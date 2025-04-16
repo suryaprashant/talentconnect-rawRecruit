@@ -1,10 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from "body-parser";
-import Connection from './db/dbConnect.js';
 
-import Jobs from './Routes/Jobs.route.js';
-import Application from './Routes/application.route.js';
+import Connection from './src/db/dbConnect.js';
+
+import Jobs from './src/Routes/Jobs.route.js';
+import Application from './src/Routes/application.route.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
