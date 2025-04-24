@@ -1,0 +1,5 @@
+# Node modules (do not upload dependencies)
+node_modules/
+
+# Environment variables (keep your secrets safe)
+.env
