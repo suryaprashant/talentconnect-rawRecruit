@@ -1,55 +1,34 @@
-import Job from "../models/Job.js";
 import StudentOverview from "../models/Student.js";
-
-// job filter and scoring algo
-const weights = {
-    industryType: 1,
-    skills: 4,
-    location: 1
-}
-
-const WeightedFilter = (PreferedJobs, skills, interestedIndustryType, preferedLocations) => {
-    const scoredJobs = PreferedJobs.map(job => {
-        let score = 0;
-
-        if (interestedIndustryType.includes(job.industryType)) score += weights.industryType;
-        if (preferedLocations.includes(job.location)) score += weights.location;
-
-        const matchedSkills = job.skillsRequired.filter(skill => skills.includes(skill));
-        if (matchedSkills.length > 0) {
-            score += (matchedSkills.length / job.skillsRequired.length) * weights.skills;
-        }
-
-        return { ...job._doc, matchedscore: score };
-    })
-
-    // sort jobs in decreasing order of matching preference
-    return scoredJobs.sort((a, b) => b.matchedscore - a.matchedscore);
-}
+import { fetchOpportunityService } from "../services/Job.service.js";
+import { WeightedFilter } from "../utility/weightedJobSearch.js";
 
 
 // offcampus
 export const findRelevantOpportunityById = async (req, res) => {
-    const studentId = req.query;
+    const studentId = req.params.id;
 
     if (!studentId) return res.status(404).json({ error: "Student Id missing" });
 
     try {
-        // student record fetched here
-        const response = await StudentOverview.findbyId(studentId);
+        // student data
+        const response = await StudentOverview.findById(studentId);
 
         const lookingFor = response.lookingFor; // "Full-Time"
-        const interestedIndustryType = response.interestedIndustryType;
+        const interestedIndustryType = response.interestedIndustry;
         const jobPreference = response.jobPreference; // ["Software Developer"]
-        const skills = response.skills; // ["Spring Boot", "React.js",]
+        const skills = response.skills; // ["Spring Boot", "React.js"]
         const preferedWorkModes = response.preferedWorkModes; // ["Remote"]
-        const preferedLocations = response.preferedLocations; // ["Delhi", "Pune"]
-        
-        const Jobs = await Job.find({
-            jobType: lookingFor,
-            title: { $in: jobPreference }, // later to be removed to advance matching keyword search algo
-            workMode: { $in: preferedWorkModes },
-        });
+        const preferedLocations = response.preferredJobLocations; // ["Delhi", "Pune"]
+
+        // console.log(lookingFor, "\n", interestedIndustryType, "\n", jobPreference, "\n", skills, "\n", preferedWorkModes, "\n", preferedLocations);
+
+        const query = {};
+        if (lookingFor) query.jobType = lookingFor;
+        if (jobPreference && jobPreference.length > 0) query.title = { $in: jobPreference };
+        if (preferedWorkModes && preferedWorkModes.length > 0) query.workMode = { $in: preferedWorkModes };
+        query.openingFor = { $ne: "Oncampus" };
+
+        const Jobs = await fetchOpportunityService(query);
 
         const preferedJobs = WeightedFilter(Jobs, skills, interestedIndustryType, preferedLocations);
         // console.log("preferedJob:", preferedJobs);
@@ -57,6 +36,21 @@ export const findRelevantOpportunityById = async (req, res) => {
     }
     catch (error) {
         console.log(error);
-        res.status(500).json({ erorr: error.message });
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export const fetchOpportunitiesForCollegeStudent = async (req, res) => {
+    const { collegeId } = req.body.collegeId
+    const query = {};
+    query.openingFor = "Oncampus";
+    query.allowedColleges = { $in: [collegeId] };
+
+
+    try {
+        const opportunities = await fetchOpportunityService(query);
+        res.status(200).json(opportunities);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 }

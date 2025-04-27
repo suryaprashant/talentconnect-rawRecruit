@@ -58,18 +58,15 @@ const studentOverviewSchema = new mongoose.Schema(
     ],
     interestedIndustry: {
       type: String,
-      enum: ['IT Industry'],
     },
     interestedJobRoles: [
       {
         type: String,
-        enum: ['Software Engineer', 'Data Analyst'],
       },
     ],
     preferredJobLocations: [
       {
         type: String,
-        enum: ['Noida', 'Delhi', 'Gurgaon', 'Bangalore', 'Pune', 'Mumbai', 'Hyderabad'],
       },
     ],
     lookingFor: {

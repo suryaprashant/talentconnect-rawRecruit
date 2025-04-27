@@ -1,49 +1,36 @@
-import Job from "../models/Job.js";
+import { createOpportunityService, fetchOpportunityService } from "../services/Job.service.js";
 
 export async function createJob(req, res) {
-    const {
-        title,
-        description,
-        location,
-        workMode,
-        industryType,
-        jobType,
-        employementType,
-        noOfOpenings,
-        salaryPerMonth,
-        minimumEducation,
-        preferedFieldOfStudy,
-        yearsOfExperience,
-        skillsRequired,
-        certificates,
-        workAuthorizationRequired,
-        companyPosted,
-    } = req.body;
+    // link path: only allowed to company (middleware implemetation)
 
     try {
-        const newJob = new Job({
-            title,
-            description,
-            location,
-            workMode,
-            industryType,
-            jobType,
-            employementType,
-            noOfOpenings,
-            salaryPerMonth,
-            minimumEducation,
-            preferedFieldOfStudy,
-            yearsOfExperience,
-            skillsRequired,
-            certificates,
-            workAuthorizationRequired,
-            companyPosted:companyPosted,
-        });
-
-        await newJob.save();
-        res.status(201).json({ message: "Job Created" });
+        const response = await createOpportunityService(req.body);
+        res.status(201).json(response);
     } catch (error) {
-        console.log("Error ", error.message);
-        res.status(500).json({ Error: "Internal Server Error" });
+        res.status(500).json({ error: "Internal server error" });
     }
 }
+
+export async function fetchOnCampusOpportunities(req, res) {
+    // link path: only allowed to college (middleware implemetation)
+    const query = {};
+    query.openingFor = "Oncampus";
+
+    try {
+        const response = await fetchOpportunityService(query);
+        if (response.success) res.status(200).json({ data: response.data });
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+// export async function fetchOffCampusOpportunities(req, res) {
+//     // link path: only allowed to college (middleware implemetation)
+
+//     try {
+//         const response = await fetchOpportunityService("Offcampus");
+//         if (response.success) res.status(200).json({ data: response.data });
+//     } catch (error) {
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// }

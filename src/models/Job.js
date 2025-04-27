@@ -6,6 +6,7 @@ const JobSchema = new mongoose.Schema(
         description: { type: String, required: true },
         location: { type: String }, // later on to create array
         workMode: { type: [String], required: true }, // "Remote", "Onsite", or "Hybrid"
+        openingFor: { type: String, enum: ["Oncampus", "Offcampus"] },
         industryType: String, // "IT"
         jobType: {
             type: String,
@@ -24,10 +25,15 @@ const JobSchema = new mongoose.Schema(
         yearsOfExperience: Number,
         skillsRequired: { type: [String], required: true }, // ["Node.js", "React.js"]
 
-        certificates: String, //later to be replaced by files or links
+        certificates: String, //later to be replaced by cloudinary link
         workAuthorizationRequired: { type: String, enum: ["Yes", "No"] },
 
-        companyPosted: { type: mongoose.Schema.Types.ObjectId, ref:"Company", required: true }, //ref to posting company for populate
+        companyPosted: { type: mongoose.Schema.Types.ObjectId, ref: "Company", required: true }, //ref to posting company for populate
+        
+        // if oncampus
+        allowedColleges:[
+            { type: mongoose.Schema.Types.ObjectId, ref: "College" }
+        ]
     },
     { timestamps: true }
 );
