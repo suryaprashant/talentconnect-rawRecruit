@@ -21,20 +21,21 @@ export const saveParsedResume = async (req, res) => {
 
 export async function resumeSearch(req, res) {
     // reqbody jobdesc. 
-
+    if(!req.body) return res.status(404).json({msg:"No job description"});
     try {
         // resume
         const response = await fetchAllResumeService(req.body);
-        console.log(response);
+        // console.log(response);
         // perform weighted search 
         let preferedResume;
         if (response.success) {
-            preferedResume = calculateMatchScore(response, req.body);
+            preferedResume = calculateMatchScore(response.data, req.body);
             return res.status(200).json(preferedResume);
         }
 
         res.status(204).json({msg:"No matching resume"});
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: "Internal server error" });
     }
 }

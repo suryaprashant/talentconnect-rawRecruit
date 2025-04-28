@@ -15,7 +15,7 @@ export async function fetchAllResumeService() {
     try {
         // will replace by based on prefered job role
         const response = await Resume.find();
-        console.log(response);
+        // console.log(response);
         return { success: true, data: response }
     } catch (error) {
         console.log(error);

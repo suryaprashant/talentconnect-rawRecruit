@@ -1,7 +1,7 @@
 const weights = {
     skills: 5,
     jobRole: 4,
-    industry: 3,
+    industry: 2,
     location: 2,
     experience: 3
 };
@@ -14,15 +14,17 @@ export function calculateMatchScore(resumes, jobDescription) {
 
         if (jobDescription.yearsOfExperience && resume.yearsOfExperience >= jobDescription.yearsOfExperience) score += weights.experience;
 
-        const matchedLocation = resume.preferredJobLocations.filter(location => resume.preferredJobLocations.includes(location));
+        const matchedLocation = jobDescription.preferredJobLocations.filter(location => resume.preferredJobLocations.includes(location));
         if (matchedLocation.length > 0) {
-            score += (matchedLocation.length / jobDescription.preferredJobLocations.length) * weights.skills;
+            score += (matchedLocation.length / jobDescription.preferredJobLocations.length) * weights.location;
         }
 
         const matchedSkills = jobDescription.skills.filter(skill => resume.skills.includes(skill));
         if (matchedSkills.length > 0) {
             score += (matchedSkills.length / jobDescription.skills.length) * weights.skills;
         }
+
+        if (resume.interestedJobRoles.includes(jobDescription.jobTitle)) score += weights.jobRole;
 
         return { ...resume._doc, matchedscore: score };
     })
