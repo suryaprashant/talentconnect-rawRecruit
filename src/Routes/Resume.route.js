@@ -3,8 +3,10 @@ import { resumeSearch, saveParsedResume } from "../controllers/resume.controller
 
 const router = express.Router();
 
+// api '.../company/dashboard/resume'
+
 // search resume
 router.get('/', resumeSearch);
-router.post('/', saveParsedResume);
+// router.post('/', saveParsedResume); 
 
 export default router;

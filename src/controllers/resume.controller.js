@@ -1,23 +1,23 @@
 import { fetchAllResumeService, saveParsedResumeService } from "../services/Resume.service.js";
 import { calculateMatchScore } from "../utility/weightedResumeSearch.js";
 
-export const saveParsedResume = async (req, res) => {
-    const resumeData = req.body;
-    if (!resumeData) return res.status(404).json({ msg: "No data" });
+// export const saveParsedResume = async (req, res) => {
+//     const resumeData = req.body;
+//     if (!resumeData) return res.status(404).json({ msg: "No data" });
 
-    try {
-        // call ml model api
+//     try {
+//         // call ml model api
 
-        // returns parsedData
+//         // returns parsedData
 
-        // save in resume collection
-        await saveParsedResumeService(resumeData);
-        res.status(201).json({ msg: "Created!" });
-    } catch (error) {
-        console.log("error ", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-}
+//         // save in resume collection
+//         await saveParsedResumeService(resumeData);
+//         res.status(201).json({ msg: "Created!" });
+//     } catch (error) {
+//         console.log("error ", error);
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// }
 
 export async function resumeSearch(req, res) {
     // reqbody jobdesc. 
