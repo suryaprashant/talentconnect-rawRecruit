@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 
-import savedJobsRouter from "./src/routes/savedjobsandinterships.js";
+import savedJobsRouter from "./src/routes/savedjobsandinternships.js";
 import serviceRequestRouter from "./src/routes/servicerequest.js";
 import servicerequestinterview from "./src/routes/servicerequest_interview.js";
 import servicerequestreferraljobs from "./src/routes/servicerequest_referraljobs.js";
@@ -17,7 +17,11 @@ import servicerequest_studenttraining from "./src/routes/servicerequest_studentt
 import studentroute from "./src/routes/student.route.js";
 import application_to_admin from "./src/routes/application_to_admin.js";
 import uploadResumeRoute from "./src/routes/uploadresume.js";
-
+import offCampusApplicationRoutes from "./src/routes/jobmanagement.js";
+import oncampus from "./src/routes/oncampus.js";
+import manage_application from "./src/routes/manage_application.js";
+import jobapplication from "./src/routes/jobapplication.js";
+import registeroncampus from "./src/controllers/registeredcandidates_oncampusapplication.js";
 import "./config/db.js";
 
 dotenv.config();
@@ -42,6 +46,11 @@ app.use("/api/rawrecruit", servicerequest_studenttraining);
 app.use("/api/rawrecruit", studentroute);
 app.use("/api/rawrecruit", application_to_admin);
 app.use("/resume", uploadResumeRoute);
+// app.use("/api/rawrecruit", offCampusApplicationRoutes);
+// app.use("/api/rawrecruit", oncampus);
+app.use("/api/rawrecruit", manage_application);
+app.use("/api/rawrecruit", jobapplication);
+app.use("/api/rawrecruit", registeroncampus);
 
 app.listen(PORT, () => {
   console.log(`Server is up and running on PORT: ${PORT}`);
