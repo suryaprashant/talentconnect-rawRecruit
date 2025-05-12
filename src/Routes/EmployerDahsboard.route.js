@@ -3,7 +3,7 @@ import { getRegisteredCampus } from "../controllers/campusPlacement.controller.j
 
 const router = express.Router();
 
-// api '.../company/dashboard/oncampus'
-router.get('/registeredcampus',getRegisteredCampus);
+// api '.../company/dashboard'
+router.get('/oncampus/registeredcampus',getRegisteredCampus);
 
 export default router;

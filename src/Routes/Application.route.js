@@ -10,10 +10,11 @@ router.post('/apply', createApplication);
 
 // shortlisting
 
+
 // access to only company 
-// accept offcampus
-router.get('/accept', getAcceptedCandidates);
 // accept oncampus
 router.get('/accept/oncampus/:id', getAcceptedCandidatesFromCollege);
+// accept offcampus
+router.get('/accept/:id', getAcceptedCandidates);
 
 export default router;

@@ -16,10 +16,10 @@ export async function createOpportunityService(jobData) {
 
 // fetch
 export async function fetchOpportunityService(query) {
-    
+
     try {
         // const response = await Job.find(query).populate('Company');
-        const response = await Job.find(query);
+        const response = await Job.find(query).lean();
         return { success: true, data: response };
     } catch (error) {
         console.log("Error: ", error.message);

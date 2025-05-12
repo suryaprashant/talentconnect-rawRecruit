@@ -57,7 +57,7 @@ export async function getUserApplication(req, res) {
 
 // offcampus
 export async function getAcceptedCandidates(req, res) {
-    const { jobId } = req.body;
+    const jobId = req.params.id;
     try {
         const response = await fetchAcceptedCandidatesService(jobId);
         // console.log(response);

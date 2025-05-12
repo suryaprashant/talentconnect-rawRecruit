@@ -19,7 +19,7 @@ export const registerCampusPlacement = async (req, res) => {
     }
 };
 
-// get college
+// get colleges that registered for oncampus placement
 export const getRegisteredCampus = async (req, res) => {
     try {
         const response = await getCollegesService();

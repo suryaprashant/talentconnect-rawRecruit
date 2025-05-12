@@ -14,8 +14,9 @@ router.post('/', createJob);
 router.get('/oncampus', fetchOnCampusOpportunities);
 
 // user
-// find relevant jobs by user Id
-router.get('/campus/', fetchOpportunitiesForCollegeStudent);
+// find jobs to collegeStudents
+router.get('/campus/:collegeId', fetchOpportunitiesForCollegeStudent);
+
 router.get('/:id', findRelevantOpportunityById);
 // router.get('/campusopportunity', fetchCampusOpportunities);
 

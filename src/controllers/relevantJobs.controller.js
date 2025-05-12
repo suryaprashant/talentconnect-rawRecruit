@@ -5,13 +5,13 @@ import { WeightedFilter } from "../utility/weightedJobSearch.js";
 
 // offcampus
 export const findRelevantOpportunityById = async (req, res) => {
-    const studentId = req.params.id;
+    const userId = req.params.id;
 
-    if (!studentId) return res.status(404).json({ error: "Student Id missing" });
+    if (!userId) return res.status(404).json({ error: "Student Id missing" });
 
     try {
         // student data
-        const response = await StudentOverview.findById(studentId);
+        const response = await StudentOverview.findById(userId);
 
         const lookingFor = response.lookingFor; // "Full-Time"
         const interestedIndustryType = response.interestedIndustry;
@@ -32,25 +32,30 @@ export const findRelevantOpportunityById = async (req, res) => {
 
         const preferedJobs = WeightedFilter(Jobs, skills, interestedIndustryType, preferedLocations);
         // console.log("preferedJob:", preferedJobs);
-        res.status(200).json({ preferedJobs: preferedJobs });
+        res.status(200).json(preferedJobs);
     }
     catch (error) {
-        console.log(error);
+        console.log(error.message);
         res.status(500).json({ error: "Internal server error" });
     }
 }
 
 export const fetchOpportunitiesForCollegeStudent = async (req, res) => {
-    const { collegeId } = req.body.collegeId
+    const { collegeId } = req.params;
+
+    if (!collegeId) return res.status(404).json({ msg: "College Id not found!" });
+
+    // search opportunity where collegeId is in job database
     const query = {};
     query.openingFor = "Oncampus";
     query.allowedColleges = { $in: [collegeId] };
 
-
     try {
         const opportunities = await fetchOpportunityService(query);
-        res.status(200).json(opportunities);
+        if (opportunities.success === true) return res.status(200).json(opportunities.data);
+        return res.status(404).json({ msg: "No Opportunities!" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.log(error.message);
+        res.status(500).json({ error: "Internal server error" });
     }
 }

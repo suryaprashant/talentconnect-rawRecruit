@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import Connection from './config/db.js';
 
 import Jobs from './src/Routes/Jobs.route.js';
+import Internship from './src/Routes/Internship.route.js';
 import Application from './src/Routes/Application.route.js';
 import Resume from './src/Routes/Resume.route.js';
 import Hackathon from './src/Routes/Hackathon.route.js';
@@ -23,10 +24,11 @@ app.use(bodyParser.json());
 
 // routes
 app.use("/jobs", Jobs);
+app.use("/internship", Internship);
 app.use("/application", Application)
-app.use('/resume', Resume);
 app.use('/hackathon', Hackathon);
-app.use('/company', EmployerDahsboard);
+app.use('/company/dashboard', EmployerDahsboard);
+app.use('/company/dashboard/resume', Resume);
 
 app.listen(PORT, () => {
     console.log('listening..', PORT);
