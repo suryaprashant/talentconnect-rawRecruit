@@ -1,4 +1,4 @@
-import CompanyOverview from '../models/companyOverviewModel.js';
+import CompanyOverview from "../../models/CompanyModels/companyOverviewModel.js";
 
 // Create or Update Company Overview
 export const createOrUpdateCompanyOverview = async (req, res) => {

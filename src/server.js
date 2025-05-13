@@ -1,14 +1,17 @@
-// src/server.js
-
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 
-import studentRoutes from './routes/studentRoutes.js';
-import fresherRoutes from './routes/fresherRoutes.js';
-import companyRoutes from './routes/companyRoutes.js';
-import collegeRoutes from './routes/collegeRoutes.js'; // ✅ Import college routes
+import collegeRoutes from './routes/collegeRoutes.js';
+import generalRoutes from './routes/generalRoutes.js';
+import companyRoutes from './routes/company.js'; // ✅ Added Company Routes
+
+// ✅ Import auth routes
+import authRoutes from './routes/authRoutes.js';
+//import studentDashboardProfileRoutes from "./routes/studentDashboardProfileRoutes.js";
+import fresherProfileRoutes from './routes/fresherProfileRoutes.js';
+import professionalProfileRoutes from './routes/professionalProfileRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -16,11 +19,24 @@ const app = express();
 // Middleware to parse JSON
 app.use(express.json());
 
-// Routes
-app.use('/api/student', studentRoutes);
-app.use('/api/fresher', fresherRoutes); 
+// ✅ Mount auth routes first
+app.use('/api/auth', authRoutes);
+
+// Student Profile Section
+//app.use('/api/student/profile', studentDashboardProfileRoutes);
+
+// Fresher Profile Section
+app.use('/api/fresherProfile', fresherProfileRoutes);
+
+// Professional Profile Section
+app.use('/api/professionalProfile', professionalProfileRoutes);
+
+// ✅ Company Profile API
 app.use('/api/company', companyRoutes);
-app.use('/api/college', collegeRoutes); // ✅ Register college routes
+
+// Other App Routes
+app.use('/api/college', collegeRoutes);
+app.use('/api/general', generalRoutes);
 
 // Connect DB and Start Server
 const PORT = process.env.PORT || 5000;

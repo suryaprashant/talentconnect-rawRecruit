@@ -1,11 +1,11 @@
 import express from 'express';
 import {
   createOrUpdateCompanyOverview
-} from '../controllers/companyOverviewController.js';
+} from '../../controllers/Company Dashboard/companyOverviewController.js';
 
 import {
   addCompanyProfile,
-} from '../controllers/companyProfileController.js';
+} from '../../controllers/Company Dashboard/companyProfileController.js'
 
 const router = express.Router();
 

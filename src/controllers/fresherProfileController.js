@@ -1,205 +1,132 @@
-// src/controllers/fresherProfileController.js
+import FresherProfile from '../models/fresherProfileModel.js';
+import cloudinary from '../utils/cloudinary.js';
 
-import FresherOverview from '../models/fresherOverviewModel.js';
-
-// Create a new Fresher Profile
 export const createFresherProfile = async (req, res) => {
   try {
+    // Logging for debugging
+    console.log(req.body);  // Log the form data
+    console.log(req.files);  // Log the uploaded files
+
+    // Destructure the data from req.body
     const {
+      userId,
       name,
-      college,
-      yearOfGraduation,
-      linkedin,
-      github,
-      portfolio,
-      resume,
-      about,
+      email,
+      linkedinUrl,
+      githubUrl,
+      portfolioUrl,
       mobileNumber,
-      branchOfStudy,
-      profilePhoto,
-      cgpa,
-      degree,
-      degreeCertificate,
+      education,
       skills,
-      interestedIndustry,
+      interestedIndustryType,
       interestedJobRoles,
+      jobDetails,
       preferredJobLocations,
       expectedSalary,
       lookingFor,
       employmentType,
-      language,
-      jobDetails,
-      internshipDetails,
-      certifications,
+      languages,
+      careerGoals,
+      internshipsTrainings,
+      skillsDescription,
+      websiteUrl,
+      certificationsUrl,
     } = req.body;
 
-    // Check if fresher with the same email already exists
-    const existingFresher = await FresherOverview.findOne({ email: req.body.email });
-
-    if (existingFresher) {
-      return res.status(400).json({
-        success: false,
-        message: 'Fresher profile already exists!',
-      });
+    // Validate if required fields are present
+    if (!userId || !name || !email) {
+      return res.status(400).json({ error: "userId, name, and email are required." });
     }
 
-    // Create a new fresher profile
-    const fresher = new FresherOverview({
+    // Upload files to Cloudinary
+    const resumeResult = req.files.resume
+      ? await cloudinary.uploader.upload_stream(
+          { folder: 'resumes', resource_type: 'auto' },
+          (error, result) => {
+            if (error) return res.status(500).json({ error: "Failed to upload resume" });
+            return result;
+          }
+        ).end(req.files.resume[0].buffer)
+      : null;
+
+    const profileResult = req.files.profileImage
+      ? await cloudinary.uploader.upload_stream(
+          { folder: 'profileImages' },
+          (error, result) => {
+            if (error) return res.status(500).json({ error: "Failed to upload profile image" });
+            return result;
+          }
+        ).end(req.files.profileImage[0].buffer)
+      : null;
+
+    const bgResult = req.files.backgroundImage
+      ? await cloudinary.uploader.upload_stream(
+          { folder: 'backgroundImages' },
+          (error, result) => {
+            if (error) return res.status(500).json({ error: "Failed to upload background image" });
+            return result;
+          }
+        ).end(req.files.backgroundImage[0].buffer)
+      : null;
+
+    // Create a new fresher profile object
+    const profile = new FresherProfile({
+      userId,
       name,
-      college,
-      yearOfGraduation,
-      linkedin,
-      github,
-      portfolio,
-      resume,
-      about,
+      email,
+      linkedinUrl,
+      githubUrl,
+      portfolioUrl,
       mobileNumber,
-      branchOfStudy,
-      profilePhoto,
-      cgpa,
-      degree,
-      degreeCertificate,
-      skills,
-      interestedIndustry,
-      interestedJobRoles,
-      preferredJobLocations,
+      education,  // Assuming education is already an object
+      skills,  // Assuming skills is already an array
+      interestedIndustryType,
+      interestedJobRoles,  // Assuming it's an array
+      jobDetails,  // Assuming it's an object
+      preferredJobLocations,  // Assuming it's an array
       expectedSalary,
       lookingFor,
       employmentType,
-      language,
-      jobDetails,
-      internshipDetails,
-      certifications,
+      languages,  // Assuming languages is an array
+      careerGoals,
+      internshipsTrainings,  // Assuming it's an array of objects
+      skillsDescription,
+      websiteUrl,
+      certificationsUrl,  // Assuming it's an array
+      resume: resumeResult?.secure_url,
+      profileImage: profileResult?.secure_url,
+      backgroundImage: bgResult?.secure_url,
     });
 
-    // Save the new fresher profile to the database
-    const newFresher = await fresher.save();
+    // Save the fresher profile to the database
+    const savedProfile = await profile.save();
+    res.status(201).json(savedProfile);
 
-    res.status(201).json({
-      success: true,
-      message: 'Fresher profile created successfully!',
-      data: newFresher,
-    });
-  } catch (error) {
-    console.error('Error creating fresher profile:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server Error',
-    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error while creating profile.' });
   }
 };
-
-// Get Fresher Profile by Email
-export const getFresherProfileByEmail = async (req, res) => {
-  try {
-    const { email } = req.params;
-    
-    // Find fresher by email
-    const fresher = await FresherOverview.findOne({ email });
-    
-    if (!fresher) {
-      return res.status(404).json({
-        success: false,
-        message: 'Fresher profile not found!',
-      });
-    }
-    
-    res.status(200).json({
-      success: true,
-      message: 'Fresher profile fetched successfully',
-      data: fresher,
-    });
-  } catch (error) {
-    console.error('Error fetching fresher profile:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server Error',
-    });
-  }
-};
-
-// Update Fresher Profile
 export const updateFresherProfile = async (req, res) => {
   try {
-    const { email } = req.params;
-    const {
-      name,
-      college,
-      yearOfGraduation,
-      linkedin,
-      github,
-      portfolio,
-      resume,
-      about,
-      mobileNumber,
-      branchOfStudy,
-      profilePhoto,
-      cgpa,
-      degree,
-      degreeCertificate,
-      skills,
-      interestedIndustry,
-      interestedJobRoles,
-      preferredJobLocations,
-      expectedSalary,
-      lookingFor,
-      employmentType,
-      language,
-      jobDetails,
-      internshipDetails,
-      certifications,
-    } = req.body;
-
-    // Find fresher by email
-    const fresher = await FresherOverview.findOne({ email });
-
-    if (!fresher) {
-      return res.status(404).json({
-        success: false,
-        message: 'Fresher profile not found!',
-      });
+    const { userId } = req.body;
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required" });
     }
 
-    // Update fresher profile fields
-    fresher.name = name || fresher.name;
-    fresher.college = college || fresher.college;
-    fresher.yearOfGraduation = yearOfGraduation || fresher.yearOfGraduation;
-    fresher.linkedin = linkedin || fresher.linkedin;
-    fresher.github = github || fresher.github;
-    fresher.portfolio = portfolio || fresher.portfolio;
-    fresher.resume = resume || fresher.resume;
-    fresher.about = about || fresher.about;
-    fresher.mobileNumber = mobileNumber || fresher.mobileNumber;
-    fresher.branchOfStudy = branchOfStudy || fresher.branchOfStudy;
-    fresher.profilePhoto = profilePhoto || fresher.profilePhoto;
-    fresher.cgpa = cgpa || fresher.cgpa;
-    fresher.degree = degree || fresher.degree;
-    fresher.degreeCertificate = degreeCertificate || fresher.degreeCertificate;
-    fresher.skills = skills || fresher.skills;
-    fresher.interestedIndustry = interestedIndustry || fresher.interestedIndustry;
-    fresher.interestedJobRoles = interestedJobRoles || fresher.interestedJobRoles;
-    fresher.preferredJobLocations = preferredJobLocations || fresher.preferredJobLocations;
-    fresher.expectedSalary = expectedSalary || fresher.expectedSalary;
-    fresher.lookingFor = lookingFor || fresher.lookingFor;
-    fresher.employmentType = employmentType || fresher.employmentType;
-    fresher.language = language || fresher.language;
-    fresher.jobDetails = jobDetails || fresher.jobDetails;
-    fresher.internshipDetails = internshipDetails || fresher.internshipDetails;
-    fresher.certifications = certifications || fresher.certifications;
+    const updatedProfile = await FresherProfile.findOneAndUpdate(
+      { userId },
+      { $set: req.body },
+      { new: true }
+    );
 
-    // Save updated fresher profile
-    const updatedFresher = await fresher.save();
+    if (!updatedProfile) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
 
-    res.status(200).json({
-      success: true,
-      message: 'Fresher profile updated successfully!',
-      data: updatedFresher,
-    });
-  } catch (error) {
-    console.error('Error updating fresher profile:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server Error',
-    });
+    res.status(200).json({ message: "Profile updated", updatedProfile });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update profile" });
   }
 };
