@@ -27,8 +27,13 @@ export async function fetchOnCampusOpportunities(req, res) {
 
 export async function fetchInternshipOpportunities(req, res) {
     // const yearsOfExperience=0; //to be updated by middleware
+    const { openingFor } = req.query;
+
     const query = {};
     query.jobType = "Internship";
+
+    if (openingFor) query.openingFor = openingFor;
+    else query.openingFor = 'Offcampus'
     // query.yearsOfExperience=yearsOfExperience;
 
     try {
@@ -39,11 +44,14 @@ export async function fetchInternshipOpportunities(req, res) {
     }
 }
 
-// export async function fetchOffCampusOpportunities(req, res) {
+// export async function fetchOpportunities(req, res) {
 //     // link path: only allowed to college (middleware implemetation)
 
+//     const query = {};
+//     query.openingFor = 'Offcampus'
+
 //     try {
-//         const response = await fetchOpportunityService("Offcampus");
+//         const response = await fetchOpportunityService(query);
 //         if (response.success) res.status(200).json({ data: response.data });
 //     } catch (error) {
 //         res.status(500).json({ error: "Internal server error" });

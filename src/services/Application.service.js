@@ -1,17 +1,22 @@
+import mongoose from 'mongoose';
+
 import Application from "../models/Application.js";
-import Job from "../models/Job.js";
 
 export async function fetchApplicationService(query, userType) {
 
     try {
         let applicationData;
         if (userType === 'User') {
-            applicationData = await Application.find(query).populate({
-                path: 'job',
-                select: '-allowedColleges'
-            });
+            applicationData = await Application.find(query)
+                .populate({
+                    path: 'job',
+                    select: '-allowedColleges'
+                })
+                .lean();
         } else if (userType === 'Company') {
-            applicationData = await Application.find(query).populate('user');
+            applicationData = await Application.find(query)
+                .populate('user')
+                .lean();
         }
         else {
             return { success: false, error: "Invalid User" }
@@ -24,10 +29,15 @@ export async function fetchApplicationService(query, userType) {
     }
 }
 
-export async function createApplicationService(applicationData) {
+export async function createApplicationService(userId, jobId) {
 
     try {
-        const newApplication = new Application(applicationData);
+        const newApplication = new Application({
+            user: userId,
+            job: jobId,
+            statusHistory: [{ status: "Applied" }],
+            currentStatus: "Applied"
+        });
         await newApplication.save();
         return { success: true, message: 'Application submited!' };
     } catch (error) {
@@ -50,11 +60,48 @@ export async function fetchAcceptedCandidatesService(jobId) {
 
 export async function getAcceptedOnCampusService(jobId) {
     try {
-        const response = await Job.findById(jobId)
-            .populate('allowedColleges')
-            .lean();
+        // const response = await Job.findById(jobId)
+        //     .populate('allowedColleges')
+        //     .lean();
 
-        return { success: true, data: response };
+        // return { success: true, data: response };
+        const result = await Application.aggregate([
+            {
+                $match: {
+                    job: new mongoose.Types.ObjectId(jobId),
+                    currentStatus: "Offer Extended"
+                }
+            },
+            {
+                $lookup: {
+                    from: "jobs",
+                    localField: "job",
+                    foreignField: "_id",
+                    as: "jobDetails"
+                }
+            },
+            {
+                $unwind: "$jobDetails"
+            },
+            {
+                $match: {
+                    "jobDetails.jobType": "Oncampus"
+                }
+            },
+            {
+                $lookup: {
+                    from: "StudentOverview",
+                    localField: "user",
+                    foreignField: "_id",
+                    as: "userDetails"
+                }
+            },
+            {
+                $unwind: "$userDetails"
+            }
+        ]);
+
+        return { success: true, data: result };
     } catch (error) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");

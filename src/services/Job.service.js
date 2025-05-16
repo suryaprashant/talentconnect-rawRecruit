@@ -27,6 +27,17 @@ export async function fetchOpportunityService(query) {
     }
 }
 
+export async function checkOpportunityService(jobId) {
+
+    try {
+        const response = await Job.exists({_id:jobId});
+        if(response) return true;
+        return false;
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
 
 // export async function fetchJobByIdService(Id) {
 //     try {

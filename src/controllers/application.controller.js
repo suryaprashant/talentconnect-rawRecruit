@@ -1,7 +1,6 @@
-import StudentOverview from "../models/Student.js";
-
 import { createApplicationService, fetchApplicationService, fetchAcceptedCandidatesService, getAcceptedOnCampusService } from "../services/Application.service.js";
-import { fetchOpportunityService } from "../services/Job.service.js";
+import { checkOpportunityService } from "../services/Job.service.js";
+import { checkStudentService } from "../services/Student.service.js";
 
 // apply for opportunity
 export async function createApplication(req, res) {
@@ -9,21 +8,14 @@ export async function createApplication(req, res) {
     if (!userId || !jobId) return res.status(404).json({ msg: "UserId or JobId missing" });
 
     try {
-        // check for the validity of user and job ids... later removed by middlewares
-        const user = await StudentOverview.findById(userId);
-        const job = await fetchOpportunityService({ _id: jobId });
+        // check for the validity of user and job ids... will remove with middlewares authentication
+        const user = await checkStudentService(userId);
+        const job = await checkOpportunityService(jobId);
         if (!user || !job) {
-            return res.status(404).json({ msg: "Invalid userId or jobId" });
+            return res.status(404).json({ msg: "User or Job not found" });
         }
 
-        const query = {
-            user: userId,
-            job: jobId,
-            statusHistory: [{ status: "Applied" }],
-            currentStatus: "Applied"
-        }
-
-        const application = await createApplicationService(query);
+        const application = await createApplicationService(userId, jobId);
         res.status(201).json(application);
     } catch (error) {
         console.log("Error: ", error);
@@ -37,6 +29,7 @@ export async function getUserApplication(req, res) {
     if (!Id) return res.status(404).json({ error: "Invalid" });
 
     let userType = "User"; //handled by middleware
+
     const query = {};
     if (userType === 'User') query.user = Id;
     else if (userType === 'Company') query.job = Id;
@@ -71,10 +64,6 @@ export async function getAcceptedCandidates(req, res) {
 // oncampus
 export async function getAcceptedCandidatesFromCollege(req, res) {
     const { jobId } = req.params;
-
-    // console.log(req.body, req.params, req.query);
-    // console.log(req.params.jobId);
-
     if (!jobId) return res.status(404).json({ error: 'Job not found!' });
 
     try {

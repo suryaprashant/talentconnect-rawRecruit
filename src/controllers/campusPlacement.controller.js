@@ -1,21 +1,15 @@
-import CampusPlacement from "../models/CampusPlacement.js";
-import { getCollegesService } from "../services/CampusPlacement.service.js";
+import { campusPlacementRegistrationService, getCollegesService } from "../services/CampusPlacement.service.js";
 
 export const registerCampusPlacement = async (req, res) => {
     try {
         const formData = req.body;
-        const newRegistration = new CampusPlacement(formData);
-        await newRegistration.save();
-        res
-            .status(201)
-            .json({
-                message: "Campus Placement registration successful",
-                data: newRegistration,
-            });
-    } catch (error) {
-        res
-            .status(500)
-            .json({ error: "Something went wrong", details: error.message });
+        const newRegistration = await campusPlacementRegistrationService(formData);
+
+        res.status(201).json({ msg: newRegistration.message });
+    }
+    catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ Error: "Internal server error" });
     }
 };
 
