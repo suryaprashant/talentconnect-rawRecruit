@@ -7,7 +7,7 @@ function StudentSidebar({ activePath }) {
   return (
     <div>
       {/* Student Sidebar */}
-      <SidebarNavItem to="/dashboard" icon={<FiHome />} label="Home" active={activePath === '/home'} />
+      <SidebarNavItem to="/home" icon={<FiHome />} label="Home" active={activePath === '/home'} />
       <SidebarNavItem to="/profile" icon={<FiUser />} label="Profile" active={activePath === '/profile'} />
       <SidebarNavItem to="/saved-jobs" icon={<FiBookmark />} label="Saved Jobs/Internships" active={activePath === '/saved-jobs'} />
 

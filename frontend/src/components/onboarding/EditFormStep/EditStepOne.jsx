@@ -18,7 +18,7 @@ export const EditStepOne = ({ onNext, onCancel }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate('/step/3');
+    navigate('/step/2');
   };
 
   return (

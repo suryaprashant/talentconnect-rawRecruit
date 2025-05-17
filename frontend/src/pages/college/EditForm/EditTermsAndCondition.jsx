@@ -33,7 +33,7 @@ export default function EditTermsAndCondition({ formData, updateFormData, nextSt
             </button>
             {/* Get Started Button */}
             <button
-              onClick={ () => naviagte("/college-dashboard/profile")}
+              onClick={ () => naviagte("/home")}
               disabled={!formData.acceptedTerms}
               className={`px-6 py-2 rounded-md ${formData.acceptedTerms ? 'bg-black text-white ' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
             >

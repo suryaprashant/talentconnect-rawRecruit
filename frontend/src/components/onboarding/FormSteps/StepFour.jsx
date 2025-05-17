@@ -4,17 +4,17 @@ import { ChevronDownIcon } from "lucide-react";
 
 export const StepFour = ({ onNext, onBack }) => {
   const [formData, setFormData] = useState({
-    industryType: [],
-    jobRoles: [],
-    locations: [],
+    industryType: "",
+    jobRoles: "",
+    locations: "",
     lookingFor: "internship",
     employmentType: "full-time",
   });
 
-  // const handleSelectChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prev) => ({ ...prev, [name]: value }));
-  // };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleRadioChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -36,22 +36,21 @@ export const StepFour = ({ onNext, onBack }) => {
         </div>
 
         <form className="w-full text-base font-normal mt-8 max-md:max-w-full">
+          {/* Industry Type */}
           <div className="w-full max-md:max-w-full">
-            <label
-              htmlFor="industryType"
-              className="block text-black max-md:max-w-full"
-            >
+            <label htmlFor="industryType" className="block text-black">
               Interested Industry Type
             </label>
             <div className="relative">
               <select
                 id="industryType"
                 name="industryType"
-                multiple
-                className="items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] whitespace-nowrap mt-2 p-3 max-md:max-w-full border border-gray-300 rounded"
+                value={formData.industryType}
+                onChange={handleChange}
+                className="items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 border border-gray-300 rounded"
               >
                 <option value="" disabled>
-                  Multiple-select
+                  Select Industry
                 </option>
                 <option value="technology">Technology</option>
                 <option value="finance">Finance</option>
@@ -63,22 +62,21 @@ export const StepFour = ({ onNext, onBack }) => {
             </div>
           </div>
 
+          {/* Job Roles */}
           <div className="w-full mt-6 max-md:max-w-full">
-            <label
-              htmlFor="jobRoles"
-              className="block text-black max-md:max-w-full"
-            >
+            <label htmlFor="jobRoles" className="block text-black">
               Interested Job Roles
             </label>
             <div className="relative">
               <select
                 id="jobRoles"
                 name="jobRoles"
-                multiple
-                className="items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] whitespace-nowrap mt-2 p-3 max-md:max-w-full border border-gray-300 rounded"
+                value={formData.jobRoles}
+                onChange={handleChange}
+                className="items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 border border-gray-300 rounded"
               >
                 <option value="" disabled>
-                  Multiple-select
+                  Select Job Role
                 </option>
                 <option value="developer">Software Developer</option>
                 <option value="designer">UI/UX Designer</option>
@@ -90,22 +88,21 @@ export const StepFour = ({ onNext, onBack }) => {
             </div>
           </div>
 
+          {/* Locations */}
           <div className="w-full mt-6 max-md:max-w-full">
-            <label
-              htmlFor="locations"
-              className="block text-black max-md:max-w-full"
-            >
+            <label htmlFor="locations" className="block text-black">
               Preferred Job Locations
             </label>
             <div className="relative">
               <select
                 id="locations"
                 name="locations"
-                multiple
-                className="items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] whitespace-nowrap mt-2 p-3 max-md:max-w-full border border-gray-300 rounded"
+                value={formData.locations}
+                onChange={handleChange}
+                className="items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 border border-gray-300 rounded"
               >
                 <option value="" disabled>
-                  Multiple-select
+                  Select Location
                 </option>
                 <option value="bangalore">Bangalore</option>
                 <option value="mumbai">Mumbai</option>
@@ -118,101 +115,64 @@ export const StepFour = ({ onNext, onBack }) => {
             </div>
           </div>
 
+          {/* Looking For */}
           <div className="w-full mt-6 max-md:max-w-full">
-            <label className="block text-black max-md:max-w-full">
-              Looking for
-            </label>
-            <div className="flex w-full gap-4 text-black whitespace-nowrap flex-wrap mt-2 max-md:max-w-full">
-              <button
-                type="button"
-                className={`self-stretch gap-2 px-4 py-2 border rounded-md ${
-                  formData.lookingFor === "job" ? "bg-black text-white" : ""
-                }`}
-                onClick={() => handleRadioChange("lookingFor", "job")}
-              >
-                Job
-              </button>
-              <button
-                type="button"
-                className={`self-stretch gap-2 px-4 py-2 border rounded-md ${
-                  formData.lookingFor === "internship"
-                    ? "bg-black text-white"
-                    : ""
-                }`}
-                onClick={() => handleRadioChange("lookingFor", "internship")}
-              >
-                Internship
-              </button>
-              <button
-                type="button"
-                className={`self-stretch gap-2 px-4 py-2 border rounded-md ${
-                  formData.lookingFor === "both" ? "bg-black text-white" : ""
-                }`}
-                onClick={() => handleRadioChange("lookingFor", "both")}
-              >
-                Both
-              </button>
+            <label className="block text-black">Looking for</label>
+            <div className="flex gap-4 mt-2 flex-wrap">
+              {["job", "internship", "both"].map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => handleRadioChange("lookingFor", option)}
+                  className={`px-4 py-2 border rounded-md ${
+                    formData.lookingFor === option
+                      ? "bg-black text-white"
+                      : "text-black"
+                  }`}
+                >
+                  {option.charAt(0).toUpperCase() + option.slice(1)}
+                </button>
+              ))}
             </div>
           </div>
 
+          {/* Employment Type */}
           <div className="w-full mt-6 max-md:max-w-full">
-            <label className="block text-black max-md:max-w-full">
-              Employment type
-            </label>
-            <div className="flex w-full gap-4 text-black whitespace-nowrap flex-wrap mt-2 max-md:max-w-full">
-              <button
-                type="button"
-                className={`self-stretch gap-2 px-4 py-2 border  rounded-md ${
-                  formData.employmentType === "part-time"
-                    ? "bg-black text-white"
-                    : ""
-                }`}
-                onClick={() => handleRadioChange("employmentType", "part-time")}
-              >
-                Part-time
-              </button>
-              <button
-                type="button"
-                className={`self-stretch gap-2 px-4 py-2  border rounded-md ${
-                  formData.employmentType === "full-time"
-                    ? "bg-black text-white"
-                    : ""
-                }`}
-                onClick={() => handleRadioChange("employmentType", "full-time")}
-              >
-                Full-time
-              </button>
-              <button
-                type="button"
-                className={`self-stretch gap-2 px-4 py-2 border rounded-md ${
-                  formData.employmentType === "contract"
-                    ? "bg-black text-white"
-                    : ""
-                }`}
-                onClick={() => handleRadioChange("employmentType", "contract")}
-              >
-                Contract
-              </button>
+            <label className="block text-black">Employment Type</label>
+            <div className="flex gap-4 mt-2 flex-wrap">
+              {["part-time", "full-time", "contract"].map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => handleRadioChange("employmentType", type)}
+                  className={`px-4 py-2 border rounded-md ${
+                    formData.employmentType === type
+                      ? "bg-black text-white"
+                      : "text-black"
+                  }`}
+                >
+                  {type.replace("-", " ").replace(/^\w/, (c) => c.toUpperCase())}
+                </button>
+              ))}
             </div>
           </div>
 
-          <div className="flex min-h-12 w-full gap-2.5 whitespace-nowrap mt-6 max-md:max-w-full">
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={onBack}
-                className="self-stretch gap-2 text-black px-6 py-3 border rounded-md max-md:px-5 cursor-pointer"
-              >
-                Back
-              </button>
-              <button
-                type="button"
-                onClick={onNext}
-                className="self-stretch bg-black gap-2 text-white px-6 py-3 border rounded-md max-md:px-5 cursor-pointer"
-              >
-                Next
-              </button>
-            </div>
+          {/* Navigation Buttons */}
+          <div className="flex gap-4 mt-6">
+            <button
+              type="button"
+              onClick={onBack}
+              className="px-6 py-3 border rounded-md text-black"
+            >
+              Back
+            </button>
+            <button
+              type="button"
+              onClick={onNext}
+              className="px-6 py-3 border rounded-md bg-black text-white"
+            >
+              Next
+            </button>
           </div>
         </form>
       </div>

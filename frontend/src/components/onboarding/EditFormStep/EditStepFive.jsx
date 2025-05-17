@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
-import { UploadIcon } from "lucide-react";
+import { UploadIcon, XIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { ChevronDownIcon } from "lucide-react";
 
 export const EditStepFive = () => {
   const [isEditable, setIsEditable] = useState(false);
@@ -17,6 +18,20 @@ export const EditStepFive = () => {
     referralSource: "",
   });
 
+  const [isSkillsOpen, setIsSkillsOpen] = useState(false);
+  const skillOptions = [
+    "JavaScript",
+    "React",
+    "Node.js",
+    "Python",
+    "Java",
+    "UI/UX Design",
+    "HTML/CSS",
+    "TypeScript",
+    "SQL",
+    "AWS"
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -26,6 +41,26 @@ export const EditStepFive = () => {
     if (e.target.files && e.target.files[0]) {
       setFormData((prev) => ({ ...prev, project: e.target.files[0] }));
     }
+  };
+
+  const toggleSkill = (skill) => {
+    if (!isEditable) return;
+    
+    setFormData(prev => {
+      if (prev.skills.includes(skill)) {
+        return { ...prev, skills: prev.skills.filter(s => s !== skill) };
+      } else {
+        return { ...prev, skills: [...prev.skills, skill] };
+      }
+    });
+  };
+
+  const removeSkill = (skill) => {
+    if (!isEditable) return;
+    setFormData(prev => ({
+      ...prev,
+      skills: prev.skills.filter(s => s !== skill)
+    }));
   };
 
   const handleEditClick = () => setIsEditable(true);
@@ -47,23 +82,66 @@ export const EditStepFive = () => {
         </div>
 
         <form className="mt-8 space-y-6">
-          {/* Skills */}
+          {/* Skills - Updated with tag input style */}
           <div>
             <label htmlFor="skills" className="block text-black">Skills</label>
-            <select
-              id="skills"
-              name="skills"
-              multiple
-              disabled={!isEditable}
-              className={`mt-2 p-3 w-full border border-gray-300 rounded text-[#666] ${!isEditable ? "bg-gray-100 cursor-not-allowed" : ""}`}
-            >
-              <option value="javascript">JavaScript</option>
-              <option value="react">React</option>
-              <option value="node">Node.js</option>
-              <option value="python">Python</option>
-              <option value="java">Java</option>
-              <option value="design">UI/UX Design</option>
-            </select>
+            
+            {/* Selected skills display */}
+            {formData.skills.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2 mb-1">
+                {formData.skills.map(skill => (
+                  <div 
+                    key={skill} 
+                    className={`flex items-center gap-1 px-3 py-1 rounded-full border ${
+                      isEditable ? "bg-gray-100 border-gray-300" : "bg-gray-50 border-gray-200"
+                    }`}
+                  >
+                    <span className="text-sm">{skill}</span>
+                    {isEditable && (
+                      <button 
+                        type="button"
+                        onClick={() => removeSkill(skill)}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        <XIcon className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Skills dropdown */}
+            <div className="relative">
+              <div 
+                className={`flex items-center justify-between p-3 w-full border border-gray-300 rounded text-[#666] cursor-pointer ${
+                  !isEditable ? "bg-gray-100 cursor-not-allowed" : "hover:border-gray-400"
+                }`}
+                onClick={() => isEditable && setIsSkillsOpen(!isSkillsOpen)}
+              >
+                <span>Select skills</span>
+                <ChevronDownIcon className={`w-5 h-5 transition-transform ${isSkillsOpen ? "rotate-180" : ""}`} />
+              </div>
+              
+              {isSkillsOpen && isEditable && (
+                <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-auto">
+                  {skillOptions.map(skill => (
+                    <div
+                      key={skill}
+                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
+                        formData.skills.includes(skill) ? "bg-gray-100 font-medium" : ""
+                      }`}
+                      onClick={() => toggleSkill(skill)}
+                    >
+                      {skill}
+                      {formData.skills.includes(skill) && (
+                        <span className="ml-2 text-gray-500">✓</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Certifications */}
@@ -195,7 +273,6 @@ export const EditStepFive = () => {
               Next
             </button>
           </div>
-
         </form>
       </div>
     </div>
