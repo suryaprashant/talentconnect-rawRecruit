@@ -12,9 +12,9 @@ export async function getStudentService(studentId) {
 
 export async function checkStudentService(studentId) {
     try {
-        const StudentData = await StudentOverview.exists({ _id: studentId });
-
-        if (StudentData) return true;
+        const student = await StudentOverview.exists({ _id: studentId });
+        console.log(student);
+        if (student) return true;
         return false;
 
     } catch (error) {
