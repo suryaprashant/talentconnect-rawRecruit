@@ -19,7 +19,7 @@ function LoginPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const userType = localStorage.getItem('userType');
+    const userType = localStorage.getItem('selectedRole');
 
     if (userType === 'candidate') {
       navigate('/home');

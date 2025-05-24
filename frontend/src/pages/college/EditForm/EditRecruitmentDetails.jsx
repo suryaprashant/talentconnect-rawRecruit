@@ -1,5 +1,54 @@
 import React, { useState } from 'react';
 
+const CustomMultiSelect = ({ options, selected, label, disabled, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSelection = (value) => {
+    const newSelected = selected.includes(value) ? [] : [value];
+    onChange(newSelected);
+    setIsOpen(false);
+  };
+  return (
+    <div className="relative mb-4">
+      <label className="block font-medium mb-2">{label}</label>
+      <div 
+        className={`p-2 border border-gray-300 rounded-md cursor-pointer ${disabled ? 'bg-gray-100' : ''}`}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+      >
+        <div className="flex justify-between items-center">
+          <span className="text-gray-700">
+            {selected.length > 0 ? selected[0] : 'Select...'}
+          </span>
+          <svg
+            className={`w-5 h-5 transform transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        {isOpen && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+            {options.map(option => (
+              <button
+                key={option}
+                type="button"
+                onClick={() => handleSelection(option)}
+                className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
+                  selected.includes(option) ? 'bg-blue-50' : ''
+                }`}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default function EditRecruitmentDetails({ formData, updateFormData, isEditing, toggleEdit, nextStep, prevStep }) {
   const [selectedService, setSelectedService] = useState(null);
 
@@ -32,45 +81,28 @@ export default function EditRecruitmentDetails({ formData, updateFormData, isEdi
         <p className="mb-6">Define your hiring partnerships and recruitment process.</p>
 
         <div className="space-y-8">
-          {/* Programs Offered Dropdown */}
-          <div>
-            <label className="block font-medium mb-2">Programs Offered</label>
-            <select
-              multiple
-              disabled={!isEditing}
-              className="w-full p-2 border border-gray-300 rounded-md h-auto disabled:bg-gray-100"
-              onChange={(e) => {
-                const selected = Array.from(e.target.selectedOptions, (option) => option.value);
-                updateFormData('programsOffered', selected);
-              }}
-              value={formData.programsOffered || []}
-            >
-              <option value="Engineering">Engineering</option>
-              <option value="Business">Business</option>
-              <option value="Arts">Arts</option>
-              <option value="Science">Science</option>
-            </select>
-          </div>
+          {/* Programs Offered Custom Dropdown */}
+          <CustomMultiSelect
+            label="Programs Offered"
+            options={['Engineering', 'Business', 'Arts', 'Science']}
+            selected={formData.programsOffered || []}
+            onChange={(selected) => updateFormData('programsOffered', selected)}
+            disabled={!isEditing}
+          />
 
-          {/* Popular Courses for Recruitment Dropdown */}
-          <div>
-            <label className="block font-medium mb-2">Popular Courses for Recruitment</label>
-            <select
-              multiple
-              disabled={!isEditing}
-              className="w-full p-2 border border-gray-300 rounded-md h-auto disabled:bg-gray-100"
-              onChange={(e) => {
-                const selected = Array.from(e.target.selectedOptions, (option) => option.value);
-                updateFormData('popularCourses', selected);
-              }}
-              value={formData.popularCourses || []}
-            >
-              <option value="Computer Science">Computer Science</option>
-              <option value="Mechanical Engineering">Mechanical Engineering</option>
-              <option value="MBA">MBA</option>
-              <option value="Electrical Engineering">Electrical Engineering</option>
-            </select>
-          </div>
+          {/* Popular Courses Custom Dropdown */}
+          <CustomMultiSelect
+            label="Popular Courses for Recruitment"
+            options={[
+              'Computer Science',
+              'Mechanical Engineering',
+              'MBA',
+              'Electrical Engineering'
+            ]}
+            selected={formData.popularCourses || []}
+            onChange={(selected) => updateFormData('popularCourses', selected)}
+            disabled={!isEditing}
+          />
 
           {/* Recruitment Services Required as Buttons */}
           <div className="border-t border-gray-200 pt-6">

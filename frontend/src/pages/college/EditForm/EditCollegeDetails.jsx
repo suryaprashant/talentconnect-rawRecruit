@@ -1,5 +1,4 @@
 import EditReview from "./EditReview";
-
 export default function EditCollegeDetails({ formData, updateFormData, isEditing, toggleEdit, nextStep, prevStep }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -113,6 +112,7 @@ export default function EditCollegeDetails({ formData, updateFormData, isEditing
           </div>
         </div>
       </div>
+
     </>
   );
 }

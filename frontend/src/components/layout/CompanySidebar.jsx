@@ -7,7 +7,7 @@ function CompanySidebar({ activePath }) {
   return (
     <div>
       {/* Company Sidebar */}
-      <SidebarNavItem to="/home" icon={<FiHome />} label="Home" active={activePath === '/home'} />
+      <SidebarNavItem to="/home" icon={<FiHome />} label="Home" active={activePath === '/company-home'} />
       <SidebarNavItem to="/company-profile" icon={<FiUser />} label="Profile" active={activePath === '/profile'} />
 
       <SidebarNavGroup label="Employer Dashboard" icon={<FiPieChart />} active={activePath.includes('/employer-dashboard')}>
@@ -51,9 +51,7 @@ function CompanySidebar({ activePath }) {
 
       <SidebarNavItem to="/chats" icon={<FiClipboard />} label="Chats" active={activePath === '/chats'} />
       <SidebarNavItem to="/interviews" icon={<FiClipboard />} label="Interviews" active={activePath === '/interviews'} />
-      <SidebarNavItem to="/reports" icon={<FiClipboard />} label="Reports" active={activePath === '/reports'} />
-
-     
+      <SidebarNavItem to="/reports" icon={<FiClipboard />} label="Reports" active={activePath === '/reports'} />     
     </div>
   );
 }

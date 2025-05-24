@@ -1,33 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
 import { MailIcon, PhoneIcon, ChevronDownIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useRole } from "@/context/RoleContext/RoleContext";
 
-export const EditStepTwo = ({ onNext, onCancel }) => {
+export const EditStepTwo = () => {
+  const { selectedRole, setSelectedRole, formData, updateFormData } = useRole();
   const [isEditable, setIsEditable] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "hello@xyz.com",
-    phone: "1234567890",
-    profileType: "",
+  const [localFormData, setLocalFormData] = useState({
+    name: formData.name || "",
+    email: formData.email || "hello@xyz.com",
+    phone: formData.phone || "1234567890",
+    profileType: selectedRole || "",
   });
 
   const navigate = useNavigate();
 
+  // Update local form when context formData changes
+  useEffect(() => {
+    setLocalFormData(prev => ({
+      ...prev,
+      name: formData.name || prev.name,
+      email: formData.email || prev.email,
+      phone: formData.phone || prev.phone,
+      profileType: selectedRole || prev.profileType,
+    }));
+  }, [formData, selectedRole]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setLocalFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleEditClick = () => setIsEditable(true);
 
   const handleProfileTypeChange = (e) => {
-    setFormData((prev) => ({ ...prev, profileType: e.target.value }));
+    const newProfileType = e.target.value;
+    setLocalFormData((prev) => ({ ...prev, profileType: newProfileType }));
+    
+    // Update the role context when profile type changes
+    setSelectedRole(newProfileType);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Save form data to context
+    updateFormData({
+      name: localFormData.name,
+      email: localFormData.email, 
+      phone: localFormData.phone,
+    });
+    
     navigate('/step/3');
+  };
+
+  const handleCancel = () => {
+    navigate('/step/1');
   };
 
   return (
@@ -54,9 +83,10 @@ export const EditStepTwo = ({ onNext, onCancel }) => {
               id="name"
               name="name"
               type="text"
-              value={formData.name}
+              value={localFormData.name}
               onChange={handleChange}
               disabled={!isEditable}
+              placeholder="Your full name"
               className={`w-full p-3 border rounded ${
                 !isEditable ? "bg-gray-100 cursor-not-allowed" : ""
               }`}
@@ -77,7 +107,7 @@ export const EditStepTwo = ({ onNext, onCancel }) => {
                 id="email"
                 name="email"
                 type="email"
-                value={formData.email}
+                value={localFormData.email}
                 onChange={handleChange}
                 disabled={!isEditable}
                 className="w-full bg-transparent outline-none"
@@ -100,7 +130,7 @@ export const EditStepTwo = ({ onNext, onCancel }) => {
                 id="phone"
                 name="phone"
                 type="tel"
-                value={formData.phone}
+                value={localFormData.phone}
                 onChange={handleChange}
                 disabled={!isEditable}
                 className="w-full bg-transparent outline-none"
@@ -117,7 +147,7 @@ export const EditStepTwo = ({ onNext, onCancel }) => {
               <select
                 id="profileType"
                 name="profileType"
-                value={formData.profileType}
+                value={localFormData.profileType}
                 onChange={handleProfileTypeChange}
                 disabled={!isEditable}
                 className={`w-full appearance-none p-3 border rounded ${
@@ -131,25 +161,32 @@ export const EditStepTwo = ({ onNext, onCancel }) => {
               </select>
               <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
             </div>
+            {localFormData.profileType && (
+              <p className="mt-2 text-sm text-gray-600">
+                Current profile: <span className="font-medium">{localFormData.profileType.charAt(0).toUpperCase() + localFormData.profileType.slice(1)}</span>
+              </p>
+            )}
           </div>
 
           <div className="flex justify-between mt-8">
             <button
               type="button"
-              onClick={() => navigate('/step/1')}
+              onClick={handleCancel}
               className="text-black border border-gray-300 rounded px-6 py-2 hover:bg-gray-100"
             >
               Cancel
             </button>
 
             <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={handleEditClick}
-                className="text-black border border-gray-300 rounded px-6 py-2 hover:bg-gray-100"
-              >
-                Edit
-              </button>
+              {!isEditable && (
+                <button
+                  type="button"
+                  onClick={handleEditClick}
+                  className="text-black border border-gray-300 rounded px-6 py-2 hover:bg-gray-100"
+                >
+                  Edit
+                </button>
+              )}
               <button
                 type="submit"
                 className="bg-black text-white rounded px-6 py-2 hover:bg-gray-800"

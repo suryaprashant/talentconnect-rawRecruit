@@ -7,7 +7,7 @@ function CollegeSidebar({ activePath }) {
   return (
     <div>
       {/* College Sidebar */}
-      <SidebarNavItem to="/home" icon={<FiHome />} label="Home" active={activePath === '/home'} />
+      <SidebarNavItem to="/home" icon={<FiHome />} label="Home" active={activePath === '/college-home'} />
       <SidebarNavItem to="/college-profile" icon={<FiUser />} label="Profile" active={activePath === '/profile'} />
 
       <SidebarNavGroup label="College Dashboard" icon={<FiPieChart />} active={activePath.includes('/college-dashboard')}>

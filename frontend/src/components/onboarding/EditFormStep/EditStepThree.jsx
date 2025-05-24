@@ -1,35 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
 import { ChevronDownIcon, UploadIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useRole } from "@/context/RoleContext/RoleContext";
 
 export const EditStepThree = () => {
+  const { selectedRole, formData, updateFormData } = useRole();
   const [isEditable, setIsEditable] = useState(false);
-  const [formData, setFormData] = useState({
-    college: "",
-    degree: "",
-    semester: "",
-    fieldOfStudy: "",
-    cgpa: "",
-    certificate: null,
+  const [localFormData, setLocalFormData] = useState({
+    college: formData.college || "",
+    degree: formData.degree || "",
+    semester: formData.semester || "",
+    fieldOfStudy: formData.fieldOfStudy || "",
+    cgpa: formData.cgpa || "",
+    certificate: formData.certificate || null,
+    yearOfGraduation: formData.yearOfGraduation || "",
   });
 
   const navigate = useNavigate();
 
+  // Update local form when context formData changes
+  useEffect(() => {
+    setLocalFormData(prev => ({
+      ...prev,
+      college: formData.college || prev.college,
+      degree: formData.degree || prev.degree,
+      semester: formData.semester || prev.semester,
+      fieldOfStudy: formData.fieldOfStudy || prev.fieldOfStudy,
+      cgpa: formData.cgpa || prev.cgpa,
+      certificate: formData.certificate || prev.certificate,
+      yearOfGraduation: formData.yearOfGraduation || prev.yearOfGraduation,
+    }));
+  }, [formData]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setLocalFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      setFormData((prev) => ({ ...prev, certificate: e.target.files[0] }));
+      setLocalFormData((prev) => ({ ...prev, certificate: e.target.files[0] }));
     }
   };
 
   const handleEditClick = () => setIsEditable(true);
+  
   const handleCancelClick = () => navigate("/step/2");
-  const handleNextClick = () => navigate("/step/4");
+  
+  const handleNextClick = () => {
+    // Save form data to context before navigation
+    updateFormData(localFormData);
+    navigate("/step/4");
+  };
+
+  // Determine if we're showing semester (for students) or year of graduation (for others)
+  const showSemester = selectedRole === "student";
 
   return (
     <div className="bg-white flex flex-col w-full max-w-[560px] mx-auto p-12 max-md:px-5">
@@ -40,8 +66,14 @@ export const EditStepThree = () => {
           Let's add your educational background!
         </h2>
         <p className="text-base mt-2 text-[#444]">
-          Provide your academic background to match with relevant job and internship opportunities. Employers consider this when shortlisting candidates.
+          Provide your academic background to match with relevant job and internship opportunities. 
+          Employers consider this when shortlisting candidates.
         </p>
+        {selectedRole && (
+          <p className="mt-1 text-sm font-medium text-blue-600">
+            You selected: {selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}
+          </p>
+        )}
       </div>
 
       <form className="mt-8 space-y-6">
@@ -52,7 +84,7 @@ export const EditStepThree = () => {
             <select
               id="college"
               name="college"
-              value={formData.college}
+              value={localFormData.college}
               onChange={handleChange}
               disabled={!isEditable}
               className={`appearance-none mt-2 p-3 w-full border border-gray-300 rounded text-[#666] ${!isEditable ? "bg-gray-100 cursor-not-allowed" : ""}`}
@@ -66,7 +98,7 @@ export const EditStepThree = () => {
           </div>
         </div>
 
-        {/* Degree and Semester */}
+        {/* Degree and Semester/Year of Graduation */}
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-1">
             <label htmlFor="degree" className="block text-black">Degree</label>
@@ -74,7 +106,7 @@ export const EditStepThree = () => {
               <select
                 id="degree"
                 name="degree"
-                value={formData.degree}
+                value={localFormData.degree}
                 onChange={handleChange}
                 disabled={!isEditable}
                 className={`appearance-none mt-2 p-3 w-full border border-gray-300 rounded text-[#666] ${!isEditable ? "bg-gray-100 cursor-not-allowed" : ""}`}
@@ -89,23 +121,48 @@ export const EditStepThree = () => {
           </div>
 
           <div className="flex-1">
-            <label htmlFor="semester" className="block text-black">Current Semester</label>
-            <div className="relative">
-              <select
-                id="semester"
-                name="semester"
-                value={formData.semester}
-                onChange={handleChange}
-                disabled={!isEditable}
-                className={`appearance-none mt-2 p-3 w-full border border-gray-300 rounded text-[#666] ${!isEditable ? "bg-gray-100 cursor-not-allowed" : ""}`}
-              >
-                <option value="" disabled>Select semester</option>
-                {[...Array(8)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>Semester {i + 1}</option>
-                ))}
-              </select>
-              <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
-            </div>
+            {showSemester ? (
+              <>
+                <label htmlFor="semester" className="block text-black">Current Semester</label>
+                <div className="relative">
+                  <select
+                    id="semester"
+                    name="semester"
+                    value={localFormData.semester}
+                    onChange={handleChange}
+                    disabled={!isEditable}
+                    className={`appearance-none mt-2 p-3 w-full border border-gray-300 rounded text-[#666] ${!isEditable ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                  >
+                    <option value="" disabled>Select semester</option>
+                    {[...Array(8)].map((_, i) => (
+                      <option key={i + 1} value={i + 1}>Semester {i + 1}</option>
+                    ))}
+                  </select>
+                  <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+                </div>
+              </>
+            ) : (
+              <>
+                <label htmlFor="yearOfGraduation" className="block text-black">Year of Graduation</label>
+                <div className="relative">
+                  <select
+                    id="yearOfGraduation"
+                    name="yearOfGraduation"
+                    value={localFormData.yearOfGraduation}
+                    onChange={handleChange}
+                    disabled={!isEditable}
+                    className={`appearance-none mt-2 p-3 w-full border border-gray-300 rounded text-[#666] ${!isEditable ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                  >
+                    <option value="" disabled>Select year</option>
+                    {[...Array(10)].map((_, i) => {
+                      const year = 2025 - i;
+                      return <option key={year} value={year}>{year}</option>;
+                    })}
+                  </select>
+                  <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -116,7 +173,7 @@ export const EditStepThree = () => {
             <select
               id="fieldOfStudy"
               name="fieldOfStudy"
-              value={formData.fieldOfStudy}
+              value={localFormData.fieldOfStudy}
               onChange={handleChange}
               disabled={!isEditable}
               className={`appearance-none mt-2 p-3 w-full border border-gray-300 rounded text-[#666] ${!isEditable ? "bg-gray-100 cursor-not-allowed" : ""}`}
@@ -138,7 +195,7 @@ export const EditStepThree = () => {
             id="cgpa"
             name="cgpa"
             type="text"
-            value={formData.cgpa}
+            value={localFormData.cgpa}
             onChange={handleChange}
             disabled={!isEditable}
             placeholder="Enter your CGPA or percentage"
@@ -153,7 +210,11 @@ export const EditStepThree = () => {
             className={`flex items-center justify-between mt-2 p-3 border border-gray-300 rounded ${!isEditable ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer hover:bg-gray-50"}`}
           >
             <span className="text-[#666] truncate">
-              {formData.certificate ? formData.certificate.name : "Upload Degree Certificate"}
+              {localFormData.certificate ? 
+                (typeof localFormData.certificate === 'string' ? 
+                  localFormData.certificate : 
+                  localFormData.certificate.name) : 
+                "Upload Degree Certificate"}
             </span>
             <UploadIcon className="w-5 h-5 text-gray-500" />
             <input
@@ -171,36 +232,35 @@ export const EditStepThree = () => {
 
       {/* Buttons: Always visible */}
       <div className="flex justify-between mt-8">
-  {/* Cancel button on the left */}
-  <button
-    type="button"
-    onClick={handleCancelClick}
-    className="text-black border border-gray-300 rounded px-6 py-2 hover:bg-gray-100"
-  >
-    Cancel
-  </button>
+        {/* Cancel button on the left */}
+        <button
+          type="button"
+          onClick={handleCancelClick}
+          className="text-black border border-gray-300 rounded px-6 py-2 hover:bg-gray-100"
+        >
+          Cancel
+        </button>
 
-  {/* Edit and Next buttons on the right */}
-  <div className="flex gap-3">
-    {!isEditable && (
-      <button
-        type="button"
-        onClick={handleEditClick}
-        className="text-black border border-gray-300 rounded px-6 py-2 hover:bg-gray-100"
-      >
-        Edit
-      </button>
-    )}
-    <button
-      type="button"
-      onClick={handleNextClick}
-      className="bg-black text-white rounded px-6 py-2 hover:bg-gray-800"
-    >
-      Next
-    </button>
-  </div>
-</div>
-
+        {/* Edit and Next buttons on the right */}
+        <div className="flex gap-3">
+          {!isEditable && (
+            <button
+              type="button"
+              onClick={handleEditClick}
+              className="text-black border border-gray-300 rounded px-6 py-2 hover:bg-gray-100"
+            >
+              Edit
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={handleNextClick}
+            className="bg-black text-white rounded px-6 py-2 hover:bg-gray-800"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

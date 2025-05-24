@@ -6,8 +6,8 @@ function ProfessionalSidebar({ activePath }) {
   return (
     <div>
       {/* Professional Sidebar */}
-      <SidebarNavItem to="/dashboard" icon={<FiHome />} label="Home" active={activePath === '/dashboard'} />
-      <SidebarNavItem to="/profile" icon={<FiUser />} label="Profile" active={activePath === '/profile'} />
+      <SidebarNavItem to="/home" icon={<FiHome />} label="Home" active={activePath === '/professional-home'} />
+      <SidebarNavItem to="/profprofile" icon={<FiUser />} label="Profile" active={activePath === '/profile'} />
       <SidebarNavItem to="/saved-jobs" icon={<FiBookmark />} label="Saved Jobs/Internships" active={activePath === '/saved-jobs'} />
 
       <SidebarNavGroup label="Professional Dashboard" icon={<FiPieChart />} active={activePath.includes('/professional-dashboard')}>
@@ -17,14 +17,14 @@ function ProfessionalSidebar({ activePath }) {
       </SidebarNavGroup>
 
       <SidebarNavGroup label="Service Request" icon={<FiClipboard />} active={activePath.includes('/service-request')}>
-        <SidebarNavItem to="/service-request/post-referral-job" label="Post Referral Job" active={activePath === '/service-request/post-referral-job'} />
-        <SidebarNavItem to="/service-request/manage-referral-jobs" label="Manage Referral Jobs" active={activePath === '/service-request/manage-referral-jobs'} />
+        <SidebarNavItem to="/professional/service-request" label="Post Referral Job" active={activePath === '/professional/service-request'} />
+        <SidebarNavItem to="/professional/service-request/referral" label="Manage Referral Jobs" active={activePath === '/service-request/manage-referral-jobs'} />
       </SidebarNavGroup>
 
       <SidebarNavGroup label="Application Status" icon={<FiClipboard />} active={activePath.includes('/application-status')}>
         <SidebarNavItem to="/application-status/job-listing" label="Job Listing" active={activePath === '/application-status/job-listing'} />
         <SidebarNavItem to="/application-status/referral-jobs" label="Referral Jobs" active={activePath === '/application-status/referral-jobs'} />
-        <SidebarNavItem to="/application-status/off-campus-jobs" label="Off-Campus Jobs" active={activePath === '/application-status/off-campus-jobs'} />
+        <SidebarNavItem to="/application-status/off-campus-listing" label="Off-Campus Jobs" active={activePath === '/application-status/off-campus-jobs'} />
         <SidebarNavItem to="/application-status/hackathon" label="Hackathon" active={activePath === '/application-status/hackathon'} />
       </SidebarNavGroup>
 
