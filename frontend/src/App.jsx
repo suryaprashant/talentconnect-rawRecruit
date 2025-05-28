@@ -188,6 +188,7 @@ import EmployerPostJob from "./pages/Employer/HiringChannels/PostJob/CreateJob";
 import EmployerPostIntership from "./pages/Employer/HiringChannels/PostInternship/CreateIntership";
 import EmployerOnCampusHiring from "./pages/Employer/HiringChannels/OnCampusHiring/OnCampusHiring";
 import EmployerOffCampus from "./pages/Employer/HiringChannels/OffCampusHiring/OffCapus";
+import MultiStepForm from "./pages/Employer/EditForms.jsx/Multiform";
 
 // Create query client
 const queryClient = new QueryClient();
@@ -215,7 +216,7 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Auth Routes */}
-      <Route path="/mock" element={<PostIntership/>} />
+   {/* //   <Route path="/mock" element={<PostIntership/>} /> */}
       <Route path="/" element={<RoleSelection />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
@@ -241,7 +242,8 @@ function AppRoutes() {
       <Route path="/college-onboarding/*" element={<OnboardingFlow />} />
       <Route path="/college-edit/*" element={<EditOnboardingFlow />} />  
 
-      <Route path="OnboardingflowForm" element={<OnboardingFlowForm/>} />
+      <Route path="Onboarding-flow-Form" element={<OnboardingFlowForm/>} />
+      <Route path="employer-edit-form" element={<MultiStepForm/>} />
 
 
 

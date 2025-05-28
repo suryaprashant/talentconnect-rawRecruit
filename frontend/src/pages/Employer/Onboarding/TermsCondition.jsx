@@ -5,14 +5,14 @@ export default function TermsAndConditions({ formData = {}, updateFormData, onBa
   const navigate = useNavigate();
 
   const handleAcceptTerms = (e) => {
-    // This will properly update the parent state
-    updateFormData('acceptedTerms', e.target.checked);
+    // Correctly update form data as an object
+    updateFormData({ acceptedTerms: e.target.checked });
   };
 
   const handleSubmit = () => {
     if (formData.acceptedTerms) {
       onSubmit();
-      navigate('/employer-edit/edit-review');
+      navigate('/employer-edit-form');
     }
   };
 

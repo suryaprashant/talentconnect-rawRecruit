@@ -31,6 +31,9 @@ function SignupPage() {
     } else if (userType === 'college') {
       navigate('/college-onboarding');
     }
+    else if (userType === 'employer') {
+      navigate('/Onboarding-flow-Form');
+    }
 
     console.log('Form submitted:', formData);
   };
