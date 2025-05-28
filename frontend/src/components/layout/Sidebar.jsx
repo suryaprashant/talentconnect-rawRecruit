@@ -43,7 +43,7 @@ function Sidebar({ open, setOpen }) {
             {selectedRole === 'professional' && <ProfessionalSidebar activePath={location.pathname} />}
             {selectedRole === 'company' && <CompanySidebar activePath={location.pathname} />}
             {selectedRole === 'college' && <CollegeSidebar activePath={location.pathname} />}
-            {selectedRole === 'professional' && <EmployerSidebar activePath={location.pathname} />}
+            {selectedRole === 'employer' && <EmployerSidebar activePath={location.pathname} />}
             
 
           </nav>

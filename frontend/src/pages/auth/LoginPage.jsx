@@ -21,13 +21,24 @@ function LoginPage() {
 
     const userType = localStorage.getItem('selectedRole');
 
-    if (userType === 'candidate') {
+    if (userType === 'student') {
       navigate('/home');
     } else if (userType === 'company') {
       navigate('/home');
     } else if (userType === 'college') {
       navigate('/home');
     }
+     else if (userType === 'fresher') {
+      navigate('/home');
+    }
+     else if (userType === 'professional') {
+      navigate('/home');
+    }
+     else if (userType === 'employer') {
+      navigate('/home');
+    }
+
+
 
     console.log('Form submitted:', formData);
   };
