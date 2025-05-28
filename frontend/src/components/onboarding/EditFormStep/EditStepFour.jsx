@@ -3,24 +3,21 @@ import { ProgressIndicator } from "../ProgressIndicator";
 import { ChevronDownIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export const EditStepFour = ({ onNext, onBack }) => {
+export const EditStepFour = () => {
   const [isEditable, setIsEditable] = useState(false);
   const [formData, setFormData] = useState({
-    industryType: [],
-    jobRoles: [],
-    locations: [],
+    industryType: "",
+    jobRoles: "",
+    locations: "",
     lookingFor: "internship",
     employmentType: "full-time",
   });
 
   const navigate = useNavigate();
 
-  const handleSelectChange = (e) => {
-    const { name, options } = e.target;
-    const selectedOptions = Array.from(options)
-      .filter(option => option.selected)
-      .map(option => option.value);
-    setFormData(prev => ({ ...prev, [name]: selectedOptions }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleRadioChange = (field, value) => {
@@ -51,21 +48,23 @@ export const EditStepFour = ({ onNext, onBack }) => {
           <form className="w-full text-base font-normal mt-8 max-md:max-w-full">
             {/* Industry Type */}
             <div className="w-full max-md:max-w-full">
-              <label htmlFor="industryType" className="block text-black max-md:max-w-full">
+              <label htmlFor="industryType" className="block text-black">
                 Interested Industry Type
               </label>
               <div className="relative">
                 <select
                   id="industryType"
                   name="industryType"
-                  multiple
+                  value={formData.industryType}
+                  onChange={handleChange}
                   disabled={!isEditable}
-                  onChange={handleSelectChange}
-                  className={`items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] whitespace-nowrap mt-2 p-3 max-md:max-w-full border border-gray-300 rounded ${
+                  className={`items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 border border-gray-300 rounded ${
                     !isEditable ? "bg-gray-100 cursor-not-allowed" : ""
                   }`}
                 >
-                  <option value="" disabled>Multiple-select</option>
+                  <option value="" disabled>
+                    Select Industry
+                  </option>
                   <option value="technology">Technology</option>
                   <option value="finance">Finance</option>
                   <option value="healthcare">Healthcare</option>
@@ -78,21 +77,23 @@ export const EditStepFour = ({ onNext, onBack }) => {
 
             {/* Job Roles */}
             <div className="w-full mt-6 max-md:max-w-full">
-              <label htmlFor="jobRoles" className="block text-black max-md:max-w-full">
+              <label htmlFor="jobRoles" className="block text-black">
                 Interested Job Roles
               </label>
               <div className="relative">
                 <select
                   id="jobRoles"
                   name="jobRoles"
-                  multiple
+                  value={formData.jobRoles}
+                  onChange={handleChange}
                   disabled={!isEditable}
-                  onChange={handleSelectChange}
-                  className={`items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] whitespace-nowrap mt-2 p-3 max-md:max-w-full border border-gray-300 rounded ${
+                  className={`items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 border border-gray-300 rounded ${
                     !isEditable ? "bg-gray-100 cursor-not-allowed" : ""
                   }`}
                 >
-                  <option value="" disabled>Multiple-select</option>
+                  <option value="" disabled>
+                    Select Job Role
+                  </option>
                   <option value="developer">Software Developer</option>
                   <option value="designer">UI/UX Designer</option>
                   <option value="manager">Project Manager</option>
@@ -105,21 +106,23 @@ export const EditStepFour = ({ onNext, onBack }) => {
 
             {/* Locations */}
             <div className="w-full mt-6 max-md:max-w-full">
-              <label htmlFor="locations" className="block text-black max-md:max-w-full">
+              <label htmlFor="locations" className="block text-black">
                 Preferred Job Locations
               </label>
               <div className="relative">
                 <select
                   id="locations"
                   name="locations"
-                  multiple
+                  value={formData.locations}
+                  onChange={handleChange}
                   disabled={!isEditable}
-                  onChange={handleSelectChange}
-                  className={`items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] whitespace-nowrap mt-2 p-3 max-md:max-w-full border border-gray-300 rounded ${
+                  className={`items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 border border-gray-300 rounded ${
                     !isEditable ? "bg-gray-100 cursor-not-allowed" : ""
                   }`}
                 >
-                  <option value="" disabled>Multiple-select</option>
+                  <option value="" disabled>
+                    Select Location
+                  </option>
                   <option value="bangalore">Bangalore</option>
                   <option value="mumbai">Mumbai</option>
                   <option value="delhi">Delhi</option>
@@ -133,17 +136,19 @@ export const EditStepFour = ({ onNext, onBack }) => {
 
             {/* Looking For */}
             <div className="w-full mt-6 max-md:max-w-full">
-              <label className="block text-black max-md:max-w-full">Looking for</label>
-              <div className="flex w-full gap-4 text-black whitespace-nowrap flex-wrap mt-2 max-md:max-w-full">
-                {["job", "internship", "both"].map(option => (
+              <label className="block text-black">Looking for</label>
+              <div className="flex gap-4 mt-2 flex-wrap">
+                {["job", "internship", "both"].map((option) => (
                   <button
                     key={option}
                     type="button"
-                    className={`self-stretch gap-2 px-4 py-2 border rounded-md ${
-                      formData.lookingFor === option ? "bg-black text-white" : ""
-                    } ${!isEditable ? "cursor-not-allowed" : ""}`}
                     onClick={() => handleRadioChange("lookingFor", option)}
                     disabled={!isEditable}
+                    className={`px-4 py-2 border rounded-md ${
+                      formData.lookingFor === option
+                        ? "bg-black text-white"
+                        : "text-black"
+                    } ${!isEditable ? "cursor-not-allowed" : ""}`}
                   >
                     {option.charAt(0).toUpperCase() + option.slice(1)}
                   </button>
@@ -153,19 +158,21 @@ export const EditStepFour = ({ onNext, onBack }) => {
 
             {/* Employment Type */}
             <div className="w-full mt-6 max-md:max-w-full">
-              <label className="block text-black max-md:max-w-full">Employment type</label>
-              <div className="flex w-full rounded-md gap-4 text-black whitespace-nowrap flex-wrap mt-2 max-md:max-w-full">
-                {["part-time", "full-time", "contract"].map(type => (
+              <label className="block text-black">Employment Type</label>
+              <div className="flex gap-4 mt-2 flex-wrap">
+                {["part-time", "full-time", "contract"].map((type) => (
                   <button
                     key={type}
                     type="button"
-                    className={`self-stretch gap-2 px-4 py-2 border rounded-md ${
-                      formData.employmentType === type ? "bg-black text-white" : ""
-                    } ${!isEditable ? "cursor-not-allowed" : ""}`}
                     onClick={() => handleRadioChange("employmentType", type)}
                     disabled={!isEditable}
+                    className={`px-4 py-2 border rounded-md ${
+                      formData.employmentType === type
+                        ? "bg-black text-white"
+                        : "text-black"
+                    } ${!isEditable ? "cursor-not-allowed" : ""}`}
                   >
-                    {type.replace("-", " ").replace(/\b\w/g, l => l.toUpperCase())}
+                    {type.replace("-", " ").replace(/^\w/, (c) => c.toUpperCase())}
                   </button>
                 ))}
               </div>

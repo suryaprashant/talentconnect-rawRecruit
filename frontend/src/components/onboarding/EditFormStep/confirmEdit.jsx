@@ -41,7 +41,7 @@ export const Confirmation = ({ onSubmit }) => {
             Cancel
           </button>
           <button
-         onClick={() => navigate("/student-dashboard")}
+         onClick={() => navigate("/home")}
             disabled={!agreed}
             className={`text-white px-6 py-3 rounded ${
               agreed ? "bg-black hover:bg-gray-800" : "bg-gray-400 cursor-not-allowed"

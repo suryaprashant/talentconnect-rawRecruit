@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 const ReviewDetails = ({ onNext, onPrev }) => {
     const navigate = useNavigate() ;
     return (
+      <div className="fixed inset-0 bg-gray-50 overflow-y-auto">
       <div className="p-6 flex flex-col justify-center items-center min-h-screen">
         <h1 className="text-xl font-bold mb-2">Review & Edit Your Details</h1>
         <p className="text-sm text-gray-600 mb-4">We've pre-filled your details based on your resume. Please review the information below and make any necessary edits before submitting.</p>
@@ -18,6 +19,7 @@ const ReviewDetails = ({ onNext, onPrev }) => {
             Next
           </button>
         </div>
+      </div>
       </div>
     );
   };

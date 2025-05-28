@@ -23,6 +23,13 @@ const roles = [
     description:
       'Need to hire talent? Register as a company to post job openings, manage applications, and connect with students from top colleges.',
   },
+  {
+    key: 'employer',
+    icon: '👔',
+    title: 'Employer',
+    description:
+      'Seeking skilled professionals? Register as an employer to access a pool of qualified candidates and streamline your hiring process.',
+  },
 ];
 
 const RoleSelection = () => {
@@ -31,7 +38,7 @@ const RoleSelection = () => {
 
   const handleContinue = () => {
     if (selectedRole) {
-      localStorage.setItem('userType', selectedRole);
+      localStorage.setItem('selectedRole', selectedRole);
       navigate('/signup');
     }
   };

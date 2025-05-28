@@ -1,4 +1,4 @@
-import EditButton from '../EditButton'
+import EditButton from '../FormSteps/EditButton'
 
 function CareerGoals({ formData, isEditable, handleInputChange, toggleEdit }) {
   // Helper function to handle selection buttons
@@ -165,7 +165,7 @@ function CareerGoals({ formData, isEditable, handleInputChange, toggleEdit }) {
             </div>
           )}
         </div>
-
+        
         <div className="form-section">
           <label className="form-label">Employment type</label>
           {isEditable ? (
@@ -217,4 +217,4 @@ function CareerGoals({ formData, isEditable, handleInputChange, toggleEdit }) {
   )
 }
 
-export default CareerGoals
+export default CareerGoals  

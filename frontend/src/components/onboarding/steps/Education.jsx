@@ -1,5 +1,5 @@
 import { FaUpload, FaFilePdf } from 'react-icons/fa'
-import EditButton from '../EditButton'
+import EditButton from '../FormSteps/EditButton'
 
 function Education({ formData, isEditable, handleInputChange, toggleEdit }) {
   const certificateFileName = formData.degreeCertificate ? formData.degreeCertificate.name : null

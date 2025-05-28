@@ -22,7 +22,7 @@ function SignupPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const userType = localStorage.getItem('userType');
+    const userType = localStorage.getItem('selectedRole');
 
     if (userType === 'candidate') {
       navigate('/student-form');
@@ -30,6 +30,9 @@ function SignupPage() {
       navigate('/company-form');
     } else if (userType === 'college') {
       navigate('/college-onboarding');
+    }
+    else if (userType === 'employer') {
+      navigate('/Onboarding-flow-Form');
     }
 
     console.log('Form submitted:', formData);

@@ -41,33 +41,70 @@ export const StepFive = ({ onNext, onBack }) => {
         </div>
 
         <form className="w-full text-base font-normal mt-8 max-md:max-w-full">
-          <div className="w-full whitespace-nowrap max-md:max-w-full">
-            <label
-              htmlFor="skills"
-              className="block text-black max-md:max-w-full"
-            >
-              Skills
-            </label>
-            <div className="relative">
-              <select
-                id="skills"
-                name="skills"
-                multiple
-                className="items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 max-md:max-w-full border border-gray-300 rounded"
-              >
-                <option value="" disabled>
-                  Multiple-select
-                </option>
-                <option value="javascript">JavaScript</option>
-                <option value="react">React</option>
-                <option value="node">Node.js</option>
-                <option value="python">Python</option>
-                <option value="java">Java</option>
-                <option value="design">UI/UX Design</option>
-              </select>
-              <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
-            </div>
-          </div>
+         {/* Skills */}
+{/* Skills */}
+<div className="w-full max-md:max-w-full">
+  <label htmlFor="skills" className="block text-black">
+    Skills
+  </label>
+
+  {/* Selected skills as tags */}
+  {formData.skills.length > 0 && (
+    <div className="flex flex-wrap gap-2 mt-2">
+      {formData.skills.map((skill, index) => (
+        <span
+          key={index}
+          className="flex items-center bg-gray-200 text-sm text-black px-3 py-1 rounded-full"
+        >
+          {skill}
+          <button
+            type="button"
+            onClick={() =>
+              setFormData((prev) => ({
+                ...prev,
+                skills: prev.skills.filter((s) => s !== skill),
+              }))
+            }
+            className="ml-2 text-gray-600 hover:text-black"
+          >
+            ×
+          </button>
+        </span>
+      ))}
+    </div>
+  )}
+
+  {/* Select input */}
+  <div className="relative mt-2">
+    <select
+      id="skills"
+      name="skills"
+      value=""
+      onChange={(e) => {
+        const selected = e.target.value;
+        if (!formData.skills.includes(selected)) {
+          setFormData((prev) => ({
+            ...prev,
+            skills: [...prev.skills, selected],
+          }));
+        }
+      }}
+      className="items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] p-3 border border-gray-300 rounded"
+    >
+      <option value="" disabled>
+        Select Skill
+      </option>
+      <option value="JavaScript">JavaScript</option>
+      <option value="React">React</option>
+      <option value="Node.js">Node.js</option>
+      <option value="Python">Python</option>
+      <option value="Java">Java</option>
+      <option value="UI/UX Design">UI/UX Design</option>
+    </select>
+    <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
+  </div>
+</div>
+
 
           <div className="w-full whitespace-nowrap mt-6 max-md:max-w-full">
             <label

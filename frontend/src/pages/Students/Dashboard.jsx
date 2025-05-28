@@ -12,7 +12,6 @@ function Dashboard() {
         assignee="Assignee"
         createdAt="July 1, 2023"
       />
-      
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
           <h2 className="mb-4 text-lg font-medium text-gray-900">Main Content</h2>

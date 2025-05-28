@@ -1,14 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
 import { MailIcon, PhoneIcon, ChevronDownIcon } from "lucide-react";
+import { useRole } from "@/context/RoleContext/RoleContext";
 
-export const StepTwo = ({ onNext, onCancel }) => {
+export const StepTwo = ({ onNext, onCancel, onProfileTypeSelect }) => {
+  const { selectedRole } = useRole();
+  
   const [formData, setFormData] = useState({
     name: "",
-    email: "hello@xyz.com",
-    phone: "1234567890",
-    profileType: "",
+    email: "",
+    phone: "",
+    profileType: selectedRole || "", // Initialize with the value from context/localStorage
   });
+
+  // If there's a role already in context/localStorage, update the form
+  useEffect(() => {
+    if (selectedRole) {
+      setFormData(prev => ({ ...prev, profileType: selectedRole }));
+    }
+  }, [selectedRole]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,7 +26,21 @@ export const StepTwo = ({ onNext, onCancel }) => {
   };
 
   const handleProfileTypeChange = (e) => {
-    setFormData((prev) => ({ ...prev, profileType: e.target.value }));
+    const selectedProfileType = e.target.value;
+    setFormData((prev) => ({ ...prev, profileType: selectedProfileType }));
+    
+    // Call the parent function to update the selected role in context
+    if (onProfileTypeSelect) {
+      onProfileTypeSelect(selectedProfileType);
+    }
+  };
+
+  const handleNextClick = () => {
+    // Ensure profile type is set in context before proceeding
+    if (onProfileTypeSelect && formData.profileType) {
+      onProfileTypeSelect(formData.profileType);
+    }
+    onNext();
   };
 
   return (
@@ -122,14 +146,15 @@ export const StepTwo = ({ onNext, onCancel }) => {
               <button
                 type="button"
                 onClick={onCancel}
-                className="self-stretch gap-2 text-black px-6 py-3 max-md:px-5 cursor-pointer"
+                className="self-stretch gap-2 text-black px-6 py-3 border rounded-md max-md:px-5 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="button"
-                onClick={onNext}
-                className="self-stretch bg-black gap-2 text-white px-6 py-3 max-md:px-5 cursor-pointer"
+                onClick={handleNextClick}
+                className="self-stretch bg-black gap-2 text-white px-6 py-3 border rounded-md max-md:px-5 cursor-pointer"
+                disabled={!formData.profileType} // Disable button if no role is selected
               >
                 Next
               </button>

@@ -61,7 +61,7 @@ const CareerGoals = () => {
       prevRoute="/edit/fresher-education"
       nextRoute="/edit/fresher-final-details"
       contextKey="careerGoals"
-     // onNext={validateNext}
+     //onNext={validateNext}
     >
       <div className="space-y-4">
         <div>

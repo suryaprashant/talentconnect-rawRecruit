@@ -1,4 +1,4 @@
-import EditButton from '../EditButton'
+import EditButton from '../FormSteps/EditButton'
 
 function BasicDetails({ formData, isEditable, handleInputChange, toggleEdit }) {
   return (
@@ -17,12 +17,12 @@ function BasicDetails({ formData, isEditable, handleInputChange, toggleEdit }) {
               id="name"
               name="name"
               value={formData.name}
-              onChange={handleInputChange}
+              onChange={handleInputChange}      
               className="form-input"
             />
-          ) : (
-            <div className="p-2 border border-gray-200 rounded">
-              {formData.name || 'Not provided'}
+          ) : (  
+            <div className="p-2 border border-gray-200 rounded">   
+            {formData.name || 'Not provided'}  
             </div>
           )}
         </div>
@@ -98,3 +98,4 @@ function BasicDetails({ formData, isEditable, handleInputChange, toggleEdit }) {
 }
 
 export default BasicDetails
+
