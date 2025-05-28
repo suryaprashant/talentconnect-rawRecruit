@@ -137,16 +137,7 @@ import PostJob from "./pages/Company/HiringChannels/PostJob/CreateJob";
 import OnCampusHiring from "./pages/Company/HiringChannels/OnCampusHiring/OnCampusHiring";
 import PoolEmployeeListing from "./pages/Company/EmployerDashboard/PoolCampus/PoolEmployeeListing";
 import PoolCampusEmployeeDash from "./pages/Company/EmployerDashboard/PoolCampus/PoolCampusEmployerDash";
-// import ProfessionalJobDetails from "./pages/Professional/ProfessionalDashboard/JobListing/JobDetails";
-// import ProfessionalJobListings from "./pages/Professional/ProfessionalDashboard/JobListing/JobListings";
-// import ProfessionalHackathon from "./pages/Professional/ProfessionalDashboard/Hackathon/Hackthon";
-// import ProfessionalDetail from "./pages/Professional/ProfessionalDashboard/Hackathon/Detail";
-// import JobRoutesProfessional from "./components/Professional/SavedJob/JobRoutes";
-// import ProfRefferralJobStatus from "./components/Professional/ApplicationStatus/ReferralJobs/RefferralJobStatus";
-// import ProfessionalOffcampusStatus from "./components/Professional/ApplicationStatus/OffCampusListing/OffcampusStatus";
-// import ProfessionalJobTracker from "./components/Professional/ApplicationStatus/JobListings/JobTracker";
-// import ProfessionalHackthonStatus from "./components/Professional/ApplicationStatus/Hackthon/HackthonStatus";
-// import ProfAIDrivenJob from "./components/Professional/AIDrivenJobSearch/AIDrivenJob"
+
 import  FresherCareerCraft from "./pages/Fresher/Service_request/CareerCraft";
 import FresherMockInterview from "./pages/Fresher/Service_request/Mock_Interview";
 import FresherCounselling from "./pages/Fresher/Service_request/Counselling";
@@ -171,6 +162,32 @@ import ProfessionalJobListings from "./pages/Professional/Dashboard/JobListing/J
 import ProfessionalJobDetails from "./pages/Professional/Dashboard/JobListing/JobDetails";
 import ProfessionalHackathon from "./pages/Professional/Dashboard/Hackathon/Hackthon";
 import ProfessionalDetail from "./pages/Professional/Dashboard/Hackathon/Detail";
+import EmployerAcceptedShortlistDrive from "./pages/Employer/AcceptedCollegeOrCandidate/OnCampus/AcceptedShortlistDrive";
+import EmployerAcceptedDriveDetail from "./pages/Employer/AcceptedCollegeOrCandidate/OnCampus/AcceptedDriveDetail";
+import OnboardingFlowForm from "./pages/Employer/Onboarding/Main";
+import EmployerResumeApp from "./components/Employer/EmployerDashboard/ResumeSearch/ResumeApp";
+import EmployerInterviewScheduler from "./components/Employer/Interview/InterviewSchedule";
+import EmployerListingPage from "./pages/Employer/EmployerDashboard/CollegeListingPage";
+import EmployerDetailsPage from "./pages/Employer/EmployerDashboard/CollegeDetailPage";
+import EmployerPoolEmployeeListing from "./pages/Employer/EmployerDashboard/PoolCampus/PoolEmployeeListing";
+import EmployerPoolCampus from "./pages/Employer/EmployerDashboard/PoolCampus/PoolCampusEmployerDash";
+import EmployerWorkforce from "./pages/Employer/Service_request/workforceSolution/workforce";
+import EmployerTraining from "./pages/Employer/Service_request/EmployeeTraining/EmployeeTraining";
+import EmployerBranding from "./pages/Employer/Service_request/Branding/Branding";
+import EmployerOnCampusJobManagement from "./pages/Employer/JobManagement/OnCampusListing/OnCampusJobManagement";
+import EmployerPoolCampusJobManagement from "./pages/Employer/JobManagement/PoolCampusListing/PoolCampusJobManagement";
+import EmployerOffCampusJobManagement from "./pages/Employer/JobManagement/OffCampusListing/OffCampusJobmanagement";
+import EmployerJobListingJobManagement from "./pages/Employer/JobManagement/JobListing/JobListingJobManagement";
+import EmployerShortlistedDrivesPage from "./pages/Employer/ShortlistedCollege/OnCampusListing/ShortlistedDrivesPage";
+import EmployerDriveDetailPage from "./pages/Employer/ShortlistedCollege/OnCampusListing/DriveDetailPage";
+import EmployerPoolCampusShortlistDrive from "./pages/Employer/ShortlistedCollege/PoolCampusListing/PoolCampusShortlistDrive";
+import EmployerPoolCampusDetailPage from "./pages/Employer/ShortlistedCollege/PoolCampusListing/PoolCampusDetailPage";
+import EmployerOffCampusListingPage from "./pages/Employer/ShortlistedCollege/OffCampusListing/OffCampusListingPage";
+import EmployerJobListingPage from "./pages/Employer/ShortlistedCollege/JobListing/JoblistingPage";
+import EmployerPostJob from "./pages/Employer/HiringChannels/PostJob/CreateJob";
+import EmployerPostIntership from "./pages/Employer/HiringChannels/PostInternship/CreateIntership";
+import EmployerOnCampusHiring from "./pages/Employer/HiringChannels/OnCampusHiring/OnCampusHiring";
+import EmployerOffCampus from "./pages/Employer/HiringChannels/OffCampusHiring/OffCapus";
 
 // Create query client
 const queryClient = new QueryClient();
@@ -224,6 +241,8 @@ function AppRoutes() {
       <Route path="/college-onboarding/*" element={<OnboardingFlow />} />
       <Route path="/college-edit/*" element={<EditOnboardingFlow />} />  
 
+      <Route path="OnboardingflowForm" element={<OnboardingFlowForm/>} />
+
 
 
       {/* Student */}  
@@ -264,7 +283,7 @@ function AppRoutes() {
 
               
                 {/* Fresher */}
-              <Route path="/home" element={<FresherDashboard />} />
+              <Route path="/fresherhome" element={<FresherDashboard />} />
               <Route path="/fresherprofile" element={<Fresher_Profile />} />
               <Route path="/fresher-dashboard/job-listing" element={<FJobListings />} />
               <Route path="/fresher-dashboard/job-listing/:jobId" element={<FJobDetails />} />
@@ -288,7 +307,7 @@ function AppRoutes() {
 
 
               {/* proffesional routes */}
-              <Route path="/home" element={<ProfDashboard/>} />
+              <Route path="/profhome" element={<ProfDashboard/>} />
               <Route path="/profprofile" element={<ProfProfile />} />
               <Route path="/professional-dashboard/job-listing" element={<ProfessionalJobListings />} />
               <Route path="/professional-dashboard/job-listing/:jobId" element={<ProfessionalJobDetails />} />
@@ -359,9 +378,68 @@ function AppRoutes() {
               <Route path='hiring-channels/off-campus-hiring' element={<OffCampus/>} />
 
 
+
+              {/* Employer Dashboard  */}
+              
+              <Route path="home" element={<Dashboard />} />
+              <Route path="/employer-profile" element={<CompanyProfile />}/> 
+
+              <Route path="/interviews" element={<EmployerInterviewScheduler />} />
+              <Route path="/employer-dashboard/resume-search" element={<EmployerResumeApp />} />
+              <Route path="/employer-dashboard/on-campus-request" element={<EmployerListingPage />} />
+              <Route path="/employer-dashboard/on-campus-request/:id" element={<EmployerDetailsPage />} />
+
+              <Route path="/employer-dashboard/pool-campus-requests" element={<EmployerPoolEmployeeListing/>} />
+              <Route path="/employer-dashboard/pool-campus-requests/:id" element={<EmployerPoolCampus />} />
+
+              {/* service request  */}
+              <Route path="/service-request/workforce-solution" element={<EmployerWorkforce/>} />
+              <Route path="/service-request/employee-training" element={<EmployerTraining/>} />
+              <Route path="/service-request/branding" element={<EmployerBranding/>} />
+              
+                {/* Job Management   */}
+             <Route path="/job-management/on-campus-listings" element={<EmployerOnCampusJobManagement/>} />
+             <Route path="/job-management/pool-campus-listings" element={<EmployerPoolCampusJobManagement/>} />
+             <Route path="/job-management/off-campus-listings" element={<EmployerOffCampusJobManagement/>} />
+             <Route path="/job-management/job-listings" element={<EmployerJobListingJobManagement/>} />
+
+              
+               {/* Accepted college / candidates  */}
+              <Route path="/Employeeaccepted/on-campus-listings" element={<EmployerAcceptedShortlistDrive/>} />
+              <Route path="/accepted/on-campus-listings/:driveId" element={<EmployerAcceptedDriveDetail/>} />
+
+               <Route path="/accepted/pool-campus-listings" element={<AcceptedPoolShortlist/>} />
+              <Route path="/accepted/pool-campus-listings/:driveId" element={<AcceptedPoolDriveDetail/>} />
+    
+              <Route path="/Employee/acceptedJobList" element={<AcceptedJobList/>} />
+              <Route path="/accepted/off-campus-listings" element={<AcceptedOffCampusList/>} /> 
+
+              
+              {/* shortlisted candidate  */}
+                  
+              <Route path="/shortlisted/on-campus-listings" element={<EmployerShortlistedDrivesPage/>} />
+              <Route path="/shortlisted/on-campus-listings/:driveId" element={<EmployerDriveDetailPage/>} />
+      
+              <Route path="/shortlisted/pool-campus-listings" element={<EmployerPoolCampusShortlistDrive/>} />
+              <Route path="/shortlisted/pool-campus-listings/:driveId" element={<EmployerPoolCampusDetailPage/>} />
+      
+              <Route path="/shortlisted/off-campus-listings" element={<EmployerOffCampusListingPage/>} />
+              <Route path="/joblistingPage" element={<EmployerJobListingPage/>} />
+
+              {/* Hiring Channel  */}
+              
+              <Route path='/hiring-channels/post-a-job' element={<EmployerPostJob/>} />
+              <Route path='/hiring-channels/post-an-internship' element={<EmployerPostIntership/>} />
+              <Route path='/hiring-channels/on-campus-hiring' element={<EmployerOnCampusHiring/>} />
+              <Route path='hiring-channels/pool-campus-hiring' element={<EmployerPoolCampus/>} />
+              <Route path='/hiring-channels/off-campus-hiring' element={<EmployerOffCampus/>} />
+
+  
+
+              
               
               {/* College  */}
-              <Route path="college" element={<Dashboard />} />
+              <Route path="home" element={<Dashboard />} />
               <Route path="college-profile" element={<CollegeProfile />} />
 
               {/* college Dashboard  */}
@@ -423,7 +501,10 @@ function AppRoutes() {
           </Layout>
         }
       />
-  
+
+
+              
+              
        {/* fresher  */}
       <Route path="/fresher/*">
         {formRoutes.map((route, index) => (

@@ -75,7 +75,7 @@ export default function EditRecruitmentDetails({ formData, updateFormData, isEdi
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex py-4 items-center justify-center min-h-screen bg-gray-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
         <h1 className="text-2xl font-bold mb-6">Placement & Recruitment Details</h1>
         <p className="mb-6">Define your hiring partnerships and recruitment process.</p>

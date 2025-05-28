@@ -23,6 +23,7 @@ const CompanyVerification = () => {
   };
 
   return (
+    <div className="min-h-screen  bg-white ">
     <div className="max-w-3xl mx-auto p-6 mt-10 bg-white shadow-md rounded-xl">
       <ProgressSteps currentStep={3} />
       <h1 className="text-2xl font-bold mt-6 mb-2">Company Verification & KYC</h1>
@@ -155,6 +156,7 @@ const CompanyVerification = () => {
           </div>
         </div>
       </form>
+    </div>
     </div>
   );
 };

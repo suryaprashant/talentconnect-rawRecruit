@@ -8,10 +8,11 @@ import StudentSidebar from './StudentSidebar' // You can create a similar one fo
 import Logo from '../ui/Logo'
 import FresherSidebar from './FresherSidebar'
 import ProfessionalSidebar from './ProfessionalSidebar'
+import EmployerSidebar from './EmployerSidebar'
 
 function Sidebar({ open, setOpen }) {
   const location = useLocation()
-  const userType = localStorage.getItem('userType')
+  // const userType = localStorage.getItem('userType')
   const selectedRole=localStorage.getItem('selectedRole')
   const isActive = (path) => location.pathname === path
 
@@ -42,6 +43,7 @@ function Sidebar({ open, setOpen }) {
             {selectedRole === 'professional' && <ProfessionalSidebar activePath={location.pathname} />}
             {selectedRole === 'company' && <CompanySidebar activePath={location.pathname} />}
             {selectedRole === 'college' && <CollegeSidebar activePath={location.pathname} />}
+            {selectedRole === 'professional' && <EmployerSidebar activePath={location.pathname} />}
             
 
           </nav>

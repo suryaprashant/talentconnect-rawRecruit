@@ -2,7 +2,7 @@ import { FaCheck } from 'react-icons/fa';
 
 export default function ProgressStepper({ currentStep, totalSteps }) {
   return (
-    <div className="flex justify-center py-12">
+    <div className="flex justify-center ">
       <div className="flex items-center">
         {Array.from({ length: totalSteps }).map((_, index) => {
           const stepNumber = index + 1;
