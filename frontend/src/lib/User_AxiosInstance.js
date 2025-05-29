@@ -40,3 +40,10 @@ export function getHackathons() {
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
+
+export function ApplyForOppurtunity(studentId, jobId) {
+  return axiosClient.post(`/application/apply`, { userId: studentId, jobId: jobId })
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+    
+}

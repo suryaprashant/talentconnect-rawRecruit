@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 //  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
 import JobCard from '@/components/Student/StudentDashboard/JobListing/JobCard';
-import { getJobDetails } from '@/lib/User_AxiosInstance';
+import { ApplyForOppurtunity, getJobDetails } from '@/lib/User_AxiosInstance';
 
 const JobDetails = () => {
   const { jobId } = useParams();
@@ -19,7 +19,7 @@ const JobDetails = () => {
 
         // Fetch job details
         const details = await getJobDetails(jobId);
-        console.log("..../", details.data[0]);
+        // console.log("..../", details.data[0]);
         setJobDetails(details.data[0]);
 
         // Fetch similar jobs
@@ -41,13 +41,16 @@ const JobDetails = () => {
     try {
       // Here you would implement the application logic
       // This could be a redirect to an application form or a direct API call
-      console.log('Applying for job:', jobId);
+      // console.log('Applying for job:', jobId);
+
+      const response=await ApplyForOppurtunity('67ff4630aad2776399874611',jobId);
+      console.log("Application: ",response);
 
       // Example: navigate to application form
       // navigate(`/apply/${jobId}`);
 
       // For now, just show an alert
-      alert('Application submitted successfully!');
+      // alert('Application submitted successfully!');
     } catch (err) {
       console.error('Error applying for job:', err);
       alert('Failed to submit application. Please try again.');
