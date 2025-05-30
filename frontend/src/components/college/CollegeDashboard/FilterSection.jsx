@@ -11,7 +11,7 @@ const FilterSection = ({
     <div className="w-full md:w-64 bg-white p-4 rounded-lg shadow-sm">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Filters</h2>
-        <button
+        <button 
           onClick={() => onClearFilters()}
           className="text-sm text-blue-600 hover:text-blue-800"
         >
@@ -23,7 +23,7 @@ const FilterSection = ({
         <div className="mb-4">
           <div className="flex flex-wrap gap-2">
             {activeFilters.map((filter) => (
-              <div
+              <div 
                 key={`${filter.category}-${filter.value}`}
                 className="inline-flex items-center bg-gray-100 rounded-full py-1 px-3 text-sm"
               >
@@ -58,7 +58,7 @@ const FilterSection = ({
         <div key={category.id} className="mb-6 border-t pt-4">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold text-gray-800">{category.label}</h3>
-            <button
+            <button 
               onClick={() => onClearFilters(category.id)}
               className="text-xs text-blue-600 hover:text-blue-800"
             >

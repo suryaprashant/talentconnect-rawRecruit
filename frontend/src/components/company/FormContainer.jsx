@@ -17,7 +17,6 @@ const FormContainer = () => {
     email: '',
     mobile: '',
     linkedIn: '',
-
     // Company info
     companyName: '',
     description: '',
@@ -32,20 +31,17 @@ const FormContainer = () => {
     city: '',
     country: '',
     pincode: '',
-
     // Hiring preferences
     jobRoles: [],
     hiringLocations: [],
     lookingFor: '',
     employmentType: [],
-
     // Verification
     documents: [],
     tanNumber: '',
     gstNumber: '',
     companyRegistration: ''
   })
-
   const handleChange = (name, value) => {
     setFormData(prev => ({
       ...prev,
@@ -108,7 +104,6 @@ const FormContainer = () => {
     animate: { opacity: 1, x: 0 },
     exit: { opacity: 0, x: -20 }
   }
-
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden">
       {currentStep > 0 && (
