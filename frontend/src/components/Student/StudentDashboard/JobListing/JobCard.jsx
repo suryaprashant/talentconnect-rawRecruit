@@ -51,7 +51,7 @@ const JobCard = ({ job }) => {
         </p>
         
         <Link 
-          to={`/student-dashboard/job-listing/${job._id}`} 
+          to={`student-dashboard/job-listing/${job._id}`} 
           className="block w-full py-2 text-center text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors"
         >
           Apply now
