@@ -55,7 +55,7 @@ const RoleSelection = () => {
         Get started by selecting the user type that best describes you. This helps us personalize your experience.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl">
+      <div className="grid grid-cols-4 gap-6 max-w-5xl">
         {roles.map(({ key, icon, title, description }) => (
           <div
             key={key}
