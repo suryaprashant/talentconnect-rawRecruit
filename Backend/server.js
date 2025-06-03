@@ -1,7 +1,7 @@
 import express from 'express';
+import cors from 'cors'; // Import cors
 import dotenv from 'dotenv';
 import connectDB from './src/config/db.js';
-import cors from 'cors';
 
 import authRoutes from './src/routes/auth.js';
 import uploadRoutes from './src/routes/uploadRoutes.js';
@@ -25,7 +25,12 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // <--- IMPORTANT: Replace with your actual frontend URL if different
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Explicitly allow methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allow necessary headers (e.g., for JWTs)
+    credentials: true, // <--- IMPORTANT: This must be true if frontend sends withCredentials
+})); // Use cors middleware
 app.use(express.json()); // For parsing application/json
 app.use(express.urlencoded({ extended: true }));
 
