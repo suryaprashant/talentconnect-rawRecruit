@@ -36,6 +36,7 @@ export const signup = async (req, res) => {
 };
 
 // 🟢 Login
+// In backend/src/controllers/authentication/manualAuth.js
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -62,6 +63,7 @@ export const login = async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
+        userType: user.userType, // ✨ Add this line
       }
     });
   } catch (error) {

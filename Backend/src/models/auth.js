@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const AuthSchema = new mongoose.Schema({
   name: {
     type: String,
-    default: null // Optional for manual users
+    default: null
   },
   email: {
     type: String,
@@ -12,22 +12,27 @@ const AuthSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    default: null // Optional for Google/LinkedIn users
+    default: null
   },
   profileImage: {
     type: String,
-    default: null // Optional, only used by OAuth
+    default: null
   },
   userType: {
     type: String,
     enum: ['candidate', 'college', 'company'],
-    default: 'candidate' // Optional unless you use role-based logic
+    default: 'candidate'
   },
   authProvider: {
     type: String,
     enum: ['manual', 'google', 'linkedin'],
-    default: 'manual' // Optional but useful for login handling
-  }
+    default: 'manual'
+  },
+
+  // ✅ Added for password reset
+  resetToken: String,
+  resetTokenExpires: Date
+
 }, { timestamps: true });
 
 export default mongoose.models.Auth || mongoose.model('Auth', AuthSchema);
