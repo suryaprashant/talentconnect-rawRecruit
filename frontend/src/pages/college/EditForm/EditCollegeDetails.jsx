@@ -1,5 +1,4 @@
 import EditReview from "./EditReview";
-
 export default function EditCollegeDetails({ formData, updateFormData, isEditing, toggleEdit, nextStep, prevStep }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -9,8 +8,9 @@ export default function EditCollegeDetails({ formData, updateFormData, isEditing
   const safeFormData = formData || {};
 
   return (
-    <div className="min-h-screen bg-white overflow-y-auto">
-      <div className="flex items-start justify-center pt-16 pb-10 min-h-screen">
+    <>
+      
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
           <h1 className="text-2xl font-bold mb-6">College/University Details</h1>
           <p className="mb-6">Provide essential details about your institution.</p>
@@ -91,7 +91,7 @@ export default function EditCollegeDetails({ formData, updateFormData, isEditing
               onClick={prevStep}
               className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100"
             >
-              Back
+              Cancel
             </button>
 
             <div className="flex gap-4">
@@ -112,6 +112,7 @@ export default function EditCollegeDetails({ formData, updateFormData, isEditing
           </div>
         </div>
       </div>
-    </div>
+
+    </>
   );
 }

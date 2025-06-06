@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const JobCard = ({ job }) => {
   const [isSaved, setIsSaved] = useState(job.isSaved || false);
-
+  
   const toggleSave = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -16,7 +16,7 @@ const JobCard = ({ job }) => {
       <div className="p-5">
         <div className="flex justify-between">
           <div className="flex-grow">
-            <Link to={`/student-dashboard/internship-opportunities/${job._id}`} className="block">
+            <Link to={`/student-dashboard/internship-opportunities/${job.id}`} className="block">
               <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors mb-1">
                 {job.title}
               </h3>
@@ -29,8 +29,8 @@ const JobCard = ({ job }) => {
               <span>{job.workMode}</span>
             </div>
           </div>
-          <button
-            onClick={toggleSave}
+          <button 
+            onClick={toggleSave} 
             className="text-gray-400 hover:text-blue-500 focus:outline-none"
             aria-label={isSaved ? "Unsave job" : "Save job"}
           >
@@ -45,13 +45,13 @@ const JobCard = ({ job }) => {
             )}
           </button>
         </div>
-
+        
         <p className="text-gray-600 mb-4 line-clamp-3">
           {job.description}
         </p>
-
-        <Link
-          to={`/student-dashboard/internship-opportunities/${job.id}`}
+        
+        <Link 
+          to={`/student-dashboard/internship-opportunities/${job.id}`} 
           className="block w-full py-2 text-center text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors"
         >
           Apply now

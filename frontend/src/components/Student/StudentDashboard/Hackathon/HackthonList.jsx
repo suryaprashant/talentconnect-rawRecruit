@@ -44,7 +44,7 @@ const HackathonList = () => {
       <SearchBar onSearch={handleSearch} onSort={handleSort} />
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filteredHackathons?.map(hackathon => (
+        {filteredHackathons.map(hackathon => (
           <HackathonCard key={hackathon.id} hackathon={hackathon} />
         ))}
       </div>

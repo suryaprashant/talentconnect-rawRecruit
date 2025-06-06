@@ -58,7 +58,6 @@ export const EditStepThree = () => {
   const showSemester = selectedRole === "student";
 
   return (
-    <div className="bg-white min-h-screen">
     <div className="bg-white flex flex-col w-full max-w-[560px] mx-auto p-12 max-md:px-5">
       <ProgressIndicator currentStep={3} totalSteps={5} />
 
@@ -262,7 +261,6 @@ export const EditStepThree = () => {
           </button>
         </div>
       </div>
-    </div>
     </div>
   );
 };

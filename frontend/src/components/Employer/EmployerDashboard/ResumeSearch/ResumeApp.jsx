@@ -1,6 +1,6 @@
 import ResumeSearch from './ResumeSearch';
 import ApplicationStatus from './ApplicationStatus';
-import useResumeAppLogic from './UseResumeApplogic';
+import useResumeAppLogic from './useResumeAppLogic';
 
 const EmployerResumeApp = () => {
   const {

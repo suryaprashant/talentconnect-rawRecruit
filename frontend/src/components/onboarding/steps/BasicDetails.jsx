@@ -1,4 +1,4 @@
-import EditButton from '../FormSteps/EditButton'
+import EditButton from '../EditButton'
 
 function BasicDetails({ formData, isEditable, handleInputChange, toggleEdit }) {
   return (

@@ -144,7 +144,7 @@ const CompanyVerification = () => {
             </button>
             <button
               type="button"
-              onClick={() => navigate("/company-profile")}
+              onClick={() => navigate("/home")}
               className={`py-1 px-4 rounded text-white ${
                 confirmChecked ? "bg-black hover:bg-gray-800" : "bg-gray-300 cursor-not-allowed"
               }`}

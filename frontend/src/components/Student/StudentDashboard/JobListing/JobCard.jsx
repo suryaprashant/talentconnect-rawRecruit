@@ -16,7 +16,7 @@ const JobCard = ({ job }) => {
       <div className="p-5">
         <div className="flex justify-between">
           <div className="flex-grow">
-            <Link to={`/student-dashboard/job-listing/${job._id}`} className="block">
+            <Link to={`/student-dashboard/job-listing/${job.id}`} className="block">
               <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors mb-1">
                 {job.title}
               </h3>
@@ -24,7 +24,7 @@ const JobCard = ({ job }) => {
             <div className="flex flex-wrap text-sm text-gray-600 mb-2">
               <span className="mr-3">{job.location}</span>
               <span className="mr-3">•</span>
-              <span className="mr-3">{job.jobType}</span>
+              <span className="mr-3">{job.employmentType}</span>
               <span className="mr-3">•</span>
               <span>{job.workMode}</span>
             </div>
@@ -51,7 +51,7 @@ const JobCard = ({ job }) => {
         </p>
         
         <Link 
-          to={`student-dashboard/job-listing/${job._id}`} 
+          to={`/student-dashboard/job-listing/${job.id}`} 
           className="block w-full py-2 text-center text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors"
         >
           Apply now

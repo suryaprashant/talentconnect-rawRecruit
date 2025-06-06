@@ -9,14 +9,10 @@ const CollegeCard = ({ college }) => {
         </svg>
       </div>
       <div className="p-4">
-        <div className="font-medium mb-1 text-center">{
-          college?.degree && college.degree.map((d,i)=>(
-            <span key={i}>{d} </span>
-          ))
-        }</div>
-        <div className="text-sm text-gray-600 mb-3 text-center">{college.collegeLocation}</div>
-        <Link
-          to={`/employer-dashboard/on-campus-request/${college._id}`}
+        <div className="font-medium mb-1 text-center">Degree</div>
+        <div className="text-sm text-gray-600 mb-3 text-center">{college.name}</div>
+        <Link 
+          to={`/employer-dashboard/on-campus-request/${college.id}`}
           className="block w-full text-center border border-gray-300 rounded py-2 text-sm hover:bg-gray-50 transition"
         >
           Contact

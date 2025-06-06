@@ -8,8 +8,8 @@ export const StepTwo = ({ onNext, onCancel, onProfileTypeSelect }) => {
   
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
-    phone: "",
+    email: "hello@xyz.com",
+    phone: "1234567890",
     profileType: selectedRole || "", // Initialize with the value from context/localStorage
   });
 

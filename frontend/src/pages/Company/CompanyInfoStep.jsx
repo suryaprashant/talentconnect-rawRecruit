@@ -9,8 +9,8 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
   }
 
   const companyName = [
-    { value: 'TCS', label: 'TCS' },
-    { value: 'Google', label: 'Google' }
+    { value: 'service', label: 'TCS' },
+    { value: 'ProductBase', label: 'Google' }
   ]
 
   const companyTypeOptions = [

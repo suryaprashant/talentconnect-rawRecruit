@@ -1,5 +1,5 @@
 import { FaUpload, FaFilePdf } from 'react-icons/fa'
-import EditButton from '../FormSteps/EditButton'
+import EditButton from '../EditButton'
 
 function ResumeUpload({ formData, isEditable, handleInputChange, toggleEdit }) {
   const fileName = formData.resume ? formData.resume.name : null

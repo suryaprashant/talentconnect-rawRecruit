@@ -29,25 +29,9 @@ export default function RequestInfo() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/oncampus-register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        alert('Form submitted successfully!');
-      } else {
-        const errorData = await response.json();
-        alert(`Submission failed: ${errorData.error}`);
-      }
-    } catch (err) {
-      alert(`An error occurred: ${err.message}`);
-    }
+  const handleSubmit = () => {
+    console.log('Form submitted:', formData);
+    // Implementation of form submission
   };
 
   return (
@@ -77,8 +61,8 @@ export default function RequestInfo() {
         <div>
           <label htmlFor="degree" className="block mb-2 font-medium">Degree</label>
           <div className="relative">
-            <select
-              id="degree"
+            <select 
+              id="degree" 
               name="degree"
               className="w-full p-2 border border-gray-300 rounded appearance-none bg-white pr-10"
               value={formData.degree}
@@ -97,8 +81,8 @@ export default function RequestInfo() {
         <div>
           <label htmlFor="locations" className="block mb-2 font-medium">Preferred Hiring Locations</label>
           <div className="relative">
-            <select
-              id="locations"
+            <select 
+              id="locations" 
               name="locations"
               className="w-full p-2 border border-gray-300 rounded appearance-none bg-white pr-10"
               value={formData.locations}
@@ -174,8 +158,8 @@ export default function RequestInfo() {
           <label className="block mb-2 font-medium">Minimum Salary Offered</label>
           <div className="flex">
             <div className="relative w-16">
-              <select
-                id="currency"
+              <select 
+                id="currency" 
                 name="currency"
                 className="w-full h-full p-2 border border-gray-300 rounded-l appearance-none bg-white pr-6"
               >
@@ -235,8 +219,8 @@ export default function RequestInfo() {
         <div>
           <label htmlFor="rounds" className="block mb-2 font-medium">Number of Rounds</label>
           <div className="relative">
-            <select
-              id="rounds"
+            <select 
+              id="rounds" 
               name="rounds"
               className="w-full p-2 border border-gray-300 rounded appearance-none bg-white pr-10"
               value={formData.rounds}
@@ -257,8 +241,8 @@ export default function RequestInfo() {
         <div>
           <label htmlFor="selectionProcess" className="block mb-2 font-medium">Process of Selection</label>
           <div className="relative">
-            <select
-              id="selectionProcess"
+            <select 
+              id="selectionProcess" 
               name="selectionProcess"
               className="w-full p-2 border border-gray-300 rounded appearance-none bg-white pr-10"
               value={formData.selectionProcess}
@@ -360,8 +344,8 @@ export default function RequestInfo() {
         <div>
           <label htmlFor="minimumStudents" className="block mb-2 font-medium">Minimum Students to be Hired</label>
           <div className="relative">
-            <select
-              id="minimumStudents"
+            <select 
+              id="minimumStudents" 
               name="minimumStudents"
               className="w-full p-2 border border-gray-300 rounded appearance-none bg-white pr-10"
               value={formData.minimumStudents}

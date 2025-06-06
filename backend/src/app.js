@@ -1,16 +1,20 @@
+// src/app.js
 import express from 'express';
 import cors from 'cors';
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 
-import Connection from '../config/Db.js';
+// DB Connections
+import mongoConnection from './config/db.js'; // MongoDB
+import mysqlConnection from '../config/Db.js'; // MySQL (for RawRecruit)
 
+// RawRecruit Routes
 import Jobs from './Routes/Jobs.route.js';
 import Internship from './Routes/Internship.route.js';
 import Application from './Routes/Application.route.js';
 import Resume from './Routes/Resume.route.js';
 import Hackathon from './Routes/Hackathon.route.js';
-import EmployerDahsboard from './Routes/EmployerDahsboard.route.js';
+import EmployerDashboard from './Routes/EmployerDahsboard.route.js';
 import Company from './Routes/Company.route.js';
 
 import savedJobsRouter from "./Routes/savedjobsandinternships.js";
@@ -48,22 +52,54 @@ import education from "./Routes/onboarding_education.js";
 import basicdetails from "./Routes/onboarding_basicdetails.js";
 import resume from "./Routes/onboarding_resume.js";
 
+// Additional Backend Routes
+import authRoutes from './routes/auth.js';
+import uploadRoutes from './routes/uploadRoutes.js';
+import studentProfileRoutes from './routes/studentProfileRoutes.js';
+import fresherProfileRoutes from './routes/fresherProfileRoutes.js';
+import professionalProfileRoutes from './routes/professionalProfileRoutes.js';
+import companyProfileRoutes from './routes/companyDashboard/companyProfileRoutes.js';
+import collegeProfileRoutes from './routes/collegeDashboard/collegeProfileRoutes.js';
+import collegeOnboardingRoutes from './routes/collegeDashboard/collegeOnboardingRoutes.js';
+import employerProfileRoutes from './routes/employerProfileRoutes.js';
+
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Connect to DBs
+mongoConnection();
+mysqlConnection(); // MySQL for RawRecruit
+
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+}));
 app.use(express.json());
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// 🔹 Mongo-Related Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/student-profile', studentProfileRoutes);
+app.use('/api/fresher-profile', fresherProfileRoutes);
+app.use('/api/professional-profile', professionalProfileRoutes);
+app.use('/api/companyDashboard', companyProfileRoutes);
+app.use('/api/college', collegeProfileRoutes);
+app.use('/api/college-onboarding', collegeOnboardingRoutes);
+app.use('/api/employer-profile', employerProfileRoutes);
+
+// 🔹 RawRecruit Routes (MySQL-backed)
 app.use("/jobs", Jobs);
 app.use("/internship", Internship);
 app.use("/application", Application);
 app.use("/hackathon", Hackathon);
-app.use("/company/dashboard", EmployerDahsboard);
+app.use("/company/dashboard", EmployerDashboard);
 app.use("/company/dashboard/resume", Resume);
 app.use("/company", Company);
 
@@ -102,12 +138,7 @@ app.use("/api/rawrecruit", education);
 app.use("/api/rawrecruit", basicdetails);
 app.use("/api/rawrecruit", resume);
 
+// Start server
 app.listen(PORT, () => {
-    console.log(`Server is running on PORT: ${PORT}`);
-    Connection();
+    console.log(`✅ Server running on PORT: ${PORT}`);
 });
-
-// app.use(cors({
-//     origin: process.env.FRONTEND_URL || "http://localhost:5173",
-//     credentials: true
-// }));

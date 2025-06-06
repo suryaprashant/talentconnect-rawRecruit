@@ -11,7 +11,10 @@ node_modules
 dist
 dist-ssr
 *.local
+<<<<<<< HEAD
 .env
+=======
+>>>>>>> sheetal_profile_part
 
 # Editor directories and files
 .vscode/*

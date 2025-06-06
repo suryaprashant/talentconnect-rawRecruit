@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import FilterSection from '../../../components/company/EmployerDashboard/FilterSection'
 import CollegeCard from '../../../components/company/EmployerDashboard/CollegeCard';
-import { getRegisteredColleges } from '@/lib/Company_AxiosInstance';
-// import { mockColleges } from '../../../constants/mockData.js';
+import { mockColleges } from '../../../constants/mockData.js';
 
 const CollegeListingPage = () => {
   const [colleges, setColleges] = useState([]);
@@ -16,75 +15,59 @@ const CollegeListingPage = () => {
     internship: false,
     fullTime: false
   });
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
+  
   // Simulating data fetch from backend
   useEffect(() => {
-    const getColleges = async () => {
-          try {
-            setIsLoading(true);
-            
-            // Fetch colleges
-            const colleges = await getRegisteredColleges();
-            setColleges(colleges.data);
-            setFilteredColleges(colleges.data);
-          } catch (err) {
-            setError('Something went wrong!');
-            console.error('Error: ', err);
-          } finally {
-            setIsLoading(false);
-          }
-        };
-    
-        getColleges();
+    // In a real app, this would be an API call
+    setColleges(mockColleges);
+    setFilteredColleges(mockColleges);
   }, []);
 
   // Filter colleges when filters change
   useEffect(() => {
     let result = [...colleges];
-
+    
     // Apply work mode filters
     if (filters.workMode.length > 0) {
-      result = result.filter(college =>
+      result = result.filter(college => 
         filters.workMode.some(mode => college.workModes.includes(mode))
       );
     }
-
+    
     // Apply degree filters
     if (filters.degree.length > 0) {
-      result = result.filter(college =>
+      result = result.filter(college => 
         filters.degree.some(deg => college.degrees.includes(deg))
       );
     }
-
+    
     // Apply course filters
     if (filters.courses.length > 0) {
-      result = result.filter(college =>
+      result = result.filter(college => 
         filters.courses.some(course => college.courses.includes(course))
       );
     }
-
+    
     // Apply internship filter
     if (filters.internship) {
       result = result.filter(college => college.hasInternship);
     }
-
+    
     // Apply full-time filter
     if (filters.fullTime) {
       result = result.filter(college => college.hasFullTime);
     }
-
+    
     // Apply location filter
     if (filters.location && filters.location !== 'Multi - Select') {
       result = result.filter(college => college.location === filters.location);
     }
-
+    
     // Apply college filter
     if (filters.college && filters.college !== 'Multi - Select') {
       result = result.filter(college => college.name.includes(filters.college));
     }
-
+    
     setFilteredColleges(result);
   }, [filters, colleges]);
 
@@ -139,35 +122,11 @@ const CollegeListingPage = () => {
     });
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-red-500 text-center p-4">
-          <p className="text-xl font-semibold">{error}</p>
-          <button
-            className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={() => window.location.reload()}
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold mb-2">Colleges Posting for On-Campus</h1>
       <p className="text-gray-600 mb-6">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in arcu.</p>
-
+      
       <div className="flex flex-wrap items-center justify-between mb-4">
         <div className="flex flex-wrap items-center gap-2">
           {filters.internship && (
@@ -186,7 +145,7 @@ const CollegeListingPage = () => {
             <button onClick={clearAllFilters} className="text-sm text-gray-600 ml-2">Clear all</button>
           )}
         </div>
-
+        
         <div className="flex items-center">
           <span className="text-sm text-gray-600 mr-4">Showing {filteredColleges.length} of {colleges.length}</span>
           <div className="relative">
@@ -204,26 +163,26 @@ const CollegeListingPage = () => {
           </div>
         </div>
       </div>
-
+      
       <div className="flex flex-col md:flex-row gap-6">
         <div className="w-full md:w-72 flex-shrink-0">
-          <FilterSection
+          <FilterSection 
             filters={filters}
             onFilterChange={handleFilterChange}
             onClearFilter={clearFilter}
           />
         </div>
-
+        
         <div className="flex-grow">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredColleges?.map(college => (
-              <CollegeCard
-                key={college._id}
+            {filteredColleges.map(college => (
+              <CollegeCard 
+                key={college.id}
                 college={college}
               />
             ))}
           </div>
-
+          
           <div className="mt-6 flex justify-center">
             <button className="border border-gray-300 rounded px-4 py-2 text-sm">View all</button>
           </div>

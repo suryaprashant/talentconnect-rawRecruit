@@ -9,7 +9,7 @@ function SidebarNavGroup({ icon, label, to, active = false, children }) {
   return (
     <div>
       <Link
-        to={to || "#"}
+        to={to}
         className={clsx(
           'sidebar-link',
           active && 'active'

@@ -6,7 +6,7 @@ import Button from '@/components/company/Button'
 
 const VerificationStep = ({ formData, handleChange, prevStep, onSubmit }) => {
   const [termsAccepted, setTermsAccepted] = useState(false)
-  const navigate = useNavigate();
+  const navigate = useNavigate() ;
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!termsAccepted) {
@@ -15,7 +15,7 @@ const VerificationStep = ({ formData, handleChange, prevStep, onSubmit }) => {
     }
     onSubmit()
     console.log('Form submitted successfully!', formData)
-    // alert('Profile created successfully!')
+    alert('Profile created successfully!')
   }
 
   return (
@@ -46,7 +46,7 @@ const VerificationStep = ({ formData, handleChange, prevStep, onSubmit }) => {
 
             <div className="flex items-center justify-between p-3 border border-gray-300 rounded-md">
               <span className="text-gray-600">Upload Document</span>
-              <button
+              <button 
                 type="button"
                 className="text-gray-600 hover:text-black"
               >
@@ -100,8 +100,8 @@ const VerificationStep = ({ formData, handleChange, prevStep, onSubmit }) => {
               Back
             </Button>
             <Button
-              onClick={() => navigate("/company-onboarding/step-1")}
-              type="submit" variant="primary">
+         onClick={() => navigate("/company-onboarding/step-1")}
+            type="submit" variant="primary">
               Get Started
             </Button>
           </div>

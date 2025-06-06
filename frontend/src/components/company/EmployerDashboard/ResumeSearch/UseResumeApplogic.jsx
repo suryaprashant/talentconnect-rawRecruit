@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { parseResume } from '@/constants/parser';
-import { getProfileByResume } from '@/lib/Company_AxiosInstance';
 
 const useResumeAppLogic = () => {
   const [view, setView] = useState('search');
@@ -44,8 +43,7 @@ const useResumeAppLogic = () => {
   };
 
   const handleSearch = (searchParams) => {
-    // console.log('Searching with params:', searchParams);
-    getProfileByResume(searchParams);
+    console.log('Searching with params:', searchParams);
     setView('applications');
   };
 
