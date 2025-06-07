@@ -49,15 +49,15 @@ import education from "./Routes/onboarding_education.js";
 import basicdetails from "./Routes/onboarding_basicdetails.js";
 import resume from "./Routes/onboarding_resume.js";
 
-import authRoutes from './Routes/auth.js';
-import uploadRoutes from './Routes/uploadRoutes.js';
-import studentProfileRoutes from './Routes/studentProfileRoutes.js';
-import fresherProfileRoutes from './Routes/fresherProfileRoutes.js';
-import professionalProfileRoutes from './Routes/professionalProfileRoutes.js';
-import companyProfileRoutes from './Routes/companyDashboard/companyProfileRoutes.js';
-import collegeProfileRoutes from './Routes/collegeDashboard/collegeProfileRoutes.js';
-import collegeOnboardingRoutes from './Routes/collegeDashboard/collegeOnboardingRoutes.js';
-import employerProfileRoutes from './Routes/employerProfileRoutes.js';
+import authRoutes from './routes/auth.js';
+import uploadRoutes from './routes/uploadRoutes.js';
+import studentProfileRoutes from './routes/studentProfileRoutes.js';
+import fresherProfileRoutes from './routes/fresherProfileRoutes.js';
+import professionalProfileRoutes from './routes/professionalProfileRoutes.js';
+import companyProfileRoutes from './routes/companyDashboard/companyProfileRoutes.js';
+import collegeProfileRoutes from './routes/collegeDashboard/collegeProfileRoutes.js';
+import collegeOnboardingRoutes from './routes/collegeDashboard/collegeOnboardingRoutes.js';
+import employerProfileRoutes from './routes/employerProfileRoutes.js';
 
 dotenv.config();
 
