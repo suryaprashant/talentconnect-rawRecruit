@@ -1,14 +1,11 @@
-// src/app.js
 import express from 'express';
 import cors from 'cors';
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 
 // DB Connections
-import mongoConnection from './config/db.js'; // MongoDB
-import mysqlConnection from '../config/Db.js'; // MySQL (for RawRecruit)
+import Connection from '../config/Db.js';
 
-// RawRecruit Routes
 import Jobs from './Routes/Jobs.route.js';
 import Internship from './Routes/Internship.route.js';
 import Application from './Routes/Application.route.js';
@@ -52,25 +49,20 @@ import education from "./Routes/onboarding_education.js";
 import basicdetails from "./Routes/onboarding_basicdetails.js";
 import resume from "./Routes/onboarding_resume.js";
 
-// Additional Backend Routes
-import authRoutes from './routes/auth.js';
-import uploadRoutes from './routes/uploadRoutes.js';
-import studentProfileRoutes from './routes/studentProfileRoutes.js';
-import fresherProfileRoutes from './routes/fresherProfileRoutes.js';
-import professionalProfileRoutes from './routes/professionalProfileRoutes.js';
-import companyProfileRoutes from './routes/companyDashboard/companyProfileRoutes.js';
-import collegeProfileRoutes from './routes/collegeDashboard/collegeProfileRoutes.js';
-import collegeOnboardingRoutes from './routes/collegeDashboard/collegeOnboardingRoutes.js';
-import employerProfileRoutes from './routes/employerProfileRoutes.js';
+import authRoutes from './Routes/auth.js';
+import uploadRoutes from './Routes/uploadRoutes.js';
+import studentProfileRoutes from './Routes/studentProfileRoutes.js';
+import fresherProfileRoutes from './Routes/fresherProfileRoutes.js';
+import professionalProfileRoutes from './Routes/professionalProfileRoutes.js';
+import companyProfileRoutes from './Routes/companyDashboard/companyProfileRoutes.js';
+import collegeProfileRoutes from './Routes/collegeDashboard/collegeProfileRoutes.js';
+import collegeOnboardingRoutes from './Routes/collegeDashboard/collegeOnboardingRoutes.js';
+import employerProfileRoutes from './Routes/employerProfileRoutes.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-// Connect to DBs
-mongoConnection();
-mysqlConnection(); // MySQL for RawRecruit
 
 // Middleware
 app.use(cors({
@@ -83,7 +75,6 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 🔹 Mongo-Related Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/student-profile', studentProfileRoutes);
@@ -94,7 +85,6 @@ app.use('/api/college', collegeProfileRoutes);
 app.use('/api/college-onboarding', collegeOnboardingRoutes);
 app.use('/api/employer-profile', employerProfileRoutes);
 
-// 🔹 RawRecruit Routes (MySQL-backed)
 app.use("/jobs", Jobs);
 app.use("/internship", Internship);
 app.use("/application", Application);
@@ -138,7 +128,7 @@ app.use("/api/rawrecruit", education);
 app.use("/api/rawrecruit", basicdetails);
 app.use("/api/rawrecruit", resume);
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`✅ Server running on PORT: ${PORT}`);
+app.listen(PORT, async() => {
+    console.log(`Server running on PORT: ${PORT}`);
+    await Connection();
 });
