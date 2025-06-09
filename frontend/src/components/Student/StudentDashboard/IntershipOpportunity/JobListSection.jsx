@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useState } from 'react';
 import JobCard from './JobCard';
 
 const JobListSection = ({ title, description, jobs }) => {
@@ -7,14 +7,14 @@ const JobListSection = ({ title, description, jobs }) => {
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
 
   // Filter jobs based on search term
-  const filteredJobs = jobs.filter(job => 
+  const filteredJobs = jobs && jobs.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.company?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Sort jobs based on selected option
-  const sortedJobs = [...filteredJobs].sort((a, b) => {
+  const sortedJobs = filteredJobs && [...filteredJobs].sort((a, b) => {
     switch (sortOption) {
       case 'date':
         return new Date(b.postedDate) - new Date(a.postedDate);
@@ -29,7 +29,7 @@ const JobListSection = ({ title, description, jobs }) => {
   });
 
   // Show only the first 6 jobs, can be expanded with "View all" button
-  const displayJobs = sortedJobs.slice(0, 6);
+  const displayJobs = sortedJobs && sortedJobs.slice(0, 6);
 
   return (
     <div className="mb-12">
@@ -52,7 +52,7 @@ const JobListSection = ({ title, description, jobs }) => {
             </svg>
           </div>
           <div className="relative">
-            <button 
+            <button
               className="flex items-center px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none"
               onClick={() => setSortMenuOpen(!sortMenuOpen)}
             >
@@ -61,7 +61,7 @@ const JobListSection = ({ title, description, jobs }) => {
                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </button>
-            
+
             {sortMenuOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                 <ul className="py-1">
@@ -117,12 +117,12 @@ const JobListSection = ({ title, description, jobs }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {displayJobs.map((job) => (
-          <JobCard key={job.id} job={job} />
+        {displayJobs?.map((job) => (
+          <JobCard key={job._id} job={job} />
         ))}
       </div>
-      
-      {jobs.length > 6 && (
+
+      {jobs?.length > 6 && (
         <div className="flex justify-end mt-4">
           <button className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
             View all
