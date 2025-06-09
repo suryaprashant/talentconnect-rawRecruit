@@ -1,5 +1,5 @@
 import EmployerProfile from '../../models/employerDashboard/employerProfileModel.js'
-import cloudinary from '../../config/cloudinary.js';
+import cloudinary from '../../../config/cloudinary.js';
 import streamifier from 'streamifier';
 
 const streamUpload = (buffer, folder) => {

@@ -1,5 +1,5 @@
 import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js'
-import cloudinary from '../../config/cloudinary.js';
+import cloudinary from '../../../config/cloudinary.js'
 import streamifier from 'streamifier';
 
 // Utility for streaming upload

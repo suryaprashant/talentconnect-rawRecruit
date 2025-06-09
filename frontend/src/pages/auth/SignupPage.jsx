@@ -1,43 +1,91 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import axios from 'axios'; // Import axios
 
 function SignupPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const userType = location.state?.userType || 'User';
+  // Get the selected user type from localStorage, which is set in GetStarted.jsx
+  const userType = localStorage.getItem('selectedRole') || 'User'; // Default to 'User' if not found
 
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear previous errors
+    setLoading(true); // Set loading state
 
-    const userType = localStorage.getItem('selectedRole');
-
-    if (userType === 'candidate') {
-      navigate('/student-form');
-    } else if (userType === 'company') {
-      navigate('/company-form');
-    } else if (userType === 'college') {
-      navigate('/college-onboarding');
-    }
-    else if (userType === 'employer') {
-      navigate('/Onboarding-flow-Form');
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
     }
 
-    console.log('Form submitted:', formData);
+    try {
+      // Send signup data to your backend
+      const response = await axios.post('http://localhost:5000/api/auth/signup', {
+        email: formData.email,
+        password: formData.password,
+        userType: userType, // Pass the userType to the backend
+      });
+
+      if (response.status === 201) {
+        console.log('Signup successful:', response.data);
+        alert('Signup successful! Please log in.'); 
+        
+        // Navigate based on userType after successful signup
+        if (userType === 'candidate') {
+          navigate('/student-form');
+        } else if (userType === 'company') {
+          navigate('/company-form');
+        } else if (userType === 'college') {
+          navigate('/college-onboarding');
+        } else if (userType === 'employer') { 
+          navigate('/employer-onboarding'); 
+        } else {
+          // Fallback if userType doesn't match specific forms
+          navigate('/login'); 
+        }
+      }
+    } catch (err) {
+      console.error('Signup Error:', err.response?.data || err.message);
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('An unexpected error occurred during signup.');
+      }
+    } finally {
+      setLoading(false); // Reset loading state
+    }
   };
 
+  const handleLinkedInLogin = () => {
+    // LinkedIn OAuth 2.0 implementation
+    const clientId = '77h8xw3kje71lm'; // Replace with your actual LinkedIn Client ID
+    const redirectUri = encodeURIComponent('http://localhost:5173/auth/linkedin/callback');
+    const state = Math.random().toString(36).substring(2); // Random state for security
+    const scope = encodeURIComponent('r_liteprofile r_emailaddress');
+
+    const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
+
+    // Store state to verify later
+    sessionStorage.setItem('linkedin_oauth_state', state);
+
+    window.location.href = linkedInAuthUrl;
+  };
 
   return (
     <div className="min-h-screen flex">
@@ -89,12 +137,15 @@ function SignupPage() {
                 required
               />
             </div>
+            
+            {error && <p className="text-red-500 text-sm">{error}</p>} {/* Display error message */}
 
             <button
               type="submit"
-              className="w-full bg-black text-white py-3 hover:bg-gray-800 transition-colors"
+              className="w-full bg-black text-white py-3 hover:bg-gray-800 transition-colors disabled:opacity-50"
+              disabled={loading} // Disable button while loading
             >
-              Sign up
+              {loading ? 'Signing up...' : 'Sign up'}
             </button>
           </form>
 
@@ -110,7 +161,10 @@ function SignupPage() {
             Sign up with Google
           </button>
 
-          <button className="w-full border border-gray-300 py-3 flex items-center justify-center hover:bg-gray-50">
+          <button 
+            onClick={handleLinkedInLogin}
+            className="w-full border border-gray-300 py-3 flex items-center justify-center hover:bg-gray-50"
+          >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
             </svg>
@@ -129,7 +183,7 @@ function SignupPage() {
       </div>
 
       {/* Right Side - Image Placeholder */}
-      <div className="hidden md:block md:w-1/2 bg-gray-200 flex items-center justify-center">
+      <div className="hidden md:flex md:w-1/2 bg-gray-200 items-center justify-center"> {/* FIXED LINE HERE */}
         <div className="w-48 h-48 bg-gray-300 flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />

@@ -1,5 +1,5 @@
 import PanelMember from '../models/panelMember.model.js';
-import cloudinary from '../config/cloudinary.js';
+import cloudinary from '../../config/cloudinary.js';
 
 
 //Create a new panel member

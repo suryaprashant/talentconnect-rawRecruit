@@ -1,5 +1,5 @@
 import FresherProfile from '../models/fresherProfileModel.js';
-import cloudinary from '../config/cloudinary.js';
+import cloudinary from '../../config/cloudinary.js';
 import streamifier from 'streamifier';
 
 const streamUpload = (buffer, folder) => {
