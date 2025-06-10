@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import axios from 'axios';
+import dayjs from 'dayjs'; // install with: npm install dayjs
 
 function Counselling() {
   const [features, setFeatures] = useState([
@@ -43,12 +45,47 @@ function Counselling() {
   const handleDateChange = (date) => {
     setFormData({ ...formData, date });
   };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Form submitted successfully!');
+  const mapCounselingType = (type) => {
+    switch (type) {
+      case 'individual': return 1;
+      case 'couples': return 2;
+      case 'family': return 3;
+      case 'career': return 4;
+      default: return 0;
+    }
   };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!formData.agreeToTerms) {
+    alert("Please accept the terms.");
+    return;
+  }
+
+  if (!formData.counsellingType || !formData.date || !formData.time) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  const payload = {
+    counselingtype: mapCounselingType(formData.counsellingType), // convert type to number
+    user: "660df3e52c4236bb16abfcf1", // replace with actual logged-in user ID
+    Date: dayjs(formData.date).format("YYYY-MM-DD"),
+    time: formData.time,
+    message: formData.message,
+  };
+
+  try {
+    const res = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/servicerequest`, payload);
+    alert("Counselling session scheduled successfully!");
+    console.log("Response:", res.data);
+  } catch (err) {
+    console.error("Error submitting form:", err.response?.data || err.message);
+    alert("Submission failed. Please try again.");
+  }
+};
+
 
   const addFeature = () => {
     const newFeature = {

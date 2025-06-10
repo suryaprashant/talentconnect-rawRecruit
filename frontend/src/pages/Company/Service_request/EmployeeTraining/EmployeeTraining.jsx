@@ -28,11 +28,36 @@ export default function EmployeeTraining() {
     });
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    alert("Form submitted successfully!");
-    setShowRegistration(false);
+  const handleSubmit = async () => {
+  const sampleUserId = "66501f37e80c7b341bc71a12"; // Replace with actual ID
+
+  const payload = {
+    user: sampleUserId,
+    Date: new Date(formData.date),
+    time: formData.time,
+    message: formData.message,
   };
+
+  try {
+    const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/servicerequest-employeetraining`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      alert("Request submitted successfully!");
+      setShowRegistration(false);
+    } else {
+      alert("Error: " + data.message);
+    }
+  } catch (error) {
+    console.error("Error submitting form:", error);
+    alert("Something went wrong!");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">

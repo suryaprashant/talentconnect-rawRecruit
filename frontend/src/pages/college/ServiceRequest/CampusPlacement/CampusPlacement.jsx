@@ -2,6 +2,7 @@ import { useState } from 'react';
 import MainPage from './Main';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
+import axios from 'axios';
 
 export default function CampusPlacement() {
   const [showRegistration, setShowRegistration] = useState(false);
@@ -22,23 +23,31 @@ export default function CampusPlacement() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
-    });
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value
+    }));
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    alert("Form submitted successfully!");
-    setShowRegistration(false);
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/submit`, formData);
+      alert("Request submitted successfully!");
+      setShowRequestInfo(false);
+    } catch (err) {
+      alert("Failed to submit request: " + (err.response?.data?.message || err.message));
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       {showRequestInfo ? (
-        <RequestInfo onBackClick={handleBackClick}
-        formData={formData} />
+        <RequestInfo 
+          onBackClick={handleBackClick}
+          formData={formData}
+          handleInputChange={handleInputChange}
+          handleSubmit={handleSubmit}
+        />
       ) : showRegistration ? (
         <RegisterPage 
           onBackClick={handleBackClick}

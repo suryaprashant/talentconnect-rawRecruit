@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import axios from 'axios';
+import dayjs from 'dayjs'; // install with: npm install dayjs
+
 
 function MockInterview() {
   const [features, setFeatures] = useState([
@@ -82,11 +85,40 @@ function MockInterview() {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Form submitted successfully!');
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!formData.agreeToTerms) {
+    alert("Please accept the terms.");
+    return;
+  }
+
+  if (!formData.category || formData.skillset.length === 0 || !formData.date || !formData.time) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  const payload = {
+  category: formData.category,
+  skillset: formData.skillset, // ✅ This is correct as an array
+  user: "660df3e52c4236bb16abfcf1",
+  date: dayjs(formData.date).format("YYYY-MM-DD"), // ✅ corrected from 'Date' to 'date'
+  time: formData.time,
+  message: formData.message,
+  termsAccepted: formData.agreeToTerms, // ✅ added this
+};
+
+
+  try {
+    const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/schedule-interview`, payload);
+    console.log("✅ Response:", response.data);
+    alert("Mock interview scheduled successfully!");
+  } catch (error) {
+    console.error("❌ Submission error:", error.response?.data || error.message);
+    alert("Failed to schedule mock interview. Try again.");
+  }
+};
+
 
   const addFeature = () => {
     const newFeature = {

@@ -67,11 +67,44 @@ export default function RegisterPage({onBackClick}) {
     setFormData({ ...formData, [field]: value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-    // Add form submission logic here
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/registeroncampus`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...formData,
+        lookingFor: formData.lookingFor.join(','),
+        rounds: formData.rounds.map(r => ({
+          numberOfStudents: r.students,
+          branch: r.branch,
+          skills: r.skills.split(',').map(skill => skill.trim()),
+        })),
+        minimumSalary: {
+          currency: formData.salaryRange,
+          amount: parseFloat(formData.salaryValue),
+        },
+        officialEmail: formData.email,
+        officialMobile: formData.mobile,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert('Registration successful!');
+    } else {
+      alert(`Error: ${result.message}`);
+    }
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    alert('An error occurred while submitting the form.');
+  }
+};
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white">

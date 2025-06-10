@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import axios from 'axios';
 
 export default function RequestInfo({ onBackClick}) {
   const [numberOfEmployees, setNumberOfEmployees] = useState('');
@@ -16,16 +17,33 @@ export default function RequestInfo({ onBackClick}) {
   const skillOptions = ['Technical Skills', 'Soft Skills', 'Leadership', 'Domain-Specific'];
   const hoursOptions = ['1-8 hours', '9-16 hours', '2-5 days', '1 week+'];
 
-  const handleSubmit = (e) => {
-    if (e) e.preventDefault();
-    console.log({
-      numberOfEmployees,
-      skillTypes,
-      trainingMode,
-      evaluationType,
-      hoursOrDays
-    });
+
+const handleSubmit = async (e) => {
+  if (e) e.preventDefault();
+
+  // 🔁 Map fields to what backend expects
+  const payload = {
+    numberOfStudents: [numberOfEmployees],
+    typesOfSkills: skillTypes,
+    modeOfTraining: trainingMode,
+    evaluationBasedOn: evaluationType,
+    numberOfHoursOrDays: [hoursOrDays]
   };
+
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_Backend_URL}/api/rawrecruit/student-training/register`,
+      payload
+    );
+    console.log('✅ Saved:', response.data);
+    alert('Request submitted successfully!');
+    onBackClick(); // go back to main page
+  } catch (error) {
+    console.error('❌ Submission error:', error.response?.data || error.message);
+    alert('Failed to submit. Please check the console.');
+  }
+};
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-white px-4">

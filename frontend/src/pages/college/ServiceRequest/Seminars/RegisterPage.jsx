@@ -63,13 +63,13 @@ export default function RegisterPage({ onBackClick, formData={}, handleInputChan
 
             <div className="flex items-center">
               <input 
-                type="checkbox" 
-                id="acceptTerms"
-                name="acceptTerms"
-                checked={formData.acceptTerms}
-                onChange={handleInputChange}
-                className="w-5 h-5 mr-2"
-              />
+  type="checkbox" 
+  id="acceptTerms"
+  name="acceptTerms"   // <- this should trigger the correct mapping
+  checked={formData.termsAccepted}  // <- bind to correct field
+  onChange={handleInputChange}
+/>
+
               <label htmlFor="acceptTerms" className="text-gray-700">
                 I accept the Terms
               </label>

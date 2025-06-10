@@ -7,11 +7,12 @@ export default function OnCampusHiring() {
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
   const [formData, setFormData] = useState({
-    date: "",
-    time: "",
-    message: "",
-    acceptTerms: false
-  });
+  date: "",
+  time: "",
+  message: "",
+  termsAccepted: false // 🔁 was `acceptTerms`
+});
+
 
   const handleRegisterClick = () => setShowRegistration(true);
   const handleRequestInfoClick = () => setShowRequestInfo(true);
@@ -28,11 +29,35 @@ export default function OnCampusHiring() {
     });
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    alert("Form submitted successfully!");
-    setShowRegistration(false);
-  };
+  const handleSubmit = async () => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/oncampus`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(formData),
+});
+
+
+    if (response.ok) {
+      alert("Form submitted successfully!");
+      setShowRegistration(false);
+    } else {
+      // Safely try to parse error JSON, or fall back to plain text
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { error: errorText };
+      }
+      alert(`Submission failed: ${errorData.error}`);
+    }
+  } catch (err) {
+    alert(`An error occurred: ${err.message}`);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">

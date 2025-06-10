@@ -21,18 +21,39 @@ export default function RequestInfo() {
   });
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+setFormData({
+  ...formData,
+  [name]: type === 'checkbox' ? checked : value
+});
+
   };
 
   const handleOptionSelect = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
-    console.log('Form submitted:', formData);
-    // Implementation of form submission
-  };
+  const handleSubmit = async () => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/oncampus-register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (response.ok) {
+      alert('Form submitted successfully!');
+    } else {
+      const errorData = await response.json();
+      alert(`Submission failed: ${errorData.error}`);
+    }
+  } catch (err) {
+    alert(`An error occurred: ${err.message}`);
+  }
+};
+
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white">

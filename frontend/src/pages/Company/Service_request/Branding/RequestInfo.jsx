@@ -16,16 +16,43 @@ export default function RequestInfo({ onBackClick}) {
   const skillOptions = ['Technical Skills', 'Soft Skills', 'Leadership', 'Domain-Specific'];
   const hoursOptions = ['1-8 hours', '9-16 hours', '2-5 days', '1 week+'];
 
-  const handleSubmit = (e) => {
-    if (e) e.preventDefault();
-    console.log({
-      numberOfEmployees,
-      skillTypes,
-      trainingMode,
-      evaluationType,
-      hoursOrDays
-    });
+
+  const handleSubmit = async () => {
+  const payload = {
+    numberOfEmployees: [numberOfEmployees],
+    skills: skillTypes,
+    trainingMode,
+    evaluation: evaluationType,
+    duration: [hoursOrDays]
   };
+
+  console.log("Payload to be submitted:", payload);
+
+  try {
+    const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/submit-employer-branding`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Training request submitted successfully!");
+      console.log(data);
+    } else {
+      alert(`Error: ${data.error || "Something went wrong"}`);
+    }
+  } catch (err) {
+    console.error("Submission error:", err);
+    alert("An error occurred while submitting the form.");
+  }
+};
+
+
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-white px-4">
