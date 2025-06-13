@@ -133,11 +133,10 @@
 //     await Connection();
 // });
 
-
+import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -145,13 +144,28 @@ import { fileURLToPath } from 'url';
 // DB & Socket
 import Connection from '../config/Db.js';
 import { app, server } from './SocketIO/server.js';
-
+// *** IMPORTANT: Define __filename and __dirname BEFORE dotenv.config() ***
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables
+// Load environment variables - This must be the first logic that needs env vars
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+
+// dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const PORT = process.env.PORT || 5000;
+
+
+
+// Load environment variables
+// dotenv.config({ path: path.resolve(__dirname, '../.env') });
+// const PORT = process.env.PORT || 5000;
+console.log('Backend server starting...');
+console.log(`DEBUG: process.env.JWT_SECRET is: ${process.env.JWT_SECRET ? 'DEFINED' : 'UNDEFINED'}`);
+console.log(`DEBUG: Length of JWT_SECRET: ${process.env.JWT_SECRET?.length || 'N/A'}`);
+console.log(`DEBUG: PORT is: ${process.env.PORT}`);
+
+
 
 // Middleware
 app.use(cors({

@@ -11,8 +11,9 @@ const useGetMessage = () => {
       if (selectedConversation && selectedConversation._id) {
         try {
           const res = await axios.get(
-            `/api/message/get/${selectedConversation._id}`
+            `/api/messages/get/${selectedConversation._id}`
           );
+          console.log("hero hii")
           setMessage(res.data);
           setLoading(false);
         } catch (error) {

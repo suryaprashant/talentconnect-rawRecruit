@@ -1,12 +1,12 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import Auth from '../../models/auth.js';
-import dotenv from 'dotenv';
+// import dotenv from 'dotenv';
 import BasicDetails from '../../models/Onboarding_basicdetails.js';
 
-dotenv.config();
+// dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'defaultsecret';
+const JWT_SECRET = process.env.JWT_SECRET ;
 
 // Helper function to generate token and set cookie
 const createTokenAndSaveCookie = (userId, email, res) => {
@@ -126,9 +126,16 @@ export const logout = async (req, res) => {
 
 // Optional: Add this if you need to get all users (excluding current user)
 export const allUsers = async (req, res) => {
+  console.log("hey Budy")
   try {
-    const loggedInUserId = req.userId; // Assuming userId is set in req from JWT
-    const filteredUsers = await Auth.find({
+   const loggedInUserId = req.user._id;  // Assuming userId is set in req from JWT
+    
+     if (!loggedInUserId) {
+      console.error("Error in allUsers Controller: loggedInUserId is missing after secureRoute");
+      return res.status(401).json({ message: "Unauthorized: User ID not found." });
+    }
+   
+   const filteredUsers = await Auth.find({
       _id: { $ne: loggedInUserId }
     }).select("-password");
     
