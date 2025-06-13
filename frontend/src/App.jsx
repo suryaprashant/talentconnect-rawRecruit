@@ -188,11 +188,13 @@ import EmployerPostJob from "./pages/Employer/HiringChannels/PostJob/CreateJob";
 import EmployerPostIntership from "./pages/Employer/HiringChannels/PostInternship/CreateIntership";
 import EmployerOnCampusHiring from "./pages/Employer/HiringChannels/OnCampusHiring/OnCampusHiring";
 import EmployerOffCampus from "./pages/Employer/HiringChannels/OffCampusHiring/OffCapus";
-
+import ChatLayout from "./home/chatLayout";
+import { useAuth } from "./context/AuthProvider";
+import { Navigate } from "react-router-dom";
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
-
+   const [authUser] = useAuth() ;
 
   // const location = useLocation();
   // const [currentPage, setCurrentPage] = useState(1);
@@ -496,6 +498,13 @@ function AppRoutes() {
               } />
 
               {/* Professional  */}
+              <Route 
+          path="/chat-application" 
+          element={
+            authUser ? <ChatLayout /> : <Navigate to="/login" />
+          } 
+           />
+      
              
             </Routes>
           </Layout>
@@ -536,14 +545,14 @@ const App = () => (
   <TooltipProvider>
     <Toaster />
     <Sonner />
-  
-    <Router>
+{/*   
+    <Router> */}
     <AppProvider>  {/* Global app state */}
           <FormProvider>  {/* Form-specific state */}
             <AppRoutes />
           </FormProvider>
         </AppProvider>
-    </Router>
+    {/* </Router> */}
    
   </TooltipProvider>
 </QueryClientProvider>

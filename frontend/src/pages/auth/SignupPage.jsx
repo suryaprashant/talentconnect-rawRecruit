@@ -1,12 +1,14 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import axios from 'axios'; // Import axios
+import axios from 'axios';
+import { useAuth } from '../../context/AuthProvider';
+import toast from 'react-hot-toast';
 
 function SignupPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  // Get the selected user type from localStorage, which is set in GetStarted.jsx
-  const userType = localStorage.getItem('selectedRole') || 'User'; // Default to 'User' if not found
+  const [authUser, setAuthUser] = useAuth();
+  const userType = localStorage.getItem('selectedRole') || 'student';
 
   const [formData, setFormData] = useState({
     email: '',
@@ -25,8 +27,8 @@ function SignupPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
-    setLoading(true); // Set loading state
+    setError('');
+    setLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
@@ -35,55 +37,56 @@ function SignupPage() {
     }
 
     try {
-      // Send signup data to your backend
-      const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/auth/signup`, {
+      const response = await axios.post('http://localhost:5000/api/auth/signup', {
         email: formData.email,
         password: formData.password,
-        userType: userType, // Pass the userType to the backend
+        userType: userType,
+      }, { withCredentials: true ,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+
       });
 
       if (response.status === 201) {
-        console.log('Signup successful:', response.data);
-        alert('Signup successful! Please log in.'); 
-        
-        // Navigate based on userType after successful signup
-        if (userType === 'candidate') {
-          navigate('/student-form');
-        } else if (userType === 'company') {
-          navigate('/company-form');
-        } else if (userType === 'college') {
-          navigate('/college-onboarding');
-        } else if (userType === 'employer') { 
-          navigate('/employer-onboarding'); 
-        } else {
-          // Fallback if userType doesn't match specific forms
-          navigate('/login'); 
+        toast.success('Signup successful!');
+        localStorage.setItem('authUser', JSON.stringify(response.data));
+        setAuthUser(response.data);
+
+        // Store token if available in response
+        if (response.data.token) {
+          localStorage.setItem('token', response.data.token);
         }
+
+        // Navigate based on userType
+        const onboardingRoutes = {
+          candidate: '/student-form',
+          company: '/company-form',
+          college: '/college-onboarding',
+          employer: '/employer-onboarding'
+        };
+        
+        navigate(onboardingRoutes[userType]);
       }
     } catch (err) {
       console.error('Signup Error:', err.response?.data || err.message);
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
-      } else {
-        setError('An unexpected error occurred during signup.');
-      }
+      const errorMessage = err.response?.data?.message || 'An unexpected error occurred during signup.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 
   const handleLinkedInLogin = () => {
-    // LinkedIn OAuth 2.0 implementation
-    const clientId = '77h8xw3kje71lm'; // Replace with your actual LinkedIn Client ID
+    const clientId = '77h8xw3kje71lm';
     const redirectUri = encodeURIComponent('http://localhost:5173/auth/linkedin/callback');
-    const state = Math.random().toString(36).substring(2); // Random state for security
+    const state = Math.random().toString(36).substring(2);
     const scope = encodeURIComponent('r_liteprofile r_emailaddress');
 
     const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
 
-    // Store state to verify later
     sessionStorage.setItem('linkedin_oauth_state', state);
-
     window.location.href = linkedInAuthUrl;
   };
 
@@ -138,12 +141,12 @@ function SignupPage() {
               />
             </div>
             
-            {error && <p className="text-red-500 text-sm">{error}</p>} {/* Display error message */}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
             <button
               type="submit"
               className="w-full bg-black text-white py-3 hover:bg-gray-800 transition-colors disabled:opacity-50"
-              disabled={loading} // Disable button while loading
+              disabled={loading}
             >
               {loading ? 'Signing up...' : 'Sign up'}
             </button>
@@ -183,7 +186,7 @@ function SignupPage() {
       </div>
 
       {/* Right Side - Image Placeholder */}
-      <div className="hidden md:flex md:w-1/2 bg-gray-200 items-center justify-center"> {/* FIXED LINE HERE */}
+      <div className="hidden md:flex md:w-1/2 bg-gray-200 items-center justify-center">
         <div className="w-48 h-48 bg-gray-300 flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />

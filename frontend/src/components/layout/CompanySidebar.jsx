@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import SidebarNavItem from './SidebarNavItem';
 import SidebarNavGroup from './SidebarNavGroup';
-import { FiHome, FiUser, FiBookmark, FiPieChart, FiClipboard, FiSearch, FiHelpCircle, FiSettings } from 'react-icons/fi';
+import { FiHome, FiUser, FiBookmark, FiPieChart, FiClipboard, FiSearch, FiHelpCircle, FiSettings ,FiMessageCircle } from 'react-icons/fi';
 
 function CompanySidebar({ activePath }) {
   return (
@@ -49,9 +49,10 @@ function CompanySidebar({ activePath }) {
         <SidebarNavItem to="/accepted/pool-campus-listings" label="Pool Campus Listings" active={activePath === '/accepted/pool-campus-listings'} />
       </SidebarNavGroup>
 
-      <SidebarNavItem to="/chats" icon={<FiClipboard />} label="Chats" active={activePath === '/chats'} />
+         
       <SidebarNavItem to="/interviews" icon={<FiClipboard />} label="Interviews" active={activePath === '/interviews'} />
       <SidebarNavItem to="/reports" icon={<FiClipboard />} label="Reports" active={activePath === '/reports'} />     
+       <SidebarNavItem to="/chat-application" icon={<FiMessageCircle />} label="Chats" active={activePath === '/chats'} />
     </div>
   );
 }

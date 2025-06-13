@@ -1,11 +1,39 @@
-import BasicDetails from "../models/Onboarding_basicdetails.js";
 
+import BasicDetails from "../models/Onboarding_basicdetails.js";
 export const submitBasicDetails = async (req, res) => {
-  try {
-    const data = req.body;
-    const details = await BasicDetails.create(data);
-    res.status(201).json(details);
+   console.log("Hello") ;
+   try {
+
+    const { name, email, mobile, profileType} = req.body;
+    const userId = req.user?._id ;
+    
+
+    if (!name) return res.status(400).json({ message: "Name is required" });
+    if (!email) return res.status(400).json({ message: "Email is required" });
+    if (!mobile) return res.status(400).json({ message: "Mobile is required" });
+    if (!profileType) return res.status(400).json({ message: "Profile type is required" });
+    if (!userId) return res.status(400).json({ message: "User ID is required" });
+
+
+    if (!userId || !email || !name || !mobile || !profileType) {
+      return res.status(400).json({ message: "Invalid input data" });
+    }
+    console.log("Incoming Request Body:", req.body);
+
+    const basicDetails = new BasicDetails({ name, email, mobile, profileType, userId });
+    await basicDetails.save();
+    res.status(201).json(basicDetails);
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ 
+        success: false,
+        error: error.message 
+      });
+    }
+    res.status(500).json({ 
+      success: false,
+      error: "Internal server error" 
+    });
   }
 };

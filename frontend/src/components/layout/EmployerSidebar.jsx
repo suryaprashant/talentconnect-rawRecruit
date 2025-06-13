@@ -1,4 +1,4 @@
-import { FiHome, FiUser, FiPieChart, FiClipboard } from 'react-icons/fi';
+import { FiHome, FiUser, FiPieChart, FiClipboard, FiMessageCircle } from 'react-icons/fi';
 import SidebarNavItem from './SidebarNavItem';
 import SidebarNavGroup from './SidebarNavGroup';
 
@@ -56,8 +56,10 @@ function EmployerSidebar({ activePath }) {
       </SidebarNavGroup>
 
       {/* Misc Pages */}
+      
       <SidebarNavItem to="/interviews" icon={<FiClipboard />} label="Interviews" active={activePath === '/interviews'} />
-      <SidebarNavItem to="/joblistingPage" icon={<FiClipboard />} label="Job Listing Page" active={activePath === '/joblistingPage'} />
+      {/* <SidebarNavItem to="/joblistingPage" icon={<FiClipboard />} label="Job Listing Page" active={activePath === '/joblistingPage'} /> */}
+      <SidebarNavItem to="/chat-application" icon={<FiMessageCircle />} label="Chats" active={activePath === '/chats'} />
     </div>
   );
 }

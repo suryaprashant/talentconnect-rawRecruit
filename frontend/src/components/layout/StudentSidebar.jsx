@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import SidebarNavItem from './SidebarNavItem';
 import SidebarNavGroup from './SidebarNavGroup';
-import { FiHome, FiUser, FiBookmark, FiPieChart, FiClipboard, FiSearch, FiHelpCircle, FiSettings } from 'react-icons/fi';
+import { FiHome, FiUser, FiBookmark, FiPieChart, FiClipboard, FiSearch, FiHelpCircle, FiSettings ,FiMessageCircle} from 'react-icons/fi';
 
 function StudentSidebar({ activePath }) {
   return (
@@ -34,7 +34,7 @@ function StudentSidebar({ activePath }) {
       </SidebarNavGroup>
 
       <SidebarNavItem to="/ai-driven-job-search" icon={<FiSearch />} label="AI-Driven Job Search" active={activePath === '/ai-driven-job-search'} />
-
+            <SidebarNavItem to="/chat-application" icon={<FiMessageCircle />} label="Chats" active={activePath === '/chats'} />
     
     </div>
   );

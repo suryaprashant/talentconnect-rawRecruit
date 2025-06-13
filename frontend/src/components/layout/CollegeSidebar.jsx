@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import SidebarNavItem from './SidebarNavItem';
 import SidebarNavGroup from './SidebarNavGroup';
-import { FiHome, FiUser, FiBookmark, FiPieChart, FiClipboard, FiSearch, FiHelpCircle, FiSettings } from 'react-icons/fi';
+import { FiHome, FiUser, FiBookmark, FiPieChart, FiClipboard, FiSearch, FiHelpCircle, FiSettings ,FiMessageCircle } from 'react-icons/fi';
 
 function CollegeSidebar({ activePath }) {
   return (
@@ -33,8 +33,8 @@ function CollegeSidebar({ activePath }) {
       </SidebarNavGroup>
 
       {/* Messages and Settings at the bottom */}
-      <SidebarNavItem to="/messages" icon={<FiClipboard />} label="Messages" />
-    
+      {/* <SidebarNavItem to="/messages" icon={<FiClipboard />} label="Messages" /> */}
+            <SidebarNavItem to="/chat-application" icon={<FiMessageCircle />} label="Chats" active={activePath === '/chats'} />
     </div>
   );
 }

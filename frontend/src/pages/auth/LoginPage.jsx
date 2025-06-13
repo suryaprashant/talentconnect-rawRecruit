@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios'; // Import axios
+import axios from 'axios';
+import { useAuth } from '../../context/AuthProvider';
+import toast from 'react-hot-toast';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const [authUser, setAuthUser] = useAuth();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -36,52 +39,58 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
-    setLoading(true); // Set loading state
+    setError('');
+    setLoading(true);
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/auth/login`, {
         email: formData.email,
         password: formData.password,
-      });
+      }, { withCredentials: true,
+         headers: {
+        'Content-Type': 'application/json'
+      }
+       });
 
       if (response.status === 200) {
-        console.log('Login successful:', response.data);
+        toast.success('Login successful!');
         const { token, user } = response.data;
 
-        // Store the JWT token and user details (like userType)
+        // Store user data in localStorage and auth context
         localStorage.setItem('token', token);
         localStorage.setItem('userEmail', user.email);
         localStorage.setItem('userId', user.id);
-        localStorage.setItem('userType', user.userType || 'candidate'); // Store userType from backend or default
+        localStorage.setItem('userType', user.userType || 'candidate');
+        setAuthUser(response.data);
 
-        // Navigate based on the user's role obtained from the backend
-        if (user.userType === 'candidate') {
-          navigate('/home'); // Assuming 'candidate' goes to '/home'
-        } else if (user.userType === 'company') {
-          navigate('/fresherhome'); // Assuming 'company' goes to '/fresherhome'
-        } else if (user.userType === 'college') {
-          navigate('/home'); // Assuming 'college' goes to '/home'
-        } else if (user.userType === 'fresher') {
-          navigate('/home');
-        } else if (user.userType === 'professional') {
-          navigate('/profhome');
-        } else {
-            // Default navigation if userType is not explicitly handled
-            navigate('/dashboard'); 
+        // Navigate based on user type
+        switch (user.userType) {
+          case 'candidate':
+            navigate('/home');
+            break;
+          case 'company':
+            navigate('/fresherhome');
+            break;
+          case 'college':
+            navigate('/home');
+            break;
+          case 'fresher':
+            navigate('/home');
+            break;
+          case 'professional':
+            navigate('/profhome');
+            break;
+          default:
+            navigate('/dashboard');
         }
-
-        alert('Login successful!'); // Or a more sophisticated notification
       }
     } catch (err) {
       console.error('Login Error:', err.response?.data || err.message);
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
-      } else {
-        setError('An unexpected error occurred during login.');
-      }
+      const errorMessage = err.response?.data?.message || 'An unexpected error occurred during login.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 
@@ -124,12 +133,12 @@ function LoginPage() {
               />
             </div>
 
-            {error && <p className="text-red-500 text-sm">{error}</p>} {/* Display error message */}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
             <button
               type="submit"
               className="w-full bg-black text-white py-3 hover:bg-gray-800 transition-colors disabled:opacity-50"
-              disabled={loading} // Disable button while loading
+              disabled={loading}
             >
               {loading ? 'Logging in...' : 'Log in'}
             </button>
@@ -173,7 +182,7 @@ function LoginPage() {
       </div>
 
       {/* Right Side - Image Placeholder */}
-      <div className="hidden md:flex md:w-1/2 bg-gray-200 items-center justify-center"> {/* FIXED LINE HERE */}
+      <div className="hidden md:flex md:w-1/2 bg-gray-200 items-center justify-center">
         <div className="w-48 h-48 bg-gray-300 flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
