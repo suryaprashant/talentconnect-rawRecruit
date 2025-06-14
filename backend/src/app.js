@@ -180,7 +180,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Auth and Profile Routes
-import authRoutes from './Routes/auth.js';
+import authRoutes from './routes/auth.js';
 import uploadRoutes from './Routes/uploadRoutes.js';
 import studentProfileRoutes from './Routes/studentProfileRoutes.js';
 import fresherProfileRoutes from './Routes/fresherProfileRoutes.js';
