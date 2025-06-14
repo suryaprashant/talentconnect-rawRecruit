@@ -192,7 +192,7 @@ import employerProfileRoutes from './routes/employerProfileRoutes.js';
 import messageRoute from "./routes/message.route.js";
 
 // Main Features
-import Jobs from './routes/Jobs.route.js';
+import Jobs from './Routes/Jobs.route.js';
 import Internship from './routes/Internship.route.js';
 import Application from './routes/Application.route.js';
 import Resume from './routes/Resume.route.js';
