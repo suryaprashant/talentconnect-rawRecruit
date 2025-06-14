@@ -242,7 +242,7 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, { // Use VITE_BACKEND_URL
+      const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/auth/login`, { 
         email: formData.email,
         password: formData.password,
       }, {

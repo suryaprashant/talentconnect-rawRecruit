@@ -244,7 +244,7 @@ function SignupPage() {
     }
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, { // Use VITE_BACKEND_URL
+      const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/auth/signup`, {
         email: formData.email,
         password: formData.password,
         userType: userType,
