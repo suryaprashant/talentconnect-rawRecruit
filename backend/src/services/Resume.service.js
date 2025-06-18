@@ -11,10 +11,10 @@ export async function saveParsedResumeService(resumeData) {
     }
 }
 
-export async function fetchAllResumeService() {
+export async function fetchAllResumeService(experience) {
     try {
         // will replace by based on prefered job role
-        const response = await Resume.find();
+        const response = await Resume.find({yearsOfExperience:experience});
         // console.log(response);
         return { success: true, data: response }
     } catch (error) {
