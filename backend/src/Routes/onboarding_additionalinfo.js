@@ -3,6 +3,6 @@ import { submitAdditionalInfo } from "../controllers/onboarding_additionalinfo.j
 
 const router = express.Router();
 
-router.post("/submit", submitAdditionalInfo);
+router.post("/submitted", submitAdditionalInfo);
 
 export default router;

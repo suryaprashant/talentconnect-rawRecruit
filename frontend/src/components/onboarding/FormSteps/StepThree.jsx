@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
 import { ChevronDownIcon, UploadIcon } from "lucide-react";
+import axios from "axios";
 
 export const StepThree = ({ onNext, onCancel, onBack = onCancel }) => {
   const [formData, setFormData] = useState({
@@ -16,6 +17,35 @@ export const StepThree = ({ onNext, onCancel, onBack = onCancel }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+const handleNextClick = async () => {
+  try {
+    const formPayload = new FormData();
+    formPayload.append("college", formData.college);
+    formPayload.append("degree", formData.degree);
+    formPayload.append("semester", formData.semester);
+    formPayload.append("specialization", formData.fieldOfStudy); // backend uses 'specialization'
+    formPayload.append("cgpa", formData.cgpa);
+    if (formData.certificate) {
+      formPayload.append("certificate", formData.certificate);
+    }
+
+    const response = await axios.post(
+      "http://localhost:5000/api/rawrecruit/education",
+      formPayload,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    console.log("Saved successfully:", response.data);
+    onNext();
+  } catch (error) {
+    console.error("Submission failed:", error.response?.data || error.message);
+    alert("Error submitting education details. Please try again.");
+  }
+};
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -197,7 +227,7 @@ export const StepThree = ({ onNext, onCancel, onBack = onCancel }) => {
               </button>
               <button
                 type="button"
-                onClick={onNext}
+                onClick={handleNextClick}
                 className="self-stretch bg-black gap-2 text-white px-6 py-3 max-md:px-5 cursor-pointer"
               >
                 Next
