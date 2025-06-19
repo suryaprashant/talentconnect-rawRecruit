@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Globe, Users, Calendar } from 'lucide-react';
 import CollegeDescription from './CollegeDescription';
 import ProfileForm from './ProfileForm';
@@ -6,6 +6,29 @@ import UserManagements from './UserManagements';
 
 export default function CollegeProfile() {
   const [activeTab, setActiveTab] = useState('Overview');
+  const [profileImage, setProfileImage] = useState(null);
+  const [backgroundImage, setBackgroundImage] = useState(null);
+  const profileInputRef = useRef(null);
+  const backgroundInputRef = useRef(null);
+
+  const handleProfileImageClick = () => {
+    profileInputRef.current.click();
+  };
+
+  const handleBackgroundImageClick = () => {
+    backgroundInputRef.current.click();
+  };
+
+  const handleImageChange = (e, setImage) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -22,21 +45,68 @@ export default function CollegeProfile() {
 
   return (
     <div className="flex flex-col w-full bg-gray-100 min-h-screen">
-      {/* Header Banner */}
-      <div className="w-full h-32 bg-gray-300"></div>
+      {/* Header Banner with upload functionality */}
+      <div 
+        className="w-full h-32 bg-gray-300 relative cursor-pointer"
+        onClick={handleBackgroundImageClick}
+      >
+        {backgroundImage && (
+          <img 
+            src={backgroundImage} 
+            alt="Background" 
+            className="w-full h-full object-cover"
+          />
+        )}
+        <input
+          type="file"
+          ref={backgroundInputRef}
+          onChange={(e) => handleImageChange(e, setBackgroundImage)}
+          accept="image/*"
+          className="hidden"
+        />
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300">
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-8 w-8 text-white opacity-0 hover:opacity-100" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+        </div>
+      </div>
 
       {/* Profile Section */}
       <div className="bg-white pb-4">
         <div className="relative px-4">
           {/* Profile Image */}
           <div className="absolute -top-16 left-4">
-            <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white">
-              <div className="text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
+            <div 
+              className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white cursor-pointer overflow-hidden"
+              onClick={handleProfileImageClick}
+            >
+              {profileImage ? (
+                <img 
+                  src={profileImage} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              )}
             </div>
+            <input
+              type="file"
+              ref={profileInputRef}
+              onChange={(e) => handleImageChange(e, setProfileImage)}
+              accept="image/*"
+              className="hidden"
+            />
           </div>
 
           {/* Profile Info */}

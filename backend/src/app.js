@@ -157,16 +157,10 @@ const PORT = process.env.PORT || 5000;
 // Load environment variables
 // dotenv.config({ path: path.resolve(__dirname, '../.env') });
 // const PORT = process.env.PORT || 5000;
-console.log("Backend server starting...");
-console.log(
-  `DEBUG: process.env.JWT_SECRET is: ${
-    process.env.JWT_SECRET ? "DEFINED" : "UNDEFINED"
-  }`
-);
-console.log(
-  `DEBUG: Length of JWT_SECRET: ${process.env.JWT_SECRET?.length || "N/A"}`
-);
-console.log(`DEBUG: PORT is: ${process.env.PORT}`);
+// console.log('Backend server starting...');
+// console.log(`DEBUG: process.env.JWT_SECRET is: ${process.env.JWT_SECRET ? 'DEFINED' : 'UNDEFINED'}`);
+// console.log(`DEBUG: Length of JWT_SECRET: ${process.env.JWT_SECRET?.length || 'N/A'}`);
+// console.log(`DEBUG: PORT is: ${process.env.PORT}`);
 
 // Middleware
 app.use(

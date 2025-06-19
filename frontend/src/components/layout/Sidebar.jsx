@@ -12,7 +12,7 @@ import EmployerSidebar from './EmployerSidebar'
 
 function Sidebar({ open, setOpen }) {
   const location = useLocation()
-  const userType = localStorage.getItem('userType')
+ // const userType = localStorage.getItem('userType')
   const selectedRole=localStorage.getItem('selectedRole')
   const isActive = (path) => location.pathname === path
 
@@ -42,8 +42,8 @@ function Sidebar({ open, setOpen }) {
             {selectedRole === 'fresher' && <FresherSidebar activePath={location.pathname} />}
             {selectedRole === 'professional' && <ProfessionalSidebar activePath={location.pathname} />}
             {selectedRole === 'employer' && <EmployerSidebar activePath={location.pathname} />}
-            {userType === 'company' && <CompanySidebar activePath={location.pathname} />}
-            {userType === 'college' && <CollegeSidebar activePath={location.pathname} />}
+            {selectedRole === 'company' && <CompanySidebar activePath={location.pathname} />}
+            {selectedRole === 'college' && <CollegeSidebar activePath={location.pathname} />}
             
 
           </nav>

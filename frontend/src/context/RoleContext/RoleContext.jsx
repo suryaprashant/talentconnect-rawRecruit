@@ -14,6 +14,17 @@ export const RoleProvider = ({ children }) => {
       return null;
     }
   });
+
+   useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'selectedRole') {
+        setSelectedRole(e.newValue);
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
   
   const [formData, setFormData] = useState(() => {
     try {

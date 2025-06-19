@@ -28,12 +28,17 @@ const createTokenAndSaveCookie = (userId, email, res) => {
 };
 
 export const signup = async (req, res) => {
+ //console.log("User Type", userType);
+
   try {
-    const { email, password } = req.body;
+    const { email, password, userType } = req.body; // Add userType to destructuring
+   console.log("User Type from DB or localStorage:", userType);
 
     // Basic validation
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+    if (!email || !password || !userType) { // Add userType validation
+      return res.status(400).json({ 
+        message: "Email, password and userType are required" 
+      });
     }
 
     // Check if user already exists
@@ -45,21 +50,23 @@ export const signup = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
+    // Create new user with userType
     const newUser = await Auth.create({
       email,
       password: hashedPassword,
+      userType // Add userType to the created user
     });
 
     // Generate token and set cookie
     const token = createTokenAndSaveCookie(newUser._id, newUser.email, res);
 
-    // Send response
+    // Send response with userType
     res.status(201).json({
       message: "Signup successful",
       user: {
         _id: newUser._id,
         email: newUser.email,
+        userType: newUser.userType // Include userType in response
       },
       token
     });
@@ -68,7 +75,6 @@ export const signup = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -110,6 +116,7 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
+  console.log("hero");
   try {
     res.clearCookie("jwt", {
       httpOnly: true,

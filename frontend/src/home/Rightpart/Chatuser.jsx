@@ -49,9 +49,9 @@ function Chatuser() {
     <div className="flex items-center space-x-4 bg-blue-700 text-white p-4 border-b border-blue-600">
       <div>
         {/* The 'rounded-full' class here ensures it's always circular */}
-        <div className={`relative w-14 h-14 rounded-full overflow-hidden ${isOnline ? 'ring-2 ring-green-500' : 'ring-2 ring-blue-300'}`}>
+        <div className={`relative flex-shrink-0 w-14 h-14 rounded-full overflow-hidden ${isOnline ? 'ring-2 ring-green-500' : 'ring-2 ring-blue-300'}`}>
           <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-            className="rounded-full object-cover w-full h-full" // And here, for the image itself
+            className="rounded-full object-cover w-full h-full aspect-square" // And here, for the image itself
           />
           {isOnline && (
             <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-blue-700"></div>
