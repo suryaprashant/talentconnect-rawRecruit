@@ -25,16 +25,17 @@ export async function resumeSearch(req, res) {
     const { query, location, experience, salary } = req.query;
     try {
         // resume
-        const response = await fetchAllResumeService(query,location,experience,salary);
-        console.log(response);
+        const response = await fetchAllResumeService(experience);
+        // console.log(response);
         // perform weighted search 
         let preferedResume;
         if (response.success) {
-            preferedResume = calculateMatchScore(response.data, req.body);
+            preferedResume = calculateMatchScore(response.data, query, location, experience, salary);
             return res.status(200).json(preferedResume);
         }
 
-        res.status(204).json({msg:"No matching resume"});
+        // res.status(200).json(response.data);
+        res.status(204).json({ msg: "No matching resume" });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Internal server error" });

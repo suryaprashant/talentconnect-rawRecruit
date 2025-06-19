@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 function ResumeSearch({ onSearch, onFileUpload }) {
   const [searchParams, setSearchParams] = useState({
-    query: '',
+    query: [],
     location: '',
     experience: '',
     salary: ''
@@ -50,14 +50,14 @@ function ResumeSearch({ onSearch, onFileUpload }) {
               className="w-full p-3 border border-gray-300 rounded appearance-none"
             >
               <option value="">Select</option>
-              <option value="remote">Remote</option>
-              <option value="onsite">On-site</option>
-              <option value="hybrid">Hybrid</option>
+              <option value="Remote">Remote</option>
+              <option value="Onsite">On-site</option>
+              <option value="Hybrid">Hybrid</option>
             </select>
           </div>
           <div>
             <label className="block mb-1 text-sm font-medium text-gray-700">Experience</label>
-            <select
+            {/* <select
               name="experience"
               value={searchParams.experience}
               onChange={handleChange}
@@ -68,7 +68,15 @@ function ResumeSearch({ onSearch, onFileUpload }) {
               <option value="1-3">1-3 years</option>
               <option value="3-5">3-5 years</option>
               <option value="5+">5+ years</option>
-            </select>
+            </select> */}
+            <input
+              type="number"
+              name="experience"
+              value={searchParams.experience}
+              onChange={handleChange}
+              placeholder="Minimum years of experience"
+              className="w-full p-3 border border-gray-300 rounded"
+            />
           </div>
         </div>
 
@@ -95,7 +103,7 @@ function ResumeSearch({ onSearch, onFileUpload }) {
           >
             Search
           </button>
-          
+
           {/* <div className="mt-4 text-center">
             <p className="mb-2 text-gray-500">Or upload resumes to parse automatically</p>
             <input
