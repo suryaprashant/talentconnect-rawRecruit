@@ -7,6 +7,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 export const googleAuth = async (req, res) => {
   try {
     const { tokenId } = req.body;
+    const {userType} = req.body ;
 
     if (!tokenId) {
       return res.status(400).json({ message: 'Google tokenId is required' });
@@ -30,10 +31,16 @@ export const googleAuth = async (req, res) => {
         name,
         email,
         profileImage: picture,
-        authProvider: 'google'
+        authProvider: 'google',
+        userType
       });
 
       await user.save();
+    }
+     else if (!user.userType) {
+        // If user exists but doesn't have a userType, update it
+        user.userType = userType;
+        await user.save();
     }
 
     // Prevent Google-auth users from logging in with password

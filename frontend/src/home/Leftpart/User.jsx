@@ -54,9 +54,9 @@ function User({ user }) {
     >
       <div className="flex items-center space-x-4">
         {/* The 'rounded-full' class here ensures it's always circular */}
-        <div className={`relative w-12 h-12 rounded-full overflow-hidden ${isOnline ? 'ring-2 ring-green-500' : 'ring-2 ring-blue-500'}`}>
+        <div className={`relative flex-shrink-0 w-12 h-12   rounded-full overflow-hidden ${isOnline ? 'ring-2 ring-green-500' : 'ring-2 ring-blue-500'}`}>
           <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-            className="object-cover w-full h-full rounded-full" // And here, for the image itself
+            className="object-cover w-full h-full rounded-full aspect-square" // And here, for the image itself
           />
           {isOnline && (
             <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-blue-800"></div>
