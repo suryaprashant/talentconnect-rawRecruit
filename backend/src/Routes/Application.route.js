@@ -13,7 +13,7 @@ router.post('/apply', createApplication);
 
 // access only to company 
 // accept oncampus
-router.get('/accept/oncampus/:jobId', getAcceptedCandidatesFromCollege);
+// router.get('/accept/oncampus/:companyId', getAcceptedCandidatesFromCollege);
 // accept offcampus
 router.get('/accept/:id', getAcceptedCandidates);
 

@@ -1,6 +1,6 @@
 // shortlist.js - Service for handling shortlisted drives
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE_URL = import.meta.env.VITE_Backend_URL || '';
 
 /**
  * Fetch shortlisted drives from the API or fallback to mock data if failed or empty.

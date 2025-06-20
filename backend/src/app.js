@@ -235,6 +235,7 @@ import preferences from "./Routes/onboarding_preferences.js";
 import education from "./Routes/onboarding_education.js";
 import basicdetails from "./Routes/onboarding_basicdetails.js";
 import resume from "./Routes/onboarding_resume.js";
+import CollegeApplication from './Routes/CollegeApplication.route.js';
 
 // Core API Mounts
 app.use('/api/auth', authRoutes);
@@ -252,6 +253,7 @@ app.use('/api/messages', messageRoute);
 app.use("/jobs", Jobs);
 app.use("/internship", Internship);
 app.use("/application", Application);
+app.use("/college/application",CollegeApplication);
 app.use("/hackathon", Hackathon);
 app.use("/company/dashboard", EmployerDashboard);
 app.use("/company/dashboard/resume", Resume);

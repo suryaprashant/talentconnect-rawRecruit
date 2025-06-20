@@ -45,3 +45,9 @@ export function createCompanyProfile(formData) {
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
+
+export function getAcceptedCampus(companyId) {
+  return axiosClient.get(`/college/application/${companyId}`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
