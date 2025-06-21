@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const onboardingSchema = new mongoose.Schema({
   collegeUniversityDetails: {
     collegeName: String,
+    collegeLocation: String ,
     state: String,
     city: String,
     country: String,
@@ -26,6 +27,12 @@ const onboardingSchema = new mongoose.Schema({
     collegeWebsite: String,
     linkedinProfile: String
   },
+  profileImage :{
+     type : String ,
+  },
+  backgroundImage :{
+    type : String ,
+  }, 
   workshops: [
     {
       workshopName: String,

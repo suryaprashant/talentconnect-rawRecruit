@@ -236,7 +236,69 @@ function LoginPage() {
     });
   };
 
-  const handleSubmit = async (e) => {
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError('');
+  //   setLoading(true);
+
+  //   try {
+  //     const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/auth/login`, { 
+  //       email: formData.email,
+  //       password: formData.password,
+  //     }, {
+  //       withCredentials: true,
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       }
+  //     });
+
+  //     if (response.status === 200) {
+  //       toast.success('Login successful!');
+  //       const { token, user } = response.data;
+
+  //       // Store user data in localStorage using the consistent key
+  //       localStorage.setItem('ChatAppUser', JSON.stringify(response.data)); // Store the whole response if needed, or just user and token separately
+  //       localStorage.setItem('token', token); // Still useful for the axios instance
+
+  //       // Set auth context
+  //       setAuthUser(response.data); // Update authUser in context
+
+  //       // Dynamically set Authorization header for axiosInstance
+  //       axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+  //       // Navigate based on user type
+  //       console.log(user.userType , "Usertype")
+  //       switch (user.userType) {
+  //         case 'candidate':
+  //           navigate('/home');
+  //           break;
+  //         case 'company':
+  //           navigate('/fresherhome'); // Assuming fresherhome is for companies based on your routing
+  //           break;
+  //         case 'college':
+  //           navigate('/home');
+  //           break;
+  //         case 'fresher':
+  //           navigate('/home'); // Assuming home is for freshers based on your routing
+  //           break;
+  //         case 'professional':
+  //           navigate('/profhome');
+  //           break;
+  //         default:
+  //           navigate('/dashboard');
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.error('Login Error:', err.response?.data || err.message);
+  //     const errorMessage = err.response?.data?.message || 'An unexpected error occurred during login.';
+  //     setError(errorMessage);
+  //     toast.error(errorMessage);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+    const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -256,36 +318,22 @@ function LoginPage() {
         toast.success('Login successful!');
         const { token, user } = response.data;
 
-        // Store user data in localStorage using the consistent key
-        localStorage.setItem('ChatAppUser', JSON.stringify(response.data)); // Store the whole response if needed, or just user and token separately
-        localStorage.setItem('token', token); // Still useful for the axios instance
-
-        // Set auth context
-        setAuthUser(response.data); // Update authUser in context
-
-        // Dynamically set Authorization header for axiosInstance
+        localStorage.setItem('ChatAppUser', JSON.stringify(response.data));
+        localStorage.setItem('token', token);
+        setAuthUser(response.data);
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        // Navigate based on user type
-        switch (user.userType) {
-          case 'candidate':
-            navigate('/home');
-            break;
-          case 'company':
-            navigate('/fresherhome'); // Assuming fresherhome is for companies based on your routing
-            break;
-          case 'college':
-            navigate('/home');
-            break;
-          case 'fresher':
-            navigate('/home'); // Assuming home is for freshers based on your routing
-            break;
-          case 'professional':
-            navigate('/profhome');
-            break;
-          default:
-            navigate('/dashboard');
-        }
+        // Navigate based only on user.userType from DB
+        const dashboardRoutes = {
+          student: '/home',
+          frsher: '/home',
+          professional:'/profhome',
+          company: '/fresherhome',
+          college: '/home',
+          employer: '/home',
+        };
+
+        navigate(dashboardRoutes[user.userType] || '/dashboard');
       }
     } catch (err) {
       console.error('Login Error:', err.response?.data || err.message);
@@ -295,7 +343,7 @@ function LoginPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="min-h-screen flex">
