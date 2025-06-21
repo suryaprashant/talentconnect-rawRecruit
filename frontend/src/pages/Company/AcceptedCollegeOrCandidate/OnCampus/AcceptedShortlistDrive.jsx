@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import ShortlistDrive from '@/components/company/AcceptedCollegeOrCandidate/OnCampus/ShortlistDrive';
-import { fetchShortlistedDrives, getMockDrives } from '../../../../constants/shortlist';
+// import { fetchShortlistedDrives, getMockDrives } from '../../../../constants/shortlist';
 import { getAcceptedCampus } from '@/lib/Company_AxiosInstance';
 
 const AcceptedShortlistDrive = () => {
@@ -45,9 +45,8 @@ const AcceptedShortlistDrive = () => {
       //   });
       // }
 
-      const response=getAcceptedCampus('682c583220f4bba79670fcfa');
-
-      setDrives(response?.data);
+      const response=await getAcceptedCampus('682c583220f4bba79670fcfa');
+      setDrives(response?.data.data);
       setPagination(prev => ({
         ...prev,
         totalItems: data?.totalItems

@@ -1,3 +1,5 @@
+import '../models/College.js';
+
 import CollegeApplication from "../models/CollegeApplication.js";
 
 export async function AcceptCampusRequestService(companyId, collegeId) {
@@ -20,7 +22,7 @@ export async function AcceptCampusRequestService(companyId, collegeId) {
 export async function getAcceptedCampusRequestService(companyId) {
 
     try {
-        const applications = await CollegeApplication.find({ company: companyId }).lean();
+        const applications = await CollegeApplication.find({ company: companyId }).populate('college').lean();
         return { success: true, data: applications };
     } catch (error) {
         console.log("Error: ", error.message);

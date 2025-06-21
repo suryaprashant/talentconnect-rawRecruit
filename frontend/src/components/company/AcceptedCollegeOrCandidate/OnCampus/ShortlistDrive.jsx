@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 const ShortlistDrive = ({
-  drives = [],
+  drives,
   loading = false,
   error = null,
   pagination = { currentPage: 1, totalItems: 0, itemsPerPage: 8 },
@@ -83,12 +83,12 @@ const ShortlistDrive = ({
     <div key={drive._id} className="border rounded-md overflow-hidden">
       <div className="p-4">
         <div className="flex justify-between items-start">
-          <h3 className="font-medium">{drive.institute}</h3>
-          <span className={`text-xs px-2 py-1 rounded-full ${drive.status === 'Completed' ? 'bg-gray-100 text-gray-600' :
-              drive.status === 'On-Going' ? 'bg-green-100 text-green-600' :
+          <h3 className="font-medium">{drive.college.collegeName}</h3>
+          <span className={`text-xs px-2 py-1 rounded-full ${drive.currentStatus === 'Completed' ? 'bg-gray-100 text-gray-600' :
+              drive.currentStatus === 'On-Going' ? 'bg-green-100 text-green-600' :
                 'bg-blue-100 text-blue-600'
             }`}>
-            {drive.status}
+            {drive.currentStatus}
           </span>
         </div>
 
@@ -99,7 +99,7 @@ const ShortlistDrive = ({
 
         <div className="mt-2 flex items-center gap-2 text-gray-600">
           <FaMapMarkerAlt className="text-xs" />
-          <span className="text-sm">{drive.location}</span>
+          <span className="text-sm">{drive.college.address.city}, {drive.college.address.state}</span>
         </div>
 
         <div className="mt-3 flex flex-col justify-between">
@@ -109,7 +109,7 @@ const ShortlistDrive = ({
           </div>
 
           <button
-            onClick={() => handleManageDrive(drive.id)}
+            onClick={() => handleManageDrive(drive._id)}
             className="bg-black text-white py-2 px-4 rounded-md text-sm hover:bg-gray-800 mt-4 transition-colors"
           >
             {customLabels.manageButtonText}
