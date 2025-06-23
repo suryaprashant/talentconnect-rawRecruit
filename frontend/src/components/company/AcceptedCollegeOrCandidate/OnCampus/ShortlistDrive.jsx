@@ -172,7 +172,7 @@ const ShortlistDrive = ({
 
         <div className="flex justify-end mt-4">
           <p className="text-sm text-gray-600">
-            Showing {drives.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}
+            Showing {drives?.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}
           </p>
         </div>
       </div>
@@ -201,7 +201,7 @@ const ShortlistDrive = ({
       {/* Drives Grid */}
       {!loading && !error && drives.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {drives.map(renderDriveCard)}
+          {drives?.map(renderDriveCard)}
         </div>
       )}
 

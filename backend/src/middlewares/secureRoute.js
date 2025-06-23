@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import Auth from "../models/auth.js";
 
 const secureRoute = async (req, res, next) => {
-  console.log("Heyyyyyyyyyyyyyyyy")
+  // console.log("Heyy")
   try {
      if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET is not configured");
@@ -19,8 +19,8 @@ const secureRoute = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({ error: "No user found" });
     }
-    console.log(req.user);
     req.user = user;
+    // console.log("user h ye,, ",req.user," ",decoded," ",token);
     next();
   } catch (error) {
     console.log("Error in secureRoute: ", error);

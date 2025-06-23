@@ -6,7 +6,7 @@ import BasicDetails from '../../models/Onboarding_basicdetails.js';
 
 // dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET ;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Helper function to generate token and set cookie
 const createTokenAndSaveCookie = (userId, email, res) => {
@@ -28,16 +28,16 @@ const createTokenAndSaveCookie = (userId, email, res) => {
 };
 
 export const signup = async (req, res) => {
- //console.log("User Type", userType);
+  //console.log("User Type", userType);
 
   try {
     const { email, password, userType } = req.body; // Add userType to destructuring
-   console.log("User Type from DB or localStorage:", userType);
+    // console.log("User Type from DB or localStorage:", userType);
 
     // Basic validation
     if (!email || !password || !userType) { // Add userType validation
-      return res.status(400).json({ 
-        message: "Email, password and userType are required" 
+      return res.status(400).json({
+        message: "Email, password and userType are required"
       });
     }
 
@@ -93,9 +93,9 @@ export const login = async (req, res) => {
 
     // Generate token and set cookie
     const token = createTokenAndSaveCookie(user._id, user.email, res);
-    
+
     // Get basic details if they exist
-    const basicDetails = await BasicDetails.findOne({ userId: user._id });
+    const basicDetails = await Auth.findById(user._id);
 
     // Send response
     res.status(200).json({
@@ -106,7 +106,7 @@ export const login = async (req, res) => {
         email: user.email,
         userType: user.userType,
         name: basicDetails?.name || user.name,
-        basicDetails
+        basicDetails: basicDetails
       }
     });
   } catch (error) {
@@ -116,7 +116,7 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  console.log("hero");
+  // console.log("hero");
   try {
     res.clearCookie("jwt", {
       httpOnly: true,
@@ -133,19 +133,19 @@ export const logout = async (req, res) => {
 
 // Optional: Add this if you need to get all users (excluding current user)
 export const allUsers = async (req, res) => {
-  console.log("hey Budy")
+  // console.log("hey Budy")
   try {
-   const loggedInUserId = req.user._id;  // Assuming userId is set in req from JWT
-    
-     if (!loggedInUserId) {
+    const loggedInUserId = req.user._id;  // Assuming userId is set in req from JWT
+
+    if (!loggedInUserId) {
       console.error("Error in allUsers Controller: loggedInUserId is missing after secureRoute");
       return res.status(401).json({ message: "Unauthorized: User ID not found." });
     }
-   
-   const filteredUsers = await Auth.find({
+
+    const filteredUsers = await Auth.find({
       _id: { $ne: loggedInUserId }
     }).select("-password");
-    
+
     res.status(200).json(filteredUsers);
   } catch (error) {
     console.error("Error in allUsers Controller:", error);

@@ -51,3 +51,9 @@ export function getAcceptedCampus(companyId) {
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
+
+export function acceptCollegeRequest(companyId, collegeId) {
+  return axiosClient.post(`/college/application`, { companyId, collegeId })
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
