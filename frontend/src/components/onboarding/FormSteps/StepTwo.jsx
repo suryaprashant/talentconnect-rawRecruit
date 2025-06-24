@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
 import { MailIcon, PhoneIcon, ChevronDownIcon } from "lucide-react";
 import { useRole } from "@/context/RoleContext/RoleContext";
-
+import axios from "axios";
 export const StepTwo = ({ onNext, onCancel, onProfileTypeSelect }) => {
   const { selectedRole } = useRole();
   
@@ -35,13 +35,37 @@ export const StepTwo = ({ onNext, onCancel, onProfileTypeSelect }) => {
     }
   };
 
-  const handleNextClick = () => {
-    // Ensure profile type is set in context before proceeding
+
+const handleNextClick = async () => {
+  try {
+    // const token = localStorage.getItem("token"); // Or however your app stores JWT
+
+    const response = await axios.post(
+      "http://localhost:5000/rawrecruit/link/submit", // Adjust the URL if different
+      {
+        name: formData.name,
+        email: formData.email,
+        mobile: formData.phone,
+        profileType: formData.profileType,
+      },
+      // {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // }
+    );
+
+    console.log("Saved successfully:", response.data);
     if (onProfileTypeSelect && formData.profileType) {
       onProfileTypeSelect(formData.profileType);
     }
     onNext();
-  };
+  } catch (error) {
+    console.error("Submission failed:", error.response?.data || error.message);
+    alert("Error submitting details. Please try again.");
+  }
+};
+
 
   return (
     <div className="justify-center items-stretch bg-white z-0 flex min-w-60 flex-col w-[560px] my-auto p-12 max-md:max-w-full max-md:px-5">

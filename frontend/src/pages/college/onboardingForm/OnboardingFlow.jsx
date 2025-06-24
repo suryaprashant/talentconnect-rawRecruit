@@ -275,7 +275,7 @@ function OnboardingFlow() {
 
      // console.log('Submission successful:', response.data);
       alert('College onboarding form submitted successfully!');
-      navigate('/college-edit/edit-review'); // Redirect after successful submission
+      navigate('/home'); // Redirect after successful submission
     } catch (error) {
       console.error('Submission failed:', error.response ? error.response.data : error.message);
       alert('Submission failed: ' + (error.response ? error.response.data.message : error.message));

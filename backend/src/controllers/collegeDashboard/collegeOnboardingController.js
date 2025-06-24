@@ -119,16 +119,16 @@ export const submitCollegeOnboarding = async (req, res) => {
     console.log('User ID from secureRoute (req.user._id):', req.user?._id);
 
     const userId = req.user?._id; // Using optional chaining for safety
+    console.log('Uploaded Files (req.files):', req.files);
+    const files = req.files; // ✅ Add this to define `files` correctly
+
 
     if (!userId) {
       console.log('Error: User not authenticated or ID missing in req.user._id.');
       return res.status(401).json({ message: 'User not authenticated or ID missing.' });
     }
 
-    // 2. Log the raw request body (important for multipart/form-data parsing)
-    console.log('Raw Request Body (req.body):', req.body);
-    console.log('Uploaded Files (req.files):', req.files);
-
+    
     const {
       collegeUniversityDetails,
       placementCoordinatorDetails,

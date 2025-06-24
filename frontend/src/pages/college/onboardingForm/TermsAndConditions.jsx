@@ -4,8 +4,7 @@ export default function TermsAndConditions({ formData, updateFormData, prevStep,
     const handleAcceptTerms = (e) => {
         updateFormData('acceptedTerms', e.target.checked);
     };
-
-    const navigate = useNavigate(); // This is correctly kept.
+ // This is correctly kept.
 
     const handleGetStartedClick = () => {
         if (formData.acceptedTerms) {

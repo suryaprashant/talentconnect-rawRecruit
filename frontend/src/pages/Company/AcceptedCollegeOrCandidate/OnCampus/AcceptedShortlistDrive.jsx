@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import ShortlistDrive from '@/components/company/AcceptedCollegeOrCandidate/OnCampus/ShortlistDrive';
-import { fetchShortlistedDrives, getMockDrives } from '../../../../constants/shortlist';
+// import { fetchShortlistedDrives, getMockDrives } from '../../../../constants/shortlist';
+import { getAcceptedCampus } from '@/lib/Company_AxiosInstance';
 
 const AcceptedShortlistDrive = () => {
   const [drives, setDrives] = useState([]);
@@ -26,28 +27,29 @@ const AcceptedShortlistDrive = () => {
       setLoading(true);
 
       let data;
-      if (import.meta.env.VITE_USE_MOCK_API === 'true') {
-        data = getMockDrives({
-          page: pagination.currentPage,
-          batchYear: filters.batchYear,
-          location: filters.location,
-          search: filters.searchTerm,
-          itemsPerPage: pagination.itemsPerPage
-        });
-      } else {
-        data = await fetchShortlistedDrives({
-          page: pagination.currentPage,
-          batchYear: filters.batchYear,
-          location: filters.location,
-          search: filters.searchTerm,
-          itemsPerPage: pagination.itemsPerPage
-        });
-      }
+      // if (import.meta.env.VITE_USE_MOCK_API === 'true') {
+      //   data = getMockDrives({
+      //     page: pagination.currentPage,
+      //     batchYear: filters.batchYear,
+      //     location: filters.location,
+      //     search: filters.searchTerm,
+      //     itemsPerPage: pagination.itemsPerPage
+      //   });
+      // } else {
+      //   data = await fetchShortlistedDrives({
+      //     page: pagination.currentPage,
+      //     batchYear: filters.batchYear,
+      //     location: filters.location,
+      //     search: filters.searchTerm,
+      //     itemsPerPage: pagination.itemsPerPage
+      //   });
+      // }
 
-      setDrives(data.drives);
+      const response=await getAcceptedCampus('682c583220f4bba79670fcfa');
+      setDrives(response?.data.data);
       setPagination(prev => ({
         ...prev,
-        totalItems: data.totalItems
+        totalItems: data?.totalItems
       }));
       setError(null);
     } catch (err) {

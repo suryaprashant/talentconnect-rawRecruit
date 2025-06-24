@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 import Application from "../models/Application.js";
+import Job from '../models/Job.js';
 
 export async function fetchApplicationService(query, userType) {
 
@@ -65,50 +66,54 @@ export async function fetchAcceptedCandidatesService(jobId) {
     }
 }
 
-export async function getAcceptedOnCampusService(jobId) {
+export async function getAcceptedOnCampusService(companyId) {
     try {
-        // const response = await Job.findById(jobId)
-        //     .populate('allowedColleges')
-        //     .lean();
 
-        // return { success: true, data: response };
-        const result = await Application.aggregate([
-            {
-                $match: {
-                    job: mongoose.Types.ObjectId(jobId),
-                    currentStatus: "Offer Extended"
-                }
-            },
-            // {
-            //     $lookup: {
-            //         from: "jobs",
-            //         localField: "job",
-            //         foreignField: "_id",
-            //         as: "jobDetails"
-            //     }
-            // },
-            // {
-            //     $unwind: "$jobDetails"
-            // },
-            // {
-            //     $match: {
-            //         "jobDetails.jobType": "Oncampus"
-            //     }
-            // },
-            // {
-            //     $lookup: {
-            //         from: "StudentOverview",
-            //         localField: "user",
-            //         foreignField: "_id",
-            //         as: "userDetails"
-            //     }
-            // },
-            // {
-            //     $unwind: "$userDetails"
-            // }
-        ]);
+        const response = await Job.find({ companyPosted: companyId, openingFor:"Oncampus" }, { _id: 1 }).lean();
 
-        return { success: true, data: result };
+        let acceptedCandidates = [];
+        for (let i = 0; i < response.length; i++) {
+            const candidateData=await fetchAcceptedCandidatesService(response[i]._id);
+            if(candidateData.data.length>0) acceptedCandidates.push(candidateData);
+        }
+
+        // const result = await Application.aggregate([
+        //     {
+        //         $match: {
+        //             job: mongoose.Types.ObjectId(jobId),
+        //             currentStatus: "Offer Extended"
+        //         }
+        //     },
+        // {
+        //     $lookup: {
+        //         from: "jobs",
+        //         localField: "job",
+        //         foreignField: "_id",
+        //         as: "jobDetails"
+        //     }
+        // },
+        // {
+        //     $unwind: "$jobDetails"
+        // },
+        // {
+        //     $match: {
+        //         "jobDetails.jobType": "Oncampus"
+        //     }
+        // },
+        // {
+        //     $lookup: {
+        //         from: "StudentOverview",
+        //         localField: "user",
+        //         foreignField: "_id",
+        //         as: "userDetails"
+        //     }
+        // },
+        // {
+        //     $unwind: "$userDetails"
+        // }
+        // ]);
+
+        return { success: true, data: acceptedCandidates };
     } catch (error) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");

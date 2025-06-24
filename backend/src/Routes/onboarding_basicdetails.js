@@ -4,6 +4,6 @@ import secureRoute from "../middlewares/secureRoute.js";
 
 const router = express.Router();
 
-router.post("/submit",secureRoute , submitBasicDetails);
+router.post("/submit", submitBasicDetails);
 
 export default router;

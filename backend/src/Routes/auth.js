@@ -7,12 +7,12 @@ import {
   sendResetLink,
   resetPassword
 } from '../controllers/authentication/forgotPasswordController.js';
-import secureRoute from "../middlewares/secureRoute.js"
+import secureRoute from "../middlewares/secureRoute.js";
 
 const router = express.Router();
 
 router.post('/signup', signup);
-router.post('/login', login);
+router.post('/login',secureRoute, login);
 router.post('/google', googleAuth);
 router.get('/linkedin/callback', handleLinkedInCallback);
 router.post('/forgot-password', sendResetLink);
