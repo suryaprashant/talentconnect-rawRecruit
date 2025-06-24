@@ -35,14 +35,20 @@ export function getAllInternship() {
     .catch(error => console.log("Error: ", error));
 }
 
+export function getInternships() {
+  return axiosClient.get(`/internship`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
 export function getHackathons() {
   return axiosClient.get(`/hackathon`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
 
-export function ApplyForOppurtunity(studentId, jobId) {
-  return axiosClient.post(`/application/apply`, { userId: studentId, jobId: jobId })
+export function ApplyForOppurtunity(userId, jobId) {
+  return axiosClient.post(`/application/apply`, { userId: userId, jobId: jobId })
     .then(response => response)
     .catch(error => console.log("Error: ", error));
     

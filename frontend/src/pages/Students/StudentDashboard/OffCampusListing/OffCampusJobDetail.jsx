@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 // import { jobListings, detailedJobData } from '@/constants/offCampusListing'
-import { getJobDetails } from '@/lib/User_AxiosInstance';
+import { ApplyForOppurtunity, getJobDetails } from '@/lib/User_AxiosInstance';
 
 function OffCampusJobDetail() {
   const { jobId } = useParams();
@@ -10,30 +10,27 @@ function OffCampusJobDetail() {
   const [isLoading, setIsLoading] = useState(false);
   const [jobDetail, setJobDetail] = useState();
 
-  // In a real app, you would fetch the specific job data using the jobId
-  // For now, we'll use the mock data
+  const loadJobDetails = async () => {
+    try {
+      setIsLoading(true);
+
+      // Fetch job details
+      const details = await getJobDetails(jobId);
+      setJobDetail(details.data[0]);
+
+      // Fetch similar jobs
+      // const similar = await fetchSimilarJobs(jobId);
+      // setSimilarJobs(similar);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load job details. Please try again later.');
+      console.error('Error fetching job details:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   // const job = detailedJobData;
   useEffect(() => {
-    const loadJobDetails = async () => {
-      try {
-        setIsLoading(true);
-
-        // Fetch job details
-        const details = await getJobDetails(jobId);
-        // console.log(details);
-        setJobDetail(details.data[0]);
-
-        // Fetch similar jobs
-        // const similar = await fetchSimilarJobs(jobId);
-        // setSimilarJobs(similar);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load job details. Please try again later.');
-        console.error('Error fetching job details:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
 
     loadJobDetails();
   }, [jobId]);
@@ -45,6 +42,15 @@ function OffCampusJobDetail() {
   const handleBackToList = () => {
     navigate('/student-dashboard/off-campus-listings');
   };
+
+  const handleApply = async () => {
+    try {
+      const response = await ApplyForOppurtunity('67ff4617aad277639987460d', jobId);
+      if (response.success === 'true') alert("Applied");
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -61,9 +67,9 @@ function OffCampusJobDetail() {
           <p className="text-xl font-semibold">{error || "Job not found"}</p>
           <button
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={() => navigate('/student-dashboard/job-listing')}
+            onClick={loadJobDetails}
           >
-            Back to Job Listings
+            Try Again
           </button>
         </div>
       </div>
@@ -87,7 +93,7 @@ function OffCampusJobDetail() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
           </button>
-          <button className="px-4 py-2 bg-black text-white rounded">Apply</button>
+          <button className="px-4 py-2 bg-black text-white rounded" onClick={handleApply}>Apply</button>
         </div>
       </div>
 
@@ -154,7 +160,7 @@ function OffCampusJobDetail() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
             </svg>
             <div>
-              <div className="font-medium">{jobDetail?.locations}</div>
+              <div className="font-medium">{jobDetail?.location}</div>
             </div>
           </div>
         </div>

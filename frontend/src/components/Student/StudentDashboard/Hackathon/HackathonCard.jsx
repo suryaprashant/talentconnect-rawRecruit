@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const HackathonCard = ({ hackathon }) => {
   return (
-    <Link to={`/student-dashboard/hackathon/${hackathon.id}`} className="block border border-gray-200 rounded-md overflow-hidden mb-4 hover:shadow-md transition-shadow duration-300">
+    <Link to={`/student-dashboard/hackathon/${hackathon._id}`} className="block border border-gray-200 rounded-md overflow-hidden mb-4 hover:shadow-md transition-shadow duration-300">
       <div className="flex p-4">
         <div className="w-16 h-16 bg-gray-200 flex-shrink-0 rounded-md flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

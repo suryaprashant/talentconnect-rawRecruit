@@ -61,7 +61,7 @@ export async function getAcceptedCandidates(req, res) {
     }
 }
 
-// oncampus
+// oncampus (no use)
 export async function getAcceptedCandidatesFromCollege(req, res) {
     const { companyId } = req.params;
     if (!companyId) return res.status(404).json({ error: 'Job not found!' });

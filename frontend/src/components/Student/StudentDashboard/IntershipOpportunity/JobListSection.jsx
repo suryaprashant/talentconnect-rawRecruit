@@ -1,7 +1,7 @@
-import {useState } from 'react';
+import { useState } from 'react';
 import JobCard from './JobCard';
 
-const JobListSection = ({ title, description, jobs }) => {
+const JobListSection = ({ title, description, jobs, userType }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState('relevance');
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
@@ -118,7 +118,7 @@ const JobListSection = ({ title, description, jobs }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {displayJobs?.map((job) => (
-          <JobCard key={job._id} job={job} />
+          <JobCard key={job._id} job={job} userType={userType} />
         ))}
       </div>
 

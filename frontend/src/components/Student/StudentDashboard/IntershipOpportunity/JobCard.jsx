@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const JobCard = ({ job }) => {
+const JobCard = ({ job,userType }) => {
   const [isSaved, setIsSaved] = useState(job.isSaved || false);
 
   const toggleSave = (e) => {
@@ -16,7 +16,7 @@ const JobCard = ({ job }) => {
       <div className="p-5">
         <div className="flex justify-between">
           <div className="flex-grow">
-            <Link to={`/student-dashboard/internship-opportunities/${job._id}`} className="block">
+            <Link to={`/${userType}-dashboard/internship-opportunities/${job._id}`} className="block">
               <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors mb-1">
                 {job.title}
               </h3>
@@ -51,7 +51,7 @@ const JobCard = ({ job }) => {
         </p>
 
         <Link
-          to={`/student-dashboard/internship-opportunities/${job.id}`}
+          to={`/${userType}-dashboard/internship-opportunities/${job._id}`}
           className="block w-full py-2 text-center text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors"
         >
           Apply now
