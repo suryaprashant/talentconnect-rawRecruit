@@ -1,6 +1,12 @@
 import mongoose from 'mongoose';
 
 const onboardingSchema = new mongoose.Schema({
+  userId: { // Add this field
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Auth', // Assuming you have a User model
+    required: true,
+    unique: true // A user should only have one college onboarding profile
+  },
   collegeUniversityDetails: {
     collegeName: String,
     collegeLocation: String ,

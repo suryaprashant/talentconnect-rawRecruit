@@ -191,6 +191,7 @@ import EmployerOffCampus from "./pages/Employer/HiringChannels/OffCampusHiring/O
 import ChatLayout from "./home/chatLayout";
 import { useAuth } from "./context/AuthProvider";
 import { Navigate } from "react-router-dom";
+import EmployerProfile from "./pages/Employer/Dashboard/CompanyProfile";
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -384,7 +385,7 @@ function AppRoutes() {
               {/* Employer Dashboard  */}
               
               <Route path="home" element={<Dashboard />} />
-              <Route path="/employer-profile" element={<CompanyProfile />}/> 
+              <Route path="/employer-profile" element={<EmployerProfile />}/> 
 
               <Route path="/interviews" element={<EmployerInterviewScheduler />} />
               <Route path="/employer-dashboard/resume-search" element={<EmployerResumeApp />} />

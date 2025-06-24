@@ -19,7 +19,7 @@ const collegeProfileSchema = new mongoose.Schema({
     collegeImageUrl: String,
     backgroundImageUrl: String
   },
-
+   
   placementCoordinatorDetails: {
     para: String,
     coordinatorName: String,

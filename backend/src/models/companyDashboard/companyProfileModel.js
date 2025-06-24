@@ -1,6 +1,12 @@
 import mongoose from 'mongoose';
 
 const companyProfileSchema = new mongoose.Schema({
+  userId: { 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Auth', 
+    required: true,
+    unique: true 
+  },
   companyDetails: {
     companyName: { type: String, required: true },
     description: { type: String },
@@ -16,7 +22,10 @@ const companyProfileSchema = new mongoose.Schema({
     state: { type: String },
     city: { type: String },
     country: { type: String },
-    pincode: { type: String }
+    pincode: { type: String },
+    collegeWebsite: {type : String} ,
+    linkedinUrl: {type : String} 
+
   },
   hiringPreferences: {
     hiringPara: { type: String },
@@ -42,7 +51,8 @@ const companyProfileSchema = new mongoose.Schema({
     pincode: { type: String },
     GSTIN: { type: String }
   },
-  backgroundImageUrl: { type: String }
+  backgroundImageUrl: { type: String },
+  profileImageUrl: {type : String}
 }, { timestamps: true });
 
 const CompanyProfile = mongoose.model('CompanyProfile', companyProfileSchema);

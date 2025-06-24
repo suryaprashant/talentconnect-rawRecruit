@@ -10,7 +10,7 @@ function CompanySidebar({ activePath }) {
       <SidebarNavItem to="/home" icon={<FiHome />} label="Home" active={activePath === '/home'} />
       <SidebarNavItem to="/company-profile" icon={<FiUser />} label="Profile" active={activePath === '/profile'} />
 
-      <SidebarNavGroup label="Employer Dashboard" icon={<FiPieChart />} active={activePath.includes('/employer-dashboard')}>
+      <SidebarNavGroup label="Company Dashboard" icon={<FiPieChart />} active={activePath.includes('/employer-dashboard')}>
         <SidebarNavItem to="/employer-dashboard/on-campus-request" label="On-campus Request" active={activePath === '/employer-dashboard/on-campus-request'} />
         <SidebarNavItem to="/employer-dashboard/pool-campus-requests" label="Pool Campus Requests" active={activePath === '/employer-dashboard/pool-campus-requests'} />
         <SidebarNavItem to="/employer-dashboard/resume-search" label="Resume Search" active={activePath === '/employer-dashboard/resume-search'} />

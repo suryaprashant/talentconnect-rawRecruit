@@ -1,3 +1,6 @@
+
+
+
 import { motion } from 'framer-motion'
 import Button from '@/components/company/Button'
 
@@ -10,7 +13,7 @@ const Introduction = ({ nextStep }) => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl font-bold mb-2">Create Employer Profile</h1>
+        <h1 className="text-2xl font-bold mb-2">Create Company Profile</h1>
         <p className="text-gray-600 mb-8">
           Build your profile to acquire top-notch talents, internships, and campus placements.
         </p>

@@ -188,7 +188,8 @@ import professionalProfileRoutes from './Routes/professionalProfileRoutes.js';
 import companyProfileRoutes from './Routes/companyDashboard/companyProfileRoutes.js';
 import collegeProfileRoutes from './Routes/collegeDashboard/collegeProfileRoutes.js';
 import collegeOnboardingRoutes from './Routes/collegeDashboard/collegeOnboardingRoutes.js';
-import employerProfileRoutes from './Routes/employerProfileRoutes.js';
+//import employerProfileRoutes from './Routes/employerProfileRoutes.js';
+import employerProfileRoutes from './Routes/employerDashboard/employerProfile.route.js'
 import messageRoute from "./Routes/message.route.js";
 
 // Main Features
@@ -245,7 +246,7 @@ app.use('/api/professional-profile', professionalProfileRoutes);
 app.use('/api/companyDashboard', companyProfileRoutes);
 app.use('/api/college', collegeProfileRoutes);
 app.use('/api/college-onboarding', collegeOnboardingRoutes);
-app.use('/api/employer-profile', employerProfileRoutes);
+app.use('/api/dashboard', employerProfileRoutes);
 app.use('/api/messages', messageRoute);
 
 // Feature Routes
