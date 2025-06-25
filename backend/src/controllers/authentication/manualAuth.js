@@ -116,7 +116,7 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  // console.log("hero");
+  console.log("hero");
   try {
     res.clearCookie("jwt", {
       httpOnly: true,
@@ -124,6 +124,7 @@ export const logout = async (req, res) => {
       secure: process.env.NODE_ENV === 'production',
       path: '/'
     });
+    localStorage.removeItem() ;
     res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
     console.error('Logout Error:', error);
@@ -133,7 +134,7 @@ export const logout = async (req, res) => {
 
 // Optional: Add this if you need to get all users (excluding current user)
 export const allUsers = async (req, res) => {
-  // console.log("hey Budy")
+  console.log("hey Budy")
   try {
     const loggedInUserId = req.user._id;  // Assuming userId is set in req from JWT
 

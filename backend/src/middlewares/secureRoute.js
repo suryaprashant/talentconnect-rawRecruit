@@ -19,6 +19,7 @@ const secureRoute = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({ error: "No user found" });
     }
+    console.log(req.user);
     req.user = user;
     // console.log("user h ye,, ",req.user," ",decoded," ",token);
     next();

@@ -1,114 +1,163 @@
+
+
 import { motion } from 'framer-motion'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import FormField from '@/components/company/FormField'
+import { useState, useEffect } from 'react' // Import useEffect
 import Button from '@/components/company/Button'
+import FormField from '@/components/company/FormField'
 
-const VerificationStep = ({ formData, handleChange, prevStep, onSubmit }) => {
-  const [termsAccepted, setTermsAccepted] = useState(false)
-  const navigate = useNavigate() ;
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (!termsAccepted) {
-      alert('Please accept the Terms & Conditions to continue')
-      return
-    }
-    onSubmit()
-    console.log('Form submitted successfully!', formData)
-    alert('Profile created successfully!')
-  }
+const VerificationStep = ({ formData, handleChange, prevStep, nextStep, updateFormData }) => {
+    // Local state for dropdown (document type) and file inputs (to manage UI feedback)
+    const [selectedDocumentType, setSelectedDocumentType] = useState(formData.documentType || '');
+    // Removed local states for backgroundFileName and profileFileName as they are no longer in this component
+    const [kycFileNames, setKycFileNames] = useState([]);
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <motion.div
-        className="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-8"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.3 }}
-      >
-        <h1 className="text-2xl font-bold mb-1">Company Verification & KYC</h1>
-        <p className="text-gray-600 mb-6">
-          Complete KYC verification to unlock full hiring access and ensure compliance.
-        </p>
+    // Sync local file names with parent formData on initial render or formData change
+    useEffect(() => {
+        // Only check kycDocuments, as backgroundImage and profileImage are no longer handled here
+        if (formData.kycDocuments) {
+            setKycFileNames(formData.kycDocuments.map(file => file.name));
+        }
+    }, [formData.kycDocuments]); // Dependency array updated to only include relevant prop
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Upload Verification Documents (Choose any one for verification)
+    const documentTypeOptions = [
+        { value: '', label: 'Select document type' },
+        { value: 'certificate', label: 'Company Certificate' },
+        { value: 'registration', label: 'Registration Document' },
+        { value: 'tax', label: 'Tax Document' },
+    ];
+
+    // Removed handleFileChange as backgroundImage and profileImage are no longer in this component
+
+    const handleKycFilesChange = (e) => {
+        const files = Array.from(e.target.files);
+        // Ensure handleChange correctly updates the kycDetails.kycDocuments array
+        handleChange('kycDocuments', files);
+        setKycFileNames(files.map(file => file.name));
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Ensure the selected document type is saved to formData.kycDetails
+        handleChange('documentType', selectedDocumentType);
+        nextStep();
+    };
+
+    // Custom File Input Component to mimic a text input with a button
+    const CustomFileInput = ({ label, name, fileName, onChange, multiple = false, accept = "*/*" }) => (
+        <div className="mb-4">
+            <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
+                {label}
             </label>
-            <select className="form-input w-full mb-3 border-gray-300 focus:ring-black focus:border-black">
-              <option value="">Select document type</option>
-              <option value="certificate">Company Certificate</option>
-              <option value="registration">Registration Document</option>
-              <option value="tax">Tax Document</option>
-            </select>
-
-            <div className="flex items-center justify-between p-3 border border-gray-300 rounded-md">
-              <span className="text-gray-600">Upload Document</span>
-              <button 
-                type="button"
-                className="text-gray-600 hover:text-black"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
+            <div className="mt-1 flex rounded-md shadow-sm">
+                <input
+                    type="text"
+                    className="flex-1 block w-full px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-black focus:border-black sm:text-sm cursor-not-allowed bg-gray-50"
+                    value={fileName || 'No file chosen'}
+                    readOnly
+                    placeholder="No file chosen"
+                />
+                <label
+                    htmlFor={name}
+                    className="cursor-pointer bg-blue-50 text-blue-700 px-4 py-2 rounded-r-md border border-l-0 border-blue-200 text-sm font-semibold hover:bg-blue-100 flex items-center justify-center"
+                >
+                    Choose File{multiple ? '(s)' : ''}
+                    <input
+                        id={name}
+                        name={name}
+                        type="file"
+                        className="sr-only" // Hide the actual input
+                        onChange={onChange}
+                        multiple={multiple}
+                        accept={accept}
+                    />
+                </label>
             </div>
-          </div>
+            {fileName && (
+                <p className="text-xs text-gray-500 mt-1">Selected: {fileName}</p>
+            )}
+        </div>
+    );
 
-          <FormField
-            label="TAN (Tax Deduction and Collection Account Number)"
-            name="tanNumber"
-            value={formData.tanNumber}
-            onChange={handleChange}
-            placeholder="10-digit alphanumeric"
-          />
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+            <motion.div
+                className="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-8"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+            >
+                <h1 className="text-2xl font-bold mb-1">Company Verification & KYC</h1>
+                <p className="text-gray-600 mb-6">
+                    Complete KYC verification to unlock full hiring access and ensure compliance.
+                </p>
 
-          <FormField
-            label="GST Number"
-            name="gstNumber"
-            value={formData.gstNumber}
-            onChange={handleChange}
-            placeholder="15-digit alphanumeric"
-          />
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Background Image Upload and Profile Image Upload sections removed */}
 
-          <FormField
-            label="Company Registration Number (CIN/LLPIN)"
-            name="companyRegistration"
-            value={formData.companyRegistration}
-            onChange={handleChange}
-            placeholder="21-digit alphanumeric"
-          />
+                    {/* KYC Documents Upload */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Upload Verification Documents (Choose any one for verification)
+                        </label>
+                        <FormField
+                            type="select"
+                            name="documentType"
+                            value={selectedDocumentType}
+                            onChange={(e) => setSelectedDocumentType(e.target.value)}
+                            placeholder="Select document type"
+                            options={documentTypeOptions}
+                        />
 
-          <div>
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={termsAccepted}
-                onChange={(e) => setTermsAccepted(e.target.checked)}
-                className="w-4 h-4 text-accent rounded border-gray-300 focus:ring-accent"
-              />
-              <span className="text-sm text-gray-600">
-                I agree to the Terms & Conditions and Privacy Policy
-              </span>
-            </label>
-          </div>
+                        <CustomFileInput
+                            label="Choose File(s)"
+                            name="kycDocuments"
+                            fileName={kycFileNames.join(', ')}
+                            onChange={handleKycFilesChange}
+                            multiple={true}
+                            accept="image/*,.pdf"
+                        />
+                    </div>
 
-          <div className="flex justify-end space-x-4 pt-4">
-            <Button variant="secondary" onClick={prevStep}>
-              Back
-            </Button>
-            <Button
-         onClick={() => navigate("/company-onboarding/step-1")}
-            type="submit" variant="primary">
-              Get Started
-            </Button>
-          </div>
-        </form>
-      </motion.div>
-    </div>
-  )
-}
+                    <FormField
+                        label="TAN (Tax Deduction and Collection Account Number)"
+                        name="TAN"
+                        value={formData.TAN}
+                        onChange={(e) => handleChange('TAN', e.target.value)}
+                        placeholder="e.g., ABCDE12345Z"
+                    />
 
-export default VerificationStep
+                    <FormField
+                        label="GST Number (Optional)"
+                        name="GSTNumber"
+                        value={formData.GSTNumber}
+                        onChange={(e) => handleChange('GSTNumber', e.target.value)}
+                        placeholder="e.g., 22ABCDE1234F1Z5"
+                    />
+
+                    <FormField
+                        label="Company Registration Number (CIN/LLPIN - Optional)"
+                        name="companyRegistrationNumber"
+                        value={formData.companyRegistrationNumber}
+                        onChange={(e) => handleChange('companyRegistrationNumber', e.target.value)}
+                        placeholder="e.g., L12345MH2020PTC123456"
+                    />
+
+                    <div className="flex justify-end space-x-4 pt-4">
+                        <Button variant="secondary" onClick={prevStep}>
+                            Back
+                        </Button>
+                        <Button
+                            type="submit"
+                            variant="primary"
+                        >
+                            Next
+                        </Button>
+                    </div>
+                </form>
+            </motion.div>
+        </div>
+    );
+};
+
+export default VerificationStep;
