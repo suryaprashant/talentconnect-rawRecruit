@@ -16,6 +16,8 @@ router.get('/oncampus', fetchOnCampusOpportunities);
 // user
 // find jobs to collegeStudents
 router.get('/campus/:collegeId', fetchOpportunitiesForCollegeStudent);
+// professional
+// router.get('/professional');
 
 router.get('/:id', findRelevantOpportunityById);
 router.get('/jobDetails/:jobId', findOpportunityById);
