@@ -43,10 +43,6 @@ const HackathonList = () => {
     setFilteredHackathons(filtered);
   }, [searchTerm, sortBy]);
 
-  useEffect(() => {
-    console.log("...\n", hackathons)
-  }, [hackathons])
-
   const handleSearch = (term) => {
     setSearchTerm(term);
   };
