@@ -47,6 +47,12 @@ export function getHackathons() {
     .catch(error => console.log("Error: ", error));
 }
 
+export function getHackathonDetail(hackathonId) {
+  return axiosClient.get(`/hackathon/${hackathonId}`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
 export function ApplyForOppurtunity(userId, jobId) {
   return axiosClient.post(`/application/apply`, { userId: userId, jobId: jobId })
     .then(response => response)

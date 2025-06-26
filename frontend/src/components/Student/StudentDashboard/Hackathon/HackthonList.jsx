@@ -13,7 +13,7 @@ const HackathonList = () => {
   const loadHackathons = async () => {
     try {
       const response = await getHackathons();
-      console.log("loaded", response);
+      // console.log("loaded", response);
       setHackathons(response.data.data);
     } catch (error) {
       console.log("Error: ", error);
