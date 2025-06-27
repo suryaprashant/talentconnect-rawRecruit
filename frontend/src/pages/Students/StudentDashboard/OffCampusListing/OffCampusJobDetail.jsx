@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 // import { jobListings, detailedJobData } from '@/constants/offCampusListing'
 import { getJobDetails } from '@/lib/User_AxiosInstance';
 
+
 function OffCampusJobDetail() {
   const { jobId } = useParams();
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ function OffCampusJobDetail() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black-500"></div>
       </div>
     );
   }

@@ -9,9 +9,9 @@ import BasicDetails from '../../models/Onboarding_basicdetails.js';
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // Helper function to generate token and set cookie
-const createTokenAndSaveCookie = (userId, email, res) => {
+const createTokenAndSaveCookie = (userId, email, res, userType) => {
   const token = jwt.sign(
-    { userId, email },
+    { userId, email, userType },
     JWT_SECRET,
     { expiresIn: '7d' }
   );
@@ -58,7 +58,7 @@ export const signup = async (req, res) => {
     });
 
     // Generate token and set cookie
-    const token = createTokenAndSaveCookie(newUser._id, newUser.email, res);
+    const token = createTokenAndSaveCookie(newUser._id, newUser.email, res, newUser.userType);
 
     // Send response with userType
     res.status(201).json({
@@ -92,7 +92,7 @@ export const login = async (req, res) => {
     }
 
     // Generate token and set cookie
-    const token = createTokenAndSaveCookie(user._id, user.email, res);
+    const token = createTokenAndSaveCookie(user._id, user.email, res, user.userType);
 
     // Get basic details if they exist
     const basicDetails = await Auth.findById(user._id);
@@ -102,7 +102,7 @@ export const login = async (req, res) => {
       message: 'Login successful',
       token,
       user: {
-        id: user._id,
+        _id: user._id,
         email: user.email,
         userType: user.userType,
         name: basicDetails?.name || user.name,

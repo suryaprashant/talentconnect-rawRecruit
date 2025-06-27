@@ -1,6 +1,3 @@
-
-
-"use client"
 import { useState } from "react";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -50,7 +47,7 @@ const useApplicationForm = () => {
 
    const updateFormData = (sectionOrField, fieldOrValue, value) => {
     setFormData(prev => {
-        // If three arguments are provided (section, field, value)
+    
         if (fieldOrValue !== undefined && value !== undefined) {
             return {
                 ...prev,
@@ -60,7 +57,7 @@ const useApplicationForm = () => {
                 }
             };
         } 
-        // If two arguments are provided (field, value) for top-level fields
+       
         else {
             return {
                 ...prev,
@@ -110,6 +107,18 @@ const useApplicationForm = () => {
             return true;
         } catch (error) {
             console.error('Failed to create company profile:', error);
+             if (error.response) {
+   
+        console.error('Error Response Data:', error.response.data);
+        console.error('Error Response Status:', error.response.status);
+        console.error('Error Response Headers:', error.response.headers);
+    } else if (error.request) {
+        
+        console.error('Error Request:', error.request);
+    } else {
+     
+        console.error('Error Message:', error.message);
+    }
             alert('Failed to create company profile. Please try again.');
             return false;
         }

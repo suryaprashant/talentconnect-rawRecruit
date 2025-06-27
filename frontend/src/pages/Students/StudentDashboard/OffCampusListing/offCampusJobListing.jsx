@@ -106,7 +106,7 @@ function OffCampusJobListings() {
       </div>
 
       <div className="flex justify-end mt-6">
-        <button className="text-sm text-gray-600 px-4 py-2 border border-gray-300 rounded hover:bg-gray-100">
+        <button className="text-sm text-white bg-black px-4 py-2 border border-gray-300 rounded hover:bg-blue-600">
           View all
         </button>
       </div>

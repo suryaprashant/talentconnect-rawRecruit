@@ -19,6 +19,46 @@
 // export const useAuth = () => useContext(AuthContext);
 
 
+// import React, { createContext, useContext, useState, useEffect } from 'react';
+
+// const AuthContext = createContext();
+
+// export const AuthProvider = ({ children }) => {
+//   const [authUser, setAuthUser] = useState(() => {
+//     try {
+//       // Initialize from localStorage with a consistent key
+//       const storedAuth = localStorage.getItem('ChatAppUser');
+//       return storedAuth ? JSON.parse(storedAuth) : null;
+//     } catch (error) {
+//       console.error("Failed to parse auth user from localStorage:", error);
+//       return null;
+//     }
+//   });
+
+//   // Effect to update localStorage whenever authUser changes
+//   useEffect(() => {
+//     try {
+//       if (authUser) {
+//         localStorage.setItem('ChatAppUser', JSON.stringify(authUser));
+//       } else {
+//         localStorage.removeItem('ChatAppUser');
+//       }
+//     } catch (error) {
+//       console.error("Failed to save auth user to localStorage:", error);
+//     }
+//   }, [authUser]);
+
+//   return (
+//     <AuthContext.Provider value={[authUser, setAuthUser]}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
+
+// export const useAuth = () => useContext(AuthContext);
+
+
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
@@ -26,22 +66,39 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(() => {
     try {
-      // Initialize from localStorage with a consistent key
-      const storedAuth = localStorage.getItem('ChatAppUser');
-      return storedAuth ? JSON.parse(storedAuth) : null;
+      const storedUser = localStorage.getItem('ChatAppUser');
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        
+        // --- FIX 1: When initializing from localStorage, ensure consistent structure ---
+        // If the stored data is directly the user object (has _id property at top level),
+        // wrap it into the { user: ... } format.
+        if (parsedUser && parsedUser._id) {
+          return { user: parsedUser };
+        } 
+        // If it's already in the { user: { ... } } format, return it as is.
+        // This covers cases where previous saves might have stored the wrapped object.
+        else if (parsedUser && parsedUser.user && parsedUser.user._id) {
+          return parsedUser;
+        }
+      }
     } catch (error) {
-      console.error("Failed to parse auth user from localStorage:", error);
-      return null;
+      console.error("Failed to parse auth user from localStorage, clearing data:", error);
+      localStorage.removeItem('ChatAppUser'); // Clear potentially corrupted data
     }
+    return null; // Default initial state if no valid user data found
   });
 
   // Effect to update localStorage whenever authUser changes
   useEffect(() => {
     try {
-      if (authUser) {
-        localStorage.setItem('ChatAppUser', JSON.stringify(authUser));
+      // --- FIX 2: When saving to localStorage, only store the raw user object ---
+      // We store only the 'user' part to localStorage.
+      // The AuthProvider's `useState` initializer will handle wrapping it back.
+      if (authUser && authUser.user && authUser.user._id) {
+        localStorage.setItem('ChatAppUser', JSON.stringify(authUser.user));
       } else {
-        localStorage.removeItem('ChatAppUser');
+        localStorage.removeItem('ChatAppUser'); // Remove if no valid user in state
       }
     } catch (error) {
       console.error("Failed to save auth user to localStorage:", error);

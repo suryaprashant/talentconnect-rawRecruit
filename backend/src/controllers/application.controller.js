@@ -68,7 +68,7 @@ export async function getAcceptedCandidatesFromCollege(req, res) {
 
     try {
         const response = await getAcceptedOnCampusService(companyId);
-        // console.log(response);
+
         res.status(200).json(response.data);
     } catch (error) {
         console.log("Error: ", error);

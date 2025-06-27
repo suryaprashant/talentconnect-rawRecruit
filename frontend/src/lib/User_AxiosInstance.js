@@ -12,8 +12,6 @@ axiosClient.defaults.headers = {
 // default 10sec
 axiosClient.defaults.timeout = 10000;
 
-// in case of tokens
-// axiosClient.defaults.withCredentials = true;
 
 // student dashboard
 export function getJobDetails(jobId) {

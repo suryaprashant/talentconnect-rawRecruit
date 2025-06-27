@@ -17,8 +17,9 @@ const streamUpload = (buffer, folder) => {
 };
 
 export const createCompanyProfile = async (req, res) => {
+    console.log("aaj hia hum")
   try {
-    
+    console.log("aaj hia hum")
     const userId = req.user._id; // Assuming req.user._id is populated by secureRoute
     if (!userId) {
       return res.status(401).json({ message: 'User not authenticated or ID missing.' });
