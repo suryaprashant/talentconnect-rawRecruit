@@ -157,7 +157,7 @@ export const getHackathon = async (req, res, next) => {
     try {
         const hackathon = await Hackathon.findById(req.params.id).populate([
             { path: 'panelMembers' },
-            { path: 'teams' }
+            // { path: 'teams' }
         ]);
 
         if (!hackathon) {

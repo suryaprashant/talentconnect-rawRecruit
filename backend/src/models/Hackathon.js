@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import '../models/PanelMenber.js'
 
 const HackathonSchema = new mongoose.Schema({
     title: {
