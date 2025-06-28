@@ -278,7 +278,7 @@ export const googleAuth = async (req, res) => {
       // New user - create with provided userType
       if (!userType) {
         return res.status(400).json({ 
-          message: 'User type is required for new registrations' 
+          message: 'User type is required for new registrations. Sign up first with google' 
         });
       }
 
