@@ -1,30 +1,31 @@
 import mongoose from "mongoose";
 
+// job
 const ApplicationSchema = new mongoose.Schema(
     {
         user: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "StudentOverview",
+            // ref: "OnboardingModel",
             required: true
         },
         job: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Job",
+            // ref: "Job",
             required: true
         },
         statusHistory: [
             {
                 status: {
                     type: String,
-                    enum: [
-                        "Applied",
-                        "Application Sent",
-                        "Awaiting Recruiter Action",
-                        "Rejected",
-                        "Shortlisted",
-                        "Interview Scheduled",
-                        "Offer Extended",
-                    ],
+                    // enum: [
+                    //     "Applied",
+                    //     "Application Sent",
+                    //     "Awaiting Recruiter Action",
+                    //     "Rejected",
+                    //     "Shortlisted",
+                    //     "Interview Scheduled",
+                    //     "Offer Extended",
+                    // ],
                     required: true
                 },
                 date: {
@@ -35,15 +36,15 @@ const ApplicationSchema = new mongoose.Schema(
         ],
         currentStatus: {
             type: String,
-            enum: [
-                "Applied",
-                "Application Sent",
-                "Awaiting Recruiter Action",
-                "Shortlisted",
-                "Interview Scheduled",
-                "Offer Extended",
-                "Rejected"
-            ],
+            // enum: [
+            //     "Applied",
+            //     "Application Sent",
+            //     "Awaiting Recruiter Action",
+            //     "Shortlisted",
+            //     "Interview Scheduled",
+            //     "Offer Extended",
+            //     "Rejected"
+            // ],
             default: "Applied"
         }
     },
