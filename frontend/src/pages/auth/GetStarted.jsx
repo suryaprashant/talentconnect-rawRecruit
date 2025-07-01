@@ -3,9 +3,9 @@ import { useState } from 'react';
 
 const roles = [
   {
-    key: 'student',
+    key: 'candidate',
     icon: '👨‍🎓',
-    title: 'Student',
+    title: 'Candidate',
     description:
       'Looking for job opportunities, internships, or placements? Register to explore careers and connect with top employers.',
   },
