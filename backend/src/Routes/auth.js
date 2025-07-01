@@ -2,7 +2,7 @@
 import express from 'express';
 import { signup, login, allUsers, logout } from '../controllers/authentication/manualAuth.js';
 import { googleAuth } from '../controllers/authentication/googleAuthController.js';
-import { handleLinkedInCallback } from '../controllers/authentication/LinkedInAuth.js';
+import {  handleLinkedInCallback, redirectToLinkedIn } from '../controllers/authentication/LinkedInAuth.js';
 import {
   sendResetLink,
   resetPassword
@@ -14,7 +14,8 @@ const router = express.Router();
 router.post('/signup', signup);
 router.post('/login',secureRoute, login);
 router.post('/google', googleAuth);
-router.get('/linkedin/callback', handleLinkedInCallback);
+router.get('/linkedin', redirectToLinkedIn);
+router.get('/linkedin/callback', handleLinkedInCallback)
 router.post('/forgot-password', sendResetLink);
 router.post('/reset-password/:token', resetPassword);
 router.get("/allusers" , secureRoute , allUsers) ;

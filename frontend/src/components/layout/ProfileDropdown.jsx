@@ -67,6 +67,7 @@ function ProfileDropdown() {
           withCredentials: true, 
         }
       );
+      localStorage.clear('authUser') ;
       localStorage.clear();
       navigate('/', { replace: true }); 
 

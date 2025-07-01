@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthProvider';
 import toast from 'react-hot-toast';
 import axiosInstance from '../../lib/axiosInstance';
-// import { useGoogleLogin } from '@react-oauth/google'; // This import seems unused and can be removed if not directly used for the login flow.
+// import { useGoogleLogin } from '@react-oauth/google'; // 
 
 function SignupPage() {
   const location = useLocation();
@@ -20,8 +20,8 @@ function SignupPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [linkedinLoading, setLinkedinLoading] = useState(false); 
 
-  // Initialize Google client
   useEffect(() => {
     // Load Google API script
     const script = document.createElement('script');
@@ -34,6 +34,69 @@ function SignupPage() {
       document.body.removeChild(script);
     };
   }, []);
+
+
+   // Handle LinkedIn callback from backend redirect
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const linkedinError = queryParams.get('error');
+    const linkedinToken = queryParams.get('token');
+    const isNewUser = queryParams.get('isNewUser') === 'true'; // Convert string to boolean
+    const userEmail = queryParams.get('email');
+    const userName = queryParams.get('name');
+    const userTypeFromLinkedIn = queryParams.get('userType');
+    const userProfileImage = queryParams.get('profileImage');
+
+
+    if (linkedinError) {
+      toast.error(decodeURIComponent(linkedinError));
+      navigate('/signup', { replace: true }); // Clear query params from URL
+    } else if (linkedinToken) {
+      toast.success('LinkedIn authentication successful!');
+
+      // Reconstruct the user object from query parameters
+      const user = {
+        _id: 'linkedin_user', // Placeholder, you might want to fetch actual ID or handle it differently
+        email: userEmail,
+        name: userName,
+        userType: userTypeFromLinkedIn || selectedRole, // Prioritize from LinkedIn, fallback to selectedRole
+        profileImage: userProfileImage,
+      };
+
+      setAuthUser({ user });
+      localStorage.setItem('ChatAppUser', JSON.stringify(user));
+      localStorage.setItem('token', linkedinToken); // Store the token
+      localStorage.setItem('selectedRole', user.userType); // Update selected role based on LinkedIn user type
+
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${linkedinToken}`;
+
+      const onboardingRoutes = {
+        candidate: '/student-form',
+        fresher: '/student-form',
+        professional: '/student-form',
+        company: '/company-form',
+        college: '/college-onboarding',
+        employer: '/onboardingflowForm'
+      };
+
+      const dashboardRoutes = {
+        student: '/home',
+        fresher: '/fresherhome',
+        professional: '/Profhome',
+        company: '/home',
+        college: '/home',
+        employer: '/home'
+      };
+
+      if (isNewUser) {
+        navigate(onboardingRoutes[user.userType] || '/onboarding', { replace: true });
+      } else {
+        navigate(dashboardRoutes[user.userType] || '/home', { replace: true });
+      }
+    }
+  }, [location.search, navigate, setAuthUser, selectedRole]);
+
+
 
   const handleChange = (e) => {
     setFormData({
@@ -49,6 +112,14 @@ function SignupPage() {
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      toast.error('Passwords do not match'); 
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 8 characters long');
+      toast.error('Password must be at least 8 characters long');
       setLoading(false);
       return;
     }
@@ -71,23 +142,17 @@ function SignupPage() {
 
       if (response.status === 201) {
         toast.success('Signup successful!');
-
-        // Assume manual signup response.data is the user object directly or similar
-        // Let's create a consistent structure for setAuthUser
-        const userData = response.data; // This might be { _id, email, name, userType, ... }
-
-        // FIX: Ensure manual signup also sets authUser with a 'user' property
+        const userData = response.data; 
         setAuthUser({
           user: {
             _id: userData._id,
             email: userData.email,
-            name: userData.name, // Ensure 'name' is available or default to something
+            name: userData.name, 
             userType: userData.userType,
-            profileImage: userData.profileImage || null // Ensure profileImage is available
+            profileImage: userData.profileImage || null // 
           }
         });
-        // localStorage.setItem('ChatAppUser', JSON.stringify(response.data)); // This line might need adjustment based on final authUser structure
-        // If AuthProvider stores the whole object including token, this will be fine
+     
         localStorage.setItem('ChatAppUser', JSON.stringify(userData)); // Store the relevant user data
         localStorage.setItem('token', userData.token); // Assuming token is directly in userData
 
@@ -131,7 +196,7 @@ function SignupPage() {
         toast.success('Google authentication successful!');
 
         // response.data contains { success, isNewUser, user: { _id, email, userType, name, profileImage }, token }
-        const { user, isNewUser } = response.data;
+        const { user, isNewUser, token } = response.data;
 
         // FIX: Ensure authUser structure matches what SocketContext expects (i.e., { user: { _id, ... } })
         setAuthUser({
@@ -146,15 +211,14 @@ function SignupPage() {
 
         // Store the full user object (from response.data.user) in local storage
         localStorage.setItem('ChatAppUser', JSON.stringify(user));
-        // Keep selectedRole consistent, though user.userType should be the definitive source
+       // localStorage.setItem('token', token); // Store the token
         localStorage.setItem('selectedRole', user.userType);
 
 
-        // Define routes based on user type and new user status
+   
         const onboardingRoutes = {
           candidate: '/student-form',
-          fresher: '/student-form', // Assuming these also go to student-form initially
-          professional: '/student-form', // Assuming a distinct professional onboarding
+         
           company: '/company-form',
           college: '/college-onboarding',
           employer: '/onboardingflowForm'
@@ -201,20 +265,20 @@ function SignupPage() {
       client.requestCode();
     }
   };
-
-  const handleLinkedInLogin = () => {
-    // It's good practice to get client_id from env as well
-    const clientId = import.meta.env.VITE_LINKEDIN_CLIENT_ID || 'your_actual_client_id';
-    const redirectUri = encodeURIComponent(`${window.location.origin}/auth/linkedin/callback`);
-    const state = Math.random().toString(36).substring(2);
-    const scope = encodeURIComponent('r_liteprofile r_emailaddress');
-
-    const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
-
-    sessionStorage.setItem('linkedin_oauth_state', state);
-    window.location.href = linkedInAuthUrl;
+  
+    // NEW: handleLinkedInClick function
+  const handleLinkedInClick = () => {
+    if (!selectedRole) {
+      toast.error('Please select a role before signing up with LinkedIn.');
+      return;
+    }
+    setLinkedinLoading(true);
+    // Redirect to your backend's LinkedIn authentication route
+    window.location.href = `${import.meta.env.VITE_Backend_URL}/api/auth/linkedin?userType=${selectedRole}`;
   };
 
+
+  
   return (
     <div className="min-h-screen flex">
       <div className="w-full md:w-1/2 flex flex-col p-8">
@@ -303,16 +367,29 @@ function SignupPage() {
             )}
           </button>
 
+             {/* NEW: LinkedIn Button with onClick handler */}
           <button
-            onClick={handleLinkedInLogin}
-            className="w-full border border-gray-300 py-3 flex items-center justify-center hover:bg-gray-50"
+            onClick={handleLinkedInClick} // Add this onClick handler
+            className="w-full border border-gray-300 py-3 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"
+            disabled={linkedinLoading}
           >
-            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
-            </svg>
-            Sign up with LinkedIn
+            {linkedinLoading ? (
+              <>
+                <svg className="animate-spin h-5 w-5 text-gray-800 mr-3" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Signing up with LinkedIn...
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+                </svg>
+                Sign up with LinkedIn
+              </>
+            )}
           </button>
-
           <p className="text-center mt-6">
             Already have an account? <Link to="/login" className="text-black hover:underline">Log In</Link>
           </p>
@@ -335,3 +412,5 @@ function SignupPage() {
 }
 
 export default SignupPage;
+
+
