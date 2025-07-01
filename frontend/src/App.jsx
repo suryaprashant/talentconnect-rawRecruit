@@ -192,6 +192,7 @@ import ChatLayout from "./home/chatLayout";
 import { useAuth } from "./context/AuthProvider";
 import { Navigate } from "react-router-dom";
 import EmployerProfile from "./pages/Employer/Dashboard/CompanyProfile";
+import LinkedInCallback from "./pages/auth/LinkedInCallback";
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -222,6 +223,7 @@ function AppRoutes() {
       <Route path="/" element={<RoleSelection />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} />
 
       <Route path='/student-form' element={<Index/>} />
       <Route path="/welcome" element={<WelcomePage />} />

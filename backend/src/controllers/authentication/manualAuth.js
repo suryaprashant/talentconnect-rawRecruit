@@ -124,7 +124,7 @@ export const logout = async (req, res) => {
       secure: process.env.NODE_ENV === 'production',
       path: '/'
     });
-    localStorage.removeItem() ;
+    //localStorage.removeItem() ;
     res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
     console.error('Logout Error:', error);
