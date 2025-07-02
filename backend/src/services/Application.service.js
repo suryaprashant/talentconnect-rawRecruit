@@ -1,19 +1,62 @@
 import mongoose from 'mongoose';
 
 import Application from "../models/Application.js";
+// import '../models/Student.js';
 import Job from '../models/Job.js';
 
 export async function fetchApplicationService(query, userType) {
-
     try {
         let applicationData;
         if (userType === 'User') {
-            applicationData = await Application.find(query)
-                .populate({
-                    path: 'job',
-                    select: '-allowedColleges'
-                })
-                .lean();
+            // applicationData = await Application.find(query)
+            //     .populate({
+            //         path: 'job',
+            //         select: '-allowedColleges'
+            //     })
+            //     .lean();
+
+            applicationData = await Application.aggregate([
+                {
+                    $match: {
+                        user: new mongoose.Types.ObjectId(query.user)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'jobs',
+                        localField: 'job',
+                        foreignField: '_id',
+                        as: 'jobDetails'
+                    }
+                },
+                {
+                    $lookup:{
+                        from:'companyoverviews',
+                        localField:'jobDetails.companyPosted',
+                        foreignField:'_id',
+                        as:'companyDetails'
+                    }
+                },
+                {
+                    $project:{
+                        job:1,
+                        statusHistory:1,
+                        currentStatus:1,
+                        createdAt:1,
+                        "jobDetails.title":1,
+                        "jobDetails._id":1,
+                        "jobDetails.description":1,
+                        "jobDetails.location":1,
+                        "jobDetails.workMode":1,
+                        "jobDetails.yearsOfExperience":1,
+                        "jobDetails.yearsOfExperience":1,
+                        "companyDetails.companyName":1,
+                    }
+                }
+                // {
+                //     $unwind: '$jobDetails'
+                // }
+            ]);
         } else if (userType === 'Company') {
             applicationData = await Application.find(query)
                 .populate('user')
@@ -69,12 +112,12 @@ export async function fetchAcceptedCandidatesService(jobId) {
 export async function getAcceptedOnCampusService(companyId) {
     try {
 
-        const response = await Job.find({ companyPosted: companyId, openingFor:"Oncampus" }, { _id: 1 }).lean();
+        const response = await Job.find({ companyPosted: companyId, openingFor: "Oncampus" }, { _id: 1 }).lean();
 
         let acceptedCandidates = [];
         for (let i = 0; i < response.length; i++) {
-            const candidateData=await fetchAcceptedCandidatesService(response[i]._id);
-            if(candidateData.data.length>0) acceptedCandidates.push(candidateData);
+            const candidateData = await fetchAcceptedCandidatesService(response[i]._id);
+            if (candidateData.data.length > 0) acceptedCandidates.push(candidateData);
         }
 
         // const result = await Application.aggregate([
