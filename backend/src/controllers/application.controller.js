@@ -26,7 +26,7 @@ export async function createApplication(req, res) {
 // get application details
 export async function getUserApplication(req, res) {
     const Id=req.query.Id;
-    if (!Id) return res.status(404).json({ error: "Invalid User" });
+    if (!Id) return res.status(404).json({ error: "Invalid" });
 
     let userType = "User"; //handled by middleware
 
