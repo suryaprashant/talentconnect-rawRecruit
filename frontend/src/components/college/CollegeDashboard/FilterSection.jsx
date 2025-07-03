@@ -54,7 +54,7 @@ const FilterSection = ({
         Showing 0 of 100
       </div>
 
-      {filterCategories.map((category) => (
+      {filterCategories?.map((category) => (
         <div key={category.id} className="mb-6 border-t pt-4">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-semibold text-gray-800">{category.label}</h3>
