@@ -43,13 +43,9 @@ const InternJobDetails = () => {
       // Here you would implement the application logic
       const response = await ApplyForOppurtunity(jobId, jobDetails.jobType);
       if (response.success === 'true') alert("Applied");
-      // console.log('Applying for job:', jobId);
 
       // Example: navigate to application form
       // navigate(`/apply/${jobId}`);
-
-      // For now, just show an alert
-      alert('Application submitted successfully!');
     } catch (err) {
       console.error('Error applying for job:', err);
       alert('Failed to submit application. Please try again.');
