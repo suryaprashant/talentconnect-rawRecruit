@@ -1,21 +1,27 @@
-import { createApplicationService, fetchApplicationService, fetchAcceptedCandidatesService, getAcceptedOnCampusService } from "../services/Application.service.js";
+import { createApplicationService, fetchApplicationService, fetchAcceptedCandidatesService, getAcceptedOnCampusService, checkExitence } from "../services/Application.service.js";
 import { checkOpportunityService } from "../services/Job.service.js";
 import { checkStudentService } from "../services/Student.service.js";
 
 // apply for opportunity
 export async function createApplication(req, res) {
-    const { userId, jobId } = req.body;
-    if (!userId || !jobId) return res.status(404).json({ msg: "UserId or JobId missing" });
+    const { jobId, jobType } = req.body;
+    const userId = req.user._id;
+
+    // console.log(userId, jobId);
+
+    if (!userId || !jobId || !jobType) return res.status(404).json({ msg: "Fields missing" });
 
     try {
+        if (await checkExitence(jobId, userId) === false) return res.status(403).json({ msg: "Already Applied" });
+
         // check for the validity of user and job ids... will remove with middlewares authentication
         const user = await checkStudentService(userId);
         const job = await checkOpportunityService(jobId);
         if (!user || !job) {
-            return res.status(404).json({ msg: "User or Job not found" });
+            return res.status(404).json({ msg: "User or Job not found!" });
         }
 
-        const application = await createApplicationService(userId, jobId);
+        const application = await createApplicationService(userId, jobId, jobType);
         res.status(201).json(application);
     } catch (error) {
         console.log("Error: ", error);
@@ -25,7 +31,7 @@ export async function createApplication(req, res) {
 
 // get application details
 export async function getUserApplication(req, res) {
-    const Id=req.query.Id;
+    const Id = req.query.Id;
     if (!Id) return res.status(404).json({ error: "Invalid" });
 
     let userType = "User"; //handled by middleware

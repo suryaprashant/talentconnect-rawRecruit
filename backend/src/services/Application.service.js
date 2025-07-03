@@ -4,15 +4,17 @@ import Application from "../models/Application.js";
 // import '../models/Student.js';
 import Job from '../models/Job.js';
 
-// export async function checkExitence(jobId, userId) {
-//     try {
-//         const response = await Application.find({ user: userId, job: jobId });
-//         if (response.data.length > 0) return { success: false, msg: "Already applied!" };
-//     } catch (error) {
-//         console.log("Error: ", error.message);
-//         throw new Error("Failed to fetch");
-//     }
-// }
+export async function checkExitence(jobId, userId) {
+    try {
+        const response = await Application.find({ user: userId, job: jobId });
+        // console.log("res: ", response);
+        if (response?.length > 0) return false;
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+    return true;
+}
 
 export async function fetchApplicationService(query, userType) {
     try {
@@ -83,12 +85,13 @@ export async function fetchApplicationService(query, userType) {
     }
 }
 
-export async function createApplicationService(userId, jobId) {
+export async function createApplicationService(userId, jobId, jobType) {
 
     try {
         const newApplication = new Application({
             user: userId,
             job: jobId,
+            jobType: jobType,
             statusHistory: [{ status: "Applied" }],
             currentStatus: "Applied"
         });
