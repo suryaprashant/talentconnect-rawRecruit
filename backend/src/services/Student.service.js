@@ -13,7 +13,7 @@ export async function getStudentService(studentId) {
 export async function checkStudentService(studentId) {
     try {
         const student = await StudentOverview.exists({ _id: studentId });
-        console.log(student);
+        // console.log(student);
         if (student) return true;
         return false;
 
