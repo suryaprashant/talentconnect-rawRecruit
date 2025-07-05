@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 export default function PostJob() {
@@ -18,6 +18,37 @@ export default function PostJob() {
     workAuthorization: ''
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  // New states for skills dropdown
+  const [showSkillsDropdown, setShowSkillsDropdown] = useState(false);
+  const [skillInput, setSkillInput] = useState('');
+  const skillsDropdownRef = useRef(null);
+  
+  // Predefined skills list
+  const allSkills = [
+    "JavaScript", "React", "Vue", "Angular", "Node.js", 
+    "Python", "Java", "C++", "SQL", "MongoDB"
+  ];
+
+  // Filter skills based on input
+  const filteredSkills = allSkills.filter(skill => 
+    skill.toLowerCase().includes(skillInput.toLowerCase())
+  );
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (skillsDropdownRef.current && !skillsDropdownRef.current.contains(event.target)) {
+        setShowSkillsDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -27,94 +58,170 @@ export default function PostJob() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleCertificationChange = (e) => {
+    const value = e.target.value;
+    setFormData(prev => ({ 
+      ...prev, 
+      certifications: value ? [value] : [] 
+    }));
+  };
+
+  // Handle adding a skill
+  const addSkill = (skill) => {
+    if (skill && !formData.skills.includes(skill)) {
+      setFormData(prev => ({
+        ...prev,
+        skills: [...prev.skills, skill]
+      }));
+    }
+    setSkillInput('');
+  };
+
+  // Handle removing a skill
+  const removeSkill = (index) => {
+    setFormData(prev => {
+      const newSkills = [...prev.skills];
+      newSkills.splice(index, 1);
+      return { ...prev, skills: newSkills };
+    });
+  };
+
+  // Handle Enter key in skill input
+  const handleSkillInputKeyDown = (e) => {
+    if (e.key === 'Enter' && skillInput.trim()) {
+      e.preventDefault();
+      addSkill(skillInput.trim());
+    }
+  };
+
+  // Handle selecting a skill from dropdown
+  const handleSelectSkill = (skill) => {
+    addSkill(skill);
+    setShowSkillsDropdown(false);
+  };
+
   const handlePostJob = async (e) => {
     e.preventDefault();
-
-    // Validate required fields
-    const requiredFields = {
-      jobTitle: 'Job Title',
-      employmentType: 'Employment Type',
-      jobDescription: 'Job Description',
-      preferredHiringLocation: 'Preferred Hiring Location',
-      monthlySalary: 'Monthly Salary',
-      numberOfOpenings: 'Number of Openings',
-      skills: 'Skills'
-    };
-
-    const missingFields = [];
-    Object.keys(requiredFields).forEach(field => {
-      if (!formData[field] || (Array.isArray(formData[field]) && formData[field].length === 0)) {
-        missingFields.push(requiredFields[field]);
-      }
-    });
-
-    if (missingFields.length > 0) {
-      alert(`Please fill in the following required fields: ${missingFields.join(', ')}`);
-      return;
-    }
-
-    // Create payload with correct field names matching the schema
-    const payload = {
-      jobTitle: formData.jobTitle,
-      employmentType: formData.employmentType,
-      jobDescription: formData.jobDescription,
-      preferredHiringLocation: formData.preferredHiringLocation,
-      numberOfOpenings: Number(formData.numberOfOpenings),
-      monthlySalary: Number(formData.monthlySalary),
-      salaryCurrency: formData.salaryCurrency,
-      minimumEducation: formData.minimumEducation || undefined,
-      preferredFieldOfStudy: formData.preferredFieldOfStudy || undefined,
-      yearsOfExperience: formData.yearsOfExperience || undefined,
-      skills: Array.isArray(formData.skills) && formData.skills.length > 0 ? formData.skills : [],
-      certifications: formData.certifications ? [formData.certifications] : [],
-      workAuthorization: formData.workAuthorization || undefined,
-    };
-
-    // Remove undefined fields to avoid sending them
-    Object.keys(payload).forEach(key => {
-      if (payload[key] === undefined) {
-        delete payload[key];
-      }
-    });
-
-    console.log("Payload being sent:", payload);
+    setIsSubmitting(true);
 
     try {
-  const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/createjob`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+      // Validate required fields
+      const requiredFields = {
+        jobTitle: 'Job Title',
+        employmentType: 'Employment Type',
+        jobDescription: 'Job Description',
+        preferredHiringLocation: 'Preferred Hiring Location',
+        monthlySalary: 'Monthly Salary',
+        numberOfOpenings: 'Number of Openings',
+        skills: 'Skills'
+      };
 
-  // Attempt to parse JSON only if response is JSON
-  const contentType = response.headers.get("content-type") || "";
-  let responseData;
-  if (contentType.includes("application/json")) {
-    responseData = await response.json();
-  } else {
-    const text = await response.text();
-    console.error("Expected JSON but got:", text);
-    throw new Error("Server did not return JSON");
-  }
+      const missingFields = [];
+      Object.keys(requiredFields).forEach(field => {
+        if (!formData[field] || (Array.isArray(formData[field]) && formData[field].length === 0)) {
+          missingFields.push(requiredFields[field]);
+        }
+      });
 
-  console.log("Response:", responseData);
+      if (missingFields.length > 0) {
+        alert(`Please fill in the following required fields: ${missingFields.join(', ')}`);
+        setIsSubmitting(false);
+        return;
+      }
 
-  if (response.ok) {
-    alert("Job posted successfully!");
-    // Reset form...
-  } else {
-    alert(`Error posting job: ${responseData.message || 'Unknown error'}`);
-  }
-} catch (error) {
-  console.error("Error posting job:", error);
-  alert("Network error or invalid response occurred while posting job");
-}
+      // Prepare payload with correct field names matching your schema
+      const payload = {
+        jobTitle: formData.jobTitle.trim(),
+        employmentType: formData.employmentType,
+        jobDescription: formData.jobDescription.trim(),
+        preferredHiringLocation: formData.preferredHiringLocation,
+        numberOfOpenings: parseInt(formData.numberOfOpenings, 10),
+        monthlySalary: parseFloat(formData.monthlySalary),
+        salaryCurrency: formData.salaryCurrency,
+        skills: Array.isArray(formData.skills) ? formData.skills : [],
+        certifications: Array.isArray(formData.certifications) ? formData.certifications : []
+      };
 
+      // Add optional fields only if they have values
+      if (formData.minimumEducation && formData.minimumEducation.trim()) {
+        payload.minimumEducation = formData.minimumEducation;
+      }
+      if (formData.preferredFieldOfStudy && formData.preferredFieldOfStudy.trim()) {
+        payload.preferredFieldOfStudy = formData.preferredFieldOfStudy;
+      }
+      if (formData.yearsOfExperience && formData.yearsOfExperience.trim()) {
+        payload.yearsOfExperience = formData.yearsOfExperience;
+      }
+      if (formData.workAuthorization && formData.workAuthorization.trim()) {
+        payload.workAuthorization = formData.workAuthorization;
+      }
+
+      // Ensure skills is always an array and not empty if required
+      if (!payload.skills || payload.skills.length === 0) {
+        alert('Please select at least one skill');
+        setIsSubmitting(false);
+        return;
+      }
+
+      console.log("Payload being sent:", JSON.stringify(payload, null, 2));
+
+      const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/createinternship`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload),
+      });
+
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+
+      if (!response.ok) {
+        // Try to get error message from response
+        let errorMessage = `HTTP Error: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (jsonError) {
+          const errorText = await response.text();
+          errorMessage = errorText || errorMessage;
+        }
+        throw new Error(errorMessage);
+      }
+
+      const responseData = await response.json();
+      console.log("Success Response:", responseData);
+
+      alert("Job posted successfully!");
+      
+      // Reset form on success
+      setFormData({
+        employmentType: 'full-time',
+        jobTitle: '',
+        preferredHiringLocation: '',
+        numberOfOpenings: '',
+        monthlySalary: '',
+        salaryCurrency: 'USD',
+        jobDescription: '',
+        minimumEducation: '',
+        preferredFieldOfStudy: '',
+        yearsOfExperience: '',
+        skills: [],
+        certifications: [],
+        workAuthorization: ''
+      });
+
+    } catch (error) {
+      console.error("Detailed error:", error);
+      alert(`Error posting job: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
     console.log('Form Cancelled');
-    // Reset form data
     setFormData({
       employmentType: 'full-time',
       jobTitle: '',
@@ -254,6 +361,8 @@ export default function PostJob() {
                 className="flex-1 p-2 border border-l-0 border-gray-300 rounded-r-md focus:ring-2 focus:ring-black focus:border-transparent"
                 value={formData.monthlySalary}
                 onChange={handleInputChange}
+                step="0.01"
+                min="0"
               />
             </div>
           </div>
@@ -343,36 +452,72 @@ export default function PostJob() {
           </div>
           
           {/* Skills */}
-          <div className="mb-4">
+          <div className="mb-4" ref={skillsDropdownRef}>
             <label htmlFor="skills" className="block text-sm font-medium mb-2">Skills <span className="text-red-500">*</span></label>
             <div className="relative">
-              <select
-                id="skills"
-                name="skills"
-                multiple
-                className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black focus:border-transparent"
-                value={formData.skills}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    skills: Array.from(e.target.selectedOptions, (option) => option.value),
-                  }))
-                }
+              <div 
+                className="w-full p-2 border border-gray-300 rounded-md bg-white focus-within:ring-2 focus-within:ring-black focus-within:border-transparent cursor-text"
+                onClick={() => setShowSkillsDropdown(true)}
               >
-                <option value="javascript">JavaScript</option>
-                <option value="react">React</option>
-                <option value="vue">Vue</option>
-                <option value="angular">Angular</option>
-                <option value="node">Node.js</option>
-                <option value="python">Python</option>
-                <option value="java">Java</option>
-                <option value="c++">C++</option>
-                <option value="sql">SQL</option>
-                <option value="mongodb">MongoDB</option>
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                {/* Display selected skills as tags */}
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {formData.skills.map((skill, index) => (
+                    <div key={index} className="bg-gray-100 px-2 py-1 rounded flex items-center">
+                      {skill}
+                      <button 
+                        type="button"
+                        className="ml-2 text-gray-500 hover:text-gray-700"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeSkill(index);
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Skill input field */}
+                <input
+                  type="text"
+                  placeholder="Type a skill and press Enter..."
+                  className="w-full p-1 outline-none"
+                  value={skillInput}
+                  onChange={(e) => setSkillInput(e.target.value)}
+                  onKeyDown={handleSkillInputKeyDown}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+              
+              <ChevronDown 
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+                size={16}
+                onClick={() => setShowSkillsDropdown(!showSkillsDropdown)}
+              />
+              
+              {/* Skills dropdown */}
+              {showSkillsDropdown && (
+                <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+                  {filteredSkills.length > 0 ? (
+                    filteredSkills.map((skill, index) => (
+                      <div 
+                        key={index}
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleSelectSkill(skill)}
+                      >
+                        {skill}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-4 py-2 text-gray-500">
+                      No matching skills found
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-            <p className="text-xs text-gray-500 mt-1">Hold Ctrl (Cmd on Mac) to select multiple skills</p>
+            <p className="text-xs text-gray-500 mt-1">Type to search skills or select from dropdown</p>
           </div>
           
           {/* Certifications */}
@@ -383,8 +528,8 @@ export default function PostJob() {
                 id="certifications" 
                 name="certifications"
                 className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black focus:border-transparent"
-                value={formData.certifications}
-                onChange={handleInputChange}
+                value={formData.certifications[0] || ''}
+                onChange={handleCertificationChange}
               >
                 <option value="">Select certification</option>
                 <option value="aws">AWS Certified</option>
@@ -424,16 +569,18 @@ export default function PostJob() {
           <button
             type="button"
             onClick={handleCancel}
-            className="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors"
+            disabled={isSubmitting}
+            className="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handlePostJob}
-            className="px-6 py-2 bg-black text-white rounded-md text-sm font-medium hover:bg-gray-800 transition-colors"
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-black text-white rounded-md text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
           >
-            Post Your Job
+            {isSubmitting ? 'Posting...' : 'Post Your Job'}
           </button>
         </div>
       </div>

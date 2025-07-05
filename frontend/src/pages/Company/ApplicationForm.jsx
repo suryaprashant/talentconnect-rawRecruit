@@ -101,7 +101,7 @@ const useApplicationForm = () => {
                 },
                 withCredentials: true
             });
-            console.log("Ho gya kaam", response)
+        
 
             alert('Company profile created successfully!');
             return true;

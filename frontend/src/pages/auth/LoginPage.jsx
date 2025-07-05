@@ -244,7 +244,7 @@ function LoginPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
+    console.log('Form Data aaya:', formData); // Debugging line to check form data   
     try {
       const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/auth/login`, {
         email: formData.email,
@@ -255,6 +255,7 @@ function LoginPage() {
           'Content-Type': 'application/json'
         }
       });
+      console.log('Form Data aaya kyu:', formData);
 
       if (response.status === 200) {
         toast.success('Login successful!');
@@ -271,7 +272,7 @@ function LoginPage() {
           },
           token: token // Also store token in authUser if your AuthProvider expects it
         });
-
+        console.log('Form Data qwer:', formData);
         localStorage.setItem('ChatAppUser', JSON.stringify(user)); // Store the relevant user data
         localStorage.setItem('token', token); // Assuming token is directly in userData
         localStorage.setItem('selectedRole', user.basicDetails.userType); // Store selectedRole for consistency
@@ -286,6 +287,8 @@ function LoginPage() {
           college: '/home',
           employer: '/home',
         };
+
+        console.log('Form Data aaya kaisa:', formData);
 
         navigate(dashboardRoutes[user.basicDetails.userType] || '/home');
       }

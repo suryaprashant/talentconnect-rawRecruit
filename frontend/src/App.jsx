@@ -142,7 +142,7 @@ import  FresherCareerCraft from "./pages/Fresher/Service_request/CareerCraft";
 import FresherMockInterview from "./pages/Fresher/Service_request/Mock_Interview";
 import FresherCounselling from "./pages/Fresher/Service_request/Counselling";
 import FresherDashboard from "./pages/Fresher/Dashboard";
-import Fresher_Profile from "./pages/Fresher/Profile";
+import Fresher_Profile from "./pages/Fresher/FresherProfile";
 import FJobListings from "./pages/Fresher/FresherDashboard/JobListing/JobListings";
 import FJobDetails from "./pages/Fresher/FresherDashboard/JobListing/JobDetails";
 import FInternJobListings from "./pages/Fresher/FresherDashboard/InternshipOpportunity/InternJobListing";

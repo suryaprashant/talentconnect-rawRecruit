@@ -24,6 +24,81 @@ export default function OffCampusHiringForm() {
     minimumStudents: '',
   });
 
+  // Sample data for dropdown options
+  const streamOptions = [
+    'Computer Science',
+    'Electrical Engineering',
+    'Mechanical Engineering',
+    'Civil Engineering',
+    'Information Technology',
+    'Electronics & Communication',
+    'Chemical Engineering',
+    'Biotechnology',
+    'Aerospace Engineering',
+    'Data Science'
+  ];
+
+  const locationOptions = [
+    'Bangalore',
+    'Mumbai',
+    'Delhi NCR',
+    'Hyderabad',
+    'Chennai',
+    'Pune',
+    'Kolkata',
+    'Ahmedabad',
+    'Gurgaon',
+    'Noida'
+  ];
+
+  const jobRoleOptions = [
+    'Software Engineer',
+    'Data Analyst',
+    'DevOps Engineer',
+    'UX/UI Designer',
+    'Product Manager',
+    'QA Engineer',
+    'System Administrator',
+    'Network Engineer',
+    'Business Analyst',
+    'Machine Learning Engineer'
+  ];
+
+  const roundsOptions = [
+    '1 Round',
+    '2 Rounds',
+    '3 Rounds',
+    '4 Rounds',
+    '5 Rounds',
+    '6 Rounds',
+    '7+ Rounds'
+  ];
+
+  const processOptions = [
+    'Online Test + Interview',
+    'Coding Test + Technical Interview',
+    'Aptitude Test + Group Discussion + Interview',
+    'Technical Interview + HR Interview',
+    'Case Study + Presentation + Interview'
+  ];
+
+  const designationOptions = [
+    'HR Manager',
+    'Talent Acquisition Specialist',
+    'Recruitment Lead',
+    'Campus Relations Manager',
+    'Technical Recruiter'
+  ];
+
+  const minStudentsOptions = [
+    '1-5 students',
+    '6-10 students',
+    '11-20 students',
+    '21-50 students',
+    '51-100 students',
+    '100+ students'
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -102,7 +177,10 @@ export default function OffCampusHiringForm() {
                 onChange={handleChange}
                 className="w-full p-2 border rounded appearance-none pr-8 bg-white"
               >
-                <option value="">Multiple-select</option>
+                <option value="" disabled>Select stream</option>
+                {streamOptions.map((stream, index) => (
+                  <option key={index} value={stream}>{stream}</option>
+                ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,6 +207,8 @@ export default function OffCampusHiringForm() {
               <div className="relative">
                 <select className="py-2 px-3 border rounded-l bg-white">
                   <option>USD</option>
+                  <option>INR</option>
+                  <option>EUR</option>
                 </select>
               </div>
               <input 
@@ -136,7 +216,7 @@ export default function OffCampusHiringForm() {
                 name="minimumPackage"
                 value={formData.minimumPackage}
                 onChange={handleChange}
-                placeholder="Placeholder" 
+                placeholder="Enter amount" 
                 className="flex-grow p-2 border border-l-0 rounded-r"
               />
             </div>
@@ -151,7 +231,10 @@ export default function OffCampusHiringForm() {
                 onChange={handleChange}
                 className="w-full p-2 border rounded appearance-none pr-8 bg-white"
               >
-                <option value="">Multiple-select</option>
+                <option value="" disabled>Select location</option>
+                {locationOptions.map((location, index) => (
+                  <option key={index} value={location}>{location}</option>
+                ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,7 +256,10 @@ export default function OffCampusHiringForm() {
                 onChange={handleChange}
                 className="w-full p-2 border rounded appearance-none pr-8 bg-white"
               >
-                <option value="">Multiple-select</option>
+                <option value="" disabled>Select job role</option>
+                {jobRoleOptions.map((role, index) => (
+                  <option key={index} value={role}>{role}</option>
+                ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -309,7 +395,12 @@ export default function OffCampusHiringForm() {
                     onChange={handleChange}
                     className="w-full p-2 border rounded appearance-none pr-8 bg-white"
                   >
-                    <option value="">Placeholder</option>
+                    <option value="" disabled>Select start date</option>
+                    <option value="2023-10-01">October 1, 2023</option>
+                    <option value="2023-11-01">November 1, 2023</option>
+                    <option value="2023-12-01">December 1, 2023</option>
+                    <option value="2024-01-01">January 1, 2024</option>
+                    <option value="2024-02-01">February 1, 2024</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                     <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -327,7 +418,12 @@ export default function OffCampusHiringForm() {
                     onChange={handleChange}
                     className="w-full p-2 border rounded appearance-none pr-8 bg-white"
                   >
-                    <option value="">Placeholder</option>
+                    <option value="" disabled>Select end date</option>
+                    <option value="2023-10-15">October 15, 2023</option>
+                    <option value="2023-11-15">November 15, 2023</option>
+                    <option value="2023-12-15">December 15, 2023</option>
+                    <option value="2024-01-15">January 15, 2024</option>
+                    <option value="2024-02-15">February 15, 2024</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                     <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -348,7 +444,10 @@ export default function OffCampusHiringForm() {
                 onChange={handleChange}
                 className="w-full p-2 border rounded appearance-none pr-8 bg-white"
               >
-                <option value="">Multiple-select</option>
+                <option value="" disabled>Select number of rounds</option>
+                {roundsOptions.map((round, index) => (
+                  <option key={index} value={round}>{round}</option>
+                ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -367,7 +466,10 @@ export default function OffCampusHiringForm() {
                 onChange={handleChange}
                 className="w-full p-2 border rounded appearance-none pr-8 bg-white"
               >
-                <option value="">Multiple-select</option>
+                <option value="" disabled>Select selection process</option>
+                {processOptions.map((process, index) => (
+                  <option key={index} value={process}>{process}</option>
+                ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -399,7 +501,10 @@ export default function OffCampusHiringForm() {
                 onChange={handleContactChange}
                 className="w-full p-2 border rounded appearance-none pr-8 bg-white"
               >
-                <option value="">Placeholder</option>
+                <option value="" disabled>Select designation</option>
+                {designationOptions.map((designation, index) => (
+                  <option key={index} value={designation}>{designation}</option>
+                ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -455,7 +560,7 @@ export default function OffCampusHiringForm() {
               name="linkedin"
               value={formData.contactPerson.linkedin}
               onChange={handleContactChange}
-              placeholder="http://www.resume.io" 
+              placeholder="http://www.linkedin.com/in/username" 
               className="w-full p-2 border rounded"
             />
           </div>
@@ -469,7 +574,10 @@ export default function OffCampusHiringForm() {
                 onChange={handleChange}
                 className="w-full p-2 border rounded appearance-none pr-8 bg-white"
               >
-                <option value="">Multiple-select</option>
+                <option value="" disabled>Select minimum students</option>
+                {minStudentsOptions.map((option, index) => (
+                  <option key={index} value={option}>{option}</option>
+                ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -491,4 +599,4 @@ export default function OffCampusHiringForm() {
       </div>
     </div>
   )
-}          
+}
