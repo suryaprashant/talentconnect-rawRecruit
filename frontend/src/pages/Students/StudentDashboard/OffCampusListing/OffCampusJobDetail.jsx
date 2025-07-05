@@ -46,7 +46,7 @@ function OffCampusJobDetail() {
 
   const handleApply = async () => {
     try {
-      const response = await ApplyForOppurtunity('67ff4617aad277639987460d', jobId);
+      const response = await ApplyForOppurtunity(jobId, jobDetail.jobType);
       if (response.success === 'true') alert("Applied");
     } catch (error) {
       console.log("Error: ", error);

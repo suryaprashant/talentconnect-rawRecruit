@@ -16,6 +16,7 @@ const registrationSchema = new mongoose.Schema({
   mobile: String,
   linkedin: String,
   minimumStudents: [String],
+  companyPosted: { type: mongoose.Schema.Types.ObjectId, ref: "CompanyProfile", required: true },
 });
 
 // Use a unique model name, and conditional registration to avoid overwrite errors

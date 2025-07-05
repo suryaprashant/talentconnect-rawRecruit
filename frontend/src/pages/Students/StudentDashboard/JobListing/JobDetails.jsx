@@ -43,8 +43,8 @@ const JobDetails = () => {
       // This could be a redirect to an application form or a direct API call
       // console.log('Applying for job:', jobId);
 
-      const response=await ApplyForOppurtunity('67ff4630aad2776399874611',jobId);
-      console.log("Application: ",response);
+      const response = await ApplyForOppurtunity(jobId, jobDetails.jobType);
+      console.log("Application: ", response);
 
       // Example: navigate to application form
       // navigate(`/apply/${jobId}`);

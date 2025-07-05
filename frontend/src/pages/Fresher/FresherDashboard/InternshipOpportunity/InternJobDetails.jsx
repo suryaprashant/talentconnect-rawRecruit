@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 // import { fetchJobDetails, fetchSimilarJobs } from '../../../../constants/JobListing'
 // import JobCard from '@/components/Student/StudentDashboard/IntershipOpportunity/JobCard';
-import { getJobDetails,ApplyForOppurtunity } from '@/lib/User_AxiosInstance';
+import { getJobDetails, ApplyForOppurtunity } from '@/lib/User_AxiosInstance';
 
 const InternJobDetails = () => {
   const { jobId } = useParams();
@@ -41,12 +41,17 @@ const InternJobDetails = () => {
 
   const handleApply = async () => {
     try {
-      const response = await ApplyForOppurtunity('67ff4617aad277639987460d', jobId);
+      // Here you would implement the application logic
+      const response = await ApplyForOppurtunity(jobId, jobDetails.jobType);
       if (response.success === 'true') alert("Applied");
-    } catch (error) {
-      console.log("Error: ", error);
+
+      // Example: navigate to application form
+      // navigate(`/apply/${jobId}`);
+    } catch (err) {
+      console.error('Error applying for job:', err);
+      alert('Failed to submit application. Please try again.');
     }
-  }
+  };
 
   const handleSave = async () => {
     try {

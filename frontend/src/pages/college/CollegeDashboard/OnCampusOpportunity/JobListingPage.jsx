@@ -1,26 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { jobs } from '@/constants/collegedashboard/jobs';
-import { initialFilterCategories } from '@/constants/collegedashboard/filter';
+// import { initialFilterCategories } from '@/constants/collegedashboard/filter';
 import JobCard from '@/components/college/CollegeDashboard/OnCampusOpprtunity/JobCard';
 import FilterSection from '@/components/college/CollegeDashboard/FilterSection';
 //import Header from '../components/Header';
 
 const JobsListingPage = () => {
+  const [jobs, setJobs] = useState();
   const [filteredJobs, setFilteredJobs] = useState(jobs);
-  const [filterCategories, setFilterCategories] = useState(initialFilterCategories);
+  const [filterCategories, setFilterCategories] = useState();
   const [activeFilters, setActiveFilters] = useState([]);
   const [sortBy, setSortBy] = useState('newest');
 
+  const fetchAllJobs = async () => {
+    try {
+      const response = await getCompanyPostingForOncampus();
+      console.log(response.data);
+      setJobs(response.data);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
+
   useEffect(() => {
-    applyFilters();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterCategories]);
+    fetchAllJobs();
+  }, []);
+
+  // useEffect(() => {
+  //   applyFilters();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [filterCategories]);
 
   const handleFilterChange = (categoryId, filterId, checked) => {
-    const updatedCategories = filterCategories.map(category => {
-      if (category.id === categoryId) {
-        const updatedFilters = category.filters.map(filter => {
-          if (filter.id === filterId) {
+    const updatedCategories = filterCategories?.map(category => {
+      if (category._id === categoryId) {
+        const updatedFilters = category?.filters?.map(filter => {
+          if (filter._id === filterId) {
             return { ...filter, checked };
           }
           return filter;
@@ -32,9 +47,9 @@ const JobsListingPage = () => {
 
     setFilterCategories(updatedCategories);
 
-    const category = updatedCategories.find(c => c.id === categoryId);
+    const category = updatedCategories.find(c => c._id === categoryId);
     if (category) {
-      const filter = category.filters.find(f => f.id === filterId);
+      const filter = category.filters.find(f => f._id === filterId);
       if (filter) {
         if (checked) {
           setActiveFilters([...activeFilters, { category: categoryId, value: filter.label }]);
@@ -50,7 +65,7 @@ const JobsListingPage = () => {
   const handleClearFilters = (categoryId) => {
     if (categoryId) {
       const updatedCategories = filterCategories.map(category => {
-        if (category.id === categoryId) {
+        if (category._id === categoryId) {
           const updatedFilters = category.filters.map(filter => ({
             ...filter,
             checked: false,
@@ -85,7 +100,7 @@ const JobsListingPage = () => {
       activeFiltersMap[af.category].push(af.value);
     });
 
-    if (activeFilters.length === 0) {
+    if (activeFilters?.length === 0) {
       setFilteredJobs(results);
       return;
     }
@@ -120,10 +135,10 @@ const JobsListingPage = () => {
 
     switch (sortValue) {
       case 'newest':
-        sortedJobs.sort((a, b) => Number(b.id) - Number(a.id));
+        sortedJobs.sort((a, b) => Number(b._id) - Number(a._id));
         break;
       case 'oldest':
-        sortedJobs.sort((a, b) => Number(a.id) - Number(b.id));
+        sortedJobs.sort((a, b) => Number(a._id) - Number(b._id));
         break;
       case 'companyAZ':
         sortedJobs.sort((a, b) => a.company.localeCompare(b.company));
@@ -161,16 +176,16 @@ const JobsListingPage = () => {
           <div className="flex-grow">
             <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center">
               <div className="flex flex-wrap gap-2 mb-4 sm:mb-0">
-                {activeFilters.length > 0 && activeFilters.map((filter, index) => (
+                {activeFilters?.map((filter, index) => (
                   <div key={index} className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full py-1 px-3 text-sm">
                     <span className="mr-1">{filter.value}</span>
                     <button
                       onClick={() => {
-                        const category = filterCategories.find(c => c.id === filter.category);
+                        const category = filterCategories.find(c => c._id === filter.category);
                         if (category) {
                           const filterItem = category.filters.find(f => f.label === filter.value);
                           if (filterItem) {
-                            handleFilterChange(category.id, filterItem.id, false);
+                            handleFilterChange(category._id, filterItem._id, false);
                           }
                         }
                       }}
@@ -201,12 +216,12 @@ const JobsListingPage = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredJobs.map(job => (
-                <JobCard key={job.id} job={job} />
+              {filteredJobs?.map(job => (
+                <JobCard key={job._id} job={job} />
               ))}
             </div>
 
-            {filteredJobs.length === 0 && (
+            {filteredJobs?.length === 0 && (
               <div className="text-center py-12">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -222,7 +237,7 @@ const JobsListingPage = () => {
               </div>
             )}
 
-            {filteredJobs.length > 0 && (
+            {filteredJobs?.length > 0 && (
               <div className="mt-8 flex justify-center">
                 <button className="inline-flex items-center px-4 py-2 border border-gray-300 bg-white rounded-md font-medium text-gray-700 hover:bg-gray-50">
                   View all

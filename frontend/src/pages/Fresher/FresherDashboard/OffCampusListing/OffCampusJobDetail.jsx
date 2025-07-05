@@ -40,12 +40,17 @@ function OffCampusJobDetail() {
 
   const handleApply = async () => {
     try {
-      const response = await ApplyForOppurtunity('67ff4617aad277639987460d', jobId);
+      // Here you would implement the application logic
+      const response = await ApplyForOppurtunity(jobId, jobDetail.jobType);
       if (response.success === 'true') alert("Applied");
-    } catch (error) {
-      console.log("Error: ", error);
+
+      // Example: navigate to application form
+      // navigate(`/apply/${jobId}`);
+    } catch (err) {
+      console.error('Error applying for job:', err);
+      alert('Failed to submit application. Please try again.');
     }
-  }
+  };
 
   if (isLoading) {
     return (

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
- import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
+import { fetchJobDetails, fetchSimilarJobs } from '../../../../constants/JobListing'
 import JobCard from '@/components/Student/StudentDashboard/JobListing/JobCard';
+import { ApplyForOppurtunity } from '@/lib/User_AxiosInstance';
 
 const FJobDetails = () => {
   const { jobId } = useParams();
@@ -15,11 +16,11 @@ const FJobDetails = () => {
     const loadJobDetails = async () => {
       try {
         setIsLoading(true);
-        
+
         // Fetch job details
         const details = await fetchJobDetails(jobId);
         setJobDetails(details);
-        
+
         // Fetch similar jobs
         const similar = await fetchSimilarJobs(jobId);
         setSimilarJobs(similar);
@@ -37,14 +38,11 @@ const FJobDetails = () => {
   const handleApply = async () => {
     try {
       // Here you would implement the application logic
-      // This could be a redirect to an application form or a direct API call
-      console.log('Applying for job:', jobId);
-      
+      const response = await ApplyForOppurtunity(jobId, jobDetails.jobType);
+      if (response.success === 'true') alert("Applied");
+
       // Example: navigate to application form
       // navigate(`/apply/${jobId}`);
-      
-      // For now, just show an alert
-      alert('Application submitted successfully!');
     } catch (err) {
       console.error('Error applying for job:', err);
       alert('Failed to submit application. Please try again.');
@@ -75,7 +73,7 @@ const FJobDetails = () => {
       <div className="flex justify-center items-center h-screen">
         <div className="text-red-500 text-center p-4">
           <p className="text-xl font-semibold">{error || "Job not found"}</p>
-          <button 
+          <button
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
             onClick={() => navigate('/fresher-dashboard/job-listing')}
           >
@@ -110,13 +108,13 @@ const FJobDetails = () => {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-            <button 
+            <button
               onClick={handleSave}
               className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded shadow"
             >
               Save
             </button>
-            <button 
+            <button
               onClick={handleApply}
               className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded shadow"
             >
@@ -135,7 +133,7 @@ const FJobDetails = () => {
             <h3 className="font-medium mb-2">What you'll do:</h3>
             <p className="text-gray-700">{jobDetails.responsibilities}</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
             <div>
               <p className="text-sm font-medium text-gray-500">Role:</p>
@@ -196,7 +194,7 @@ const FJobDetails = () => {
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-3">About company</h2>
           <p className="text-gray-700 mb-4">{jobDetails.aboutCompany}</p>
-          
+
           <h3 className="font-medium mb-2">Company Info</h3>
           <p className="text-gray-700">
             <span className="font-medium">Address:</span> {jobDetails.companyAddress}
@@ -238,7 +236,7 @@ const FJobDetails = () => {
             <JobCard key={job.id} job={job} />
           ))}
         </div>
-        
+
         <div className="flex justify-end mt-4">
           <button className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
             View all

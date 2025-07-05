@@ -39,17 +39,11 @@ const JobDetails = () => {
   const handleApply = async () => {
     try {
       // Here you would implement the application logic
-      // This could be a redirect to an application form or a direct API call
-      // console.log('Applying for job:', jobId);
-
-      const response=await ApplyForOppurtunity('67ff4630aad2776399874611',jobId);
-      console.log("Application: ",response);
+      const response = await ApplyForOppurtunity(jobId, jobDetails.jobType);
+      if (response.success === 'true') alert("Applied");
 
       // Example: navigate to application form
       // navigate(`/apply/${jobId}`);
-
-      // For now, just show an alert
-      // alert('Application submitted successfully!');
     } catch (err) {
       console.error('Error applying for job:', err);
       alert('Failed to submit application. Please try again.');

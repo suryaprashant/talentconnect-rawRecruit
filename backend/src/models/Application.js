@@ -13,6 +13,10 @@ const ApplicationSchema = new mongoose.Schema(
             // ref: "Job",
             required: true
         },
+        jobType:{ //to be used in tablejoin
+            type:String,
+            required:true,
+        },
         statusHistory: [
             {
                 status: {

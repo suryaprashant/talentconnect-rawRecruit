@@ -9,3 +9,12 @@ export const submitRegistration = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const getAllRegistrations = async (req, res) => {
+  try {
+    const response = await Registration.find().lean();
+    res.status(200).json({ success: true, data: response });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}

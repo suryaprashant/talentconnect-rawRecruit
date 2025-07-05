@@ -4,6 +4,18 @@ import Application from "../models/Application.js";
 // import '../models/Student.js';
 import Job from '../models/Job.js';
 
+export async function checkExitence(jobId, userId) {
+    try {
+        const response = await Application.find({ user: userId, job: jobId });
+        // console.log("res: ", response);
+        if (response?.length > 0) return false;
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+    return true;
+}
+
 export async function fetchApplicationService(query, userType) {
     try {
         let applicationData;
@@ -30,27 +42,27 @@ export async function fetchApplicationService(query, userType) {
                     }
                 },
                 {
-                    $lookup:{
-                        from:'companyoverviews',
-                        localField:'jobDetails.companyPosted',
-                        foreignField:'_id',
-                        as:'companyDetails'
+                    $lookup: {
+                        from: 'companyoverviews',
+                        localField: 'jobDetails.companyPosted',
+                        foreignField: '_id',
+                        as: 'companyDetails'
                     }
                 },
                 {
-                    $project:{
-                        job:1,
-                        statusHistory:1,
-                        currentStatus:1,
-                        createdAt:1,
-                        "jobDetails.title":1,
-                        "jobDetails._id":1,
-                        "jobDetails.description":1,
-                        "jobDetails.location":1,
-                        "jobDetails.workMode":1,
-                        "jobDetails.yearsOfExperience":1,
-                        "jobDetails.yearsOfExperience":1,
-                        "companyDetails.companyName":1,
+                    $project: {
+                        job: 1,
+                        statusHistory: 1,
+                        currentStatus: 1,
+                        createdAt: 1,
+                        "jobDetails.title": 1,
+                        "jobDetails._id": 1,
+                        "jobDetails.description": 1,
+                        "jobDetails.location": 1,
+                        "jobDetails.workMode": 1,
+                        "jobDetails.yearsOfExperience": 1,
+                        "jobDetails.yearsOfExperience": 1,
+                        "companyDetails.companyName": 1,
                     }
                 }
                 // {
@@ -73,12 +85,13 @@ export async function fetchApplicationService(query, userType) {
     }
 }
 
-export async function createApplicationService(userId, jobId) {
+export async function createApplicationService(userId, jobId, jobType) {
 
     try {
         const newApplication = new Application({
             user: userId,
             job: jobId,
+            jobType: jobType,
             statusHistory: [{ status: "Applied" }],
             currentStatus: "Applied"
         });

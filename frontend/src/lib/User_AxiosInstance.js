@@ -52,8 +52,8 @@ export function getHackathonDetail(hackathonId) {
 }
 
 // application
-export function ApplyForOppurtunity(userId, jobId) {
-  return axiosClient.post(`/application/apply`, { userId: userId, jobId: jobId })
+export function ApplyForOppurtunity(jobId, jobType) {
+  return axiosClient.post(`/application/apply`, { jobId: jobId, jobType: jobType })
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 
