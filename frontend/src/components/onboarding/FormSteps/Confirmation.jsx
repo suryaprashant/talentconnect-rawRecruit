@@ -6,10 +6,10 @@
 //   const [agreed, setAgreed] = useState(false);
 //   const navigate = useNavigate();
 //   const { selectedRole, setSelectedRole } = useRole();
-  
+
 //   // Ensure we have the role in component state for backup
 //   const [roleBackup, setRoleBackup] = useState(null);
-  
+
 //   // Store backup of the role when component mounts or role changes
 //   useEffect(() => {
 //     if (selectedRole) {
@@ -32,28 +32,28 @@
 //   const handleSubmit = (e) => {
 //     // Prevent default form submission behavior
 //     if (e) e.preventDefault();
-    
+
 //     // Store current state before doing anything
 //     const storedRole = localStorage.getItem('selectedRole') || roleBackup;
 //     const storedFormData = localStorage.getItem('formData');
-    
+
 //     // Call the onSubmit prop if it exists
 //     if (onSubmit) {
 //       onSubmit();
 //     }
-    
+
 //     // Ensure the role still exists in localStorage - restore if needed
 //     if (!localStorage.getItem('selectedRole') && storedRole) {
 //       localStorage.setItem('selectedRole', storedRole);
 //       // Also update context
 //       setSelectedRole(storedRole);
 //     }
-    
+
 //     // Ensure form data still exists - restore if needed
 //     if (!localStorage.getItem('formData') && storedFormData) {
 //       localStorage.setItem('formData', storedFormData);
 //     }
-    
+
 //     // Short timeout to ensure localStorage updates before navigation
 //     setTimeout(() => {
 //       // Set the role one more time right before navigating
@@ -147,17 +147,17 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
   };
 
   const handleSubmit = async (e) => {
-     if (e) e.preventDefault();
+    if (e) e.preventDefault();
 
     if (!agreed) {
       alert("Please agree to the Terms & Conditions and Privacy Policy.");
       return;
     }
-  
+
     const dataToSend = new FormData();
     const tempFormData = { ...formData };
     delete tempFormData.profileType;
-  
+
     for (const key in tempFormData) {
       const value = tempFormData[key];
       if (Array.isArray(value)) {
@@ -174,23 +174,23 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
         dataToSend.append(key, value.toString());
       }
     }
-  
+
     if (selectedRole) {
       dataToSend.append('profileType', selectedRole);
     } else {
       console.warn("selectedRole is null, but profileType is a required field. This might cause a schema validation error.");
       alert("Profile type not selected. Please go back and select a profile type.");
       return; // Prevent submission if role is missing
-  }
+    }
 
-  console.log("Submitting FormData to backend via Axios. Inspect network tab for payload details.");
+    console.log("Submitting FormData to backend via Axios. Inspect network tab for payload details.");
 
 
     console.log("Submitting FormData to backend via Axios. Inspect network tab for payload details.");
 
     try {
-      const response = await axios.post("http://localhost:5000/api/onboarding", dataToSend, {
-         withCredentials: true, // Ensure cookies are sent with the request
+      const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/onboarding`, dataToSend, {
+        withCredentials: true, // Ensure cookies are sent with the request
       });
       console.log("Response from backend:", response.data);
       // Clear form data and role context after successful submission                 
@@ -198,7 +198,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
       //   onSubmit();
       // }
       alert('Candidate profile created successfully!');
-      
+
       const userTypeFromDb = response.data.profileType || response.data.userType;
 
       // Clear form data and role context AFTER successful submission and before navigation
@@ -290,9 +290,8 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
           <button
             onClick={handleSubmit}
             disabled={!agreed}
-            className={`self-stretch gap-2 text-white px-6 border rounded-md py-3 max-md:px-5 cursor-pointer ${
-              agreed ? "bg-black" : "bg-gray-400"
-            }`}
+            className={`self-stretch gap-2 text-white px-6 border rounded-md py-3 max-md:px-5 cursor-pointer ${agreed ? "bg-black" : "bg-gray-400"
+              }`}
             type="button"
           >
             Get Started
