@@ -235,9 +235,11 @@ import basicdetails from "./Routes/onboarding_basicdetails.js";
 import resume from "./Routes/onboarding_resume.js";
 import CollegeApplication from './Routes/CollegeApplication.route.js';
 import jobinterest from "./Routes/onboarding_jobinterests.js";
-
+import student_onboardingroutes from "./Routes/student_onboardingroutes.js";
 // Core API Mounts
 app.use("/api/auth", authRoutes);
+app.use("/api", student_onboardingroutes);
+
 app.use("/api/upload", uploadRoutes);
 app.use("/api/student-profile", studentProfileRoutes);
 app.use("/api/fresher-profile", fresherProfileRoutes);

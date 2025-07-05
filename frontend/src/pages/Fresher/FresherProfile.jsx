@@ -5,7 +5,7 @@ import Badge from '@/components/ui/Badge';
 import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown } from 'react-icons/fi';
 import axios from 'axios';
 
-function Profile() {
+function Fresher_Profile() {
   const [activeTab, setActiveTab] = useState('overview');
   const [switchToPro, setSwitchToPro] = useState(false);
   const [isProfileEditing, setIsProfileEditing] = useState(false);
@@ -1727,4 +1727,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default Fresher_Profile;

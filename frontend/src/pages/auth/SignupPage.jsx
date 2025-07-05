@@ -159,6 +159,7 @@ function SignupPage() {
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`; // Assuming token is available here
 
         const onboardingRoutes = {
+          candidate: '/student-form',
           student: '/student-form',
           company: '/company-form',
           college: '/college-onboarding',
