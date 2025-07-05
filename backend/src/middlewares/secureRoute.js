@@ -24,7 +24,7 @@ const secureRoute = async (req, res, next) => {
     }
 
     req.user = user;
-    console.log(req.user);
+    // console.log(req.user);
     // console.log("user h ye,, ",req.user," ",decoded," ",token);
     next();
   } catch (error) {

@@ -12,9 +12,9 @@ export async function createApplication(req, res) {
         if (await checkExitence(jobId, userId) === false) return res.status(403).json({ msg: "Already Applied" });
 
         // check for the validity of user and job ids... will remove with middlewares authentication
-        const user = await checkStudentService(userId);
+        // const user = await checkStudentService(userId);
         const job = await checkOpportunityService(jobId);
-        if (!user || !job) {
+        if (!job) {
             return res.status(404).json({ msg: "User or Job not found!" });
         }
 
