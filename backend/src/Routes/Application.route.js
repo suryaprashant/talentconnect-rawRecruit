@@ -6,7 +6,7 @@ const router = express.Router();
 
 // api '.../application'
 
-router.get('/', getUserApplication);
+router.get('/getall', getUserApplication);
 router.post('/apply',secureRoute, createApplication);
 
 // shortlisting

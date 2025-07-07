@@ -33,6 +33,8 @@ export default function OnCampusHiring() {
   try {
     const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/oncampus`, {
   method: "POST",
+  withCredentials: true, // Ensure cookies are sent with the request
+  credentials: "include", // Include credentials for cross-origin requests
   headers: {
     "Content-Type": "application/json",
   },

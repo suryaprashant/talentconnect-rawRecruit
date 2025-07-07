@@ -157,7 +157,7 @@ import PostReferralJobPage from "./pages/Professional/ServiceRequest/postreferra
 import TotalApplicantsPage from "./pages/Professional/ServiceRequest/TotalApplicantsPage";
 import OffCampusApplicant from "./pages/Professional/ServiceRequest/OffcampusApplicant";
 import ProfDashboard from "./pages/Professional/Dashboard";
-import ProfProfile from "./pages/Professional/Profile";
+import ProfProfile from "./pages/Professional/ProfessionalProfile";
 import ProfessionalJobListings from "./pages/Professional/Dashboard/JobListing/JobListings";
 import ProfessionalJobDetails from "./pages/Professional/Dashboard/JobListing/JobDetails";
 import ProfessionalHackathon from "./pages/Professional/Dashboard/Hackathon/Hackthon";

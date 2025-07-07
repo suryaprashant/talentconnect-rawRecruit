@@ -120,6 +120,7 @@ export default function OffCampusHiringForm() {
 
   const handleSubmit = () => {
     console.log('Form data submitted:', formData);
+    alert('Form submitted successfully!');
     // Here you would typically send this data to your backend
   };
 
