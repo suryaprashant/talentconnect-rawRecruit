@@ -11,6 +11,7 @@ axiosClient.defaults.headers = {
 
 // default 10sec
 axiosClient.defaults.timeout = 10000;
+axiosClient.defaults.withCredentials = true;
 
 
 // student dashboard
