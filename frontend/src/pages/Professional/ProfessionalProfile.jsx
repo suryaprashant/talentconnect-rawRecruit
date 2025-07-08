@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import React from 'react';
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import Badge from '@/components/ui/Badge';
@@ -6,9 +7,298 @@ import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown } f
 import axios from 'axios';
 import { Plus, Upload, X, Briefcase, Award, Globe, Users } from 'lucide-react';
 
+// It will only re-render if its props (experience, onUpdate, etc.) have actually changed.
+const ExperienceCard = React.memo(({ experience, type, onUpdate, onRemove, canRemove, isProfileEditing }) => {
+  const displayFieldStyle = "w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-900 min-h-[40px] flex items-center";
+
+  // This handler now directly calls the memoized onUpdate function from the parent.
+  const handleInputChange = (field, value) => {
+    onUpdate(type, experience.id, field, value);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      onUpdate(type, experience.id, 'certificate', file);
+    }
+  };
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+      {canRemove && isProfileEditing && (
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => onRemove(type, experience.id)}
+            className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+      )}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            {type === 'leadership' ? 'Organization' : 'Company/Organization'}
+          </label>
+          {isProfileEditing ? (
+            <input
+              type="text"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder={`Enter ${type === 'leadership' ? 'organization' : 'company'} name`}
+              value={(type === 'leadership' ? experience.organization : experience.company) || ''}
+              onChange={(e) => handleInputChange(
+                type === 'leadership' ? 'organization' : 'company', 
+                e.target.value
+              )}
+            />
+          ) : (
+            <div className={displayFieldStyle}>
+              {(type === 'leadership' ? experience.organization : experience.company) || "N/A"}
+            </div>
+          )}
+        </div>
+        
+       <div>
+  <label className="block text-sm font-semibold text-gray-700 mb-2">
+    {type === 'leadership' ? 'Role/Position' : 'Job Role'}
+  </label>
+  {isProfileEditing ? (
+    <input
+      type="text"
+      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+      placeholder={`Enter ${type === 'leadership' ? 'role' : 'job role'}`}
+      value={experience.role || ''}
+      onChange={(e) => handleInputChange(
+        'role', // Always use 'role' for the field name
+        e.target.value
+      )}
+    />
+  ) : (
+    <div className={displayFieldStyle}>
+      {experience.role || "N/A"}
+    </div>
+  )}
+</div>
+        
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Start Date
+          </label>
+          {isProfileEditing ? (
+            <input
+              type="date"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              value={experience.startDate || ''}
+              onChange={(e) => handleInputChange('startDate', e.target.value)}
+            />
+          ) : (
+            <div className={displayFieldStyle}>
+              {experience.startDate || "N/A"}
+            </div>
+          )}
+        </div>
+        
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            End Date
+          </label>
+          {isProfileEditing ? (
+            <input
+              type="date"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              value={experience.endDate || ''}
+              onChange={(e) => handleInputChange('endDate', e.target.value)}
+            />
+          ) : (
+            <div className={displayFieldStyle}>
+              {experience.endDate || "N/A"}
+            </div>
+          )}
+        </div>
+        
+        <div className="md:col-span-2">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Description
+          </label>
+          {isProfileEditing ? (
+            <textarea
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+              placeholder="Describe your role, responsibilities, and achievements..."
+              rows="4"
+              value={experience.description || ''}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+            />
+          ) : (
+            <div className={`${displayFieldStyle} items-start min-h-[100px]`}>
+              {experience.description || "N/A"}
+            </div>
+          )}
+        </div>
+        
+        <div className="md:col-span-2">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Certificate (Optional)
+          </label>
+          {isProfileEditing ? (
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+              <div className="text-sm text-gray-600">
+                <label className="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
+                  Upload a file
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    onChange={handleFileChange}
+                  />
+                </label>
+                <span className="ml-1">or drag and drop</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">PDF, DOC, DOCX, JPG, PNG up to 10MB</p>
+              {experience.certificate && (
+                <p className="text-sm text-green-600 mt-2 font-medium">
+                  File uploaded: {typeof experience.certificate === 'string' ? experience.certificate : experience.certificate.name}
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className={displayFieldStyle}>
+              {experience.experienceCertificateUrl || experience.certificate ? (
+                <a href={experience.experienceCertificateUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline cursor-pointer">
+                  View Certificate
+                </a>
+              ) : (
+                "No certificate uploaded"
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+// Same for AwardCard: move definition outside and wrap in React.memo.
+const AwardCard = React.memo(({ award, onUpdate, onRemove, canRemove, isProfileEditing }) => {
+    const displayFieldStyle = "w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-900 min-h-[40px] flex items-center";
+
+    return (
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+            {canRemove && isProfileEditing && (
+                <div className="flex justify-end mb-4">
+                    <button
+                        onClick={() => onRemove('award', award.id)}
+                        className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                    >
+                        <X size={20} />
+                    </button>
+                </div>
+            )}
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Award Title
+                    </label>
+                    {isProfileEditing ? (
+                        <input
+                            type="text"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            placeholder="Enter award title"
+                            value={award.title || ''}
+                            onChange={(e) => onUpdate('award', award.id, 'title', e.target.value)}
+                        />
+                    ) : (
+                        <div className={displayFieldStyle}>
+                            {award.title || "N/A"}
+                        </div>
+                    )}
+                </div>
+                
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Awarding Organization
+                    </label>
+                    {isProfileEditing ? (
+                        <input
+                            type="text"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            placeholder="Enter organization name"
+                            value={award.organization || ''}
+                            onChange={(e) => onUpdate('award', award.id, 'organization', e.target.value)}
+                        />
+                    ) : (
+                        <div className={displayFieldStyle}>
+                            {award.organization || "N/A"}
+                        </div>
+                    )}
+                </div>
+                
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Start Date
+                    </label>
+                    {isProfileEditing ? (
+                        <input
+                            type="date"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            value={award.startDate || ''}
+                            onChange={(e) => onUpdate('award', award.id, 'startDate', e.target.value)}
+                        />
+                    ) : (
+                        <div className={displayFieldStyle}>
+                            {award.startDate || "N/A"}
+                        </div>
+                    )}
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        End Date
+                    </label>
+                    {isProfileEditing ? (
+                        <input
+                            type="date"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            value={award.endDate || ''}
+                            onChange={(e) => onUpdate('award', award.id, 'endDate', e.target.value)}
+                        />
+                    ) : (
+                        <div className={displayFieldStyle}>
+                            {award.endDate || "N/A"}
+                        </div>
+                    )}
+                </div>
+                
+                <div className="md:col-span-2">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Description
+                    </label>
+                    {isProfileEditing ? (
+                        <textarea
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                            placeholder="Describe the award and your achievement..."
+                            rows="3"
+                            value={award.description || ''}
+                            onChange={(e) => onUpdate('award', award.id, 'description', e.target.value)}
+                        />
+                    ) : (
+                        <div className={`${displayFieldStyle} items-start min-h-[80px]`}>
+                            {award.description || "N/A"}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+});
+
+
+
+
 function ProfProfile() {
   const [activeTab, setActiveTab] = useState('overview');
-  const [switchToPro, setSwitchToPro] = useState(false);
+
   const [isProfileEditing, setIsProfileEditing] = useState(false);
   const [hasOnboardingData, setHasOnboardingData] = useState(true); // State to track if onboarding data exists
 
@@ -42,6 +332,10 @@ function ProfProfile() {
     project: '',
     resume: '',
     referralSource: '',
+    internationalExperiences: [],
+    leadershipExperiences: [],
+    awards: [],
+
   });
 
   // New states for dynamic experience sections
@@ -49,7 +343,7 @@ function ProfProfile() {
     {
       id: 1,
       company: '',
-      jobRole: '',
+      role: '',
       startDate: '',
       endDate: '',
       description: '',
@@ -86,10 +380,16 @@ function ProfProfile() {
       id: 1,
       title: '',
       organization: '',
-      date: '',
+     startDate: '',
+      endDate: '',
       description: ''
     }
   ]);
+
+  const predefinedCurrencies = [
+  "INR", "USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY", "SEK", 
+  "NZD", "MXN", "SGD", "HKD", "NOK", "KRW", "TRY", "RUB", "BRL", "ZAR"
+];
 
 
   // New states to hold File objects for upload
@@ -123,6 +423,7 @@ function ProfProfile() {
         const token = localStorage.getItem('token');
 
         const response = await axios.get(`${backendUrl}/api/onboarding/me`, {
+          withCredentials: true,
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -152,6 +453,13 @@ function ProfProfile() {
             industry: fetchedData.industry || prevData.industry,
             jobRoles: fetchedData.jobRoles || prevData.jobRoles,
             locations: fetchedData.locations || prevData.locations,
+            expectedSalaryCurrency: fetchedData.expectedSalaryCurrency || prevData.expectedSalaryCurrency,
+            expectedSalaryAmount: fetchedData.expectedSalaryAmount || prevData.expectedSalaryAmount,
+            currentSalaryCurrency: fetchedData.currentSalaryCurrency || prevData.currentSalaryCurrency,
+
+            currentSalaryAmount: fetchedData.currentSalaryAmount || prevData.currentSalaryAmount,
+
+
             lookingFor: fetchedData.lookingFor || prevData.lookingFor,
             employmentType: fetchedData.employmentType || prevData.employmentType,
             skills: fetchedData.skills || prevData.skills,
@@ -162,16 +470,32 @@ function ProfProfile() {
                             ? fetchedData.certifications.split('; ').map(name => ({ name, url: '' }))
                             : [],
             referralSource: fetchedData.referralSource || prevData.referralSource,
-            profileImageUrl: profileImageUrl,
-            backgroundImageUrl: backgroundImageUrl,
+            profileImageUrl: profileImageUrl || prevData.profileImageUrl,
+            backgroundImageUrl: backgroundImageUrl || prevData.backgroundImageUrl, 
             resumeUrl: resumeUrl,
             degreeCertificateUrl: degreeCertificateUrl,
+            project: fetchedData.project || prevData.project,
             projectUrl: projectUrl,
             experiences: fetchedData.experiences ? fetchedData.experiences.map(exp => ({
               ...exp,
               experienceCertificateUrl: exp.experienceCertificate || ''
+
             })) : []
+            
           }));
+            // Populate dynamic sections from fetched data
+          if (fetchedData.experiences && fetchedData.experiences.length > 0) {
+            setWorkExperiences(fetchedData.experiences.map(exp => ({ ...exp, id: exp._id || Date.now() })));
+          }
+          if (fetchedData.internationalExperience && fetchedData.internationalExperience.length > 0) {
+            setInternationalExperiences(fetchedData.internationalExperience.map(exp => ({ ...exp, id: exp._id || Date.now() })));
+          }
+          if (fetchedData.leadership && fetchedData.leadership.length > 0) {
+            setLeadershipExperiences(fetchedData.leadership.map(exp => ({ ...exp, id: exp._id || Date.now() })));
+          }
+          if (fetchedData.awards && fetchedData.awards.length > 0) {
+            setAwards(fetchedData.awards.map(award => ({ ...award, id: award._id || Date.now() })));
+          }
         }
         setLoading(false);
       } catch (err) {
@@ -206,95 +530,62 @@ function ProfProfile() {
     };
   }, []);
 
-  // Functions to manage new experience sections
-  const addExperience = (type) => {
-    const newId = Date.now();
-    const newExperience = {
-      id: newId,
-      company: '',
-      jobRole: '',
-      startDate: '',
-      endDate: '',
-      description: '',
-      certificate: null
-    };
 
-    const newLeadershipExperience = {
-      id: newId,
-      organization: '',
-      role: '',
-      startDate: '',
-      endDate: '',
-      description: '',
-      certificate: null
-    };
+const addExperience = useCallback((type) => {
+  const newId = Date.now();
+  switch (type) {
+    case 'work':
+      setWorkExperiences(prev => [...prev, { id: newId, company: '', jobRole: '', startDate: '', endDate: '', description: '', certificate: null }]);
+      break;
+    case 'international':
+      setInternationalExperiences(prev => [...prev, { id: newId, company: '', jobRole: '', startDate: '', endDate: '', description: '', certificate: null }]);
+      break;
+    case 'leadership':
+      setLeadershipExperiences(prev => [...prev, { id: newId, organization: '', role: '', startDate: '', endDate: '', description: '', certificate: null }]);
+      break;
+    case 'award':
+      setAwards(prev => [...prev, { id: newId, title: '', organization: '', startDate: '', endDate: '', description: '' }]);
+      break;
+    default: break;
+  }
+}, []);
 
-    const newAward = {
-      id: newId,
-      title: '',
-      organization: '',
-      date: '',
-      description: ''
-    };
+const removeExperience = useCallback((type, id) => {
+  switch (type) {
+    case 'work':
+      setWorkExperiences(prev => prev.filter(exp => exp.id !== id));
+      break;
+    case 'international':
+      setInternationalExperiences(prev => prev.filter(exp => exp.id !== id));
+      break;
+    case 'leadership':
+      setLeadershipExperiences(prev => prev.filter(exp => exp.id !== id));
+      break;
+    case 'award':
+      setAwards(prev => prev.filter(award => award.id !== id));
+      break;
+    default: break;
+  }
+}, []);
 
-    switch (type) {
-      case 'work':
-        setWorkExperiences([...workExperiences, newExperience]);
-        break;
-      case 'international':
-        setInternationalExperiences([...internationalExperiences, newExperience]);
-        break;
-      case 'leadership':
-        setLeadershipExperiences([...leadershipExperiences, newLeadershipExperience]);
-        break;
-      case 'award':
-        setAwards([...awards, newAward]);
-        break;
-    }
-  };
-
-  const removeExperience = (type, id) => {
-    switch (type) {
-      case 'work':
-        setWorkExperiences(workExperiences.filter(exp => exp.id !== id));
-        break;
-      case 'international':
-        setInternationalExperiences(internationalExperiences.filter(exp => exp.id !== id));
-        break;
-      case 'leadership':
-        setLeadershipExperiences(leadershipExperiences.filter(exp => exp.id !== id));
-        break;
-      case 'award':
-        setAwards(awards.filter(award => award.id !== id));
-        break;
-    }
-  };
-
-  const updateExperience = (type, id, field, value) => {
-    switch (type) {
-      case 'work':
-        setWorkExperiences(workExperiences.map(exp =>
-          exp.id === id ? { ...exp, [field]: value } : exp
-        ));
-        break;
-      case 'international':
-        setInternationalExperiences(internationalExperiences.map(exp =>
-          exp.id === id ? { ...exp, [field]: value } : exp
-        ));
-        break;
-      case 'leadership':
-        setLeadershipExperiences(leadershipExperiences.map(exp =>
-          exp.id === id ? { ...exp, [field]: value } : exp
-        ));
-        break;
-      case 'award':
-        setAwards(awards.map(award =>
-          award.id === id ? { ...award, [field]: value } : award
-        ));
-        break;
-    }
-  };
-
+const updateExperience = useCallback((type, id, field, value) => {
+  const updater = (prev) => prev.map(item => item.id === id ? { ...item, [field]: value } : item);
+  switch (type) {
+    case 'work':
+      setWorkExperiences(updater);
+      break;
+    case 'international':
+      setInternationalExperiences(updater);
+      break;
+    case 'leadership':
+      setLeadershipExperiences(updater);
+      break;
+    case 'award':
+      setAwards(updater);
+      break;
+    default: break;
+  }
+}, []);
 
   const handleProfileDataChange = (field, value) => {
     setProfileData(prev => ({ ...prev, [field]: value }));
@@ -321,149 +612,164 @@ function ProfProfile() {
     handleProfileDataChange('experiences', profileData.experiences.filter((_, index) => index !== indexToRemove));
   };
 
- const handleFileChange = (event, fileType, index = null) => {
-  const file = event.target.files[0];
-  if (!file) return;
 
-  if (fileType === 'profileImage') {
-    setProfileImageFile(file);
-    const url = URL.createObjectURL(file);
-    setProfileData(prev => ({ ...prev, profileImageUrl: url }));
-  } else if (fileType === 'backgroundImage') {
-    setBackgroundImageFile(file);
-    const url = URL.createObjectURL(file);
-    setProfileData(prev => ({ ...prev, backgroundImageUrl: url }));
-  } else if (fileType === 'resume') {
-    setResumeFile(file);
-    setProfileData(prev => ({ ...prev, resumeUrl: file.name }));
-  } else if (fileType === 'degreeCertificate') {
-    setDegreeCertificateFile(file);
-    setProfileData(prev => ({ ...prev, degreeCertificateUrl: URL.createObjectURL(file) }));
-  } else if (fileType === 'project') {
-    setProjectFile(file);
-    setProfileData(prev => ({ ...prev, projectUrl: URL.createObjectURL(file) }));
-  } else if (fileType === 'experienceCertificate' && index !== null) {
-    const updatedExperiences = [...profileData.experiences];
-    updatedExperiences[index].experienceCertificateFile = file;
-    updatedExperiences[index].experienceCertificateUrl = URL.createObjectURL(file);
-    setProfileData(prev => ({ ...prev, experiences: updatedExperiences }));
-  }
-};
+  const handleFileChange = (event, fileType) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-  const handleProfileImageClick = () => {
-    document.getElementById('profileImageUpload').click();
+    const fileUpdaters = {
+      profileImage: () => { setProfileImageFile(file); setProfileData(prev => ({ ...prev, profileImageUrl: URL.createObjectURL(file) })); },
+      backgroundImage: () => { setBackgroundImageFile(file); setProfileData(prev => ({ ...prev, backgroundImageUrl: URL.createObjectURL(file) })); },
+      resume: () => { setResumeFile(file); setProfileData(prev => ({ ...prev, resumeUrl: file.name })); },
+      degreeCertificate: () => { setDegreeCertificateFile(file); setProfileData(prev => ({ ...prev, degreeCertificateUrl: URL.createObjectURL(file) })); },
+      project: () => { setProjectFile(file); setProfileData(prev => ({ ...prev, projectUrl: URL.createObjectURL(file) })); },
+    };
+    
+    fileUpdaters[fileType]?.();
   };
 
-  const handleBackgroundImageClick = () => {
-    document.getElementById('backgroundImageUpload').click();
-  };
-
-  const handleResumeClick = () => {
-    document.getElementById('resume-upload').click();
-  };
+  const handleProfileImageClick = () => document.getElementById('profileImageUpload').click();
+  const handleBackgroundImageClick = () => document.getElementById('backgroundImageUpload').click();
+  const handleResumeClick = () => document.getElementById('resume-upload').click();
 
   const handleCustomMultiSelectToggle = (field, item) => {
     setProfileData(prev => {
       const currentItems = prev[field] || [];
-      if (currentItems.includes(item)) {
-        return { ...prev, [field]: currentItems.filter(i => i !== item) };
-      } else {
-        return { ...prev, [field]: [...currentItems, item] };
-      }
+      const newItems = currentItems.includes(item) ? currentItems.filter(i => i !== item) : [...currentItems, item];
+      return { ...prev, [field]: newItems };
     });
   };
 
-  const handleSaveChanges = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const backendUrl = import.meta.env.VITE_Backend_URL;
-      const token = localStorage.getItem('token');
-      const formData = new FormData();
+const handleSaveChanges = async () => {
+  setLoading(true);
+  setError(null);
+  try {
+    const backendUrl = import.meta.env.VITE_Backend_URL;
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
 
-      for (const key in profileData) {
-        if (['profileImageUrl', 'backgroundImageUrl', 'resumeUrl', 'degreeCertificateUrl', 'projectUrl', 'about', '_id'].includes(key)) {
-          continue;
-        }
-        if (key === 'experiences') {
-          formData.append(key, JSON.stringify(profileData[key].map(exp => {
-            const { experienceCertificateUrl, experienceCertificateFile, ...rest } = exp;
-            return rest;
-          })));
-        } else if (Array.isArray(profileData[key]) && key !== 'certifications') {
-          formData.append(key, profileData[key].join(','));
-        } else if (key === 'certifications') {
-          if (Array.isArray(profileData.certifications)) {
-            formData.append(key, profileData.certifications.map(cert => cert.name).join('; '));
+  
+    for (const key in profileData) {
+      if (!['profileImageUrl', 'backgroundImageUrl', 'resumeUrl', 'degreeCertificateUrl', 'projectUrl', '_id', 'experiences', 'internationalExperience', 'leadership', 'awards'].includes(key)) {
+        const value = profileData[key];
+        if (Array.isArray(value)) {
+        
+          if (key === 'certifications') {
+            formData.append(key, value.map(cert => cert.name).join('; '));
           } else {
-            formData.append(key, '');
+            // General handling for other arrays joined by ','
+            formData.append(key, value.join(','));
           }
         } else {
-          formData.append(key, profileData[key]);
+          formData.append(key, value);
         }
       }
-
-      if (profileImageFile) formData.append('profileImage', profileImageFile);
-      if (backgroundImageFile) formData.append('backgroundImage', backgroundImageFile);
-      if (resumeFile) formData.append('resume', resumeFile);
-      if (degreeCertificateFile) formData.append('degreeCertificate', degreeCertificateFile);
-      if (projectFile) formData.append('project', projectFile);
-
-      profileData.experiences.forEach((exp, index) => {
-        if (exp.experienceCertificateFile) {
-          formData.append('experienceCertificate', exp.experienceCertificateFile);
-        }
-      });
-      
-      let endpoint = `${backendUrl}/api/onboarding/update`;
-      const axiosConfig = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`
-        }
-      };
-
-      const response = await axios.put(endpoint, formData, axiosConfig);
-      console.log('Form updated/submitted successfully:', response.data);
-      
-      if (response.data && response.data.data) {
-        setProfileData(prev => ({
-          ...prev,
-          _id: response.data.data._id,
-          ...response.data.data,
-          profileImageUrl: response.data.data.profileImage || prev.profileImageUrl,
-          backgroundImageUrl: response.data.data.backgroundImage || prev.backgroundImageUrl,
-          resumeUrl: response.data.data.resume || prev.resumeUrl,
-          degreeCertificateUrl: response.data.data.degreeCertificate || prev.degreeCertificateUrl,
-          projectUrl: response.data.data.project || prev.projectUrl,
-          certifications: (response.data.data.certifications && typeof response.data.data.certifications === 'string' && response.data.data.certifications.length > 0)
-                          ? response.data.data.certifications.split('; ').map(name => ({ name, url: '' }))
-                          : [],
-          experiences: response.data.data.experiences ? response.data.data.experiences.map(exp => ({
-            ...exp,
-            experienceCertificateUrl: exp.experienceCertificate || ''
-          })) : []
-        }));
-      }
-
-      setIsProfileEditing(false);
-      setHasOnboardingData(true); 
-
-      setProfileImageFile(null);
-      setBackgroundImageFile(null);
-      setResumeFile(null);
-      setDegreeCertificateFile(null);
-      setProjectFile(null);
-
-      setLoading(false);
-
-    } catch (err) {
-      console.error('Error saving profile changes:', err.response ? err.response.data : err.message);
-      setError(`Failed to save changes: ${err.response?.data?.details || err.message}`);
-      setLoading(false);
     }
-  };
 
+    const cleanExperiences = (exps) => exps.map(({ id, certificate, certificateUrl, experienceCertificateFile, ...rest }) => rest);
+    
+    formData.append('experiences', JSON.stringify(cleanExperiences(workExperiences)));
+    formData.append('internationalExperience', JSON.stringify(cleanExperiences(internationalExperiences)));
+    formData.append('leadership', JSON.stringify(cleanExperiences(leadershipExperiences)));
+    formData.append('awards', JSON.stringify(cleanExperiences(awards)));
+
+
+    // 3. Append main file inputs
+    if (profileImageFile) formData.append('profileImage', profileImageFile);
+    if (backgroundImageFile) formData.append('backgroundImage', backgroundImageFile);
+    if (resumeFile) formData.append('resume', resumeFile);
+    if (degreeCertificateFile) formData.append('degreeCertificate', degreeCertificateFile);
+    if (projectFile) formData.append('project', projectFile);
+
+    // 4. Append certificate files for dynamic sections
+    workExperiences.forEach(exp => {
+      if (exp.certificate) formData.append('experienceCertificate', exp.certificate);
+    });
+    internationalExperiences.forEach(exp => {
+      if (exp.certificate) formData.append('internationalExperienceCertificate', exp.certificate);
+    });
+    leadershipExperiences.forEach(exp => {
+      if (exp.certificate) formData.append('leadershipCertificate', exp.certificate);
+    });
+ 
+    const endpoint = `${backendUrl}/api/onboarding/update`;
+    const axiosConfig = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`
+      }
+    };
+
+    const response = await axios.put(endpoint, formData, axiosConfig);
+    console.log('Form updated/submitted successfully:', response.data);
+
+    // 6. Update state with the response data
+    if (response.data && response.data.data) {
+      const fetchedData = response.data.data;
+
+      setProfileData(prev => ({
+        ...prev,
+      
+        _id: fetchedData._id || prev._id,
+       
+        ...fetchedData,
+    
+        profileImageUrl: fetchedData.profileImage || prev.profileImageUrl,
+        backgroundImageUrl: fetchedData.backgroundImage || prev.backgroundImageUrl,
+        resumeUrl: fetchedData.resume || prev.resumeUrl,
+        degreeCertificateUrl: fetchedData.degreeCertificate || prev.degreeCertificateUrl,
+        projectUrl: fetchedData.project || prev.projectUrl,
+     
+        certifications: (fetchedData.certifications && typeof fetchedData.certifications === 'string' && fetchedData.certifications.length > 0)
+          ? fetchedData.certifications.split('; ').map(name => ({ name, url: '' })) 
+          : [],
+   
+        experiences: fetchedData.experiences ? fetchedData.experiences.map(exp => ({
+            ...exp,
+            experienceCertificateUrl: exp.experienceCertificate || '' // Map certificate URL if provided
+        })) : []
+      }));
+
+      // Update individual dynamic section states, adding client-side 'id'
+      if (fetchedData.experiences && fetchedData.experiences.length > 0) {
+        setWorkExperiences(fetchedData.experiences.map(exp => ({ ...exp, id: exp._id || Date.now() })));
+      } else {
+          setWorkExperiences([]); // Clear if no data
+      }
+      if (fetchedData.internationalExperience && fetchedData.internationalExperience.length > 0) {
+        setInternationalExperiences(fetchedData.internationalExperience.map(exp => ({ ...exp, id: exp._id || Date.now() })));
+      } else {
+          setInternationalExperiences([]);
+      }
+      if (fetchedData.leadership && fetchedData.leadership.length > 0) {
+        setLeadershipExperiences(fetchedData.leadership.map(exp => ({ ...exp, id: exp._id || Date.now() })));
+      } else {
+          setLeadershipExperiences([]);
+      }
+      if (fetchedData.awards && fetchedData.awards.length > 0) {
+        setAwards(fetchedData.awards.map(award => ({ ...award, id: award._id || Date.now() })));
+      } else {
+          setAwards([]);
+      }
+    }
+
+    // 7. Update UI state and clear file inputs
+    setIsProfileEditing(false);
+    setHasOnboardingData(true);
+
+    setProfileImageFile(null);
+    setBackgroundImageFile(null);
+    setResumeFile(null);
+    setDegreeCertificateFile(null);
+    setProjectFile(null);
+
+  } catch (err) {
+    console.error('Error saving profile changes:', err.response ? err.response.data : err.message);
+    setError(`Failed to save changes: ${err.response?.data?.details || err.message}`);
+  } finally {
+    setLoading(false);
+  }
+};
  const renderContent = () => {
     if (loading) return <div className="text-center py-8">Loading profile data...</div>;
     if (error && !hasOnboardingData) return (
@@ -486,248 +792,7 @@ function ProfProfile() {
 
     const displayFieldStyle = "w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-900 min-h-[40px] flex items-center";
     const displayFieldWrapperStyle = "relative mt-1";
-
-    const ExperienceCard = ({ experience, type, onUpdate, onRemove, canRemove }) => (
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-          {canRemove && isProfileEditing && (
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={() => onRemove(type, experience.id)}
-                className="p-1 text-gray-400 hover:text-red-500 transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </div>
-          )}
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                {type === 'leadership' ? 'Organization' : 'Company/Organization'}
-              </label>
-              {isProfileEditing ? (
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder={`Enter ${type === 'leadership' ? 'organization' : 'company'} name`}
-                  value={type === 'leadership' ? experience.organization : experience.company}
-                  onChange={(e) => onUpdate(type, experience.id, type === 'leadership' ? 'organization' : 'company', e.target.value)}
-                />
-              ) : (
-                <div className={displayFieldStyle}>
-                  {(type === 'leadership' ? experience.organization : experience.company) || "N/A"}
-                </div>
-              )}
-            </div>
-            
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                {type === 'leadership' ? 'Role/Position' : 'Job Role'}
-              </label>
-              {isProfileEditing ? (
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder={`Enter ${type === 'leadership' ? 'role' : 'job role'}`}
-                  value={type === 'leadership' ? experience.role : experience.jobRole}
-                  onChange={(e) => onUpdate(type, experience.id, type === 'leadership' ? 'role' : 'jobRole', e.target.value)}
-                />
-              ) : (
-                <div className={displayFieldStyle}>
-                  {(type === 'leadership' ? experience.role : experience.jobRole) || "N/A"}
-                </div>
-              )}
-            </div>
-            
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Start Date
-              </label>
-              {isProfileEditing ? (
-                <input
-                  type="date"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  value={experience.startDate}
-                  onChange={(e) => onUpdate(type, experience.id, 'startDate', e.target.value)}
-                />
-              ) : (
-                <div className={displayFieldStyle}>
-                  {experience.startDate || "N/A"}
-                </div>
-              )}
-            </div>
-            
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                End Date
-              </label>
-              {isProfileEditing ? (
-                <input
-                  type="date"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  value={experience.endDate}
-                  onChange={(e) => onUpdate(type, experience.id, 'endDate', e.target.value)}
-                />
-              ) : (
-                <div className={displayFieldStyle}>
-                  {experience.endDate || "N/A"}
-                </div>
-              )}
-            </div>
-            
-            <div className="md:col-span-2">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Description
-              </label>
-              {isProfileEditing ? (
-                <textarea
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                  placeholder="Describe your role, responsibilities, and achievements..."
-                  rows="4"
-                  value={experience.description}
-                  onChange={(e) => onUpdate(type, experience.id, 'description', e.target.value)}
-                />
-              ) : (
-                <div className={`${displayFieldStyle} items-start min-h-[100px]`}>
-                  {experience.description || "N/A"}
-                </div>
-              )}
-            </div>
-            
-            <div className="md:col-span-2">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Certificate (Optional)
-              </label>
-              {isProfileEditing ? (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-                  <Upload className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-                  <div className="text-sm text-gray-600">
-                    <label className="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
-                      Upload a file
-                      <input
-                        type="file"
-                        className="hidden"
-                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                        onChange={(e) => onUpdate(type, experience.id, 'certificate', e.target.files[0])}
-                      />
-                    </label>
-                    <span className="ml-1">or drag and drop</span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2">PDF, DOC, DOCX, JPG, PNG up to 10MB</p>
-                  {experience.certificate && (
-                    <p className="text-sm text-green-600 mt-2 font-medium">
-                      File uploaded: {experience.certificate.name}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <div className={displayFieldStyle}>
-                  {experience.certificate ? (
-                    <span className="text-blue-600 hover:underline cursor-pointer">
-                      View Certificate
-                    </span>
-                  ) : (
-                    "No certificate uploaded"
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      );
-
-    const AwardCard = ({ award, onUpdate, onRemove, canRemove }) => (
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-          {canRemove && isProfileEditing && (
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={() => onRemove('award', award.id)}
-                className="p-1 text-gray-400 hover:text-red-500 transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </div>
-          )}
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Award Title
-              </label>
-              {isProfileEditing ? (
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Enter award title"
-                  value={award.title}
-                  onChange={(e) => onUpdate('award', award.id, 'title', e.target.value)}
-                />
-              ) : (
-                <div className={displayFieldStyle}>
-                  {award.title || "N/A"}
-                </div>
-              )}
-            </div>
-            
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Awarding Organization
-              </label>
-              {isProfileEditing ? (
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Enter organization name"
-                  value={award.organization}
-                  onChange={(e) => onUpdate('award', award.id, 'organization', e.target.value)}
-                />
-              ) : (
-                <div className={displayFieldStyle}>
-                  {award.organization || "N/A"}
-                </div>
-              )}
-            </div>
-            
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Date Received
-              </label>
-              {isProfileEditing ? (
-                <input
-                  type="date"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  value={award.date}
-                  onChange={(e) => onUpdate('award', award.id, 'date', e.target.value)}
-                />
-              ) : (
-                <div className={displayFieldStyle}>
-                  {award.date || "N/A"}
-                </div>
-              )}
-            </div>
-            
-            <div className="md:col-span-2">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Description
-              </label>
-              {isProfileEditing ? (
-                <textarea
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                  placeholder="Describe the award and your achievement..."
-                  rows="3"
-                  value={award.description}
-                  onChange={(e) => onUpdate('award', award.id, 'description', e.target.value)}
-                />
-              ) : (
-                <div className={`${displayFieldStyle} items-start min-h-[80px]`}>
-                  {award.description || "N/A"}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      );
-
+   
     switch (activeTab) {
       case 'overview':
         return (
@@ -877,8 +942,9 @@ function ProfProfile() {
                             profileData.experiences.map((exp, idx) => (
                               <div key={idx} className="mb-4 border-b pb-2 last:border-b-0">
                                 <p className="font-medium text-gray-900">{exp.role || 'N/A'} at {exp.company || 'N/A'}</p>
-                                <p className="text-sm text-gray-600">{exp.startDate || ''} - {exp.endDate || 'Present'}</p>
-                                <p className="text-sm text-gray-700">{exp.description || 'No description provided.'}</p>
+                                <p className="text-sm text-gray-600"><span className='text-black text-sm'>Start Date : </span>{exp.startDate || ''}  </p>
+                                <p className="text-sm text-gray-600"><span className='text-black text-sm'>End Date : </span>{exp.endDate || 'Present'}  </p>
+                                <p className="text-sm text-gray-700"><span className='text-black text-sm'>Description :</span>  {exp.description || 'No description provided.'}</p>
                                 {exp.experienceCertificateUrl && (
                                   <p className="text-sm text-blue-600 mt-1">
                                     <a href={exp.experienceCertificateUrl} target="_blank" rel="noopener noreferrer" className="underline">View Certificate</a>
@@ -1360,139 +1426,106 @@ function ProfProfile() {
                     </div>
                   )}
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Current Salary
+                  </label>
+                  {isProfileEditing ? (
+                    <div className="flex items-center gap-2">
+                      <select
+                        className="w-1/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        value={profileData.currentSalaryCurrency || ''}
+                        onChange={(e) => handleProfileDataChange('currentSalaryCurrency', e.target.value)}
+                      >
+                        {predefinedCurrencies.map((currency) => (
+                          <option key={currency} value={currency}>{currency}</option>
+                        ))}
+                      </select>
+                      <input
+                        type="number"
+                        className="w-2/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        placeholder="Enter amount"
+                        value={profileData.currentSalaryAmount || ''}
+                        onChange={(e) => handleProfileDataChange('currentSalaryAmount', e.target.value)}
+                      />
+                    </div>
+                  ) : (
+                    <div className={displayFieldStyle}>
+                      {profileData.currentSalaryCurrency} {profileData.currentSalaryAmount || "N/A"}
+                    </div>
+                  )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Expected Salary
+                    </label>
+                    {isProfileEditing ? (
+                      <div className="flex items-center gap-2">
+                        <select
+                          className="w-1/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          value={profileData.expectedSalaryCurrency || ''}
+                          onChange={(e) => handleProfileDataChange('expectedSalaryCurrency', e.target.value)}
+                        >
+                          {predefinedCurrencies.map((currency) => (
+                            <option key={currency} value={currency}>{currency}</option>
+                          ))}
+                        </select>
+                        <input
+                          type="number"
+                          className="w-2/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          placeholder="Enter amount"
+                          value={profileData.expectedSalaryAmount || ''}
+                          onChange={(e) => handleProfileDataChange('expectedSalaryAmount', e.target.value)}
+                        />
+                      </div>
+                    ) : (
+                      <div className={displayFieldStyle}>
+                        {profileData.expectedSalaryCurrency} {profileData.expectedSalaryAmount || "N/A"}
+                      </div>
+                    )}
+                  </div>
+                 
               </div>
             </div>
 
-            {/* START: New Experience Sections */}
             <div className="space-y-8">
-                {/* Work Experience Section */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 md:p-8 border border-blue-100">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-3 bg-blue-500 rounded-xl">
-                                <Briefcase className="h-6 w-6 text-white" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl md:text-2xl font-bold text-gray-900">Work Experience</h3>
-                                <p className="text-gray-600 text-sm">Share your professional journey and achievements</p>
-                            </div>
-                        </div>
-                    </div>
+                <div className="bg-white rounded-2xl p-6 md:p-8 border border-blue-100">
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">Work Experience</h3>
                     <div className="space-y-6">
-                        {workExperiences.map((experience) => (
-                            <ExperienceCard
-                                key={experience.id}
-                                experience={experience}
-                                type="work"
-                                onUpdate={updateExperience}
-                                onRemove={removeExperience}
-                                canRemove={workExperiences.length > 1}
-                            />
-                        ))}
+                        {/* FIX: Added isProfileEditing prop */}
+                        {workExperiences.map((exp) => <ExperienceCard key={exp.id} experience={exp} type="work" onUpdate={updateExperience} onRemove={removeExperience} canRemove={workExperiences.length > 1} isProfileEditing={isProfileEditing} />)}
                     </div>
-                    {isProfileEditing && (
-                        <button onClick={() => addExperience('work')} className="mt-6 w-full py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-medium">
-                            <Plus size={20} /> Add Work Experience
-                        </button>
-                    )}
+                    {isProfileEditing && (<button onClick={() => addExperience('work')} className="mt-6 py-3 px-6 text-blue-600 rounded-lg flex items-center gap-2 font-medium"><Plus size={20} /> Add Work Experience</button>)}
                 </div>
 
-                {/* International Experience Section */}
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 md:p-8 border border-green-100">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-3 bg-green-500 rounded-xl">
-                                <Globe className="h-6 w-6 text-white" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl md:text-2xl font-bold text-gray-900">International Experience</h3>
-                                <p className="text-gray-600 text-sm">Highlight your global work and cultural experiences</p>
-                            </div>
-                        </div>
-                    </div>
+                <div className="bg-white rounded-2xl p-6 md:p-8 border border-green-100">
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">International Experience</h3>
                     <div className="space-y-6">
-                        {internationalExperiences.map((experience) => (
-                            <ExperienceCard
-                                key={experience.id}
-                                experience={experience}
-                                type="international"
-                                onUpdate={updateExperience}
-                                onRemove={removeExperience}
-                                canRemove={internationalExperiences.length > 1}
-                            />
-                        ))}
+                        {/* FIX: Added isProfileEditing prop */}
+                        {internationalExperiences.map((exp) => <ExperienceCard key={exp.id} experience={exp} type="international" onUpdate={updateExperience} onRemove={removeExperience} canRemove={internationalExperiences.length > 1} isProfileEditing={isProfileEditing} />)}
                     </div>
-                     {isProfileEditing && (
-                        <button onClick={() => addExperience('international')} className="mt-6 w-full py-3 px-6 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 font-medium">
-                            <Plus size={20} /> Add International Experience
-                        </button>
-                     )}
+                    {isProfileEditing && (<button onClick={() => addExperience('international')} className="mt-6 py-3 px-6 text-blue-600 rounded-lg flex items-center gap-2 font-medium"><Plus size={20} /> Add International Experience</button>)}
                 </div>
 
-                {/* Leadership Experience Section */}
-                <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-2xl p-6 md:p-8 border border-purple-100">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-3 bg-purple-500 rounded-xl">
-                                <Users className="h-6 w-6 text-white" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl md:text-2xl font-bold text-gray-900">Leadership Experience</h3>
-                                <p className="text-gray-600 text-sm">Showcase your leadership roles and team management skills</p>
-                            </div>
-                        </div>
-                    </div>
+                <div className="bg-white rounded-2xl p-6 md:p-8 border border-purple-100">
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">Leadership Experience</h3>
                     <div className="space-y-6">
-                        {leadershipExperiences.map((experience) => (
-                            <ExperienceCard
-                                key={experience.id}
-                                experience={experience}
-                                type="leadership"
-                                onUpdate={updateExperience}
-                                onRemove={removeExperience}
-                                canRemove={leadershipExperiences.length > 1}
-                            />
-                        ))}
+                        {/* FIX: Added isProfileEditing prop */}
+                        {leadershipExperiences.map((exp) => <ExperienceCard key={exp.id} experience={exp} type="leadership" onUpdate={updateExperience} onRemove={removeExperience} canRemove={leadershipExperiences.length > 1} isProfileEditing={isProfileEditing} />)}
                     </div>
-                     {isProfileEditing && (
-                        <button onClick={() => addExperience('leadership')} className="mt-6 w-full py-3 px-6 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 font-medium">
-                            <Plus size={20} /> Add Leadership Experience
-                        </button>
-                    )}
+                    {isProfileEditing && (<button onClick={() => addExperience('leadership')} className="mt-6 py-3 px-6 text-blue-600 rounded-lg flex items-center gap-2 font-medium"><Plus size={20} /> Add Leadership Experience</button>)}
                 </div>
 
-                {/* Awards & Recognition Section */}
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 md:p-8 border border-amber-100">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-3 bg-amber-500 rounded-xl">
-                                <Award className="h-6 w-6 text-white" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl md:text-2xl font-bold text-gray-900">Awards & Recognition</h3>
-                                <p className="text-gray-600 text-sm">Display your achievements and recognitions</p>
-                            </div>
-                        </div>
-                    </div>
+                <div className="bg-white rounded-2xl p-6 md:p-8 border border-amber-100">
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">Awards & Recognition</h3>
                     <div className="space-y-6">
-                        {awards.map((award) => (
-                            <AwardCard
-                                key={award.id}
-                                award={award}
-                                onUpdate={updateExperience}
-                                onRemove={removeExperience}
-                                canRemove={awards.length > 1}
-                            />
-                        ))}
+                        {/* FIX: Added isProfileEditing prop */}
+                        {awards.map((award) => <AwardCard key={award.id} award={award} onUpdate={updateExperience} onRemove={removeExperience} canRemove={awards.length > 1} isProfileEditing={isProfileEditing} />)}
                     </div>
-                    {isProfileEditing && (
-                        <button onClick={() => addExperience('award')} className="mt-6 w-full py-3 px-6 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors flex items-center justify-center gap-2 font-medium">
-                            <Plus size={20} /> Add Award
-                        </button>
-                    )}
+                    {isProfileEditing && (<button onClick={() => addExperience('award')} className="mt-6 py-3 px-6 text-blue-600 rounded-lg flex items-center gap-2 font-medium"><Plus size={20} /> Add Award</button>)}
                 </div>
             </div>
-            {/* END: New Experience Sections */}
 
 
             {/* Skills Section */}
@@ -1694,9 +1727,16 @@ function ProfProfile() {
                 </Button>
               )}
             </div>
-
-           
-
+            {/* Add Languages Section */}
+            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="flex justify-between items-center mb-4">  
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900">Languages</h3>
+                  <p className="text-sm mt-2 text-gray-600">{profileData.language || "English"}</p>
+                </div>      
+              </div>
+              
+            </div>       
             {/* Save Changes / Edit Profile Button for Profile Tab */}
             <div className="flex justify-end p-6 bg-white border border-gray-200 rounded-lg shadow-sm mt-6">
               <Button
@@ -1785,7 +1825,7 @@ function ProfProfile() {
     }
   };
 
-  return (
+return (
 <div className="flex flex-col w-full bg-gray-100 min-h-screen">
       <div
         className="w-full h-32 bg-gray-300 relative bg-cover bg-center cursor-pointer"

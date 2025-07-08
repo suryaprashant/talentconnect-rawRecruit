@@ -36,13 +36,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5000', // Must match your backend port
-        changeOrigin: true,
-        secure: false,
-      },
-    },
-  },
+  // server: {
+  //   proxy: {
+  //     '/api': {
+  //       target: import.meta.env.VITE_Backend_URL, // Must match your backend port
+  //       changeOrigin: true,
+  //       secure: false,
+  //     },
+  //   },
+  // },
 })

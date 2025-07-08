@@ -21,3 +21,13 @@ export const getAllRegistrations = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 }
+
+export const getRegistrationDetail = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const response = await Registration.findById(id).lean();
+    res.status(200).json(response);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}

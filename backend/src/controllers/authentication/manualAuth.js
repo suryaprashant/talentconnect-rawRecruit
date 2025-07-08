@@ -18,8 +18,9 @@ const createTokenAndSaveCookie = (userId, email, res, userType) => {
 
   res.cookie('jwt', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // secure in production
-    sameSite: 'strict',
+    // secure: process.env.NODE_ENV === 'production', // secure in production
+    secure: true,
+    sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     path: '/'
   });
@@ -116,7 +117,7 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  console.log("hero");
+  // console.log("hero");
   try {
     res.clearCookie("jwt", {
       httpOnly: true,

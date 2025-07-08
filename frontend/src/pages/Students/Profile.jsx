@@ -11,7 +11,7 @@ function Profile() {
   const [isProfileEditing, setIsProfileEditing] = useState(false);
   const [hasOnboardingData, setHasOnboardingData] = useState(true); // State to track if onboarding data exists
 
-   const [profileData, setProfileData] = useState({
+  const [profileData, setProfileData] = useState({
     profileImage: '',
     backgroundImage: '',
     fullName: '',
@@ -73,12 +73,9 @@ function Profile() {
       setError(null);
       try {
         const backendUrl = import.meta.env.VITE_Backend_URL;
-        const token = localStorage.getItem('token');
 
         const response = await axios.get(`${backendUrl}/api/onboarding/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+          withCredentials: true,
         });
 
         if (response.data) {
@@ -112,8 +109,8 @@ function Profile() {
             github: fetchedData.github || prevData.github,
             portfolio: fetchedData.portfolio || prevData.portfolio,
             certifications: (fetchedData.certifications && typeof fetchedData.certifications === 'string' && fetchedData.certifications.length > 0)
-                            ? fetchedData.certifications.split('; ').map(name => ({ name, url: '' }))
-                            : [],
+              ? fetchedData.certifications.split('; ').map(name => ({ name, url: '' }))
+              : [],
             referralSource: fetchedData.referralSource || prevData.referralSource,
             profileImageUrl: profileImageUrl,
             backgroundImageUrl: backgroundImageUrl,
@@ -184,37 +181,37 @@ function Profile() {
     handleProfileDataChange('experiences', profileData.experiences.filter((_, index) => index !== indexToRemove));
   };
 
- const handleFileChange = (event, fileType, index = null) => {
-  const file = event.target.files[0];
-  if (!file) return;
+  const handleFileChange = (event, fileType, index = null) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-  if (fileType === 'profileImage') {
-    setProfileImageFile(file);
-    // Create temporary URL for preview
-    const url = URL.createObjectURL(file);
-    setProfileData(prev => ({ ...prev, profileImageUrl: url }));
-  } else if (fileType === 'backgroundImage') {
-    setBackgroundImageFile(file);
-    // Create temporary URL for preview
-    const url = URL.createObjectURL(file);
-    setProfileData(prev => ({ ...prev, backgroundImageUrl: url }));
-  } else if (fileType === 'resume') {
-    setResumeFile(file);
-    // For resume, we can't preview it but can show the filename
-    setProfileData(prev => ({ ...prev, resumeUrl: file.name }));
-  } else if (fileType === 'degreeCertificate') {
-    setDegreeCertificateFile(file);
-    setProfileData(prev => ({ ...prev, degreeCertificateUrl: URL.createObjectURL(file) }));
-  } else if (fileType === 'project') {
-    setProjectFile(file);
-    setProfileData(prev => ({ ...prev, projectUrl: URL.createObjectURL(file) }));
-  } else if (fileType === 'experienceCertificate' && index !== null) {
-    const updatedExperiences = [...profileData.experiences];
-    updatedExperiences[index].experienceCertificateFile = file;
-    updatedExperiences[index].experienceCertificateUrl = URL.createObjectURL(file);
-    setProfileData(prev => ({ ...prev, experiences: updatedExperiences }));
-  }
-};
+    if (fileType === 'profileImage') {
+      setProfileImageFile(file);
+      // Create temporary URL for preview
+      const url = URL.createObjectURL(file);
+      setProfileData(prev => ({ ...prev, profileImageUrl: url }));
+    } else if (fileType === 'backgroundImage') {
+      setBackgroundImageFile(file);
+      // Create temporary URL for preview
+      const url = URL.createObjectURL(file);
+      setProfileData(prev => ({ ...prev, backgroundImageUrl: url }));
+    } else if (fileType === 'resume') {
+      setResumeFile(file);
+      // For resume, we can't preview it but can show the filename
+      setProfileData(prev => ({ ...prev, resumeUrl: file.name }));
+    } else if (fileType === 'degreeCertificate') {
+      setDegreeCertificateFile(file);
+      setProfileData(prev => ({ ...prev, degreeCertificateUrl: URL.createObjectURL(file) }));
+    } else if (fileType === 'project') {
+      setProjectFile(file);
+      setProfileData(prev => ({ ...prev, projectUrl: URL.createObjectURL(file) }));
+    } else if (fileType === 'experienceCertificate' && index !== null) {
+      const updatedExperiences = [...profileData.experiences];
+      updatedExperiences[index].experienceCertificateFile = file;
+      updatedExperiences[index].experienceCertificateUrl = URL.createObjectURL(file);
+      setProfileData(prev => ({ ...prev, experiences: updatedExperiences }));
+    }
+  };
   // Enhanced file input handlers
   const handleProfileImageClick = () => {
     document.getElementById('profileImageUpload').click();
@@ -304,7 +301,7 @@ function Profile() {
       // UPDATED LOGIC: Always use the update endpoint
       // The backend will handle checking if entry exists and create/update accordingly
       let endpoint = `${backendUrl}/api/onboarding/update`;
-      
+
       const axiosConfig = {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -315,7 +312,7 @@ function Profile() {
       const response = await axios.put(endpoint, formData, axiosConfig);
 
       console.log('Form updated/submitted successfully:', response.data);
-      
+
       // Update state with response data
       if (response.data && response.data.data) {
         setProfileData(prev => ({
@@ -331,8 +328,8 @@ function Profile() {
           projectUrl: response.data.data.project || prev.projectUrl,
           // Handle certifications array conversion
           certifications: (response.data.data.certifications && typeof response.data.data.certifications === 'string' && response.data.data.certifications.length > 0)
-                          ? response.data.data.certifications.split('; ').map(name => ({ name, url: '' }))
-                          : [],
+            ? response.data.data.certifications.split('; ').map(name => ({ name, url: '' }))
+            : [],
           // Handle experiences with certificate URLs
           experiences: response.data.data.experiences ? response.data.data.experiences.map(exp => ({
             ...exp,
@@ -361,7 +358,7 @@ function Profile() {
   };
 
   // Render content based on active tab and switch state
- const renderContent = () => {
+  const renderContent = () => {
     if (loading) return <div className="text-center py-8">Loading profile data...</div>;
     // Condition for showing "Go to Profile" button
     if (error && !hasOnboardingData) return (
@@ -741,35 +738,10 @@ function Profile() {
                           </div>
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Current Salary</h5>
-                          <p className="text-gray-900">{profileData.currentSalaryCurrency || 'N/A'} {profileData.currentSalaryAmount || ''}</p>
-                        </div>
+                        
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Expected Salary</h5>
-                          <p className="text-gray-900">{profileData.expectedSalaryCurrency || 'N/A'} {profileData.expectedSalaryAmount || ''}</p>
-                        </div>
-
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Work Experience</h5>
-                          {profileData.experiences && profileData.experiences.length > 0 ? (
-                            profileData.experiences.map((exp, idx) => (
-                              <div key={idx} className="mb-4 border-b pb-2 last:border-b-0">
-                                <p className="font-medium text-gray-900">{exp.role || 'N/A'} at {exp.company || 'N/A'}</p>
-                                <p className="text-sm text-gray-600">{exp.startDate || ''} - {exp.endDate || 'Present'}</p>
-                                <p className="text-sm text-gray-700">{exp.description || 'No description provided.'}</p>
-                                {exp.experienceCertificateUrl && (
-                                  <p className="text-sm text-blue-600 mt-1">
-                                    <a href={exp.experienceCertificateUrl} target="_blank" rel="noopener noreferrer" className="underline">View Certificate</a>
-                                  </p>
-                                )}
-                              </div>
-                            ))
-                          ) : (
-                            <span className="text-gray-600">No work experience added.</span>
-                          )}
-                        </div>
+                       
+                      
 
                         <div className="p-4 border border-gray-200 rounded-lg">
                           <h5 className="font-medium text-gray-900 mb-2">Certifications</h5>
@@ -792,8 +764,8 @@ function Profile() {
                         </div>
 
                         <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Referral Source</h5>
-                          <p className="text-gray-900">{profileData.referralSource || 'N/A'}</p>
+                          <h5 className="font-medium text-gray-900 mb-2">Language</h5>
+                          <p className="text-gray-900">{profileData.referralSource || 'English'}</p>
                         </div>
 
                       </div>
@@ -1107,9 +1079,8 @@ function Profile() {
                           {predefinedJobRoles.map((role) => (
                             <div
                               key={role}
-                              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
-                                profileData.jobRoles.includes(role) ? 'bg-blue-50 text-blue-800' : ''
-                              }`}
+                              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${profileData.jobRoles.includes(role) ? 'bg-blue-50 text-blue-800' : ''
+                                }`}
                               onClick={() => handleCustomMultiSelectToggle('jobRoles', role)}
                             >
                               {role}
@@ -1122,11 +1093,11 @@ function Profile() {
                     <div className={displayFieldStyle}>
                       {profileData.jobRoles && profileData.jobRoles.length > 0 ? (
                         <div className="flex flex-wrap gap-2 py-1">
-                            {profileData.jobRoles.map(role => (
-                                <Badge key={role} variant="primary" size="md" className="bg-gray-100 text-gray-800">
-                                    {role}
-                                </Badge>
-                            ))}
+                          {profileData.jobRoles.map(role => (
+                            <Badge key={role} variant="primary" size="md" className="bg-gray-100 text-gray-800">
+                              {role}
+                            </Badge>
+                          ))}
                         </div>
                       ) : "N/A"}
                     </div>
@@ -1168,9 +1139,8 @@ function Profile() {
                           {predefinedLocations.map((location) => (
                             <div
                               key={location}
-                              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
-                                profileData.locations.includes(location) ? 'bg-blue-50 text-blue-800' : ''
-                              }`}
+                              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${profileData.locations.includes(location) ? 'bg-blue-50 text-blue-800' : ''
+                                }`}
                               onClick={() => handleCustomMultiSelectToggle('locations', location)}
                             >
                               {location}
@@ -1183,11 +1153,11 @@ function Profile() {
                     <div className={displayFieldStyle}>
                       {profileData.locations && profileData.locations.length > 0 ? (
                         <div className="flex flex-wrap gap-2 py-1">
-                            {profileData.locations.map(location => (
-                                <Badge key={location} variant="primary" size="md" className="bg-gray-100 text-gray-800">
-                                    {location}
-                                </Badge>
-                            ))}
+                          {profileData.locations.map(location => (
+                            <Badge key={location} variant="primary" size="md" className="bg-gray-100 text-gray-800">
+                              {location}
+                            </Badge>
+                          ))}
                         </div>
                       ) : "N/A"}
                     </div>
@@ -1268,11 +1238,11 @@ function Profile() {
                   <div className={displayFieldStyle + " h-24 overflow-auto"}>
                     {profileData.skills.length > 0 ? (
                       <div className="flex flex-wrap gap-2 py-1">
-                          {profileData.skills.map(skill => (
-                              <Badge key={skill} variant="primary" size="md" className="bg-gray-100 text-gray-800">
-                                  {skill}
-                              </Badge>
-                          ))}
+                        {profileData.skills.map(skill => (
+                          <Badge key={skill} variant="primary" size="md" className="bg-gray-100 text-gray-800">
+                            {skill}
+                          </Badge>
+                        ))}
                       </div>
                     ) : "N/A"}
                   </div>
@@ -1443,89 +1413,15 @@ function Profile() {
                 </Button>
               )}
             </div>
-
-            {/* Project Section */}
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">Project</h3>
-                  <p className="text-sm text-gray-600">Upload a project file or portfolio.</p>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Project File (Optional)
-                </label>
-                {isProfileEditing ? (
-                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                    <div className="space-y-1 text-center">
-                      <FiUploadCloud className="mx-auto h-12 w-12 text-gray-400" />
-                      <div className="flex text-sm text-gray-600">
-                        <label
-                          htmlFor="project-upload"
-                          className="relative cursor-pointer bg-white rounded-md font-medium text-black hover:text-gray-700 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
-                        >
-                          <span>Upload a file</span>
-                          <input
-                            id="project-upload"
-                            name="project-upload"
-                            type="file"
-                            className="sr-only"
-                            accept=".pdf,.zip,.rar" // Assuming common project file types
-                            onChange={(e) => handleFileChange(e, 'project')}
-                          />
-                        </label>
-                        <p className="pl-1">or drag and drop</p>
-                      </div>
-                      <p className="text-xs text-gray-500">PDF, ZIP, RAR up to 25MB</p>
-                      {profileData.projectUrl && (
-                        <p className="text-sm text-green-600 mt-2">
-                          File uploaded: <a href={profileData.projectUrl} target="_blank" rel="noopener noreferrer" className="underline">View Project</a>
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className={displayFieldStyle}>
-                    {profileData.projectUrl ? (
-                      <a href={profileData.projectUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                        View Project
-                      </a>
-                    ) : (
-                      "No project file uploaded"
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-
             {/* Other Section (Referral Source) */}
             <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
               <div className="flex justify-between items-center mb-4">
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900">Other Information</h3>
-                  <p className="text-sm text-gray-600">Additional details.</p>
+                  <h3 className="text-lg font-medium text-gray-900">Language :</h3>
+                  <p className="text-sm mt-2 text-gray-600">English</p>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Referral Source
-                </label>
-                {isProfileEditing ? (
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    placeholder="How did you hear about us?"
-                    value={profileData.referralSource}
-                    onChange={(e) => handleProfileDataChange('referralSource', e.target.value)}
-                  />
-                ) : (
-                  <div className={displayFieldStyle}>
-                    {profileData.referralSource || "N/A"}
-                  </div>
-                )}
-              </div>
+             
             </div>
 
             {/* Save Changes / Edit Profile Button for Profile Tab */}
@@ -1541,98 +1437,97 @@ function Profile() {
             </div>
           </div>
         );
-  case 'resume':
-  return (
-    <div className="space-y-6">
-      <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Upload your resume/CV</h3>
-        
-        {/* Current Resume Display */}
-        {(profileData.resumeUrl || resumeFile) && (
-          <div className="mb-4 p-4 border border-gray-200 rounded-lg bg-gray-50 flex justify-between items-center">
-            <div>
-              <p className="text-sm font-medium text-gray-900">
-                {resumeFile ? 'New Resume' : 'Current Resume'}
-              </p>
-              {resumeFile ? (
-                <p className="text-sm text-gray-600">{resumeFile.name}</p>
-              ) : (
-                <a 
-                  href={profileData.resumeUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm text-blue-600 hover:underline"
-                >
-                  View Resume
-                </a>
+      case 'resume':
+        return (
+          <div className="space-y-6">
+            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Upload your resume/CV</h3>
+
+              {/* Current Resume Display */}
+              {(profileData.resumeUrl || resumeFile) && (
+                <div className="mb-4 p-4 border border-gray-200 rounded-lg bg-gray-50 flex justify-between items-center">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">
+                      {resumeFile ? 'New Resume' : 'Current Resume'}
+                    </p>
+                    {resumeFile ? (
+                      <p className="text-sm text-gray-600">{resumeFile.name}</p>
+                    ) : (
+                      <a
+                        href={profileData.resumeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:underline"
+                      >
+                        View Resume
+                      </a>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleResumeClick}
+                    className="text-sm text-red-600 hover:text-red-800"
+                  >
+                    Replace
+                  </button>
+                </div>
+              )}
+
+              {/* Upload Area */}
+              <div
+                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition-colors cursor-pointer"
+                onClick={handleResumeClick}
+              >
+                <input
+                  type="file"
+                  className="hidden"
+                  id="resume-upload"
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) => handleFileChange(e, 'resume')}
+                />
+                <div className="flex flex-col items-center justify-center">
+                  <FiUploadCloud className="mx-auto h-12 w-12 text-gray-400 mb-2" />
+                  <p className="text-sm text-gray-600">
+                    {profileData.resumeUrl || resumeFile ? 'Click to upload new resume' : 'Click to upload or drag and drop'}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Supported formats: PDF, DOC, DOCX
+                  </p>
+                </div>
+              </div>
+
+              {/* Save Changes Button */}
+              {resumeFile && (
+                <div className="mt-6 flex justify-end">
+                  <Button
+                    variant="primary"
+                    onClick={handleSaveChanges}
+                    disabled={loading}
+                    className="bg-black hover:bg-gray-900"
+                  >
+                    {loading ? 'Saving...' : 'Save Changes'}
+                  </Button>
+                </div>
               )}
             </div>
-            <button
-              onClick={handleResumeClick}
-              className="text-sm text-red-600 hover:text-red-800"
-            >
-              Replace
-            </button>
           </div>
-        )}
-
-        {/* Upload Area */}
-        <div 
-          className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition-colors cursor-pointer"
-          onClick={handleResumeClick}
-        >
-          <input
-            type="file"
-            className="hidden"
-            id="resume-upload"
-            accept=".pdf,.doc,.docx"
-            onChange={(e) => handleFileChange(e, 'resume')}
-          />
-          <div className="flex flex-col items-center justify-center">
-            <FiUploadCloud className="mx-auto h-12 w-12 text-gray-400 mb-2" />
-            <p className="text-sm text-gray-600">
-              {profileData.resumeUrl || resumeFile ? 'Click to upload new resume' : 'Click to upload or drag and drop'}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Supported formats: PDF, DOC, DOCX
-            </p>
-          </div>
-        </div>
-
-        {/* Save Changes Button */}
-        {resumeFile && (
-          <div className="mt-6 flex justify-end">
-            <Button
-              variant="primary"
-              onClick={handleSaveChanges}
-              disabled={loading}
-              className="bg-black hover:bg-gray-900"
-            >
-              {loading ? 'Saving...' : 'Save Changes'}
-            </Button>
-          </div>
-        )}
-      </div>
-    </div>
-  );   default:
+        ); default:
         return null;
     }
   };
 
   return (
-<div className="flex flex-col w-full bg-gray-100 min-h-screen">
+    <div className="flex flex-col w-full bg-gray-100 min-h-screen">
       {/* Updated Header Banner with click-to-upload */}
       <div
-  className="w-full h-32 bg-gray-300 relative bg-cover bg-center cursor-pointer"
-  style={{ 
-    backgroundImage: `url(${
-      backgroundImageFile ? 
-      URL.createObjectURL(backgroundImageFile) : 
-      profileData.backgroundImageUrl
-    })` 
-  }}
-  onClick={handleBackgroundImageClick}
->
+        className="w-full h-32 bg-gray-300 relative bg-cover bg-center cursor-pointer"
+        style={{
+          backgroundImage: `url(${backgroundImageFile ?
+            URL.createObjectURL(backgroundImageFile) :
+            profileData.backgroundImageUrl
+            })`
+        }}
+        onClick={handleBackgroundImageClick}
+      >
         <input
           id="backgroundImageUpload"
           type="file"
@@ -1652,16 +1547,16 @@ function Profile() {
       <div className="bg-white pb-4">
         <div className="relative px-4">
           {/* Updated Profile Image with click-to-upload */}
-          <div 
+          <div
             className="absolute -top-16 left-4 cursor-pointer"
             onClick={handleProfileImageClick}
           >
             <div className="relative w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white overflow-hidden">
               {profileData.profileImageUrl ? (
-                <img 
-                  src={profileData.profileImageUrl} 
-                  alt="Profile" 
-                  className="w-full h-full object-cover" 
+                <img
+                  src={profileData.profileImageUrl}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 <div className="text-gray-400 flex flex-col items-center">
@@ -1678,7 +1573,7 @@ function Profile() {
               onChange={(e) => handleFileChange(e, 'profileImage')}
             />
           </div>
-        </div>          
+        </div>
 
         {/* User Info & Switch */}
         <div className="px-6 pt-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -1689,17 +1584,15 @@ function Profile() {
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">Switch to Professional</span>
             <button
-              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                switchToPro ? 'bg-black' : 'bg-gray-200'
-              }`}
+              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${switchToPro ? 'bg-black' : 'bg-gray-200'
+                }`}
               role="switch"
               aria-checked={switchToPro}
               onClick={() => setSwitchToPro(!switchToPro)}
             >
               <span
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                  switchToPro ? 'translate-x-5' : 'translate-x-0'
-                }`}
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${switchToPro ? 'translate-x-5' : 'translate-x-0'
+                  }`}
               />
             </button>
           </div>

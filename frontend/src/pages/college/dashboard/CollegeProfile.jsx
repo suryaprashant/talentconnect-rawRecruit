@@ -493,7 +493,9 @@ export default function CollegeProfile() {
       setError(null);
       try {
         const backendUrl = import.meta.env.VITE_Backend_URL; // Ensure your backend URL is configured
-        const response = await axios.get(`${backendUrl}/api/college-onboarding/profile-data`);
+        const response = await axios.get(`${backendUrl}/api/college-onboarding/profile-data`, {
+          withCredentials: true,
+        });
         const data = response.data.data;
 
         if (data) {
@@ -563,18 +565,18 @@ export default function CollegeProfile() {
     }
 
     if (error && !onboardingData && activeTab !== 'Profile') { // Only show global error if no data loaded at all AND not on profile tab
-        return (
-          <div className="text-center py-8">
-            <p className="text-lg text-red-600">{error}</p>
-            <p className="text-md text-gray-500 mt-2 mb-4">You can create your profile in the "Profile" tab.</p>
-            <button
-              className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200"
-              onClick={() => setActiveTab('Profile')}
-            >
-              Go to Profile Form
-            </button>
-          </div>
-        );
+      return (
+        <div className="text-center py-8">
+          <p className="text-lg text-red-600">{error}</p>
+          <p className="text-md text-gray-500 mt-2 mb-4">You can create your profile in the "Profile" tab.</p>
+          <button
+            className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200"
+            onClick={() => setActiveTab('Profile')}
+          >
+            Go to Profile Form
+          </button>
+        </div>
+      );
     }
 
     switch (activeTab) {

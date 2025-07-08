@@ -13,7 +13,7 @@ axiosClient.defaults.headers = {
 axiosClient.defaults.timeout = 10000;
 
 // in case of tokens
-// axiosClient.defaults.withCredentials = true;
+axiosClient.defaults.withCredentials = true;
 
 export function getRegisteredColleges() {
   return axiosClient.get(`/company/dashboard/oncampus/registeredcampus`)

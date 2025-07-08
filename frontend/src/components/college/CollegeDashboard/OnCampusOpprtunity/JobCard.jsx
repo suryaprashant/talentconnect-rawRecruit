@@ -14,11 +14,11 @@ const JobCard = ({ job }) => {
       </div>
       <div className="p-4">
         <div className="text-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">{job.degree}</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{job?.degree?.map((jb)=>(<span>{jb}</span>))}</h3>
           <p className="text-sm text-gray-600">{job.university}</p>
         </div>
         <Link 
-          to={`/college-dashboard/on-campus-opportunities/${job.id}`}
+          to={`/college-dashboard/on-campus-opportunities/${job._id}`}
           className="block w-full py-2 px-4 text-center text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
         >
           Contact

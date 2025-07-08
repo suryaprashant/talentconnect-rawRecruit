@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { jobs } from '@/constants/collegedashboard/jobs';
-// import { initialFilterCategories } from '@/constants/collegedashboard/filter';
+import { initialFilterCategories } from '@/constants/collegedashboard/filter';
 import JobCard from '@/components/college/CollegeDashboard/OnCampusOpprtunity/JobCard';
 import FilterSection from '@/components/college/CollegeDashboard/FilterSection';
+import { getCompanyPostingForOncampus } from '@/lib/College_AxiosIntance';
 //import Header from '../components/Header';
 
 const JobsListingPage = () => {
-  const [jobs, setJobs] = useState();
-  const [filteredJobs, setFilteredJobs] = useState(jobs);
-  const [filterCategories, setFilterCategories] = useState();
+  const [tempJobs, setTempJobs] = useState();
+  const [filteredJobs, setFilteredJobs] = useState();
+  const [filterCategories, setFilterCategories] = useState(initialFilterCategories);
   const [activeFilters, setActiveFilters] = useState([]);
   const [sortBy, setSortBy] = useState('newest');
 
   const fetchAllJobs = async () => {
     try {
       const response = await getCompanyPostingForOncampus();
-      console.log(response.data);
-      setJobs(response.data);
+      setTempJobs(response.data.data);
+      // console.log(response.data);
     } catch (error) {
       console.log("Error: ", error);
     }
@@ -26,10 +27,10 @@ const JobsListingPage = () => {
     fetchAllJobs();
   }, []);
 
-  // useEffect(() => {
-  //   applyFilters();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [filterCategories]);
+  useEffect(() => {
+    applyFilters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterCategories]);
 
   const handleFilterChange = (categoryId, filterId, checked) => {
     const updatedCategories = filterCategories?.map(category => {
@@ -216,7 +217,7 @@ const JobsListingPage = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredJobs?.map(job => (
+              {tempJobs?.map(job => (
                 <JobCard key={job._id} job={job} />
               ))}
             </div>

@@ -1,6 +1,7 @@
+import { getCompanyPostingForOncampusDetail } from '@/lib/College_AxiosIntance';
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { jobs } from '@/constants/collegedashboard/jobs';
+// import { jobs } from '@/constants/collegedashboard/jobs';
 //import Header from '../components/Header';
 
 const JobDetailPage = () => {
@@ -8,19 +9,18 @@ const JobDetailPage = () => {
   const [job, setJob] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
 
-  useEffect(() => {
-    if (id) {
-      const foundJob = jobs.find(j => j.id === id);
-      if (foundJob) {
-        setJob(foundJob);
-        // Set document title
-        document.title = `${foundJob.title} at ${foundJob.company}`;
-      }
+  const loadJobDetail = async () => {
+    try {
+      const response = await getCompanyPostingForOncampusDetail(id);
+      console.log(response.data);
+      setJob(response);
+    } catch (error) {
+      console.log("Error: ", error);
     }
-    
-    return () => {
-      document.title = 'Campus Jobs';
-    };
+  }
+
+  useEffect(() => {
+    loadJobDetail();
   }, [id]);
 
   if (!job) {
@@ -53,7 +53,7 @@ const JobDetailPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* <Header /> */}
-      
+
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link to="/college-dashboard/on-campus-opportunities" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -61,53 +61,53 @@ const JobDetailPage = () => {
           </svg>
           Back to jobs
         </Link>
-        
+
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           {/* Header Section */}
           <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
             <div className="text-sm text-blue-600 font-medium">Registrations Open</div>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-2">
-              <h1 className="text-2xl font-bold text-gray-900">{job.company}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{job?.company}</h1>
               <div className="flex items-center mt-2 md:mt-0">
-                <a 
-                  href={job.companyInfo.website ? `https://${job.companyInfo.website}` : '#'} 
-                  target="_blank" 
+                <a
+                  href={job?.companyInfo?.website ? `https://${job?.companyInfo?.website}` : '#'}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-800 text-sm mr-6"
                 >
-                  {job.companyInfo.website}
+                  {job?.companyInfo?.website}
                 </a>
               </div>
             </div>
-            
+
             <div className="flex flex-col sm:flex-row justify-between mt-4">
               <div className="flex items-center text-sm text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span>{job.eventDates.start} - {job.eventDates.end}</span>
+                <span>{job.startDate} - {job.endDate}</span>
               </div>
               <div className="flex items-center mt-2 sm:mt-0 text-sm text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span>{job.isHybridEvent ? 'Hybrid Event' : 'In-person Event'}</span>
+                {/* <span>{job.isHybridEvent ? 'Hybrid Event' : 'In-person Event'}</span> */}
               </div>
             </div>
-            
+
             <div className="flex space-x-2 mt-4">
               <button className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none">
                 Register Now
               </button>
-              <button 
+              <button
                 onClick={() => setIsSaved(!isSaved)}
                 className={`inline-flex items-center justify-center px-4 py-2 border ${isSaved ? 'border-gray-300 bg-gray-50' : 'border-gray-300 bg-white'} text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none`}
               >
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className={`h-5 w-5 mr-1 ${isSaved ? 'text-blue-600 fill-current' : 'text-gray-400'}`} 
-                  viewBox="0 0 20 20" 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-5 w-5 mr-1 ${isSaved ? 'text-blue-600 fill-current' : 'text-gray-400'}`}
+                  viewBox="0 0 20 20"
                   fill={isSaved ? 'currentColor' : 'none'}
                   stroke="currentColor"
                 >
@@ -115,7 +115,7 @@ const JobDetailPage = () => {
                 </svg>
                 {isSaved ? 'Saved' : 'Save'}
               </button>
-              <button 
+              <button
                 onClick={handleShare}
                 className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none"
               >
@@ -126,12 +126,12 @@ const JobDetailPage = () => {
               </button>
             </div>
           </div>
-          
+
           {/* About Section */}
           <div className="px-6 py-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">About {job.company}</h2>
-            <p className="text-gray-700 mb-6">{job.companyInfo.about}</p>
-            
+            <h2 className="text-xl font-bold text-gray-900 mb-4">About {job?.company}</h2>
+            <p className="text-gray-700 mb-6">{job?.companyInfo.about}</p>
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="text-2xl font-bold text-gray-900">{job.companyInfo.stats.employees}</div>
@@ -151,7 +151,7 @@ const JobDetailPage = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Program Details */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Program Details</h2>
@@ -183,7 +183,7 @@ const JobDetailPage = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-6">
               <h3 className="font-medium text-gray-900">Compensation</h3>
               <div className="mt-2 px-4 py-3 bg-gray-50 rounded-lg">
@@ -192,14 +192,14 @@ const JobDetailPage = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Description */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Description</h2>
             <div className="prose max-w-none text-gray-700">
               <p className="mb-4">About The Role:</p>
               <p className="mb-4">{job.description}</p>
-              
+
               <h3 className="text-lg font-medium text-gray-900 mt-6 mb-2">Key Responsibilities</h3>
               <ul className="list-disc pl-5 space-y-2 mb-6">
                 <li>Collaborate with cross-functional teams</li>
@@ -208,7 +208,7 @@ const JobDetailPage = () => {
                 <li>Support deployment and release monitoring</li>
                 <li>Learn and apply emerging technologies</li>
               </ul>
-              
+
               <h3 className="text-lg font-medium text-gray-900 mt-6 mb-2">What We're Looking For</h3>
               <ul className="list-disc pl-5 space-y-2">
                 <li><strong>Education:</strong> Currently pursuing or recently completed a degree in Computer Science, Engineering, or a related field</li>
@@ -218,7 +218,7 @@ const JobDetailPage = () => {
               </ul>
             </div>
           </div>
-          
+
           {/* Job Details */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Job Details</h2>
@@ -257,7 +257,7 @@ const JobDetailPage = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Eligibility Criteria */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Eligibility Criteria</h2>
@@ -296,7 +296,7 @@ const JobDetailPage = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Compensation & Benefits */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Compensation & Benefits</h2>
@@ -314,7 +314,7 @@ const JobDetailPage = () => {
                 <div className="text-xl font-bold text-gray-900">₹40,000</div>
               </div>
             </div>
-            
+
             <h3 className="font-medium text-gray-900 mt-6 mb-2">Benefits</h3>
             <ul className="list-disc pl-5 space-y-1">
               {job.benefits.map((benefit, index) => (
@@ -322,11 +322,11 @@ const JobDetailPage = () => {
               ))}
             </ul>
           </div>
-          
+
           {/* Selection Process */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Selection Process</h2>
-            
+
             <div className="relative">
               <div className="overflow-hidden h-2 mb-6 text-xs flex rounded bg-gray-200">
                 <div className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600 w-1/5"></div>
@@ -342,7 +342,7 @@ const JobDetailPage = () => {
                 ))}
               </div>
             </div>
-            
+
             <h3 className="font-medium text-gray-900 mt-6 mb-4">Important Dates</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="border border-gray-300 rounded p-4">
@@ -371,7 +371,7 @@ const JobDetailPage = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Required Documents */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Required Documents</h2>
@@ -381,7 +381,7 @@ const JobDetailPage = () => {
               ))}
             </ul>
           </div>
-          
+
           {/* How to Apply */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-4">How to Apply</h2>
@@ -389,7 +389,7 @@ const JobDetailPage = () => {
               Students can apply through the <span className="text-blue-600">TalentConnect Portal</span> or their college placement cell.
               Make sure to complete your profile and upload all necessary documents before the deadline.
             </p>
-            
+
             <div className="mt-6">
               <h3 className="font-medium text-gray-900 mb-2">College Placement Officer Contact:</h3>
               <div className="bg-gray-50 p-4 rounded-lg">
@@ -420,7 +420,7 @@ const JobDetailPage = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Additional Resources */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Additional Resources</h2>
@@ -445,7 +445,7 @@ const JobDetailPage = () => {
               </a>
             </div>
           </div>
-          
+
           {/* Note to Students */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Note to Students</h2>

@@ -4,16 +4,17 @@ import Auth from "../models/auth.js";
 const secureRoute = async (req, res, next) => {
 
   try {
-     if (!process.env.JWT_SECRET) {
+    if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET is not configured");
     }
-  
+
     const token = req.cookies.jwt;
+    // console.log("Token: ", token);
     if (!token) {
       return res.status(401).json({ error: "No token, authorization denied" });
     }
-    
-    const decoded = jwt.verify(token, process.env.JWT_SECRET );
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded) {
       return res.status(401).json({ error: "Invalid Token" });
     }
@@ -24,7 +25,7 @@ const secureRoute = async (req, res, next) => {
     }
 
     req.user = user;
-    console.log(req.user);
+    // console.log(req.user);
     // console.log("user h ye,, ",req.user," ",decoded," ",token);
     next();
   } catch (error) {
