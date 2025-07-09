@@ -82,6 +82,7 @@ import DefineHiringPreferences from "./HiringPrefrences";
 import Welcome from "./Welcome";
 import TermsAndConditions from "./TermsCondition";
 import { useNavigate } from "react-router-dom"; // Ensure Navigate is not used if not needed
+import axios from "axios";
 
 const OnboardingFlowForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -144,12 +145,14 @@ const OnboardingFlowForm = () => {
       };
       finalFormData.append("hiringPreferences", JSON.stringify(hiringPreferences));
 
-      const response = await fetch("/api/dashboard/employerOnboarding", {
-        method: "POST",
-        body: finalFormData,
-        // No 'Content-Type' header needed for FormData; the browser sets it automatically
-        // as 'multipart/form-data' with the correct boundary.
-      });
+      // const response = await fetch("/api/dashboard/employerOnboarding", {
+      //   method: "POST",
+      //   body: finalFormData,
+      //   // No 'Content-Type' header needed for FormData; the browser sets it automatically
+      //   // as 'multipart/form-data' with the correct boundary.
+      // });
+
+      const response =await axios.post(`${import.meta.env.VITE_Backend_URL}/api/dashboard/employerOnboarding`)
 
       const data = await response.json();
 

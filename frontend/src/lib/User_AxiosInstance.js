@@ -22,8 +22,8 @@ export function getJobDetails(jobId) {
 }
 
 
-export function getRelaventOpportunity(userId) {
-  return axiosClient.get(`/jobs/${userId}`)
+export function getRelaventOpportunity() {
+  return axiosClient.get(`/jobs/relevantjobs`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

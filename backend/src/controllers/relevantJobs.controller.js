@@ -5,7 +5,9 @@ import { WeightedFilter } from "../utility/weightedJobSearch.js";
 
 // offcampus
 export const findRelevantOpportunityById = async (req, res) => {
-    const userId = req.params.id;
+    const userId = req.user._id;
+
+    console.log("user: ", req.user);
 
     if (!userId) return res.status(404).json({ error: "Student Id missing" });
 

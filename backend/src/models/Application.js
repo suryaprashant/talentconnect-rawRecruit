@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-
+import OnboardingModel from "./studentonboardingmodel.js";
 // job
 const ApplicationSchema = new mongoose.Schema(
     {
         user: {
             type: mongoose.Schema.Types.ObjectId,
-            // ref: "OnboardingModel",
+            ref: OnboardingModel,
             required: true
         },
         job: {
@@ -13,9 +13,9 @@ const ApplicationSchema = new mongoose.Schema(
             // ref: "Job",
             required: true
         },
-        jobType:{ //to be used in tablejoin
-            type:String,
-            required:true,
+        jobType: { //to be used in tablejoin
+            type: String,
+            required: true,
         },
         statusHistory: [
             {

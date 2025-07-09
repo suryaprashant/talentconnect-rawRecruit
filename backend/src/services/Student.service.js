@@ -1,8 +1,8 @@
-import StudentOverview from '../models/Student.js'
+import OnboardingModel from '../models/studentonboardingmodel.js'
 
 export async function getStudentService(studentId) {
     try {
-        const StudentData = await StudentOverview.findById(studentId);
+        const StudentData = await OnboardingModel.find({ userId: studentId });
         return { success: true, data: StudentData };
     } catch (error) {
         console.log("Error: ", error.message);

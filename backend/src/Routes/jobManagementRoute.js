@@ -1,14 +1,14 @@
 import express from 'express';
+import { getOffcampusJobs, getOffcampusJobApplicants } from '../controllers/jobManagementController.js';
 
-const router=express.Router();
+const router = express.Router();
 
 // api '../company/jobmanagement'
 
 // get jobs
-// router.get('/oncampus/jobs');
-// router.get('/offcampus/jobs');
-// router.get('/poolcampus/jobs');
-// router.get('/joblisting/jobs');
+// offcampus
+router.get('/offcampus', getOffcampusJobs);
+router.get('/offcampus/applications/:jobId', getOffcampusJobApplicants);
 
 // get applications
 // router.get('offcampus/applications:id')

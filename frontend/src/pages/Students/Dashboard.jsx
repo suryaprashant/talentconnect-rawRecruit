@@ -1,12 +1,15 @@
 import PageHeader from '@/components/dashboard/PageHeader'
 import Button from '@/components/ui/Button'
+import { useAuth } from '@/context/AuthProvider'
 import { FiPlus } from 'react-icons/fi'
 
 function Dashboard() {
+  const [authuser,setAuthUser]=useAuth();
+
   return (
     <div>
       <PageHeader 
-        title="Header Title"
+        title={authuser.user.name?authuser.user.name:authuser.user.email}
         label="Label"
         status="Active"
         assignee="Assignee"

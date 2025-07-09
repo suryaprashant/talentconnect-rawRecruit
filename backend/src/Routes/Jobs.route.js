@@ -2,6 +2,7 @@ import express from "express";
 
 import { fetchOpportunitiesForCollegeStudent, findRelevantOpportunityById } from "../controllers/relevantJobs.controller.js";
 import { createJob, fetchOnCampusOpportunities, findOpportunityById } from "../controllers/job.controller.js";
+import secureRoute from "../middlewares/secureRoute.js";
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ router.get('/campus/:collegeId', fetchOpportunitiesForCollegeStudent);
 // professional
 // router.get('/professional');
 
-router.get('/:id', findRelevantOpportunityById);
+router.get('/relevantjobs',secureRoute, findRelevantOpportunityById);
 router.get('/jobDetails/:jobId', findOpportunityById);
 // router.get('/campusopportunity', fetchCampusOpportunities);
 

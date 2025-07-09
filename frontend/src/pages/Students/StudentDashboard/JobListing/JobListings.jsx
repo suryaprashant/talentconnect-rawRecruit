@@ -15,7 +15,7 @@ const JobListings = () => {
         setIsLoading(true);
         
         // Fetch jobs based on profile
-        const profileJobsData = await getRelaventOpportunity('67ff4617aad277639987460d');
+        const profileJobsData = await getRelaventOpportunity();
         setProfileJobs(profileJobsData.data);
         
         // Fetch jobs based on preferences

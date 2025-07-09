@@ -236,6 +236,8 @@ import resume from "./Routes/onboarding_resume.js";
 import CollegeApplication from './Routes/CollegeApplication.route.js';
 import jobinterest from "./Routes/onboarding_jobinterests.js";
 import student_onboardingroutes from "./Routes/student_onboardingroutes.js";
+import JobManagement from "./Routes/jobManagementRoute.js"
+
 // Core API Mounts
 app.use("/api/auth", authRoutes);
 app.use("/api", student_onboardingroutes);
@@ -259,6 +261,8 @@ app.use("/hackathon", Hackathon);
 app.use("/company/dashboard", EmployerDashboard);
 app.use("/company/dashboard/resume", Resume);
 app.use("/company", Company);
+
+app.use('/company/jobmanagement',JobManagement);
 
 // RawRecruit API Mounts
 app.use("/api/rawrecruit", [
