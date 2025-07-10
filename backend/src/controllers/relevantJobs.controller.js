@@ -7,22 +7,22 @@ import { WeightedFilter } from "../utility/weightedJobSearch.js";
 export const findRelevantOpportunityById = async (req, res) => {
     const userId = req.user._id;
 
-    console.log("user: ", req.user);
+    // console.log("user: ", req.user);
 
     if (!userId) return res.status(404).json({ error: "Student Id missing" });
 
     try {
         // student data
         const response = await getStudentService(userId);
-        // console.log("student", response.data);
-        const lookingFor = response.data.lookingFor; // "Full-Time"
-        const interestedIndustryType = response.data.interestedIndustry;
-        const jobPreference = response.data.jobPreference; // ["Software Developer"]
-        const skills = response.data.skills; // ["Spring Boot", "React.js"]
-        const preferedWorkModes = response.data.preferedWorkModes; // ["Remote"]
-        const preferedLocations = response.data.preferredJobLocations; // ["Delhi", "Pune"]
+        // console.log("student", response.data[0]);
+        const lookingFor = response.data[0].lookingFor; // "Full-Time"
+        const interestedIndustryType = response.data[0].interestedIndustry;
+        const jobPreference = response.data[0].jobPreference; // ["Software Developer"]
+        const skills = response.data[0].skills; // ["Spring Boot", "React.js"]
+        const preferedWorkModes = response.data[0].preferedWorkModes; // ["Remote"]
+        const preferedLocations = response.data[0].preferredJobLocations; // ["Delhi", "Pune"]
 
-        // console.log(lookingFor, "\n", interestedIndustryType, "\n", jobPreference, "\n", skills, "\n", preferedWorkModes, "\n", preferedLocations);
+        console.log(lookingFor, "\n", interestedIndustryType, "\n", jobPreference, "\n", skills, "\n", preferedWorkModes, "\n", preferedLocations);
 
         const query = {};
         if (lookingFor) query.employementType = lookingFor;
