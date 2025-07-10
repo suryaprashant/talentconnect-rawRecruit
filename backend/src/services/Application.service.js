@@ -1,12 +1,13 @@
 import mongoose from 'mongoose';
 
-import Application from "../models/Application.js";
+// import Application from "../models/Application.js";
+import OffCampusApplication from '../models/offcampusApplicationModel.js'
 // import '../models/Student.js';
 import Job from '../models/Job.js';
 
 export async function checkExitence(jobId, userId) {
     try {
-        const response = await Application.find({ user: userId, job: jobId });
+        const response = await OffCampusApplication.find({ user: userId, job: jobId });
         // console.log("res: ", response);
         if (response?.length > 0) return false;
     } catch (error) {
@@ -16,67 +17,58 @@ export async function checkExitence(jobId, userId) {
     return true;
 }
 
-export async function fetchApplicationService(query, userType) {
+export async function fetchApplicationService(userId) {
     try {
-        let applicationData;
-        if (userType === 'User') {
-            // applicationData = await Application.find(query)
-            //     .populate({
-            //         path: 'job',
-            //         select: '-allowedColleges'
-            //     })
-            //     .lean();
+        // let applicationData;
+        // applicationData = await Application.find(query)
+        //     .populate({
+        //         path: 'job',
+        //         select: '-allowedColleges'
+        //     })
+        //     .lean();
 
-            applicationData = await Application.aggregate([
-                {
-                    $match: {
-                        user: new mongoose.Types.ObjectId(query.user)
-                    }
-                },
-                {
-                    $lookup: {
-                        from: 'jobs',
-                        localField: 'job',
-                        foreignField: '_id',
-                        as: 'jobDetails'
-                    }
-                },
-                {
-                    $lookup: {
-                        from: 'companyoverviews',
-                        localField: 'jobDetails.companyPosted',
-                        foreignField: '_id',
-                        as: 'companyDetails'
-                    }
-                },
-                {
-                    $project: {
-                        job: 1,
-                        statusHistory: 1,
-                        currentStatus: 1,
-                        createdAt: 1,
-                        "jobDetails.title": 1,
-                        "jobDetails._id": 1,
-                        "jobDetails.description": 1,
-                        "jobDetails.location": 1,
-                        "jobDetails.workMode": 1,
-                        "jobDetails.yearsOfExperience": 1,
-                        "jobDetails.yearsOfExperience": 1,
-                        "companyDetails.companyName": 1,
-                    }
+        const applicationData = await OffCampusApplication.aggregate([
+            {
+                $match: {
+                    user: new mongoose.Types.ObjectId(userId)
                 }
-                // {
-                //     $unwind: '$jobDetails'
-                // }
-            ]);
-        } else if (userType === 'Company') {
-            applicationData = await Application.find(query)
-                .populate('user')
-                .lean();
-        }
-        else {
-            return { success: false, error: "Invalid User" }
-        }
+            },
+            {
+                $lookup: {
+                    from: 'jobs',
+                    localField: 'job',
+                    foreignField: '_id',
+                    as: 'jobDetails'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'companyoverviews',
+                    localField: 'jobDetails.companyPosted',
+                    foreignField: '_id',
+                    as: 'companyDetails'
+                }
+            },
+            {
+                $project: {
+                    job: 1,
+                    statusHistory: 1,
+                    currentStatus: 1,
+                    createdAt: 1,
+                    "jobDetails.title": 1,
+                    "jobDetails._id": 1,
+                    "jobDetails.description": 1,
+                    "jobDetails.location": 1,
+                    "jobDetails.workMode": 1,
+                    "jobDetails.yearsOfExperience": 1,
+                    "jobDetails.yearsOfExperience": 1,
+                    "companyDetails.companyName": 1,
+                }
+            }
+            // {
+            //     $unwind: '$jobDetails'
+            // }
+        ]);
 
         return applicationData.length > 0 ? { success: true, data: applicationData } : { success: false, message: "No application" };
     } catch (error) {
@@ -85,13 +77,12 @@ export async function fetchApplicationService(query, userType) {
     }
 }
 
-export async function createApplicationService(userId, jobId, jobType) {
+export async function createApplicationService(userId, jobId) {
 
     try {
-        const newApplication = new Application({
+        const newApplication = new OffCampusApplication({
             user: userId,
             job: jobId,
-            jobType: jobType,
             statusHistory: [{ status: "Applied" }],
             currentStatus: "Applied"
         });
@@ -105,7 +96,7 @@ export async function createApplicationService(userId, jobId, jobType) {
 
 export async function fetchAcceptedCandidatesService(jobId) {
     try {
-        const response = await Application.find({ job: jobId, currentStatus: 'Offer Extended' })
+        const response = await OffCampusApplication.find({ job: jobId, currentStatus: 'Offer Extended' })
             .populate({
                 path: 'user',
                 select: "name collegeName cgpa resumeUrl"
@@ -170,6 +161,18 @@ export async function getAcceptedOnCampusService(companyId) {
         // ]);
 
         return { success: true, data: acceptedCandidates };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+
+export async function getOffCampusApplicantsService(jobId) {
+    try {
+        const response = await OffCampusApplication.find({ job: jobId })
+            .populate('user')
+            .lean();
+        return { success: true, data: response };
     } catch (error) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");

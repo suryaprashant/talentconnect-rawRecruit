@@ -1,64 +1,55 @@
-// src/models/companyModels/offCampusApplicationModel.js
-
 import mongoose from "mongoose";
-
-const offCampusApplicationSchema = new mongoose.Schema(
-  {
-    jobId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Job",
-      required: true,
+import "./studentonboardingmodel.js";
+// job
+const ApplicationSchema = new mongoose.Schema(
+    {
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Onboarding",
+            required: true
+        },
+        job: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "HiringDrive",
+            required: true
+        },
+        statusHistory: [
+            {
+                status: {
+                    type: String,
+                    // enum: [
+                    //     "Applied",
+                    //     "Application Sent",
+                    //     "Awaiting Recruiter Action",
+                    //     "Rejected",
+                    //     "Shortlisted",
+                    //     "Interview Scheduled",
+                    //     "Offer Extended",
+                    // ],
+                    required: true
+                },
+                date: {
+                    type: Date,
+                    default: Date.now
+                }
+            }
+        ],
+        currentStatus: {
+            type: String,
+            // enum: [
+            //     "Applied",
+            //     "Application Sent",
+            //     "Awaiting Recruiter Action",
+            //     "Shortlisted",
+            //     "Interview Scheduled",
+            //     "Offer Extended",
+            //     "Rejected"
+            // ],
+            default: "Applied"
+        }
     },
-    applicantId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
-      required: true,
-    },
-    applicationStatus: {
-      type: String,
-      enum: ["Applied", "Shortlisted", "Rejected"],
-      default: "Applied",
-    },
-    currentSalary: {
-      type: String,
-    },
-    expectedSalary: {
-      type: String,
-    },
-    portfolioLink: {
-      type: String,
-    },
-    resumeLink: {
-      type: String,
-    },
-    linkedinLink: {
-      type: String,
-    },
-    skills: [String],
-    languages: [String],
-    industry: {
-      type: String,
-    },
-    designation: {
-      type: String,
-    },
-    experience: {
-      type: String,
-    },
-    location: {
-      type: String,
-    },
-    lastActive: {
-      type: Date,
-      default: Date.now,
-    },
-  },
-  { timestamps: true }
+    { timestamps: true }
 );
 
-const OffCampusApplication = mongoose.model(
-  "OffCampusApplication",
-  offCampusApplicationSchema
-);
-
+const OffCampusApplication = mongoose.model("OffCampusApplication", ApplicationSchema);
 export default OffCampusApplication;

@@ -1,4 +1,5 @@
-import { getOffCampusJobsService, getOffCampusJobApplicantsService } from "../services/jobManagementService.js";
+import { getOffCampusJobsService } from "../services/jobManagementService.js";
+import { getOffCampusApplicantsService } from "../services/Application.service.js";
 
 export const getOffcampusJobs = async (req, res) => {
     const companyId = req.user._id;
@@ -17,7 +18,7 @@ export const getOffcampusJobApplicants = async (req, res) => {
     if (!jobId) return res.status(404).json({ msg: "Job not found!" });
 
     try {
-        const response = await getOffCampusJobApplicantsService(jobId);
+        const response = await getOffCampusApplicantsService(jobId);
         res.status(200).json(response);
     } catch (error) {
         console.log("Error: ", error);
