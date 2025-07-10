@@ -431,56 +431,44 @@ export default function OffCampusHiringForm({onBackClick}) {
           </div>
 
           <div>
-            <label className="block mb-1 font-medium">Tentative Date of Placement / Hiring</label>
-            <div className="flex space-x-2">
-              <div className="w-1/2">
-                <label className="block text-xs mb-1">Start Date</label>
-                <div className="relative">
-                  <select
-                    name="startDate"
-                    value={formData.startDate}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded appearance-none pr-8 bg-white focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="" disabled>Select start date</option>
-                    <option value="2023-10-01">October 1, 2023</option>
-                    <option value="2023-11-01">November 1, 2023</option>
-                    <option value="2023-12-01">December 1, 2023</option>
-                    <option value="2024-01-01">January 1, 2024</option>
-                    <option value="2024-02-01">February 1, 2024</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div className="w-1/2">
-                <label className="block text-xs mb-1">End Date</label>
-                <div className="relative">
-                  <select
-                    name="endDate"
-                    value={formData.endDate}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded appearance-none pr-8 bg-white focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="" disabled>Select end date</option>
-                    <option value="2023-10-15">October 15, 2023</option>
-                    <option value="2023-11-15">November 15, 2023</option>
-                    <option value="2023-12-15">December 15, 2023</option>
-                    <option value="2024-01-15">January 15, 2024</option>
-                    <option value="2024-02-15">February 15, 2024</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+  <label className="block mb-1 font-medium">Tentative Date of Placement / Hiring</label>
+  <div className="flex space-x-2">
+    <div className="w-1/2">
+      <label className="block text-xs mb-1">Start Date</label>
+      <div className="relative">
+        <input
+          type="date"
+          name="startDate"
+          value={formData.startDate}
+          onChange={handleChange}
+          className="w-full p-2 border rounded appearance-none pr-8 bg-white focus:ring-blue-500 focus:border-blue-500"
+        />
+        <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div className="w-1/2">
+      <label className="block text-xs mb-1">End Date</label>
+      <div className="relative">
+        <input
+          type="date"
+          name="endDate"
+          value={formData.endDate}
+          onChange={handleChange}
+          className="w-full p-2 border rounded appearance-none pr-8 bg-white focus:ring-blue-500 focus:border-blue-500"
+        />
+        <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
           <div>
             <label className="block mb-1 font-medium">Number of Rounds</label>

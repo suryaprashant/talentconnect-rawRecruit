@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import Auth from "../models/auth.js";
 
-const secureRoute = async (req, res, next) => {
+export const secureRoute = async (req, res, next) => {
 
   try {
     if (!process.env.JWT_SECRET) {
@@ -33,4 +33,5 @@ const secureRoute = async (req, res, next) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 export default secureRoute;
