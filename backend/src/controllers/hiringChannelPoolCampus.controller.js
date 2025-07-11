@@ -26,3 +26,37 @@ export const poolCampusRegister = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 }
+
+export const getAllRegistrations = async(req, res) => {
+  try {
+    const response = await PoolCampusHiring.find()
+      .populate({
+        path: 'companyId',
+        select: 'companyDetails profileImage', // Add fields you need
+      })
+      .lean();
+    res.status(200).json({ success: true, data: response });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+
+}
+
+export const getJobById = async (req, res) =>{
+  const { id } = req.params;
+  try {
+    const response = await PoolCampusHiring.findById(id)
+      .populate({ 
+      path: 'companyId',
+      select: 'companyDetails profileImage hiringPreferences',
+      })
+      .lean();
+    res.status(200).json(response);
+  }
+  catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }  
+}
