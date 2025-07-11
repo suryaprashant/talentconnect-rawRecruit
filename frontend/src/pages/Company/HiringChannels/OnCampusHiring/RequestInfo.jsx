@@ -2,23 +2,24 @@ import { useState } from 'react';
 import { ChevronDown, Mail, Phone, Link } from 'lucide-react';
 
 export default function RequestInfo() {
-  const [formData, setFormData] = useState({
+  const intialData = {
     degree: '',
-    locations: [],
-    lookingFor: 'job',
-    employmentType: 'full-time',
+    preferredLocations: [],
+    lookingFor: '',
+    employmentType: '',
     minimumSalary: '',
     startDate: '',
     endDate: '',
     rounds: '',
     selectionProcess: [],
-    contactName: '',
+    contactPerson: '',
     contactDesignation: '',
-    contactEmail: 'hello@xyz.com',
-    contactMobile: '1234567890',
-    contactLinkedIn: 'www.resume.io',
+    email: 'hello@xyz.com',
+    mobile: '',
+    linkedin: '',
     minimumStudents: ''
-  });
+  };
+  const [formData, setFormData] = useState(intialData);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -35,16 +36,21 @@ setFormData({
 
   const handleSubmit = async () => {
   try {
+     const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1];
     const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/oncampus-register`, {
       method: 'POST',
+      withCredentials: true,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json' ,
+        'Authorization': `Bearer ${token}` // Assuming you store JWT in localStorage
       },
+
       body: JSON.stringify(formData)
     });
 
     if (response.ok) {
       alert('Form submitted successfully!');
+      setFormData(intialData); // Reset form data
     } else {
       const errorData = await response.json();
       alert(`Submission failed: ${errorData.error}`);
@@ -100,19 +106,22 @@ setFormData({
 
         {/* Preferred Hiring Locations */}
         <div>
-          <label htmlFor="locations" className="block mb-2 font-medium">Preferred Hiring Locations</label>
+          <label htmlFor="preferredLocations" className="block mb-2 font-medium">Preferred Hiring Locations</label>
           <div className="relative">
             <select 
-              id="locations" 
-              name="locations"
+              id="preferredLocations" 
+              name="preferredLocations"
               className="w-full p-2 border border-gray-300 rounded appearance-none bg-white pr-10"
-              value={formData.locations}
+              value={formData.preferredLocations}
               onChange={handleInputChange}
             >
               <option value="" disabled>Multiple select</option>
               <option value="remote">Remote</option>
               <option value="onsite">On-site</option>
               <option value="hybrid">Hybrid</option>
+              <option value="hybrid">Mumbai</option>
+              <option value="hybrid">Delhi</option>
+              <option value="hybrid">Bengluru</option>
             </select>
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
           </div>
@@ -279,87 +288,89 @@ setFormData({
           </div>
         </div>
 
-        {/* Contact Person */}
+
+        
+      {/* Contact Person */}
         <div>
-          <label htmlFor="contactName" className="block mb-2 font-medium">Contact Person</label>
+        <label htmlFor="contactPerson" className="block mb-2 font-medium">Contact Person</label>
+        <input
+          type="text"
+          id="contactPerson"
+          name="contactPerson" // Now matches formData.contactPerson
+          placeholder="Name"
+          className="w-full p-2 border border-gray-300 rounded"
+          value={formData.contactPerson}
+          onChange={handleInputChange}
+        />
+      </div>
+
+      {/* Contact person designation */}
+      <div>
+        <label htmlFor="contactDesignation" className="block mb-2 font-medium">Contact person designation <span className="text-red-500">*</span></label>
+        <div className="relative">
           <input
             type="text"
-            id="contactName"
-            name="contactName"
-            placeholder="Name"
-            className="w-full p-2 border border-gray-300 rounded"
-            value={formData.contactName}
+            id="contactDesignation"
+            name="contactDesignation" // Matches formData.contactDesignation
+            placeholder="Placeholder"
+            className="w-full p-2 border border-gray-300 rounded appearance-none pr-10"
+            value={formData.contactDesignation}
+            onChange={handleInputChange}
+          />
+          <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+        </div>
+      </div>
+
+      {/* Contact person email */}
+      <div>
+        <label htmlFor="email" className="block mb-2 font-medium">Contact person email <span className="text-red-500">*</span></label>
+        <div className="relative">
+          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+          <input
+            type="email"
+            id="email"
+            name="email" // Now matches formData.email
+            placeholder="hello@xyz.com"
+            className="w-full p-2 pl-10 border border-gray-300 rounded"
+            value={formData.email}
             onChange={handleInputChange}
           />
         </div>
+      </div>
 
-        {/* Contact person designation */}
-        <div>
-          <label htmlFor="contactDesignation" className="block mb-2 font-medium">Contact person designation <span className="text-red-500">*</span></label>
-          <div className="relative">
-            <input
-              type="text"
-              id="contactDesignation"
-              name="contactDesignation"
-              placeholder="Placeholder"
-              className="w-full p-2 border border-gray-300 rounded appearance-none pr-10"
-              value={formData.contactDesignation}
-              onChange={handleInputChange}
-            />
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-          </div>
+      {/* Contact person mobile no */}
+      <div>
+        <label htmlFor="mobile" className="block mb-2 font-medium">Contact person mobile no <span className="text-red-500">*</span></label>
+        <div className="relative">
+          <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+          <input
+            type="tel"
+            id="mobile"
+            name="mobile" // Now matches formData.mobile
+            placeholder="1234567890"
+            className="w-full p-2 pl-10 border border-gray-300 rounded"
+            value={formData.mobile}
+            onChange={handleInputChange}
+          />
         </div>
+      </div>
 
-        {/* Contact person email */}
-        <div>
-          <label htmlFor="contactEmail" className="block mb-2 font-medium">Contact person email <span className="text-red-500">*</span></label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            <input
-              type="email"
-              id="contactEmail"
-              name="contactEmail"
-              placeholder="hello@xyz.com"
-              className="w-full p-2 pl-10 border border-gray-300 rounded"
-              value={formData.contactEmail}
-              onChange={handleInputChange}
-            />
-          </div>
+      {/* Contact person LinkedIn Profile */}
+      <div>
+        <label htmlFor="linkedin" className="block mb-2 font-medium">Contact person LinkedIn Profile</label>
+        <div className="relative">
+          <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+          <input
+            type="url"
+            id="linkedIin"
+            name="linkedin" // Now matches formData.linkedIn
+            placeholder="http://www.linkedin.com/in/yourprofile"
+            className="w-full p-2 pl-10 border border-gray-300 rounded"
+            value={formData.linkedin} 
+            onChange={handleInputChange}
+          />
         </div>
-
-        {/* Contact person mobile no */}
-        <div>
-          <label htmlFor="contactMobile" className="block mb-2 font-medium">Contact person mobile no <span className="text-red-500">*</span></label>
-          <div className="relative">
-            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            <input
-              type="tel"
-              id="contactMobile"
-              name="contactMobile"
-              placeholder="1234567890"
-              className="w-full p-2 pl-10 border border-gray-300 rounded"
-              value={formData.contactMobile}
-              onChange={handleInputChange}
-            />
-          </div>
-        </div>
-
-        {/* Contact person LinkedIn Profile */}
-        <div>
-          <label htmlFor="contactLinkedIn" className="block mb-2 font-medium">Contact person LinkedIn Profile</label>
-          <div className="relative">
-            <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            <input
-              type="url"
-              id="contactLinkedIn"
-              name="contactLinkedIn"
-              placeholder="http://"
-              className="w-full p-2 pl-10 border border-gray-300 rounded"
-              value={formData.contactLinkedIn}
-              onChange={handleInputChange}
-            />
-          </div>
-        </div>
+      </div>
 
         {/* Minimum Students to be Hired */}
         <div>

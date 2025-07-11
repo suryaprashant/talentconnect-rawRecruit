@@ -1,14 +1,14 @@
 import jwt from "jsonwebtoken";
 import Auth from "../models/auth.js";
 
-export const secureRoute = async (req, res, next) => {
+ const secureRoute = async (req, res, next) => {
 
   try {
     if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET is not configured");
     }
 
-    const token = req.cookies.jwt;
+    const token = req.cookies.jwt || req.headers.authorization?.split(" ")[1]; // Get token from cookies or Authorization header
     // console.log("Token: ", token);
     if (!token) {
       return res.status(401).json({ error: "No token, authorization denied" });

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const registrationSchema = new mongoose.Schema({
+  companyPosted: { type: mongoose.Schema.Types.ObjectId, ref: "CompanyProfile"  , required: true }, // Reference to the company profile
   degree: [String],
   preferredLocations: [String],
   lookingFor: String,
@@ -16,12 +17,11 @@ const registrationSchema = new mongoose.Schema({
   mobile: String,
   linkedin: String,
   minimumStudents: [String],
-  companyPosted: { type: mongoose.Schema.Types.ObjectId, ref: "CompanyProfile" },
+  
+}, { timestamps: true
 });
 
-// Use a unique model name, and conditional registration to avoid overwrite errors
 const modelName = "CampusRegistration";
-
 const Registration =
   mongoose.models[modelName] ||
   mongoose.model(modelName, registrationSchema, "campus_registrations"); // <- collection name

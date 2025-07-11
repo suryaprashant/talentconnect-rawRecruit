@@ -3,7 +3,7 @@ import CompanyProfile from '../models/companyDashboard/companyProfileModel.js'
 
 export const poolCampusRegister = async (req, res) => {
   try {
-      const userId = req.user._id ; 
+    const userId = req.user._id ; 
      
     const companyProfile = await CompanyProfile.findOne({ userId });
 

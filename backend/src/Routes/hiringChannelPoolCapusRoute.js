@@ -1,6 +1,6 @@
 import express from 'express';
 import { poolCampusRegister } from '../controllers/hiringChannelPoolCampus.controller.js';
-import {secureRoute} from '../middlewares/secureRoute.js'
+import secureRoute from '../middlewares/secureRoute.js'
 
 const router = express.Router() ;
 
