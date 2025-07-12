@@ -12,8 +12,8 @@ function FOffCampusJobListings() {
 
   const fetchOffCampusJobs = async () => {
     try {
-      const response = await getRelaventOpportunity('67ff4617aad277639987460d');
-      setJobListings(response.data);
+      const response = await getRelaventOpportunity();
+      setJobListings(response.data.data);
     } catch (error) {
       console.log("Error: ", error);
     }
@@ -67,9 +67,9 @@ function FOffCampusJobListings() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {jobListings?.map(job => (
+        {jobListings.length > 0 ? jobListings.map(job => (
           <JobCard key={job._id} job={job} onClick={handleJobClick} />
-        ))}
+        )) : (<span>No Jobs</span>)}
       </div>
 
       <div className="flex justify-end mt-6">

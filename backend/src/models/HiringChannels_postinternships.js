@@ -1,8 +1,8 @@
 // models/HiringChannels_postjob.js
 import mongoose from "mongoose";
-
 const jobSchema = new mongoose.Schema(
   {
+    companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'CompanyProfile', required: true },
     employmentType: {
       type: String,
       enum: ["full-time", "part-time", "contract"],

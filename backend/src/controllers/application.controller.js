@@ -12,9 +12,9 @@ export async function createApplication(req, res) {
     try {
         if (await checkExitence(jobId, userId) === false) return res.status(403).json({ msg: "Already Applied" });
 
-        // const user = await checkStudentService(userId);
+        const user = await checkStudentService(userId);
         const job = await checkOpportunityService(jobId);
-        if (!job) {
+        if (!job || !user) {
             return res.status(404).json({ msg: "User or Job not found!" });
         }
 
