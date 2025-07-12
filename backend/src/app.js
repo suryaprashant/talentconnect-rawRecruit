@@ -236,6 +236,8 @@ import resume from "./Routes/onboarding_resume.js";
 import CollegeApplication from './Routes/CollegeApplication.route.js';
 import jobinterest from "./Routes/onboarding_jobinterests.js";
 import student_onboardingroutes from "./Routes/student_onboardingroutes.js";
+import hiringOffCampus from "./Routes/hiringChannelsOffCampus.js";
+import HiringChannelPoolCampusRoute from "./Routes/hiringChannelPoolCapusRoute.js";
 import JobManagement from "./Routes/jobManagementRoute.js"
 
 // Core API Mounts
@@ -251,7 +253,8 @@ app.use("/api/college", collegeProfileRoutes);
 app.use("/api/college-onboarding", collegeOnboardingRoutes);
 app.use("/api/dashboard", employerProfileRoutes);
 app.use("/api/messages", messageRoute);
-
+app.use("/api/company" , hiringOffCampus)
+app.use("/api/hiringDrive", HiringChannelPoolCampusRoute) ;
 // Feature Routes
 app.use("/jobs", Jobs);
 app.use("/internship", Internship);

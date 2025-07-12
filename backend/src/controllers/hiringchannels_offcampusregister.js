@@ -1,5 +1,6 @@
 import OffCampusRegister from "../models/HiringChannels_oncampusregister.js";
 
+
 export const registerOffCampus = async (req, res) => {
   try {
     const registration = new OffCampusRegister(req.body);
@@ -9,3 +10,5 @@ export const registerOffCampus = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+

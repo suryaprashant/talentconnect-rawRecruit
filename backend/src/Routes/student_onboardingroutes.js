@@ -1,58 +1,3 @@
-
-// import express from "express";
-// import {
-//   getAllOnboardingForms,
-//   submitOnboardingForm,
-//   getOnboardingForm,
-//   updateOnboardingForm,
-// } from "../controllers/studentOnboardingController.js";
-// import secureRoute from "../middlewares/secureRoute.js"; // Import your secureRoute middleware
-// import multer from "multer"; // Assuming you are using multer for file uploads
-
-// const router = express.Router();
-
-// // Configure Multer for file uploads
-// const storage = multer.memoryStorage(); // Store files in memory
-// const upload = multer({ storage: storage });
-
-// // Apply secureRoute to routes that require authentication
-// router.get("/onboarding", secureRoute, getAllOnboardingForms); // Example for getting all forms (might need admin role later)
-
-// router.post(
-//   "/onboarding",
-//   secureRoute, // Apply secureRoute here
-//   upload.fields([
-//     { name: "resume", maxCount: 1 },
-//     { name: "degreeCertificate", maxCount: 1 },
-//     { name: "project", maxCount: 1 },
-//     { name: "experienceCertificate", maxCount: 5 }, // Allow multiple experience certificates
-//   ]),
-//   submitOnboardingForm
-// );
-
-// router.get("/onboarding/me", secureRoute, getOnboardingForm); // Apply secureRoute here
-
-// router.put(
-//   "/onboarding/:id",
-//   secureRoute, // Apply secureRoute here
-//   upload.fields([
-//     { name: "resume", maxCount: 1 },
-//     { name: "degreeCertificate", maxCount: 1 },
-//     { name: "project", maxCount: 1 },
-//     { name: "experienceCertificate", maxCount: 5 },
-//   ]),
-//   updateOnboardingForm
-// );
-
-// export default router;
-
-
-
-
-
-// Path: routes/studentOnboardingRoutes.js
-
-
 import express from "express";
 import {
   getAllOnboardingForms,
@@ -81,7 +26,10 @@ router.post(
     { name: "project", maxCount: 2 },
     { name: "experienceCertificate", maxCount: 5 }, // Allow multiple experience certificates
     { name: "profileImage", maxCount: 1 }, // Added for profile image upload
-    { name: "backgroundImage", maxCount: 1 }, // Added for background image upload
+    { name: "backgroundImage", maxCount: 1 },
+    { name: "experienceCertificate", maxCount: 10 },
+    { name: "leadershipCertificate", maxCount: 10 },
+    { name: "internationalExperienceCertificate", maxCount: 10 }, // Added for background image upload
   ]),
   submitOnboardingForm
 );
@@ -97,7 +45,10 @@ router.put(
     { name: "project", maxCount: 2 },
     { name: "experienceCertificate", maxCount: 5 },
     { name: "profileImage", maxCount: 1 }, // Added for profile image update
-    { name: "backgroundImage", maxCount: 1 }, // Added for background image update
+    { name: "backgroundImage", maxCount: 1 },
+    { name: "experienceCertificate", maxCount: 10 },
+    { name: "leadershipCertificate", maxCount: 10 },
+    { name: "internationalExperienceCertificate", maxCount: 10 }, // Added for background image update
   ]),
   updateOnboardingForm
 );

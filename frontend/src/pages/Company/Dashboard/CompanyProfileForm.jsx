@@ -539,7 +539,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
   const handleEditToggle = () => {
     setIsEditing(prev => !prev);
   };
-
+  const backendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
   const handleSubmit = async () => {
     try {
       const dataToSubmit = new FormData();
@@ -556,7 +556,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
       delete kycDetailsWithoutDocs.kycDocuments; // Do not send old URLs back
       dataToSubmit.append('kycDetails', JSON.stringify(kycDetailsWithoutDocs));
 
-      const response = await axios.put('/api/companyDashboard/updateInformation', dataToSubmit, {
+      const response = await axios.put(`${backendUrl}/api/companyDashboard/updateInformation`, dataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('token')}`

@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.get('/', getUserApplication);
 router.post('/offcampusapply',secureRoute, createApplication);
+router.get('/getall', getUserApplication);
 
 // shortlisting
 

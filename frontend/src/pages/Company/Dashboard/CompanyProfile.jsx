@@ -114,23 +114,28 @@ export default function CompanyProfile() {
     fetchProfileData();
   }, []);
 
-  const fetchProfileData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.get('/api/companyDashboard/getInformation', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      setProfileData(response.data.profile);
-    } catch (err) {
-      console.error('Error fetching profile:', err);
-      setError('Failed to load profile data.');
-    } finally {
-      setLoading(false);
-    }
-  };
+   const backendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
+
+const fetchProfileData = async () => {
+  setLoading(true);
+  setError(null);
+ 
+  try {
+    console.log('Fetching profile data...');
+    const response = await axios.get(`${backendUrl}/api/companyDashboard/getInformation`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    console.log('Profile data fetched:', response.data);
+    setProfileData(response.data.profile);
+  } catch (err) {
+    console.error('Error fetching profile:', err);
+    setError('Failed to load profile data.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleImageUpload = async (event, imageType) => {
     const file = event.target.files[0];
@@ -140,7 +145,7 @@ export default function CompanyProfile() {
     formData.append(imageType === 'backgroundImage' ? 'backgroundImage' : 'profileImage', file);
 
     try {
-      const response = await axios.put('/api/companyDashboard/updateInformation', formData, {
+      const response = await axios.put(`${backendUrl}/api/companyDashboard/updateInformation`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('token')}`

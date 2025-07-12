@@ -526,7 +526,7 @@ export default function ProfileForm({
     };
 
     return (
-        <div className="bg-white min-h-screen pb-12">
+        <div className="bg-white w-full min-h-screen pb-12">
             <div className="max-w-4xl mx-auto px-4 py-8">
                 <div className="mb-10 flex justify-between items-center">
                     <div>
