@@ -83,11 +83,11 @@ const InternJobListings = () => {
         jobs={profileJobs}
       />
 
-      <JobListSection
+      {/* <JobListSection
         title="Intership based on your preferences"
         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros."
         jobs={preferenceJobs}
-      />
+      /> */}
     </div>
   );
 };

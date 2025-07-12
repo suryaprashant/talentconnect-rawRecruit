@@ -1,4 +1,5 @@
-import { fetchOpportunityService } from "../services/Job.service.js";
+import { fetchInternshipService, fetchOpportunityService } from "../services/Job.service.js";
+import { getStudentService } from "../services/Student.service.js";
 
 // export async function createJob(req, res) {
 //     // link path: only allowed to company (middleware implemetation)
@@ -26,18 +27,22 @@ export async function fetchOnCampusOpportunities(req, res) {
 }
 
 export async function fetchInternshipOpportunities(req, res) {
-    // const yearsOfExperience=0; //to be updated by middleware
-    const { openingFor } = req.query;
+    const userType = req.user.userType;
+    // console.log("usertype: ", userType)
+    // const { openingFor } = req.query;
 
-    const query = {};
-    query.jobType = "Internship";
-
-    if (openingFor) query.openingFor = openingFor;
-    else query.openingFor = 'Offcampus'
+    // const query = {};
+    // if (openingFor) query.openingFor = openingFor;
+    // else query.openingFor = 'Offcampus'
     // query.yearsOfExperience=yearsOfExperience;
 
+    let yearsOfExperience;
+    if (userType === 'student' || userType === 'fresher') yearsOfExperience = 0;
+    else if (userType === 'professional') yearsOfExperience = 1;
+    else return res.status(403).json({ msg: "Invalid user" });
+
     try {
-        const response = await fetchOpportunityService(query);
+        const response = await fetchInternshipService(yearsOfExperience);
         res.status(200).json(response.data);
     } catch (error) {
         res.status(500).json({ error: "Internal server error" });

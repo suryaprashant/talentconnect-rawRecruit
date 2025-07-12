@@ -29,7 +29,7 @@ export function getRelaventOpportunity() {
 }
 
 export function getAllInternship() {
-  return axiosClient.get(`/internship?openingFor=Oncampus`)
+  return axiosClient.get(`/internship`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

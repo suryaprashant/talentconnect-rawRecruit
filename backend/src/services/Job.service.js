@@ -1,5 +1,6 @@
 import Job from "../models/Job.js";
 import HiringDrive from "../models/HiringChannelOffCampusRegister.js";
+import Intern from "../models/HiringChannels_postinternships.js";
 
 // create by company
 // export async function createOpportunityService(jobData, companyId) {
@@ -16,7 +17,7 @@ import HiringDrive from "../models/HiringChannelOffCampusRegister.js";
 
 // update opportunity by company
 
-// fetch
+// fetch jobs
 export async function fetchOpportunityService(query) {
     try {
         // const response = await Job.find(query).populate('Company');
@@ -40,6 +41,55 @@ export async function fetchOpportunityService(query) {
         });
 
         return { success: true, data: newResponse };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+
+// fetch internship
+export async function fetchInternshipService(yearsOfExperience) {
+    try {
+        // const response = await Job.find(query).populate('Company');
+        // const response = await Intern.find(query)
+        //     .populate({
+        //         path: 'companyId',
+        //         select: 'companyDetails'
+        //     })
+        //     .lean();
+
+        // cal status
+        // const now = Date.now();
+        // const newResponse = response.map(item => {
+        //     const start = new Date(item.hiringStartDate).getTime();
+        //     const end = new Date(item.hiringEndDate).getTime();
+
+        //     return {
+        //         ...item,
+        //         status: now >= start && now <= end ? 'Open' : 'Closed'
+        //     };
+        // });
+
+        const response = await Intern.find({
+            $expr: {
+                $and: [
+                    {
+                        $lte: [
+                            { $toInt: { $arrayElemAt: [{ $split: ["$yearsOfExperience", "-"] }, 0] } },
+                            yearsOfExperience
+                        ]
+                    },
+                    {
+                        $gte: [
+                            { $toInt: { $arrayElemAt: [{ $split: ["$yearsOfExperience", "-"] }, 1] } },
+                            yearsOfExperience
+                        ]
+                    }
+                ]
+            }
+        });
+
+        return { success: true, data: response };
     } catch (error) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");
