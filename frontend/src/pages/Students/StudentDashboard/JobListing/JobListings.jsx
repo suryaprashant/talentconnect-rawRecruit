@@ -9,25 +9,26 @@ const JobListings = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const loadJobs = async () => {
+    try {
+      setIsLoading(true);
+
+      // Fetch jobs based on profile
+      const profileJobsData = await getRelaventOpportunity();
+      console.log("Jobs: ",profileJobsData.data.data);
+      setProfileJobs(profileJobsData.data.data);
+
+      // Fetch jobs based on preferences
+      // const preferenceJobsData = await fetchJobs({ type: 'preferences' });
+      // setPreferenceJobs(preferenceJobsData);
+    } catch (err) {
+      setError('Failed to load jobs. Please try again later.');
+      console.error('Error fetching jobs:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   useEffect(() => {
-    const loadJobs = async () => {
-      try {
-        setIsLoading(true);
-        
-        // Fetch jobs based on profile
-        const profileJobsData = await getRelaventOpportunity();
-        setProfileJobs(profileJobsData.data);
-        
-        // Fetch jobs based on preferences
-        const preferenceJobsData = await fetchJobs({ type: 'preferences' });
-        setPreferenceJobs(preferenceJobsData);
-      } catch (err) {
-        setError('Failed to load jobs. Please try again later.');
-        console.error('Error fetching jobs:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
 
     loadJobs();
   }, []);
@@ -45,7 +46,7 @@ const JobListings = () => {
       <div className="flex justify-center items-center h-screen">
         <div className="text-red-500 text-center p-4">
           <p className="text-xl font-semibold">{error}</p>
-          <button 
+          <button
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
             onClick={() => window.location.reload()}
           >
@@ -58,17 +59,17 @@ const JobListings = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <JobListSection 
-        title="Jobs based on your profile" 
+      <JobListSection
+        title="Jobs based on your profile"
         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros."
         jobs={profileJobs}
       />
-      
-      <JobListSection 
-        title="Jobs based on your preferences" 
+
+      {/* <JobListSection
+        title="Jobs based on your preferences"
         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros."
         jobs={preferenceJobs}
-      />
+      /> */}
     </div>
   );
 };

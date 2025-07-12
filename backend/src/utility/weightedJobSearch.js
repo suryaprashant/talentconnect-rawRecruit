@@ -6,6 +6,8 @@ const weights = {
 }
 
 export const WeightedFilter = (PreferedJobs, skills, interestedIndustryType, preferedLocations) => {
+    // console.log(PreferedJobs)
+    
     const scoredJobs = PreferedJobs?.map(job => {
         let score = 0;
 

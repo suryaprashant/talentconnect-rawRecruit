@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import JobCard from '@/components/Student/StudentDashboard/OffCampusListing/JobCard';
 import { getRelaventOpportunity } from '@/lib/User_AxiosInstance';
-// import { jobListings } from '@/constants/offCampusListing'
 
-function OffCampusJobListings() {
-  const [jobListing, setJobListing] = useState([]);
+function OffCampusoffCampusJobss() {
+  const [offCampusJobs, setOffCampusJobs] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -20,8 +19,8 @@ function OffCampusJobListings() {
     try {
       setIsLoading(true);
 
-      const response = await getRelaventOpportunity('67ff4617aad277639987460d');
-      setJobListing(response.data);
+      const response = await getRelaventOpportunity();
+      setOffCampusJobs(response.data.data);
       setError(null);
     } catch (error) {
       setError('Failed to load jobs. Please try again later.')
@@ -100,7 +99,7 @@ function OffCampusJobListings() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {jobListing?.map(job => (
+        {offCampusJobs?.map(job => (
           <JobCard key={job._id} job={job} onClick={handleJobClick} />
         ))}
       </div>
@@ -114,4 +113,4 @@ function OffCampusJobListings() {
   );
 }
 
-export default OffCampusJobListings;
+export default OffCampusoffCampusJobss;

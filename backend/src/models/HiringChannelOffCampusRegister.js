@@ -1,8 +1,9 @@
 // models/HiringDrive.js
 import mongoose from "mongoose";
+import './companyDashboard/companyProfileModel.js'
 
 const HiringDriveSchema = new mongoose.Schema({
-  comapanyId: { type: mongoose.Schema.Types.ObjectId, ref: 'companyProfileModel', required: true },
+  companyId: { type: mongoose.Schema.Types.ObjectId, ref: 'CompanyProfile', required: true },
   offCampusVenue: { type: String, required: true },
   studentStreams: [{ type: String, required: true }],
   criteria: { type: String },

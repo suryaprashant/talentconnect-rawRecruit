@@ -18,15 +18,15 @@ const JobCard = ({ job }) => {
           <div className="flex-grow">
             <Link to={`/${localStorage.getItem('selectedRole')}-dashboard/job-listing/${job._id}`} className="block">
               <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors mb-1">
-                {job.title}
+                {job.jobRoles}
               </h3>
             </Link>
             <div className="flex flex-wrap text-sm text-gray-600 mb-2">
-              <span className="mr-3">{job.location}</span>
+              <span className="mr-3">{job.workLocations}</span>
               <span className="mr-3">•</span>
-              <span className="mr-3">{job.jobType}</span>
+              <span className="mr-3">{job.employmentTypes}</span>
               <span className="mr-3">•</span>
-              <span>{job.workMode}</span>
+              <span>{job.workModes}</span>
             </div>
           </div>
           <button 

@@ -15,28 +15,31 @@ export const findRelevantOpportunityById = async (req, res) => {
         // student data
         const response = await getStudentService(userId);
         // console.log("student", response.data[0]);
-        const lookingFor = response.data[0].lookingFor; // "Full-Time"
-        const interestedIndustryType = response.data[0].interestedIndustry;
+        const lookingFor = response.data[0].lookingFor; // "Job"
+        const employmentType = response.data[0].employmentType; // "full-time"
+        const interestedIndustryType = response.data[0].industry;
         const jobPreference = response.data[0].jobPreference; // ["Software Developer"]
         const skills = response.data[0].skills; // ["Spring Boot", "React.js"]
         const preferedWorkModes = response.data[0].preferedWorkModes; // ["Remote"]
-        const preferedLocations = response.data[0].preferredJobLocations; // ["Delhi", "Pune"]
+        const preferedLocations = response.data[0].locations; // ["Delhi", "Pune"]
 
-        console.log(lookingFor, "\n", interestedIndustryType, "\n", jobPreference, "\n", skills, "\n", preferedWorkModes, "\n", preferedLocations);
+        // console.log(lookingFor, "\n", interestedIndustryType, "\n", jobPreference, "\n", skills, "\n", preferedWorkModes, "\n", preferedLocations);
 
         const query = {};
-        if (lookingFor) query.employementType = lookingFor;
+        // if (lookingFor) query.lookingFor = lookingFor;
+        if (employmentType) query.employmentTypes = { $in: [employmentType] };
         if (jobPreference && jobPreference.length > 0) query.title = { $in: jobPreference };
         if (preferedWorkModes && preferedWorkModes.length > 0) query.workMode = { $in: preferedWorkModes };
-        query.openingFor = { $ne: "Oncampus" };
-        query.jobType = { $ne: "Internship" };
+        // query.openingFor = { $ne: "Oncampus" };
+        // query.jobType = { $ne: "Internship" };
 
         // console.log(query);
 
         const Jobs = await fetchOpportunityService(query);
-        const preferedJobs = await WeightedFilter(Jobs.data, skills, interestedIndustryType, preferedLocations);
+        res.status(200).json(Jobs);
+        // const preferedJobs = await WeightedFilter(Jobs.data, skills, interestedIndustryType, preferedLocations);
 
-        res.status(200).json(preferedJobs);
+        // res.status(200).json(preferedJobs);
     }
     catch (error) {
         console.log(error.message);

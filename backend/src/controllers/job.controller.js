@@ -1,15 +1,15 @@
-import { createOpportunityService, fetchOpportunityService } from "../services/Job.service.js";
+import { fetchOpportunityService } from "../services/Job.service.js";
 
-export async function createJob(req, res) {
-    // link path: only allowed to company (middleware implemetation)
+// export async function createJob(req, res) {
+//     // link path: only allowed to company (middleware implemetation)
 
-    try {
-        const response = await createOpportunityService(req.body, req.params.companyId);
-        res.status(201).json(response);
-    } catch (error) {
-        res.status(500).json({ error: "Internal server error" });
-    }
-}
+//     try {
+//         const response = await createOpportunityService(req.body, req.params.companyId);
+//         res.status(201).json(response);
+//     } catch (error) {
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// }
 
 export async function fetchOnCampusOpportunities(req, res) {
     // link path: only allowed to college (middleware implemetation)
