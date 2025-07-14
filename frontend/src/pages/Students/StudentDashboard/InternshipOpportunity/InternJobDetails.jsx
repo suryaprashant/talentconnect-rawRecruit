@@ -40,7 +40,6 @@ const InternJobDetails = () => {
 
   const handleApply = async () => {
     try {
-      // Here you would implement the application logic
       const response = await ApplyForInternship(jobId);
       if (response.success === 'true') alert("Applied");
 
@@ -55,7 +54,7 @@ const InternJobDetails = () => {
   const handleSave = async () => {
     try {
       // Implement save job functionality
-      console.log('Saving job:', jobId);
+      // console.log('Saving job:', jobId);
       alert('Job saved successfully!');
     } catch (err) {
       console.error('Error saving job:', err);

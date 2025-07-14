@@ -6,7 +6,7 @@ import { checkStudentService } from "../services/Student.service.js";
 export async function createApplication(req, res) {
     const { jobId } = req.body;
     const userId = req.user._id;
-    console.log("user", userId);
+    
     if (!userId || !jobId) return res.status(404).json({ msg: "Fields missing" });
 
     try {
