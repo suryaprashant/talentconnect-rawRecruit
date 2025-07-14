@@ -34,8 +34,8 @@ export function getAllInternship() {
     .catch(error => console.log("Error: ", error));
 }
 
-export function getInternships() {
-  return axiosClient.get(`/internship`)
+export function getInternshipDetail(Id) {
+  return axiosClient.get(`/internship/getInternshipDetail/${Id}`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

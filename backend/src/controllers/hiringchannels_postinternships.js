@@ -1,9 +1,18 @@
 import Intern from "../models/HiringChannels_postinternships.js";
+import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
+
 export const createJob = async (req, res) => {
+  const userId = req.user._id;
+
   try {
-    console.log("Received data:", req.body); // Add this for debugging
+    const companyProfile = await CompanyProfile.findOne({ userId });
+
+    if (!companyProfile) {
+      return res.status(404).json({ error: "Company profile not found" });
+    }
 
     const jobData = req.body;
+    jobData.companyId = companyProfile._id;
 
     // Validate required fields
     if (
@@ -20,11 +29,9 @@ export const createJob = async (req, res) => {
     const newJob = new Intern(jobData);
     const savedJob = await newJob.save();
 
-    console.log("Job saved successfully:", savedJob); // Add this for debugging
-
-    res.status(201).json({ success: true, job: savedJob });
+    res.status(201).json({ success: true, msg: "Internship posted!" });
   } catch (error) {
-    console.error("Error creating job:", error); // Add this for debugging
+    console.error("Error creating job:", error);
 
     // Handle validation errors specifically
     if (error.name === "ValidationError") {
@@ -35,7 +42,7 @@ export const createJob = async (req, res) => {
       });
     }
 
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: "Internal Server" });
   }
 };
 export const getJobs = async (req, res) => {

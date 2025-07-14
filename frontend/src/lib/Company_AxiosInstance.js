@@ -11,8 +11,6 @@ axiosClient.defaults.headers = {
 
 // default 10sec
 axiosClient.defaults.timeout = 10000;
-
-// in case of tokens
 axiosClient.defaults.withCredentials = true;
 
 export function getRegisteredColleges() {
@@ -54,6 +52,13 @@ export function getAcceptedCampus(companyId) {
 
 export function acceptCollegeRequest(companyId, collegeId) {
   return axiosClient.post(`/college/application`, { companyId, collegeId })
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
+// internship
+export function postInternship(payload) {
+  return axiosClient.post(`/api/rawrecruit/createinternship`, payload)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

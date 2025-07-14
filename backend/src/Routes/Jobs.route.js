@@ -21,7 +21,7 @@ router.get('/campus/:collegeId', fetchOpportunitiesForCollegeStudent);
 // router.get('/professional');
 
 router.get('/relevantjobs', secureRoute, findRelevantOpportunityById);
-router.get('/jobDetails/:jobId', findOpportunityById);
+// router.get('/jobDetails/:jobId', findOpportunityById);
 // router.get('/campusopportunity', fetchCampusOpportunities);
 
 

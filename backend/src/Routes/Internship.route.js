@@ -5,7 +5,7 @@ import secureRoute from "../middlewares/secureRoute.js";
 const router = express.Router();
 
 // api '.../internship'
-router.get('/',secureRoute,fetchInternshipOpportunities);  //for oncampus ..internship?openingFor=Oncampus
-router.get('/:jobId',findOpportunityById);
+router.get('/', secureRoute, fetchInternshipOpportunities);
+router.get('/getInternshipDetail/:jobId', findOpportunityById);
 
 export default router;

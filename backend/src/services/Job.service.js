@@ -89,6 +89,8 @@ export async function fetchInternshipService(yearsOfExperience) {
             }
         });
 
+        // console.log("Internship, ", response)
+
         return { success: true, data: response };
     } catch (error) {
         console.log("Error: ", error.message);
@@ -108,14 +110,17 @@ export async function checkOpportunityService(jobId) {
     }
 }
 
-// export async function fetchJobByIdService(Id) {
-//     try {
-//         const response = await Job.findById(Id);
-//         return { success: true, data: response };
-//     } catch (error) {
-//         console.log("Error: ", error.message);
-//         throw new Error("Failed to fetch");
-//     }
-// }
-
-
+export async function fetchInternshipByIdService(Id) {
+    try {
+        const response = await Intern.findById(Id)
+            .populate({
+                path: 'companyId',
+                select: 'companyDetails'
+            })
+            .lean();
+        return { success: true, data: response };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}

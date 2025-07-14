@@ -8,7 +8,7 @@ const JobListSection = ({ title, description, jobs, userType }) => {
 
   // Filter jobs based on search term
   const filteredJobs = jobs && jobs.filter(job =>
-    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.company?.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -118,7 +118,7 @@ const JobListSection = ({ title, description, jobs, userType }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {displayJobs?.map((job) => (
-          <JobCard key={job._id} job={job} userType={userType} />
+          <JobCard key={job._id} job={job} userType="student" />
         ))}
       </div>
 

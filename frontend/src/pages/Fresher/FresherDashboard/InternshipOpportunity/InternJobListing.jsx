@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import JobListSection from '@/components/Student/StudentDashboard/IntershipOpportunity/JobListSection';
 // import { fetchJobs } from '@/constants/JobListing';
-import { getInternships } from '@/lib/User_AxiosInstance';
+import { getAllInternship } from '@/lib/User_AxiosInstance';
 
 const FInternJobListings = () => {
   const [profileInternships, setProfileInternships] = useState([]);
@@ -14,7 +14,7 @@ const FInternJobListings = () => {
       setIsLoading(true);
 
       // Fetch jobs based on profile
-      const response = await getInternships();
+      const response = await getAllInternship();
       setProfileInternships(response.data);
 
       // Fetch jobs based on preferences

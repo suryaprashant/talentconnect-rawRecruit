@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import axios from 'axios';
 import { ChevronDown } from 'lucide-react';
+import { postInternship } from '@/lib/Company_AxiosInstance';
 
 export default function PostJob() {
   const [formData, setFormData] = useState({
@@ -37,9 +39,9 @@ export default function PostJob() {
   const handleCertificationChange = (e) => {
     const value = e.target.value;
     // Store as array even if single selection
-    setFormData(prev => ({ 
-      ...prev, 
-      certifications: value ? [value] : [] 
+    setFormData(prev => ({
+      ...prev,
+      certifications: value ? [value] : []
     }));
   };
 
@@ -106,19 +108,12 @@ export default function PostJob() {
         return;
       }
 
-      console.log("Payload being sent:", JSON.stringify(payload, null, 2));
+      // console.log("Payload being sent:", JSON.stringify(payload, null, 2));
 
-      const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/createinternship`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await postInternship(payload);
 
-      console.log("Response status:", response.status);
-      console.log("Response headers:", response.headers);
+      // console.log("Response status:", response.status);
+      // console.log("Response headers:", response.headers);
 
       if (!response.ok) {
         // Try to get error message from response
@@ -134,10 +129,10 @@ export default function PostJob() {
       }
 
       const responseData = await response.json();
-      console.log("Success Response:", responseData);
+      // console.log("Success Response:", responseData);
 
-      alert("Job posted successfully!");
-      
+      alert("Internship posted successfully!");
+
       // Reset form on success
       setFormData({
         employmentType: 'full-time',
@@ -189,47 +184,44 @@ export default function PostJob() {
         <div className="bg-white p-6 rounded-lg shadow-sm mb-4">
           <h2 className="text-lg font-bold mb-1">Basic Job Details</h2>
           <p className="text-sm text-gray-600 mb-4">Help candidates connect with the right recruiter in your company.</p>
-          
+
           {/* Employment Type */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Employment type <span className="text-red-500">*</span></label>
             <div className="flex gap-2 flex-wrap">
               <button
                 type="button"
-                className={`px-4 py-1 border rounded-full text-sm transition-colors ${
-                  formData.employmentType === 'full-time' 
-                    ? 'bg-black text-white border-black' 
-                    : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
-                }`}
+                className={`px-4 py-1 border rounded-full text-sm transition-colors ${formData.employmentType === 'full-time'
+                  ? 'bg-black text-white border-black'
+                  : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                  }`}
                 onClick={() => handleOptionSelect('employmentType', 'full-time')}
               >
                 Full-time
               </button>
               <button
                 type="button"
-                className={`px-4 py-1 border rounded-full text-sm transition-colors ${
-                  formData.employmentType === 'part-time' 
-                    ? 'bg-black text-white border-black' 
-                    : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
-                }`}
+                className={`px-4 py-1 border rounded-full text-sm transition-colors ${formData.employmentType === 'part-time'
+                  ? 'bg-black text-white border-black'
+                  : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                  }`}
                 onClick={() => handleOptionSelect('employmentType', 'part-time')}
               >
                 Part-time
               </button>
               <button
                 type="button"
-                className={`px-4 py-1 border rounded-full text-sm transition-colors ${
-                  formData.employmentType === 'contract' 
-                    ? 'bg-black text-white border-black' 
-                    : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
-                }`}
+                className={`px-4 py-1 border rounded-full text-sm transition-colors ${formData.employmentType === 'contract'
+                  ? 'bg-black text-white border-black'
+                  : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                  }`}
                 onClick={() => handleOptionSelect('employmentType', 'contract')}
               >
                 Contract
               </button>
             </div>
           </div>
-          
+
           {/* Job Title */}
           <div className="mb-4">
             <label htmlFor="jobTitle" className="block text-sm font-medium mb-2">Job Title <span className="text-red-500">*</span></label>
@@ -243,13 +235,13 @@ export default function PostJob() {
               onChange={handleInputChange}
             />
           </div>
-          
+
           {/* Preferred Hiring Location */}
           <div className="mb-4">
             <label htmlFor="preferredHiringLocation" className="block text-sm font-medium mb-2">Preferred Hiring Location <span className="text-red-500">*</span></label>
             <div className="relative">
-              <select 
-                id="preferredHiringLocation" 
+              <select
+                id="preferredHiringLocation"
                 name="preferredHiringLocation"
                 className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black focus:border-transparent"
                 value={formData.preferredHiringLocation}
@@ -263,7 +255,7 @@ export default function PostJob() {
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
             </div>
           </div>
-          
+
           {/* No. of Openings */}
           <div className="mb-4">
             <label htmlFor="numberOfOpenings" className="block text-sm font-medium mb-2">No. of Openings <span className="text-red-500">*</span></label>
@@ -278,13 +270,13 @@ export default function PostJob() {
               min="1"
             />
           </div>
-          
+
           {/* Monthly In-hand Salary */}
           <div className="mb-4">
             <label htmlFor="monthlySalary" className="block text-sm font-medium mb-2">Monthly In-hand Salary <span className="text-red-500">*</span></label>
             <div className="flex">
               <div className="relative w-20">
-                <select 
+                <select
                   id="salaryCurrency"
                   name="salaryCurrency"
                   value={formData.salaryCurrency}
@@ -309,7 +301,7 @@ export default function PostJob() {
               />
             </div>
           </div>
-          
+
           {/* Job Info / Job Description */}
           <div className="mb-4">
             <label htmlFor="jobDescription" className="block text-sm font-medium mb-2">Job Info / Job Description <span className="text-red-500">*</span></label>
@@ -323,18 +315,18 @@ export default function PostJob() {
             ></textarea>
           </div>
         </div>
-        
+
         {/* Selection Criteria Section */}
         <div className="bg-white p-6 rounded-lg shadow-sm mb-4">
           <h2 className="text-lg font-bold mb-1">Selection Criteria</h2>
           <p className="text-sm text-gray-600 mb-4">Outline the steps involved in assessing applicants to ensure the best fit for the role.</p>
-          
+
           {/* Minimum Education */}
           <div className="mb-4">
             <label htmlFor="minimumEducation" className="block text-sm font-medium mb-2">Minimum Education</label>
             <div className="relative">
-              <select 
-                id="minimumEducation" 
+              <select
+                id="minimumEducation"
                 name="minimumEducation"
                 className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black focus:border-transparent"
                 value={formData.minimumEducation}
@@ -349,13 +341,13 @@ export default function PostJob() {
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
             </div>
           </div>
-          
+
           {/* Preferred Field of Study */}
           <div className="mb-4">
             <label htmlFor="preferredFieldOfStudy" className="block text-sm font-medium mb-2">Preferred Field of Study</label>
             <div className="relative">
-              <select 
-                id="preferredFieldOfStudy" 
+              <select
+                id="preferredFieldOfStudy"
                 name="preferredFieldOfStudy"
                 className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black focus:border-transparent"
                 value={formData.preferredFieldOfStudy}
@@ -371,13 +363,13 @@ export default function PostJob() {
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
             </div>
           </div>
-          
+
           {/* Years of Experience */}
           <div className="mb-4">
             <label htmlFor="yearsOfExperience" className="block text-sm font-medium mb-2">Years of Experience</label>
             <div className="relative">
-              <select 
-                id="yearsOfExperience" 
+              <select
+                id="yearsOfExperience"
                 name="yearsOfExperience"
                 className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black focus:border-transparent"
                 value={formData.yearsOfExperience}
@@ -393,7 +385,7 @@ export default function PostJob() {
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
             </div>
           </div>
-          
+
           {/* Skills */}
           <div className="mb-4">
             <label htmlFor="skills" className="block text-sm font-medium mb-2">Skills <span className="text-red-500">*</span></label>
@@ -421,13 +413,13 @@ export default function PostJob() {
             </div>
             <p className="text-xs text-gray-500 mt-1">Hold Ctrl (Cmd on Mac) to select multiple skills. Selected: {formData.skills.join(', ')}</p>
           </div>
-          
+
           {/* Certifications */}
           <div className="mb-4">
             <label htmlFor="certifications" className="block text-sm font-medium mb-2">Certifications (if any)</label>
             <div className="relative">
-              <select 
-                id="certifications" 
+              <select
+                id="certifications"
                 name="certifications"
                 className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black focus:border-transparent"
                 value={formData.certifications[0] || ''}
@@ -443,13 +435,13 @@ export default function PostJob() {
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
             </div>
           </div>
-          
+
           {/* Work Authorization Requirement */}
           <div className="mb-4">
             <label htmlFor="workAuthorization" className="block text-sm font-medium mb-2">Work Authorization Requirement</label>
             <div className="relative">
-              <select 
-                id="workAuthorization" 
+              <select
+                id="workAuthorization"
                 name="workAuthorization"
                 className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black focus:border-transparent"
                 value={formData.workAuthorization}
@@ -465,7 +457,7 @@ export default function PostJob() {
             </div>
           </div>
         </div>
-        
+
         {/* Action Buttons */}
         <div className="flex justify-end gap-4 pb-6">
           <button

@@ -18,11 +18,11 @@ const JobCard = ({ job,userType }) => {
           <div className="flex-grow">
             <Link to={`/${userType}-dashboard/internship-opportunities/${job._id}`} className="block">
               <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors mb-1">
-                {job.title}
+                {job.jobTitle}
               </h3>
             </Link>
             <div className="flex flex-wrap text-sm text-gray-600 mb-2">
-              <span className="mr-3">{job.location}</span>
+              <span className="mr-3">{job.preferredHiringLocation}</span>
               <span className="mr-3">•</span>
               <span className="mr-3">{job.employmentType}</span>
               <span className="mr-3">•</span>
@@ -47,7 +47,7 @@ const JobCard = ({ job,userType }) => {
         </div>
 
         <p className="text-gray-600 mb-4 line-clamp-3">
-          {job.description}
+          {job.jobDescription}
         </p>
 
         <Link

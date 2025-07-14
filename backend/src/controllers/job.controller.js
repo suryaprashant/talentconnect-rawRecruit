@@ -1,4 +1,4 @@
-import { fetchInternshipService, fetchOpportunityService } from "../services/Job.service.js";
+import { fetchInternshipByIdService, fetchInternshipService, fetchOpportunityService } from "../services/Job.service.js";
 import { getStudentService } from "../services/Student.service.js";
 
 // export async function createJob(req, res) {
@@ -50,11 +50,10 @@ export async function fetchInternshipOpportunities(req, res) {
 }
 
 export async function findOpportunityById(req, res) {
-    const query = { _id: req.params.jobId };
-
+    const internshipId=req.params.jobId;
 
     try {
-        const response = await fetchOpportunityService(query);
+        const response = await fetchInternshipByIdService(internshipId);
         res.status(200).json(response.data);
     } catch (error) {
         res.status(500).json({ error: "Internal server error" });
