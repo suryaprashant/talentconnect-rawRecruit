@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import OffCampusApplication from '../models/offcampusApplicationModel.js'
 // import '../models/Student.js';
 import Job from '../models/Job.js';
+import InternshipApplication from '../models/internshipApplicationModel.js';
 
 export async function checkExitence(jobId, userId) {
     try {
@@ -176,5 +177,35 @@ export async function getOffCampusApplicantsService(jobId) {
     } catch (error) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");
+    }
+}
+
+// internship
+export async function checkInternshipExitence(jobId, userId) {
+    try {
+        const response = await InternshipApplication.find({ user: userId, job: jobId });
+        // console.log("res: ", response);
+        if (response?.length > 0) return true;
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+    return false;
+}
+
+export async function createInternshipApplicationService(userId, jobId) {
+
+    try {
+        const newApplication = new InternshipApplication({
+            user: userId,
+            job: jobId,
+            statusHistory: [{ status: "Applied" }],
+            currentStatus: "Applied"
+        });
+        await newApplication.save();
+        return { success: true, message: 'Application submited!' };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to Save");
     }
 }

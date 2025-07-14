@@ -1,4 +1,4 @@
-import { createApplicationService, fetchApplicationService, fetchAcceptedCandidatesService, getAcceptedOnCampusService, checkExitence } from "../services/Application.service.js";
+import { createApplicationService, fetchApplicationService, fetchAcceptedCandidatesService, getAcceptedOnCampusService, checkExitence, createInternshipApplicationService, checkInternshipExitence } from "../services/Application.service.js";
 import { checkOpportunityService } from "../services/Job.service.js";
 import { checkStudentService } from "../services/Student.service.js";
 
@@ -70,5 +70,29 @@ export async function getAcceptedCandidatesFromCollege(req, res) {
     } catch (error) {
         console.log("Error: ", error);
         res.status(500).json({ Error: "Internal server error" });
+    }
+}
+
+// internship
+export async function createIntershipApplication(req, res) {
+    const { internshipId } = req.body;
+    const userId = req.user._id;
+
+    if (!userId || !internshipId) return res.status(404).json({ msg: "Fields missing" });
+
+    try {
+        if (await checkInternshipExitence(internshipId, userId) === true) return res.status(403).json({ msg: "Already Applied" });
+
+        // const user = await checkStudentService(userId);
+        // const job = await checkOpportunityService(internshipId);
+        // if (!job || !user) {
+        //     return res.status(404).json({ msg: "User or Job not found!" });
+        // }
+
+        const application = await createInternshipApplicationService(userId, internshipId);
+        res.status(201).json(application);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 }
