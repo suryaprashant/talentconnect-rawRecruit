@@ -26,3 +26,9 @@ export function getCompanyPostingForOncampusDetail(jobId) {
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
+
+export function ApplyForPoolCampus(jobId) {
+  return axiosClient.post(`/api/hiringDrive/poolcampus/apply`,{jobId:jobId})
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}

@@ -254,7 +254,7 @@ app.use("/api/college-onboarding", collegeOnboardingRoutes);
 app.use("/api/dashboard", employerProfileRoutes);
 app.use("/api/messages", messageRoute);
 app.use("/api/company" , hiringOffCampus)
-app.use("/api/hiringDrive", HiringChannelPoolCampusRoute) ;
+app.use("/api/hiringDrive", HiringChannelPoolCampusRoute);
 // Feature Routes
 app.use("/jobs", Jobs);
 app.use("/internship", Internship);
