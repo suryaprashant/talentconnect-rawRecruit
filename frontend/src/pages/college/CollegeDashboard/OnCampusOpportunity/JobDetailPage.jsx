@@ -12,7 +12,7 @@
 //   const loadJobDetail = async () => {
 //   try {
 //     const response = await getCompanyPostingForOncampusDetail(id);
-    
+
 //     // Ensure response has the expected structure
 //     if (response?.data) {
 //       const completeJobData = {
@@ -1082,7 +1082,7 @@
 
 
 
-import { getCompanyPostingForOncampusDetail } from '@/lib/College_AxiosIntance'; // Ensure this path is correct
+import { ApplyForOnCampus, getCompanyPostingForOncampusDetail } from '@/lib/College_AxiosIntance'; // Ensure this path is correct
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
@@ -1104,7 +1104,7 @@ const JobDetailPage = () => {
         startDate: backendData.startDate || 'Not Specified',
         endDate: backendData.endDate || 'Not Specified',
         // Assuming isHybridEvent is not in backend, set to false or 'Not Specified'
-        isHybridEvent: false, 
+        isHybridEvent: false,
 
         companyInfo: {
           website: backendData.companyPosted?.companyDetails?.websiteUrl || 'Not Specified',
@@ -1126,7 +1126,7 @@ const JobDetailPage = () => {
           },
         },
         description: backendData.companyPosted?.companyDetails?.description || 'Not Specified', // Using company description
-        
+
         jobDetails: {
           role: (backendData.companyPosted?.hiringPreferences?.jobRoles && backendData.companyPosted.hiringPreferences.jobRoles.length > 0) ? backendData.companyPosted.hiringPreferences.jobRoles.join(', ') : 'Not Specified',
           industry: backendData.companyPosted?.companyDetails?.industryType || 'Not Specified',
@@ -1148,7 +1148,7 @@ const JobDetailPage = () => {
           },
         },
         benefits: ['Health Insurance', 'Paid Time Off', 'Professional Development'], // Hardcoded or add to backend
-        
+
         selectionProcess: {
           steps: (backendData.selectionProcess && backendData.selectionProcess.length > 0) ? backendData.selectionProcess : ['Not Specified'],
           dates: {
@@ -1159,7 +1159,7 @@ const JobDetailPage = () => {
           },
         },
         requiredDocuments: ['Resume', 'Transcripts', 'Government ID'], // Hardcoded or add to backend
-        
+
         contactInfo: {
           contactPrsonDesignation: backendData.contactDesignation || 'Not Specified',
           name: backendData.contactPerson || 'Not Specified',
@@ -1197,6 +1197,18 @@ const JobDetailPage = () => {
         .catch(() => alert('Failed to copy link'));
     }
   };
+
+  const handleApply = async () => {
+    try {
+      // if (jobDetail?.status === 'Open') {
+      const response = await ApplyForOnCampus(id);
+      if (response.success === 'true') alert("Applied");
+      // }
+      // else alert("Application Closed!")
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
 
   if (error) {
     return (
@@ -1270,7 +1282,7 @@ const JobDetailPage = () => {
             </div>
 
             <div className="flex space-x-2 mt-4">
-              <button className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none">
+              <button className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none" onClick={handleApply}>
                 Register Now
               </button>
               <button
@@ -1586,7 +1598,7 @@ const JobDetailPage = () => {
                   </div>
                   <div>
                     <div className="text-base font-medium text-gray-900">{job.contactInfo.name}  <span className='text-sm text-gray-500 '>({job.contactInfo.contactPrsonDesignation})</span></div>
-                  
+
                     <div className="flex items-center mt-1">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -1600,15 +1612,15 @@ const JobDetailPage = () => {
                       <a href={`tel:${job.contactInfo.phone}`} className="text-blue-600 hover:text-blue-800 text-sm">{job.contactInfo.phone}</a>
                     </div>
                     <div className="flex items-center mt-1">
-                   
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-gray-500 mr-1"
-                      viewBox="0 0 24 24"
-                      fill="currentColor" >
-                      <path d="M19 0H5C2.239 0 0 2.239 0 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5V5c0-2.761-2.239-5-5-5zm-11 19H5V8h3v11zm-1.5-12C5.672 6.5 5 5.828 5 5s.672-1.5 1.5-1.5S8 4.172 8 5s-.672 1.5-1.5 1.5zM19 19h-3v-5.277c0-.987-.018-2.384-1.455-2.384-1.457 0-1.688 1.139-1.688 2.316V19h-3V8h2.894v1.297h.04c.404-.77 1.393-1.58 2.853-1.58                   3.054 0 3.626 2.016 3.626 4.636V19z"/>
-                    </svg>
-                    <a href={`tel:${job.contactInfo.linkedin}`} className="text-blue-600 hover:text-blue-800 text-sm">{job.                  contactInfo.linkedin}</a>
+
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 text-gray-500 mr-1"
+                        viewBox="0 0 24 24"
+                        fill="currentColor" >
+                        <path d="M19 0H5C2.239 0 0 2.239 0 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5V5c0-2.761-2.239-5-5-5zm-11 19H5V8h3v11zm-1.5-12C5.672 6.5 5 5.828 5 5s.672-1.5 1.5-1.5S8 4.172 8 5s-.672 1.5-1.5 1.5zM19 19h-3v-5.277c0-.987-.018-2.384-1.455-2.384-1.457 0-1.688 1.139-1.688 2.316V19h-3V8h2.894v1.297h.04c.404-.77 1.393-1.58 2.853-1.58                   3.054 0 3.626 2.016 3.626 4.636V19z" />
+                      </svg>
+                      <a href={`tel:${job.contactInfo.linkedin}`} className="text-blue-600 hover:text-blue-800 text-sm">{job.contactInfo.linkedin}</a>
                     </div>
                   </div>
                 </div>

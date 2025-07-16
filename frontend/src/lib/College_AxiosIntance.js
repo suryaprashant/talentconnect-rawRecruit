@@ -32,3 +32,9 @@ export function ApplyForPoolCampus(jobId) {
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
+
+export function ApplyForOnCampus(jobId) {
+  return axiosClient.post(`/api/rawrecruit/oncampus/apply`,{jobId:jobId})
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}

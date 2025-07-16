@@ -1,28 +1,30 @@
 import Registration from "../models/HiringChannels_oncampusregister.js";
+import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
+import { checkOnCampusApplicationExitence, oncampusApplicationService, poolcampusApplicationService } from "../services/Application.service.js";
 
 
 export const submitRegistration = async (req, res) => {
   try {
-    
-   const userId = req.user._id ; 
-     
+
+    const userId = req.user._id;
+
     const companyProfile = await CompanyProfile.findOne({ userId });
 
     if (!companyProfile) {
       return res.status(404).json({ error: "Company profile not found" });
     }
-    
+
     const registration = new Registration({
       ...req.body,
       companyPosted: companyProfile._id, // Store the company ID
     });
-    console.log("Registration Data:", registration) ;
+    console.log("Registration Data:", registration);
     await registration.save();
     //console.log("Registration saved successfully");
     res.status(201).json({
       success: true,
-    //  message: "Pool campus hiring request submitted successfully",
+      //  message: "Pool campus hiring request submitted successfully",
       data: registration,
     });
   } catch (err) {
@@ -32,8 +34,8 @@ export const submitRegistration = async (req, res) => {
 
 export const getAllRegistrations = async (req, res) => {
   try {
-  
-  const response = await Registration.find()
+
+    const response = await Registration.find()
       .populate({
         path: 'companyPosted',
         select: 'companyDetails profileImage', // Add fields you need
@@ -55,7 +57,7 @@ export const getRegistrationDetail = async (req, res) => {
         select: 'companyDetails profileImage hiringPreferences',
       })
       .lean();
-      
+
     res.status(200).json(response);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -150,3 +152,23 @@ export const getRegistrationDetail = async (req, res) => {
 //     res.status(500).json({ error: err.message });
 //   }
 // };
+
+// apply
+export async function createOnCampusApplication(req, res) {
+  const collegeId = req.user._id;
+  const { jobId } = req.body;
+
+  // console.log("ids", collegeId, " ", jobId);
+
+  try {
+    const college = await collegeOnboardingModel.find({ userId: collegeId });
+
+    if (await checkOnCampusApplicationExitence(college[0]._id, jobId) === true) return res.status(403).json({ msg: "Already Applied!" })
+
+    const application = await oncampusApplicationService(college[0]._id, jobId);
+    res.status(201).json({ msg: "Application Submitted" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Internal Server" });
+  }
+}

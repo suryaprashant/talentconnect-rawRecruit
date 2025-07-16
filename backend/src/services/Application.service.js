@@ -6,6 +6,7 @@ import OffCampusApplication from '../models/offcampusApplicationModel.js'
 import Job from '../models/Job.js';
 import InternshipApplication from '../models/internshipApplicationModel.js';
 import PoolCampusApplication from '../models/poolcampusApplicationModel.js';
+import OnCampusApplication from '../models/oncampusApplicationModel.js';
 
 export async function checkExitence(jobId, userId) {
     try {
@@ -227,6 +228,35 @@ export async function checkPoolCampusApplicationExitence(collegeId, jobId) {
 export async function poolcampusApplicationService(collegeId, jobId) {
     try {
         const newApplication = new PoolCampusApplication({
+            college: collegeId,
+            drive: jobId,
+            statusHistory: [{ status: "Applied" }],
+            currentStatus: "Applied"
+        });
+        await newApplication.save();
+        return { success: true, message: 'Application submited!' };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to Save");
+    }
+}
+
+export async function checkOnCampusApplicationExitence(collegeId, jobId) {
+    try {
+        const response = await OnCampusApplication.find({ college: collegeId, drive: jobId });
+        // console.log("res: ", response);
+        console.log(response.length);
+        if (response?.length > 0) return true;
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+    return false;
+}
+
+export async function oncampusApplicationService(collegeId, jobId) {
+    try {
+        const newApplication = new OnCampusApplication({
             college: collegeId,
             drive: jobId,
             statusHistory: [{ status: "Applied" }],
