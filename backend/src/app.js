@@ -239,7 +239,7 @@ import student_onboardingroutes from "./Routes/student_onboardingroutes.js";
 import hiringOffCampus from "./Routes/hiringChannelsOffCampus.js";
 import HiringChannelPoolCampusRoute from "./Routes/hiringChannelPoolCapusRoute.js";
 import JobManagement from "./Routes/jobManagementRoute.js"
-
+import poolCampusRoute from "./Routes/jobManagement/poolCampusRoute.js";
 // Core API Mounts
 app.use("/api/auth", authRoutes);
 app.use("/api", student_onboardingroutes);
@@ -255,6 +255,7 @@ app.use("/api/dashboard", employerProfileRoutes);
 app.use("/api/messages", messageRoute);
 app.use("/api/company" , hiringOffCampus)
 app.use("/api/hiringDrive", HiringChannelPoolCampusRoute);
+app.use("/api/company" , poolCampusRoute);
 // Feature Routes
 app.use("/jobs", Jobs);
 app.use("/internship", Internship);
@@ -264,7 +265,6 @@ app.use("/hackathon", Hackathon);
 app.use("/company/dashboard", EmployerDashboard);
 app.use("/company/dashboard/resume", Resume);
 app.use("/company", Company);
-
 app.use('/company/jobmanagement',JobManagement);
 
 // RawRecruit API Mounts

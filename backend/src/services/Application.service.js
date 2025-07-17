@@ -6,6 +6,8 @@ import OffCampusApplication from '../models/offcampusApplicationModel.js'
 import Job from '../models/Job.js';
 import InternshipApplication from '../models/internshipApplicationModel.js';
 import PoolCampusApplication from '../models/poolcampusApplicationModel.js';
+import PoolCampusHiring from '../models/HiringChannelPoolCampusModel.js';
+
 
 export async function checkExitence(jobId, userId) {
     try {
@@ -239,3 +241,4 @@ export async function poolcampusApplicationService(collegeId, jobId) {
         throw new Error("Failed to Save");
     }
 }
+
