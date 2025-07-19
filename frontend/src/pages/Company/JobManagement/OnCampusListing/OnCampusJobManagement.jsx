@@ -1877,7 +1877,7 @@ export default function OnCampusJobManagement() {
                         {displayLocations(job.preferredLocations)}
                       </td>
                       <td className="px-4 py-4">
-                        {safeFormatDate(job.endDate)}
+                        {(job.endDate)}
                       </td>
                       <td className="px-4 py-4">{job.applicationCount || 0}</td>
                       <td className="px-4 py-4">

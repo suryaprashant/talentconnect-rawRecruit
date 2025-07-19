@@ -119,9 +119,12 @@ setFormData({
               <option value="remote">Remote</option>
               <option value="onsite">On-site</option>
               <option value="hybrid">Hybrid</option>
-              <option value="hybrid">Mumbai</option>
-              <option value="hybrid">Delhi</option>
-              <option value="hybrid">Bengluru</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Delhi">Delhi</option>
+              <option value="UP">UP</option>
+              <option value="Hyderabad">Hyderabad</option>
+              <option value="Kerala">Kerala</option>
+              <option value="Noida">Noida</option>
             </select>
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
           </div>
