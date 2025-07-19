@@ -1,5 +1,6 @@
 import express from 'express';
 import { getOffcampusJobs, getOffcampusJobApplicants } from '../controllers/jobManagementController.js';
+import secureRoute from '../middlewares/secureRoute.js';
 
 const router = express.Router();
 
@@ -7,7 +8,7 @@ const router = express.Router();
 
 // get jobs
 // offcampus
-router.get('/offcampus', getOffcampusJobs);
+router.get('/offcampus', secureRoute, getOffcampusJobs);
 router.get('/offcampus/applications/:jobId', getOffcampusJobApplicants);
 
 // get applications

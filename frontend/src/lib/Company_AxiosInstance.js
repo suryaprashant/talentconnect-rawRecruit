@@ -62,3 +62,10 @@ export function postInternship(payload) {
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
+
+// jobmanagement
+export function getPostedJobs() {
+  return axiosClient.get(`/company/jobmanagement/offcampus`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
