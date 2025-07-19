@@ -65,8 +65,14 @@ export function ApplyForInternship(internshipId) {
     .catch(error => console.log("Error: ", error));
 }
 
-export function getApplicationStatus(userId) {
+export function getJobListingApplicationStatus(userId) {
   return axiosClient.get(`/application`, { params: { Id: userId } })
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
+export function getOffCampusApplicationStatus(userId) {
+  return axiosClient.get(`/application/offcampus/${userId}`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

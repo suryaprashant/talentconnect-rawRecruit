@@ -25,8 +25,28 @@ export const getOffcampusJobApplicants = async (req, res) => {
     const { jobId } = req.params;
     if (!jobId) return res.status(404).json({ msg: "Job not found!" });
 
+    const query = {};
+    query.job = jobId;
+
     try {
-        const response = await getOffCampusApplicantsService(jobId);
+        const response = await getOffCampusApplicantsService(query);
+        res.status(200).json(response);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ msg: "Internal server error!" });
+    }
+}
+
+export const getShortlistedOffcampusJobApplicants = async (req, res) => {
+    const { jobId } = req.params;
+    if (!jobId) return res.status(404).json({ msg: "Job not found!" });
+
+    const query = {};
+    query.job = jobId;
+    query.currentStatus = "Shortlisted";
+
+    try {
+        const response = await getOffCampusApplicantsService(query);
         res.status(200).json(response);
     } catch (error) {
         console.log("Error: ", error);

@@ -434,7 +434,7 @@ export default function OffCampusJobManagement() {
 
   // Action handlers - these would connect to your backend API
   const handleView = (jobId) => {
-    const job = jobs.find(j => j.id === jobId);
+    const job = jobs.find(j => j._id === jobId);
     if (job) {
       setSelectedJob(job);
       setShowJobDetail(true);
@@ -484,11 +484,11 @@ export default function OffCampusJobManagement() {
   if (showJobDetail && selectedJob) {
     return (
       <CollegeRequestDetail
-        college={selectedJob.collegeDetails}
+        college={selectedJob}
         onClose={() => setShowJobDetail(false)}
-        onAccept={() => handleAcceptDrive(selectedJob.id)}
-        onShortlist={() => handleShortlistDrive(selectedJob.id)}
-        onReject={() => handleRejectDrive(selectedJob.id)}
+        onAccept={() => handleAcceptDrive(selectedJob._id)}
+        onShortlist={() => handleShortlistDrive(selectedJob._id)}
+        onReject={() => handleRejectDrive(selectedJob._id)}
       />
     );
   }
@@ -498,7 +498,7 @@ export default function OffCampusJobManagement() {
       <div className="max-w-7xl mx-auto p-4 bg-white">
         <div className="flex justify-between items-center mt-10 mb-4">
           <div>
-            <h1 className="text-3xl font-bold">Manage On-Campus Applications</h1>
+            <h1 className="text-3xl font-bold">Manage Off-Campus Applications</h1>
             <p className="text-gray-600 mt-2">Track Your Job Listings and Streamline Candidate Applications</p>
           </div>
           <button className="bg-black text-white px-4 py-2 rounded-md">
@@ -605,24 +605,24 @@ export default function OffCampusJobManagement() {
                           {job.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3">{new Date(job?.hiringEndDate).toUTCString().slice(0,11)}</td>
+                      <td className="px-4 py-3">{new Date(job?.hiringEndDate).toUTCString().slice(0, 11)}</td>
                       <td className="px-4 py-3">{job.views}</td>
                       <td className="px-4 py-3">{job.applications}</td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <div className="flex gap-2">
-                          <button onClick={() => handleView(job.id)} className="text-gray-500 hover:text-gray-700" title="View Job">
+                          <button onClick={() => handleView(job._id)} className="text-gray-500 hover:text-gray-700" title="View Job">
                             <Eye size={18} />
                           </button>
-                          <button onClick={() => handleEdit(job.id)} className="text-gray-500 hover:text-gray-700" title="Edit Job">
+                          <button onClick={() => handleEdit(job._id)} className="text-gray-500 hover:text-gray-700" title="Edit Job">
                             <Edit size={18} />
                           </button>
-                          <button onClick={() => handleApplications(job.id)} className="text-gray-500 hover:text-gray-700" title="View Applications">
+                          <button onClick={() => handleApplications(job._id)} className="text-gray-500 hover:text-gray-700" title="View Applications">
                             <Users size={18} />
                           </button>
-                          <button onClick={() => handleExport(job.id)} className="text-gray-500 hover:text-gray-700" title="Export Job Data">
+                          <button onClick={() => handleExport(job._id)} className="text-gray-500 hover:text-gray-700" title="Export Job Data">
                             <FileText size={18} />
                           </button>
-                          <button onClick={() => handleDelete(job.id)} className="text-gray-500 hover:text-gray-700" title="Delete Job">
+                          <button onClick={() => handleDelete(job._id)} className="text-gray-500 hover:text-gray-700" title="Delete Job">
                             <Trash size={18} />
                           </button>
                         </div>

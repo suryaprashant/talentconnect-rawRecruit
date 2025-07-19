@@ -7,11 +7,11 @@ const router = express.Router();
 // api '.../application'
 
 router.get('/', getUserApplication);
-router.post('/offcampusapply',secureRoute, createApplication);
-router.get('/getall', getUserApplication);
+router.post('/offcampusapply', secureRoute, createApplication);
+router.get('/offcampus', secureRoute, getUserApplication);
 
 // internship
-router.post('/internship/apply',secureRoute,createIntershipApplication);
+router.post('/internship/apply', secureRoute, createIntershipApplication);
 
 // shortlisting
 

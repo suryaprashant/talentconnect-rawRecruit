@@ -69,3 +69,9 @@ export function getPostedJobs() {
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
+
+export function getApplicationsForJob(jobId) {
+  return axiosClient.get(`/company/jobmanagement/offcampus/applications/${jobId}`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}

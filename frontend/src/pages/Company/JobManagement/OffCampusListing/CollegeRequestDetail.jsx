@@ -1,16 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Calendar, MapPin, FileText, Users, CheckCircle, ArrowUpRight } from 'lucide-react';
+import { getApplicationsForJob } from '@/lib/Company_AxiosInstance';
 
 const CollegeRequestDetail = ({ college, onClose, onAccept, onShortlist, onReject }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const getApplications = async () => {
+    try {
+      const response = await getApplicationsForJob(college._id);
+      console.log("res: ", response);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
+  useEffect(() => {
+    getApplications();
+  }, [])
+
   const handleAction = (actionType) => {
     setIsSubmitting(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false);
-      
+
       if (actionType === 'accept') {
         onAccept && onAccept(college.id);
       } else if (actionType === 'shortlist') {
@@ -70,12 +83,12 @@ const CollegeRequestDetail = ({ college, onClose, onAccept, onShortlist, onRejec
         {/* Drive Details */}
         <div className="bg-white p-6 rounded-md shadow-sm mb-4">
           <h2 className="text-lg font-bold mb-4">Drive Proposal Details</h2>
-          
+
           <div className="grid grid-cols-2 gap-6">
             <div>
               <h3 className="font-medium text-gray-700 mb-2">Eligible Branches</h3>
               <ul className="space-y-2">
-                {college.eligibleBranches.map((branch, index) => (
+                {college?.eligibleBranches?.map((branch, index) => (
                   <li key={index} className="flex items-center">
                     <CheckCircle size={16} className="mr-2 text-gray-600" />
                     {branch}
@@ -83,7 +96,7 @@ const CollegeRequestDetail = ({ college, onClose, onAccept, onShortlist, onRejec
                 ))}
               </ul>
             </div>
-            
+
             <div>
               <h3 className="font-medium text-gray-700 mb-2">Student Count</h3>
               <div className="flex items-center">
@@ -111,7 +124,7 @@ const CollegeRequestDetail = ({ college, onClose, onAccept, onShortlist, onRejec
           <div className="mt-6">
             <h3 className="font-medium text-gray-700 mb-2">Uploaded Documents</h3>
             <ul className="space-y-3">
-              {college.documents.map((doc, index) => (
+              {college?.documents?.map((doc, index) => (
                 <li key={index} className="flex items-center justify-between border-b pb-2">
                   <div className="flex items-center">
                     <FileText size={16} className="mr-2 text-gray-600" />
@@ -128,7 +141,7 @@ const CollegeRequestDetail = ({ college, onClose, onAccept, onShortlist, onRejec
           <div className="mt-6">
             <h3 className="font-medium text-gray-700 mb-2">Facilities Required</h3>
             <ul className="space-y-2">
-              {college.facilities.map((facility, index) => (
+              {college?.facilities?.map((facility, index) => (
                 <li key={index} className="flex items-center">
                   <CheckCircle size={16} className="mr-2 text-gray-600" />
                   {facility}
@@ -140,21 +153,21 @@ const CollegeRequestDetail = ({ college, onClose, onAccept, onShortlist, onRejec
 
         {/* Action Buttons */}
         <div className="flex space-x-4">
-          <button 
+          <button
             onClick={() => handleAction('accept')}
             disabled={isSubmitting}
             className="flex-1 bg-black text-white py-2 font-medium rounded-md hover:bg-gray-800 disabled:opacity-50"
           >
             Accept Drive
           </button>
-          <button 
+          <button
             onClick={() => handleAction('shortlist')}
             disabled={isSubmitting}
             className="flex-1 bg-white border border-gray-300 text-gray-700 py-2 font-medium rounded-md hover:bg-gray-50 disabled:opacity-50"
           >
             Shortlist Drive
           </button>
-          <button 
+          <button
             onClick={() => handleAction('reject')}
             disabled={isSubmitting}
             className="flex-1 bg-white border border-gray-300 text-gray-700 py-2 font-medium rounded-md hover:bg-gray-50 disabled:opacity-50"

@@ -1,14 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Search, MapPin, Clock } from 'lucide-react';
 import SimilarJobs from '../SimilarJobs';
 import { jobListings, statusSteps, similarJobs } from '../../../../constants/data.js';
+import { getOffCampusApplicationStatus } from '@/lib/User_AxiosInstance';
 
 const OffcampusStatus = () => {
   const [selectedJob, setSelectedJob] = useState(jobListings[0]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
 
-  const filteredJobs = jobListings.filter(job => 
+  const fetchApplication = async () => {
+    try {
+      const response = await getOffCampusApplicationStatus('67ff4630aad2776399874611');
+      setJobListings(response.data.data);
+      console.log("response: ", response.data.data);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchApplication();
+  }, [])
+
+  const filteredJobs = jobListings.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.company.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -33,7 +48,7 @@ const OffcampusStatus = () => {
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
             </div>
             <div className="relative">
-              <select 
+              <select
                 className="pl-3 pr-8 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -58,8 +73,8 @@ const OffcampusStatus = () => {
         {/* Job List Sidebar */}
         <div className="w-64 bg-white border-r border-gray-200 overflow-y-auto">
           {filteredJobs.map(job => (
-            <div 
-              key={job.id} 
+            <div
+              key={job.id}
               className={`p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${selectedJob.id === job.id ? 'bg-gray-100' : ''}`}
               onClick={() => setSelectedJob(job)}
             >
@@ -86,9 +101,9 @@ const OffcampusStatus = () => {
                   {statusSteps.map((step, idx) => {
                     const currentIdx = getStatusIndex(selectedJob.status);
                     const isActive = idx <= currentIdx;
-                    
+
                     return (
-                      <div key={idx} className="flex flex-col items-center text-xs" style={{width: `${100/statusSteps.length}%`}}>
+                      <div key={idx} className="flex flex-col items-center text-xs" style={{ width: `${100 / statusSteps.length}%` }}>
                         <div className={`w-4 h-4 rounded-full mb-1 ${isActive ? 'bg-blue-500' : 'bg-gray-300'}`}></div>
                         <span className={`text-center ${isActive ? 'text-blue-500 font-medium' : 'text-gray-500'}`}>
                           {step}
@@ -99,8 +114,8 @@ const OffcampusStatus = () => {
                   })}
                 </div>
                 <div className="h-1 bg-gray-200 absolute left-0 right-0 top-2">
-                  <div 
-                    className="h-1 bg-blue-500" 
+                  <div
+                    className="h-1 bg-blue-500"
                     style={{
                       width: `${(getStatusIndex(selectedJob.status) / (statusSteps.length - 1)) * 100}%`
                     }}
@@ -154,9 +169,9 @@ const OffcampusStatus = () => {
               </div>
 
               {/* Similar Jobs Section */}
-              <SimilarJobs 
-                jobs={similarJobs} 
-                title="Similar jobs for you" 
+              <SimilarJobs
+                jobs={similarJobs}
+                title="Similar jobs for you"
                 description="Lorem ipsum dolor sit amet, consectetur adipiscing enim in eros."
               />
             </>
