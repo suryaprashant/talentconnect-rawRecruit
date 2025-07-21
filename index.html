@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume Autofill</title>
+  </head>
+  <body>
+    <h2>Upload Resume to Autofill</h2>
+    <form id="uploadForm">
+      <input type="file" id="resumeFile" name="resume" accept=".pdf" required />
+      <button type="submit">Upload</button>
+    </form>
+
+    <h3>Autofilled Details</h3>
+    <form id="autofillForm">
+      <input type="text" id="name" placeholder="Name" /><br />
+      <input type="email" id="email" placeholder="Email" /><br />
+      <input type="text" id="phone" placeholder="Phone" /><br />
+      <input type="text" id="linkedin" placeholder="LinkedIn" /><br />
+      <input type="text" id="github" placeholder="GitHub" /><br />
+      <textarea id="skills" placeholder="Skills"></textarea><br />
+      <textarea id="certifications" placeholder="Certifications"></textarea
+      ><br />
+      <textarea id="projects" placeholder="Projects"></textarea><br />
+      <textarea id="achievements" placeholder="Achievements"></textarea><br />
+      <input type="text" id="languages" placeholder="Languages" /><br />
+      <textarea id="education" placeholder="College Name"></textarea><br />
+      <input type="text" id="cgpa" placeholder="CGPA" /><br />
+      <textarea id="experience" placeholder="Experience"></textarea><br />
+    </form>
+
+    <script>
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const formData = new FormData();
+          formData.append(
+            "resume",
+            document.getElementById("resumeFile").files[0]
+          );
+
+          try {
+            const response = await fetch("http://localhost:3001/upload", {
+              method: "POST",
+              body: formData,
+            });
+            const data = await response.json();
+
+            for (const field in data) {
+              const el = document.getElementById(field);
+              if (el) el.value = data[field] || "";
+            }
+          } catch (err) {
+            console.error("Upload failed", err);
+            alert("Failed to upload and extract resume data.");
+          }
+        });
+    </script>
+  </body>
+</html>
