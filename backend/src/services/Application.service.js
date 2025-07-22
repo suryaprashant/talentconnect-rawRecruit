@@ -7,7 +7,7 @@ import Job from '../models/Job.js';
 import InternshipApplication from '../models/internshipApplicationModel.js';
 import PoolCampusApplication from '../models/poolcampusApplicationModel.js';
 import OnCampusApplication from '../models/oncampusApplicationModel.js';
-import { response } from 'express';
+import PoolCampusHiring from '../models/HiringChannelPoolCampusModel.js';
 
 export async function checkExitence(jobId, userId) {
     try {
@@ -157,7 +157,7 @@ export async function fetchShortlistedCandidates(companyId, targetStatus) {
                     currentStatus: 1,
                     statusHistory: 1,
                     jobTitle: '$jobDetails.jobRoles',
-                    user: { cgpa: '$userDetails.cgpa', college: '$userDetails.college', name:   '$userDetails.name' }
+                    user: { cgpa: '$userDetails.cgpa', college: '$userDetails.college', name: '$userDetails.name' }
                 }
             }
         ]);
@@ -336,3 +336,4 @@ export async function oncampusApplicationService(collegeId, jobId) {
         throw new Error("Failed to Save");
     }
 }
+

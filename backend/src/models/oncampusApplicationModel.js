@@ -10,7 +10,7 @@ const ApplicationSchema = new mongoose.Schema(
         },
         drive: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "PoolCampusHiring",
+            ref: "CampusRegistration",
             required: true
         },
         statusHistory: [
