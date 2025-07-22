@@ -7,6 +7,7 @@ import Job from '../models/Job.js';
 import InternshipApplication from '../models/internshipApplicationModel.js';
 import PoolCampusApplication from '../models/poolcampusApplicationModel.js';
 import OnCampusApplication from '../models/oncampusApplicationModel.js';
+import { response } from 'express';
 
 export async function checkExitence(jobId, userId) {
     try {
@@ -23,7 +24,6 @@ export async function checkExitence(jobId, userId) {
 export async function fetchApplicationService(userId) {
     try {
 
-        // badhiya approach thi but .. :|
         // const applicationData = await OffCampusApplication.aggregate([
         //     {
         //         $match: {
@@ -107,6 +107,62 @@ export async function fetchShortlistedCandidatesService(jobId) { //offcampus job
             })
             .lean();
         return { success: true, data: response };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+
+// offcampus shorlisted candidate for all jobs
+export async function fetchShortlistedCandidates(companyId, targetStatus) {
+    try {
+        // filter the candidates
+        const candidates = await OffCampusApplication.aggregate([
+            {
+                $lookup: {
+                    from: 'hiringdrives',
+                    localField: 'job',
+                    foreignField: '_id',
+                    as: 'jobDetails'
+                }
+            },
+            // { $unwind: '$jobDetails' },
+            {
+                $match: {
+                    'jobDetails.companyId': new mongoose.Types.ObjectId(companyId)
+                }
+            },
+            {
+                $match: {
+                    currentStatus: targetStatus
+                }
+            },
+            {
+                $lookup: {
+                    from: 'onboardings',
+                    localField: 'user',
+                    foreignField: '_id',
+                    as: 'userDetails'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$userDetails',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            // custom project fields
+            {
+                $project: {
+                    currentStatus: 1,
+                    statusHistory: 1,
+                    jobTitle: '$jobDetails.jobRoles',
+                    user: { cgpa: '$userDetails.cgpa', college: '$userDetails.college', name:   '$userDetails.name' }
+                }
+            }
+        ]);
+
+        return { success: true, response: candidates };
     } catch (error) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");

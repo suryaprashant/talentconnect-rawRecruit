@@ -46,10 +46,10 @@ function OffCampusJobDetail() {
 
   const handleApply = async () => {
     try {
-      if (jobDetail?.status === 'Open') {
-        const response = await ApplyForOppurtunity(jobId, jobDetail.jobType);
-        if (response.success === 'true') alert("Applied");
-      }
+      // if (jobDetail?.status === 'Open') {
+      const response = await ApplyForOppurtunity(jobId, jobDetail.jobType);
+      if (response.success === 'true') alert("Applied");
+      // }
       else alert("Application Closed!")
     } catch (error) {
       console.log("Error: ", error);

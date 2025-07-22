@@ -1,6 +1,8 @@
-import { createApplicationService, fetchApplicationService, fetchAcceptedCandidatesService, getAcceptedOnCampusService, checkExitence, createInternshipApplicationService, checkInternshipExitence, getOffCampusApplicantsService } from "../services/Application.service.js";
+import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
+import { createApplicationService, fetchApplicationService, checkExitence, createInternshipApplicationService, checkInternshipExitence, getOffCampusApplicantsService, fetchShortlistedCandidates } from "../services/Application.service.js";
 import { checkOpportunityService } from "../services/Job.service.js";
 import { checkStudentService, getStudentService } from "../services/Student.service.js";
+import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
 
 // apply for opportunity
 export async function createApplication(req, res) {
@@ -46,7 +48,7 @@ export async function getUserApplication(req, res) {
 // action by company
 
 // offcampus
-export async function getAcceptedCandidates(req, res) {
+export async function getAcceptedCandidatesByJob(req, res) {
     const jobId = req.params.id;
     if (!jobId) return res.status(404).json({ msg: "Job not found!" });
 
@@ -63,6 +65,39 @@ export async function getAcceptedCandidates(req, res) {
         res.status(500).json({ Error: "Internal server error" });
     }
 }
+
+// getAllshortlistedcandidates
+export async function getShortlistedCandidatesByCompany(req, res) {
+    const companyId = req.user._id;
+
+    try {
+        const company = await CompanyProfile.find({ userId: companyId }).lean();
+        if (!company) return res.status(404).json({ msg: "company not found!" });
+        const response = await fetchShortlistedCandidates(company[0]._id, "Applied");
+        // console.log(response);
+        res.status(200).json(response);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ Error: "Internal server error" });
+    }
+}
+
+// getAllAcceptedcandidates
+export async function getAcceptedCandidatesByCompany(req, res) {
+    const companyId = req.user._id;
+
+    try {
+        const company = await CompanyProfile.find({ userId: companyId }).lean();
+        if (!company) return res.status(404).json({ msg: "company not found!" });
+        const response = await fetchShortlistedCandidates(companyId, "Accepted");
+        // console.log(response);
+        res.status(200).json(response);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ Error: "Internal server error" });
+    }
+}
+
 
 // oncampus (no use)
 // export async function getAcceptedCandidatesFromCollege(req, res) {

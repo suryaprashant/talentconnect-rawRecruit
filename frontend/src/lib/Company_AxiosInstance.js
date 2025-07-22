@@ -75,3 +75,10 @@ export function getApplicationsForJob(jobId) {
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
+
+// shortlisted
+export function getShorlistedCandidateByCompany() {
+  return axiosClient.get(`/application/offcampus/shortlisted`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
