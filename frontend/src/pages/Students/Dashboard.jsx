@@ -9,7 +9,7 @@ function Dashboard() {
   return (
     <div>
       <PageHeader 
-        title={authuser.user.name?authuser.user.name:authuser.user.email}
+        title={authuser?.user?.name ?? authuser?.user?.email ?? 'Welcome'}
         label="Label"
         status="Active"
         assignee="Assignee"

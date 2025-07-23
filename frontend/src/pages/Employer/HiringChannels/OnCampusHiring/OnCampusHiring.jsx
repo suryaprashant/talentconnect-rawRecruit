@@ -3,7 +3,7 @@ import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
 
-export default function EmployerOnCampusHiring() {
+const EmployerOnCampusHiring = () => {
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
   const [formData, setFormData] = useState({
@@ -55,3 +55,5 @@ export default function EmployerOnCampusHiring() {
     </div>
   );
 }
+
+export default EmployerOnCampusHiring ;

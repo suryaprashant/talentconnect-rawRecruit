@@ -622,7 +622,14 @@ export default function OffCampusHiringForm({onBackClick}) {
             </div>
           </div>
 
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-between mt-6">
+             <button
+          type="button"
+          onClick={onBackClick}
+          className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+        >
+          ← Back to Home
+        </button>
             <button
               type="button"
               onClick={handleSubmit}
@@ -631,17 +638,9 @@ export default function OffCampusHiringForm({onBackClick}) {
             >
               {loading ? 'Registering...' : 'Register'}
             </button>
+            
           </div>
         </div>
-      </div>
-      <div className="flex justify-center mt-6">
-        <button
-          type="button"
-          onClick={onBackClick}
-          className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
-        >
-          ← Back to Home
-        </button>
       </div>
     </div>
   );

@@ -70,14 +70,11 @@ export const AuthProvider = ({ children }) => {
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
         
-        // --- FIX 1: When initializing from localStorage, ensure consistent structure ---
-        // If the stored data is directly the user object (has _id property at top level),
-        // wrap it into the { user: ... } format.
+      
         if (parsedUser && parsedUser._id) {
           return { user: parsedUser };
         } 
-        // If it's already in the { user: { ... } } format, return it as is.
-        // This covers cases where previous saves might have stored the wrapped object.
+       
         else if (parsedUser && parsedUser.user && parsedUser.user._id) {
           return parsedUser;
         }
@@ -92,9 +89,7 @@ export const AuthProvider = ({ children }) => {
   // Effect to update localStorage whenever authUser changes
   useEffect(() => {
     try {
-      // --- FIX 2: When saving to localStorage, only store the raw user object ---
-      // We store only the 'user' part to localStorage.
-      // The AuthProvider's `useState` initializer will handle wrapping it back.
+     
       if (authUser && authUser.user && authUser.user._id) {
         localStorage.setItem('ChatAppUser', JSON.stringify(authUser.user));
       } else {

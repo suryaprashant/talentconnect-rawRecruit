@@ -166,7 +166,7 @@ const PORT = process.env.PORT || 5000;
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
@@ -241,6 +241,10 @@ import HiringChannelPoolCampusRoute from "./Routes/hiringChannelPoolCapusRoute.j
 import JobManagement from "./Routes/jobManagementRoute.js"
 import poolCampusRoute from "./Routes/jobManagement/poolCampusRoute.js";
 import OncampusJobmanagement from "./Routes/jobManagement/onCampusRoute.js"
+import TeamMemberRoute from "./Routes/teamMemberRoute.js";
+import notificationRoute from "./Routes/notificationRoute.js"
+// employer Hiring channel
+import onCampusHiring from './Routes/employerHiringChannel/hiringChannel.route.js'
 // Core API Mounts
 app.use("/api/auth", authRoutes);
 app.use("/api", student_onboardingroutes);
@@ -258,6 +262,11 @@ app.use("/api/company" , hiringOffCampus)
 app.use("/api/hiringDrive", HiringChannelPoolCampusRoute);
 app.use("/api/company" , poolCampusRoute);
 app.use("/api/company/jobmanagement", OncampusJobmanagement);
+app.use("/api/team-member" , TeamMemberRoute) ;
+app.use("/api/notifications" , notificationRoute )
+
+// employer Hiring channel
+app.use("/api/HiringChannels" , onCampusHiring) ;
 // Feature Routes
 app.use("/jobs", Jobs);
 app.use("/internship", Internship);

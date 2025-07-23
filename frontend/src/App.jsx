@@ -186,13 +186,16 @@ import EmployerOffCampusListingPage from "./pages/Employer/ShortlistedCollege/Of
 import EmployerJobListingPage from "./pages/Employer/ShortlistedCollege/JobListing/JoblistingPage";
 import EmployerPostJob from "./pages/Employer/HiringChannels/PostJob/CreateJob";
 import EmployerPostIntership from "./pages/Employer/HiringChannels/PostInternship/CreateIntership";
-import EmployerOnCampusHiring from "./pages/Employer/HiringChannels/OnCampusHiring/OnCampusHiring";
+import EmployerOnCampusHiring from './pages/Employer/HiringChannels/OnCampusHiring/OnCampusHiring'
+import EmployerPoolCampuses from './pages/Employer/HiringChannels/PoolCampusHiring/PoolCampus'
 import EmployerOffCampus from "./pages/Employer/HiringChannels/OffCampusHiring/OffCapus";
 import ChatLayout from "./home/chatLayout";
 import { useAuth } from "./context/AuthProvider";
 import { Navigate } from "react-router-dom";
 import EmployerProfile from "./pages/Employer/Dashboard/CompanyProfile";
 import LinkedInCallback from "./pages/auth/LinkedInCallback";
+import InvitationsPage from "./pages/InvitationsPage";
+import ConfirmationPage from "./pages/ConfirmationPage";
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -224,7 +227,8 @@ function AppRoutes() {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} />
-
+      <Route path= "/invitations" element={<InvitationsPage/>} />
+      <Route path ="/invitation-accepted" element ={<ConfirmationPage/>} />
       <Route path='/student-form' element={<Index/>} />
       <Route path="/welcome" element={<WelcomePage />} />
       <Route path="/step/1" element={<EditStepOne />} />
@@ -433,11 +437,11 @@ function AppRoutes() {
 
               {/* Hiring Channel  */}
               
-              <Route path='/hiring-channels/post-a-job' element={<EmployerPostJob/>} />
+              <Route path='/hiring-channels/post-a-job/employer' element={<EmployerPostJob/>} />
               <Route path='/hiring-channels/post-an-internship' element={<EmployerPostIntership/>} />
-              <Route path='/hiring-channels/on-campus-hiring' element={<EmployerOnCampusHiring/>} />
-              <Route path='hiring-channels/pool-campus-hiring' element={<EmployerPoolCampus/>} />
-              <Route path='/hiring-channels/off-campus-hiring' element={<EmployerOffCampus/>} />
+              <Route path='/hiring-channels/on-campus-hiring/employer' element={<EmployerOnCampusHiring/>} />
+              <Route path='hiring-channels/pool-campus-hiring/employer' element={<EmployerPoolCampuses/>} />
+              <Route path='/hiring-channels/off-campus-hiring/employer' element={<EmployerOffCampus/>} />
 
   
 
@@ -554,7 +558,7 @@ const App = () => (
           <FormProvider>  {/* Form-specific state */}
             <AppRoutes />
           </FormProvider>
-        </AppProvider>
+    </AppProvider>
     {/* </Router> */}
    
   </TooltipProvider>
