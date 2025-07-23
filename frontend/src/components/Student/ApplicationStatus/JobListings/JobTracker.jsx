@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import { Search, MapPin, Clock } from 'lucide-react';
 import SimilarJobs from '../SimilarJobs';
 import { jobListings, statusSteps, similarJobs } from '../../../../constants/data.js';
-import { getApplicationStatus } from '@/lib/User_AxiosInstance';
+import { getJobListingApplicationStatus } from '@/lib/User_AxiosInstance';
 
 const JobTracker = () => {
   const [jobListings, setJobListings] = useState();
 
   const fetchApplication = async () => {
     try {
-      const response = await getApplicationStatus('67ff4630aad2776399874611');
+      const response = await getJobListingApplicationStatus('67ff4630aad2776399874611');
       setJobListings(response.data.data);
       console.log("response: ", response.data.data);
     } catch (error) {

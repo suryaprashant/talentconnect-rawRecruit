@@ -9,7 +9,7 @@ const router = express.Router();
 // get jobs
 // offcampus
 router.get('/offcampus', secureRoute, getOffcampusJobs);
-router.get('/offcampus/applications/:jobId', getOffcampusJobApplicants);
+router.get('/offcampus/applications/:jobId', secureRoute, getOffcampusJobApplicants);
 
 // get applications
 // router.get('offcampus/applications:id')

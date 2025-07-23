@@ -49,8 +49,21 @@ export async function fetchInternshipOpportunities(req, res) {
     }
 }
 
+export async function findOffcampusOpportunityById(req, res) {
+    const jobId = req.params.jobId;
+
+    const query = {};
+    query._id = jobId;
+    try {
+        const response = await fetchOpportunityService(query);
+        res.status(200).json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
 export async function findOpportunityById(req, res) {
-    const internshipId=req.params.jobId;
+    const internshipId = req.params.jobId;
 
     try {
         const response = await fetchInternshipByIdService(internshipId);
