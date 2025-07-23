@@ -1,5 +1,4 @@
 import HiringDrive from "../models/HiringChannelOffCampusRegister.js";
-import OffCampusApplication from "../models/offcampusApplicationModel.js";
 
 export async function getOffCampusJobsService(companyId) {
     try {

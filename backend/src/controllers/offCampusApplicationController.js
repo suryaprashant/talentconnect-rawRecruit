@@ -1,6 +1,6 @@
 // src/controllers/companyDashboard/jobManagement/offCampusApplicationController.js
 
-import OffCampusApplication from "../models/offcampusApplicationModel.js";
+import OffCampusApplication from "../models/offCampusApplicationModel.js";
 
 // Get All Off-Campus Applications
 export const getAllOffCampusApplications = async (req, res) => {
