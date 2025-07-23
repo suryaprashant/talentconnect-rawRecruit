@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import JobListSection from '@/components/Student/StudentDashboard/JobListing/JobListSection';
 import { fetchJobs } from '@/constants/JobListing';
-import { getRelaventOpportunity } from '@/lib/User_AxiosInstance';
+import { getRelaventJobListingOpportunity } from '@/lib/User_AxiosInstance';
 
 const ProfessionalJobListings = () => {
   const userId = '67ff4617aad277639987460d';
@@ -15,7 +15,7 @@ const ProfessionalJobListings = () => {
       setIsLoading(true);
 
       // Fetch jobs based on profile
-      const profileJobsData = await getRelaventOpportunity(userId);
+      const profileJobsData = await getRelaventJobListingOpportunity(userId);
       setProfileJobs(profileJobsData.data);
 
       // Fetch jobs based on preferences

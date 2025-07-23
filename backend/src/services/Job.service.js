@@ -1,6 +1,6 @@
-import Job from "../models/Job.js";
 import HiringDrive from "../models/HiringChannelOffCampusRegister.js";
 import Intern from "../models/HiringChannels_postinternships.js";
+import JobPosting from "../models/HiringChannels_postjob.js";
 
 // create by company
 // export async function createOpportunityService(jobData, companyId) {
@@ -20,8 +20,36 @@ import Intern from "../models/HiringChannels_postinternships.js";
 // fetch jobs
 export async function fetchOpportunityService(query) {
     try {
-        // const response = await Job.find(query).populate('Company');
         const response = await HiringDrive.find(query)
+            .populate({
+                path: 'companyId',
+                select: 'companyDetails'
+            })
+            .lean();
+
+        // cal status
+        const now = Date.now();
+        const newResponse = response.map(item => {
+            const start = new Date(item.hiringStartDate).getTime();
+            const end = new Date(item.hiringEndDate).getTime();
+
+            return {
+                ...item,
+                status: now >= start && now <= end ? 'Open' : 'Closed'
+            };
+        });
+
+        return { success: true, data: newResponse };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+
+export async function fetchJobListingOpportunityService(query) {
+    try {
+        // const response = await Job.find(query).populate('Company');
+        const response = await JobPosting.find(query)
             .populate({
                 path: 'companyId',
                 select: 'companyDetails'
@@ -102,6 +130,18 @@ export async function checkOpportunityService(jobId) {
 
     try {
         const response = await HiringDrive.exists({ _id: jobId });
+        if (response) return true;
+        return false;
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+
+export async function checkJobListingOpportunityService(jobId) {
+
+    try {
+        const response = await JobPosting.exists({ _id: jobId });
         if (response) return true;
         return false;
     } catch (error) {

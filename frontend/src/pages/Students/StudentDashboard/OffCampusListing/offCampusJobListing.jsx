@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import JobCard from '@/components/Student/StudentDashboard/OffCampusListing/JobCard';
-import { getRelaventOpportunity } from '@/lib/User_AxiosInstance';
+import { getRelaventOffcampusOpportunity } from '@/lib/User_AxiosInstance';
 
 function OffCampusoffCampusJobss() {
   const [offCampusJobs, setOffCampusJobs] = useState([]);
@@ -19,7 +19,7 @@ function OffCampusoffCampusJobss() {
     try {
       setIsLoading(true);
 
-      const response = await getRelaventOpportunity();
+      const response = await getRelaventOffcampusOpportunity();
       setOffCampusJobs(response.data.data);
       setError(null);
     } catch (error) {

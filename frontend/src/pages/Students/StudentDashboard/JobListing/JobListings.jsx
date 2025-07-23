@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import JobListSection from '@/components/Student/StudentDashboard/JobListing/JobListSection';
 import { fetchJobs } from '@/constants/JobListing';
-import { getRelaventOpportunity } from '@/lib/User_AxiosInstance';
+import { getRelaventJobListingOpportunity } from '@/lib/User_AxiosInstance';
 
 const JobListings = () => {
   const [profileJobs, setProfileJobs] = useState([]);
@@ -14,8 +14,8 @@ const JobListings = () => {
       setIsLoading(true);
 
       // Fetch jobs based on profile
-      const profileJobsData = await getRelaventOpportunity();
-      console.log("Jobs: ",profileJobsData.data.data);
+      const profileJobsData = await getRelaventJobListingOpportunity();
+      console.log("Jobs: ", profileJobsData.data.data);
       setProfileJobs(profileJobsData.data.data);
 
       // Fetch jobs based on preferences
@@ -48,7 +48,7 @@ const JobListings = () => {
           <p className="text-xl font-semibold">{error}</p>
           <button
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={() => window.location.reload()}
+            onClick={() => loadJobs()}
           >
             Try Again
           </button>

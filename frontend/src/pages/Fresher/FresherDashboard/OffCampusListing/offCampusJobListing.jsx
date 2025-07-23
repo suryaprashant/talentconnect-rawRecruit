@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import JobCard from '@/components/Student/StudentDashboard/OffCampusListing/JobCard';
-import { getRelaventOpportunity } from '@/lib/User_AxiosInstance.js';
+import { getRelaventOffcampusOpportunity } from '@/lib/User_AxiosInstance.js';
 // import { jobListings } from '@/constants/offCampusListing'
 
 function FOffCampusJobListings() {
@@ -12,7 +12,7 @@ function FOffCampusJobListings() {
 
   const fetchOffCampusJobs = async () => {
     try {
-      const response = await getRelaventOpportunity();
+      const response = await getRelaventOffcampusOpportunity();
       setJobListings(response.data.data);
     } catch (error) {
       console.log("Error: ", error);
