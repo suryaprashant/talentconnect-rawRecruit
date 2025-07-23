@@ -38,9 +38,15 @@ const AuthSchema = new mongoose.Schema({
     default: 'manual'
   },
 
-  // ✅ Added for password reset
+  //  Added for password reset
   resetToken: String,
-  resetTokenExpires: Date
+  resetTokenExpires: Date, 
+
+  activeCompanyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'CompanyProfile',
+    default: null,
+  }
 
 }, { timestamps: true });
 

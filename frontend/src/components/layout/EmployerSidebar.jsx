@@ -176,28 +176,28 @@ function EmployerSidebar({ activePath }) {
       {/* Hiring Channels */}
       <SidebarNavGroup label="Hiring Channels" icon={<FiUsers />} active={activePath.includes('/hiring-channels')}>
         <SidebarNavItem 
-          to="/hiring-channels/on-campus-hiring" 
+          to="/hiring-channels/on-campus-hiring/employer" 
           icon={<FiMapPin />} 
           label="On-campus Hiring" 
-          active={activePath === '/hiring-channels/on-campus-hiring'} 
+          active={activePath === '/hiring-channels/on-campus-hiring//employer'} 
         />
         <SidebarNavItem 
-          to="/hiring-channels/pool-campus-hiring" 
+          to="/hiring-channels/pool-campus-hiring/employer" 
           icon={<FiUsers />} 
           label="Pool Campus Hiring" 
-          active={activePath === '/hiring-channels/pool-campus-hiring'} 
+          active={activePath === '/hiring-channels/pool-campus-hiring/employer'} 
         />
         <SidebarNavItem 
-          to="/hiring-channels/off-campus-hiring" 
+          to="/hiring-channels/off-campus-hiring/employer" 
           icon={<FiLayers />} 
           label="Off-campus Hiring" 
-          active={activePath === '/hiring-channels/off-campus-hiring'} 
+          active={activePath === '/hiring-channels/off-campus-hiring/employer'} 
         />
         <SidebarNavItem 
-          to="/hiring-channels/post-a-job" 
+          to="/hiring-channels/post-a-job/employer" 
           icon={<FiFilePlus />} 
           label="Post a Job" 
-          active={activePath === '/hiring-channels/post-a-job'} 
+          active={activePath === '/hiring-channels/post-a-job/employer'} 
         />
         <SidebarNavItem 
           to="/hiring-channels/post-an-internship" 
