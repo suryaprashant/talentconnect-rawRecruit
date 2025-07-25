@@ -1,17 +1,20 @@
 import mongoose from 'mongoose';
 
 // import Application from "../models/Application.js";
-import OffCampusApplication from '../models/offcampusApplicationModel.js'
+import OffCampusApplication from '../models/offCampusApplicationModel.js';
 // import '../models/Student.js';
 import Job from '../models/Job.js';
 import InternshipApplication from '../models/internshipApplicationModel.js';
 import PoolCampusApplication from '../models/poolcampusApplicationModel.js';
 import OnCampusApplication from '../models/oncampusApplicationModel.js';
 import PoolCampusHiring from '../models/HiringChannelPoolCampusModel.js';
+import JobListingApplication from '../models/jobListingApplicationModel.js';
 
-export async function checkExitence(jobId, userId) {
+export async function checkExitence(jobId, userId, jobType) {
     try {
-        const response = await OffCampusApplication.find({ user: userId, job: jobId });
+        let response;
+        if (jobType == 'offcampus') response = await OffCampusApplication.find({ user: userId, job: jobId });
+        else if(jobType == 'joblisting') response = await JobListingApplication.find({ user: userId, job: jobId });
         // console.log("res: ", response);
         if (response?.length > 0) return false;
     } catch (error) {
@@ -81,6 +84,22 @@ export async function fetchApplicationService(userId) {
 export async function createApplicationService(userId, jobId) {
     try {
         const newApplication = new OffCampusApplication({
+            user: userId,
+            job: jobId,
+            statusHistory: [{ status: "Applied" }],
+            currentStatus: "Applied"
+        });
+        await newApplication.save();
+        return { success: true, message: 'Application submited!' };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to Save");
+    }
+}
+
+export async function createJobListingApplicationService(userId, jobId) {
+    try {
+        const newApplication = new JobListingApplication({
             user: userId,
             job: jobId,
             statusHistory: [{ status: "Applied" }],

@@ -21,9 +21,21 @@ export function getJobDetails(jobId) {
     .catch(error => console.log("Error: ", error));
 }
 
+export function getJobLisingJobDetails(jobId) {
+  return axiosClient.get(`/jobs/jobDetails/joblisting/${jobId}`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
 
-export function getRelaventOpportunity() {
-  return axiosClient.get(`/jobs/relevantjobs`)
+
+export function getRelaventOffcampusOpportunity() {
+  return axiosClient.get(`/jobs/relevantjobs/offcampus`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
+export function getRelaventJobListingOpportunity() {
+  return axiosClient.get(`/jobs/relevantjobs/joblisting`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
@@ -55,6 +67,12 @@ export function getHackathonDetail(hackathonId) {
 // application
 export function ApplyForOppurtunity(jobId) {
   return axiosClient.post(`/application/offcampusapply`, { jobId: jobId })
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
+export function ApplyForJobListingOppurtunity(jobId) {
+  return axiosClient.post(`/application/joblistingapply`, { jobId: jobId })
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

@@ -1,6 +1,6 @@
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
-import { createApplicationService, fetchApplicationService, checkExitence, createInternshipApplicationService, checkInternshipExitence, getOffCampusApplicantsService, fetchShortlistedCandidates } from "../services/Application.service.js";
-import { checkOpportunityService } from "../services/Job.service.js";
+import { createApplicationService, fetchApplicationService, checkExitence, createInternshipApplicationService, checkInternshipExitence, getOffCampusApplicantsService, fetchShortlistedCandidates, createJobListingApplicationService } from "../services/Application.service.js";
+import { checkJobListingOpportunityService, checkOpportunityService } from "../services/Job.service.js";
 import { checkStudentService, getStudentService } from "../services/Student.service.js";
 import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
 
@@ -13,7 +13,7 @@ export async function createApplication(req, res) {
 
     try {
         const user = await getStudentService(userId);
-        if (await checkExitence(jobId, user.data[0]._id) === false) return res.status(403).json({ msg: "Already Applied" });
+        if (await checkExitence(jobId, user.data[0]._id, "offcampus") === false) return res.status(403).json({ msg: "Already Applied" });
 
         const job = await checkOpportunityService(jobId);
         if (!job || !user) {
@@ -21,6 +21,28 @@ export async function createApplication(req, res) {
         }
 
         const application = await createApplicationService(user.data[0]._id, jobId);
+        res.status(201).json(application);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export async function createJobListingApplication(req, res) {
+    const { jobId } = req.body;
+    const userId = req.user._id;
+
+    if (!userId || !jobId) return res.status(404).json({ msg: "Fields missing" });
+
+    try {
+        const user = await getStudentService(userId);
+        const job = await checkJobListingOpportunityService(jobId);
+        if (await checkExitence(jobId, user.data[0]._id,"joblisting") === false) return res.status(403).json({ msg: "Already Applied" });
+        if (!job || !user) {
+            return res.status(404).json({ msg: "User or Job not found!" });
+        }
+
+        const application = await createJobListingApplicationService(user.data[0]._id, jobId);
         res.status(201).json(application);
     } catch (error) {
         console.log("Error: ", error);
@@ -73,7 +95,7 @@ export async function getShortlistedCandidatesByCompany(req, res) {
     try {
         const company = await CompanyProfile.find({ userId: companyId }).lean();
         if (!company) return res.status(404).json({ msg: "company not found!" });
-        const response = await fetchShortlistedCandidates(company[0]._id, "Applied");
+        const response = await fetchShortlistedCandidates(company[0]._id, "Shortlisted");
         // console.log(response);
         res.status(200).json(response);
     } catch (error) {

@@ -41,7 +41,7 @@ const jobSchema = new mongoose.Schema(
     },
     certifications: [String],
     workAuthorization: String,
-    companyPosted: { type: mongoose.Schema.Types.ObjectId, ref: "CompanyProfile" },
+    companyId: { type: mongoose.Schema.Types.ObjectId, ref: "CompanyProfile", required: true },
   },
   {
     timestamps: true,

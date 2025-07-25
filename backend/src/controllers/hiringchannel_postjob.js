@@ -1,10 +1,13 @@
+import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import JobPosting from "../models/HiringChannels_postjob.js";
 
 export const createJob = async (req, res) => {
+  const companyId = req.user._id;
   try {
-    console.log("Received job data:", req.body);
-
+    const company = await CompanyProfile.find({ userId: companyId }).lean();
+    if (!company) return res.status(404).json({ msg: "company not found!" });
     const jobData = req.body;
+    jobData.companyId = company[0]._id;
 
     // Validate required fields
     const requiredFields = [
@@ -26,10 +29,10 @@ export const createJob = async (req, res) => {
     }
 
     const newJob = new JobPosting(jobData);
-    const savedJob = await newJob.save();
+    await newJob.save();
 
-    console.log("Job saved successfully:", savedJob);
-    res.status(201).json({ success: true, job: savedJob });
+    // console.log("Job saved successfully:", savedJob);
+    res.status(201).json({ success: true, message: "Job created!" });
   } catch (error) {
     console.error("Error creating job:", error);
     res.status(500).json({ success: false, message: error.message });

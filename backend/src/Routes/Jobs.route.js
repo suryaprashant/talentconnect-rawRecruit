@@ -1,7 +1,7 @@
 import express from "express";
 
-import { fetchOpportunitiesForCollegeStudent, findRelevantOpportunityById } from "../controllers/relevantJobs.controller.js";
-import { fetchOnCampusOpportunities, findOffcampusOpportunityById, findOpportunityById } from "../controllers/job.controller.js";
+import { fetchOpportunitiesForCollegeStudent, findRelevantJoblistingOpportunity, findRelevantOpportunityById } from "../controllers/relevantJobs.controller.js";
+import { fetchOnCampusOpportunities, findJobListingOpportunityById, findOffcampusOpportunityById, findOpportunityById } from "../controllers/job.controller.js";
 import secureRoute from "../middlewares/secureRoute.js";
 
 const router = express.Router();
@@ -20,8 +20,10 @@ router.get('/campus/:collegeId', fetchOpportunitiesForCollegeStudent);
 // professional
 // router.get('/professional');
 
-router.get('/relevantjobs', secureRoute, findRelevantOpportunityById);
+router.get('/relevantjobs/offcampus', secureRoute, findRelevantOpportunityById);
+router.get('/relevantjobs/joblisting', secureRoute, findRelevantJoblistingOpportunity);
 router.get('/jobDetails/:jobId', findOffcampusOpportunityById);
+router.get('/jobDetails/joblisting/:jobId', findJobListingOpportunityById);
 // router.get('/campusopportunity', fetchCampusOpportunities);
 
 
