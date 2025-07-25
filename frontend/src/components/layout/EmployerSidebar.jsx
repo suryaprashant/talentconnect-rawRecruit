@@ -148,16 +148,16 @@ function EmployerSidebar({ activePath }) {
       {/* Job Management */}
       <SidebarNavGroup label="Job Management" icon={<FiBriefcase />} active={activePath.includes('/job-management')}>
         <SidebarNavItem 
-          to="/job-management/on-campus-listings" 
+          to="/job-management/on-campus-listings/employer" 
           icon={<FiMapPin />} 
           label="On-campus Listings" 
-          active={activePath === '/job-management/on-campus-listings'} 
+          active={activePath === '/job-management/on-campus-listings/employer'} 
         />
         <SidebarNavItem 
-          to="/job-management/pool-campus-listings" 
+          to="/job-management/pool-campus-listings/employer" 
           icon={<FiUsers />} 
           label="Pool Campus Listings" 
-          active={activePath === '/job-management/pool-campus-listings'} 
+          active={activePath === '/job-management/pool-campus-listings/employer'} 
         />
         <SidebarNavItem 
           to="/job-management/off-campus-listings" 

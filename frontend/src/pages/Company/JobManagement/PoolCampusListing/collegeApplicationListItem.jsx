@@ -1,7 +1,3 @@
-// 
-
-
-
 import { useState } from 'react';
 import { Calendar, MapPin, FileText, Users, CheckCircle, ArrowUpRight, X, User, Mail, Phone, Link } from 'lucide-react';
 
