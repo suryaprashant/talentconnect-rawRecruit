@@ -12,7 +12,7 @@ const companyProfileSchema = new mongoose.Schema({
     name: { type: String, required: true },
     designation: { type: String, required: true },
     workEmail: { type: String, required: true },
-    mobile: { type: String, required: true },
+    mobile: { type: String },
     linkedIn: { type: String },
    
   },

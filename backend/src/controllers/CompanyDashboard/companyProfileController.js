@@ -17,9 +17,9 @@ const streamUpload = (buffer, folder) => {
 };
 
 export const createCompanyProfile = async (req, res) => {
-    console.log("aaj hia hum")
+
   try {
-    console.log("aaj hia hum")
+   
     const userId = req.user._id; // Assuming req.user._id is populated by secureRoute
     if (!userId) {
       return res.status(401).json({ message: 'User not authenticated or ID missing.' });
@@ -27,6 +27,7 @@ export const createCompanyProfile = async (req, res) => {
 
     const {
       companyDetails,
+      employerDetails ,
       hiringPreferences,
       kycDetails
     } = req.body;
@@ -52,6 +53,7 @@ export const createCompanyProfile = async (req, res) => {
     // Create company profile
     const companyProfile = await CompanyProfile.create({
       userId,
+      employerDetails : JSON.parse(employerDetails) ,
       companyDetails: JSON.parse(companyDetails),
       hiringPreferences: JSON.parse(hiringPreferences),
       kycDetails: {
