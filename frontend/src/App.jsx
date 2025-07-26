@@ -407,8 +407,8 @@ function AppRoutes() {
               <Route path="/service-request/branding" element={<EmployerBranding/>} />
               
                 {/* Job Management   */}
-             <Route path="/job-management/on-campus-listings" element={<EmployerOnCampusJobManagement/>} />
-             <Route path="/job-management/pool-campus-listings" element={<EmployerPoolCampusJobManagement/>} />
+             <Route path="/job-management/on-campus-listings/employer" element={<EmployerOnCampusJobManagement/>} />
+             <Route path="/job-management/pool-campus-listings/employer" element={<EmployerPoolCampusJobManagement/>} />
              <Route path="/job-management/off-campus-listings" element={<EmployerOffCampusJobManagement/>} />
              <Route path="/job-management/job-listings" element={<EmployerJobListingJobManagement/>} />
 

@@ -5,6 +5,13 @@ import { useNavigate } from 'react-router-dom';
 const useApplicationForm = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
+        employerDetails: {
+            name: '',
+            designation: '',
+            workEmail: '',
+            mobile: '',
+            linkedIn: ''
+        },
         companyDetails: {
             companyName: '',
             description: '',
@@ -77,6 +84,10 @@ const useApplicationForm = () => {
             const backendUrl = import.meta.env.VITE_Backend_URL;
             const dataToSend = new FormData();
 
+            // --- FIX IS HERE ---
+            // This line was added to ensure the employer details are sent to the backend.
+            dataToSend.append('employerDetails', JSON.stringify(formData.employerDetails));
+            
             dataToSend.append('companyDetails', JSON.stringify(formData.companyDetails));
             dataToSend.append('hiringPreferences', JSON.stringify(formData.hiringPreferences));
             
@@ -109,16 +120,16 @@ const useApplicationForm = () => {
             console.error('Failed to create company profile:', error);
              if (error.response) {
    
-        console.error('Error Response Data:', error.response.data);
-        console.error('Error Response Status:', error.response.status);
-        console.error('Error Response Headers:', error.response.headers);
-    } else if (error.request) {
-        
-        console.error('Error Request:', error.request);
-    } else {
-     
-        console.error('Error Message:', error.message);
-    }
+            console.error('Error Response Data:', error.response.data);
+            console.error('Error Response Status:', error.response.status);
+            console.error('Error Response Headers:', error.response.headers);
+        } else if (error.request) {
+            
+            console.error('Error Request:', error.request);
+        } else {
+       
+            console.error('Error Message:', error.message);
+        }
             alert('Failed to create company profile. Please try again.');
             return false;
         }

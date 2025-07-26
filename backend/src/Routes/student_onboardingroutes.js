@@ -22,14 +22,15 @@ router.post(
   secureRoute, // Apply secureRoute here
   upload.fields([
     { name: "resume", maxCount: 1 },
-    { name: "degreeCertificate", maxCount: 2 },
-    { name: "project", maxCount: 2 },
-    { name: "experienceCertificate", maxCount: 5 }, // Allow multiple experience certificates
+    { name: "degreeCertificate", maxCount: 1 },
+    { name: "project", maxCount: 1 },
+    // { name: "experienceCertificate", maxCount: 5 }, // Allow multiple experience certificates
     { name: "profileImage", maxCount: 1 }, // Added for profile image upload
     { name: "backgroundImage", maxCount: 1 },
     { name: "experienceCertificate", maxCount: 10 },
     { name: "leadershipCertificate", maxCount: 10 },
-    { name: "internationalExperienceCertificate", maxCount: 10 }, // Added for background image upload
+    { name: "internationalExperienceCertificate", maxCount: 10 },
+      { name: "awardCertificate", maxCount: 10 }, // Added for background image upload
   ]),
   submitOnboardingForm
 );
