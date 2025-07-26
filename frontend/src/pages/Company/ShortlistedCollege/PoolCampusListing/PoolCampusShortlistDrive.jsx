@@ -24,28 +24,28 @@ const PoolCampusShortlistDrive = () => {
   const loadDrives = async () => {
     try {
       setLoading(true);
-      
+
       // Choose between real API and mock data
       let data;
-      if (import.meta.env.VITE_USE_MOCK_API === 'true') {
-        data = getMockDrives({
-          page: pagination.currentPage,
-          itemsPerPage: pagination.itemsPerPage
-        });
-      } else {
-        data = await fetchShortlistedDrives({
-          page: pagination.currentPage,
-          batchYear: filters.batchYear,
-          location: filters.location,
-          search: filters.searchTerm,
-          itemsPerPage: pagination.itemsPerPage
-        });
-      }
-      
-      setDrives(data.drives);
+      // if (import.meta.env.VITE_USE_MOCK_API === 'true') {
+      //   data = getMockDrives({
+      //     page: pagination.currentPage,
+      //     itemsPerPage: pagination.itemsPerPage
+      //   });
+      // } else {
+      //   data = await fetchShortlistedDrives({
+      //     page: pagination.currentPage,
+      //     batchYear: filters.batchYear,
+      //     location: filters.location,
+      //     search: filters.searchTerm,
+      //     itemsPerPage: pagination.itemsPerPage
+      //   });
+      // }
+
+      setDrives(data?.drives);
       setPagination(prev => ({
         ...prev,
-        totalItems: data.totalItems
+        totalItems: data?.totalItems
       }));
       setError(null);
     } catch (err) {
@@ -76,19 +76,19 @@ const PoolCampusShortlistDrive = () => {
   };
 
   return (
-      <div className="bg-gray-50 min-h-screen py-10 px-4 flex justify-center items-start">
-         <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg p-6">
-           <PoolCampusDrives 
-             drives={drives}
-             loading={loading}
-             error={error}
-             pagination={pagination}
-             filters={filters}
-             onPageChange={handlePageChange}
-             onFilterChange={handleFilterChange}
-           />
-         </div>
-       </div>
+    <div className="bg-gray-50 min-h-screen py-10 px-4 flex justify-center items-start">
+      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg p-6">
+        <PoolCampusDrives
+          drives={drives}
+          loading={loading}
+          error={error}
+          pagination={pagination}
+          filters={filters}
+          onPageChange={handlePageChange}
+          onFilterChange={handleFilterChange}
+        />
+      </div>
+    </div>
   );
 };
 

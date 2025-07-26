@@ -19,8 +19,8 @@ const PoolEmployeeListing = () => {
   // Simulating data fetch from backend
   useEffect(() => {
     // In a real app, this would be an API call
-    setColleges(mockColleges);
-    setFilteredColleges(mockColleges);
+    // setColleges(mockColleges);
+    // setFilteredColleges(mockColleges);
   }, []);
 
   // Filter colleges when filters change
@@ -124,7 +124,7 @@ const PoolEmployeeListing = () => {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold mb-2">Colleges Posting for On-Campus</h1>
+      <h1 className="text-2xl font-bold mb-2">Colleges Posting for Pool-Campus</h1>
       <p className="text-gray-600 mb-6">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in arcu.</p>
       
       <div className="flex flex-wrap items-center justify-between mb-4">
