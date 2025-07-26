@@ -6,7 +6,7 @@ import FilterSection from '@/components/college/CollegeDashboard/FilterSection';
 //import Header from '../components/Header';
 
 const InternJobsListingPage = () => {
-  const [filteredJobs, setFilteredJobs] = useState(jobs);
+  const [filteredJobs, setFilteredJobs] = useState();
   const [filterCategories, setFilterCategories] = useState(initialFilterCategories);
   const [activeFilters, setActiveFilters] = useState([]);
   const [sortBy, setSortBy] = useState('newest');
@@ -17,9 +17,9 @@ const InternJobsListingPage = () => {
   }, [filterCategories]);
 
   const handleFilterChange = (categoryId, filterId, checked) => {
-    const updatedCategories = filterCategories.map(category => {
+    const updatedCategories = filterCategories?.map(category => {
       if (category.id === categoryId) {
-        const updatedFilters = category.filters.map(filter => {
+        const updatedFilters = category.filters?.map(filter => {
           if (filter.id === filterId) {
             return { ...filter, checked };
           }
@@ -49,9 +49,9 @@ const InternJobsListingPage = () => {
 
   const handleClearFilters = (categoryId) => {
     if (categoryId) {
-      const updatedCategories = filterCategories.map(category => {
+      const updatedCategories = filterCategories?.map(category => {
         if (category.id === categoryId) {
-          const updatedFilters = category.filters.map(filter => ({
+          const updatedFilters = category.filters?.map(filter => ({
             ...filter,
             checked: false,
           }));
@@ -62,9 +62,9 @@ const InternJobsListingPage = () => {
       setFilterCategories(updatedCategories);
       setActiveFilters(activeFilters.filter(af => af.category !== categoryId));
     } else {
-      const updatedCategories = filterCategories.map(category => ({
+      const updatedCategories = filterCategories?.map(category => ({
         ...category,
-        filters: category.filters.map(filter => ({
+        filters: category.filters?.map(filter => ({
           ...filter,
           checked: false,
         })),
@@ -85,8 +85,8 @@ const InternJobsListingPage = () => {
       activeFiltersMap[af.category].push(af.value);
     });
 
-    if (activeFilters.length === 0) {
-      setFilteredJobs(results);
+    if (activeFilters?.length === 0) {
+      // setFilteredJobs(results);
       return;
     }
 
@@ -109,7 +109,7 @@ const InternJobsListingPage = () => {
       }
     });
 
-    setFilteredJobs(results);
+    // setFilteredJobs(results);
   };
 
   const handleSortChange = (e) => {
@@ -135,7 +135,7 @@ const InternJobsListingPage = () => {
         break;
     }
 
-    setFilteredJobs(sortedJobs);
+    // setFilteredJobs(sortedJobs);
   };
 
   return (
@@ -161,7 +161,7 @@ const InternJobsListingPage = () => {
           <div className="flex-grow">
             <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center">
               <div className="flex flex-wrap gap-2 mb-4 sm:mb-0">
-                {activeFilters.length > 0 && activeFilters.map((filter, index) => (
+                {activeFilters?.length > 0 && activeFilters?.map((filter, index) => (
                   <div key={index} className="inline-flex items-center bg-blue-50 text-blue-700 rounded-full py-1 px-3 text-sm">
                     <span className="mr-1">{filter.value}</span>
                     <button
@@ -201,12 +201,12 @@ const InternJobsListingPage = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredJobs.map(job => (
+              {filteredJobs?.map(job => (
                 <JobCard key={job.id} job={job} />
               ))}
             </div>
 
-            {filteredJobs.length === 0 && (
+            {filteredJobs?.length === 0 && (
               <div className="text-center py-12">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -222,7 +222,7 @@ const InternJobsListingPage = () => {
               </div>
             )}
 
-            {filteredJobs.length > 0 && (
+            {filteredJobs?.length > 0 && (
               <div className="mt-8 flex justify-center">
                 <button className="inline-flex items-center px-4 py-2 border border-gray-300 bg-white rounded-md font-medium text-gray-700 hover:bg-gray-50">
                   View all

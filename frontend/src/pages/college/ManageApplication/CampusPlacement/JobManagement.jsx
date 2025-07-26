@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useJobs } from '@/context/College/JobManagement/JobContext';
-import { 
-  Search, Eye, Edit, Users, FileText, Trash, 
+import {
+  Search, Eye, Edit, Users, FileText, Trash,
   ChevronLeft, ChevronRight, Filter
 } from 'lucide-react';
 
@@ -13,70 +13,72 @@ function JobManagementApplication() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('All Jobs');
   const [showFilters, setShowFilters] = useState(false);
-  
+
   const itemsPerPage = 5;
 
   // Filter jobs based on search query and active tab
-  const filteredJobs = jobs.filter(job => {
-    const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          job.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          job.location.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    if (activeTab === 'All Jobs') {
-      return matchesSearch;
-    } else if (activeTab === 'Published') {
-      return matchesSearch && job.status === 'Published';
-    } else if (activeTab === 'Drafts') {
-      return matchesSearch && job.status === 'Draft';
-    }
-    
-    return matchesSearch;
-  });
-  
-  const totalItems = filteredJobs.length;
+
+  let filteredJobs;
+  //const filteredJobs = jobs.filter(job => {
+  // const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //                       job.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //                       job.location.toLowerCase().includes(searchQuery.toLowerCase());
+
+  //   if (activeTab === 'All Jobs') {
+  //     return matchesSearch;
+  //   } else if (activeTab === 'Published') {
+  //     return matchesSearch && job.status === 'Published';
+  //   } else if (activeTab === 'Drafts') {
+  //     return matchesSearch && job.status === 'Draft';
+  //   }
+
+  //   return matchesSearch;
+  // });
+
+  const totalItems = filteredJobs?.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-  
+
   // Current page data
-  const currentJobs = filteredJobs.slice(startIndex, endIndex);
-  
+  const currentJobs = filteredJobs?.slice(startIndex, endIndex);
+
   // Pagination controls
   const handlePrevPage = () => {
     setCurrentPage(prev => Math.max(prev - 1, 1));
   };
-  
+
   const handleNextPage = () => {
     setCurrentPage(prev => Math.min(prev + 1, totalPages));
   };
-  
+
   const handlePageClick = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-  
+
   // Action handlers
   const handleView = (jobId) => {
     navigate(`/manage-application/campus-placement/${jobId}`);
   };
-  
+
   const handleEdit = (jobId, e) => {
     e.stopPropagation();
     console.log(`Edit job with ID: ${jobId}`);
     // In a real app: navigate to edit page or open edit modal
   };
-  
+
   const handleApplications = (jobId, e) => {
     e.stopPropagation();
     console.log(`View applications for job ID: ${jobId}`);
     // In a real app: navigate to applications page
   };
-  
+
   const handleExport = (jobId, e) => {
     e.stopPropagation();
     console.log(`Export job with ID: ${jobId}`);
     // In a real app: trigger API call to export job data
   };
-  
+
   const handleDelete = (jobId, e) => {
     e.stopPropagation();
     console.log(`Delete job with ID: ${jobId}`);
@@ -95,30 +97,30 @@ function JobManagementApplication() {
             Post a Job
           </button>
         </div>
-        
+
         <div className="border rounded-md mt-10">
           {/* Tabs */}
           <div className="flex border-b">
-            <button 
+            <button
               className={`px-4 py-2 ${activeTab === 'All Jobs' ? 'border-b-2 border-black font-medium' : ''}`}
               onClick={() => setActiveTab('All Jobs')}
             >
-              All Jobs ({jobs.length})
+              All Jobs ({jobs?.length})
             </button>
-            <button 
+            <button
               className={`px-4 py-2 ${activeTab === 'Published' ? 'border-b-2 border-black font-medium' : ''}`}
               onClick={() => setActiveTab('Published')}
             >
               Published
             </button>
-            <button 
+            <button
               className={`px-4 py-2 ${activeTab === 'Drafts' ? 'border-b-2 border-black font-medium' : ''}`}
               onClick={() => setActiveTab('Drafts')}
             >
               Drafts
             </button>
           </div>
-          
+
           {/* Search and filters */}
           <div className="p-4 border-b flex flex-wrap items-center gap-2">
             <div className="relative flex-grow max-w-sm">
@@ -133,20 +135,20 @@ function JobManagementApplication() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            
-            <button 
+
+            <button
               className="flex items-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-50 transition-colors"
               onClick={() => setShowFilters(!showFilters)}
             >
               <Filter className="w-4 h-4" />
               Filters
             </button>
-            
+
             <div className="ml-auto text-sm text-gray-500">
-              Showing {startIndex + 1}-{Math.min(endIndex, filteredJobs.length)} of {filteredJobs.length}
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredJobs?.length)} of {filteredJobs?.length}
             </div>
           </div>
-          
+
           {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -168,16 +170,16 @@ function JobManagementApplication() {
                       <p className="mt-2">Loading jobs...</p>
                     </td>
                   </tr>
-                ) : currentJobs.length === 0 ? (
+                ) : currentJobs?.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="text-center py-4 text-gray-500">
                       No jobs found matching your criteria.
                     </td>
                   </tr>
                 ) : (
-                  currentJobs.map(job => (
-                    <tr 
-                      key={job.id} 
+                  currentJobs?.map(job => (
+                    <tr
+                      key={job.id}
                       className="border-b hover:bg-gray-50 cursor-pointer transition-colors"
                       onClick={() => handleView(job.id)}
                     >
@@ -188,11 +190,10 @@ function JobManagementApplication() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-1 text-xs rounded-full ${
-                          job.status === 'Published' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
+                        <span className={`px-2 py-1 text-xs rounded-full ${job.status === 'Published'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-800'
+                          }`}>
                           {job.status}
                         </span>
                       </td>
@@ -224,37 +225,36 @@ function JobManagementApplication() {
               </tbody>
             </table>
           </div>
-          
+
           {/* Pagination */}
-          {!loading && filteredJobs.length > 0 && (
+          {!loading && filteredJobs?.length > 0 && (
             <div className="flex items-center justify-between p-4">
-              <button 
-                onClick={handlePrevPage} 
+              <button
+                onClick={handlePrevPage}
                 disabled={currentPage === 1}
                 className="flex items-center gap-1 px-4 py-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition-colors"
               >
                 <ChevronLeft size={16} />
                 Prev
               </button>
-              
+
               <div className="flex gap-2">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                {Array?.from({ length: totalPages }, (_, i) => i + 1)?.map(page => (
                   <button
                     key={page}
                     onClick={() => handlePageClick(page)}
-                    className={`w-8 h-8 flex items-center justify-center rounded-md transition-colors ${
-                      currentPage === page 
-                        ? 'bg-black text-white' 
-                        : 'border hover:bg-gray-50'
-                    }`}
+                    className={`w-8 h-8 flex items-center justify-center rounded-md transition-colors ${currentPage === page
+                      ? 'bg-black text-white'
+                      : 'border hover:bg-gray-50'
+                      }`}
                   >
                     {page}
                   </button>
                 ))}
               </div>
-              
-              <button 
-                onClick={handleNextPage} 
+
+              <button
+                onClick={handleNextPage}
                 disabled={currentPage === totalPages}
                 className="flex items-center gap-1 px-4 py-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition-colors"
               >
