@@ -83,14 +83,14 @@ export function ApplyForInternship(internshipId) {
     .catch(error => console.log("Error: ", error));
 }
 
-export function getJobListingApplicationStatus(userId) {
-  return axiosClient.get(`/application`, { params: { Id: userId } })
+export function getJobListingApplicationStatus() {
+  return axiosClient.get(`/application/offcampus`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
 
-export function getOffCampusApplicationStatus(userId) {
-  return axiosClient.get(`/application/offcampus/${userId}`)
+export function getOffCampusApplicationStatus() {
+  return axiosClient.get(`/application/candidate/offCampus`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

@@ -9,7 +9,7 @@ const JobTracker = () => {
 
   const fetchApplication = async () => {
     try {
-      const response = await getJobListingApplicationStatus('67ff4630aad2776399874611');
+      const response = await getJobListingApplicationStatus();
       setJobListings(response.data.data);
       console.log("response: ", response.data.data);
     } catch (error) {

@@ -1,5 +1,5 @@
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
-import { createApplicationService, fetchApplicationService, checkExitence, createInternshipApplicationService, checkInternshipExitence, getOffCampusApplicantsService, fetchShortlistedCandidates, createJobListingApplicationService } from "../services/Application.service.js";
+import { createApplicationService, checkExitence, createInternshipApplicationService, checkInternshipExitence, getOffCampusApplicantsService, fetchShortlistedCandidates, createJobListingApplicationService, fetchOffcampusApplicationService } from "../services/Application.service.js";
 import { checkJobListingOpportunityService, checkOpportunityService } from "../services/Job.service.js";
 import { checkStudentService, getStudentService } from "../services/Student.service.js";
 import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
@@ -37,7 +37,7 @@ export async function createJobListingApplication(req, res) {
     try {
         const user = await getStudentService(userId);
         const job = await checkJobListingOpportunityService(jobId);
-        if (await checkExitence(jobId, user.data[0]._id,"joblisting") === false) return res.status(403).json({ msg: "Already Applied" });
+        if (await checkExitence(jobId, user.data[0]._id, "joblisting") === false) return res.status(403).json({ msg: "Already Applied" });
         if (!job || !user) {
             return res.status(404).json({ msg: "User or Job not found!" });
         }
@@ -51,12 +51,13 @@ export async function createJobListingApplication(req, res) {
 }
 
 // get offcampus application details
-export async function getUserApplication(req, res) {
-    const userId = req.query.Id;
-    if (!userId) return res.status(404).json({ error: "Invalid" });
+export async function getOffcampusUserApplication(req, res) {
+    const userId = req.user._id;
+    const user = await getStudentService(userId);
+    if (!user) return res.status(404).json({ error: "Invalid user" });
 
     try {
-        const response = await fetchApplicationService(userId);
+        const response = await fetchOffcampusApplicationService(user.data[0]._id);
         // console.log(response);
 
         if (response.success) res.status(200).json(response);
