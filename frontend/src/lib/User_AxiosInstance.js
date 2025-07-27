@@ -84,7 +84,7 @@ export function ApplyForInternship(internshipId) {
 }
 
 export function getJobListingApplicationStatus() {
-  return axiosClient.get(`/application/offcampus`)
+  return axiosClient.get(`/application/candidate/joblisting`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

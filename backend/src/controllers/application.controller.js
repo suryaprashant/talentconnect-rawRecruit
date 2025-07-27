@@ -1,5 +1,5 @@
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
-import { createApplicationService, checkExitence, createInternshipApplicationService, checkInternshipExitence, getOffCampusApplicantsService, fetchShortlistedCandidates, createJobListingApplicationService, fetchOffcampusApplicationService } from "../services/Application.service.js";
+import { createApplicationService, checkExitence, createInternshipApplicationService, checkInternshipExitence, getOffCampusApplicantsService, fetchShortlistedCandidates, createJobListingApplicationService, fetchOffcampusApplicationService, fetchJoblistingApplicationService } from "../services/Application.service.js";
 import { checkJobListingOpportunityService, checkOpportunityService } from "../services/Job.service.js";
 import { checkStudentService, getStudentService } from "../services/Student.service.js";
 import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
@@ -50,7 +50,7 @@ export async function createJobListingApplication(req, res) {
     }
 }
 
-// get offcampus application details
+// get application details by candidate
 export async function getOffcampusUserApplication(req, res) {
     const userId = req.user._id;
     const user = await getStudentService(userId);
@@ -58,6 +58,23 @@ export async function getOffcampusUserApplication(req, res) {
 
     try {
         const response = await fetchOffcampusApplicationService(user.data[0]._id);
+        // console.log(response);
+
+        if (response.success) res.status(200).json(response);
+        else res.status(404).json(response);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ Error: "Internal server error" });
+    }
+}
+
+export async function getJobListingUserApplication(req, res) {
+    const userId = req.user._id;
+    const user = await getStudentService(userId);
+    if (!user) return res.status(404).json({ error: "Invalid user" });
+
+    try {
+        const response = await fetchJoblistingApplicationService(user.data[0]._id);
         // console.log(response);
 
         if (response.success) res.status(200).json(response);

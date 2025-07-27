@@ -81,6 +81,57 @@ export async function fetchOffcampusApplicationService(userId) {
         throw new Error("Failed to fetch");
     }
 }
+export async function fetchJoblistingApplicationService(userId) {
+    try {
+
+        const applicationData = await JobListingApplication.aggregate([
+            {
+                $match: {
+                    user: new mongoose.Types.ObjectId(userId)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'jobpostings',
+                    localField: 'job',
+                    foreignField: '_id',
+                    as: 'jobDetails'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'companyprofiles',
+                    localField: 'jobDetails.companyId',
+                    foreignField: '_id',
+                    as: 'companyDetails'
+                }
+            },
+            {
+                $project: {
+                    job: 1,
+                    statusHistory: 1,
+                    currentStatus: 1,
+                    createdAt: 1,
+                    "jobDetails.jobTitle": 1,
+                    "jobDetails._id": 1,
+                    "jobDetails.jobDescription": 1,
+                    "jobDetails.preferredHiringLocation": 1,
+                    // "jobDetails.workModes": 1,
+                    "jobDetails.yearsOfExperience": 1,
+                    "companyDetails.companyDetails": 1,
+                }
+            }
+            // {
+            //     $unwind: '$jobDetails'
+            // }
+        ]);
+
+        return { success: true, data: applicationData };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
 
 export async function createApplicationService(userId, jobId) {
     try {
