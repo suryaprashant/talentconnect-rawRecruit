@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
 import { ChevronDownIcon } from "lucide-react";
@@ -8,14 +6,14 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
   // Initialize local state from passed formData
   const [localFormData, setLocalFormData] = useState({
     industry: formData.industry || "", // This should probably be an array if multi-select
-    jobRole: formData.jobRole || "",   // This should probably be an array if multi-select
+    jobRoles: formData.jobRoles || "",   // This should probably be an array if multi-select
     locations: formData.locations || "", // This should probably be an array if multi-select
     lookingFor: formData.lookingFor || "Internship",
     employmentType: formData.employmentType || "full time",
-    expectedSalaryCurrency: formData.expectedSalaryCurrency || "", // Added from model
-    expectedSalaryAmount: formData.expectedSalaryAmount || "",     // Added from model
-    currentSalaryCurrency: formData.currentSalaryCurrency || "",   // Added from model
-    currentSalaryAmount: formData.currentSalaryAmount || "",       // Added from model
+    // expectedSalaryCurrency: formData.expectedSalaryCurrency || "", // Added from model
+    // expectedSalaryAmount: formData.expectedSalaryAmount || "",     // Added from model
+    // currentSalaryCurrency: formData.currentSalaryCurrency || "",   // Added from model
+    // currentSalaryAmount: formData.currentSalaryAmount || "",       // Added from model
   });
 
   const handleChange = (e) => {
@@ -71,8 +69,7 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
                 name="industry"
                 value={localFormData.industry}
                 onChange={handleChange}
-                // Consider adding `multiple` attribute here if users can select multiple industries
-                // multiple // <--- Add this if multiple selections are allowed
+              
                 className="items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 border border-gray-300 rounded"
               >
                 <option value="" disabled>Select Industry</option>
@@ -88,17 +85,16 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
 
           {/* Job Role */}
           <div className="w-full mt-6 max-md:max-w-full">
-            <label htmlFor="jobRole" className="block text-black">
+            <label htmlFor="jobRoles" className="block text-black">
               Interested Job Roles
             </label>
             <div className="relative">
               <select
-                id="jobRole"
-                name="jobRole"
-                value={localFormData.jobRole}
+                id="jobRoles"
+                name="jobRoles"
+                value={localFormData.jobRoles}
                 onChange={handleChange}
-                // Consider adding `multiple` attribute here if users can select multiple roles
-                // multiple // <--- Add this if multiple selections are allowed
+               
                 className="items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 border border-gray-300 rounded"
               >
                 <option value="" disabled>Select Job Role</option>
@@ -138,78 +134,6 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
               <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
             </div>
           </div>
-
-          {/* Expected Salary
-          <div className="flex w-full gap-6 mt-6 max-md:flex-wrap">
-            <div className="flex-1 shrink basis-[0%]">
-              <label htmlFor="expectedSalaryCurrency" className="block text-black">
-                Expected Salary (Currency)
-              </label>
-              <select
-                id="expectedSalaryCurrency"
-                name="expectedSalaryCurrency"
-                value={localFormData.expectedSalaryCurrency}
-                onChange={handleChange}
-                className="items-center appearance-none bg-white flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 border border-gray-300 rounded"
-              >
-                <option value="" disabled>Select Currency</option>
-                <option value="INR">INR</option>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-              </select>
-            </div>
-            <div className="flex-1 shrink basis-[0%]">
-              <label htmlFor="expectedSalaryAmount" className="block text-black">
-                Expected Salary (Amount)
-              </label>
-              <input
-                id="expectedSalaryAmount"
-                name="expectedSalaryAmount"
-                type="number"
-                value={localFormData.expectedSalaryAmount}
-                onChange={handleChange}
-                className="flex min-h-12 w-full gap-2 mt-2 py-3 px-3 border border-gray-300 rounded"
-                placeholder="e.g., 500000"
-              />
-            </div>
-          </div> */}
-
-          {/* Current Salary
-          <div className="flex w-full gap-6 mt-6 max-md:flex-wrap">
-            <div className="flex-1 shrink basis-[0%]">
-              <label htmlFor="currentSalaryCurrency" className="block text-black">
-                Current Salary (Currency)
-              </label>
-              <select
-                id="currentSalaryCurrency"
-                name="currentSalaryCurrency"
-                value={localFormData.currentSalaryCurrency}
-                onChange={handleChange}
-                className="items-center appearance-none bg-white flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 border border-gray-300 rounded"
-              >
-                <option value="" disabled>Select Currency</option>
-                <option value="INR">INR</option>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-              </select>
-            </div>
-            <div className="flex-1 shrink basis-[0%]">
-              <label htmlFor="currentSalaryAmount" className="block text-black">
-                Current Salary (Amount)
-              </label>
-              <input
-                id="currentSalaryAmount"
-                name="currentSalaryAmount"
-                type="number"
-                value={localFormData.currentSalaryAmount}
-                onChange={handleChange}
-                className="flex min-h-12 w-full gap-2 mt-2 py-3 px-3 border border-gray-300 rounded"
-                placeholder="e.g., 300000"
-              />
-            </div>
-          </div> */}
-
-
           {/* Looking For */}
           <div className="w-full mt-6 max-md:max-w-full">
             <label className="block text-black">Looking for</label>

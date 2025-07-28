@@ -738,10 +738,7 @@ function Fresher_Profile() {
                           </div>
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Current Salary</h5>
-                          <p className="text-gray-900">{profileData.currentSalaryCurrency || 'N/A'} {profileData.currentSalaryAmount || ''}</p>
-                        </div>
+                        
 
                         <div className="p-4 border border-gray-200 rounded-lg">
                           <h5 className="font-medium text-gray-900 mb-2">Expected Salary</h5>
