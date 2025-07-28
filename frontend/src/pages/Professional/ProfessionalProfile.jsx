@@ -380,7 +380,7 @@ function ProfProfile() {
       id: 1,
       title: '',
       organization: '',
-     startDate: '',
+      startDate: '',
       endDate: '',
       description: ''
     }
@@ -1727,7 +1727,7 @@ const handleSaveChanges = async () => {
                 </Button>
               )}
             </div>
-            {/* Add Languages Section */}
+           
             <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
               <div className="flex justify-between items-center mb-4">  
                 <div>

@@ -84,11 +84,11 @@ const onboardingSchema = new mongoose.Schema(
         experienceCertificate: String, // Now stores Cloudinary URL
       },
     ],
-    // --- NEW: Leadership Experience ---
+
     leadership: [leadershipSchema],
-    // --- NEW: International Experience ---
+
     internationalExperience: [internationalExperienceSchema],
-    // --- NEW: Awards and Recognitions ---
+
     awards: [awardSchema],
     skills: [String],
     certifications: String,

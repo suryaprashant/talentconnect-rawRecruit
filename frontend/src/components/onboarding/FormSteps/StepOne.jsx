@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
 import { UploadIcon } from "lucide-react";

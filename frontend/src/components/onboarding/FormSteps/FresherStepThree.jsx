@@ -196,7 +196,7 @@ export const FresherStepThree = ({ onNext, onCancel, onBack = onCancel, formData
             <div className="flex gap-4">
               <button
                 type="button"
-                onClick={onCancel}
+                onClick={onBack}
                 className="self-stretch gap-2 text-black px-6 py-3 border rounded-md max-md:px-5 cursor-pointer"
               >
                 Cancel
