@@ -94,3 +94,9 @@ export function getOffCampusApplicationStatus() {
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
+
+export function getInternshipApplicationStatus() {
+  return axiosClient.get(`/application/candidate/internship`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}

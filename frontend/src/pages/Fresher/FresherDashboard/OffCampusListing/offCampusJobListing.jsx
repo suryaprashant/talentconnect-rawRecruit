@@ -1,31 +1,63 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import JobCard from '@/components/Student/StudentDashboard/OffCampusListing/JobCard';
-import { getRelaventOffcampusOpportunity } from '@/lib/User_AxiosInstance.js';
-// import { jobListings } from '@/constants/offCampusListing'
+import { getRelaventOffcampusOpportunity } from '@/lib/User_AxiosInstance';
 
-function FOffCampusJobListings() {
-  const [jobListings, setJobListings] = useState();
+function FOffCampusListings() {
+  const [offCampusJobs, setOffCampusJobs] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const fetchOffCampusJobs = async () => {
+  const handleJobClick = (jobId) => {
+    navigate(`/student-dashboard/off-campus-listings/${jobId}`);
+  };
+
+  const fetchOffcampusOpportunity = async () => {
     try {
+      setIsLoading(true);
+
       const response = await getRelaventOffcampusOpportunity();
-      setJobListings(response.data.data);
+      setOffCampusJobs(response.data.data);
+      setError(null);
     } catch (error) {
-      console.log("Error: ", error);
+      setError('Failed to load jobs. Please try again later.')
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   useEffect(() => {
-    fetchOffCampusJobs();
+    fetchOffcampusOpportunity();
   }, []);
 
-  const handleJobClick = (jobId) => {
-    navigate(`/fresher-dashboard/off-campus-listings/${jobId}`);
-  };
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-red-500 text-center p-4">
+          <p className="text-xl font-semibold">{error}</p>
+          <button
+            className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+            // onClick={() => window.location.reload()}
+            onClick={() => fetchOffcampusOpportunity()}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4">
@@ -67,13 +99,13 @@ function FOffCampusJobListings() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {jobListings.length > 0 ? jobListings.map(job => (
+        {offCampusJobs?.map(job => (
           <JobCard key={job._id} job={job} onClick={handleJobClick} />
-        )) : (<span>No Jobs</span>)}
+        ))}
       </div>
 
       <div className="flex justify-end mt-6">
-        <button className="text-sm text-gray-600 px-4 py-2 border border-gray-300 rounded hover:bg-gray-100">
+        <button className="text-sm text-white bg-black px-4 py-2 border border-gray-300 rounded hover:bg-blue-600">
           View all
         </button>
       </div>
@@ -81,4 +113,4 @@ function FOffCampusJobListings() {
   );
 }
 
-export default FOffCampusJobListings;
+export default FOffCampusListings;
