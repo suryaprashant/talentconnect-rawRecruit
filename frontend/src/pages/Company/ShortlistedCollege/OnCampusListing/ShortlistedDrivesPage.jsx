@@ -26,28 +26,28 @@ const ShortlistedDrivesPage = () => {
       setLoading(true);
 
       let data;
-      if (import.meta.env.VITE_USE_MOCK_API === 'true') {
-        data = getMockDrives({
-          page: pagination.currentPage,
-          batchYear: filters.batchYear,
-          location: filters.location,
-          search: filters.searchTerm,
-          itemsPerPage: pagination.itemsPerPage
-        });
-      } else {
-        data = await fetchShortlistedDrives({
-          page: pagination.currentPage,
-          batchYear: filters.batchYear,
-          location: filters.location,
-          search: filters.searchTerm,
-          itemsPerPage: pagination.itemsPerPage
-        });
-      }
+      // if (import.meta.env.VITE_USE_MOCK_API === 'true') {
+      //   data = getMockDrives({
+      //     page: pagination.currentPage,
+      //     batchYear: filters.batchYear,
+      //     location: filters.location,
+      //     search: filters.searchTerm,
+      //     itemsPerPage: pagination.itemsPerPage
+      //   });
+      // } else {
+      //   data = await fetchShortlistedDrives({
+      //     page: pagination.currentPage,
+      //     batchYear: filters.batchYear,
+      //     location: filters.location,
+      //     search: filters.searchTerm,
+      //     itemsPerPage: pagination.itemsPerPage
+      //   });
+      // }
 
-      setDrives(data.drives);
+      setDrives(data?.drives);
       setPagination(prev => ({
         ...prev,
-        totalItems: data.totalItems
+        totalItems: data?.totalItems
       }));
       setError(null);
     } catch (err) {
@@ -79,7 +79,7 @@ const ShortlistedDrivesPage = () => {
   return (
     <div className="bg-gray-50 min-h-screen py-10 px-4 flex justify-center items-start">
       <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg p-6">
-        <ShortlistedDrives 
+        <ShortlistedDrives
           drives={drives}
           loading={loading}
           error={error}

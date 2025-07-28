@@ -49,7 +49,8 @@ export async function fetchOpportunityService(query) {
 export async function fetchJobListingOpportunityService(query) {
     try {
         // const response = await Job.find(query).populate('Company');
-        const response = await JobPosting.find(query)
+        // const response = await JobPosting.find(query)
+        const response = await JobPosting.find()
             .populate({
                 path: 'companyId',
                 select: 'companyDetails'
@@ -126,6 +127,7 @@ export async function fetchInternshipService(yearsOfExperience) {
     }
 }
 
+// offcampus
 export async function checkOpportunityService(jobId) {
 
     try {

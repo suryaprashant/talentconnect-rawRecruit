@@ -20,7 +20,7 @@ function SignupPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [linkedinLoading, setLinkedinLoading] = useState(false); 
+  const [linkedinLoading, setLinkedinLoading] = useState(false);
 
   useEffect(() => {
     // Load Google API script
@@ -36,7 +36,7 @@ function SignupPage() {
   }, []);
 
 
-   // Handle LinkedIn callback from backend redirect
+  // Handle LinkedIn callback from backend redirect
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const linkedinError = queryParams.get('error');
@@ -112,7 +112,7 @@ function SignupPage() {
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
-      toast.error('Passwords do not match'); 
+      toast.error('Passwords do not match');
       setLoading(false);
       return;
     }
@@ -142,17 +142,18 @@ function SignupPage() {
 
       if (response.status === 201) {
         toast.success('Signup successful!');
-        const userData = response.data; 
+        const userData = response.data;
+        console.log("userData: ", userData);
         setAuthUser({
           user: {
             _id: userData._id,
             email: userData.email,
-            name: userData.name, 
+            name: userData.name,
             userType: userData.userType,
             profileImage: userData.profileImage || null // 
           }
         });
-     
+
         localStorage.setItem('ChatAppUser', JSON.stringify(userData)); // Store the relevant user data
         localStorage.setItem('token', userData.token); // Assuming token is directly in userData
 
@@ -212,14 +213,14 @@ function SignupPage() {
 
         // Store the full user object (from response.data.user) in local storage
         localStorage.setItem('ChatAppUser', JSON.stringify(user));
-       // localStorage.setItem('token', token); // Store the token
+        // localStorage.setItem('token', token); // Store the token
         localStorage.setItem('selectedRole', user.userType);
 
 
-   
+
         const onboardingRoutes = {
           candidate: '/student-form',
-         
+
           company: '/company-form',
           college: '/college-onboarding',
           employer: '/onboardingflowForm'
@@ -266,8 +267,8 @@ function SignupPage() {
       client.requestCode();
     }
   };
-  
-    // NEW: handleLinkedInClick function
+
+  // NEW: handleLinkedInClick function
   const handleLinkedInClick = () => {
     if (!selectedRole) {
       toast.error('Please select a role before signing up with LinkedIn.');
@@ -279,7 +280,7 @@ function SignupPage() {
   };
 
 
-  
+
   return (
     <div className="min-h-screen flex">
       <div className="w-full md:w-1/2 flex flex-col p-8">
@@ -368,7 +369,7 @@ function SignupPage() {
             )}
           </button>
 
-             {/* NEW: LinkedIn Button with onClick handler */}
+          {/* NEW: LinkedIn Button with onClick handler */}
           <button
             onClick={handleLinkedInClick} // Add this onClick handler
             className="w-full border border-gray-300 py-3 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"

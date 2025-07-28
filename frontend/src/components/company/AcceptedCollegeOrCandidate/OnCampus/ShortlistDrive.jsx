@@ -85,8 +85,8 @@ const ShortlistDrive = ({
         <div className="flex justify-between items-start">
           <h3 className="font-medium">{drive.college.collegeName}</h3>
           <span className={`text-xs px-2 py-1 rounded-full ${drive.currentStatus === 'Completed' ? 'bg-gray-100 text-gray-600' :
-              drive.currentStatus === 'On-Going' ? 'bg-green-100 text-green-600' :
-                'bg-blue-100 text-blue-600'
+            drive.currentStatus === 'On-Going' ? 'bg-green-100 text-green-600' :
+              'bg-blue-100 text-blue-600'
             }`}>
             {drive.currentStatus}
           </span>

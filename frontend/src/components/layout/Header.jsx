@@ -11,7 +11,7 @@
 
 // function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
 //     const [authuser, setAuthuser] = useAuth();
-    
+
 //     // ✅ State for notifications
 //     const [notificationsOpen, setNotificationsOpen] = useState(false);
 //     const [notifications, setNotifications] = useState([]);
@@ -127,7 +127,7 @@
 
 // // function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
 // //     const [authuser, setAuthuser] = useAuth();
-    
+
 // //     // State for notifications
 // //     const [notificationsOpen, setNotificationsOpen] = useState(false);
 // //     const [notifications, setNotifications] = useState([]);
@@ -245,13 +245,13 @@ import Avatar from '../ui/Avatar';
 import NotificationsDropdown from './NotificationDropdown';
 
 //  1. Import BOTH dropdown components
-import ProfileSwitchDropdown from '../Employer/ProfileSwitchDropdown'; 
+import ProfileSwitchDropdown from '../Employer/ProfileSwitchDropdown';
 import StandardProfileDropdown from './ProfileDropdown'; // Assuming this is the correct name and path
 
 function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
     const [authuser] = useAuth(); // No need for setAuthuser here
- 
-    
+
+
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -321,10 +321,10 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
                                 )}
                             </button>
                             {notificationsOpen && (
-                                <NotificationsDropdown 
-                                    notifications={notifications} 
-                                    setNotifications={setNotifications} 
-                                    setUnreadCount={setUnreadCount} 
+                                <NotificationsDropdown
+                                    notifications={notifications}
+                                    setNotifications={setNotifications}
+                                    setUnreadCount={setUnreadCount}
                                 />
                             )}
                         </div>

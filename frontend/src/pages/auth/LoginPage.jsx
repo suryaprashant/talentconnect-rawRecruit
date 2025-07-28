@@ -255,7 +255,7 @@ function LoginPage() {
           'Content-Type': 'application/json'
         }
       });
-      console.log('Data', response);
+      // console.log('Data', response);
 
       if (response.status === 200) {
         // toast.success('Login successful!');
