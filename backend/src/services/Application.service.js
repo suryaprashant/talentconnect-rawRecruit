@@ -14,7 +14,7 @@ export async function checkExitence(jobId, userId, jobType) {
     try {
         let response;
         if (jobType == 'offcampus') response = await OffCampusApplication.find({ user: userId, job: jobId });
-        else if(jobType == 'joblisting') response = await JobListingApplication.find({ user: userId, job: jobId });
+        else if (jobType == 'joblisting') response = await JobListingApplication.find({ user: userId, job: jobId });
         // console.log("res: ", response);
         if (response?.length > 0) return false;
     } catch (error) {
@@ -24,55 +24,158 @@ export async function checkExitence(jobId, userId, jobType) {
     return true;
 }
 
-export async function fetchApplicationService(userId) {
+// candidate
+export async function fetchOffcampusApplicationService(userId) {
     try {
 
-        // const applicationData = await OffCampusApplication.aggregate([
-        //     {
-        //         $match: {
-        //             user: new mongoose.Types.ObjectId(userId)
-        //         }
-        //     },
-        //     {
-        //         $lookup: {
-        //             from: 'jobs',
-        //             localField: 'job',
-        //             foreignField: '_id',
-        //             as: 'jobDetails'
-        //         }
-        //     },
-        //     {
-        //         $lookup: {
-        //             from: 'companyoverviews',
-        //             localField: 'jobDetails.companyPosted',
-        //             foreignField: '_id',
-        //             as: 'companyDetails'
-        //         }
-        //     },
-        //     {
-        //         $project: {
-        //             job: 1,
-        //             statusHistory: 1,
-        //             currentStatus: 1,
-        //             createdAt: 1,
-        //             "jobDetails.title": 1,
-        //             "jobDetails._id": 1,
-        //             "jobDetails.description": 1,
-        //             "jobDetails.location": 1,
-        //             "jobDetails.workMode": 1,
-        //             "jobDetails.yearsOfExperience": 1,
-        //             "jobDetails.yearsOfExperience": 1,
-        //             "companyDetails.companyName": 1,
-        //         }
-        //     }
-        //     // {
-        //     //     $unwind: '$jobDetails'
-        //     // }
-        // ]);
+        const applicationData = await OffCampusApplication.aggregate([
+            {
+                $match: {
+                    user: new mongoose.Types.ObjectId(userId)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'hiringdrives',
+                    localField: 'job',
+                    foreignField: '_id',
+                    as: 'jobDetails'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'companyprofiles',
+                    localField: 'jobDetails.companyId',
+                    foreignField: '_id',
+                    as: 'companyDetails'
+                }
+            },
+            {
+                $project: {
+                    job: 1,
+                    statusHistory: 1,
+                    currentStatus: 1,
+                    createdAt: 1,
+                    "jobDetails.jobRoles": 1,
+                    "jobDetails._id": 1,
+                    "jobDetails.description": 1,
+                    "jobDetails.workLocations": 1,
+                    "jobDetails.workModes": 1,
+                    "jobDetails.yearsOfExperience": 1,
+                    "companyDetails.companyDetails": 1,
+                }
+            }
+            // {
+            //     $unwind: '$jobDetails'
+            // }
+        ]);
 
-        const applicationData = await OffCampusApplication.find({ user: userId })
-            .populate('job')
-            .lean();
+        // const applicationData = await OffCampusApplication.find({ user: userId })
+        //     .populate('job')
+        //     .populate('$job.companyId')
+        //     .lean();
+
+        return { success: true, data: applicationData };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+export async function fetchJoblistingApplicationService(userId) {
+    try {
+
+        const applicationData = await JobListingApplication.aggregate([
+            {
+                $match: {
+                    user: new mongoose.Types.ObjectId(userId)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'jobpostings',
+                    localField: 'job',
+                    foreignField: '_id',
+                    as: 'jobDetails'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'companyprofiles',
+                    localField: 'jobDetails.companyId',
+                    foreignField: '_id',
+                    as: 'companyDetails'
+                }
+            },
+            {
+                $project: {
+                    job: 1,
+                    statusHistory: 1,
+                    currentStatus: 1,
+                    createdAt: 1,
+                    "jobDetails.jobTitle": 1,
+                    "jobDetails._id": 1,
+                    "jobDetails.jobDescription": 1,
+                    "jobDetails.preferredHiringLocation": 1,
+                    // "jobDetails.workModes": 1,
+                    "jobDetails.yearsOfExperience": 1,
+                    "companyDetails.companyDetails": 1,
+                }
+            }
+            // {
+            //     $unwind: '$jobDetails'
+            // }
+        ]);
+
+        return { success: true, data: applicationData };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+export async function fetchInternshipApplicationService(userId) {
+    try {
+
+        const applicationData = await InternshipApplication.aggregate([
+            {
+                $match: {
+                    user: new mongoose.Types.ObjectId(userId)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'intern',
+                    localField: 'job',
+                    foreignField: '_id',
+                    as: 'jobDetails'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'companyprofiles',
+                    localField: 'jobDetails.companyId',
+                    foreignField: '_id',
+                    as: 'companyDetails'
+                }
+            },
+            // {
+            //     $project: {
+            //         job: 1,
+            //         statusHistory: 1,
+            //         currentStatus: 1,
+            //         createdAt: 1,
+            //         "jobDetails.jobTitle": 1,
+            //         "jobDetails._id": 1,
+            //         "jobDetails.jobDescription": 1,
+            //         "jobDetails.preferredHiringLocation": 1,
+            //         // "jobDetails.workModes": 1,
+            //         "jobDetails.yearsOfExperience": 1,
+            //         "companyDetails.companyDetails": 1,
+            //     }
+            // }
+            // {
+            //     $unwind: '$jobDetails'
+            // }
+        ]);
 
         return { success: true, data: applicationData };
     } catch (error) {
@@ -281,7 +384,7 @@ export async function getInternshipApplicantsService(query) {
     }
 }
 
-export async function createInternshipApplicationService(jobId) {
+export async function createInternshipApplicationService(userId, jobId) {
 
     try {
         const newApplication = new InternshipApplication({

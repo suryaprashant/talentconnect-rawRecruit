@@ -4,7 +4,6 @@ import { fetchJobs } from '@/constants/JobListing';
 import { getRelaventJobListingOpportunity } from '@/lib/User_AxiosInstance';
 
 const ProfessionalJobListings = () => {
-  const userId = '67ff4617aad277639987460d';
   const [profileJobs, setProfileJobs] = useState([]);
   const [preferenceJobs, setPreferenceJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -15,8 +14,9 @@ const ProfessionalJobListings = () => {
       setIsLoading(true);
 
       // Fetch jobs based on profile
-      const profileJobsData = await getRelaventJobListingOpportunity(userId);
-      setProfileJobs(profileJobsData.data);
+      const profileJobsData = await getRelaventJobListingOpportunity();
+      // console.log("Jobs: ", profileJobsData.data.data);
+      setProfileJobs(profileJobsData.data.data);
 
       // Fetch jobs based on preferences
       // const preferenceJobsData = await fetchJobs({ type: 'preferences' });
@@ -28,8 +28,8 @@ const ProfessionalJobListings = () => {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
+
     loadJobs();
   }, []);
 
@@ -48,7 +48,7 @@ const ProfessionalJobListings = () => {
           <p className="text-xl font-semibold">{error}</p>
           <button
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={loadJobs}
+            onClick={() => loadJobs()}
           >
             Try Again
           </button>

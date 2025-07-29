@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchJobDetails, fetchSimilarJobs } from '../../../../constants/JobListing'
+//  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
 import JobCard from '@/components/Student/StudentDashboard/JobListing/JobCard';
-import { ApplyForOppurtunity } from '@/lib/User_AxiosInstance';
+import { ApplyForJobListingOppurtunity, getJobLisingJobDetails } from '@/lib/User_AxiosInstance';
 
 const FJobDetails = () => {
   const { jobId } = useParams();
@@ -12,37 +12,35 @@ const FJobDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const loadJobDetails = async () => {
+    try {
+      setIsLoading(true);
+
+      // Fetch job details
+      const details = await getJobLisingJobDetails(jobId);
+      // console.log("..../", details.data[0]);
+      setJobDetails(details.data[0]);
+
+      // Fetch similar jobs
+      // const similar = await fetchSimilarJobs(jobId);
+      // setSimilarJobs(similar);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load job details. Please try again later.');
+      console.error('Error fetching job details:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   useEffect(() => {
-    const loadJobDetails = async () => {
-      try {
-        setIsLoading(true);
-
-        // Fetch job details
-        const details = await fetchJobDetails(jobId);
-        setJobDetails(details);
-
-        // Fetch similar jobs
-        const similar = await fetchSimilarJobs(jobId);
-        setSimilarJobs(similar);
-      } catch (err) {
-        setError('Failed to load job details. Please try again later.');
-        console.error('Error fetching job details:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadJobDetails();
   }, [jobId]);
 
   const handleApply = async () => {
     try {
-      // Here you would implement the application logic
-      const response = await ApplyForOppurtunity(jobId, jobDetails.jobType);
-      if (response.success === 'true') alert("Applied");
-
-      // Example: navigate to application form
-      // navigate(`/apply/${jobId}`);
+      const response = await ApplyForJobListingOppurtunity(jobId);
+      console.log("Application: ", response);
+      if (response) alert('Application submitted successfully!');
     } catch (err) {
       console.error('Error applying for job:', err);
       alert('Failed to submit application. Please try again.');
@@ -75,9 +73,9 @@ const FJobDetails = () => {
           <p className="text-xl font-semibold">{error || "Job not found"}</p>
           <button
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={() => navigate('/fresher-dashboard/job-listing')}
+            onClick={() => loadJobDetails()}
           >
-            Back to Job Listings
+            Retry
           </button>
         </div>
       </div>
@@ -89,21 +87,21 @@ const FJobDetails = () => {
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="flex justify-between items-start mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">{jobDetails.title}</h1>
-            <p className="text-gray-600 mb-2">{jobDetails.company}</p>
-            <p className="text-sm text-gray-500 mb-2">Job ID: {jobDetails.jobId}</p>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">{jobDetails.jobTitle}</h1>
+            <p className="text-gray-600 mb-2">{jobDetails.companyId?.companyDetails?.companyName}</p>
+            <p className="text-sm text-gray-500 mb-2">Job ID: {jobDetails._id}</p>
             <div className="flex items-center mb-2">
               <span className="inline-flex items-center mr-4">
                 <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" />
                 </svg>
-                {jobDetails.experience}
+                {jobDetails.yearsOfExperience} yrs
               </span>
-              <span className="inline-flex items-center">
+              <span className="inline-flex items-center capitalize">
                 <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
-                {jobDetails.location}
+                {jobDetails.preferredHiringLocation}
               </span>
             </div>
           </div>
@@ -127,41 +125,41 @@ const FJobDetails = () => {
           <h2 className="text-xl font-semibold mb-3">Job description</h2>
           <div className="mb-4">
             <h3 className="font-medium mb-2">About The Role:</h3>
-            <p className="text-gray-700">{jobDetails.description}</p>
+            <p className="text-gray-700">{jobDetails.jobDescription}</p>
           </div>
           <div className="mb-4">
             <h3 className="font-medium mb-2">What you'll do:</h3>
-            <p className="text-gray-700">{jobDetails.responsibilities}</p>
+            <p className="text-gray-700">{jobDetails?.responsibilities}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
             <div>
               <p className="text-sm font-medium text-gray-500">Role:</p>
-              <p className="text-gray-700">{jobDetails.roleType}</p>
+              <p className="text-gray-700">{jobDetails.jobTitle}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Industry Type:</p>
-              <p className="text-gray-700">{jobDetails.industryType}</p>
+              <p className="text-gray-700">{jobDetails.comapnyId?.companyDetails?.industryType}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Department:</p>
-              <p className="text-gray-700">{jobDetails.department}</p>
+              <p className="text-gray-700">{jobDetails?.department}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Employment Type:</p>
-              <p className="text-gray-700">{jobDetails.employmentType}</p>
+              <p className="text-gray-700">{jobDetails?.employmentType}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Role Category:</p>
-              <p className="text-gray-700">{jobDetails.roleCategory}</p>
+              <p className="text-gray-700">{jobDetails?.jobType}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Salary Range:</p>
-              <p className="text-gray-700">{jobDetails.salaryRange}</p>
+              <p className="text-gray-700">{jobDetails.salaryCurrency} {jobDetails?.monthlySalary} per month</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Work Mode:</p>
-              <p className="text-gray-700">{jobDetails.workMode}</p>
+              <p className="text-gray-700">{jobDetails.preferredHiringLocation}</p>
             </div>
           </div>
         </div>
@@ -170,20 +168,20 @@ const FJobDetails = () => {
           <h2 className="text-xl font-semibold mb-3">Education</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm font-medium text-gray-500">UG:</p>
-              <p className="text-gray-700">{jobDetails.education?.ug}</p>
+              <p className="text-sm font-medium text-gray-500">Minimum Education: <span className="text-gray-700">{jobDetails.minimumEducation}</span></p>
+              <p className="text-sm font-medium text-gray-500">Prefered field of study: <span className="text-gray-700">{jobDetails.preferredFieldOfStudy}</span></p>
             </div>
-            <div>
+            {/* <div>
               <p className="text-sm font-medium text-gray-500">PG:</p>
               <p className="text-gray-700">{jobDetails.education?.pg}</p>
-            </div>
+            </div> */}
           </div>
         </div>
 
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-3">Key Skills</h2>
           <div className="flex flex-wrap gap-2">
-            {jobDetails.skills.map((skill, index) => (
+            {jobDetails?.skills?.map((skill, index) => (
               <span key={index} className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">
                 {skill}
               </span>
@@ -193,17 +191,17 @@ const FJobDetails = () => {
 
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-3">About company</h2>
-          <p className="text-gray-700 mb-4">{jobDetails.aboutCompany}</p>
+          <p className="text-gray-700 mb-4">{jobDetails?.companyId?.companyDetails.description}</p>
 
           <h3 className="font-medium mb-2">Company Info</h3>
           <p className="text-gray-700">
-            <span className="font-medium">Address:</span> {jobDetails.companyAddress}
+            <span className="font-medium">Address:</span> {jobDetails?.companyId?.companyDetails.companyLocation} {jobDetails?.companyId?.companyDetails.state}, {jobDetails?.companyId?.companyDetails.country}
           </p>
         </div>
       </div>
 
       {/* Similar Jobs Section */}
-      <div className="mb-8">
+      {/* <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h2 className="text-xl font-bold">Similar Jobs</h2>
@@ -232,7 +230,7 @@ const FJobDetails = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {similarJobs.map((job) => (
+          {similarJobs?.map((job) => (
             <JobCard key={job.id} job={job} />
           ))}
         </div>
@@ -242,7 +240,7 @@ const FJobDetails = () => {
             View all
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

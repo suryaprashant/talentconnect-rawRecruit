@@ -50,8 +50,8 @@ const JobList = ({ jobs }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {sortedJobs.map(job => (
-          <Link to={`/saved-jobs/${job.id}`} key={job.id}>
+        {sortedJobs?.map(job => (
+          <Link to={`/saved-jobs/${job._id}`} key={job._id}>
             <JobCard job={job} />
           </Link>
         ))}

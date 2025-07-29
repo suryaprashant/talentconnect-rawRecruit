@@ -168,11 +168,12 @@ const ApplicationsPage = () => {
           {getCurrentApplications().length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {getCurrentApplications().map(application => (
-                <ApplicationCard
-                  key={application.id}
-                  application={application}
-                  className="transition-all hover:shadow-md hover:-translate-y-1"
-                />
+                // <ApplicationCard
+                //   key={application.id}
+                //   application={application}
+                //   className="transition-all hover:shadow-md hover:-translate-y-1"
+                // />
+                <span></span>
               ))}
             </div>
           ) : (

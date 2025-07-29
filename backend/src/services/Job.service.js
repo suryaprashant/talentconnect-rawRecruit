@@ -20,7 +20,7 @@ import JobPosting from "../models/HiringChannels_postjob.js";
 // fetch jobs
 export async function fetchOpportunityService(query) {
     try {
-        const response = await HiringDrive.find(query)
+        const response = await HiringDrive.find()
             .populate({
                 path: 'companyId',
                 select: 'companyDetails'
