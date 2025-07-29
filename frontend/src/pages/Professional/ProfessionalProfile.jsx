@@ -5,13 +5,12 @@ import Avatar from '@/components/ui/Avatar';
 import Badge from '@/components/ui/Badge';
 import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown } from 'react-icons/fi';
 import axios from 'axios';
-import { Plus, Upload, X, Briefcase, Award, Globe, Users } from 'lucide-react';
+import { Plus, Upload, X } from 'lucide-react';
 
-// It will only re-render if its props (experience, onUpdate, etc.) have actually changed.
+// Memoized child component for performance
 const ExperienceCard = React.memo(({ experience, type, onUpdate, onRemove, canRemove, isProfileEditing }) => {
   const displayFieldStyle = "w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-900 min-h-[40px] flex items-center";
 
-  // This handler now directly calls the memoized onUpdate function from the parent.
   const handleInputChange = (field, value) => {
     onUpdate(type, experience.id, field, value);
   };
@@ -59,27 +58,27 @@ const ExperienceCard = React.memo(({ experience, type, onUpdate, onRemove, canRe
           )}
         </div>
         
-       <div>
-  <label className="block text-sm font-semibold text-gray-700 mb-2">
-    {type === 'leadership' ? 'Role/Position' : 'Job Role'}
-  </label>
-  {isProfileEditing ? (
-    <input
-      type="text"
-      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-      placeholder={`Enter ${type === 'leadership' ? 'role' : 'job role'}`}
-      value={experience.role || ''}
-      onChange={(e) => handleInputChange(
-        'role', // Always use 'role' for the field name
-        e.target.value
-      )}
-    />
-  ) : (
-    <div className={displayFieldStyle}>
-      {experience.role || "N/A"}
-    </div>
-  )}
-</div>
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            {type === 'leadership' ? 'Role/Position' : 'Job Role'}
+          </label>
+          {isProfileEditing ? (
+            <input
+              type="text"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              placeholder={`Enter ${type === 'leadership' ? 'role' : 'job role'}`}
+              value={experience.role || ''}
+              onChange={(e) => handleInputChange(
+                'role',
+                e.target.value
+              )}
+            />
+          ) : (
+            <div className={displayFieldStyle}>
+              {experience.role || "N/A"}
+            </div>
+          )}
+        </div>
         
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -158,14 +157,14 @@ const ExperienceCard = React.memo(({ experience, type, onUpdate, onRemove, canRe
               <p className="text-xs text-gray-500 mt-2">PDF, DOC, DOCX, JPG, PNG up to 10MB</p>
               {experience.certificate && (
                 <p className="text-sm text-green-600 mt-2 font-medium">
-                  File uploaded: {typeof experience.certificate === 'string' ? experience.certificate : experience.certificate.name}
+                  File uploaded: {typeof experience.certificate === 'string' ? 'Existing Certificate' : experience.certificate.name}
                 </p>
               )}
             </div>
           ) : (
             <div className={displayFieldStyle}>
-              {experience.experienceCertificateUrl || experience.certificate ? (
-                <a href={experience.experienceCertificateUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline cursor-pointer">
+              {experience.certificate ? (
+                <a href={typeof experience.certificate === 'string' ? experience.certificate : '#'} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline cursor-pointer">
                   View Certificate
                 </a>
               ) : (
@@ -179,132 +178,128 @@ const ExperienceCard = React.memo(({ experience, type, onUpdate, onRemove, canRe
   );
 });
 
-// Same for AwardCard: move definition outside and wrap in React.memo.
 const AwardCard = React.memo(({ award, onUpdate, onRemove, canRemove, isProfileEditing }) => {
     const displayFieldStyle = "w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-900 min-h-[40px] flex items-center";
 
     return (
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-            {canRemove && isProfileEditing && (
-                <div className="flex justify-end mb-4">
-                    <button
-                        onClick={() => onRemove('award', award.id)}
-                        className="p-1 text-gray-400 hover:text-red-500 transition-colors"
-                    >
-                        <X size={20} />
-                    </button>
-                </div>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+        {canRemove && isProfileEditing && (
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => onRemove('award', award.id)}
+              className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        )}
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Award Title
+            </label>
+            {isProfileEditing ? (
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="Enter award title"
+                value={award.title || ''}
+                onChange={(e) => onUpdate('award', award.id, 'title', e.target.value)}
+              />
+            ) : (
+              <div className={displayFieldStyle}>
+                {award.title || "N/A"}
+              </div>
             )}
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Award Title
-                    </label>
-                    {isProfileEditing ? (
-                        <input
-                            type="text"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            placeholder="Enter award title"
-                            value={award.title || ''}
-                            onChange={(e) => onUpdate('award', award.id, 'title', e.target.value)}
-                        />
-                    ) : (
-                        <div className={displayFieldStyle}>
-                            {award.title || "N/A"}
-                        </div>
-                    )}
-                </div>
-                
-                <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Awarding Organization
-                    </label>
-                    {isProfileEditing ? (
-                        <input
-                            type="text"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            placeholder="Enter organization name"
-                            value={award.organization || ''}
-                            onChange={(e) => onUpdate('award', award.id, 'organization', e.target.value)}
-                        />
-                    ) : (
-                        <div className={displayFieldStyle}>
-                            {award.organization || "N/A"}
-                        </div>
-                    )}
-                </div>
-                
-                <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Start Date
-                    </label>
-                    {isProfileEditing ? (
-                        <input
-                            type="date"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            value={award.startDate || ''}
-                            onChange={(e) => onUpdate('award', award.id, 'startDate', e.target.value)}
-                        />
-                    ) : (
-                        <div className={displayFieldStyle}>
-                            {award.startDate || "N/A"}
-                        </div>
-                    )}
-                </div>
-                <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        End Date
-                    </label>
-                    {isProfileEditing ? (
-                        <input
-                            type="date"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            value={award.endDate || ''}
-                            onChange={(e) => onUpdate('award', award.id, 'endDate', e.target.value)}
-                        />
-                    ) : (
-                        <div className={displayFieldStyle}>
-                            {award.endDate || "N/A"}
-                        </div>
-                    )}
-                </div>
-                
-                <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Description
-                    </label>
-                    {isProfileEditing ? (
-                        <textarea
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                            placeholder="Describe the award and your achievement..."
-                            rows="3"
-                            value={award.description || ''}
-                            onChange={(e) => onUpdate('award', award.id, 'description', e.target.value)}
-                        />
-                    ) : (
-                        <div className={`${displayFieldStyle} items-start min-h-[80px]`}>
-                            {award.description || "N/A"}
-                        </div>
-                    )}
-                </div>
-            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Awarding Organization
+            </label>
+            {isProfileEditing ? (
+              <input
+                type="text"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="Enter organization name"
+                value={award.organization || ''}
+                onChange={(e) => onUpdate('award', award.id, 'organization', e.target.value)}
+              />
+            ) : (
+              <div className={displayFieldStyle}>
+                {award.organization || "N/A"}
+              </div>
+            )}
+          </div>
+          
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Start Date
+            </label>
+            {isProfileEditing ? (
+              <input
+                type="date"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                value={award.startDate || ''}
+                onChange={(e) => onUpdate('award', award.id, 'startDate', e.target.value)}
+              />
+            ) : (
+              <div className={displayFieldStyle}>
+                {award.startDate || "N/A"}
+              </div>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              End Date
+            </label>
+            {isProfileEditing ? (
+              <input
+                type="date"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                value={award.endDate || ''}
+                onChange={(e) => onUpdate('award', award.id, 'endDate', e.target.value)}
+              />
+            ) : (
+              <div className={displayFieldStyle}>
+                {award.endDate || "N/A"}
+              </div>
+            )}
+          </div>
+          
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Description
+            </label>
+            {isProfileEditing ? (
+              <textarea
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                placeholder="Describe the award and your achievement..."
+                rows="3"
+                value={award.description || ''}
+                onChange={(e) => onUpdate('award', award.id, 'description', e.target.value)}
+              />
+            ) : (
+              <div className={`${displayFieldStyle} items-start min-h-[80px]`}>
+                {award.description || "N/A"}
+              </div>
+            )}
+          </div>
         </div>
+      </div>
     );
 });
 
-
-
-
 function ProfProfile() {
   const [activeTab, setActiveTab] = useState('overview');
-
   const [isProfileEditing, setIsProfileEditing] = useState(false);
-  const [hasOnboardingData, setHasOnboardingData] = useState(true); // State to track if onboarding data exists
+  const [hasOnboardingData, setHasOnboardingData] = useState(true);
 
-   const [profileData, setProfileData] = useState({
-    profileImage: '',
-    backgroundImage: '',
+  const [profileData, setProfileData] = useState({
+    profileImageUrl: '',
+    backgroundImageUrl: '',
+    resumeUrl: '',
     fullName: '',
     email: '',
     phone: '',
@@ -328,74 +323,22 @@ function ProfProfile() {
     github: '',
     portfolio: '',
     certifications: [],
-    experiences: [],
-    project: '',
-    resume: '',
+    projectUrl: '',
     referralSource: '',
-    internationalExperiences: [],
-    leadershipExperiences: [],
-    awards: [],
-
   });
 
-  // New states for dynamic experience sections
-  const [workExperiences, setWorkExperiences] = useState([
-    {
-      id: 1,
-      company: '',
-      role: '',
-      startDate: '',
-      endDate: '',
-      description: '',
-      certificate: null
-    }
-  ]);
+  // States for dynamic sections
+  const [workExperiences, setWorkExperiences] = useState([]);
+  const [internationalExperiences, setInternationalExperiences] = useState([]);
+  const [leadershipExperiences, setLeadershipExperiences] = useState([]);
+  const [awards, setAwards] = useState([]);
 
-  const [internationalExperiences, setInternationalExperiences] = useState([
-    {
-      id: 1,
-      company: '',
-      jobRole: '',
-      startDate: '',
-      endDate: '',
-      description: '',
-      certificate: null
-    }
-  ]);
-
-  const [leadershipExperiences, setLeadershipExperiences] = useState([
-    {
-      id: 1,
-      organization: '',
-      role: '',
-      startDate: '',
-      endDate: '',
-      description: '',
-      certificate: null
-    }
-  ]);
-
-  const [awards, setAwards] = useState([
-    {
-      id: 1,
-      title: '',
-      organization: '',
-      startDate: '',
-      endDate: '',
-      description: ''
-    }
-  ]);
-
-  const predefinedCurrencies = [
-  "INR", "USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY", "SEK", 
-  "NZD", "MXN", "SGD", "HKD", "NOK", "KRW", "TRY", "RUB", "BRL", "ZAR"
-];
-
-
-  // New states to hold File objects for upload
+  // States for files that upload immediately
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [backgroundImageFile, setBackgroundImageFile] = useState(null);
   const [resumeFile, setResumeFile] = useState(null);
+
+  // States for files saved with the main "Save" button
   const [degreeCertificateFile, setDegreeCertificateFile] = useState(null);
   const [projectFile, setProjectFile] = useState(null);
 
@@ -413,6 +356,7 @@ function ProfProfile() {
   const predefinedEmploymentTypes = ['part time', 'full time', 'contract'];
   const predefinedLookingFor = ['Job', 'Internship', 'Both'];
   const predefinedIndustries = ['IT Industry', 'Finance', 'Healthcare', 'Education', 'Marketing', 'Retail', 'Manufacturing', 'Automotive'];
+  const predefinedCurrencies = ["INR", "USD", "EUR", "GBP", "JPY", "AUD", "CAD"];
 
   useEffect(() => {
     const fetchUserProfileData = async () => {
@@ -433,57 +377,20 @@ function ProfProfile() {
           const fetchedData = response.data;
           setHasOnboardingData(true);
 
-          // Construct URLs for files
-          const profileImageUrl = fetchedData.profileImage || '';
-          const backgroundImageUrl = fetchedData.backgroundImage || '';
-          const resumeUrl = fetchedData.resume || '';
-          const degreeCertificateUrl = fetchedData.degreeCertificate || '';
-          const projectUrl = fetchedData.project || '';
-
           setProfileData(prevData => ({
             ...prevData,
-            _id: fetchedData._id,
-            fullName: fetchedData.name || prevData.fullName,
-            email: fetchedData.email || prevData.email,
-            phone: fetchedData.phone || prevData.phone,
-            college: fetchedData.college || prevData.college,
-            degree: fetchedData.degree || prevData.degree,
-            yearOfGraduation: fetchedData.yearOfGraduation || prevData.yearOfGraduation,
-            cgpa: fetchedData.cgpa || prevData.cgpa,
-            industry: fetchedData.industry || prevData.industry,
-            jobRoles: fetchedData.jobRoles || prevData.jobRoles,
-            locations: fetchedData.locations || prevData.locations,
-            expectedSalaryCurrency: fetchedData.expectedSalaryCurrency || prevData.expectedSalaryCurrency,
-            expectedSalaryAmount: fetchedData.expectedSalaryAmount || prevData.expectedSalaryAmount,
-            currentSalaryCurrency: fetchedData.currentSalaryCurrency || prevData.currentSalaryCurrency,
-
-            currentSalaryAmount: fetchedData.currentSalaryAmount || prevData.currentSalaryAmount,
-
-
-            lookingFor: fetchedData.lookingFor || prevData.lookingFor,
-            employmentType: fetchedData.employmentType || prevData.employmentType,
-            skills: fetchedData.skills || prevData.skills,
-            linkedin: fetchedData.linkedin || prevData.linkedin,
-            github: fetchedData.github || prevData.github,
-            portfolio: fetchedData.portfolio || prevData.portfolio,
+            ...fetchedData,
+            fullName: fetchedData.name || '',
+            profileImageUrl: fetchedData.profileImage || '',
+            backgroundImageUrl: fetchedData.backgroundImage || '',
+            resumeUrl: fetchedData.resume || '',
+            degreeCertificateUrl: fetchedData.degreeCertificate || '',
+            projectUrl: fetchedData.project || '',
             certifications: (fetchedData.certifications && typeof fetchedData.certifications === 'string' && fetchedData.certifications.length > 0)
-                            ? fetchedData.certifications.split('; ').map(name => ({ name, url: '' }))
-                            : [],
-            referralSource: fetchedData.referralSource || prevData.referralSource,
-            profileImageUrl: profileImageUrl || prevData.profileImageUrl,
-            backgroundImageUrl: backgroundImageUrl || prevData.backgroundImageUrl, 
-            resumeUrl: resumeUrl,
-            degreeCertificateUrl: degreeCertificateUrl,
-            project: fetchedData.project || prevData.project,
-            projectUrl: projectUrl,
-            experiences: fetchedData.experiences ? fetchedData.experiences.map(exp => ({
-              ...exp,
-              experienceCertificateUrl: exp.experienceCertificate || ''
-
-            })) : []
-            
+              ? fetchedData.certifications.split('; ').map(name => ({ name, url: '' }))
+              : [],
           }));
-            // Populate dynamic sections from fetched data
+
           if (fetchedData.experiences && fetchedData.experiences.length > 0) {
             setWorkExperiences(fetchedData.experiences.map(exp => ({ ...exp, id: exp._id || Date.now() })));
           }
@@ -497,17 +404,13 @@ function ProfProfile() {
             setAwards(fetchedData.awards.map(award => ({ ...award, id: award._id || Date.now() })));
           }
         }
-        setLoading(false);
       } catch (err) {
         console.error('Error fetching user profile:', err);
         if (err.response && err.response.status === 404) {
           setHasOnboardingData(false);
-          setProfileData(prev => ({
-            ...prev,
-            _id: null
-          }));
         }
         setError('Failed to load profile data. Please fill out your profile.');
+      } finally {
         setLoading(false);
       }
     };
@@ -530,102 +433,127 @@ function ProfProfile() {
     };
   }, []);
 
+  const handleImmediateFileUpload = async (file, fieldName) => {
+    if (!file) return;
 
-const addExperience = useCallback((type) => {
-  const newId = Date.now();
-  switch (type) {
-    case 'work':
-      setWorkExperiences(prev => [...prev, { id: newId, company: '', jobRole: '', startDate: '', endDate: '', description: '', certificate: null }]);
-      break;
-    case 'international':
-      setInternationalExperiences(prev => [...prev, { id: newId, company: '', jobRole: '', startDate: '', endDate: '', description: '', certificate: null }]);
-      break;
-    case 'leadership':
-      setLeadershipExperiences(prev => [...prev, { id: newId, organization: '', role: '', startDate: '', endDate: '', description: '', certificate: null }]);
-      break;
-    case 'award':
-      setAwards(prev => [...prev, { id: newId, title: '', organization: '', startDate: '', endDate: '', description: '' }]);
-      break;
-    default: break;
-  }
-}, []);
+    const formData = new FormData();
+    formData.append(fieldName, file);
 
-const removeExperience = useCallback((type, id) => {
-  switch (type) {
-    case 'work':
-      setWorkExperiences(prev => prev.filter(exp => exp.id !== id));
-      break;
-    case 'international':
-      setInternationalExperiences(prev => prev.filter(exp => exp.id !== id));
-      break;
-    case 'leadership':
-      setLeadershipExperiences(prev => prev.filter(exp => exp.id !== id));
-      break;
-    case 'award':
-      setAwards(prev => prev.filter(award => award.id !== id));
-      break;
-    default: break;
-  }
-}, []);
+    try {
+      const backendUrl = import.meta.env.VITE_Backend_URL;
+      const endpoint = `${backendUrl}/api/onboarding/update`;
+      const token = localStorage.getItem('token');
 
-const updateExperience = useCallback((type, id, field, value) => {
-  const updater = (prev) => prev.map(item => item.id === id ? { ...item, [field]: value } : item);
-  switch (type) {
-    case 'work':
-      setWorkExperiences(updater);
-      break;
-    case 'international':
-      setInternationalExperiences(updater);
-      break;
-    case 'leadership':
-      setLeadershipExperiences(updater);
-      break;
-    case 'award':
-      setAwards(updater);
-      break;
-    default: break;
-  }
-}, []);
+      const response = await axios.put(endpoint, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
+        },
+        withCredentials: true,
+      });
+
+      if (response.data && response.data.data) {
+        const savedData = response.data.data;
+        const urlFieldMap = { profileImage: 'profileImageUrl', backgroundImage: 'backgroundImageUrl', resume: 'resumeUrl' };
+        const urlStateField = urlFieldMap[fieldName];
+
+        if (urlStateField && savedData[fieldName]) {
+          setProfileData(prevData => ({ ...prevData, [urlStateField]: savedData[fieldName] }));
+        }
+      }
+    } catch (err) {
+      console.error(`Error uploading ${fieldName}:`, err);
+      setError(`Failed to upload ${fieldName}. Please try again.`);
+    } finally {
+      if (fieldName === 'profileImage') setProfileImageFile(null);
+      if (fieldName === 'backgroundImage') setBackgroundImageFile(null);
+      if (fieldName === 'resume') setResumeFile(null);
+    }
+  };
+
+  const addExperience = useCallback((type) => {
+    const newId = Date.now();
+    switch (type) {
+      case 'work':
+        setWorkExperiences(prev => [...prev, { id: newId, company: '', role: '', startDate: '', endDate: '', description: '', certificate: null }]);
+        break;
+      case 'international':
+        setInternationalExperiences(prev => [...prev, { id: newId, company: '', role: '', startDate: '', endDate: '', description: '', certificate: null }]);
+        break;
+      case 'leadership':
+        setLeadershipExperiences(prev => [...prev, { id: newId, organization: '', role: '', startDate: '', endDate: '', description: '', certificate: null }]);
+        break;
+      case 'award':
+        setAwards(prev => [...prev, { id: newId, title: '', organization: '', startDate: '', endDate: '', description: '' }]);
+        break;
+      default: break;
+    }
+  }, []);
+
+  const removeExperience = useCallback((type, id) => {
+    switch (type) {
+      case 'work':
+        setWorkExperiences(prev => prev.filter(exp => exp.id !== id));
+        break;
+      case 'international':
+        setInternationalExperiences(prev => prev.filter(exp => exp.id !== id));
+        break;
+      case 'leadership':
+        setLeadershipExperiences(prev => prev.filter(exp => exp.id !== id));
+        break;
+      case 'award':
+        setAwards(prev => prev.filter(award => award.id !== id));
+        break;
+      default: break;
+    }
+  }, []);
+
+  const updateExperience = useCallback((type, id, field, value) => {
+    const updater = (prev) => prev.map(item => item.id === id ? { ...item, [field]: value } : item);
+    switch (type) {
+      case 'work':
+        setWorkExperiences(updater);
+        break;
+      case 'international':
+        setInternationalExperiences(updater);
+        break;
+      case 'leadership':
+        setLeadershipExperiences(updater);
+        break;
+      case 'award':
+        setAwards(updater);
+        break;
+      default: break;
+    }
+  }, []);
 
   const handleProfileDataChange = (field, value) => {
     setProfileData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleWorkExperienceChange = (index, field, value) => {
-    const newExperiences = [...profileData.experiences];
-    newExperiences[index][field] = value;
-    handleProfileDataChange('experiences', newExperiences);
-  };
-
-  const addWorkExperience = () => {
-    handleProfileDataChange('experiences', [...profileData.experiences, {
-      company: '',
-      role: '',
-      startDate: '',
-      endDate: '',
-      description: '',
-      experienceCertificateUrl: '', // For UI preview
-    }]);
-  };
-
-  const removeWorkExperience = (indexToRemove) => {
-    handleProfileDataChange('experiences', profileData.experiences.filter((_, index) => index !== indexToRemove));
-  };
-
-
-  const handleFileChange = (event, fileType) => {
+  const handleFileChange = async (event, fileType) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    const fileUpdaters = {
-      profileImage: () => { setProfileImageFile(file); setProfileData(prev => ({ ...prev, profileImageUrl: URL.createObjectURL(file) })); },
-      backgroundImage: () => { setBackgroundImageFile(file); setProfileData(prev => ({ ...prev, backgroundImageUrl: URL.createObjectURL(file) })); },
-      resume: () => { setResumeFile(file); setProfileData(prev => ({ ...prev, resumeUrl: file.name })); },
-      degreeCertificate: () => { setDegreeCertificateFile(file); setProfileData(prev => ({ ...prev, degreeCertificateUrl: URL.createObjectURL(file) })); },
-      project: () => { setProjectFile(file); setProfileData(prev => ({ ...prev, projectUrl: URL.createObjectURL(file) })); },
-    };
-    
-    fileUpdaters[fileType]?.();
+    if (fileType === 'profileImage') {
+      setProfileImageFile(file);
+      setProfileData(prev => ({ ...prev, profileImageUrl: URL.createObjectURL(file) }));
+      await handleImmediateFileUpload(file, 'profileImage');
+    } else if (fileType === 'backgroundImage') {
+      setBackgroundImageFile(file);
+      setProfileData(prev => ({ ...prev, backgroundImageUrl: URL.createObjectURL(file) }));
+      await handleImmediateFileUpload(file, 'backgroundImage');
+    } else if (fileType === 'resume') {
+      setResumeFile(file);
+      setProfileData(prev => ({ ...prev, resumeUrl: file.name }));
+      await handleImmediateFileUpload(file, 'resume');
+    } else if (fileType === 'degreeCertificate') {
+      setDegreeCertificateFile(file);
+      setProfileData(prev => ({ ...prev, degreeCertificateUrl: URL.createObjectURL(file) }));
+    } else if (fileType === 'project') {
+      setProjectFile(file);
+      setProfileData(prev => ({ ...prev, projectUrl: URL.createObjectURL(file) }));
+    }
   };
 
   const handleProfileImageClick = () => document.getElementById('profileImageUpload').click();
@@ -640,136 +568,104 @@ const updateExperience = useCallback((type, id, field, value) => {
     });
   };
 
-const handleSaveChanges = async () => {
-  setLoading(true);
-  setError(null);
-  try {
-    const backendUrl = import.meta.env.VITE_Backend_URL;
-    const token = localStorage.getItem('token');
-    const formData = new FormData();
+  const handleSaveChanges = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const backendUrl = import.meta.env.VITE_Backend_URL;
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
 
-  
-    for (const key in profileData) {
-      if (!['profileImageUrl', 'backgroundImageUrl', 'resumeUrl', 'degreeCertificateUrl', 'projectUrl', '_id', 'experiences', 'internationalExperience', 'leadership', 'awards'].includes(key)) {
-        const value = profileData[key];
-        if (Array.isArray(value)) {
-        
-          if (key === 'certifications') {
-            formData.append(key, value.map(cert => cert.name).join('; '));
-          } else {
-            // General handling for other arrays joined by ','
-            formData.append(key, value.join(','));
-          }
-        } else {
-          formData.append(key, value);
+      for (const key in profileData) {
+        const keysToSkip = ['profileImageUrl', 'backgroundImageUrl', 'resumeUrl', 'degreeCertificateUrl', 'projectUrl', '_id', 'experiences', 'internationalExperience', 'leadership', 'awards'];
+        if (!keysToSkip.includes(key)) {
+            const value = profileData[key];
+            if (Array.isArray(value)) {
+                if (key === 'certifications') {
+                    formData.append(key, value.map(cert => cert.name).join('; '));
+                } else {
+                    formData.append(key, value.join(','));
+                }
+            } else if (value !== null) {
+                formData.append(key, value);
+            }
         }
       }
-    }
-
-    const cleanExperiences = (exps) => exps.map(({ id, certificate, certificateUrl, experienceCertificateFile, ...rest }) => rest);
-    
-    formData.append('experiences', JSON.stringify(cleanExperiences(workExperiences)));
-    formData.append('internationalExperience', JSON.stringify(cleanExperiences(internationalExperiences)));
-    formData.append('leadership', JSON.stringify(cleanExperiences(leadershipExperiences)));
-    formData.append('awards', JSON.stringify(cleanExperiences(awards)));
-
-
-    // 3. Append main file inputs
-    if (profileImageFile) formData.append('profileImage', profileImageFile);
-    if (backgroundImageFile) formData.append('backgroundImage', backgroundImageFile);
-    if (resumeFile) formData.append('resume', resumeFile);
-    if (degreeCertificateFile) formData.append('degreeCertificate', degreeCertificateFile);
-    if (projectFile) formData.append('project', projectFile);
-
-    // 4. Append certificate files for dynamic sections
-    workExperiences.forEach(exp => {
-      if (exp.certificate) formData.append('experienceCertificate', exp.certificate);
-    });
-    internationalExperiences.forEach(exp => {
-      if (exp.certificate) formData.append('internationalExperienceCertificate', exp.certificate);
-    });
-    leadershipExperiences.forEach(exp => {
-      if (exp.certificate) formData.append('leadershipCertificate', exp.certificate);
-    });
- 
-    const endpoint = `${backendUrl}/api/onboarding/update`;
-    const axiosConfig = {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`
-      }
-    };
-
-    const response = await axios.put(endpoint, formData, axiosConfig);
-    console.log('Form updated/submitted successfully:', response.data);
-
-    // 6. Update state with the response data
-    if (response.data && response.data.data) {
-      const fetchedData = response.data.data;
-
-      setProfileData(prev => ({
-        ...prev,
       
-        _id: fetchedData._id || prev._id,
-       
-        ...fetchedData,
-    
-        profileImageUrl: fetchedData.profileImage || prev.profileImageUrl,
-        backgroundImageUrl: fetchedData.backgroundImage || prev.backgroundImageUrl,
-        resumeUrl: fetchedData.resume || prev.resumeUrl,
-        degreeCertificateUrl: fetchedData.degreeCertificate || prev.degreeCertificateUrl,
-        projectUrl: fetchedData.project || prev.projectUrl,
-     
-        certifications: (fetchedData.certifications && typeof fetchedData.certifications === 'string' && fetchedData.certifications.length > 0)
-          ? fetchedData.certifications.split('; ').map(name => ({ name, url: '' })) 
-          : [],
-   
-        experiences: fetchedData.experiences ? fetchedData.experiences.map(exp => ({
-            ...exp,
-            experienceCertificateUrl: exp.experienceCertificate || '' // Map certificate URL if provided
-        })) : []
-      }));
+      const cleanExperiences = (exps) => exps.map(({ id, certificate, certificateUrl, experienceCertificateFile, ...rest }) => rest);
+      
+      formData.append('experiences', JSON.stringify(cleanExperiences(workExperiences)));
+      formData.append('internationalExperience', JSON.stringify(cleanExperiences(internationalExperiences)));
+      formData.append('leadership', JSON.stringify(cleanExperiences(leadershipExperiences)));
+      formData.append('awards', JSON.stringify(cleanExperiences(awards)));
 
-      // Update individual dynamic section states, adding client-side 'id'
-      if (fetchedData.experiences && fetchedData.experiences.length > 0) {
-        setWorkExperiences(fetchedData.experiences.map(exp => ({ ...exp, id: exp._id || Date.now() })));
-      } else {
-          setWorkExperiences([]); // Clear if no data
+      if (degreeCertificateFile) formData.append('degreeCertificate', degreeCertificateFile);
+      if (projectFile) formData.append('project', projectFile);
+      
+      workExperiences.forEach(exp => {
+        if (exp.certificate && typeof exp.certificate !== 'string') formData.append('experienceCertificate', exp.certificate);
+      });
+      internationalExperiences.forEach(exp => {
+        if (exp.certificate && typeof exp.certificate !== 'string') formData.append('internationalExperienceCertificate', exp.certificate);
+      });
+      leadershipExperiences.forEach(exp => {
+        if (exp.certificate && typeof exp.certificate !== 'string') formData.append('leadershipCertificate', exp.certificate);
+      });
+
+      const endpoint = `${backendUrl}/api/onboarding/update`;
+      const response = await axios.put(endpoint, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
+        },
+        withCredentials: true,
+      });
+
+      console.log('Form updated/submitted successfully:', response.data);
+
+      if (response.data && response.data.data) {
+        const fetchedData = response.data.data;
+
+        setProfileData(prev => ({
+            ...prev,
+            ...fetchedData,
+            profileImageUrl: fetchedData.profileImage || prev.profileImageUrl,
+            backgroundImageUrl: fetchedData.backgroundImage || prev.backgroundImageUrl,
+            resumeUrl: fetchedData.resume || prev.resumeUrl,
+            degreeCertificateUrl: fetchedData.degreeCertificate || prev.degreeCertificateUrl,
+            projectUrl: fetchedData.project || prev.projectUrl,
+            certifications: (fetchedData.certifications && typeof fetchedData.certifications === 'string')
+              ? fetchedData.certifications.split('; ').map(name => ({ name, url: '' })) 
+              : [],
+        }));
+        
+        if (fetchedData.experiences && fetchedData.experiences.length > 0) {
+            setWorkExperiences(fetchedData.experiences.map(exp => ({ ...exp, id: exp._id || Date.now(), certificate: exp.experienceCertificate })));
+        } else { setWorkExperiences([]); }
+        if (fetchedData.internationalExperience && fetchedData.internationalExperience.length > 0) {
+            setInternationalExperiences(fetchedData.internationalExperience.map(exp => ({ ...exp, id: exp._id || Date.now() })));
+        } else { setInternationalExperiences([]); }
+        if (fetchedData.leadership && fetchedData.leadership.length > 0) {
+            setLeadershipExperiences(fetchedData.leadership.map(exp => ({ ...exp, id: exp._id || Date.now() })));
+        } else { setLeadershipExperiences([]); }
+        if (fetchedData.awards && fetchedData.awards.length > 0) {
+            setAwards(fetchedData.awards.map(award => ({ ...award, id: award._id || Date.now() })));
+        } else { setAwards([]); }
       }
-      if (fetchedData.internationalExperience && fetchedData.internationalExperience.length > 0) {
-        setInternationalExperiences(fetchedData.internationalExperience.map(exp => ({ ...exp, id: exp._id || Date.now() })));
-      } else {
-          setInternationalExperiences([]);
-      }
-      if (fetchedData.leadership && fetchedData.leadership.length > 0) {
-        setLeadershipExperiences(fetchedData.leadership.map(exp => ({ ...exp, id: exp._id || Date.now() })));
-      } else {
-          setLeadershipExperiences([]);
-      }
-      if (fetchedData.awards && fetchedData.awards.length > 0) {
-        setAwards(fetchedData.awards.map(award => ({ ...award, id: award._id || Date.now() })));
-      } else {
-          setAwards([]);
-      }
+      
+      setIsProfileEditing(false);
+      setHasOnboardingData(true);
+      setDegreeCertificateFile(null);
+      setProjectFile(null);
+
+    } catch (err) {
+      console.error('Error saving profile changes:', err.response ? err.response.data : err.message);
+      setError(`Failed to save changes: ${err.response?.data?.details || err.message}`);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // 7. Update UI state and clear file inputs
-    setIsProfileEditing(false);
-    setHasOnboardingData(true);
-
-    setProfileImageFile(null);
-    setBackgroundImageFile(null);
-    setResumeFile(null);
-    setDegreeCertificateFile(null);
-    setProjectFile(null);
-
-  } catch (err) {
-    console.error('Error saving profile changes:', err.response ? err.response.data : err.message);
-    setError(`Failed to save changes: ${err.response?.data?.details || err.message}`);
-  } finally {
-    setLoading(false);
-  }
-};
  const renderContent = () => {
     if (loading) return <div className="text-center py-8">Loading profile data...</div>;
     if (error && !hasOnboardingData) return (

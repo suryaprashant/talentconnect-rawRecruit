@@ -16,7 +16,7 @@ function useGetAllUsers() {
             Authorization: `Bearer ${token}`,
           },
         });
-         console.log("hiiiiiiiii")
+      
         setAllUsers(response.data);
         setLoading(false);
       } catch (error) {
