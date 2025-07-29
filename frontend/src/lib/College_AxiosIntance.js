@@ -11,9 +11,8 @@ axiosClient.defaults.headers = {
 
 // default 10sec
 axiosClient.defaults.timeout = 10000;
-
 // in case of tokens
-// axiosClient.defaults.withCredentials = true;
+axiosClient.defaults.withCredentials = true;
 
 export function getCompanyPostingForOncampus() {
   return axiosClient.get(`/api/rawrecruit/oncampus-register`)
@@ -28,13 +27,19 @@ export function getCompanyPostingForOncampusDetail(jobId) {
 }
 
 export function ApplyForPoolCampus(jobId) {
-  return axiosClient.post(`/api/hiringDrive/poolcampus/apply`,{jobId:jobId})
+  return axiosClient.post(`/api/hiringDrive/poolcampus/apply`, { jobId: jobId })
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
 
 export function ApplyForOnCampus(jobId) {
-  return axiosClient.post(`/api/rawrecruit/oncampus/apply`,{jobId:jobId})
+  return axiosClient.post(`/api/rawrecruit/oncampus/apply`, { jobId: jobId })
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
+export function getOncampusJobs() {
+  return axiosClient.post(`/api/rawrecruit/college/oncampus`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

@@ -16,7 +16,7 @@ const StatusBadge = ({ status, className = '' }) => {
     }
     
     return (
-      <span className={`badge ${badgeClass} ${className}`}>
+      <span className={`badge p-1 rounded ${badgeClass} ${className}`}>
         {status}
       </span>
     );

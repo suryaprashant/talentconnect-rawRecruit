@@ -1,4 +1,3 @@
-import { create } from 'domain';
 import PoolCampusHiring from '../models/HiringChannelPoolCampusModel.js'
 import collegeOnboardingModel from '../models/collegeDashboard/collegeOnboardingModel.js';
 import CompanyProfile from '../models/companyDashboard/companyProfileModel.js'
@@ -79,6 +78,22 @@ export async function createPoolCampusApplication(req, res) {
     const college = await collegeOnboardingModel.find({ userId: collegeId });
 
     if (await checkPoolCampusApplicationExitence(college[0]._id, jobId) === true) return res.status(403).json({ msg: "Already Applied!" })
+
+    const application = await poolcampusApplicationService(college[0]._id, jobId);
+    res.status(201).json({ msg: "Application Submitted" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Internal Server" });
+  }
+}
+
+export async function getPoolCampusApplicationByCollege(req, res) {
+  const collegeId = req.user._id;
+
+  // console.log("ids", collegeId, " ", jobId);
+
+  try {
+    const college = await collegeOnboardingModel.find({ userId: collegeId });
 
     const application = await poolcampusApplicationService(college[0]._id, jobId);
     res.status(201).json({ msg: "Application Submitted" });

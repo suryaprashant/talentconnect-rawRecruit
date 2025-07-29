@@ -1,7 +1,7 @@
 import Registration from "../models/HiringChannels_oncampusregister.js";
 import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
-import { checkOnCampusApplicationExitence, oncampusApplicationService, poolcampusApplicationService } from "../services/Application.service.js";
+import { checkOnCampusApplicationExitence, getOncampusApplicantsService, oncampusApplicationService, poolcampusApplicationService } from "../services/Application.service.js";
 import OnCampusApplication from "../models/oncampusApplicationModel.js";
 
 export const submitRegistration = async (req, res) => {
@@ -71,8 +71,6 @@ export async function createOnCampusApplication(req, res) {
   const collegeId = req.user._id;
   const { jobId } = req.body;
 
-  // console.log("ids", collegeId, " ", jobId);
-
   try {
     const college = await collegeOnboardingModel.find({ userId: collegeId });
 
@@ -100,17 +98,17 @@ export async function createOnCampusApplication(req, res) {
 //         const companyId = companyProfile._id; 
 //         const currentDate = new Date(); 
 
-      
+
 //         const companyHiringData = await Registration.aggregate([
 //             {
-                
+
 //                 $match: {
 //                     companyPosted: companyId,
 //                     //  endDate: { $gte: new Date() } 
 //                 }
 //             },
 //             {
-             
+
 //                 $lookup: {
 //                     from: OnCampusApplication.collection.name, 
 //                     localField: "_id",
@@ -119,13 +117,13 @@ export async function createOnCampusApplication(req, res) {
 //                 }
 //             },
 //             {
-             
+
 //                 $addFields: {
 //                     applicationCount: { $size: "$applications" }
 //                 }
 //             },
 //             {
-              
+
 //                 $project: {
 //                     companyPosted: 1,
 //                     degree: 1,
@@ -151,7 +149,7 @@ export async function createOnCampusApplication(req, res) {
 //                 }
 //             },
 //             {
-              
+
 //                 $lookup: {
 //                     from: "collegeonboardings", 
 //                     localField: "applications.college", 
@@ -160,7 +158,7 @@ export async function createOnCampusApplication(req, res) {
 //                 }
 //             },
 //             {
-              
+
 //                 $project: {
 //                     applications: 0,
 //                 }
@@ -172,7 +170,7 @@ export async function createOnCampusApplication(req, res) {
 //             return res.status(200).json({ message: "No active on-campus hiring drives found for this company.", data: [] });
 //         }
 
-  
+
 //         res.status(200).json({
 //             success: true,
 //             count: companyHiringData.length,
@@ -199,7 +197,7 @@ export async function createOnCampusApplication(req, res) {
 //             })
 //             .lean(); // Return plain JavaScript objects
 
-      
+
 //         const colleges = applications.map(app => ({
 //             ...app.college.collegeUniversityDetails,
 //             coordinator: app.college.placementCoordinatorDetails, 
@@ -209,7 +207,7 @@ export async function createOnCampusApplication(req, res) {
 //             appliedAt: app.createdAt 
 //         }));
 
-       
+
 //         res.status(200).json({ success: true, data: colleges });
 
 //     } catch (error) {
@@ -343,7 +341,7 @@ export const getCollegesForOnCampusJob = async (req, res) => {
       averagePackage: app.college?.placementRecruitmentDetails?.averagePackage || 'Not Specified',
 
       // Use the spread operator to include ALL fields from driveDetails
-      ...driveDetails, 
+      ...driveDetails,
     }));
 
     res.status(200).json({ success: true, data: colleges });
@@ -353,3 +351,26 @@ export const getCollegesForOnCampusJob = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
+
+export async function getOncampusCollegeApplication(req, res) {
+  const collegeId = req.user._id;
+
+  try {
+    const college = await collegeOnboardingModel.find({ userId: collegeId });
+    if (!college) return res.status(404).json({ error: "Invalid college" });
+
+    // console.log(college[0]);
+
+    const query = {};
+    query.college = college[0]._id;
+
+    const response = await getOncampusApplicantsService(query);
+    // console.log(response);
+
+    if (response.success) res.status(200).json(response);
+    else res.status(404).json(response);
+  } catch (error) {
+    console.log("Error: ", error);
+    res.status(500).json({ Error: "Internal server error" });
+  }
+}

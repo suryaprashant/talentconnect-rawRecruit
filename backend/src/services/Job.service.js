@@ -20,7 +20,7 @@ import JobPosting from "../models/HiringChannels_postjob.js";
 // fetch jobs
 export async function fetchOpportunityService(query) {
     try {
-        const response = await HiringDrive.find()
+        const response = await HiringDrive.find(query)
             .populate({
                 path: 'companyId',
                 select: 'companyDetails'
@@ -49,8 +49,7 @@ export async function fetchOpportunityService(query) {
 export async function fetchJobListingOpportunityService(query) {
     try {
         // const response = await Job.find(query).populate('Company');
-        // const response = await JobPosting.find(query)
-        const response = await JobPosting.find()
+        const response = await JobPosting.find(query)
             .populate({
                 path: 'companyId',
                 select: 'companyDetails'

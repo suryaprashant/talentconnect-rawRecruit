@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import { getApplications } from '@/constants/applicationService';
+// import { getApplications } from '@/constants/applicationService';
+import { getOncampusJobs } from '@/lib/College_AxiosIntance';
 
 const ApplicationContext = createContext();
 
@@ -22,9 +23,9 @@ export const ApplicationProvider = ({ children }) => {
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const data = await getApplications();
-        setApplications(data);
-        setFilteredApplications(data);
+        const data = await getOncampusJobs()
+        setApplications(data.data.data);
+        setFilteredApplications(data.data.data);
         setLoading(false);
       } catch (err) {
         setError(err.message);

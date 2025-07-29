@@ -459,3 +459,14 @@ export async function oncampusApplicationService(collegeId, jobId) {
     }
 }
 
+export async function getOncampusApplicantsService(query) {
+    try {
+        const response = await OnCampusApplication.find(query)
+            .populate('drive')
+            .lean();
+        return { success: true, data: response };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to Save");
+    }
+}

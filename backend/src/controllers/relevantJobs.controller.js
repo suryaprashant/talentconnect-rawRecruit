@@ -27,9 +27,9 @@ export const findRelevantOpportunityById = async (req, res) => {
 
         const query = {};
         // if (lookingFor) query.lookingFor = lookingFor;
-        if (employmentType) query.employmentTypes = { $in: [employmentType] };
-        if (jobPreference && jobPreference.length > 0) query.title = { $in: jobPreference };
-        if (preferedWorkModes && preferedWorkModes.length > 0) query.workMode = { $in: preferedWorkModes };
+        // if (employmentType) query.employmentTypes = { $in: [employmentType] };
+        // if (jobPreference && jobPreference.length > 0) query.title = { $in: jobPreference };
+        // if (preferedWorkModes && preferedWorkModes.length > 0) query.workMode = { $in: preferedWorkModes };
         // query.openingFor = { $ne: "Oncampus" };
         // query.jobType = { $ne: "Internship" };
 

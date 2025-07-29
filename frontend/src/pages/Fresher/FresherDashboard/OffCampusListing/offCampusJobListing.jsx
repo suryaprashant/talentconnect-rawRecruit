@@ -12,7 +12,7 @@ function FOffCampusListings() {
   const navigate = useNavigate();
 
   const handleJobClick = (jobId) => {
-    navigate(`/student-dashboard/off-campus-listings/${jobId}`);
+    navigate(`/fresher-dashboard/off-campus-listings/${jobId}`);
   };
 
   const fetchOffcampusOpportunity = async () => {
@@ -21,6 +21,7 @@ function FOffCampusListings() {
 
       const response = await getRelaventOffcampusOpportunity();
       setOffCampusJobs(response.data.data);
+      console.log("res..",response.data.data);
       setError(null);
     } catch (error) {
       setError('Failed to load jobs. Please try again later.')
