@@ -22,7 +22,6 @@ router.post('/internship/apply', secureRoute, createIntershipApplication);
 
 // shortlisting
 
-
 // access only to company 
 // accept oncampus
 // router.get('/accept/oncampus/:companyId', getAcceptedCandidatesFromCollege);
