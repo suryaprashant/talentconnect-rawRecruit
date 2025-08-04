@@ -1,3 +1,5 @@
+// to be delete
+
 import mongoose from "mongoose";
 
 const jobApplicationSchema = new mongoose.Schema({
