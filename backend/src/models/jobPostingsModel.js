@@ -18,8 +18,8 @@ const jobPostingSchema = new mongoose.Schema({
     venue : { type: String }, 
     jobStatus: {
         type: String,   
-        enum: ["Active" , "Expired" ],
-        default: "Active" 
+        enum: ["Open" , "Closed" , "Pending" ],
+        default: "Pending" 
     },
     lookingFor: {
         type: String,

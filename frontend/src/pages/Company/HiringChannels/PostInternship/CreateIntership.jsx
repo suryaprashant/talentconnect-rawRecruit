@@ -177,7 +177,7 @@ export default function PostJob() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-3xl mx-auto p-4">
         <div className="bg-white p-6 rounded-lg shadow-sm mb-4">
-          <h2 className="text-lg font-bold mb-1">Basic Job Details</h2>
+          <h2 className="text-lg font-bold mb-1">Basic Intership Details</h2>
           <p className="text-sm text-gray-600 mb-4">Help candidates connect with the right recruiter in your company.</p>
 
           <div className="mb-4">

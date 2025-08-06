@@ -438,7 +438,7 @@ function AppRoutes() {
               {/* Hiring Channel  */}
               
               <Route path='/hiring-channels/post-a-job/employer' element={<EmployerPostJob/>} />
-              <Route path='/hiring-channels/post-an-internship' element={<EmployerPostIntership/>} />
+              <Route path='/hiring-channels/post-an-internship/employer' element={<EmployerPostIntership/>} />
               <Route path='/hiring-channels/on-campus-hiring/employer' element={<EmployerOnCampusHiring/>} />
               <Route path='hiring-channels/pool-campus-hiring/employer' element={<EmployerPoolCampuses/>} />
               <Route path='/hiring-channels/off-campus-hiring/employer' element={<EmployerOffCampus/>} />

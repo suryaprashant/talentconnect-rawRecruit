@@ -183,7 +183,7 @@ export default function CreateJob() {
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Employment type <span className="text-red-500">*</span></label>
             <div className="flex gap-2 flex-wrap">
-              {/* CORRECTED: Sending capitalized values that match the schema */}
+        
               <button type="button" className={`px-4 py-1 border rounded-full text-sm transition-colors ${formData.employmentType === 'Full-time' ? 'bg-black text-white border-black' : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'}`} onClick={() => handleOptionSelect('employmentType', 'Full-time')}>Full-time</button>
               <button type="button" className={`px-4 py-1 border rounded-full text-sm transition-colors ${formData.employmentType === 'Part-time' ? 'bg-black text-white border-black' : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'}`} onClick={() => handleOptionSelect('employmentType', 'Part-time')}>Part-time</button>
               <button type="button" className={`px-4 py-1 border rounded-full text-sm transition-colors ${formData.employmentType === 'Contract' ? 'bg-black text-white border-black' : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'}`} onClick={() => handleOptionSelect('employmentType', 'Contract')}>Contract</button>
