@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import Application from '../models/applicationModel';
+import Application from '../models/applicationModel.js';
 
 // import OffCampusApplication from '../models/offCampusApplicationModel.js';
 // import InternshipApplication from '../models/internshipApplicationModel.js';
@@ -9,15 +9,39 @@ import Application from '../models/applicationModel';
 // import JobListingApplication from '../models/jobListingApplicationModel.js';
 
 // check if similar application exists
-export async function checkExitenceService(jobId, userId) {
+export async function checkExitenceService(userId, userType, jobId, jobType) {
     try {
-        const response = await Application.find({ user: userId, job: jobId });
+        const response = await Application.find({
+            applicant: userId,
+            applicantType: userType,
+            job: jobId,
+            jobType: jobType
+        }).lean();
         if (response?.length > 0) return true;
     } catch (error) {
         console.log("Error: ", error.message);
-        // throw new Error("Failed to fetch");
+        throw new Error("Failed to fetch");
     }
     return false;
+}
+
+// save job by user
+export async function saveJobService(userId, userType, jobId, jobType) {
+    try {
+        const newApplication = new Application({
+            applicant: userId,
+            applicantType: userType,
+            job: jobId,
+            jobType: jobType,
+            statusHistory: [{ status: "saved" }],
+            currentStatus: "saved"
+        });
+        await newApplication.save();
+        return { success: true, message: 'Application submited!' };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to Save");
+    }
 }
 
 // create application
