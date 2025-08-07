@@ -1,7 +1,7 @@
 import Registration from "../models/HiringChannels_oncampusregister.js";
 import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
-import { checkOnCampusApplicationExitence, getOncampusApplicantsService, oncampusApplicationService, poolcampusApplicationService } from "../services/Application.service.js";
+// import { oncampusApplicationService, poolcampusApplicationService } from "../services/Application.service.js";
 import OnCampusApplication from "../models/oncampusApplicationModel.js";
 
 export const submitRegistration = async (req, res) => {
@@ -61,26 +61,6 @@ export const getRegistrationDetail = async (req, res) => {
     res.status(200).json(response);
   } catch (err) {
     res.status(500).json({ error: err.message });
-  }
-}
-
-
-
-// apply
-export async function createOnCampusApplication(req, res) {
-  const collegeId = req.user._id;
-  const { jobId } = req.body;
-
-  try {
-    const college = await collegeOnboardingModel.find({ userId: collegeId });
-
-    if (await checkOnCampusApplicationExitence(college[0]._id, jobId) === true) return res.status(403).json({ msg: "Already Applied!" })
-
-    const application = await oncampusApplicationService(college[0]._id, jobId);
-    res.status(201).json({ msg: "Application Submitted" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: "Internal Server" });
   }
 }
 

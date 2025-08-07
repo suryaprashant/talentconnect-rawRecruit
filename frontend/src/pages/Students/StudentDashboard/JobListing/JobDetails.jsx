@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 //  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
 import JobCard from '@/components/Student/StudentDashboard/JobListing/JobCard';
-import { ApplyForJobListingOppurtunity, getJobLisingJobDetails } from '@/lib/User_AxiosInstance';
+import { ApplyForJobListingOppurtunity, getJobLisingJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 
 const JobDetails = () => {
   const { jobId } = useParams();
@@ -19,7 +19,7 @@ const JobDetails = () => {
 
         // Fetch job details
         const details = await getJobLisingJobDetails(jobId);
-        // console.log("..../", details.data[0]);
+        console.log("..../", details.data[0]);
         setJobDetails(details.data[0]);
 
         // Fetch similar jobs
@@ -37,6 +37,17 @@ const JobDetails = () => {
     loadJobDetails();
   }, [jobId]);
 
+  const handleSave = async () => {
+    try {
+      const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
+      console.log("saved: ", response);
+      if (response) alert('Application submitted successfully!');
+    } catch (err) {
+      console.error('Error applying for job:', err);
+      alert('Failed to submit application. Please try again.');
+    }
+  };
+
   const handleApply = async () => {
     try {
       const response = await ApplyForJobListingOppurtunity(jobId);
@@ -45,17 +56,6 @@ const JobDetails = () => {
     } catch (err) {
       console.error('Error applying for job:', err);
       alert('Failed to submit application. Please try again.');
-    }
-  };
-
-  const handleSave = async () => {
-    try {
-      // Implement save job functionality
-      console.log('Saving job:', jobId);
-      alert('Job saved successfully!');
-    } catch (err) {
-      console.error('Error saving job:', err);
-      alert('Failed to save job. Please try again.');
     }
   };
 
@@ -169,8 +169,8 @@ const JobDetails = () => {
           <h2 className="text-xl font-semibold mb-3">Education</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm font-medium text-gray-500">Minimum Education: <span className="text-gray-700"> { jobDetails.minEducation}</span></p>
-              <p className="text-sm font-medium text-gray-500">Prefered field of study: <span className="text-gray-700">  { jobDetails.studentStreams}</span></p>
+              <p className="text-sm font-medium text-gray-500">Minimum Education: <span className="text-gray-700"> {jobDetails.minEducation}</span></p>
+              <p className="text-sm font-medium text-gray-500">Prefered field of study: <span className="text-gray-700">  {jobDetails.studentStreams}</span></p>
             </div>
             {/* <div>
               <p className="text-sm font-medium text-gray-500">PG:</p>

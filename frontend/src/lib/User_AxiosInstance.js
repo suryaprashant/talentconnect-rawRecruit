@@ -64,21 +64,28 @@ export function getHackathonDetail(hackathonId) {
     .catch(error => console.log("Error: ", error));
 }
 
+// save opportunity
+export function SaveOppurtunity(jobId, jobType) {
+  return axiosClient.post(`/application/candidate/saveopportunity`, { jobId: jobId, jobType: jobType })
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
 // application
 export function ApplyForOppurtunity(jobId) {
-  return axiosClient.post(`/application/offcampusapply`, { jobId: jobId })
+  return axiosClient.post(`/application/candidate/offcampus`, { jobId: jobId })
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
 
 export function ApplyForJobListingOppurtunity(jobId) {
-  return axiosClient.post(`/application/joblistingapply`, { jobId: jobId })
+  return axiosClient.post(`/application/candidate/joblisting`, { jobId: jobId })
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
 
 export function ApplyForInternship(internshipId) {
-  return axiosClient.post(`/application/internship/apply`, { internshipId: internshipId })
+  return axiosClient.post(`/application/candidate/internship`, { internshipId: internshipId })
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

@@ -32,8 +32,8 @@ export async function saveJobService(userId, userType, jobId, jobType) {
             applicantType: userType,
             job: jobId,
             jobType: jobType,
-            statusHistory: [{ status: "saved" }],
-            currentStatus: "saved"
+            statusHistory: [{ status: "Saved" }],
+            currentStatus: "Saved"
         });
         await newApplication.save();
         return { success: true, message: 'Application submited!' };
@@ -47,11 +47,16 @@ export async function saveJobService(userId, userType, jobId, jobType) {
 export async function createApplicationService(userId, userType, jobId, jobType) {
     try {
         const existing = await getApplicationService(userId, userType, jobId, jobType);
-        if (existing) {
-            existing.currentStatus = "Applied";
-            existing.statusHistory.push({ status: "Applied" });
-            await existing.save();
-        } else {
+        // console.log("existing response: ", existing.response);
+        if (existing?.response[0]?.currentStatus === "Applied") {
+            return { success: false, message: "Already Applied" };
+        }
+        else if (existing?.response[0]?.currentStatus === "Saved") {
+            existing.response[0].currentStatus = "Applied";
+            existing.response[0].statusHistory.push({ status: "Applied" });
+            await existing.response[0].save();
+        }
+        else {
             const newApplication = new Application({
                 applicant: userId,
                 applicantType: userType,

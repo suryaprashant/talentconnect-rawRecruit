@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPoolCampusApplication, getAllRegistrations, getJobById, poolCampusRegister } from '../controllers/hiringChannelPoolCampus.controller.js';
+import { getAllRegistrations, getJobById, poolCampusRegister } from '../controllers/hiringChannelPoolCampus.controller.js';
 import secureRoute from '../middlewares/secureRoute.js'
 
 const router = express.Router();
@@ -13,6 +13,6 @@ router.get('/getAllPoolCampusJobs', getAllRegistrations);
 
 router.get('/getPoolCampusJob/:id', getJobById);
 
-router.post('/poolcampus/apply', secureRoute, createPoolCampusApplication);
+// router.post('/poolcampus/apply', secureRoute, createPoolCampusApplication);
 
 export default router;
