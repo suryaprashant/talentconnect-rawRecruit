@@ -6,18 +6,19 @@ const router = express.Router();
 
 // api '.../application'
 
+// offcampus
+router.post('candidate/offcampus', secureRoute, createOffcampusApplication);
 router.get('/candidate/offCampus', secureRoute, getOffcampusUserApplication);
-router.get('/candidate/joblisting', secureRoute, getJobListingUserApplication);
-router.get('/candidate/internship', secureRoute, getInternshipUserApplication);
-
-router.post('/offcampusapply', secureRoute, createOffcampusApplication);
 router.get('/offcampus/shortlisted', secureRoute, getShortlistedCandidatesByCompany);
 router.get('/offcampus/accepted', secureRoute, getAcceptedCandidatesByCompany);
 
-router.post('/joblistingapply', secureRoute, createJobListingApplication);
+// joblisting
+router.post('candidate/joblisting', secureRoute, createJobListingApplication);
+router.get('/candidate/joblisting', secureRoute, getJobListingUserApplication);
 
 // internship
-router.post('/internship/apply', secureRoute, createIntershipApplication);
+router.post('candidate/internship', secureRoute, createIntershipApplication);
+router.get('/candidate/internship', secureRoute, getInternshipUserApplication);
 
 // shortlisting
 

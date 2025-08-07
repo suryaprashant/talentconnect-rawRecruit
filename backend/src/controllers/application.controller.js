@@ -1,13 +1,13 @@
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
-import { createApplicationService, checkExitenceService, createInternshipApplicationService, checkInternshipExitence, getOffCampusApplicantsService, fetchShortlistedCandidates, createJobListingApplicationService, fetchOffcampusApplicationService, fetchJoblistingApplicationService, fetchInternshipApplicationService, checkExitenceService } from "../services/Application.service.js";
+import { createApplicationService, getApplicationService, getOffCampusApplicantsService, fetchShortlistedCandidates, fetchInternshipApplicationService, fetchApplicationStatusService } from "../services/Application.service.js";
 import { getCollegeService } from "../services/collegeService.js";
-import { checkJobListingOpportunityService, checkOpportunityService } from "../services/Job.service.js";
+// import { checkJobListingOpportunityService, checkOpportunityService } from "../services/Job.service.js";
 import { getStudentService } from "../services/Student.service.js";
-import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
+// import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
 
 // save opportunity
 export async function saveJobByUser(req, res) {
-    const { jobId } = req.body;
+    const { jobId, jobType } = req.body;
     const userId = req.user._id;
 
     try {
@@ -15,9 +15,9 @@ export async function saveJobByUser(req, res) {
 
         // if (!userId || !jobId) return res.status(404).json({ msg: "Fields missing" });
         if (!jobId || !user) return res.status(404).json({ msg: "User or Job not found!" });
-        if (await checkExitenceService(user.data[0]._id, user.data[0].userType, jobId, "Off-campus") === true) return res.status(403).json({ msg: "Already Applied" });
+        if (await getApplicationService(user.data[0]._id, user.data[0].userType, jobId, jobType).success === true) return res.status(403).json({ msg: "Already Applied" });
 
-        const application = await createApplicationService(user.data[0]._id, user.data[0].userType, jobId, "Off-campus");
+        const application = await createApplicationService(user.data[0]._id, user.data[0].userType, jobId, jobType);
         res.status(201).json(application);
     } catch (error) {
         console.log("Error: ", error);
@@ -37,7 +37,7 @@ export async function createOffcampusApplication(req, res) {
 
         // if (!userId || !jobId) return res.status(404).json({ msg: "Fields missing" });
         if (!jobId || !user) return res.status(404).json({ msg: "User or Job not found!" });
-        if (await checkExitenceService(user.data[0]._id, user.data[0].userType, jobId, "Off-campus") === true) return res.status(403).json({ msg: "Already Applied" });
+        if ((await getApplicationService(user.data[0]._id, user.data[0].userType, jobId, "Off-campus")).response.currentStatus === "Applied") return res.status(403).json({ msg: "Already Applied" });
 
         const application = await createApplicationService(user.data[0]._id, user.data[0].userType, jobId, "Off-campus");
         res.status(201).json(application);
@@ -58,9 +58,9 @@ export async function createJobListingApplication(req, res) {
         const user = await getStudentService(userId);
 
         if (!jobId || !user) return res.status(404).json({ msg: "User or Job not found!" });
-        if (await checkExitenceService(user.data[0]._id, user.data[0].userType, jobId, "Job-posting") === true) return res.status(403).json({ msg: "Already Applied" });
+        if (await getApplicationService(user.data[0]._id, user.data[0].userType, jobId, "Job-listing") === true) return res.status(403).json({ msg: "Already Applied" });
 
-        const application = await createApplicationService(user.data[0]._id, user.data[0].userType, jobId, "Job-posting");
+        const application = await createApplicationService(user.data[0]._id, user.data[0].userType, jobId, "Job-listing");
         res.status(201).json(application);
     } catch (error) {
         console.log("Error: ", error);
@@ -78,7 +78,7 @@ export async function createIntershipApplication(req, res) {
         const user = await getStudentService(userId);
 
         if (!user || !internshipId) return res.status(404).json({ msg: "Invalid" });
-        if (await checkExitenceService(user.data[0]._id, user.data[0].userType, internshipId, "Internship") === true) return res.status(403).json({ msg: "Already Applied" });
+        if (await getApplicationService(user.data[0]._id, user.data[0].userType, internshipId, "Internship") === true) return res.status(403).json({ msg: "Already Applied" });
 
         const application = await createApplicationService(user.data[0]._id, user.data[0].userType, internshipId, "Internship");
         res.status(201).json(application);
@@ -98,7 +98,7 @@ export async function createOncampusApplication(req, res) {
         const user = await getCollegeService(userId);
 
         if (!user || !driveId) return res.status(404).json({ msg: "Invalid" });
-        if (await checkExitenceService(user.data[0]._id, user.data[0].userType, driveId, "On-campus") === true) return res.status(403).json({ msg: "Already Applied" });
+        if (await getApplicationService(user.data[0]._id, user.data[0].userType, driveId, "On-campus") === true) return res.status(403).json({ msg: "Already Applied" });
 
         const application = await createApplicationService(user.data[0]._id, user.data[0].userType, driveId, "On-campus");
         res.status(201).json(application);
@@ -118,7 +118,7 @@ export async function createPoolcampusApplication(req, res) {
         const user = await getCollegeService(userId);
 
         if (!user || !driveId) return res.status(404).json({ msg: "Invalid" });
-        if (await checkExitenceService(user.data[0]._id, user.data[0].userType, driveId, "Pool-campus") === true) return res.status(403).json({ msg: "Already Applied" });
+        if (await getApplicationService(user.data[0]._id, user.data[0].userType, driveId, "Pool-campus") === true) return res.status(403).json({ msg: "Already Applied" });
 
         const application = await createApplicationService(user.data[0]._id, user.data[0].userType, driveId, "Pool-campus");
         res.status(201).json(application);
@@ -131,11 +131,12 @@ export async function createPoolcampusApplication(req, res) {
 // get application details by candidate
 export async function getOffcampusUserApplication(req, res) {
     const userId = req.user._id;
-    const user = await getStudentService(userId);
-    if (!user) return res.status(404).json({ error: "Invalid user" });
 
     try {
-        const response = await fetchOffcampusApplicationService(user.data[0]._id);
+        const user = await getStudentService(userId);
+        if (!user) return res.status(404).json({ error: "Invalid user" });
+        
+        const response = await fetchApplicationStatusService(user.data[0]._id, "Off-campus");
         // console.log(response);
 
         if (response.success) res.status(200).json(response);
@@ -153,7 +154,7 @@ export async function getJobListingUserApplication(req, res) {
         const user = await getStudentService(userId);
         if (!user) return res.status(404).json({ error: "Invalid user" });
 
-        const response = await fetchJoblistingApplicationService(user.data[0]._id);
+        const response = await fetchApplicationStatusService(user.data[0]._id, "Job-listing");
 
         if (response.success) res.status(200).json(response);
         else res.status(404).json(response);

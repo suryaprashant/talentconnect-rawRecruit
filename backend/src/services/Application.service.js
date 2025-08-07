@@ -9,20 +9,19 @@ import Application from '../models/applicationModel.js';
 // import JobListingApplication from '../models/jobListingApplicationModel.js';
 
 // check if similar application exists
-export async function checkExitenceService(userId, userType, jobId, jobType) {
+export async function getApplicationService(userId, userType, jobId, jobType) {
     try {
         const response = await Application.find({
             applicant: userId,
             applicantType: userType,
             job: jobId,
             jobType: jobType
-        }).lean();
-        if (response?.length > 0) return true;
+        });
+        return { success: true, response: response }
     } catch (error) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");
     }
-    return false;
 }
 
 // save job by user
@@ -47,15 +46,23 @@ export async function saveJobService(userId, userType, jobId, jobType) {
 // create application
 export async function createApplicationService(userId, userType, jobId, jobType) {
     try {
-        const newApplication = new Application({
-            applicant: userId,
-            applicantType: userType,
-            job: jobId,
-            jobType: jobType,
-            statusHistory: [{ status: "Applied" }],
-            currentStatus: "Applied"
-        });
-        await newApplication.save();
+        const existing = await getApplicationService(userId, userType, jobId, jobType);
+        if (existing) {
+            existing.currentStatus = "Applied";
+            existing.statusHistory.push({ status: "Applied" });
+            await existing.save();
+        } else {
+            const newApplication = new Application({
+                applicant: userId,
+                applicantType: userType,
+                job: jobId,
+                jobType: jobType,
+                statusHistory: [{ status: "Applied" }],
+                currentStatus: "Applied"
+            });
+            await newApplication.save();
+        }
+
         return { success: true, message: 'Application submited!' };
     } catch (error) {
         console.log("Error: ", error.message);

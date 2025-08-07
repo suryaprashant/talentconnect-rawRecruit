@@ -1,7 +1,6 @@
 
 import mongoose from 'mongoose';
 const companyProfileSchema = new mongoose.Schema({
-  // This remains the unique identifier
   userId: { 
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Auth', 
