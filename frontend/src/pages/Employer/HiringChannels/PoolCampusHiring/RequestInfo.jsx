@@ -1,25 +1,26 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { ChevronDown } from 'lucide-react'; // Import ChevronDown for the selects
 
 export default function OffCampusHiringForm() {
   // Define initial state
   const initialState = {
     venue: '',
-    collegeTypes: [],
-    studentStreams: [],
-    criteria: '',
+    collegeTypes: '', // Changed to a string to match the select input
+    studentStreams: '', // Changed to a string to match the select input
+    criteria: '', // Renamed to description to match backend schema
     minPackage: {
       currency: 'INR',
       amount: ''
     },
-    workLocations: [],
-    jobRoles: [],
+    workLocations: '', // Changed to a string to match the select input
+    jobRoles: '', // Changed to a string to match the select input
     workMode: 'Hybrid',
     employmentType: 'Full-time',
     placementStartDate: '',
     placementEndDate: '',
-    numberOfRounds: [],
-    selectionProcess: [],
+    numberOfRounds: '', // Changed to a string to match the select input
+    selectionProcess: '', // Changed to a string to match the select input
     contactPerson: {
       name: '',
       designation: '',
@@ -37,22 +38,29 @@ export default function OffCampusHiringForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    // Special handling for date inputs
+    if (name === 'placementStartDate' || name === 'placementEndDate') {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleArrayChange = (e) => {
+    const { name, value } = e.target;
+    // Set the value directly. It will be converted to an array in handleSubmit.
     setFormData({
       ...formData,
       [name]: value,
     });
   };
-
   
-
-  const handleArrayChange = (e) => {
-  const { name, value } = e.target;
-  setFormData({
-    ...formData,
-    [name]: value, // Just store the value directly (not in an array)
-  });
-};
-
   const handlePackageChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -63,7 +71,7 @@ export default function OffCampusHiringForm() {
       },
     });
   };
-
+  
   const handleContactChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -81,43 +89,68 @@ export default function OffCampusHiringForm() {
     setError(null);
 
     try {
-      // Prepare the data for backend
+      const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1];
+
+      // Prepare the data for backend, ensuring fields match the schema
       const submissionData = {
-        ...formData,
-        // Ensure arrays are properly formatted
-        collegeTypes: formData.collegeTypes.length > 0 ? [formData.collegeTypes] : [],
-        studentStreams: formData.studentStreams.length > 0 ? [formData.studentStreams] : [],
-        workLocations: formData.workLocations.length > 0 ? [formData.workLocations] : [],
-        jobRoles: formData.jobRoles.length > 0 ? [formData.jobRoles] : [],
-        numberOfRounds: formData.numberOfRounds.length > 0 ? [formData.numberOfRounds] : [],
-        selectionProcess: formData.selectionProcess.length > 0 ? [formData.selectionProcess] : [],
+        venue: formData.venue,
+        // The backend schema expects arrays of strings. We convert the single select value to an array here.
+        collegeTypes: formData.collegeTypes ? [formData.collegeTypes] : [],
+        studentStreams: formData.studentStreams ? [formData.studentStreams] : [],
+        description: formData.criteria, // Mapped 'criteria' to 'description'
+        minPackage: {
+            currency: formData.minPackage.currency,
+            amount: parseFloat(formData.minPackage.amount) // Ensure amount is a number
+        },
+        location: formData.workLocations ? [formData.workLocations] : [], // Mapped 'workLocations' to 'location'
+        jobRoles: formData.jobRoles ? [formData.jobRoles] : [],
+        workMode: formData.workMode,
+        employmentType: formData.employmentType,
+        startDate: formData.placementStartDate, // Mapped 'placementStartDate' to 'startDate'
+        endDate: formData.placementEndDate, // Mapped 'placementEndDate' to 'endDate'
+        rounds: formData.numberOfRounds ? [formData.numberOfRounds] : [], // Mapped 'numberOfRounds' to 'rounds'
+        selectionProcess: formData.selectionProcess ? [formData.selectionProcess] : [],
+        contactPerson: {
+          name: formData.contactPerson.name,
+          designation: formData.contactPerson.designation,
+          email: formData.contactPerson.email,
+          mobile: formData.contactPerson.mobile,
+          linkedin: formData.contactPerson.linkedin,
+        },
+        minimumStudents: formData.minStudents,
+        jobType: "Pool-campus", // Explicitly setting the jobType
       };
 
-      
-     
       const response = await axios.post(
-        `${import.meta.env.VITE_Backend_URL}/api/HiringChannels/create-poolCampusJob`,
+        `${import.meta.env.VITE_Backend_URL}/api/employer/hiring-channel/create-poolCampusJob`,
         submissionData,
         {
+          withCredentials: true,
           headers: {
-        'Content-Type': 'application/json',
-      },
-      withCredentials: true,
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
         }
-        
       );
+
       console.log('Submission response:', response.data);
 
-      if (response.data.success) {
+      if (response.status === 201) {
         setSubmitSuccess(true);
+        // Use a modal or a div instead of alert
         alert('Your pool campus hiring request has been submitted successfully.');
-        // Reset form data after successful submission
         setFormData(initialState);
-
       }
     } catch (err) {
       console.error('Submission error:', err);
-      setError(err.response?.data?.error || 'Failed to submit form. Please try again.');
+      if (err.response) {
+        setError(err.response.data.message || err.response.data.error || 'Failed to submit form. Please try again.');
+        // Use a modal or a div instead of alert
+        alert(err.response.data.message || err.response.data.error || 'Failed to submit form. Please try again.');
+      } else {
+        setError('Network error. Please check your connection.');
+        alert('Network error. Please check your connection.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -125,13 +158,13 @@ export default function OffCampusHiringForm() {
 
   // Enhanced options for all dropdowns (unchanged from your original code)
   const locations = [
-    'Online', 
-    'Bangalore', 
-    'Mumbai', 
-    'Delhi', 
-    'Hyderabad', 
-    'Chennai', 
-    'Pune', 
+    'Online',
+    'Bangalore',
+    'Mumbai',
+    'Delhi',
+    'Hyderabad',
+    'Chennai',
+    'Pune',
     'Kolkata',
     'Ahmedabad',
     'Jaipur',
@@ -259,11 +292,10 @@ export default function OffCampusHiringForm() {
     '500+'
   ];
 
- 
 
   return (
     <div className="max-w-4xl mx-auto p-4 font-sans">
-      {/* Header Section (unchanged) */}
+      {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between mb-8">
         <div className="md:w-1/2">
           <h1 className="text-3xl font-bold mb-2">Pool Campus Connect:</h1>
@@ -271,7 +303,7 @@ export default function OffCampusHiringForm() {
         </div>
         <div className="md:w-1/2">
           <p className="text-sm">
-           Tap into diverse talent from multiple institutions through one powerful drive. <br /> Pool Campus Connect brings students from several colleges together, making it easier for companies to conduct centralized hiring drive that are time-saving, cost-efficient, and great for brand visibility
+            Tap into diverse talent from multiple institutions through one powerful drive. <br /> Pool Campus Connect brings students from several colleges together, making it easier for companies to conduct centralized hiring drive that are time-saving, cost-efficient, and great for brand visibility
           </p>
         </div>
       </div>
@@ -293,7 +325,7 @@ export default function OffCampusHiringForm() {
             <div>
               <label className="block mb-1 font-medium">Pool Campus Hiring Venue</label>
               <div className="relative">
-                <select 
+                <select
                   name="venue"
                   value={formData.venue}
                   onChange={handleChange}
@@ -306,9 +338,7 @@ export default function OffCampusHiringForm() {
                   ))}
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
             </div>
@@ -316,7 +346,7 @@ export default function OffCampusHiringForm() {
             <div>
               <label className="block mb-1 font-medium">Type of College</label>
               <div className="relative">
-                <select 
+                <select
                   name="collegeTypes"
                   value={formData.collegeTypes}
                   onChange={handleArrayChange}
@@ -329,9 +359,7 @@ export default function OffCampusHiringForm() {
                   ))}
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
             </div>
@@ -339,7 +367,7 @@ export default function OffCampusHiringForm() {
             <div>
               <label className="block mb-1 font-medium">Student Stream / Degree</label>
               <div className="relative">
-                <select 
+                <select
                   name="studentStreams"
                   value={formData.studentStreams}
                   onChange={handleArrayChange}
@@ -352,17 +380,15 @@ export default function OffCampusHiringForm() {
                   ))}
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
             </div>
 
             <div>
               <label className="block mb-1 font-medium">Criteria</label>
-              <textarea 
-                name="criteria"
+              <textarea
+                name="criteria" // This will be mapped to 'description'
                 value={formData.criteria}
                 onChange={handleChange}
                 placeholder="Example: Minimum 60% aggregate, No active backlogs, Good communication skills..."
@@ -375,7 +401,7 @@ export default function OffCampusHiringForm() {
               <label className="block mb-1 font-medium">Minimum Package Offered</label>
               <div className="flex">
                 <div className="relative">
-                  <select 
+                  <select
                     name="currency"
                     value={formData.minPackage.currency}
                     onChange={handlePackageChange}
@@ -386,12 +412,12 @@ export default function OffCampusHiringForm() {
                     <option value="EUR">EUR</option>
                   </select>
                 </div>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   name="amount"
                   value={formData.minPackage.amount}
                   onChange={handlePackageChange}
-                  placeholder="Enter amount (e.g. 500000)" 
+                  placeholder="Enter amount (e.g. 500000)"
                   className="flex-grow p-2 border border-l-0 rounded-r"
                   required
                 />
@@ -401,8 +427,8 @@ export default function OffCampusHiringForm() {
             <div>
               <label className="block mb-1 font-medium">Work Location</label>
               <div className="relative">
-                <select 
-                  name="workLocations"
+                <select
+                  name="workLocations" // This will be mapped to 'location'
                   value={formData.workLocations}
                   onChange={handleArrayChange}
                   className="w-full p-2 border rounded appearance-none pr-8 bg-white"
@@ -414,9 +440,7 @@ export default function OffCampusHiringForm() {
                   ))}
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
             </div>
@@ -427,7 +451,7 @@ export default function OffCampusHiringForm() {
             <div>
               <label className="block mb-1 font-medium">Job Role</label>
               <div className="relative">
-                <select 
+                <select
                   name="jobRoles"
                   value={formData.jobRoles}
                   onChange={handleArrayChange}
@@ -440,9 +464,7 @@ export default function OffCampusHiringForm() {
                   ))}
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
             </div>
@@ -451,16 +473,16 @@ export default function OffCampusHiringForm() {
               <label className="block mb-1 font-medium">Work Mode</label>
               <div className="flex space-x-2">
                 <div className="inline-flex items-center">
-                  <input 
-                    type="radio" 
+                  <input
+                    type="radio"
                     id="hybrid"
-                    name="workMode" 
+                    name="workMode"
                     value="Hybrid"
                     checked={formData.workMode === "Hybrid"}
                     onChange={handleChange}
                     className="sr-only"
                   />
-                  <label 
+                  <label
                     htmlFor="hybrid"
                     className={`px-4 py-2 text-sm border rounded-md cursor-pointer ${formData.workMode === 'Hybrid' ? 'bg-black text-white' : 'bg-white'}`}
                   >
@@ -468,16 +490,16 @@ export default function OffCampusHiringForm() {
                   </label>
                 </div>
                 <div className="inline-flex items-center">
-                  <input 
-                    type="radio" 
+                  <input
+                    type="radio"
                     id="onsite"
-                    name="workMode" 
+                    name="workMode"
                     value="On-site"
                     checked={formData.workMode === "On-site"}
                     onChange={handleChange}
                     className="sr-only"
                   />
-                  <label 
+                  <label
                     htmlFor="onsite"
                     className={`px-4 py-2 text-sm border rounded-md cursor-pointer ${formData.workMode === 'On-site' ? 'bg-black text-white' : 'bg-white'}`}
                   >
@@ -485,16 +507,16 @@ export default function OffCampusHiringForm() {
                   </label>
                 </div>
                 <div className="inline-flex items-center">
-                  <input 
-                    type="radio" 
+                  <input
+                    type="radio"
                     id="remote"
-                    name="workMode" 
+                    name="workMode"
                     value="Remote"
                     checked={formData.workMode === "Remote"}
                     onChange={handleChange}
-                    className="sr-only" 
+                    className="sr-only"
                   />
-                  <label 
+                  <label
                     htmlFor="remote"
                     className={`px-4 py-2 text-sm border rounded-md cursor-pointer ${formData.workMode === 'Remote' ? 'bg-black text-white' : 'bg-white'}`}
                   >
@@ -508,16 +530,16 @@ export default function OffCampusHiringForm() {
               <label className="block mb-1 font-medium">Employment type</label>
               <div className="flex space-x-2">
                 <div className="inline-flex items-center">
-                  <input 
-                    type="radio" 
+                  <input
+                    type="radio"
                     id="parttime"
-                    name="employmentType" 
+                    name="employmentType"
                     value="Part-time"
                     checked={formData.employmentType === "Part-time"}
                     onChange={handleChange}
                     className="sr-only"
                   />
-                  <label 
+                  <label
                     htmlFor="parttime"
                     className={`px-4 py-2 text-sm border rounded-md cursor-pointer ${formData.employmentType === 'Part-time' ? 'bg-black text-white' : 'bg-white'}`}
                   >
@@ -525,16 +547,16 @@ export default function OffCampusHiringForm() {
                   </label>
                 </div>
                 <div className="inline-flex items-center">
-                  <input 
-                    type="radio" 
+                  <input
+                    type="radio"
                     id="fulltime"
-                    name="employmentType" 
+                    name="employmentType"
                     value="Full-time"
                     checked={formData.employmentType === "Full-time"}
                     onChange={handleChange}
-                    className="sr-only" 
+                    className="sr-only"
                   />
-                  <label 
+                  <label
                     htmlFor="fulltime"
                     className={`px-4 py-2 text-sm border rounded-md cursor-pointer ${formData.employmentType === 'Full-time' ? 'bg-black text-white' : 'bg-white'}`}
                   >
@@ -542,16 +564,16 @@ export default function OffCampusHiringForm() {
                   </label>
                 </div>
                 <div className="inline-flex items-center">
-                  <input 
-                    type="radio" 
+                  <input
+                    type="radio"
                     id="contract"
-                    name="employmentType" 
+                    name="employmentType"
                     value="Contract"
                     checked={formData.employmentType === "Contract"}
                     onChange={handleChange}
-                    className="sr-only" 
+                    className="sr-only"
                   />
-                  <label 
+                  <label
                     htmlFor="contract"
                     className={`px-4 py-2 text-sm border rounded-md cursor-pointer ${formData.employmentType === 'Contract' ? 'bg-black text-white' : 'bg-white'}`}
                   >
@@ -560,7 +582,7 @@ export default function OffCampusHiringForm() {
                 </div>
               </div>
             </div>
-            
+
             <div>
               <label className="block mb-1 font-medium">Tentative Date of Placement / Hiring</label>
               <div className="flex space-x-2">
@@ -575,11 +597,6 @@ export default function OffCampusHiringForm() {
                       className="w-full p-2 border rounded appearance-none pr-8 bg-white focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
-                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </div>
                   </div>
                 </div>
                 <div className="w-1/2 mt-3  ">
@@ -593,11 +610,6 @@ export default function OffCampusHiringForm() {
                       className="w-full p-2 border rounded appearance-none pr-8 bg-white focus:ring-blue-500 focus:border-blue-500"
                       required
                     />
-                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -606,7 +618,7 @@ export default function OffCampusHiringForm() {
             <div>
               <label className="block mb-1 font-medium">Number of Rounds</label>
               <div className="relative">
-                <select 
+                <select
                   name="numberOfRounds"
                   value={formData.numberOfRounds}
                   onChange={handleArrayChange}
@@ -619,9 +631,7 @@ export default function OffCampusHiringForm() {
                   ))}
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
             </div>
@@ -629,7 +639,7 @@ export default function OffCampusHiringForm() {
             <div>
               <label className="block mb-1 font-medium">Process of Selection</label>
               <div className="relative">
-                <select 
+                <select
                   name="selectionProcess"
                   value={formData.selectionProcess}
                   onChange={handleArrayChange}
@@ -642,22 +652,20 @@ export default function OffCampusHiringForm() {
                   ))}
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
             </div>
-            
+
             {/* Contact Person Details */}
             <div>
               <label className="block mb-1 font-medium">Contact Person</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 name="name"
                 value={formData.contactPerson.name}
                 onChange={handleContactChange}
-                placeholder="Enter full name" 
+                placeholder="Enter full name"
                 className="w-full p-2 border rounded mb-2"
                 required
               />
@@ -666,7 +674,7 @@ export default function OffCampusHiringForm() {
             <div>
               <label className="block mb-1 font-medium">Contact person designation *</label>
               <div className="relative">
-                <select 
+                <select
                   name="designation"
                   value={formData.contactPerson.designation}
                   onChange={handleContactChange}
@@ -679,9 +687,7 @@ export default function OffCampusHiringForm() {
                   ))}
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
             </div>
@@ -695,12 +701,12 @@ export default function OffCampusHiringForm() {
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                   </svg>
                 </span>
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   name="email"
                   value={formData.contactPerson.email}
                   onChange={handleContactChange}
-                  placeholder="example@company.com" 
+                  placeholder="example@company.com"
                   className="w-full p-2 focus:outline-none"
                   required
                 />
@@ -715,12 +721,12 @@ export default function OffCampusHiringForm() {
                     <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                   </svg>
                 </span>
-                <input 
-                  type="tel" 
+                <input
+                  type="tel"
                   name="mobile"
                   value={formData.contactPerson.mobile}
                   onChange={handleContactChange}
-                  placeholder="Enter 10-digit mobile number" 
+                  placeholder="Enter 10-digit mobile number"
                   className="w-full p-2 focus:outline-none"
                   required
                 />
@@ -729,12 +735,12 @@ export default function OffCampusHiringForm() {
 
             <div>
               <label className="block mb-1 font-medium">Contact person LinkedIn Profile</label>
-              <input 
-                type="url" 
+              <input
+                type="url"
                 name="linkedin"
                 value={formData.contactPerson.linkedin}
                 onChange={handleContactChange}
-                placeholder="https://www.linkedin.com/in/username" 
+                placeholder="https://www.linkedin.com/in/username"
                 className="w-full p-2 border rounded"
               />
             </div>
@@ -742,7 +748,7 @@ export default function OffCampusHiringForm() {
             <div>
               <label className="block mb-1 font-medium">Minimum Students to be Hired</label>
               <div className="relative">
-                <select 
+                <select
                   name="minStudents"
                   value={formData.minStudents}
                   onChange={handleChange}
@@ -755,15 +761,13 @@ export default function OffCampusHiringForm() {
                   ))}
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
             </div>
 
             <div className="flex justify-end mt-6">
-              <button 
+              <button
                 type="submit"
                 disabled={isSubmitting}
                 className="px-6 py-2 bg-black text-white font-medium rounded hover:bg-gray-800 transition-colors disabled:opacity-50"

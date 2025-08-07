@@ -1,6 +1,6 @@
 import HiringDrive from "../models/HiringChannelOffCampusRegister.js";
 import Intern from "../models/HiringChannels_postinternships.js";
-import JobPosting from "../models/HiringChannels_postjob.js";
+import { JobPostingTable } from "../models/jobPostingsModel.js";
 
 // create by company
 // export async function createOpportunityService(jobData, companyId) {
@@ -20,9 +20,9 @@ import JobPosting from "../models/HiringChannels_postjob.js";
 // fetch jobs
 export async function fetchOpportunityService(query) {
     try {
-        const response = await HiringDrive.find(query)
+        const response = await JobPostingTable.find(query)
             .populate({
-                path: 'companyId',
+                path: 'companyPosted',
                 select: 'companyDetails'
             })
             .lean();
@@ -49,9 +49,9 @@ export async function fetchOpportunityService(query) {
 export async function fetchJobListingOpportunityService(query) {
     try {
         // const response = await Job.find(query).populate('Company');
-        const response = await JobPosting.find(query)
+        const response = await JobPostingTable.find(query)
             .populate({
-                path: 'companyId',
+                path: 'companyPosted',
                 select: 'companyDetails'
             })
             .lean();
@@ -142,7 +142,7 @@ export async function checkOpportunityService(jobId) {
 export async function checkJobListingOpportunityService(jobId) {
 
     try {
-        const response = await JobPosting.exists({ _id: jobId });
+        const response = await JobPostingTable.exists({ _id: jobId });
         if (response) return true;
         return false;
     } catch (error) {
@@ -153,9 +153,9 @@ export async function checkJobListingOpportunityService(jobId) {
 
 export async function fetchInternshipByIdService(Id) {
     try {
-        const response = await Intern.findById(Id)
+        const response = await JobPostingTable.findById(Id)
             .populate({
-                path: 'companyId',
+                path: 'companyPosted',
                 select: 'companyDetails'
             })
             .lean();

@@ -89,7 +89,7 @@ const JobDetails = () => {
         <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-800 mb-2">{jobDetails.jobTitle}</h1>
-            <p className="text-gray-600 mb-2">{jobDetails.companyId?.companyDetails?.companyName}</p>
+            <p className="text-gray-600 mb-2">{jobDetails.companyPosted?.companyDetails?.companyName}</p>
             <p className="text-sm text-gray-500 mb-2">Job ID: {jobDetails._id}</p>
             <div className="flex items-center mb-2">
               <span className="inline-flex items-center mr-4">
@@ -102,7 +102,7 @@ const JobDetails = () => {
                 <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
-                {jobDetails.preferredHiringLocation}
+                {jobDetails.location}
               </span>
             </div>
           </div>
@@ -126,7 +126,7 @@ const JobDetails = () => {
           <h2 className="text-xl font-semibold mb-3">Job description</h2>
           <div className="mb-4">
             <h3 className="font-medium mb-2">About The Role:</h3>
-            <p className="text-gray-700">{jobDetails.jobDescription}</p>
+            <p className="text-gray-700">{jobDetails.description}</p>
           </div>
           <div className="mb-4">
             <h3 className="font-medium mb-2">What you'll do:</h3>
@@ -156,11 +156,11 @@ const JobDetails = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Salary Range:</p>
-              <p className="text-gray-700">{jobDetails.salaryCurrency} {jobDetails?.monthlySalary} per month</p>
+              <p className="text-gray-700">{jobDetails.minPackage.currency} {jobDetails?.minPackage.amount}/month</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Work Mode:</p>
-              <p className="text-gray-700">{jobDetails.preferredHiringLocation}</p>
+              <p className="text-gray-700">{jobDetails.workMode}</p>
             </div>
           </div>
         </div>
@@ -169,8 +169,8 @@ const JobDetails = () => {
           <h2 className="text-xl font-semibold mb-3">Education</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm font-medium text-gray-500">Minimum Education: <span className="text-gray-700">{jobDetails.minimumEducation}</span></p>
-              <p className="text-sm font-medium text-gray-500">Prefered field of study: <span className="text-gray-700">{jobDetails.preferredFieldOfStudy}</span></p>
+              <p className="text-sm font-medium text-gray-500">Minimum Education: <span className="text-gray-700"> { jobDetails.minEducation}</span></p>
+              <p className="text-sm font-medium text-gray-500">Prefered field of study: <span className="text-gray-700">  { jobDetails.studentStreams}</span></p>
             </div>
             {/* <div>
               <p className="text-sm font-medium text-gray-500">PG:</p>
@@ -192,56 +192,15 @@ const JobDetails = () => {
 
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-3">About company</h2>
-          <p className="text-gray-700 mb-4">{jobDetails?.companyId?.companyDetails.description}</p>
+          <p className="text-gray-700 mb-4">{jobDetails?.companyPosted?.companyDetails.description}</p>
 
           <h3 className="font-medium mb-2">Company Info</h3>
           <p className="text-gray-700">
-            <span className="font-medium">Address:</span> {jobDetails?.companyId?.companyDetails.companyLocation} {jobDetails?.companyId?.companyDetails.state}, {jobDetails?.companyId?.companyDetails.country}
+            <span className="font-medium">Address:</span> {jobDetails?.companyPosted?.companyDetails.companyLocation} {jobDetails?.companyPosted?.companyDetails.state}, {jobDetails?.companyPosted?.companyDetails.country}
           </p>
         </div>
       </div>
 
-      {/* Similar Jobs Section */}
-      {/* <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-xl font-bold">Similar Jobs</h2>
-            <p className="text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
-          </div>
-          <div className="flex items-center">
-            <div className="relative mr-2">
-              <input
-                type="text"
-                placeholder="Search"
-                className="pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <svg className="absolute left-2 top-2.5 w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="relative">
-              <button className="flex items-center px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none">
-                <span>Sort by</span>
-                <svg className="ml-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {similarJobs?.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </div>
-
-        <div className="flex justify-end mt-4">
-          <button className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-            View all
-          </button>
-        </div>
-      </div> */}
     </div>
   );
 };

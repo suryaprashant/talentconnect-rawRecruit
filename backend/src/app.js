@@ -102,8 +102,10 @@ import OncampusJobmanagement from "./Routes/jobManagement/onCampusRoute.js"
 import TeamMemberRoute from "./Routes/teamMemberRoute.js";
 import notificationRoute from "./Routes/notificationRoute.js"
 
-import onCampusHiring from './Routes/employerHiringChannel/hiringChannel.route.js'
+// import onCampusHiring from './Routes/employerHiringChannel/hiringChannel.route.js'
 import jobPosting from './Routes/jobPostingsRoute.js' ;
+import studentDashboardRoute from './Routes/studentDashboard/studentDashboardRoute.js';
+import EmployerHiringChannelRoute from './Routes/employerHiringChannel/hiringChannel.route.js'
 
 app.use("/api/auth", authRoutes);
 app.use("/api", student_onboardingroutes);
@@ -124,8 +126,12 @@ app.use("/api/company/jobmanagement", OncampusJobmanagement);
 app.use("/api/team-member" , TeamMemberRoute) ;
 app.use("/api/notifications" , notificationRoute )
 
+//student dashboard
+app.use("/api/student-dashboard", studentDashboardRoute);
+
 // employer Hiring channel
-app.use("/api/HiringChannels" , onCampusHiring) ;
+app.use("/api/employer/hiring-channel", EmployerHiringChannelRoute);
+//app.use("/api/HiringChannels" , onCampusHiring) ;
 // Feature Routes
 app.use("/jobs", Jobs);
 app.use("/internship", Internship);

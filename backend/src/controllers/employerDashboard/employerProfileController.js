@@ -210,7 +210,7 @@ export const createEmployerOnboarding = async (req, res) => {
         // Create the new document
         const onboardingData = await CompanyProfile.create({
             userId,
-            ...uploads, // FIX: Spread the image URLs at the root level
+            ...uploads, 
             employerDetails: JSON.parse(employerDetails),
             companyDetails: JSON.parse(companyDetails),
             hiringPreferences: JSON.parse(hiringPreferences),

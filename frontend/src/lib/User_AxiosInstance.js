@@ -29,19 +29,19 @@ export function getJobLisingJobDetails(jobId) {
 
 
 export function getRelaventOffcampusOpportunity() {
-  return axiosClient.get(`/jobs/relevantjobs/offcampus`)
+  return axiosClient.get(`/api/student-dashboard/off-campus`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
 
 export function getRelaventJobListingOpportunity() {
-  return axiosClient.get(`/jobs/relevantjobs/joblisting`)
+  return axiosClient.get(`/api/student-dashboard/job-postings`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
 
 export function getAllInternship() {
-  return axiosClient.get(`/internship`)
+  return axiosClient.get(`/api/student-dashboard/internship-postings`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
