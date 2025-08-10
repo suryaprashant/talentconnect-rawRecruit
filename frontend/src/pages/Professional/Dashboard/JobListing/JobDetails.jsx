@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 //  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
 import JobCard from '@/components/Student/StudentDashboard/JobListing/JobCard';
-import { ApplyForJobListingOppurtunity, getJobLisingJobDetails } from '@/lib/User_AxiosInstance';
+import { ApplyForJobListingOppurtunity, getJobLisingJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 
 const JobDetails = () => {
   const { jobId } = useParams();
@@ -49,12 +49,11 @@ const JobDetails = () => {
 
   const handleSave = async () => {
     try {
-      // Implement save job functionality
-      console.log('Saving job:', jobId);
-      alert('Job saved successfully!');
+      const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
+      if (response) alert('Job saved!');
     } catch (err) {
-      console.error('Error saving job:', err);
-      alert('Failed to save job. Please try again.');
+      console.error('Error applying for job:', err);
+      alert('Failed to submit application. Please try again.');
     }
   };
 

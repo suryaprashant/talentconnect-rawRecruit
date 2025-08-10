@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 // import { jobListings, detailedJobData } from '@/constants/offCampusListing'
-import { ApplyForOppurtunity, getJobDetails } from '@/lib/User_AxiosInstance';
+import { ApplyForOppurtunity, getJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 
 
 function OffCampusJobDetail() {
@@ -30,31 +30,34 @@ function OffCampusJobDetail() {
       setIsLoading(false);
     }
   };
-  // const job = detailedJobData;
-  useEffect(() => {
 
+  useEffect(() => {
     loadJobDetails();
   }, [jobId]);
-
-  // useEffect(() => {
-  //   console.log("jobdetail: ", jobDetail);
-  // }, [jobDetail]);
 
   const handleBackToList = () => {
     navigate('/fresher-dashboard/off-campus-listings');
   };
 
+  const handleSave = async () => {
+    try {
+      const response = await SaveOppurtunity(jobId, jobDetail?.jobType);
+      if (response) alert('Job saved!');
+    } catch (err) {
+      console.error('Error applying for job:', err);
+      alert('Failed to submit application. Please try again.');
+    }
+  };
+
   const handleApply = async () => {
     try {
-      // if (jobDetail?.status === 'Open') {
-      const response = await ApplyForOppurtunity(jobId, jobDetail.jobType);
-      if (response.success === 'true') alert("Applied");
-      // }
-      else alert("Application Closed!")
-    } catch (error) {
-      console.log("Error: ", error);
+      const response = await ApplyForOppurtunity(jobId);
+      if (response) alert('Application submitted successfully!');
+    } catch (err) {
+      console.error('Error applying for job:', err);
+      alert('Failed to submit application. Please try again.');
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -87,7 +90,7 @@ function OffCampusJobDetail() {
         <div className="flex items-center">
           <div className="w-12 h-12 bg-gray-200 mr-4"></div>
           <div>
-            <h2 className="text-xl font-bold">{jobDetail?.companyId?.companyDetails.companyName} - {jobDetail?.jobRoles.map((j, i) => (<span key={i}>{j}</span>))}</h2>
+            <h2 className="text-xl font-bold">{jobDetail?.companyPosted?.companyDetails.companyName} - {jobDetail?.jobRoles.map((j, i) => (<span key={i}>{j}</span>))}</h2>
             <p className="text-sm text-gray-600">Application {jobDetail.status}</p>
           </div>
         </div>
@@ -103,12 +106,12 @@ function OffCampusJobDetail() {
 
       {/* About Company */}
       <section className="mb-8">
-        <h3 className="text-lg font-semibold mb-3">About {jobDetail?.companyId?.companyDetails?.companyName}</h3>
-        <p className="text-gray-700 mb-4">{jobDetail?.companyId?.companyDetails.description}</p>
+        <h3 className="text-lg font-semibold mb-3">About {jobDetail?.companyPosted?.companyDetails?.companyName}</h3>
+        <p className="text-gray-700 mb-4">{jobDetail?.companyPosted?.companyDetails.description}</p>
 
         <div className="grid grid-cols-4 gap-4">
           <div className="border border-gray-200 p-4">
-            <div className="font-bold text-lg">{jobDetail?.companyId?.companyDetails.numberOfEmployees}</div>
+            <div className="font-bold text-lg">{jobDetail?.companyPosted?.companyDetails.numberOfEmployees}</div>
             <div className="text-sm text-gray-600">Employees</div>
           </div>
           <div className="border border-gray-200 p-4">
@@ -116,11 +119,11 @@ function OffCampusJobDetail() {
             <div className="text-sm text-gray-600">Revenue</div>
           </div>
           <div className="border border-gray-200 p-4">
-            <div className="font-bold text-lg capitalize">{jobDetail?.companyId?.companyDetails.industryType}</div>
+            <div className="font-bold text-lg capitalize">{jobDetail?.companyPosted?.companyDetails.industryType}</div>
             <div className="text-sm text-gray-600">Industries</div>
           </div>
           <div className="border border-gray-200 p-4">
-            <div className="font-bold text-lg">{jobDetail?.companyId?.companyDetails.country}</div>
+            <div className="font-bold text-lg">{jobDetail?.companyPosted?.companyDetails.country}</div>
             <div className="text-sm text-gray-600">Countries</div>
           </div>
         </div>
@@ -196,7 +199,7 @@ function OffCampusJobDetail() {
           </div>
           <div className="flex items-center">
             <div className="text-sm text-gray-600 mr-1">Work Mode</div>
-            <div>{jobDetail?.workModes.map((j, i) => (<span key={i}>{j} </span>))}</div>
+            <div>{jobDetail?.workModes?.map((j, i) => (<span key={i}>{j} </span>))}</div>
           </div>
         </div>
       </section>

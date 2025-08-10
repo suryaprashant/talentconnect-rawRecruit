@@ -13,9 +13,9 @@ function OffCampusJobDetail() {
     try {
       setIsLoading(true);
 
-  
+
       const details = await getJobDetails(jobId);
-     
+
       setJobDetail(details.data[0]); // Access the first element of the data array
       setError(null);
     } catch (err) {
@@ -38,10 +38,10 @@ function OffCampusJobDetail() {
 
   const handleApply = async () => {
     try {
-
+      console.log(".../n", jobDetail)
       if (jobDetail && jobDetail.jobStatus === 'Open') { // Use jobStatus from your schema
-        const response = await ApplyForOppurtunity(jobId, jobDetail.jobType); // Pass jobType if 
-        if (response?.success === true) { // Check for boolean true
+        const response = await ApplyForOppurtunity(jobId); // Pass jobType if 
+        if (response?.data.success === true) { // Check for boolean true
           alert("Application submitted successfully!");
         } else {
           alert("Failed to submit application. Please try again.");
@@ -149,7 +149,7 @@ function OffCampusJobDetail() {
             <div className="text-sm text-gray-600">Employees</div>
           </div>
           <div className="border border-gray-200 p-4 rounded-md">
-        
+
             <div className="font-bold text-lg">N/A</div>
             <div className="text-sm text-gray-600">Revenue</div>
           </div>
@@ -180,13 +180,13 @@ function OffCampusJobDetail() {
               <div className="text-sm text-gray-600">Streams: {jobDetail.studentStreams?.join(', ') || 'N/A'}</div>
             </div>
             {/* Location  */}
-          
-           
-          </div>
-            <div className="ml-4 flex">Location:
-              <div className="font-medium text-gray-600 "> { Array.isArray(jobDetail.location) ? jobDetail.location.join(', ') : jobDetail.location || 'N/A'}</div>    
 
-            </div>
+
+          </div>
+          <div className="ml-4 flex">Location:
+            <div className="font-medium text-gray-600 "> {Array.isArray(jobDetail.location) ? jobDetail.location.join(', ') : jobDetail.location || 'N/A'}</div>
+
+          </div>
           <div className="flex items-start">
             <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
@@ -218,22 +218,22 @@ function OffCampusJobDetail() {
           </div>
           {/* Number of round  */}
           <div className="flex items-start">
-            <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> 
+            <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             </svg>
             <div>
               <div className="font-medium">Number of rounds: <span className='text-gray-600'>{jobDetail.rounds || 'N/A'}</span></div>
             </div>
-            </div>      
+          </div>
 
         </div>
-         {/* About the role  */}
-          <div className="flex items-start mt-5">
-            <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> </svg>
-            <div>
-              <div className="font-medium">About the role</div>
-              <div className="text-gray-700">{jobDetail.description || 'No description available.'}</div>
-              </div>
-            </div>
+        {/* About the role  */}
+        <div className="flex items-start mt-5">
+          <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> </svg>
+          <div>
+            <div className="font-medium">About the role</div>
+            <div className="text-gray-700">{jobDetail.description || 'No description available.'}</div>
+          </div>
+        </div>
       </section>
 
       {/* Job Details */}
@@ -250,7 +250,7 @@ function OffCampusJobDetail() {
           </div>
           <div className="flex items-center">
             <div className="text-sm text-gray-600 mr-1">Department:</div>
-          
+
             <div>N/A</div>
           </div>
           <div className="flex items-center">
@@ -272,7 +272,7 @@ function OffCampusJobDetail() {
         </div>
       </section>
 
-   
+
       <section className="mb-8">
         <h3 className="text-lg font-semibold mb-3">Selection Process</h3>
         <div className="relative flex items-center justify-between overflow-x-auto px-4">
@@ -317,17 +317,17 @@ function OffCampusJobDetail() {
           </div>
           <div className="border border-gray-200 p-3 rounded-md">
             <div className="text-sm text-gray-600">Test Date</div>
-           
+
             <div className="font-medium">N/A</div>
           </div>
           <div className="border border-gray-200 p-3 rounded-md">
             <div className="text-sm text-gray-600">Interview Window</div>
-           
+
             <div className="font-medium">N/A</div>
           </div>
           <div className="border border-gray-200 p-3 rounded-md">
             <div className="text-sm text-gray-600">Results</div>
-          
+
             <div className="font-medium">N/A</div>
           </div>
         </div>

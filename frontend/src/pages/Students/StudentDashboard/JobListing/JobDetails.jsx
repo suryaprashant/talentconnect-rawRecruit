@@ -40,8 +40,7 @@ const JobDetails = () => {
   const handleSave = async () => {
     try {
       const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
-      console.log("saved: ", response);
-      if (response) alert('Application submitted successfully!');
+      if (response) alert('Job saved!');
     } catch (err) {
       console.error('Error applying for job:', err);
       alert('Failed to submit application. Please try again.');
@@ -51,7 +50,6 @@ const JobDetails = () => {
   const handleApply = async () => {
     try {
       const response = await ApplyForJobListingOppurtunity(jobId);
-      console.log("Application: ", response);
       if (response) alert('Application submitted successfully!');
     } catch (err) {
       console.error('Error applying for job:', err);

@@ -257,7 +257,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 // import { fetchJobDetails, fetchSimilarJobs } from '../../../../constants/JobListing' // Keep commented if not used
 import JobCard from '@/components/Student/StudentDashboard/IntershipOpportunity/JobCard'; // Ensure this path is correct
-import { ApplyForInternship, getInternshipDetail } from '@/lib/User_AxiosInstance';
+import { ApplyForInternship, getInternshipDetail, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 
 const InternJobDetails = () => {
   const { jobId } = useParams();
@@ -300,7 +300,7 @@ const InternJobDetails = () => {
   const handleApply = async () => {
     try {
       const response = await ApplyForInternship(jobId);
-      
+
       if (response && response.success === true) {
         alert("Application submitted successfully!");
       } else {
@@ -314,11 +314,11 @@ const InternJobDetails = () => {
 
   const handleSave = async () => {
     try {
-      
-      alert('Internship saved successfully!');
+      const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
+      if (response) alert('Job saved!');
     } catch (err) {
-      console.error('Error saving internship:', err);
-      alert('Failed to save internship. Please try again.');
+      console.error('Error applying for job:', err);
+      alert('Failed to submit application. Please try again.');
     }
   };
 
@@ -372,7 +372,7 @@ const InternJobDetails = () => {
           </div>
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
             <button
-              onClick={handleSave}
+              onClick={()=>handleSave()}
               className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded shadow"
             >
               Save

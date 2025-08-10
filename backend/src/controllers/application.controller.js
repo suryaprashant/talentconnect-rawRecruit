@@ -24,6 +24,7 @@ export async function saveJobByUser(req, res) {
         // if (await getApplicationService(user.data[0]._id, req.user.userType, jobId, jobType).success === true) return res.status(403).json({ msg: "Already Applied" });
 
         const application = await saveJobService(user.data[0]._id, req.user.userType, jobId, jobType);
+        if (application.success === false) return res.status(403).json({ msg: application.message });
         res.status(201).json(application);
     } catch (error) {
         console.log("Error: ", error);
@@ -45,6 +46,8 @@ export async function createOffcampusApplication(req, res) {
         if (!jobId || !user) return res.status(404).json({ msg: "User or Job not found!" });
 
         const application = await createApplicationService(user.data[0]._id, req.user.userType, jobId, "Off-campus");
+        if (application.success === false) return res.status(403).json({ msg: application.message });
+
         res.status(201).json(application);
     } catch (error) {
         console.log("Error: ", error);
@@ -86,6 +89,8 @@ export async function createIntershipApplication(req, res) {
         if (!user || !internshipId) return res.status(404).json({ msg: "Invalid" });
 
         const application = await createApplicationService(user.data[0]._id, req.user.userType, internshipId, "Internship");
+        if (application.success === false) return res.status(403).json({ msg: application.message });
+
         res.status(201).json(application);
     } catch (error) {
         console.log("Error: ", error);
@@ -105,6 +110,8 @@ export async function createOncampusApplication(req, res) {
         if (!user || !driveId) return res.status(404).json({ msg: "Invalid" });
 
         const application = await createApplicationService(user.data[0]._id, req.user.userType, driveId, "On-campus");
+        if (application.success === false) return res.status(403).json({ msg: application.message });
+
         res.status(201).json(application);
     } catch (error) {
         console.log("Error: ", error);
@@ -125,6 +132,8 @@ export async function createPoolcampusApplication(req, res) {
         if (await getApplicationService(user.data[0]._id, req.user.userType, driveId, "Pool-campus") === true) return res.status(403).json({ msg: "Already Applied" });
 
         const application = await createApplicationService(user.data[0]._id, req.user.userType, driveId, "Pool-campus");
+        if (application.success === false) return res.status(403).json({ msg: application.message });
+
         res.status(201).json(application);
     } catch (error) {
         console.log("Error: ", error);

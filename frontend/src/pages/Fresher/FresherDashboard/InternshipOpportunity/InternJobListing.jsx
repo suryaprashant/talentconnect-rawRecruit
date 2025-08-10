@@ -15,7 +15,7 @@ const FInternJobListings = () => {
 
       // Fetch jobs based on profile
       const response = await getAllInternship();
-      setProfileInternships(response.data);
+      setProfileInternships(response.data.data);
 
       // Fetch jobs based on preferences
       // const preferenceJobsData = await fetchJobs({ type: 'preferences' });

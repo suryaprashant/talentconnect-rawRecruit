@@ -135,7 +135,7 @@
 
 // export default JobListSection;
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import JobCard from './JobCard';
 
 const JobListSection = ({ title, description, jobs }) => {
@@ -175,6 +175,7 @@ const JobListSection = ({ title, description, jobs }) => {
 
   // Show only the first 6 jobs, can be expanded with "View all" button
   const displayJobs = sortedJobs.slice(0, 6);
+  console.log("display: ", displayJobs);
 
   return (
     <div className="mb-12">

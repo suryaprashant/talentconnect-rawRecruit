@@ -27,15 +27,25 @@ export async function getApplicationService(userId, userType, jobId, jobType) {
 // save job by user
 export async function saveJobService(userId, userType, jobId, jobType) {
     try {
-        const newApplication = new Application({
-            applicant: userId,
-            applicantType: userType,
-            job: jobId,
-            jobType: jobType,
-            statusHistory: [{ status: "Saved" }],
-            currentStatus: "Saved"
-        });
-        await newApplication.save();
+        const existing = await getApplicationService(userId, userType, jobId, jobType);
+        
+        if (existing?.response[0]?.currentStatus === "Applied") {
+            return { success: false, message: "Already Applied" };
+        }
+        else if (existing?.response[0]?.currentStatus === "Saved") {
+            return { success: false, message: "Already saved" }
+        }
+        else {
+            const newApplication = new Application({
+                applicant: userId,
+                applicantType: userType,
+                job: jobId,
+                jobType: jobType,
+                statusHistory: [{ status: "Saved" }],
+                currentStatus: "Saved"
+            });
+            await newApplication.save();
+        }
         return { success: true, message: 'Application submited!' };
     } catch (error) {
         console.log("Error: ", error.message);
