@@ -1,6 +1,8 @@
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import {
     createApplicationService,
+    fetchApplicationStatusService,
+    fetchApplicationsByJobService,
     getApplicationService,
     saveJobService,
     // getApplicationService, 
@@ -198,17 +200,15 @@ export async function getInternshipUserApplication(req, res) {
 // action by company
 
 // offcampus
-export async function getAcceptedCandidatesByJob(req, res) {
-    const jobId = req.params.id;
-    if (!jobId) return res.status(404).json({ msg: "Job not found!" });
-
-    const query = {};
-    query.job = jobId;
-    query.currentStatus = "Accepted";
+export async function getApplicationsByJob(req, res) {
+    const { jobId, jobType } = req.query;
+    if (!jobId || !jobType) return res.status(404).json({ msg: "Job not found!" });
 
     try {
-        const response = await getOffCampusApplicantsService(query);
-        // console.log(response);
+        const response = await fetchApplicationsByJobService(jobId, jobType);
+
+        // to be implement -- sorting feature like ATS
+
         res.status(200).json(response.data);
     } catch (error) {
         console.log("Error: ", error);

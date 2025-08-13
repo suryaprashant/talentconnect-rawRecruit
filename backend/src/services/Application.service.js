@@ -28,7 +28,7 @@ export async function getApplicationService(userId, userType, jobId, jobType) {
 export async function saveJobService(userId, userType, jobId, jobType) {
     try {
         const existing = await getApplicationService(userId, userType, jobId, jobType);
-        
+
         if (existing?.response[0]?.currentStatus === "Applied") {
             return { success: false, message: "Already Applied" };
         }
@@ -135,6 +135,60 @@ export async function fetchApplicationStatusService(userId, jobType) {
     } catch (error) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");
+    }
+}
+
+// job management
+
+export async function fetchApplicationsByJobService(jobId, jobType) {
+    try {
+        const response = await Application.aggregate([
+            {
+                $match: {
+                    job: new mongoose.Types.ObjectId(jobId),
+                    jobType: jobType
+                }
+            },
+            {
+                $lookup: {
+                    from: "onboardings",
+                    localField: "applicant",
+                    foreignField: "_id",
+                    as: "applicant"
+                }
+            },
+            {
+                $unwind: { path: "$applicant", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $project: {
+                    applicant: 1,
+                    // job: {
+                    //     _id: 1,
+                    //     jobTitle: 1
+                    // },
+                    jobType: 1,
+                    statusHistory: 1,
+                    currentStatus: 1,
+                    createdAt: 1
+                }
+            }
+        ]);
+        return { success: true, data: response };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+
+// count applications
+export async function countApplicationsService(jobId, jobType) {
+    try {
+        const response = await Application.countDocuments({ job: jobId, jobType: jobType });
+        return { success: true, count: response };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed");
     }
 }
 

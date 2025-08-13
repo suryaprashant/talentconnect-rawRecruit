@@ -64,14 +64,21 @@ export function postInternship(payload) {
 }
 
 // jobmanagement
-export function getPostedJobs() {
-  return axiosClient.get(`/company/jobmanagement/offcampus`)
+export function getPostedJobs(jobType) {
+  return axiosClient.get(`/company/jobmanagement/${jobType}`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
 
-export function getApplicationsForJob(jobId) {
-  return axiosClient.get(`/company/jobmanagement/offcampus/applications/${jobId}`)
+export function getApplicationsForJob(jobId, jobType) {
+  return axiosClient.get(`application/manage`,
+    {
+      params: {
+        jobId: jobId,
+        jobType: jobType
+      }
+    }
+  )
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

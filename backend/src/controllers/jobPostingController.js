@@ -139,4 +139,3 @@ export const createInternshipPosting = async (req, res) => {
     }
 }
 
-

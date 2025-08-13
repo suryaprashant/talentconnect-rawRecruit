@@ -1,5 +1,5 @@
 import express from "express";
-import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, getAcceptedCandidatesByJob, saveJobByUser } from "../controllers/application.controller.js";
+import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob } from "../controllers/application.controller.js";
 import secureRoute from '../middlewares/secureRoute.js';
 
 const router = express.Router();
@@ -28,9 +28,9 @@ router.post('/candidate/internship', secureRoute, createIntershipApplication);
 // shortlisting
 
 // access only to company 
-// accept oncampus
-// router.get('/accept/oncampus/:companyId', getAcceptedCandidatesFromCollege);
+// get candidates by job
+router.get('/manage', getApplicationsByJob);
 // accept offcampus
-router.get('/accept/:id', getAcceptedCandidatesByJob);
+// router.get('/accept/:id', getAcceptedCandidatesByJob);
 
 export default router;

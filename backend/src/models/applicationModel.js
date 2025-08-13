@@ -7,18 +7,18 @@ const ApplicationSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             required: true
         },
-        applicantType:{
-            type:String,
-            required:true
+        applicantType: {
+            type: String,
+            required: true
         },
         job: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "JobPosting",
+            ref: "JobPostingTable",
             required: true
         },
-        jobType:{
-            type:String,
-            required:true
+        jobType: {
+            type: String,
+            required: true
         },
         statusHistory: [
             {
