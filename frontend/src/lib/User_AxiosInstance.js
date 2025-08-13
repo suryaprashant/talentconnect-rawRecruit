@@ -46,8 +46,14 @@ export function getAllInternship() {
     .catch(error => console.log("Error: ", error));
 }
 
+// export function getInternshipDetail(Id) {
+//   return axiosClient.get(`/internship/getInternshipDetail/${Id}`)
+//     .then(response => response)
+//     .catch(error => console.log("Error: ", error));
+// }
+
 export function getInternshipDetail(Id) {
-  return axiosClient.get(`/internship/getInternshipDetail/${Id}`)
+  return axiosClient.get(`/api/student-dashboard/getPoolCampusJob/${Id}`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

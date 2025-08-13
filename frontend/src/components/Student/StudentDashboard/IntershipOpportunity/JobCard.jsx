@@ -127,10 +127,10 @@ const JobCard = ({ job, userType }) => {
         
           <Link to={`/${localStorage.getItem('selectedRole')}-dashboard/internship-opportunities/${job._id}`} className="block ">
             <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors mb-1">
-              {job.jobTitle}
+              {job.jobTitle} Intern
             </h3>
           
-            <p className="text-sm text-gray-600">{job.companyPosted?.companyName}</p>
+            <p className="text-sm text-gray-600">{job.companyPosted?.companyDetails?.companyName}</p>
           </Link>
         </div>
 

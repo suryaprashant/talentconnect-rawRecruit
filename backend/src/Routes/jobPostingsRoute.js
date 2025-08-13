@@ -1,6 +1,6 @@
 import express from 'express' ;
 
-import { createOffCampusJobPosting, createOnCampusPosting, createPoolCampusPosting , createJobPosting, createInternshipPosting } from '../controllers/jobPostingController.js';
+import { createOffCampusJobPosting, createOnCampusPosting, createPoolCampusPosting , createJobPosting, createInternshipPosting, createOnCampusCollegeRequest, createPoolCampusCollegeRequest } from '../controllers/jobPostingController.js';
 
 import secureRoute from '../middlewares/secureRoute.js' ;
 
@@ -15,5 +15,9 @@ router.post("/pool-campus", secureRoute , createPoolCampusPosting);
 router.post("/job-posting", secureRoute , createJobPosting);
 
 router.post("/internship-posting", secureRoute , createInternshipPosting);
+
+router.post("/on-campus/college-request", secureRoute , createOnCampusCollegeRequest); // Add route for college request
+
+router.post("/pool-campus/college-request", secureRoute , createPoolCampusCollegeRequest); // Add route for college request
 
 export default router;

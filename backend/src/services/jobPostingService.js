@@ -49,3 +49,40 @@ export const getJobPostingsByJobTypeService = async (jobType) => {
         throw error;
     }
 };
+
+
+
+export const getJobPostingsByCollegeService = async (jobType) => {
+    try {
+        const postings = await JobPostingTable.find({ jobType }).populate('collegePosted');
+        
+        const currentDate = new Date();
+        const updatedPostings = postings.map(posting => {
+            let status = posting.jobStatus;
+
+            // Check and update status based on dates
+            if (posting.startDate && posting.endDate) {
+                const startDate = new Date(posting.startDate);
+                const endDate = new Date(posting.endDate);
+                
+                if (currentDate < startDate) {
+                    status = "Pending";
+                } else if (currentDate >= startDate && currentDate <= endDate) {
+                    status = "Open";
+                } else if (currentDate > endDate) {
+                    status = "Closed";
+                }
+            }
+
+            return {
+                ...posting.toObject(),
+                jobStatus: status
+            };
+        });
+        console.log("Updated Postings:", updatedPostings);
+        return updatedPostings;
+    } catch (error) {
+        console.error("Error in getJobPostingsByJobTypeService:", error.message);
+        throw error;
+    }
+};

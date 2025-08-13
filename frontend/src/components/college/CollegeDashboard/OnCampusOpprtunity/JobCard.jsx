@@ -2,48 +2,25 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-// const JobCard = ({ job }) => {
-//   return (
-//     <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1">
-//       <div className="relative h-40 bg-gray-200">
-//         <img
-//           src={job.companyPosted?.profileImage || '/default-company-logo.png'}
-//           alt={`${job.companyPosted?.profileImage} logo`}
-//           className="w-full h-full object-cover"
-//         />
-//       </div>
-//       <div className="p-4">
-//         <div className="text-center mb-4">
-//           <h3 className="text-lg font-semibold text-gray-900">{job?.degree?.map((jb)=>(<span>{jb}</span>))}</h3>
-//           <p className="text-sm text-gray-600">{job.university}</p>
-//         </div>
-//         <Link 
-//           to={`/college-dashboard/on-campus-opportunities/${job._id}`}
-//           className="block w-full py-2 px-4 text-center text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-//         >
-//           Contact
-//         </Link>
-//       </div>
-//     </div>
-//   );
-// };
-
-// JobCard.propTypes = {
-//   job: PropTypes.shape({
-//     id: PropTypes.string.isRequired,
-//     logo: PropTypes.string.isRequired,
-//     company: PropTypes.string.isRequired,
-//     degree: PropTypes.string.isRequired,
-//     university: PropTypes.string.isRequired
-//   }).isRequired
-// };
-
-// export default JobCard;
-
 const JobCard = ({ job }) => {
-  // Safely extract company data with proper fallbacks
   const companyName = job.companyPosted?.companyDetails?.companyName || 'Company';
-  const logo = job.companyPosted?.profileImageUrl || '/default-company.png';
+  const logo = job.companyPosted?.profileImageUrl || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeRfV9n69zxuV4DQX7sYF7ql8ajx47wLioPeP-m4qFbHLkD9UNwfQSneRtkQEDnx-QxFs&usqp=CAU';
+
+  const getJobStatus = () => {
+    const now = new Date();
+    const startDate = new Date(job.startDate);
+    const endDate = new Date(job.endDate);
+
+    if (now < startDate) {
+      return { status: 'Pending', color: 'bg-yellow-400' };
+    } else if (now >= startDate && now <= endDate) {
+      return { status: 'Open', color: 'bg-green-500' };
+    } else {
+      return { status: 'Closed', color: 'bg-red-500' };
+    }
+  };
+
+  const jobStatus = getJobStatus();
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1">
@@ -52,10 +29,11 @@ const JobCard = ({ job }) => {
           src={logo}
           alt={`${companyName} logo`}
           className="w-full h-full object-cover"
-          // onError={(e) => {
-          //   e.target.src = '/default-company.png'; // Fallback if image fails to load
-          // }}
         />
+        {/* Job Status Badge */}
+        <div className={`absolute top-2 right-2 px-3 py-1 text-xs font-bold text-white rounded-full ${jobStatus.color}`}>
+          {jobStatus.status}
+        </div>
       </div>
       <div className="p-4">
         <div className="text-center mb-4">
@@ -73,7 +51,7 @@ const JobCard = ({ job }) => {
           to={`/college-dashboard/on-campus-opportunities/${job._id}`}
           className="block w-full py-2 px-4 text-center text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
         >
-          Contact
+          View Details
         </Link>
       </div>
     </div>
@@ -89,7 +67,9 @@ JobCard.propTypes = {
       }),
       profileImageUrl: PropTypes.string
     }),
-    degree: PropTypes.arrayOf(PropTypes.string).isRequired
+    degree: PropTypes.arrayOf(PropTypes.string).isRequired,
+    startDate: PropTypes.string.isRequired,
+    endDate: PropTypes.string.isRequired
   }).isRequired
 };
 

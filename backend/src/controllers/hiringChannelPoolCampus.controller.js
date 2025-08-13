@@ -3,6 +3,7 @@ import collegeOnboardingModel from '../models/collegeDashboard/collegeOnboarding
 import CompanyProfile from '../models/companyDashboard/companyProfileModel.js'
 import { checkPoolCampusApplicationExitence, poolcampusApplicationService } from '../services/Application.service.js';
 import PoolCampusApplication from '../models/poolcampusApplicationModel.js' ;
+import { JobPostingTable } from '../models/jobPostingsModel.js';
 
 
 export const poolCampusRegister = async (req, res) => {
@@ -32,40 +33,43 @@ export const poolCampusRegister = async (req, res) => {
   }
 }
 
-export const getAllRegistrations = async (req, res) => {
-  try {
-    const response = await PoolCampusHiring.find()
-      .populate({
-        path: 'companyId',
-        select: 'companyDetails profileImage', // Add fields you need
-      })
-      .lean()
-      .sort({ createdAt: -1 }); // Sort by creation date, most recent first
-    res.status(200).json({ success: true, data: response });
+// export const getAllRegistrations = async (req, res) => { 
+//    try {
+//     const response = await JobPostingTable.find({ 
+//      jobType: "Pool-campus",
+//      visibleTo: "College"
+//     })
+//      .populate({
+//        path: 'companyPosted',
+//        select: 'companyDetails profileImage',
+//      })
+//      .lean()
+//      .sort({ createdAt: -1 });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
+//  res.status(200).json({ success: true, data: response });
 
-}
+// } catch (err) {
+//  console.error(err);
+//  res.status(500).json({ error: err.message });
+//  }
+// };
 
-export const getJobById = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const response = await PoolCampusHiring.findById(id)
-      .populate({
-        path: 'companyId',
-        select: 'companyDetails profileImage hiringPreferences',
-      })
-      .lean();
-    res.status(200).json(response);
-  }
-  catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
-}
+// export const getJobById = async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     const response = await PoolCampusHiring.findById(id)
+//       .populate({
+//         path: 'companyId',
+//         select: 'companyDetails profileImage hiringPreferences',
+//       })
+//       .lean();
+//     res.status(200).json(response);
+//   }
+//   catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message });
+//   }
+// }
 
 // apply
 export async function createPoolCampusApplication(req, res) {
