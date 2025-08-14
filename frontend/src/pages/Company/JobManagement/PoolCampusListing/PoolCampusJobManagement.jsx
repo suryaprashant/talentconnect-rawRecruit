@@ -919,7 +919,7 @@ export default function OnCampusJobManagement() {
                     <tr key={job._id} className="border-b border-gray-200 hover:bg-gray-50">
                       <td className="px-4 py-4">
                         <div className="font-medium text-gray-900">
-                          {job.lookingFor || 'N/A'}
+                          {job.jobRoles || 'N/A'}
                         </div>
                         <div className="text-sm text-gray-500">
                           {job.employmentType || 'N/A Type'}
