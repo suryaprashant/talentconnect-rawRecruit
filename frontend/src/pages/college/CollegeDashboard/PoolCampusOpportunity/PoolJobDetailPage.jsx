@@ -628,7 +628,7 @@ const PoolJobDetailsPage = () => {
     try {
       // if (jobDetail?.status === 'Open') {
       const response = await ApplyForPoolCampus(id);
-      if (response.success === 'true') alert("Applied");
+      if (response.success === true) alert("Applied");
       // }
       // else alert("Application Closed!")
     } catch (error) {

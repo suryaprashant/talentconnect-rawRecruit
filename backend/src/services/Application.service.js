@@ -139,7 +139,7 @@ export async function fetchApplicationStatusService(userId, jobType) {
 }
 
 // job management
-
+// joblisting and offcampus
 export async function fetchApplicationsByJobService(jobId, jobType) {
     try {
         const response = await Application.aggregate([
@@ -168,6 +168,48 @@ export async function fetchApplicationsByJobService(jobId, jobType) {
                     //     jobTitle: 1
                     // },
                     jobType: 1,
+                    statusHistory: 1,
+                    currentStatus: 1,
+                    createdAt: 1
+                }
+            }
+        ]);
+        return { success: true, data: response };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+
+// oncampus and poolcampus
+export async function fetchCollegeApplicationsByJobService(jobId, jobType) {
+    try {
+        const response = await Application.aggregate([
+            {
+                $match: {
+                    job: new mongoose.Types.ObjectId(jobId),
+                    jobType: jobType
+                }
+            },
+            {
+                $lookup: {
+                    from: "collegeonboardings",
+                    localField: "applicant",
+                    foreignField: "_id",
+                    as: "applicant"
+                }
+            },
+            {
+                $unwind: { path: "$applicant", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $project: {
+                    applicant: 1,
+                    // job: {
+                    //     _id: 1,
+                    //     jobTitle: 1
+                    // },
+                    // jobType: 1,
                     statusHistory: 1,
                     currentStatus: 1,
                     createdAt: 1

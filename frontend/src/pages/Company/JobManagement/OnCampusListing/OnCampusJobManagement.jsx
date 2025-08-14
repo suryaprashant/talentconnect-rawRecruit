@@ -371,13 +371,13 @@
 //   const [showFilters, setShowFilters] = useState(false);
 //   const [selectedJob, setSelectedJob] = useState(null);
 //   const [showJobDetail, setShowJobDetail] = useState(false);
-  
+
 //   const itemsPerPage = 5;
 //   const totalItems = jobs.length;
 //   const totalPages = Math.ceil(totalItems / itemsPerPage);
 //   const startIndex = (currentPage - 1) * itemsPerPage;
 //   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-  
+
 //   // Simulate fetching data from an API
 //   useEffect(() => {
 //     const fetchJobs = async () => {
@@ -385,7 +385,7 @@
 //         // In a real app, this would be a fetch call
 //         // const response = await fetch('/api/jobs');
 //         // const data = await response.json();
-        
+
 //         // Simulating API delay
 //         setTimeout(() => {
 //           setJobs(sampleJobs);
@@ -405,7 +405,7 @@
 //     const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
 //                            job.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
 //                            job.location.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
 //     if (activeTab === 'All Jobs') {
 //       return matchesSearch;
 //     } else if (activeTab === 'Published') {
@@ -413,26 +413,26 @@
 //     } else if (activeTab === 'Drafts') {
 //       return matchesSearch && job.status === 'Draft';
 //     }
-    
+
 //     return matchesSearch;
 //   });
-  
+
 //   // Current page data
 //   const currentJobs = filteredJobs.slice(startIndex, endIndex);
-  
+
 //   // Pagination controls
 //   const handlePrevPage = () => {
 //     setCurrentPage(prev => Math.max(prev - 1, 1));
 //   };
-  
+
 //   const handleNextPage = () => {
 //     setCurrentPage(prev => Math.min(prev + 1, totalPages));
 //   };
-  
+
 //   const handlePageClick = (pageNumber) => {
 //     setCurrentPage(pageNumber);
 //   };
-  
+
 //   // Action handlers - these would connect to your backend API
 //   const handleView = (jobId) => {
 //     const job = jobs.find(j => j.id === jobId);
@@ -441,22 +441,22 @@
 //       setShowJobDetail(true);
 //     }
 //   };
-  
+
 //   const handleEdit = (jobId) => {
 //     console.log(`Edit job with ID: ${jobId}`);
 //     // In a real app: navigate to edit page or open edit modal
 //   };
-  
+
 //   const handleApplications = (jobId) => {
 //     console.log(`View applications for job ID: ${jobId}`);
 //     // In a real app: navigate to applications page
 //   };
-  
+
 //   const handleExport = (jobId) => {
 //     console.log(`Export job with ID: ${jobId}`);
 //     // In a real app: trigger API call to export job data
 //   };
-  
+
 //   const handleDelete = (jobId) => {
 //     console.log(`Delete job with ID: ${jobId}`);
 //     // In a real app: show confirmation and delete on confirmation
@@ -506,7 +506,7 @@
 //           Post a Job
 //         </button>
 //       </div>
-      
+
 //       <div className="border rounded-md mt-10">
 //         {/* Tabs */}
 //         <div className="flex border-b">
@@ -529,7 +529,7 @@
 //             Drafts
 //           </button>
 //         </div>
-        
+
 //         {/* Search and filters */}
 //         <div className="p-4 border-b flex flex-wrap items-center gap-2">
 //           <div className="relative flex-grow max-w-sm">
@@ -544,7 +544,7 @@
 //               onChange={(e) => setSearchQuery(e.target.value)}
 //             />
 //           </div>
-          
+
 //           <button 
 //             className="flex items-center gap-2 px-4 py-2 border rounded-md"
 //             onClick={() => setShowFilters(!showFilters)}
@@ -552,12 +552,12 @@
 //             <Filter className="w-4 h-4" />
 //             Filters
 //           </button>
-          
+
 //           <div className="ml-auto text-sm text-gray-500">
 //             Showing {startIndex + 1}-{Math.min(endIndex, filteredJobs.length)} of {filteredJobs.length}
 //           </div>
 //         </div>
-        
+
 //         {/* Table */}
 //         <div className="overflow-x-auto">
 //           <table className="w-full">
@@ -586,7 +586,7 @@
 //                   </td>
 //                 </tr>
 //               ) : (
-//                 currentJobs.map(job => (
+//                 currentJobs?.map(job => (
 //                   <tr 
 //                     key={job.id} 
 //                     className="border-b hover:bg-gray-50 cursor-pointer"
@@ -635,7 +635,7 @@
 //             </tbody>
 //           </table>
 //         </div>
-        
+
 //         {/* Pagination */}
 //         <div className="flex items-center justify-between p-4">
 //           <button 
@@ -646,9 +646,9 @@
 //             <ChevronLeft size={16} />
 //             Prev
 //           </button>
-          
+
 //           <div className="flex gap-2">
-//             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+//             {Array.from({ length: totalPages }, (_, i) => i + 1)?.map(page => (
 //               <button
 //                 key={page}
 //                 onClick={() => handlePageClick(page)}
@@ -662,7 +662,7 @@
 //               </button>
 //             ))}
 //           </div>
-          
+
 //           <button 
 //             onClick={handleNextPage} 
 //             disabled={currentPage === totalPages}
@@ -682,16 +682,17 @@ import { useState, useEffect } from 'react';
 import { Search, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 import CollegeRequestDetail from './CollegeRequestDetail';
-import { format, isValid } from 'date-fns';
+import { getCollegeApplicationsForJob, getPostedJobs } from '@/lib/Company_AxiosInstance';
+// import { format, isValid } from 'date-fns';
 
 const API_BASE_URL = import.meta.env.VITE_Backend_URL;
 
 // Helper function to safely format dates
-const safeFormatDate = (dateString, formatStr = 'MMM d, yyyy') => {
-  if (!dateString) return 'Not Specified';
-  const date = new Date(dateString);
-  return isValid(date) ? format(date, formatStr) : 'Invalid Date';
-};
+// const safeFormatDate = (dateString, formatStr = 'MMM d, yyyy') => {
+//   if (!dateString) return 'Not Specified';
+//   const date = new Date(dateString);
+//   return isValid(date) ? format(date, formatStr) : 'Invalid Date';
+// };
 
 export default function OnCampusJobManagement() {
   const [jobs, setJobs] = useState([]);
@@ -709,19 +710,13 @@ export default function OnCampusJobManagement() {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `${API_BASE_URL}/api/company/jobmanagement/on-campus-drives`,
-        {
-          headers: { 'Authorization': `Bearer ${token}` },
-          withCredentials: true
-        }
-      );
-      const processedJobs = response.data.data?.map(job => ({
-        ...job,
-        preferredLocations: Array.isArray(job.preferredLocations) ? job.preferredLocations : []
-      })) || [];
-      setJobs(processedJobs);
+      const response = await getPostedJobs("On-campus");
+      // console.log("response oncampus: ", response);
+      // const processedJobs = response.data.data?.map(job => ({
+      //   ...job,
+      //   preferredLocations: Array.isArray(job.preferredLocations) ? job.preferredLocations : []
+      // })) || [];
+      setJobs(response.data.response);
     } catch (err) {
       console.error("Error fetching jobs:", err);
       setError(err.response?.data?.message || err.message || "Failed to fetch drives.");
@@ -731,19 +726,13 @@ export default function OnCampusJobManagement() {
     }
   };
 
-  const fetchCollegesForJob = async (jobId) => {
+  const fetchCollegesForJob = async (jobId, jobType) => {
     setCollegesLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `${API_BASE_URL}/api/company/jobmanagement/on-campus-drives/${jobId}/colleges`,
-        {
-          headers: { 'Authorization': `Bearer ${token}` },
-          withCredentials: true
-        }
-      );
-      setColleges(response.data.data || []);
+      const response = await getCollegeApplicationsForJob(jobId, jobType)
+      console.log("College: ", response);
+      setColleges(response.data);
     } catch (err) {
       console.error("Error fetching colleges:", err);
       setError(err.response?.data?.message || err.message || "Failed to fetch colleges.");
@@ -780,8 +769,8 @@ export default function OnCampusJobManagement() {
 
   const filteredJobs = jobs.filter(job => {
     const searchLower = searchQuery.toLowerCase();
-    const locationsMatch = Array.isArray(job.preferredLocations)
-      ? job.preferredLocations.some(location =>
+    const locationsMatch = Array.isArray(job.location)
+      ? job.location.some(location =>
         location?.toLowerCase().includes(searchLower))
       : false;
 
@@ -796,14 +785,15 @@ export default function OnCampusJobManagement() {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentJobs = filteredJobs.slice(startIndex, startIndex + itemsPerPage);
+  console.log("currentJobs: ", currentJobs);
 
   const handleViewColleges = (job) => {
     if (job.applicationCount === 0) {
       alert("No colleges have applied for this drive yet.");
-      return; 
+      return;
     }
     setSelectedJob(job);
-    fetchCollegesForJob(job._id);
+    fetchCollegesForJob(job._id, job.jobType);
   };
 
   const handleBackToList = () => {
@@ -832,8 +822,8 @@ export default function OnCampusJobManagement() {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Applications for: {selectedJob.lookingFor || 'N/A'}
             </h2>
-            <p className="text-gray-600">
-              {displayLocations(selectedJob.preferredLocations)} • {selectedJob.employmentType || 'N/A Type'}
+            <p className="text-gray-600 capitalize">
+              {displayLocations(selectedJob.location)} • {selectedJob.employmentType || 'N/A Type'}
             </p>
           </div>
           {collegesLoading ? (
@@ -851,7 +841,7 @@ export default function OnCampusJobManagement() {
             </div>
           ) : (
             <div className="space-y-6">
-              {colleges.map(college => (
+              {colleges?.map(college => (
                 <CollegeRequestDetail
                   key={college.applicationId}
                   collegeApplication={college} // Pass the fully merged college object
@@ -925,7 +915,7 @@ export default function OnCampusJobManagement() {
                     </td>
                   </tr>
                 ) : (
-                  currentJobs.map(job => (
+                  currentJobs?.map(job => (
                     <tr key={job._id} className="border-b border-gray-200 hover:bg-gray-50">
                       <td className="px-4 py-4">
                         <div className="font-medium text-gray-900">
@@ -935,13 +925,13 @@ export default function OnCampusJobManagement() {
                           {job.employmentType || 'N/A Type'}
                         </div>
                       </td>
-                      <td className="px-4 py-4">
-                        {displayLocations(job.preferredLocations)}
+                      <td className="px-4 py-4 capitalize">
+                        {displayLocations(job.location)}
                       </td>
                       <td className="px-4 py-4">
-                        {(job.endDate)}
+                        {new Date(job.endDate).toUTCString().slice(0, 16)}
                       </td>
-                      <td className="px-4 py-4">{job.applicationCount || 0}</td>
+                      <td className="px-4 py-4">{job.applicationCount || null}</td>
                       <td className="px-4 py-4">
                         <div className="flex gap-2">
                           <button
@@ -962,38 +952,37 @@ export default function OnCampusJobManagement() {
           </div>
 
           <div className="flex items-center justify-between p-4 bg-gray-50 border-t border-gray-200">
-             <button
-                onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                disabled={currentPage === 1}
-                className="flex items-center gap-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 disabled:opacity-50"
-             >
-                <ChevronLeft size={16} />
-                Prev
-             </button>
+            <button
+              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+              className="flex items-center gap-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+            >
+              <ChevronLeft size={16} />
+              Prev
+            </button>
 
-             <div className="flex gap-2">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium ${
-                      currentPage === page ? 'bg-black text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-100'
+            <div className="flex gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1)?.map(page => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium ${currentPage === page ? 'bg-black text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-100'
                     }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-             </div>
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
 
-             <button
-                onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-                disabled={currentPage === totalPages || totalPages === 0}
-                className="flex items-center gap-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 disabled:opacity-50"
-             >
-                Next
-                <ChevronRight size={16} />
-             </button>
-           </div>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="flex items-center gap-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+            >
+              Next
+              <ChevronRight size={16} />
+            </button>
+          </div>
         </div>
       </div>
     </div>
