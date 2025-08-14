@@ -1,31 +1,36 @@
 import express from "express";
-import { createApplication, createIntershipApplication, createJobListingApplication, getAcceptedCandidatesByCompany, getAcceptedCandidatesByJob, getShortlistedCandidatesByCompany, getOffcampusUserApplication, getJobListingUserApplication, getInternshipUserApplication } from "../controllers/application.controller.js";
-import secureRoute from '../middlewares/secureRoute.js'
-import { getInternshipApplicantsService } from "../services/Application.service.js";
+import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob } from "../controllers/application.controller.js";
+import secureRoute from '../middlewares/secureRoute.js';
 
 const router = express.Router();
 
 // api '.../application'
+router.post("/candidate/saveopportunity", secureRoute, saveJobByUser);
 
-router.get('/candidate/offCampus', secureRoute, getOffcampusUserApplication);
-router.get('/candidate/joblisting', secureRoute, getJobListingUserApplication);
-router.get('/candidate/internship', secureRoute, getInternshipUserApplication);
+// offcampus
+router.post('/candidate/offcampus', secureRoute, createOffcampusApplication);
+// router.get('/candidate/offCampus', secureRoute, getOffcampusUserApplication);
+// router.get('/offcampus/shortlisted', secureRoute, getShortlistedCandidatesByCompany);
+// router.get('/offcampus/accepted', secureRoute, getAcceptedCandidatesByCompany);
 
-router.post('/offcampusapply', secureRoute, createApplication);
-router.get('/offcampus/shortlisted', secureRoute, getShortlistedCandidatesByCompany);
-router.get('/offcampus/accepted', secureRoute, getAcceptedCandidatesByCompany);
-
-router.post('/joblistingapply', secureRoute, createJobListingApplication);
+// joblisting
+router.post('/candidate/joblisting', secureRoute, createJobListingApplication);
+// router.get('/candidate/joblisting', secureRoute, getJobListingUserApplication);
 
 // internship
-router.post('/internship/apply', secureRoute, createIntershipApplication);
+router.post('/candidate/internship', secureRoute, createIntershipApplication);
+// router.get('/candidate/internship', secureRoute, getInternshipUserApplication);
+
+// oncampus
+
+// poolcampus
 
 // shortlisting
 
 // access only to company 
-// accept oncampus
-// router.get('/accept/oncampus/:companyId', getAcceptedCandidatesFromCollege);
+// get candidates by job
+router.get('/manage', getApplicationsByJob);
 // accept offcampus
-router.get('/accept/:id', getAcceptedCandidatesByJob);
+// router.get('/accept/:id', getAcceptedCandidatesByJob);
 
 export default router;

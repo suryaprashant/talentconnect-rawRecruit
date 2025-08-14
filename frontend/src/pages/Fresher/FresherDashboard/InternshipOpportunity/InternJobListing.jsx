@@ -95,7 +95,7 @@ const FInternJobListings = () => {
     try {
       setIsLoading(true);
       const response = await getAllInternship();
-      // Corrected: Access the 'data' property of the response.data object
+      // Corrected: Access the 'data' property of the response.data.data object
       setProfileJobs(response.data.data);
       setError(null);
     } catch (error) {

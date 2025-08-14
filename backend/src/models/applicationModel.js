@@ -1,18 +1,23 @@
-// to be delete
-
 import mongoose from "mongoose";
-import "./studentonboardingmodel.js";
-// job
+
+// applicationSchema
 const ApplicationSchema = new mongoose.Schema(
     {
-        user: {
+        applicant: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Onboarding",
+            required: true
+        },
+        applicantType: {
+            type: String,
             required: true
         },
         job: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "JobPosting",
+            ref: "JobPostingTable",
+            required: true
+        },
+        jobType: {
+            type: String,
             required: true
         },
         statusHistory: [
@@ -53,5 +58,5 @@ const ApplicationSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-const JobListingApplication = mongoose.model("JobListingApplication", ApplicationSchema);
-export default JobListingApplication;
+const Application = mongoose.model("Application", ApplicationSchema);
+export default Application;

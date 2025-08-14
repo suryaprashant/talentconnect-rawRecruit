@@ -281,7 +281,9 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ApplyForOppurtunity, getJobDetails } from '@/lib/User_AxiosInstance';
+// import { jobListings, detailedJobData } from '@/constants/offCampusListing'
+import { ApplyForOppurtunity, getJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
+
 
 function OffCampusJobDetail() {
   const { jobId } = useParams();
@@ -305,30 +307,33 @@ function OffCampusJobDetail() {
   };
 
   useEffect(() => {
-    if (jobId) {
-      loadJobDetails();
-    }
+
+    loadJobDetails();
   }, [jobId]);
 
   const handleBackToList = () => {
     navigate('/fresher-dashboard/off-campus-listings');
   };
 
+  const handleSave = async () => {
+    try {
+      const response = await SaveOppurtunity(jobId, jobDetail?.jobType);
+      if (response) alert('Job saved!');
+    } catch (err) {
+      console.error('Error applying for job:', err);
+      alert('Failed to submit application. Please try again.');
+    }
+  };
+
   const handleApply = async () => {
     try {
-      if (jobDetail && jobDetail.jobStatus === 'Open') {
-        const response = await ApplyForOppurtunity(jobId, jobDetail.jobType);
-        if (response?.success === true) {
-          alert("Application submitted successfully!");
-        } else {
-          alert("Failed to submit application. Please try again.");
-        }
-      } else {
-        alert("Application is not open or job details are missing.");
-      }
+      // if (jobDetail?.status === 'Open') {
+      const response = await ApplyForOppurtunity(jobId, jobDetail.jobType);
+      if (response.success === 'true') alert("Applied");
+      // }
+      else alert("Application Closed!")
     } catch (error) {
-      console.error("Error during application:", error);
-      alert('Failed to submit application. Please try again.');
+      console.log("Error: ", error);
     }
   };
 
@@ -395,12 +400,8 @@ function OffCampusJobDetail() {
             )}
           </div>
           <div>
-            {/* Company Name and Job Roles */}
-            <h2 className="text-xl font-bold">
-              {jobDetail.companyPosted?.companyDetails?.companyName || "N/A"} - {jobDetail.jobRoles?.map((j, i) => (<span key={i}>{j}{i < jobDetail.jobRoles.length - 1 ? ', ' : ''}</span>)) || 'N/A'}
-            </h2>
-            {/* Job Status */}
-            <p className={`text-sm ${headerStatusClasses}`}>Application {jobDetail.jobStatus}</p>
+            <h2 className="text-xl font-bold">{jobDetail?.companyId?.companyDetails.companyName} - {jobDetail?.jobRoles.map((j, i) => (<span key={i}>{j}</span>))}</h2>
+            <p className="text-sm text-gray-600">Application {jobDetail.status}</p>
           </div>
         </div>
         <div className="flex space-x-2">
@@ -415,24 +416,24 @@ function OffCampusJobDetail() {
 
       {/* About Company */}
       <section className="mb-8">
-        <h3 className="text-lg font-semibold mb-3">About {jobDetail.companyPosted?.companyDetails?.companyName || "Company"}</h3>
-        <p className="text-gray-700 mb-4">{jobDetail.companyPosted?.companyDetails?.description || 'No company description available.'}</p>
+        <h3 className="text-lg font-semibold mb-3">About {jobDetail?.companyId?.companyDetails?.companyName}</h3>
+        <p className="text-gray-700 mb-4">{jobDetail?.companyId?.companyDetails.description}</p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="border border-gray-200 p-4 rounded-md">
-            <div className="font-bold text-lg">{jobDetail.companyPosted?.companyDetails?.numberOfEmployees || 'N/A'}</div>
+        <div className="grid grid-cols-4 gap-4">
+          <div className="border border-gray-200 p-4">
+            <div className="font-bold text-lg">{jobDetail?.companyId?.companyDetails.numberOfEmployees}</div>
             <div className="text-sm text-gray-600">Employees</div>
           </div>
           <div className="border border-gray-200 p-4 rounded-md">
             <div className="font-bold text-lg">N/A</div>
             <div className="text-sm text-gray-600">Revenue</div>
           </div>
-          <div className="border border-gray-200 p-4 rounded-md">
-            <div className="font-bold text-lg capitalize">{jobDetail.companyPosted?.companyDetails?.industryType || 'N/A'}</div>
+          <div className="border border-gray-200 p-4">
+            <div className="font-bold text-lg capitalize">{jobDetail?.companyId?.companyDetails.industryType}</div>
             <div className="text-sm text-gray-600">Industries</div>
           </div>
-          <div className="border border-gray-200 p-4 rounded-md">
-            <div className="font-bold text-lg">{jobDetail.companyPosted?.companyDetails?.country || 'N/A'}</div>
+          <div className="border border-gray-200 p-4">
+            <div className="font-bold text-lg">{jobDetail?.companyId?.companyDetails.country}</div>
             <div className="text-sm text-gray-600">Countries</div>
           </div>
         </div>
@@ -542,8 +543,8 @@ function OffCampusJobDetail() {
             <div>{jobDetail.minPackage?.currency || 'N/A'} {jobDetail.minPackage?.amount || 'Not Mentioned'} /month</div>
           </div>
           <div className="flex items-center">
-            <div className="text-sm text-gray-600 mr-1">Work Mode:</div>
-            <div className="capitalize">{jobDetail.workMode || 'N/A'}</div>
+            <div className="text-sm text-gray-600 mr-1">Work Mode</div>
+            <div>{jobDetail?.workModes.map((j, i) => (<span key={i}>{j} </span>))}</div>
           </div>
         </div>
       </section>

@@ -80,4 +80,3 @@ const jobPostingSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 export const JobPostingTable = mongoose.models.JobPostingTable || mongoose.model("JobPostingTable", jobPostingSchema);
-

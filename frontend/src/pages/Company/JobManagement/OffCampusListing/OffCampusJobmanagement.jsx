@@ -3,364 +3,8 @@ import {
   Search, Eye, Edit, Users, FileText, Trash,
   ChevronLeft, ChevronRight, Filter, X
 } from 'lucide-react';
-import CollegeRequestDetail from './CollegeRequestDetail';
+import ApplicantDetails from './ApplicantDetails';
 import { getPostedJobs } from '@/lib/Company_AxiosInstance';
-
-// Sample data - in a real app this would come from an API
-const sampleJobs = [
-  {
-    id: 1,
-    title: "Software Engineer",
-    type: "Full-time",
-    location: "Mumbai",
-    status: "Published",
-    deadline: "Apr 30, 2025",
-    views: 1234,
-    applications: 89,
-    // Additional data for college detail view
-    collegeDetails: {
-      name: "MIT Institute of Technology",
-      rank: 12,
-      location: "Mumbai, Maharashtra",
-      placementRate: 98,
-      highestPackage: 42,
-      averagePackage: 12,
-      eligibleBranches: [
-        "Computer Science Engineering",
-        "Information Technology",
-        "Electronics Engineering"
-      ],
-      studentCount: 250,
-      proposedStartDate: "21 April, 2025",
-      proposedEndDate: "24 April, 2025",
-      documents: [
-        { name: "Company Profile.pdf" },
-        { name: "Job Description.pdf" }
-      ],
-      facilities: [
-        "Computer Lab with Internet (Capacity: 100)",
-        "Interview Rooms (Count: 5)",
-        "Presentation Hall"
-      ]
-    }
-  },
-  {
-    id: 2,
-    title: "Product Design Intern",
-    type: "Internship",
-    location: "Mumbai",
-    status: "Draft",
-    deadline: "May 15, 2025",
-    views: 856,
-    applications: 45,
-    collegeDetails: {
-      name: "MIT Institute of Technology",
-      rank: 12,
-      location: "Mumbai, Maharashtra",
-      placementRate: 98,
-      highestPackage: 42,
-      averagePackage: 12,
-      eligibleBranches: [
-        "Computer Science Engineering",
-        "Information Technology",
-        "Electronics Engineering"
-      ],
-      studentCount: 250,
-      proposedStartDate: "22 April, 2025",
-      proposedEndDate: "24 April, 2025",
-      documents: [
-        { name: "Company Profile.pdf" },
-        { name: "Job Description.pdf" }
-      ],
-      facilities: [
-        "Computer Lab with Internet (Capacity: 100)",
-        "Interview Rooms (Count: 5)",
-        "Presentation Hall"
-      ]
-    }
-  },
-  {
-    id: 3,
-    title: "Software Engineer",
-    type: "Full-time",
-    location: "Mumbai",
-    status: "Draft",
-    deadline: "Apr 30, 2025",
-    views: 956,
-    applications: 67,
-    collegeDetails: {
-      name: "MIT Institute of Technology",
-      rank: 12,
-      location: "Mumbai, Maharashtra",
-      placementRate: 98,
-      highestPackage: 42,
-      averagePackage: 12,
-      eligibleBranches: [
-        "Computer Science Engineering",
-        "Information Technology",
-        "Electronics Engineering"
-      ],
-      studentCount: 250,
-      proposedStartDate: "21 April, 2025",
-      proposedEndDate: "24 April, 2025",
-      documents: [
-        { name: "Company Profile.pdf" },
-        { name: "Job Description.pdf" }
-      ],
-      facilities: [
-        "Computer Lab with Internet (Capacity: 100)",
-        "Interview Rooms (Count: 5)",
-        "Presentation Hall"
-      ]
-    }
-  },
-  {
-    id: 4,
-    title: "Software Engineer",
-    type: "Full-time",
-    location: "Mumbai",
-    status: "Published",
-    deadline: "Apr 30, 2025",
-    views: 127,
-    applications: 36,
-    collegeDetails: {
-      name: "MIT Institute of Technology",
-      rank: 12,
-      location: "Mumbai, Maharashtra",
-      placementRate: 98,
-      highestPackage: 42,
-      averagePackage: 12,
-      eligibleBranches: [
-        "Computer Science Engineering",
-        "Information Technology",
-        "Electronics Engineering"
-      ],
-      studentCount: 250,
-      proposedStartDate: "21 April, 2025",
-      proposedEndDate: "24 April, 2025",
-      documents: [
-        { name: "Company Profile.pdf" },
-        { name: "Job Description.pdf" }
-      ],
-      facilities: [
-        "Computer Lab with Internet (Capacity: 100)",
-        "Interview Rooms (Count: 5)",
-        "Presentation Hall"
-      ]
-    }
-  },
-  {
-    id: 5,
-    title: "Software Engineer",
-    type: "Full-time",
-    location: "Mumbai",
-    status: "Published",
-    deadline: "May 15, 2025",
-    views: 59,
-    applications: 23,
-    collegeDetails: {
-      name: "MIT Institute of Technology",
-      rank: 12,
-      location: "Mumbai, Maharashtra",
-      placementRate: 98,
-      highestPackage: 42,
-      averagePackage: 12,
-      eligibleBranches: [
-        "Computer Science Engineering",
-        "Information Technology",
-        "Electronics Engineering"
-      ],
-      studentCount: 250,
-      proposedStartDate: "21 April, 2025",
-      proposedEndDate: "24 April, 2025",
-      documents: [
-        { name: "Company Profile.pdf" },
-        { name: "Job Description.pdf" }
-      ],
-      facilities: [
-        "Computer Lab with Internet (Capacity: 100)",
-        "Interview Rooms (Count: 5)",
-        "Presentation Hall"
-      ]
-    }
-  },
-  {
-    id: 6,
-    title: "Software Engineer",
-    type: "Full-time",
-    location: "Mumbai",
-    status: "Draft",
-    deadline: "May 15, 2025",
-    views: 1005,
-    applications: 78,
-    collegeDetails: {
-      name: "MIT Institute of Technology",
-      rank: 12,
-      location: "Mumbai, Maharashtra",
-      placementRate: 98,
-      highestPackage: 42,
-      averagePackage: 12,
-      eligibleBranches: [
-        "Computer Science Engineering",
-        "Information Technology",
-        "Electronics Engineering"
-      ],
-      studentCount: 250,
-      proposedStartDate: "21 April, 2025",
-      proposedEndDate: "24 April, 2025",
-      documents: [
-        { name: "Company Profile.pdf" },
-        { name: "Job Description.pdf" }
-      ],
-      facilities: [
-        "Computer Lab with Internet (Capacity: 100)",
-        "Interview Rooms (Count: 5)",
-        "Presentation Hall"
-      ]
-    }
-  },
-  // Additional data for pagination demonstration
-  {
-    id: 7,
-    title: "Backend Developer",
-    type: "Full-time",
-    location: "Mumbai",
-    status: "Published",
-    deadline: "Jun 5, 2025",
-    views: 423,
-    applications: 41,
-    collegeDetails: {
-      name: "MIT Institute of Technology",
-      rank: 12,
-      location: "Mumbai, Maharashtra",
-      placementRate: 98,
-      highestPackage: 42,
-      averagePackage: 12,
-      eligibleBranches: [
-        "Computer Science Engineering",
-        "Information Technology",
-        "Electronics Engineering"
-      ],
-      studentCount: 250,
-      proposedStartDate: "21 April, 2025",
-      proposedEndDate: "24 April, 2025",
-      documents: [
-        { name: "Company Profile.pdf" },
-        { name: "Job Description.pdf" }
-      ],
-      facilities: [
-        "Computer Lab with Internet (Capacity: 100)",
-        "Interview Rooms (Count: 5)",
-        "Presentation Hall"
-      ]
-    }
-  },
-  {
-    id: 8,
-    title: "UI/UX Designer",
-    type: "Contract",
-    location: "Mumbai",
-    status: "Published",
-    deadline: "May 25, 2025",
-    views: 673,
-    applications: 52,
-    collegeDetails: {
-      name: "MIT Institute of Technology",
-      rank: 12,
-      location: "Mumbai, Maharashtra",
-      placementRate: 98,
-      highestPackage: 42,
-      averagePackage: 12,
-      eligibleBranches: [
-        "Computer Science Engineering",
-        "Information Technology",
-        "Electronics Engineering"
-      ],
-      studentCount: 250,
-      proposedStartDate: "21 April, 2025",
-      proposedEndDate: "24 April, 2025",
-      documents: [
-        { name: "Company Profile.pdf" },
-        { name: "Job Description.pdf" }
-      ],
-      facilities: [
-        "Computer Lab with Internet (Capacity: 100)",
-        "Interview Rooms (Count: 5)",
-        "Presentation Hall"
-      ]
-    }
-  },
-  {
-    id: 9,
-    title: "DevOps Engineer",
-    type: "Full-time",
-    location: "Mumbai",
-    status: "Draft",
-    deadline: "Jun 10, 2025",
-    views: 321,
-    applications: 19,
-    collegeDetails: {
-      name: "MIT Institute of Technology",
-      rank: 12,
-      location: "Mumbai, Maharashtra",
-      placementRate: 98,
-      highestPackage: 42,
-      averagePackage: 12,
-      eligibleBranches: [
-        "Computer Science Engineering",
-        "Information Technology",
-        "Electronics Engineering"
-      ],
-      studentCount: 250,
-      proposedStartDate: "21 April, 2025",
-      proposedEndDate: "24 April, 2025",
-      documents: [
-        { name: "Company Profile.pdf" },
-        { name: "Job Description.pdf" }
-      ],
-      facilities: [
-        "Computer Lab with Internet (Capacity: 100)",
-        "Interview Rooms (Count: 5)",
-        "Presentation Hall"
-      ]
-    }
-  },
-  {
-    id: 10,
-    title: "Marketing Specialist",
-    type: "Part-time",
-    location: "Mumbai",
-    status: "Published",
-    deadline: "May 30, 2025",
-    views: 512,
-    applications: 63,
-    collegeDetails: {
-      name: "MIT Institute of Technology",
-      rank: 12,
-      location: "Mumbai, Maharashtra",
-      placementRate: 98,
-      highestPackage: 42,
-      averagePackage: 12,
-      eligibleBranches: [
-        "Computer Science Engineering",
-        "Information Technology",
-        "Electronics Engineering"
-      ],
-      studentCount: 250,
-      proposedStartDate: "21 April, 2025",
-      proposedEndDate: "24 April, 2025",
-      documents: [
-        { name: "Company Profile.pdf" },
-        { name: "Job Description.pdf" }
-      ],
-      facilities: [
-        "Computer Lab with Internet (Capacity: 100)",
-        "Interview Rooms (Count: 5)",
-        "Presentation Hall"
-      ]
-    }
-  }
-];
 
 export default function OffCampusJobManagement() {
   // State variables
@@ -381,13 +25,10 @@ export default function OffCampusJobManagement() {
 
   const fetchJobs = async () => {
     try {
-      const response = await getPostedJobs();
-      setJobs(response.data.data);
-      // Simulating API delay
-      // setTimeout(() => {
-      //   setJobs(sampleJobs);
-      //   setLoading(false);
-      // }, 500);
+      const response = await getPostedJobs("Off-campus");
+      // console.log(response.data.response);
+      setJobs(response.data.response);
+
     } catch (error) {
       console.error("Error fetching jobs:", error);
       setLoading(false);
@@ -402,8 +43,8 @@ export default function OffCampusJobManagement() {
   // Filter jobs based on search query and active tab
   const filteredJobs = jobs?.filter(job => {
     const matchesSearch = job.jobRoles[0].toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.workModes.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.workLocations.toLowerCase().includes(searchQuery.toLowerCase());
+      job.workMode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.venue.toLowerCase().includes(searchQuery.toLowerCase());
 
     if (activeTab === 'All Jobs') {
       return matchesSearch;
@@ -483,8 +124,8 @@ export default function OffCampusJobManagement() {
   // If showing job detail, render the detail view
   if (showJobDetail && selectedJob) {
     return (
-      <CollegeRequestDetail
-        college={selectedJob}
+      <ApplicantDetails
+        job={selectedJob}
         onClose={() => setShowJobDetail(false)}
         onAccept={() => handleAcceptDrive(selectedJob._id)}
         onShortlist={() => handleShortlistDrive(selectedJob._id)}
@@ -585,27 +226,27 @@ export default function OffCampusJobManagement() {
                     </td>
                   </tr>
                 ) : (
-                  currentJobs.map(job => (
+                  currentJobs?.map(job => (
                     <tr
                       key={job._id}
                       className="border-b hover:bg-gray-50 cursor-pointer"
                       onClick={() => handleView(job._id)}
                     >
                       <td className="px-4 py-3">
-                        <div className="font-medium">{job?.jobRoles}</div>
+                        <div className="font-medium">{job?.jobRoles[0]}</div>
                         <div className="text-sm text-gray-500">
-                          {job?.workModes} • {job?.workLocations}
+                          {job?.workMode} • {job?.location[0]}
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-1 text-xs rounded-full ${job.status === 'Published'
+                        <span className={`px-2 py-1 text-xs rounded-full ${job?.status === 'Published'
                           ? 'bg-green-100 text-green-800'
                           : 'bg-gray-100 text-gray-800'
                           }`}>
-                          {job.status}
+                          {job?.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3">{new Date(job?.hiringEndDate).toUTCString().slice(0, 11)}</td>
+                      <td className="px-4 py-3">{new Date(job?.endDate).toUTCString().slice(0, 16)}</td>
                       <td className="px-4 py-3">{job.views}</td>
                       <td className="px-4 py-3">{job.applications}</td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
@@ -646,7 +287,7 @@ export default function OffCampusJobManagement() {
             </button>
 
             <div className="flex gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              {Array.from({ length: totalPages }, (_, i) => i + 1)?.map(page => (
                 <button
                   key={page}
                   onClick={() => handlePageClick(page)}

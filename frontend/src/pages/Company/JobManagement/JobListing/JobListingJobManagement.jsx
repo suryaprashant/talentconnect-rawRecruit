@@ -3,11 +3,12 @@ import {
   Search, Eye, Edit, Users, FileText, Trash,
   ChevronLeft, ChevronRight, Filter, X
 } from 'lucide-react';
-import CollegeRequestDetail from './CollegeRequestDetail';
+import ApplicantDetails from './ApplicantDetails';
+import { getPostedJobs } from '@/lib/Company_AxiosInstance';
 
-export default function JobListingJobManagement() {
+export default function OffCampusJobManagement() {
   // State variables
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState();
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,33 +18,33 @@ export default function JobListingJobManagement() {
   const [showJobDetail, setShowJobDetail] = useState(false);
 
   const itemsPerPage = 5;
-  const totalItems = jobs.length;
+  const totalItems = jobs?.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
-  // Simulate fetching data from an API
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        // In a real app, this would be a fetch call
-        // const response = await fetch('/api/jobs');
-        // const data = await response.json();
+  const fetchJobs = async () => {
+    try {
+      const response = await getPostedJobs("Job-posting");
+      // console.log(response.data.response);
+      setJobs(response.data.response);
 
-      } catch (error) {
-        console.error("Error fetching jobs:", error);
-      }
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
       setLoading(false);
-    };
+    }
+    setLoading(false);
+  };
 
+  useEffect(() => {
     fetchJobs();
   }, []);
 
   // Filter jobs based on search query and active tab
-  const filteredJobs = jobs.filter(job => {
-    const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.location.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredJobs = jobs?.filter(job => {
+    const matchesSearch = job.jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.workMode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.venue.toLowerCase().includes(searchQuery.toLowerCase());
 
     if (activeTab === 'All Jobs') {
       return matchesSearch;
@@ -57,7 +58,7 @@ export default function JobListingJobManagement() {
   });
 
   // Current page data
-  const currentJobs = filteredJobs.slice(startIndex, endIndex);
+  const currentJobs = filteredJobs?.slice(startIndex, endIndex);
 
   // Pagination controls
   const handlePrevPage = () => {
@@ -74,7 +75,7 @@ export default function JobListingJobManagement() {
 
   // Action handlers - these would connect to your backend API
   const handleView = (jobId) => {
-    const job = jobs.find(j => j.id === jobId);
+    const job = jobs.find(j => j._id === jobId);
     if (job) {
       setSelectedJob(job);
       setShowJobDetail(true);
@@ -123,12 +124,12 @@ export default function JobListingJobManagement() {
   // If showing job detail, render the detail view
   if (showJobDetail && selectedJob) {
     return (
-      <CollegeRequestDetail
-        college={selectedJob.collegeDetails}
+      <ApplicantDetails
+        job={selectedJob}
         onClose={() => setShowJobDetail(false)}
-        onAccept={() => handleAcceptDrive(selectedJob.id)}
-        onShortlist={() => handleShortlistDrive(selectedJob.id)}
-        onReject={() => handleRejectDrive(selectedJob.id)}
+        onAccept={() => handleAcceptDrive(selectedJob._id)}
+        onShortlist={() => handleShortlistDrive(selectedJob._id)}
+        onReject={() => handleRejectDrive(selectedJob._id)}
       />
     );
   }
@@ -138,7 +139,7 @@ export default function JobListingJobManagement() {
       <div className="max-w-7xl mx-auto p-4 bg-white">
         <div className="flex justify-between items-center mt-10 mb-4">
           <div>
-            <h1 className="text-3xl font-bold">Manage On-Campus Applications</h1>
+            <h1 className="text-3xl font-bold">Manage Off-Campus Applications</h1>
             <p className="text-gray-600 mt-2">Track Your Job Listings and Streamline Candidate Applications</p>
           </div>
           <button className="bg-black text-white px-4 py-2 rounded-md">
@@ -153,7 +154,7 @@ export default function JobListingJobManagement() {
               className={`px-4 py-2 ${activeTab === 'All Jobs' ? 'border-b-2 border-black font-medium' : ''}`}
               onClick={() => setActiveTab('All Jobs')}
             >
-              All Jobs ({jobs.length})
+              All Jobs ({jobs?.length})
             </button>
             <button
               className={`px-4 py-2 ${activeTab === 'Published' ? 'border-b-2 border-black font-medium' : ''}`}
@@ -193,7 +194,7 @@ export default function JobListingJobManagement() {
             </button>
 
             <div className="ml-auto text-sm text-gray-500">
-              Showing {startIndex + 1}-{Math.min(endIndex, filteredJobs.length)} of {filteredJobs.length}
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredJobs?.length)} of {filteredJobs?.length}
             </div>
           </div>
 
@@ -218,51 +219,51 @@ export default function JobListingJobManagement() {
                       <p className="mt-2">Loading jobs...</p>
                     </td>
                   </tr>
-                ) : currentJobs.length === 0 ? (
+                ) : currentJobs?.length === 0 ? (
                   <tr>
                     <td colSpan="6" className="text-center py-4 text-gray-500">
                       No jobs found matching your criteria.
                     </td>
                   </tr>
                 ) : (
-                  currentJobs.map(job => (
+                  currentJobs?.map(job => (
                     <tr
-                      key={job.id}
+                      key={job._id}
                       className="border-b hover:bg-gray-50 cursor-pointer"
-                      onClick={() => handleView(job.id)}
+                      onClick={() => handleView(job._id)}
                     >
                       <td className="px-4 py-3">
-                        <div className="font-medium">{job.title}</div>
+                        <div className="font-medium">{job?.jobTitle}</div>
                         <div className="text-sm text-gray-500">
-                          {job.type} • {job.location}
+                          {job?.workMode} • {job?.location[0]}
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-1 text-xs rounded-full ${job.status === 'Published'
+                        <span className={`px-2 py-1 text-xs rounded-full ${job?.status === 'Published'
                           ? 'bg-green-100 text-green-800'
                           : 'bg-gray-100 text-gray-800'
                           }`}>
-                          {job.status}
+                          {job?.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3">{job.deadline}</td>
+                      <td className="px-4 py-3">{new Date(job?.endDate).toUTCString().slice(0, 16)}</td>
                       <td className="px-4 py-3">{job.views}</td>
                       <td className="px-4 py-3">{job.applications}</td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <div className="flex gap-2">
-                          <button onClick={() => handleView(job.id)} className="text-gray-500 hover:text-gray-700" title="View Job">
+                          <button onClick={() => handleView(job._id)} className="text-gray-500 hover:text-gray-700" title="View Job">
                             <Eye size={18} />
                           </button>
-                          <button onClick={() => handleEdit(job.id)} className="text-gray-500 hover:text-gray-700" title="Edit Job">
+                          <button onClick={() => handleEdit(job._id)} className="text-gray-500 hover:text-gray-700" title="Edit Job">
                             <Edit size={18} />
                           </button>
-                          <button onClick={() => handleApplications(job.id)} className="text-gray-500 hover:text-gray-700" title="View Applications">
+                          <button onClick={() => handleApplications(job._id)} className="text-gray-500 hover:text-gray-700" title="View Applications">
                             <Users size={18} />
                           </button>
-                          <button onClick={() => handleExport(job.id)} className="text-gray-500 hover:text-gray-700" title="Export Job Data">
+                          <button onClick={() => handleExport(job._id)} className="text-gray-500 hover:text-gray-700" title="Export Job Data">
                             <FileText size={18} />
                           </button>
-                          <button onClick={() => handleDelete(job.id)} className="text-gray-500 hover:text-gray-700" title="Delete Job">
+                          <button onClick={() => handleDelete(job._id)} className="text-gray-500 hover:text-gray-700" title="Delete Job">
                             <Trash size={18} />
                           </button>
                         </div>
@@ -286,7 +287,7 @@ export default function JobListingJobManagement() {
             </button>
 
             <div className="flex gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              {Array.from({ length: totalPages }, (_, i) => i + 1)?.map(page => (
                 <button
                   key={page}
                   onClick={() => handlePageClick(page)}

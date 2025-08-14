@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 //  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
 import JobCard from '@/components/Student/StudentDashboard/JobListing/JobCard';
-import { ApplyForJobListingOppurtunity, getJobLisingJobDetails } from '@/lib/User_AxiosInstance';
+import { ApplyForJobListingOppurtunity, ApplyForOppurtunity, getJobLisingJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 
 const FJobDetails = () => {
   const { jobId } = useParams();
@@ -36,25 +36,23 @@ const FJobDetails = () => {
     loadJobDetails();
   }, [jobId]);
 
-  const handleApply = async () => {
+  const handleSave = async () => {
     try {
-      const response = await ApplyForJobListingOppurtunity(jobId);
-      console.log("Application: ", response);
-      if (response) alert('Application submitted successfully!');
+      const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
+      if (response) alert('Job saved!');
     } catch (err) {
       console.error('Error applying for job:', err);
       alert('Failed to submit application. Please try again.');
     }
   };
 
-  const handleSave = async () => {
+  const handleApply = async () => {
     try {
-      // Implement save job functionality
-      console.log('Saving job:', jobId);
-      alert('Job saved successfully!');
+      const response = await ApplyForOppurtunity(jobId);
+      if (response) alert('Application submitted successfully!');
     } catch (err) {
-      console.error('Error saving job:', err);
-      alert('Failed to save job. Please try again.');
+      console.error('Error applying for job:', err);
+      alert('Failed to submit application. Please try again.');
     }
   };
 
