@@ -1,12 +1,24 @@
 import mongoose from "mongoose";
 
 const jobPostingSchema = new mongoose.Schema({
-    companyPosted: { type: mongoose.Schema.Types.ObjectId, ref: "CompanyProfile", required: true }, 
+    
+    
+    companyPosted: { type: mongoose.Schema.Types.ObjectId, ref: "CompanyProfile" }, 
+    collegePosted: { type: mongoose.Schema.Types.ObjectId, ref: "CollegeOnboarding" },
     jobType :{
         type: String,
         required : true ,
         enum : ["Off-campus" , "On-campus", "Pool-campus" , "Job-posting", "Internship"]
     },
+    visibleTo: {
+        type: String,
+        enum: ["All", "College", "Company" ],
+        default: "All"
+    },
+    state: { type: String },
+    city: { type: String },
+    country: { type: String },
+    pincode: { type: String },
     degree: [String],
     location: {type: [String], required: true},
 
@@ -44,6 +56,7 @@ const jobPostingSchema = new mongoose.Schema({
     rounds: [{ type: String }],
     selectionProcess: [{ type: String }],
     numberOfOpenings: { type: Number },
+    numberOfStudent : [{type : String}],
     contactPerson: {
         name: { type: String },
         designation: { type: String },

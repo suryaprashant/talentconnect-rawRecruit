@@ -23,7 +23,7 @@ export const submitCollegeOnboarding = async (req, res) => {
 
     const userId = req.user?._id; // Using optional chaining for safety
     console.log('Uploaded Files (req.files):', req.files);
-    const files = req.files; // ✅ Add this to define `files` correctly
+    const files = req.files; 
 
 
     if (!userId) {

@@ -86,7 +86,7 @@ const FJobDetails = () => {
         <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-800 mb-2">{jobDetails.jobTitle}</h1>
-            <p className="text-gray-600 mb-2">{jobDetails.companyId?.companyDetails?.companyName}</p>
+            <p className="text-gray-600 mb-2">{jobDetails.companyPosted?.companyDetails?.companyName}</p>
             <p className="text-sm text-gray-500 mb-2">Job ID: {jobDetails._id}</p>
             <div className="flex items-center mb-2">
               <span className="inline-flex items-center mr-4">
@@ -99,7 +99,7 @@ const FJobDetails = () => {
                 <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
-                {jobDetails.preferredHiringLocation}
+                {jobDetails.location}
               </span>
             </div>
           </div>
@@ -123,7 +123,7 @@ const FJobDetails = () => {
           <h2 className="text-xl font-semibold mb-3">Job description</h2>
           <div className="mb-4">
             <h3 className="font-medium mb-2">About The Role:</h3>
-            <p className="text-gray-700">{jobDetails.jobDescription}</p>
+            <p className="text-gray-700">{jobDetails.description}</p>
           </div>
           <div className="mb-4">
             <h3 className="font-medium mb-2">What you'll do:</h3>
@@ -137,7 +137,7 @@ const FJobDetails = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Industry Type:</p>
-              <p className="text-gray-700">{jobDetails.comapnyId?.companyDetails?.industryType}</p>
+              <p className="text-gray-700">{jobDetails.comapnyPosted?.companyDetails?.industryType}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Department:</p>
@@ -153,11 +153,11 @@ const FJobDetails = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Salary Range:</p>
-              <p className="text-gray-700">{jobDetails.salaryCurrency} {jobDetails?.monthlySalary} per month</p>
+              <p className="text-gray-700">{jobDetails?.minPackage?.currency} {jobDetails?.minPackage?.amount} per month</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Work Mode:</p>
-              <p className="text-gray-700">{jobDetails.preferredHiringLocation}</p>
+              <p className="text-gray-700">{jobDetails?.workMode}</p>
             </div>
           </div>
         </div>
@@ -166,8 +166,8 @@ const FJobDetails = () => {
           <h2 className="text-xl font-semibold mb-3">Education</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm font-medium text-gray-500">Minimum Education: <span className="text-gray-700">{jobDetails.minimumEducation}</span></p>
-              <p className="text-sm font-medium text-gray-500">Prefered field of study: <span className="text-gray-700">{jobDetails.preferredFieldOfStudy}</span></p>
+              <p className="text-sm font-medium text-gray-500">Minimum Education: <span className="text-gray-700">{jobDetails.minEducation}</span></p>
+              <p className="text-sm font-medium text-gray-500">Prefered field of study: <span className="text-gray-700">{jobDetails?.studentStreams}</span></p>
             </div>
             {/* <div>
               <p className="text-sm font-medium text-gray-500">PG:</p>
@@ -189,11 +189,11 @@ const FJobDetails = () => {
 
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-3">About company</h2>
-          <p className="text-gray-700 mb-4">{jobDetails?.companyId?.companyDetails.description}</p>
+          <p className="text-gray-700 mb-4">{jobDetails?.companyPosted?.companyDetails?.description}</p>
 
           <h3 className="font-medium mb-2">Company Info</h3>
           <p className="text-gray-700">
-            <span className="font-medium">Address:</span> {jobDetails?.companyId?.companyDetails.companyLocation} {jobDetails?.companyId?.companyDetails.state}, {jobDetails?.companyId?.companyDetails.country}
+            <span className="font-medium">Address:</span> {jobDetails?.companyPosted?.companyDetails.location} {jobDetails?.companyPosted?.companyDetails.state}, {jobDetails?.companyPosted?.companyDetails.country}
           </p>
         </div>
       </div>

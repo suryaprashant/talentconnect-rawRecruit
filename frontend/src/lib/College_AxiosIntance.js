@@ -15,13 +15,13 @@ axiosClient.defaults.timeout = 10000;
 axiosClient.defaults.withCredentials = true;
 
 export function getCompanyPostingForOncampus() {
-  return axiosClient.get(`/api/rawrecruit/oncampus-register`)
+  return axiosClient.get(`/api/student-dashboard/on-campus/college`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
 
 export function getCompanyPostingForOncampusDetail(jobId) {
-  return axiosClient.get(`/api/rawrecruit/oncampus-register/${jobId}`)
+  return axiosClient.get(`/api/student-dashboard/oncampus/college/${jobId}`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

@@ -1,5 +1,6 @@
 import { createPostingService } from "../services/jobPostingService.js"
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
+import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
 
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
 const sendError = (res, statusCode, message) => res.status(statusCode).json({ message });
@@ -47,6 +48,9 @@ export const createOnCampusPosting = async (req, res) => {
             ...req.body,
             companyPosted: companyPostedId._id,
             jobType: "On-campus",
+            visibleTo: "College", // Default visibility, can be changed based on requirements
+
+            
         };
 
         const newPosting = await createPostingService(postingData);
@@ -61,6 +65,60 @@ export const createOnCampusPosting = async (req, res) => {
     }
 }
 
+// college Request 
+export const createOnCampusCollegeRequest = async (req, res) => {
+   
+    try {
+        const userId = req.user._id;
+        console.log("User ID milega bhai :", userId);
+        const collegeProfile = await collegeOnboardingModel.findOne({ userId });
+        if (!collegeProfile) {
+            return res.status(404).json({ error: "College profile not found" });
+        }   
+        const postingData = {
+            ...req.body,
+            collegePosted: collegeProfile._id,
+            jobType: "On-campus",
+            visibleTo: "Company", // Default visibility for college requests
+        };  
+        const newPosting = await createPostingService(postingData);
+        if (!newPosting) {
+            return sendError(res, 500, "Failed to create job posting");
+        }
+        sendResponse(res, 201, { message: "On-campus college request created successfully!", data: newPosting });
+        
+    } catch (error) {
+        console.error("Error in createOnCampusCollegeRequest:", error.message);
+        sendError(res, 500, "Internal server error");
+    }
+
+}
+// colege Request for Pool Campus
+export const createPoolCampusCollegeRequest = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const companyPostedId = await collegeOnboardingModel.findOne({ userId });
+        if (!companyPostedId) {
+            return res.status(404).json({ error: "College profile not found" });
+        }
+        const postingData = {
+            ...req.body,
+            companyPosted: companyPostedId._id,
+            jobType: "Pool-campus",
+            jobPosted: "College",
+        };
+        const newPosting = await createPostingService(postingData);
+        if (!newPosting) {
+            return sendError(res, 500, "Failed to create job posting");
+        }
+        sendResponse(res, 201, { message: "Pool-campus college request created successfully!", data: newPosting });
+    } catch (error) {
+        console.error("Error in createPoolCampusCollegeRequest:", error.message);
+        sendError(res, 500, "Internal server error");
+    }
+}
+
+
 
 export const createPoolCampusPosting = async (req, res) => {
     try {
@@ -74,6 +132,8 @@ export const createPoolCampusPosting = async (req, res) => {
             ...req.body,
             companyPosted: companyPostedId._id,
             jobType: "Pool-campus",
+            visibleTo: "College", 
+            jobPosted: "Company", 
         };
         const newPosting = await createPostingService(postingData);
         if (!newPosting) {

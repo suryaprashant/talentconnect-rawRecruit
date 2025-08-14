@@ -14,13 +14,14 @@ axiosClient.defaults.timeout = 10000;
 axiosClient.defaults.withCredentials = true;
 
 export function getRegisteredColleges() {
-  return axiosClient.get(`/company/dashboard/oncampus/registeredcampus`)
+  return axiosClient.get(`/api/student-dashboard/on-campus`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
 
+
 export function getCollegeDetail(collegeId) {
-  return axiosClient.get(`/company/dashboard/oncampus/registeredcampus/${collegeId}`)
+  return axiosClient.get(`/api/student-dashboard/on-campus/company/${collegeId}`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

@@ -32,23 +32,26 @@ export const poolCampusRegister = async (req, res) => {
   }
 }
 
-export const getAllRegistrations = async (req, res) => {
-  try {
-    const response = await PoolCampusHiring.find()
-      .populate({
-        path: 'companyId',
-        select: 'companyDetails profileImage', // Add fields you need
-      })
-      .lean()
-      .sort({ createdAt: -1 }); // Sort by creation date, most recent first
-    res.status(200).json({ success: true, data: response });
+export const getAllRegistrations = async (req, res) => { 
+   try {
+    const response = await JobPostingTable.find({ 
+     jobType: "Pool-campus",
+     visibleTo: "College"
+    })
+     .populate({
+       path: 'companyPosted',
+       select: 'companyDetails profileImage',
+     })
+     .lean()
+     .sort({ createdAt: -1 });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
+ res.status(200).json({ success: true, data: response });
 
-}
+} catch (err) {
+ console.error(err);
+ res.status(500).json({ error: err.message });
+ }
+};
 
 export const getJobById = async (req, res) => {
   const { id } = req.params;

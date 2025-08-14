@@ -3,6 +3,7 @@ import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboarding
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 // import { oncampusApplicationService, poolcampusApplicationService } from "../services/Application.service.js";
 import OnCampusApplication from "../models/oncampusApplicationModel.js";
+import { JobPostingTable } from "../models/jobPostingsModel.js";
 
 export const submitRegistration = async (req, res) => {
   try {
@@ -51,7 +52,7 @@ export const getAllRegistrations = async (req, res) => {
 export const getRegistrationDetail = async (req, res) => {
   const { id } = req.params;
   try {
-    const response = await Registration.findById(id)
+    const response = await JobPostingTable.findById(id)
       .populate({
         path: 'companyPosted',
         select: 'companyDetails profileImage hiringPreferences',
