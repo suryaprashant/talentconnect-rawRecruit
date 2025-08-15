@@ -196,6 +196,7 @@ import EmployerProfile from "./pages/Employer/Dashboard/CompanyProfile";
 import LinkedInCallback from "./pages/auth/LinkedInCallback";
 import InvitationsPage from "./pages/InvitationsPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
+import PoolCampusPlacement from "./pages/college/ServiceRequest/PoolCampusPlacement/PoolCampus";
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -464,6 +465,7 @@ function AppRoutes() {
 
               {/* service request  */}
               <Route path= 'service-request/campus-placement' element={<CampusPlacement/>} />
+              <Route path= 'service-request/poolcampus-placement' element={<PoolCampusPlacement/>} />
               <Route path= 'service-request/student-training-programs' element={<StudentTraining/>} />
               <Route path= 'service-request/seminars' element={<Seminar/>} />
 

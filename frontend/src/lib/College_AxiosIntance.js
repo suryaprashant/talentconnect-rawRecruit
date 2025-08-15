@@ -43,3 +43,15 @@ export function getOncampusJobs() {
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
+
+export function getPoolCampusForCompany(){
+  return axiosClient.get(`/api/student-dashboard/pool-campus/company`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
+export function getPoolCampusJobByIdForCompany(jobId) {
+  return axiosClient.get(`/api/student-dashboard/pool-campus/company/${jobId}`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}

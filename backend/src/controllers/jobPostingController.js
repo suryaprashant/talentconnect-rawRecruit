@@ -103,9 +103,9 @@ export const createPoolCampusCollegeRequest = async (req, res) => {
         }
         const postingData = {
             ...req.body,
-            companyPosted: companyPostedId._id,
+            collegePosted: companyPostedId._id,
             jobType: "Pool-campus",
-            jobPosted: "College",
+            visibleTo: "Company", // Default visibility for college requests
         };
         const newPosting = await createPostingService(postingData);
         if (!newPosting) {
@@ -117,8 +117,6 @@ export const createPoolCampusCollegeRequest = async (req, res) => {
         sendError(res, 500, "Internal server error");
     }
 }
-
-
 
 export const createPoolCampusPosting = async (req, res) => {
     try {
@@ -133,7 +131,7 @@ export const createPoolCampusPosting = async (req, res) => {
             companyPosted: companyPostedId._id,
             jobType: "Pool-campus",
             visibleTo: "College", 
-            jobPosted: "Company", 
+             
         };
         const newPosting = await createPostingService(postingData);
         if (!newPosting) {

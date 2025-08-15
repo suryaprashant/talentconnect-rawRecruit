@@ -150,6 +150,38 @@ export const getPoolCampusJobByIdForCollege = async (req, res) => {
   }
 }
 
+export const getPoolCampusForCompany = async(req, res) =>{
+    try{
+        const response = await JobPostingTable.find({
+            jobType: "Pool-campus",
+            visibleTo: "Company"
+        })
+        .populate({ path: 'collegePosted', select: 'collegeUniversityDetails profileImage profileAchievements' })
+        .lean() 
+        .sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: response });    
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({ error: err.message });
+
+    }    
+}
+
+export const getPoolCampusJobByIdForCompany = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const response = await JobPostingTable.findById(id)
+            .populate({path: 'collegePosted', select: 'collegeUniversityDetails profileImage profileAchievements'})
+            .lean();
+        res.status(200).json(response);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+};
+
 export const getJobPostings = async (req, res) => {
     try {
         const postings = await getJobPostingsByJobTypeService("Job-posting");

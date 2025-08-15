@@ -61,6 +61,12 @@ function CollegeSidebar({ activePath }) {
           label="Campus Placement" 
           active={activePath === '/service-request/campus-placement'} 
         />
+           <SidebarNavItem 
+          to="/service-request/poolcampus-placement" 
+          icon={<FiBriefcase />} 
+          label="PoolCampus Placement" 
+          active={activePath === '/service-request/poolcampus-placement'} 
+        />
         <SidebarNavItem 
           to="/service-request/student-training-programs" 
           icon={<FiBook />} 

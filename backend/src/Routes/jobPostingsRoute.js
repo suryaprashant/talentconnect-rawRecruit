@@ -12,6 +12,8 @@ router.post("/on-campus", secureRoute , createOnCampusPosting);
 
 router.post("/pool-campus", secureRoute , createPoolCampusPosting);
 
+router.post("/pool-campus/college-request", secureRoute , createPoolCampusCollegeRequest); // Add route for college request
+
 router.post("/job-posting", secureRoute , createJobPosting);
 
 router.post("/internship-posting", secureRoute , createInternshipPosting);
