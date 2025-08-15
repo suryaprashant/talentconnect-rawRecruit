@@ -1316,7 +1316,9 @@ const PoolJobDetailsPage = () => {
   const handleApply = async () => {
     try {
       const response = await ApplyForPoolCampus(id);
-      if (response.success === 'true') alert("Applied");
+      if (response.success === true) alert("Applied");
+      // }
+      // else alert("Application Closed!")
     } catch (error) {
       console.log("Error: ", error);
     }

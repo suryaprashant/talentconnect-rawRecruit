@@ -26,14 +26,16 @@ export function getCompanyPostingForOncampusDetail(jobId) {
     .catch(error => console.log("Error: ", error));
 }
 
+// application
+
 export function ApplyForPoolCampus(jobId) {
-  return axiosClient.post(`/api/hiringDrive/poolcampus/apply`, { jobId: jobId })
+  return axiosClient.post(`/application/college/poolcampus`, { jobId: jobId })
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
 
 export function ApplyForOnCampus(jobId) {
-  return axiosClient.post(`/api/rawrecruit/oncampus/apply`, { jobId: jobId })
+  return axiosClient.post(`/application/college/oncampus`, { jobId: jobId })
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

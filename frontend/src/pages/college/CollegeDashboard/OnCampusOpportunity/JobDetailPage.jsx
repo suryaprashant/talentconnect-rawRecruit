@@ -729,9 +729,9 @@ const JobDetailPage = () => {
   const handleApply = async () => {
     try {
       const response = await ApplyForOnCampus(id);
-      if (response.success === 'true') {
-        alert("Applied");
-      }
+      if (response.success === true) alert("Applied");
+      // }
+      // else alert("Application Closed!")
     } catch (error) {
       console.log("Error: ", error);
       alert("Failed to apply.");

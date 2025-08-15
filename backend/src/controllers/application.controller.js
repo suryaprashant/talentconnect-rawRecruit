@@ -3,6 +3,7 @@ import {
     createApplicationService,
     fetchApplicationStatusService,
     fetchApplicationsByJobService,
+    fetchCollegeApplicationsByJobService,
     getApplicationService,
     saveJobService,
     // getApplicationService, 
@@ -102,16 +103,15 @@ export async function createIntershipApplication(req, res) {
 
 // oncampus
 export async function createOncampusApplication(req, res) {
-    const { driveId } = req.body;
+    const { jobId } = req.body;
     const userId = req.user._id;
 
     try {
         // to get collegeId from college database
         const user = await getCollegeService(userId);
+        if (user.data.length == 0 || !jobId) return res.status(404).json({ msg: "Invalid" });
 
-        if (!user || !driveId) return res.status(404).json({ msg: "Invalid" });
-
-        const application = await createApplicationService(user.data[0]._id, req.user.userType, driveId, "On-campus");
+        const application = await createApplicationService(user.data[0]._id, req.user.userType, jobId, "On-campus");
         if (application.success === false) return res.status(403).json({ msg: application.message });
 
         res.status(201).json(application);
@@ -123,17 +123,17 @@ export async function createOncampusApplication(req, res) {
 
 // poolcampus
 export async function createPoolcampusApplication(req, res) {
-    const { driveId } = req.body;
+    const { jobId } = req.body;
     const userId = req.user._id;
 
     try {
         // to get collegeId from college database
         const user = await getCollegeService(userId);
 
-        if (!user || !driveId) return res.status(404).json({ msg: "Invalid" });
-        if (await getApplicationService(user.data[0]._id, req.user.userType, driveId, "Pool-campus") === true) return res.status(403).json({ msg: "Already Applied" });
+        if (!user || !jobId) return res.status(404).json({ msg: "Invalid" });
+        if (await getApplicationService(user.data[0]._id, req.user.userType, jobId, "Pool-campus") === true) return res.status(403).json({ msg: "Already Applied" });
 
-        const application = await createApplicationService(user.data[0]._id, req.user.userType, driveId, "Pool-campus");
+        const application = await createApplicationService(user.data[0]._id, req.user.userType, jobId, "Pool-campus");
         if (application.success === false) return res.status(403).json({ msg: application.message });
 
         res.status(201).json(application);
@@ -199,13 +199,30 @@ export async function getInternshipUserApplication(req, res) {
 
 // action by company
 
-// offcampus
+// offcampus and joblisting
 export async function getApplicationsByJob(req, res) {
     const { jobId, jobType } = req.query;
     if (!jobId || !jobType) return res.status(404).json({ msg: "Job not found!" });
 
     try {
         const response = await fetchApplicationsByJobService(jobId, jobType);
+
+        // to be implement -- sorting feature like ATS
+
+        res.status(200).json(response.data);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ Error: "Internal server error" });
+    }
+}
+
+// oncampus and poolcampus
+export async function getCollegeApplicationsByJob(req, res) {
+    const { jobId, jobType } = req.query;
+    if (!jobId || !jobType) return res.status(404).json({ msg: "Job not found!" });
+
+    try {
+        const response = await fetchCollegeApplicationsByJobService(jobId, jobType);
 
         // to be implement -- sorting feature like ATS
 

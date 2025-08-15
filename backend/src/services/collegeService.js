@@ -2,7 +2,7 @@ import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboarding
 
 export async function getCollegeService(userId) {
     try {
-        const college = await collegeOnboardingModel.findOne({ userId }).lean();
+        const college = await collegeOnboardingModel.find({ userId: userId }).lean();
         return { success: true, data: college };
     } catch (error) {
         console.log("Error: ", error.message);

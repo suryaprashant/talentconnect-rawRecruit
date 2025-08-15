@@ -84,6 +84,19 @@ export function getApplicationsForJob(jobId, jobType) {
     .catch(error => console.log("Error: ", error));
 }
 
+export function getCollegeApplicationsForJob(jobId, jobType) {
+  return axiosClient.get(`application/manage/college`,
+    {
+      params: {
+        jobId: jobId,
+        jobType: jobType
+      }
+    }
+  )
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
 // shortlisted
 export function getShorlistedCandidateByCompany() {
   return axiosClient.get(`/application/offcampus/shortlisted`)
