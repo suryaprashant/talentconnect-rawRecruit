@@ -266,7 +266,7 @@ function OffCampusJobDetail() {
           </div>
           <div className="flex items-center">
             <div className="text-sm text-gray-600 mr-1">Work Mode</div>
-            <div>{jobDetail?.workmode}</div>
+            <div>{jobDetail?.workMode}</div>
           </div>
         </div>
       </section>
