@@ -1,5 +1,6 @@
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import {
+    ChangeStatusService,
     createApplicationService,
     fetchApplicationStatusService,
     fetchApplicationsByJobService,
@@ -227,6 +228,55 @@ export async function getCollegeApplicationsByJob(req, res) {
         // to be implement -- sorting feature like ATS
 
         res.status(200).json(response.data);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ Error: "Internal server error" });
+    }
+}
+
+// shortlist/accept candidate/college
+export async function shortlistApplicant(req, res) {
+    const { applicationId } = req.params;
+    if (!applicationId) return res.status(404).json({ msg: "Application not found!" });
+    try {
+        const response = await ChangeStatusService(applicationId, "Shortlisted");
+
+        // service -> send mail to candidate
+
+        if (response.success === true) return res.status(200).json(response);
+        return res.status(404).json(response);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ Error: "Internal server error" });
+    }
+}
+
+export async function rejectApplicant(req, res) {
+    const { applicationId } = req.params;
+    if (!applicationId) return res.status(404).json({ msg: "Application not found!" });
+    try {
+        const response = await ChangeStatusService(applicationId, "Rejected");
+
+        // service -> send mail to candidate
+
+        if (response.success === true) return res.status(200).json(response);
+        return res.status(404).json(response);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ Error: "Internal server error" });
+    }
+}
+
+export async function acceptApplicant(req, res) {
+    const { applicationId } = req.params;
+    if (!applicationId) return res.status(404).json({ msg: "Application not found!" });
+    try {
+        const response = await ChangeStatusService(applicationId, "Accepted");
+
+        // service -> send mail to candidate
+
+        if (response.success === true) return res.status(200).json(response);
+        return res.status(404).json(response);
     } catch (error) {
         console.log("Error: ", error);
         res.status(500).json({ Error: "Internal server error" });

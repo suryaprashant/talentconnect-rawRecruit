@@ -97,9 +97,28 @@ export function getCollegeApplicationsForJob(jobId, jobType) {
     .catch(error => console.log("Error: ", error));
 }
 
-// shortlisted
+// get shortlisted candidate
 export function getShorlistedCandidateByCompany() {
   return axiosClient.get(`/application/offcampus/shortlisted`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
+// shortlist candidate
+export function shortlistCandidate(applicationId) {
+  return axiosClient.patch(`/application/manage/shortlist/${applicationId}`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+// reject
+export function rejectCandidate(applicationId) {
+  return axiosClient.patch(`/application/manage/reject/${applicationId}`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+// accept candidate
+export function acceptCandidate(applicationId) {
+  return axiosClient.patch(`/application/manage/accept/${applicationId}`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

@@ -146,7 +146,8 @@ export async function fetchApplicationsByJobService(jobId, jobType) {
             {
                 $match: {
                     job: new mongoose.Types.ObjectId(jobId),
-                    jobType: jobType
+                    jobType: jobType,
+                    // currentStatus not equal to "saved"
                 }
             },
             {
@@ -228,6 +229,29 @@ export async function countApplicationsService(jobId, jobType) {
     try {
         const response = await Application.countDocuments({ job: jobId, jobType: jobType });
         return { success: true, count: response };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed");
+    }
+}
+
+// shortlist application
+export async function ChangeStatusService(applicationId, newStatus) {
+    try {
+        const existing = await Application.findById(applicationId);
+        // console.log("existing response: ", existing);
+        if (existing?.currentStatus === newStatus) {
+            return { success: false, msg: `Already ${newStatus}` };
+        }
+        else if (existing?.currentStatus === "Applied" || existing?.currentStatus === "Shortlisted" || existing?.currentStatus === "Accepted") {
+            existing.currentStatus = newStatus;
+            existing.statusHistory.push({ status: newStatus });
+            await existing.save();
+            return { success: true, msg: `status changed to: ${newStatus}` };
+        }
+        else {
+            return { success: false, msg: "Error" };
+        }
     } catch (error) {
         console.log("Error: ", error.message);
         throw new Error("Failed");
