@@ -27,7 +27,7 @@ export async function saveJobByUser(req, res) {
         if (!jobId || !user) return res.status(404).json({ msg: "User or Job not found!" });
         // if (await getApplicationService(user.data[0]._id, req.user.userType, jobId, jobType).success === true) return res.status(403).json({ msg: "Already Applied" });
 
-        const application = await saveJobService(user.data[0]._id, req.user.userType, jobId, jobType);
+        const application = await saveJobService(user?.data[0]._id, req?.user.userType, jobId, jobType);
         if (application.success === false) return res.status(403).json({ msg: application.message });
         res.status(201).json(application);
     } catch (error) {

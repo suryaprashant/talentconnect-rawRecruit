@@ -682,7 +682,7 @@ import { useState, useEffect } from 'react';
 import { Search, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 import CollegeRequestDetail from './CollegeRequestDetail';
-import { getCollegeApplicationsForJob, getPostedJobs } from '@/lib/Company_AxiosInstance';
+import { acceptCandidate, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 // import { format, isValid } from 'date-fns';
 
 const API_BASE_URL = import.meta.env.VITE_Backend_URL;
@@ -731,7 +731,7 @@ export default function OnCampusJobManagement() {
     setError(null);
     try {
       const response = await getCollegeApplicationsForJob(jobId, jobType)
-      console.log("College: ", response);
+      // console.log("College: ", response);
       setColleges(response.data);
     } catch (err) {
       console.error("Error fetching colleges:", err);
@@ -744,19 +744,23 @@ export default function OnCampusJobManagement() {
 
   const handleUpdateApplicationStatus = async (applicationId, status) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.patch(
-        `${API_BASE_URL}/api/company/applications/${applicationId}/status`,
-        { status },
-        {
-          headers: { 'Authorization': `Bearer ${token}` },
-          withCredentials: true
-        }
-      );
-      if (selectedJob) {
-        fetchCollegesForJob(selectedJob._id);
+      let response;
+      switch (status) {
+        case "Shortlisted":
+          // console.log("res")
+          response = await shortlistCandidate(applicationId);
+          break;
+        case "Rejected":
+          response = await rejectCandidate(applicationId);
+          break;
+        case "Accepted":
+          response = await acceptCandidate(applicationId);
+          break;
+        default:
+          alert("Invalid Action!");
       }
-      alert(`Application status updated to: ${status}`);
+      console.log(response)
+      // if (response.success === true) alert(`Application status updated to: ${status}`);
     } catch (err) {
       console.error("Error updating application status:", err);
       setError(err.response?.data?.message || err.message || "Failed to update status.");
@@ -785,7 +789,7 @@ export default function OnCampusJobManagement() {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentJobs = filteredJobs.slice(startIndex, startIndex + itemsPerPage);
-  console.log("currentJobs: ", currentJobs);
+  // console.log("currentJobs: ", currentJobs);
 
   const handleViewColleges = (job) => {
     if (job.applicationCount === 0) {
@@ -843,11 +847,11 @@ export default function OnCampusJobManagement() {
             <div className="space-y-6">
               {colleges?.map(college => (
                 <CollegeRequestDetail
-                  key={college.applicationId}
+                  key={college._id}
                   collegeApplication={college} // Pass the fully merged college object
-                  onAccept={() => handleUpdateApplicationStatus(college.applicationId, 'Accepted')}
-                  onShortlist={() => handleUpdateApplicationStatus(college.applicationId, 'Shortlisted')}
-                  onReject={() => handleUpdateApplicationStatus(college.applicationId, 'Rejected')}
+                  onAccept={() => handleUpdateApplicationStatus(college._id, 'Accepted')}
+                  onShortlist={() => handleUpdateApplicationStatus(college._id, 'Shortlisted')}
+                  onReject={() => handleUpdateApplicationStatus(college._id, 'Rejected')}
                 />
               ))}
             </div>

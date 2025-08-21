@@ -26,8 +26,14 @@ export function getCompanyPostingForOncampusDetail(jobId) {
     .catch(error => console.log("Error: ", error));
 }
 
-// application
+// save opportunity
+export function SaveOppurtunity(jobId, jobType) {
+  return axiosClient.post(`/application/candidate/saveopportunity`, { jobId: jobId, jobType: jobType })
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
 
+// application
 export function ApplyForPoolCampus(jobId) {
   return axiosClient.post(`/application/college/poolcampus`, { jobId: jobId })
     .then(response => response)
@@ -46,7 +52,7 @@ export function getOncampusJobs() {
     .catch(error => console.log("Error: ", error));
 }
 
-export function getPoolCampusForCompany(){
+export function getPoolCampusForCompany() {
   return axiosClient.get(`/api/student-dashboard/pool-campus/company`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));

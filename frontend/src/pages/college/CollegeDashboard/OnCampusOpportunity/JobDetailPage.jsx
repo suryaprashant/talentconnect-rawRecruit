@@ -598,14 +598,14 @@
 
 
 
-import { ApplyForOnCampus, getCompanyPostingForOncampusDetail } from '@/lib/College_AxiosIntance';
+import { ApplyForOnCampus, getCompanyPostingForOncampusDetail, SaveOppurtunity } from '@/lib/College_AxiosIntance';
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 // Utility function to format date
 const formatDate = (dateString) => {
   if (!dateString || dateString === 'Not Specified') return 'Not Specified';
-  
+
   try {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -636,6 +636,7 @@ const JobDetailPage = () => {
         startDate: formatDate(backendData.startDate) || 'Not Specified',
         endDate: formatDate(backendData.endDate) || 'Not Specified',
         isHybridEvent: false,
+        jobType: backendData.jobType,
 
         companyInfo: {
           website: backendData.companyPosted?.companyDetails?.websiteUrl || 'Not Specified',
@@ -738,6 +739,25 @@ const JobDetailPage = () => {
     }
   };
 
+  const handleSave = async (jobId, jobType) => {
+    console.log("Save: ", jobId, jobType);
+
+    try {
+      const response = await SaveOppurtunity(jobId, jobType);
+      if (response.success === true) alert("Saved");
+      // }
+      // else alert("Application Closed!")
+    } catch (error) {
+      console.log("Error: ", error);
+      alert("Error!");
+    }
+  };
+
+  useEffect(() => {
+    console.log("job", job);
+
+  }, [job]);
+
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -814,7 +834,7 @@ const JobDetailPage = () => {
                 Register Now
               </button>
               <button
-                onClick={() => setIsSaved(!isSaved)}
+                onClick={() => handleSave(job._id, job.jobType)}
                 className={`inline-flex items-center justify-center px-4 py-2 border ${isSaved ? 'border-gray-300 bg-gray-50' : 'border-gray-300 bg-white'} text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none`}
               >
                 <svg
@@ -994,7 +1014,7 @@ const JobDetailPage = () => {
                 </ul>
               </div>
             )}
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="border border-gray-300 rounded p-4">
                 <div className="text-center">
