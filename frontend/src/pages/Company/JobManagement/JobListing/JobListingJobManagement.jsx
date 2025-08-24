@@ -127,9 +127,9 @@ export default function OffCampusJobManagement() {
       <ApplicantDetails
         job={selectedJob}
         onClose={() => setShowJobDetail(false)}
-        onAccept={() => handleAcceptDrive(selectedJob._id)}
-        onShortlist={() => handleShortlistDrive(selectedJob._id)}
-        onReject={() => handleRejectDrive(selectedJob._id)}
+        // onAccept={() => handleAcceptDrive(selectedJob._id)}
+        // onShortlist={() => handleShortlistDrive(selectedJob._id)}
+        // onReject={() => handleRejectDrive(selectedJob._id)}
       />
     );
   }
@@ -246,7 +246,7 @@ export default function OffCampusJobManagement() {
                           {job?.status}
                         </span>
                       </td>
-                      <td className="px-4 py-3">{new Date(job?.endDate).toUTCString().slice(0, 16)}</td>
+                      <td className="px-4 py-3">{new Date(job.endDate).toUTCString().slice(0, 16)}</td>
                       <td className="px-4 py-3">{job.views}</td>
                       <td className="px-4 py-3">{job.applications}</td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>

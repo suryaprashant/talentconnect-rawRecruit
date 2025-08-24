@@ -1197,13 +1197,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { MapPin, Building, Calendar, Globe, Download, Mail, Phone, Linkedin, CheckCircle, Info } from 'lucide-react';
-import { ApplyForPoolCampus } from '@/lib/College_AxiosIntance';
+import { ApplyForPoolCampus, SaveOppurtunity } from '@/lib/College_AxiosIntance';
 
 const PoolJobDetailsPage = () => {
   const { id } = useParams();
   const [jobDetails, setJobDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); 
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -1323,6 +1323,19 @@ const PoolJobDetailsPage = () => {
       console.log("Error: ", error);
     }
   };
+  const handleSave = async (jobId, jobType) => {
+    console.log("Save: ", jobId, jobType);
+
+    try {
+      const response = await SaveOppurtunity(jobId, jobType);
+      if (response.success === true) alert("Saved");
+      // }
+      // else alert("Application Closed!")
+    } catch (error) {
+      console.log("Error: ", error);
+      alert("Error!");
+    }
+  };
 
   if (loading) {
     return (
@@ -1434,7 +1447,9 @@ const PoolJobDetailsPage = () => {
                 className="bg-black text-white px-5 py-2 rounded-md hover:bg-gray-800 transition duration-200">
                 Register Now
               </button>
-              <button className="border border-gray-300 px-4 py-2 rounded-md text-gray-700 hover:bg-gray-50">
+              <button
+                onClick={() => handleSave(jobDetails._id, jobDetails.jobType)}
+                className="border border-gray-300 px-4 py-2 rounded-md text-gray-700 hover:bg-gray-50">
                 Save
               </button>
               <button className="border border-gray-300 px-4 py-2 rounded-md text-gray-700 hover:bg-gray-50">
