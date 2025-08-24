@@ -4,11 +4,12 @@ const jobPostingSchema = new mongoose.Schema({
     
     
     companyPosted: { type: mongoose.Schema.Types.ObjectId, ref: "CompanyProfile" }, 
+    candidatePosted: { type: mongoose.Schema.Types.ObjectId, ref: "Onboarding" },
     collegePosted: { type: mongoose.Schema.Types.ObjectId, ref: "CollegeOnboarding" },
     jobType :{
         type: String,
         required : true ,
-        enum : ["Off-campus" , "On-campus", "Pool-campus" , "Job-posting", "Internship"]
+        enum : ["Off-campus" , "On-campus", "Pool-campus" , "Job-posting", "Internship" , "Refferral"]
     },
     visibleTo: {
         type: String,
@@ -45,14 +46,14 @@ const jobPostingSchema = new mongoose.Schema({
     },
     description : { type: String,  },
     jobRoles: [{ type: String }], 
-    minPackage: {
+    minPackage:{
         currency: { type: String },
         amount: { type: Number }
     },
     studentStreams: [{ type: String }], 
 
     startDate: { type: Date,  },
-    endDate: { type: Date },
+    endDate:{ type: Date },
     rounds: [{ type: String }],
     selectionProcess: [{ type: String }],
     numberOfOpenings: { type: Number },
@@ -75,6 +76,7 @@ const jobPostingSchema = new mongoose.Schema({
     workAuthorization: {
         type: String,
     },
+    workAchievements: [{ type: String }],
     minimumStudents: { type: String }, 
 
 }, { timestamps: true });

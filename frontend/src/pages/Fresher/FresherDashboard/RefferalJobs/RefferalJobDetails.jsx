@@ -1,15 +1,14 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-// import { fetchJobDetails, fetchSimilarJobs } from '../../../../constants/JobListing' // Keep commented if not used
-import JobCard from '@/components/Student/StudentDashboard/IntershipOpportunity/JobCard'; // Ensure this path is correct
-import { ApplyForInternship, getInternshipDetail } from '@/lib/User_AxiosInstance';
 
-const InternJobDetails = () => {
+import JobCard from '@/components/Student/StudentDashboard/IntershipOpportunity/JobCard';
+import { ApplyForInternship, getReferralJobById } from '@/lib/User_AxiosInstance';
+
+const RefferalJobDetails = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const [jobDetails, setJobDetails] = useState(null);
-  const [similarJobs, setSimilarJobs] = useState([]); // Still unused if fetchSimilarJobs is commented
+  const [similarJobs, setSimilarJobs] = useState([]); 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -18,16 +17,11 @@ const InternJobDetails = () => {
       try {
         setIsLoading(true);
 
-        // Fetch job details
-        const response = await getInternshipDetail(jobId);
-        // Backend's findJobListingOpportunityById returns { data: jobObject }, so response.data is the job object directly.
-        // No need for response.data.data here.
+        
+        const response = await getReferralJobById(jobId);
+        
         setJobDetails(response.data);
         console.log("Internship Details:", response.data);
-
-        // Fetch similar jobs (currently commented out, so no change needed here)
-        // const similar = await fetchSimilarJobs(jobId);
-        // setSimilarJobs(similar);
 
         setError(null);
       } catch (err) {
@@ -38,7 +32,7 @@ const InternJobDetails = () => {
       }
     };
 
-    if (jobId) { // Only load if jobId is available
+    if (jobId) { 
       loadJobDetails();
     }
   }, [jobId]);
@@ -83,9 +77,9 @@ const InternJobDetails = () => {
           <p className="text-xl font-semibold">{error || "Internship not found"}</p>
           <button
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={() => navigate('/student-dashboard/internship-opportunities')} // Navigate back to internship listings
+            onClick={() => navigate('/fresher-dashboard/Referral-Jobs')}
           >
-            Back to Internships
+            Back to Referral Jobs
           </button>
         </div>
       </div>
@@ -97,16 +91,16 @@ const InternJobDetails = () => {
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="flex justify-between items-start mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">{jobDetails.jobTitle} Intern At {jobDetails.companyPosted.companyDetails.companyName}</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">{jobDetails.jobTitle}  At {jobDetails?.candidatePosted.experiences?.[0]?.company}</h1>
             {/* Access company name from companyPosted */}
-            <p className="text-gray-600 mb-2">{jobDetails.companyPosted?.companyDetails?.companyName}</p>
-            <p className="text-sm text-gray-500 mb-2">Internship ID: {jobDetails._id}</p>
+            <p className="text-gray-600 mb-2">{jobDetails?.candidatePosted.experiences?.[0]?.company}</p>
+            <p className="text-sm text-gray-500 mb-2">Job ID: {jobDetails._id}</p>
             <div className="flex items-center mb-2">
               <span className="inline-flex items-center mr-4">
                 <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" />
-                </svg>
-                {jobDetails.yearsOfExperience || 'N/A'}
+                </svg>Experiences: 
+                { jobDetails.yearsOfExperience || 'N/A'}
               </span>
               <span className="inline-flex items-center capitalize">
                 <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -133,7 +127,7 @@ const InternJobDetails = () => {
         </div>
 
         <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-3">Internship description</h2>
+          <h2 className="text-xl font-semibold mb-3">Referral Job Description</h2>
           <div className="mb-4">
             <h3 className="font-medium mb-2">About The Role:</h3>
             <p className="text-gray-700">{jobDetails.description}</p> {/* Use 'description' from your schema */}
@@ -191,11 +185,11 @@ const InternJobDetails = () => {
 
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-3">About company</h2>
-          <p className="text-gray-700 mb-4">{jobDetails.companyPosted?.companyDetails?.description || 'No company description available.'}</p>
+          <p className="text-gray-700 mb-4">{jobDetails.candidatePosted?.experiences?.[0]?.description || 'No company description available.'}</p>
 
           <h3 className="font-medium mb-2">Company Info</h3>
           <p className="text-gray-700">
-            <span className="font-medium">Address:</span> {jobDetails.companyPosted?.companyDetails?.companyLocation || 'N/A'} {jobDetails.companyPosted?.companyDetails?.state || ''}, {jobDetails.companyPosted?.companyDetails?.country || ''}
+            <span className="font-medium">Address:</span> {jobDetails.candidatePosted?.locations || 'N/A'} {jobDetails.companyPosted?.companyDetails?.state || ''}, {jobDetails.companyPosted?.companyDetails?.country || ''}
           </p>
         </div>
       </div>
@@ -245,4 +239,4 @@ const InternJobDetails = () => {
   );
 };
 
-export default InternJobDetails;
+export default RefferalJobDetails;

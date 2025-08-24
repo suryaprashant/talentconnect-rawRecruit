@@ -6,7 +6,8 @@ axiosClient.defaults.baseURL = import.meta.env.VITE_Backend_URL;
 
 axiosClient.defaults.headers = {
   'Content-Type': 'application/json',
-  Accept: 'application/json'
+  Accept: 'application/json',
+  
 };
 
 // default 10sec
@@ -113,3 +114,25 @@ export function getInternshipApplicationStatus() {
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
+
+export const postReferralJob = (jobData) => {
+  return axiosClient.post('/api/hiring-channels/referral-posting', jobData)
+    .then(response => response.data)
+    .catch(error => {
+      console.error("Error posting referral job:", error);
+      throw error;
+    });
+}
+
+export function getReferralJobListing() {
+    return axiosClient.get(`/api/student-dashboard/referral-jobs`)
+    .then(response => response)
+    .catch(error => console.log("Error:", error));
+}
+
+export function getReferralJobById(referralJob){
+  return axiosClient.get(`api/student-dashboard/referral-jobs/${referralJob}`)
+  .then(response => response)
+  .catch(error => console.log("Error: ", error));
+}
+

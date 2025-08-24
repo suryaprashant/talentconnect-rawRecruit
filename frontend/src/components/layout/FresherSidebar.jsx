@@ -52,10 +52,10 @@ function FresherSidebar({ activePath }) {
           active={activePath === '/fresher-dashboard/internship-opportunities'} 
         />
         <SidebarNavItem 
-          to="/fresher-dashboard/referral-jobs" 
+          to="/fresher-dashboard/Referral-Jobs" 
           icon={<FiUsers />} 
           label="Referral Jobs" 
-          active={activePath === '/fresher-dashboard/referral-jobs'} 
+          active={activePath === '/fresher-dashboard/Referral-Jobs'} 
         />
         <SidebarNavItem 
           to="/fresher-dashboard/hackathon" 

@@ -1,6 +1,8 @@
 import { createPostingService } from "../services/jobPostingService.js"
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
+import OnboardingModel from "../models/studentonboardingmodel.js";
+
 
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
 const sendError = (res, statusCode, message) => res.status(statusCode).json({ message });
@@ -195,5 +197,32 @@ export const createInternshipPosting = async (req, res) => {
         console.error("Error in createInternshipPosting:", error.message);
         sendError(res, 500, "Internal server error");
     }
+}
+
+export const createRefferralPosting = async (req, res) =>{
+    try{
+        const userId = req.user._id;
+
+        const companyPostedId = await OnboardingModel.findOne({ userId });
+        if (!companyPostedId) {
+            return res.status(404).json({ error: "User profile not found" });
+        }   
+        const postingData = {
+            ...req.body,
+            candidatePosted: companyPostedId._id,
+            jobType: "Refferral",
+        };
+        const newPosting = await createPostingService(postingData);
+        if (!newPosting) {
+            return sendError(res, 500, "Failed to create referral posting");
+        }
+        sendResponse(res, 201, { message: "Referral posting created successfully!", data: newPosting });
+
+    }
+    catch (error) {
+        console.error("Error in createRefferralPosting:", error.message);
+        sendError(res, 500, "Internal server error");
+    }
+    
 }
 

@@ -11,33 +11,16 @@ const JobCard = ({ job, userType }) => {
     e.preventDefault();
     e.stopPropagation();
     setIsSaved(!isSaved);
-    // Here you would also call your API to save/unsave the job
+   
   };
 
-  // Determine job status styling based on its value
-  let statusClasses = '';
-  switch (job.jobStatus) {
-    case 'Open':
-      statusClasses = 'bg-green-100 text-green-800';
-      break;
-    case 'Closed':
-      statusClasses = 'bg-red-100 text-red-800';
-      break;
-    case 'Pending':
-      statusClasses = 'bg-yellow-100 text-yellow-800'; // Using yellow for pending status
-      break;
-    default:
-      statusClasses = 'bg-gray-100 text-gray-800'; // Default styling for unknown status
-  }
-
+ 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden relative">
      
       <div className="absolute top-4 right-4 flex items-center space-x-2">
        
-        <div className={`px-3 py-1 rounded-full text-xs font-semibold ${statusClasses}`}>
-          {job.jobStatus}
-        </div>
+      
 
         <button
           onClick={toggleSave}
@@ -61,7 +44,7 @@ const JobCard = ({ job, userType }) => {
       <div className="p-5">
         <div className="flex flex-col mb-2">
         
-          <Link to={`/${localStorage.getItem('selectedRole')}-dashboard/internship-opportunities/${job._id}`} className="block ">
+          <Link to={`/${localStorage.getItem('selectedRole')}-dashboard/referral-Jobs/${job._id}`} className="block ">
             <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors mb-1">
               {job.jobTitle} Intern
             </h3>
@@ -87,7 +70,7 @@ const JobCard = ({ job, userType }) => {
 
       
         <Link
-          to={`/${localStorage.getItem('selectedRole')}-dashboard/internship-opportunities/${job._id}`}
+          to={`/${localStorage.getItem('selectedRole')}-dashboard/referral-Jobs/${job._id}`}
           className="block w-full py-2 text-center text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors"
         >
           Apply now

@@ -1,6 +1,8 @@
 import { getJobPostingsByCollegeService, getJobPostingsByJobTypeService } from "../../services/jobPostingService.js";
 import CompanyProfile from "../../models/companyDashboard/companyProfileModel.js";
 import { JobPostingTable } from "../../models/jobPostingsModel.js";
+import OnboardingModel from "../../models/studentonboardingmodel.js";
+
 
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
 const sendError = (res, statusCode, message) => res.status(statusCode).json({ message });
@@ -199,3 +201,40 @@ export const getInternshipPostings = async (req, res) => {
         sendError(res, 500, "Internal server error");
     }
 };
+
+export const getReferralJobs = async(req, res) => {
+    try{
+    
+        const userId = req.user._id ;
+        const postId = await OnboardingModel.findOne({userId})
+
+        const candidatePostedId = postId._id ;
+       
+        const response = await JobPostingTable.find({
+            jobType: "Refferral",
+            candidatePosted: { $ne: candidatePostedId }
+        })
+        .lean() 
+        .sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: response });    
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({ error: err.message });
+
+    }    
+}
+
+export const getReferralJobById = async(req, res) =>{
+      const { id } = req.params;
+    try {
+        const response = await JobPostingTable.findById(id)
+            .populate('candidatePosted')
+            .lean();
+        res.status(200).json(response);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+}

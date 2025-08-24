@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
-// Sub-schema for Leadership Experience
+
 const leadershipSchema = new mongoose.Schema({
   organization: String,
   role: String,
   startDate: String,
   endDate: String,
   description: String,
-  certificate: String, // Stores Cloudinary URL
+  certificate: String, 
 });
 const internationalExperienceSchema = new mongoose.Schema({
   country: String,     
@@ -18,7 +18,7 @@ const internationalExperienceSchema = new mongoose.Schema({
 
 });
 
-// Sub-schema for Awards
+
 const awardSchema = new mongoose.Schema({
   title: String,
   organization: String,
@@ -32,15 +32,11 @@ const onboardingSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Auth", // This links to your 'Auth' model
+      ref: "Auth",
       required: true,
-      unique: true, // Ensures one onboarding profile per user
+      unique: true, 
     },
-
-    // Resume (now stores Cloudinary URL)
     resume: String,
-
-    // Basic Info
     name: String,
     email: { type: String, required: true },
     phone: { type: String, required: true },
@@ -57,9 +53,9 @@ const onboardingSchema = new mongoose.Schema(
     specialization: String,
     cgpa: String,
     yearOfGraduation: String,
-    degreeCertificate: String, // Now stores Cloudinary URL
+    degreeCertificate: String, 
 
-    // Job Preferences
+    
     industry: [String],
     jobRoles: [String],
     locations: [String],
@@ -73,7 +69,7 @@ const onboardingSchema = new mongoose.Schema(
       enum: ["part time", "full time", "contract"],
     },
 
-    // Internships or Work Experience
+   
     experiences: [
       {
         company: String,
@@ -81,7 +77,7 @@ const onboardingSchema = new mongoose.Schema(
         startDate: String,
         endDate: String,
         description: String,
-        experienceCertificate: String, // Now stores Cloudinary URL
+        experienceCertificate: String,
       },
     ],
 
