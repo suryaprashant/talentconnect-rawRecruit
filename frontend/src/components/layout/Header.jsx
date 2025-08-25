@@ -243,13 +243,11 @@ import axios from 'axios';
 import SearchBar from '../ui/SearchBar';
 import Avatar from '../ui/Avatar';
 import NotificationsDropdown from './NotificationDropdown';
-
-//  1. Import BOTH dropdown components
 import ProfileSwitchDropdown from '../Employer/ProfileSwitchDropdown';
-import StandardProfileDropdown from './ProfileDropdown'; // Assuming this is the correct name and path
+import StandardProfileDropdown from './ProfileDropdown'; 
 
 function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
-    const [authuser] = useAuth(); // No need for setAuthuser here
+    const [authuser] = useAuth(); 
 
 
     const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -275,7 +273,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
         }
     }, [authuser]);
 
-    // Close dropdowns when clicking outside
+    
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (profileRef.current && !profileRef.current.contains(event.target)) {
@@ -288,6 +286,8 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [setProfileOpen]);
+
+    console.log(authuser)
 
     return (
         <header className="sticky top-0 z-30 flex items-center h-16 px-4 bg-white border-b border-gray-200 shadow-sm">
@@ -329,21 +329,21 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
                             )}
                         </div>
 
-                        {/* Profile Dropdown Section */}
+                       
                         <div className="relative" ref={profileRef}>
                             <button
                                 type="button"
                                 className="flex items-center max-w-xs text-sm rounded-full focus:outline-none"
                                 onClick={() => setProfileOpen(!profileOpen)}
                             >
-                                <Avatar name={authuser.user.name || authuser.user.email} />
+                                <Avatar name={authuser?.user?.name || authuser?.user?.email} />
                                 <span className="hidden ml-2 mr-1 font-medium text-gray-700 md:block">
-                                    {authuser.user.name || authuser.user.email}
+                                    {authuser?.user?.name || authuser?.user?.email}
                                 </span>
                                 <FiChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileOpen ? 'transform rotate-180' : ''}`} />
                             </button>
 
-                            {/* ✅ 2. Conditionally render the correct dropdown */}
+                        
                             {profileOpen && (
                                 authuser.user.userType === 'employer'
                                     ? <ProfileSwitchDropdown />

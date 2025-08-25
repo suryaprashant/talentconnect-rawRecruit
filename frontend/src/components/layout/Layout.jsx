@@ -11,7 +11,7 @@ function Layout({ children }) {
       {/* Sidebar */}
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
       
-      {/* Main content */}
+     
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header 
           sidebarOpen={sidebarOpen} 

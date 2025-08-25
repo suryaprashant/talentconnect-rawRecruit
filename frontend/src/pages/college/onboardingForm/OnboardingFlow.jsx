@@ -116,7 +116,8 @@
 
 import React, { useState } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Import axios for API calls
+import axios from 'axios'; 
+import {useAuth} from '../../../context/AuthProvider'
 
 // Import Page Components
 import Welcome from './Welcome';
@@ -126,7 +127,7 @@ import RecruitmentDetails from './RecruitmentDetails';
 import ProfileAchievements from './ProfileAchievements';
 import TermsAndConditions from './TermsAndConditions';
 
-// Import Shared Component
+
 import ProgressStepper from './ProgressStepper';
 
 // Define step configuration with proper route paths
@@ -146,6 +147,7 @@ const totalVisibleStepperSteps = stepperSteps.length;
 function OnboardingFlow() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [authuser , setAuthUser] = useAuth() ;
 
   const [formData, setFormData] = useState({
     collegeName: '',
@@ -158,7 +160,7 @@ function OnboardingFlow() {
     designation: '',
     officialEmail: '',
     officialMobile: '',
-    linkedinProfile: '', // This will be used for CoordinatorDetails
+    linkedinProfile: '', 
     programsOffered: '', // Changed to string for single select dropdown
     popularCoursesForRecruitment: '', // Changed to string for single select dropdown
     preferredHiringCompanies: '', // Changed to string for single select dropdown
@@ -214,7 +216,7 @@ function OnboardingFlow() {
         pincode: formData.pincode,
       }));
 
-      // Append placementCoordinatorDetails
+   
       data.append('placementCoordinatorDetails', JSON.stringify({
         coordinatorName: formData.coordinatorName,
         designation: formData.designation,
@@ -273,7 +275,21 @@ function OnboardingFlow() {
         },
       });
 
-     // console.log('Submission successful:', response.data);
+    if (response.data && response.data.user) {
+  const updatedUser = response.data.user;
+   const mergedUser = { ...updatedUser, ...authuser.user };
+
+       const finalAuthUser = {
+        ...authuser,
+        user: mergedUser,
+       };
+       
+       setAuthUser(finalAuthUser);
+       localStorage.setItem('ChatAppUser', JSON.stringify(mergedUser));
+ }
+
+
+    
       alert('College onboarding form submitted successfully!');
       navigate('/home'); // Redirect after successful submission
     } catch (error) {

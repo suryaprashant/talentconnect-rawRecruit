@@ -143,21 +143,32 @@ function SignupPage() {
       if (response.status === 201) {
         toast.success('Signup successful!');
         const userData = response.data;
-        console.log("userData: ", userData);
-        setAuthUser({
-          user: {
-            _id: userData._id,
-            email: userData.email,
-            name: userData.name,
-            userType: userData.userType,
-            profileImage: userData.profileImage || null // 
-          }
-        });
+       // console.log("userData: ", userData);
+        // setAuthUser({
+        //   user: {
+        //     _id: userData._id,
+        //     email: userData.email,
+        //     name: userData.name || userData.email,
+        //     userType: userData.userType || selectedRole,
+        //     profileImage: userData.profileImage || null 
+        //   }
+        // });
 
-        localStorage.setItem('ChatAppUser', JSON.stringify(userData)); // Store the relevant user data
-        localStorage.setItem('token', userData.token); // Assuming token is directly in userData
+        const authUserData = {
+        user: {
+          _id: userData._id,
+          email: userData.email,
+          name: userData.name || userData.email,
+          userType: userData.userType || selectedRole,
+          profileImage: userData.profileImage || null
+        }
+      };
 
-        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`; // Assuming token is available here
+          setAuthUser(authUserData);
+      localStorage.setItem('ChatAppUser', JSON.stringify(authUserData));
+      localStorage.setItem('token', userData.token);
+
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
 
         const onboardingRoutes = {
           candidate: '/student-form',
