@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import ShortlistDrive from '@/components/company/AcceptedCollegeOrCandidate/OnCampus/ShortlistDrive';
-// import { fetchShortlistedDrives, getMockDrives } from '../../../../constants/shortlist';
-import { getAcceptedCampus } from '@/lib/Company_AxiosInstance';
+import ShortlistedDrives from '@/components/company/AcceptedCollegeOrCandidate/OnCampus/ShortlistDrive';
+import { fetchShortlistedDrives, getMockDrives } from '../../../../constants/shortlist';
+import { getAcceptedCandidateByCompany } from '@/lib/Company_AxiosInstance';
 
-const AcceptedShortlistDrive = () => {
-  const [drives, setDrives] = useState([]);
+const AcceptedShortlistedDrive = () => {
+  const [drives, setDrives] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({
@@ -26,7 +26,7 @@ const AcceptedShortlistDrive = () => {
     try {
       setLoading(true);
 
-      let data;
+      // let data;
       // if (import.meta.env.VITE_USE_MOCK_API === 'true') {
       //   data = getMockDrives({
       //     page: pagination.currentPage,
@@ -45,11 +45,12 @@ const AcceptedShortlistDrive = () => {
       //   });
       // }
 
-      const response=await getAcceptedCampus('682c583220f4bba79670fcfa');
-      setDrives(response?.data.data);
+      const data = await getAcceptedCandidateByCompany("college","On-campus");
+      console.log("res: ", data.data.response);
+      setDrives(data?.data.response);
       setPagination(prev => ({
         ...prev,
-        totalItems: data?.totalItems
+        totalItems: data?.data.response.length
       }));
       setError(null);
     } catch (err) {
@@ -81,7 +82,7 @@ const AcceptedShortlistDrive = () => {
   return (
     <div className="bg-gray-50 min-h-screen py-10 px-4 flex justify-center items-start">
       <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg p-6">
-        <ShortlistDrive 
+        <ShortlistedDrives
           drives={drives}
           loading={loading}
           error={error}
@@ -95,4 +96,4 @@ const AcceptedShortlistDrive = () => {
   );
 };
 
-export default AcceptedShortlistDrive;
+export default AcceptedShortlistedDrive;

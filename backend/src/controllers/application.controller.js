@@ -4,6 +4,7 @@ import {
     createApplicationService,
     fetchApplicationStatusService,
     fetchApplicationsByJobService,
+    fetchCandidatesbyStatus,
     fetchCollegeApplicationsByJobService,
     getApplicationService,
     saveJobService,
@@ -286,11 +287,13 @@ export async function acceptApplicant(req, res) {
 // getAllshortlistedcandidates
 export async function getShortlistedCandidatesByCompany(req, res) {
     const companyId = req.user._id;
+    const { applicantType, jobType } = req.query;
+    if (!applicantType || !jobType) return res.status(404).json({ msg: "Applicant not defined!" });
 
     try {
         const company = await CompanyProfile.find({ userId: companyId }).lean();
         if (!company) return res.status(404).json({ msg: "company not found!" });
-        const response = await fetchShortlistedCandidates(company[0]._id, "Shortlisted");
+        const response = await fetchCandidatesbyStatus(company[0]._id, "Shortlisted", applicantType, jobType);
         // console.log(response);
         res.status(200).json(response);
     } catch (error) {
@@ -302,11 +305,13 @@ export async function getShortlistedCandidatesByCompany(req, res) {
 // getAllAcceptedcandidates
 export async function getAcceptedCandidatesByCompany(req, res) {
     const companyId = req.user._id;
+    const { applicantType, jobType } = req.query;
+    if (!applicantType || !jobType) return res.status(404).json({ msg: "Applicant not defined!" });
 
     try {
         const company = await CompanyProfile.find({ userId: companyId }).lean();
         if (!company) return res.status(404).json({ msg: "company not found!" });
-        const response = await fetchShortlistedCandidates(companyId, "Accepted");
+        const response = await fetchCandidatesbyStatus(company[0]._id, "Accepted", applicantType, jobType);
         // console.log(response);
         res.status(200).json(response);
     } catch (error) {

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import PoolCampusDrives from '@/components/company/ShortlistedCollege/PoolCampusListing/PoolCampusDrive';
+import ShortlistedDrives from '@/components/company/ShortlistedCollege/OnCampusListing/ShortlistedDrives';
 import { fetchShortlistedDrives, getMockDrives } from '../../../../constants/shortlist';
+import { getShorlistedCandidateByCompany } from '@/lib/Company_AxiosInstance';
 
 const PoolCampusShortlistDrive = () => {
-  const [drives, setDrives] = useState([]);
+  const [drives, setDrives] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({
@@ -25,11 +26,13 @@ const PoolCampusShortlistDrive = () => {
     try {
       setLoading(true);
 
-      // Choose between real API and mock data
-      let data;
+      // let data;
       // if (import.meta.env.VITE_USE_MOCK_API === 'true') {
       //   data = getMockDrives({
       //     page: pagination.currentPage,
+      //     batchYear: filters.batchYear,
+      //     location: filters.location,
+      //     search: filters.searchTerm,
       //     itemsPerPage: pagination.itemsPerPage
       //   });
       // } else {
@@ -42,10 +45,12 @@ const PoolCampusShortlistDrive = () => {
       //   });
       // }
 
-      setDrives(data?.drives);
+      const data = await getShorlistedCandidateByCompany("college", "Pool-campus");
+      // console.log("res: ", data.data.response);
+      setDrives(data?.data.response);
       setPagination(prev => ({
         ...prev,
-        totalItems: data?.totalItems
+        totalItems: data?.data.response.length
       }));
       setError(null);
     } catch (err) {
@@ -68,7 +73,6 @@ const PoolCampusShortlistDrive = () => {
       ...prev,
       [filterType]: value
     }));
-    // Reset to first page when filters change
     setPagination(prev => ({
       ...prev,
       currentPage: 1
@@ -78,7 +82,7 @@ const PoolCampusShortlistDrive = () => {
   return (
     <div className="bg-gray-50 min-h-screen py-10 px-4 flex justify-center items-start">
       <div className="w-full max-w-5xl bg-white rounded-2xl shadow-lg p-6">
-        <PoolCampusDrives
+        <ShortlistedDrives
           drives={drives}
           loading={loading}
           error={error}

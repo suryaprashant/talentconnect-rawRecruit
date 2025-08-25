@@ -97,9 +97,26 @@ export function getCollegeApplicationsForJob(jobId, jobType) {
     .catch(error => console.log("Error: ", error));
 }
 
-// get shortlisted candidate
-export function getShorlistedCandidateByCompany() {
-  return axiosClient.get(`/application/offcampus/shortlisted`)
+// get shortlisted applicant
+export function getShorlistedCandidateByCompany(applicantType, jobType) {
+  return axiosClient.get(`/application/manage/shortlist/`, {
+    params: {
+      applicantType: applicantType,
+      jobType: jobType
+    }
+  })
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
+// get accepted applicant
+export function getAcceptedCandidateByCompany(applicantType, jobType) {
+  return axiosClient.get(`/application/manage/accept/`, {
+    params: {
+      applicantType: applicantType,
+      jobType: jobType
+    }
+  })
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

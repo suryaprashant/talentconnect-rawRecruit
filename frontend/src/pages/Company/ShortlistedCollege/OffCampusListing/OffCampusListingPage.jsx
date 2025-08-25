@@ -14,8 +14,8 @@ export default function OffCampusListingPage() {
 
   const getCandidates = async () => {
     try {
-      const response = await getShorlistedCandidateByCompany();
-      console.log(response);
+      const response = await getShorlistedCandidateByCompany("user","Off-campus");
+      console.log("applicants: ", response);
       setCandidates(response.data.response);
     } catch (error) {
       console.log("Error: ", error);
@@ -155,14 +155,14 @@ export default function OffCampusListingPage() {
               <div className="relative w-16 h-16 mr-4">
                 <img
                   src="/api/placeholder/60/60"
-                  alt={candidate?.user.name}
+                  alt={candidate?.applicant.name}
                   className="rounded-full"
                 />
               </div>
 
               {/* Name and position */}
               <div className="flex-grow">
-                <h2 className="text-lg font-semibold">{candidate?.user.name}</h2>
+                <h2 className="text-lg font-semibold">{candidate?.applicant.name}</h2>
                 <p className="text-gray-600">{candidate.jobTitle[0]}</p>
                 <span className={`
                   text-sm px-2 py-1 rounded-full inline-block mt-1
@@ -179,7 +179,7 @@ export default function OffCampusListingPage() {
             <div className="flex items-center text-sm text-gray-600 mb-2">
               <span className="flex items-center">
                 <Bookmark size={16} className="mr-1" />
-                {candidate?.user.college} • CGPA: {candidate?.user.cgpa}
+                {candidate?.applicant.college} • CGPA: {candidate?.applicant.cgpa}
               </span>
             </div>
 

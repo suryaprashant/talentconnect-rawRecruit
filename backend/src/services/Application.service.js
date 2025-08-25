@@ -453,61 +453,77 @@ export async function ChangeStatusService(applicationId, newStatus) {
 //     }
 // }
 
-// // offcampus shorlisted candidate for all jobs
-// export async function fetchShortlistedCandidates(companyId, targetStatus) {
-//     try {
-//         // filter the candidates
-//         const candidates = await OffCampusApplication.aggregate([
-//             {
-//                 $lookup: {
-//                     from: 'hiringdrives',
-//                     localField: 'job',
-//                     foreignField: '_id',
-//                     as: 'jobDetails'
-//                 }
-//             },
-//             // { $unwind: '$jobDetails' },
-//             {
-//                 $match: {
-//                     'jobDetails.companyId': new mongoose.Types.ObjectId(companyId)
-//                 }
-//             },
-//             {
-//                 $match: {
-//                     currentStatus: targetStatus
-//                 }
-//             },
-//             {
-//                 $lookup: {
-//                     from: 'onboardings',
-//                     localField: 'user',
-//                     foreignField: '_id',
-//                     as: 'userDetails'
-//                 }
-//             },
-//             {
-//                 $unwind: {
-//                     path: '$userDetails',
-//                     preserveNullAndEmptyArrays: true
-//                 }
-//             },
-//             // custom project fields
-//             {
-//                 $project: {
-//                     currentStatus: 1,
-//                     statusHistory: 1,
-//                     jobTitle: '$jobDetails.jobRoles',
-//                     user: { cgpa: '$userDetails.cgpa', college: '$userDetails.college', name: '$userDetails.name' }
-//                 }
-//             }
-//         ]);
+// getshorlisted candidate by company
+export async function fetchCandidatesbyStatus(companyId, targetStatus, applicantType, jobType) {
+    try {
+        // determine which collection to lookup based on applicantType
+        let fromCollection, projectApplicant;
 
-//         return { success: true, response: candidates };
-//     } catch (error) {
-//         console.log("Error: ", error.message);
-//         throw new Error("Failed to fetch");
-//     }
-// }
+        if (applicantType === "user") {
+            fromCollection = "onboardings";
+            projectApplicant = {
+                cgpa: "$applicantDetails.cgpa",
+                college: "$applicantDetails.college",
+                name: "$applicantDetails.name"
+            };
+        } else if (applicantType === "college") {
+            fromCollection = "collegeonboardings";
+            projectApplicant = {
+                college: "$applicantDetails.collegeUniversityDetails"
+            };
+        } else {
+            throw new Error(`Unsupported applicantType: ${applicantType}`);
+        }
+
+        const candidates = await Application.aggregate([
+            // Lookup job details
+            {
+                $lookup: {
+                    from: "jobpostingtables",
+                    localField: "job",
+                    foreignField: "_id",
+                    as: "jobDetails"
+                }
+            },
+            {
+                $match: {
+                    "jobDetails.companyPosted": new mongoose.Types.ObjectId(companyId),
+                    currentStatus: targetStatus,
+                    // applicantType: applicantType,
+                    jobType: jobType
+                }
+            },
+            // left-outer join applicant details based on type
+            {
+                $lookup: {
+                    from: fromCollection,
+                    localField: "applicant",
+                    foreignField: "_id",
+                    as: "applicantDetails"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$applicantDetails",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    currentStatus: 1,
+                    statusHistory: 1,
+                    jobTitle: "$jobDetails",
+                    applicant: projectApplicant
+                }
+            }
+        ]);
+
+        return { success: true, response: candidates };
+    } catch (error) {
+        console.log("Error in fetchCandidatesbyStatus:", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
 
 // // export async function getAcceptedOnCampusService(companyId) {
 // //     try {
