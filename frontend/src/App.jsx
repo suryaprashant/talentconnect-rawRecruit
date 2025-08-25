@@ -197,6 +197,10 @@ import LinkedInCallback from "./pages/auth/LinkedInCallback";
 import InvitationsPage from "./pages/InvitationsPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
 import PoolCampusPlacement from "./pages/college/ServiceRequest/PoolCampusPlacement/PoolCampus";
+import RefferalJobPosting from './pages/Fresher/FresherDashboard/RefferalJobs/RefferalJobListing'
+import RefferalJobDetail from './pages/Fresher/FresherDashboard/RefferalJobs/RefferalJobDetails'
+import RefferalPosting from './pages/Professional/Dashboard/RefferalJobs/RefferalJobListing'
+import RefferalDetail from './pages/Professional/Dashboard/RefferalJobs/RefferalJobDetails'
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -301,6 +305,8 @@ function AppRoutes() {
               <Route path="/fresher-dashboard/internship-opportunities/:jobId" element={<FInternJobDetails />} />
               <Route path="/fresher-dashboard/off-campus-listings" element={<FOffCampusJobListings />} />
               <Route path="/fresher-dashboard/off-campus-listings/:jobId" element={<FOffCampusJobDetail/>} />
+              <Route path= "/fresher-dashboard/Referral-Jobs" element={<RefferalJobPosting/>} />
+              <Route path="/fresher-dashboard/Referral-Jobs/:jobId" element= {<RefferalJobDetail/>} />
               <Route path="/fresher-dashboard/hackathon" element={<FresherHackathon/>} />
               <Route path="/fresher-dashboard/hackathon/:id" element={<FresherDetail />} />
               {/* service request  */}
@@ -323,6 +329,8 @@ function AppRoutes() {
               <Route path="/professional-dashboard/job-listing/:jobId" element={<ProfessionalJobDetails />} />
               <Route path="/professional-dashboard/hackathon" element={<ProfessionalHackathon/>} />
               <Route path="/professional-dashboard/hackathon/:id" element={<ProfessionalDetail />} />
+               <Route path= "/professional-dashboard/referral-jobs" element={<RefferalPosting/>} />
+              <Route path="/professional-dashboard/referral-jobs/:jobId" element= {<RefferalDetail/>} />
 
               <Route path ='professional/service-request' element={<RefPostingPage/>}/>
               <Route path ='professional/service-request/post' element={<PostReferralJobPage/>}/>

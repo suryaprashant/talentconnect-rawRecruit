@@ -7,10 +7,10 @@ const JobListSection = ({ title, description, jobs }) => {
   const [sortOption, setSortOption] = useState('relevance');
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
 
-  // Ensure jobs is an array before filtering/sorting
+
   const safeJobs = Array.isArray(jobs) ? jobs : [];
 
-  // Filter jobs based on search term
+
   const filteredJobs = safeJobs.filter(job => {
     const jobTitleMatch = job.jobTitle?.toLowerCase().includes(searchTerm.toLowerCase());
     const locationMatch = job.location?.some(loc => loc.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -132,7 +132,7 @@ const JobListSection = ({ title, description, jobs }) => {
         ))}
       </div>
 
-      {safeJobs.length > 6 && ( // Use safeJobs for length check
+      {safeJobs.length > 6 && (
         <div className="flex justify-end mt-4">
           <button className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
             View all

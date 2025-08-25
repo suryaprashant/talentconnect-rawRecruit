@@ -74,11 +74,10 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
       console.log("Response from backend:", response.data);
       alert('Candidate profile created successfully!');
 
-      // --- FIX: Crucial cleanup step after successful submission ---
-      // This clears the role and form data from localStorage and context state.
+   
       clearFormData();
       if (onSubmit) {
-          onSubmit(); // Notify parent component of completion
+          onSubmit(); 
       }
       
       const userTypeFromDb = response.data.profileType || response.data.userType;

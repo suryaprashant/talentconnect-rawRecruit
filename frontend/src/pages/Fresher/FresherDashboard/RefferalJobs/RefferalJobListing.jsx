@@ -1,10 +1,9 @@
 
-
 import { useState, useEffect } from 'react';
-import JobListSection from '@/components/Student/StudentDashboard/IntershipOpportunity/JobListSection';
-import { getAllInternship } from '@/lib/User_AxiosInstance';
+import JobListSection from '@/components/Student/StudentDashboard/ReferralJobs/JobListSection';
+import { getReferralJobListing } from '@/lib/User_AxiosInstance';
 
-const FInternJobListings = () => {
+const RefferalJobListings = () => {
   const [profileJobs, setProfileJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,7 +11,7 @@ const FInternJobListings = () => {
   const fetchInternships = async () => {
     try {
       setIsLoading(true);
-      const response = await getAllInternship();
+      const response = await getReferralJobListing();
       // Corrected: Access the 'data' property of the response.data.data object
       setProfileJobs(response.data.data);
       setError(null);
@@ -72,4 +71,4 @@ const FInternJobListings = () => {
   );
 };
 
-export default FInternJobListings;
+export default RefferalJobListings;

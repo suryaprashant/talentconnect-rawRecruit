@@ -3,7 +3,7 @@ import { ProgressIndicator } from "../ProgressIndicator";
 import { ChevronDownIcon, UploadIcon } from "lucide-react";
 
 export const StepFive = ({ onNext, onBack, formData, onChange }) => {
-  // --- FIX: Initialize state from formData prop to persist data ---
+  
   const [localFormData, setLocalFormData] = useState({
     skills: formData.skills || [],
     certifications: formData.certifications || "",
