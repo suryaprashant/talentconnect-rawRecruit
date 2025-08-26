@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import ShortlistedDrives from '@/components/company/ShortlistedCollege/OnCampusListing/ShortlistedDrives';
 import { fetchShortlistedDrives, getMockDrives } from '../../../../constants/shortlist';
+import { getShorlistedCandidateByCompany } from '@/lib/Company_AxiosInstance';
 
 const ShortlistedDrivesPage = () => {
-  const [drives, setDrives] = useState([]);
+  const [drives, setDrives] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({
@@ -25,7 +26,7 @@ const ShortlistedDrivesPage = () => {
     try {
       setLoading(true);
 
-      let data;
+      // let data;
       // if (import.meta.env.VITE_USE_MOCK_API === 'true') {
       //   data = getMockDrives({
       //     page: pagination.currentPage,
@@ -44,10 +45,12 @@ const ShortlistedDrivesPage = () => {
       //   });
       // }
 
-      setDrives(data?.drives);
+      const data = await getShorlistedCandidateByCompany("college","On-campus");
+      // console.log("res: ", data.data.response);
+      setDrives(data?.data.response);
       setPagination(prev => ({
         ...prev,
-        totalItems: data?.totalItems
+        totalItems: data?.data.response.length
       }));
       setError(null);
     } catch (err) {

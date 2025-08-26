@@ -2,8 +2,8 @@ import { FaCalendarAlt, FaMapMarkerAlt, FaSearch } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const ShortlistDrive = ({
-  drives,
+const ShortlistedDrives = ({
+  drives = [],
   loading = false,
   error = null,
   pagination = { currentPage: 1, totalItems: 0, itemsPerPage: 8 },
@@ -83,9 +83,10 @@ const ShortlistDrive = ({
     <div key={drive._id} className="border rounded-md overflow-hidden">
       <div className="p-4">
         <div className="flex justify-between items-start">
-          <h3 className="font-medium">{drive.college.collegeName}</h3>
-          <span className={`text-xs px-2 py-1 rounded-full ${drive.currentStatus === 'Completed' ? 'bg-gray-100 text-gray-600' :
-            drive.currentStatus === 'On-Going' ? 'bg-green-100 text-green-600' :
+          <h3 className="font-medium">{drive?.applicant?.college?.collegeName}</h3>
+
+          <span className={`text-xs px-2 py-1 rounded-full ${drive.status === 'Completed' ? 'bg-gray-100 text-gray-600' :
+            drive.status === 'On-Going' ? 'bg-green-100 text-green-600' :
               'bg-blue-100 text-blue-600'
             }`}>
             {drive.currentStatus}
@@ -94,12 +95,13 @@ const ShortlistDrive = ({
 
         <div className="mt-3 flex items-center gap-2 text-gray-600">
           <FaCalendarAlt className="text-xs" />
-          <span className="text-sm">{drive.date}</span>
+          <span className="text-sm">{drive?.date}</span>
         </div>
+
 
         <div className="mt-2 flex items-center gap-2 text-gray-600">
           <FaMapMarkerAlt className="text-xs" />
-          <span className="text-sm">{drive.college.address.city}, {drive.college.address.state}</span>
+          <span className="text-sm">{drive?.applicant?.college?.collegeLocation} {drive?.applicant?.college?.state} {drive?.applicant?.college?.country} {drive?.applicant?.college?.pincode}</span>
         </div>
 
         <div className="mt-3 flex flex-col justify-between">
@@ -172,7 +174,7 @@ const ShortlistDrive = ({
 
         <div className="flex justify-end mt-4">
           <p className="text-sm text-gray-600">
-            Showing {drives?.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}
+            Showing {drives.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}
           </p>
         </div>
       </div>
@@ -201,7 +203,7 @@ const ShortlistDrive = ({
       {/* Drives Grid */}
       {!loading && !error && drives.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {drives?.map(renderDriveCard)}
+          {drives.map(renderDriveCard)}
         </div>
       )}
 
@@ -211,7 +213,7 @@ const ShortlistDrive = ({
   );
 };
 
-ShortlistDrive.propTypes = {
+ShortlistedDrives.propTypes = {
   drives: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
@@ -243,4 +245,4 @@ ShortlistDrive.propTypes = {
   })
 };
 
-export default ShortlistDrive;
+export default ShortlistedDrives;

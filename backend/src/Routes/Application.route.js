@@ -1,5 +1,5 @@
 import express from "express";
-import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant } from "../controllers/application.controller.js";
+import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany } from "../controllers/application.controller.js";
 import secureRoute from '../middlewares/secureRoute.js';
 
 const router = express.Router();
@@ -27,12 +27,18 @@ router.post('/college/oncampus', secureRoute, createOncampusApplication);
 // poolcampus
 router.post('/college/poolcampus', secureRoute, createPoolcampusApplication);
 
-// shortlisting
-router.patch('/manage/shortlist/:applicationId', secureRoute, shortlistApplicant);
-router.patch('/manage/reject/:applicationId', secureRoute, rejectApplicant);
-router.patch('/manage/accept/:applicationId', secureRoute, acceptApplicant);
-
 // access only to company 
+
+// shortlist
+router.patch('/manage/shortlist/:applicationId', secureRoute, shortlistApplicant);
+router.get('/manage/shortlist/', secureRoute, getShortlistedCandidatesByCompany);
+
+// reject
+router.patch('/manage/reject/:applicationId', secureRoute, rejectApplicant);
+
+// accept
+router.patch('/manage/accept/:applicationId', secureRoute, acceptApplicant);
+router.get('/manage/accept/', secureRoute, getAcceptedCandidatesByCompany);
 
 // get candidates by job
 router.get('/manage', getApplicationsByJob);

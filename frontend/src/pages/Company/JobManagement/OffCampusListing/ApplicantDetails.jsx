@@ -358,14 +358,14 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                   <button className="px-6 py-2 border rounded-md text-gray-700">Chat</button>
                   {/* <button className="px-6 py-2 border rounded-md text-gray-700">View Details</button> */}
                   <button
-                    onClick={() => handleAction('shortlist')}
+                    onClick={() => shortlistApplicant(applicant?._id)}
                     disabled={isSubmitting}
                     className="px-6 py-2 bg-black text-white font-medium rounded-md hover:bg-gray-800 disabled:opacity-50"
                   >
                     Shortlist Candidate
                   </button>
                   <button
-                    onClick={() => handleAction('reject')}
+                    onClick={() => rejectApplicant(applicant._id)}
                     disabled={isSubmitting}
                     className="px-6 py-2 border rounded-md text-red-500 hover:bg-gray-50 disabled:opacity-50"
                   >
