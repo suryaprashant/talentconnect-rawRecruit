@@ -32,10 +32,6 @@ const PersonalInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
     }
   };
 
-  // --- THE FIX IS HERE ---
-  // This function acts as a "translator". It takes the raw browser event,
-  // extracts the field's name and value, and then calls the parent's
-  // handleChange function with the two arguments it expects.
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
     handleChange(name, value);
@@ -56,7 +52,7 @@ const PersonalInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-          {/* Use the new handleFieldChange function for all FormFields */}
+      
           <FormField
             label="Enter your name"
             name="name"
@@ -99,20 +95,28 @@ const PersonalInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
             }
           />
 
-          <FormField
-            label="Enter your mobile no."
-            type="tel"
-            name="mobile"
-            value={formData.mobile}
-            onChange={handleFieldChange}
-            placeholder="1234567890"
-            error={errors.mobile}
-            icon={
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-              </svg>
-            }
-          />
+          {/* Fixed Mobile Input Field */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Enter your mobile no.
+            </label>
+            <div className="relative rounded-md shadow-sm">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                </svg>
+              </div>
+              <input
+                type="tel"
+                name="mobile"
+                value={formData.mobile}
+                onChange={handleFieldChange}
+                placeholder="1234567890"
+                className={`block w-full pl-10 pr-3 py-2 border ${errors.mobile ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-black`}
+              />
+            </div>
+            {errors.mobile && <p className="mt-1 text-sm text-red-600">{errors.mobile}</p>}
+          </div>
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -126,7 +130,7 @@ const PersonalInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
                 type="text"
                 name="linkedIn"
                 value={formData.linkedIn}
-                onChange={handleFieldChange} // This now also uses the new handler
+                onChange={handleFieldChange}
                 placeholder="www.linkedin.com/in/yourname"
                 className="form-input rounded-l-none flex-1 border-gray-300 focus:ring-black focus:border-black"
               />
@@ -137,7 +141,7 @@ const PersonalInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
             <Button variant="secondary" onClick={prevStep}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" onClick={nextStep}>
+            <Button type="submit" variant="primary">
               Next
             </Button>
           </div>

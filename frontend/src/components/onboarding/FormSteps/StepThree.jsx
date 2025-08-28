@@ -1,11 +1,9 @@
-
-
 import React, { useState } from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
 import { ChevronDownIcon, UploadIcon } from "lucide-react";
 
 export const StepThree = ({ onNext, onCancel, onBack = onCancel, formData, onChange }) => {
-  //  Use correct field names matching the backend schema ---
+  
   const [localFormData, setLocalFormData] = useState({
     college: formData.college || "",
     degree: formData.degree || "",
@@ -22,7 +20,7 @@ export const StepThree = ({ onNext, onCancel, onBack = onCancel, formData, onCha
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      // --- FIX: Update the correct state key ---
+
       setLocalFormData((prev) => ({ ...prev, degreeCertificate: e.target.files[0] }));
     }
   };

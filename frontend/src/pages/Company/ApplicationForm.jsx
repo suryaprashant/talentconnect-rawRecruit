@@ -1,9 +1,12 @@
 import { useState } from "react";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import {useAuth} from '@/context/AuthProvider'
 
 const useApplicationForm = () => {
     const navigate = useNavigate();
+
+    const[authUser , setAuthUser] = useAuth() ;
     const [formData, setFormData] = useState({
         employerDetails: {
             name: '',
@@ -84,8 +87,7 @@ const useApplicationForm = () => {
             const backendUrl = import.meta.env.VITE_Backend_URL;
             const dataToSend = new FormData();
 
-            // --- FIX IS HERE ---
-            // This line was added to ensure the employer details are sent to the backend.
+            
             dataToSend.append('employerDetails', JSON.stringify(formData.employerDetails));
             
             dataToSend.append('companyDetails', JSON.stringify(formData.companyDetails));
@@ -112,8 +114,16 @@ const useApplicationForm = () => {
                 },
                 withCredentials: true
             });
-        
 
+            if(response.data && response.data.user){
+                const updatedUserFromServer = response.data.user ;
+
+                const finalUser = {
+                    ...authUser.user ,
+                    ...updatedUserFromServer,
+                }
+                setAuthUser({user : finalUser})
+            }
             alert('Company profile created successfully!');
             return true;
         } catch (error) {

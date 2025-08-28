@@ -314,7 +314,7 @@ export async function getShortlistedCandidatesByCompany(req, res) {
     try {
         const company = await CompanyProfile.find({ userId: companyId }).lean();
         if (!company) return res.status(404).json({ msg: "company not found!" });
-        const response = await fetchCandidatesbyStatus(company[0]._id, "Shortlisted", applicantType, jobType);
+        const response = await fetchCandidatesbyStatus(company._id, "Shortlisted", applicantType, jobType);
         // console.log(response);
         res.status(200).json(response);
     } catch (error) {

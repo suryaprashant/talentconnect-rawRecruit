@@ -8,11 +8,13 @@ import Welcome from "./Welcome";
 import TermsAndConditions from "./TermsCondition";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "@/context/AuthProvider";
 
 const OnboardingFlowForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
+  const[authUser , setAuthUser] = useAuth() ;
 
   const updateFormData = (newData) => {
     setFormData((prev) => ({ ...prev, ...newData }));
@@ -72,9 +74,19 @@ const OnboardingFlowForm = () => {
       const response = await axios.post(
         `${import.meta.env.VITE_Backend_URL}/api/dashboard/employerOnboarding`,
         finalFormData,
-        // FIX 2: Added withCredentials to send authentication cookie
         { withCredentials: true }
       );
+
+      if(response.data && response.data.user){
+        const updatedUserFromServer = response.data.user ;
+
+        const finalUser = {
+          ...authUser.user ,
+          ...updatedUserFromServer,
+        };
+
+        setAuthUser({user : finalUser});
+      }
 
       if (response.status === 201) {
         console.log("Onboarding created successfully:", response.data.profile);

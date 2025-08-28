@@ -1,6 +1,7 @@
 import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js'
 import cloudinary from '../../../config/cloudinary.js'
 import streamifier from 'streamifier';
+import Auth from '../../models/auth.js'
 
 // Utility for streaming upload
 const streamUpload = (buffer, folder) => {
@@ -62,16 +63,32 @@ export const createCompanyProfile = async (req, res) => {
       },
       backgroundImageUrl: uploads.backgroundImageUrl || ''
     });
+
+       // Update the user's role in the Auth model to "company"
+    await Auth.findByIdAndUpdate(userId, { userType: "company" });
+    console.log(`User ${req.user.email} userType updated to company`);
+
+    const updatedUser = await Auth.findById(userId).select("-password");
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found after update." });
+    }
       
     res.status(201).json({
       message: 'Company profile created successfully',
-      profile: companyProfile
+      profile: companyProfile,
+      user : updatedUser
     });
 
    
 
   } catch (error) {
     console.error(error);
+     if (error.code === 11000) {
+      return res.status(409).json({ 
+        message: 'A company profile already exists for this user.',
+        error: error.message 
+      });
+    }
     res.status(500).json({
       message: 'Failed to create company profile',
       error: error.message

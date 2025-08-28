@@ -568,6 +568,19 @@ function ProfProfile() {
     });
   };
 
+   useEffect(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const fromEditProfile = urlParams.get('editProfile');
+      
+      if (fromEditProfile === 'true') {
+        setActiveTab('profile');
+        // Clean up the URL
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+      }
+    }, []);
+    
+
   const handleSaveChanges = async () => {
     setLoading(true);
     setError(null);
