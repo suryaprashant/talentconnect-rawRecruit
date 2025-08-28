@@ -140,33 +140,26 @@ function SignupPage() {
         }
       );
 
-      if (response.status === 201) {
-        toast.success('Signup successful!');
-        const userData = response.data;
-       // console.log("userData: ", userData);
-        // setAuthUser({
-        //   user: {
-        //     _id: userData._id,
-        //     email: userData.email,
-        //     name: userData.name || userData.email,
-        //     userType: userData.userType || selectedRole,
-        //     profileImage: userData.profileImage || null 
-        //   }
-        // });
+     if (response.status === 201) {
+    toast.success('Signup successful!');
+    const userData = response.data;
 
-        const authUserData = {
-        user: {
-          _id: userData._id,
-          email: userData.email,
-          name: userData.name || userData.email,
-          userType: userData.userType || selectedRole,
-          profileImage: userData.profileImage || null
-        }
-      };
+    // --- ADD THIS LINE TO DEBUG ---
+    console.log('--- STEP 1: DATA FROM SIGNUP API ---', userData);
 
-          setAuthUser(authUserData);
-      localStorage.setItem('ChatAppUser', JSON.stringify(authUserData));
-      localStorage.setItem('token', userData.token);
+    const authUserData = {
+      user: {
+        _id: userData._id,
+        email: userData.email,
+        name: userData.name || userData.email,
+        userType: userData.userType || selectedRole,
+        profileImage: userData.profileImage || null
+      }
+    };
+    
+    setAuthUser(authUserData);
+    localStorage.setItem('ChatAppUser', JSON.stringify(authUserData));
+    localStorage.setItem('token', userData.token);
 
       axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
 

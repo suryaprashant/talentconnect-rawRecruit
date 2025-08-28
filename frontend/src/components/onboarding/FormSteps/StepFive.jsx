@@ -191,8 +191,8 @@ export const StepFive = ({ onNext, onBack, formData, onChange }) => {
                 onChange={handleChange}
                 className="items-center appearance-none bg-white flex w-full gap-4 mt-2 p-3 max-md:max-w-full border border-gray-300 rounded"
               >
-                <option value="" disabled selected>
-                  Select one...
+              <option value="" disabled>
+                Select one...
                 </option>
                 <option value="social">Social Media</option>
                 <option value="friend">Friend or Colleague</option>

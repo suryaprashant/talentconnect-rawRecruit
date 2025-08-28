@@ -65,7 +65,7 @@ export default function EmployerProfile() {
 
       const newImageUrl = response.data.imageUrl;
 
-      // FIX: Update the state correctly at the root level
+      
       setEmployerData((prevData) => ({
         ...prevData,
         // Conditionally add the correct image URL field to the root of the object
@@ -84,6 +84,17 @@ export default function EmployerProfile() {
       event.target.value = '';
     }
   };
+   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromEditProfile = urlParams.get('editProfile');
+    
+    if (fromEditProfile === 'true') {
+      setActiveTab('Profile');
+      // Clean up the URL
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, []);
 
   const renderContent = () => {
     if (loading) {

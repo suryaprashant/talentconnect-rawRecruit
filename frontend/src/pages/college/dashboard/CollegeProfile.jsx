@@ -5,6 +5,7 @@ import CollegeDescription from './CollegeDescription'; // Assuming this exists
 import ProfileForm from './ProfileForm'; // Your ProfileForm component
 import UserManagements from './UserManagements'; // Assuming this exists
 import axios from 'axios';
+import {useAuth} from '@/context/AuthProvider'
 
 // Configure axios to send cookies with requests
 axios.defaults.withCredentials = true;
@@ -18,6 +19,7 @@ export default function CollegeProfile() {
   const [onboardingData, setOnboardingData] = useState(null); // This will hold the fetched profile data
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {auth} = useAuth() ;
 
   const profileInputRef = useRef(null);
   const backgroundInputRef = useRef(null);
@@ -61,6 +63,18 @@ export default function CollegeProfile() {
     };
 
     fetchData();
+  }, []);
+
+   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromEditProfile = urlParams.get('editProfile');
+    
+    if (fromEditProfile === 'true') {
+      setActiveTab('Profile');
+      // Clean up the URL
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
   }, []);
 
   const handleProfileImageClick = () => {

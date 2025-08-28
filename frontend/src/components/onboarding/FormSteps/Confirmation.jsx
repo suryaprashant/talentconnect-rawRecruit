@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRole } from "@/context/RoleContext/RoleContext";
 import axios from 'axios';
+import { useAuth } from "@/context/AuthProvider";
 
 export const Confirmation = ({ onSubmit, onCancel }) => {
   const [agreed, setAgreed] = useState(false);
@@ -9,7 +10,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
   
   
   const { selectedRole, formData, clearFormData } = useRole();
-
+  const[, setAuthUser] = useAuth() ;
   const handleCheckboxChange = () => {
     setAgreed(!agreed);
   };
@@ -32,7 +33,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
     // This ensures profileType isn't added twice if it exists in formData
     delete tempFormData.profileType;
 
-    // Handle experience certificates separately if they exist
+   
     if (tempFormData.experiences && Array.isArray(tempFormData.experiences)) {
         const experiencesData = [];
         tempFormData.experiences.forEach((exp) => {
@@ -47,7 +48,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
     }
     delete tempFormData.experiences;
 
-    // Append all other form fields
+    
     for (const key in tempFormData) {
       const value = tempFormData[key];
       if (value === null || value === undefined) continue;
@@ -71,11 +72,15 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
         withCredentials: true,
       });
 
-      console.log("Response from backend:", response.data);
+      //console.log("Response from backend:", response.data);
       alert('Candidate profile created successfully!');
-
+      
+      if(response.data && response.data.user){
+        setAuthUser({user : response.data.user}) ;
+      }
+     
    
-      clearFormData();
+       clearFormData();
       if (onSubmit) {
           onSubmit(); 
       }

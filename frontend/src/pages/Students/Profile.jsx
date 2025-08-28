@@ -274,6 +274,18 @@ function Profile() {
     }
   };
 
+   useEffect(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const fromEditProfile = urlParams.get('editProfile');
+      
+      if (fromEditProfile === 'true') {
+        setActiveTab('Profile');
+        // Clean up the URL
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+      }
+    }, []);
+
 
   // --- Helper and render functions (no changes) ---
 

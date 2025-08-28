@@ -3,22 +3,19 @@ import { ProgressIndicator } from "../ProgressIndicator";
 import { ChevronDownIcon } from "lucide-react";
 
 export const StepFour = ({ onNext, onBack, formData, onChange }) => {
-  // Initialize local state from passed formData
+  
   const [localFormData, setLocalFormData] = useState({
-    industry: formData.industry || "", // This should probably be an array if multi-select
-    jobRoles: formData.jobRoles || "",   // This should probably be an array if multi-select
-    locations: formData.locations || "", // This should probably be an array if multi-select
+    industry: formData.industry || "",
+    jobRoles: formData.jobRoles || "",   
+    locations: formData.locations || "", 
     lookingFor: formData.lookingFor || "Internship",
     employmentType: formData.employmentType || "full time",
-    // expectedSalaryCurrency: formData.expectedSalaryCurrency || "", // Added from model
-    // expectedSalaryAmount: formData.expectedSalaryAmount || "",     // Added from model
-    // currentSalaryCurrency: formData.currentSalaryCurrency || "",   // Added from model
-    // currentSalaryAmount: formData.currentSalaryAmount || "",       // Added from model
+    
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // For select elements where multiple can be selected, handle as array
+    
     if (e.target.multiple) {
       const selectedOptions = Array.from(e.target.selectedOptions).map(
         (option) => option.value
