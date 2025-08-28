@@ -1,11 +1,13 @@
 import express from "express";
-import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany } from "../controllers/application.controller.js";
+import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs } from "../controllers/application.controller.js";
 import secureRoute from '../middlewares/secureRoute.js';
 
 const router = express.Router();
 
 // api '.../application'
-router.post("/candidate/saveopportunity", secureRoute, saveJobByUser);
+// save opportunity
+router.post("/saveopportunity", secureRoute, saveJobByUser);
+router.get("/saveopportunity",secureRoute,fetchSavedJobs);
 
 // offcampus
 router.post('/candidate/offcampus', secureRoute, createOffcampusApplication);

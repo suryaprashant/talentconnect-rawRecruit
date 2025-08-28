@@ -1,6 +1,7 @@
 // src/hooks/useJobs.js
 import { useState, useEffect } from "react";
-import  fetchJobs from "../../../constants/jobServices.js"
+import { fetchSavedJobs } from "@/lib/User_AxiosInstance";
+// import  fetchJobs from "../../../constants/jobServices.js"
 
 const useJobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -10,8 +11,8 @@ const useJobs = () => {
   useEffect(() => {
     const loadJobs = async () => {
       try {
-        const data = await fetchJobs();
-        setJobs(data);
+        const data = await fetchSavedJobs();
+        setJobs(data.data);
       } catch (err) {
         setError("Failed to load jobs. Please try again later.");
       } finally {

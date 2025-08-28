@@ -289,7 +289,7 @@ function AppRoutes() {
               <Route path="/application-status/hackathon" element={<HackthonStatus/>} />
               <Route path='/notifications' element={<NotificationSettings/>} />
               <Route path='/Faq' element={<FAQPage/>} />
-               <Route path="/saved-jobs/*" element={<JobRoutes/>} />
+              <Route path="/saved-jobs/*" element={<JobRoutes/>} />
               <Route path="/ai-driven-job-search" element={<AIDrivenJob/>} />
               <Route path="settings" element={<Settings />} />
               <Route path="ContactUs" element={<ContactUs/>} />

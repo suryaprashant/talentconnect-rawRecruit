@@ -14,8 +14,8 @@ export default function OffCampusListingPage() {
 
   const getCandidates = async () => {
     try {
-      const response = await getShorlistedCandidateByCompany("user","Off-campus");
-      console.log("applicants: ", response);
+      const response = await getShorlistedCandidateByCompany("user", "Off-campus");
+      console.log("applicants: ", response.data.response);
       setCandidates(response.data.response);
     } catch (error) {
       console.log("Error: ", error);
@@ -170,7 +170,7 @@ export default function OffCampusListingPage() {
                     candidate.currentStatus === 'Interview Scheduled' ? 'bg-purple-100 text-purple-800' :
                       'bg-green-100 text-green-800'}
                 `}>
-                  {candidate.currentStatus}
+                  {candidate?.currentStatus}
                 </span>
               </div>
             </div>
@@ -184,10 +184,10 @@ export default function OffCampusListingPage() {
             </div>
 
             {/* Last active */}
-            {/* <div className="flex items-center text-sm text-gray-600 mb-4">
+            <div className="flex items-center text-sm text-gray-600 mb-4">
               <Clock size={16} className="mr-1" />
-              Last active: {candidate.lastActive}
-            </div> */}
+              Last active: {candidate?.lastActive}
+            </div>
 
             {/* Action buttons */}
             <div className="flex gap-2">

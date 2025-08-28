@@ -15,7 +15,7 @@ export default function OffCampusListingPage() {
   const getCandidates = async () => {
     try {
       const response = await getAcceptedCandidateByCompany("user","Off-campus");
-      console.log("applicants: ", response);
+      // console.log("applicants: ", response);
       setCandidates(response.data.response);
     } catch (error) {
       console.log("Error: ", error);

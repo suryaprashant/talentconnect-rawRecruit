@@ -24,6 +24,32 @@ export async function getApplicationService(userId, userType, jobId, jobType) {
     }
 }
 
+export async function getSavedJobsService(userId) {
+    try {
+        const applications = await Application.aggregate([
+            {
+                $match: {
+                    currentStatus: "Saved",
+                    applicant: new mongoose.Types.ObjectId(userId),
+                    // applicantType: userType
+                }
+            },
+            {
+                $lookup: {
+                    from: "jobpostingtables",
+                    localField: "job",
+                    foreignField: "_id",
+                    as: "jobDetails"
+                }
+            }
+        ]);
+        return { success: true, data: applications }
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+
 // save job by user
 export async function saveJobService(userId, userType, jobId, jobType) {
     try {
@@ -455,6 +481,7 @@ export async function ChangeStatusService(applicationId, newStatus) {
 
 // getshorlisted candidate by company
 export async function fetchCandidatesbyStatus(companyId, targetStatus, applicantType, jobType) {
+    // console.log("type: ", companyId, targetStatus, applicantType, jobType);
     try {
         // determine which collection to lookup based on applicantType
         let fromCollection, projectApplicant;
@@ -512,7 +539,7 @@ export async function fetchCandidatesbyStatus(companyId, targetStatus, applicant
                 $project: {
                     currentStatus: 1,
                     statusHistory: 1,
-                    jobTitle: "$jobDetails",
+                    jobTitle: "$jobDetails.jobRoles",
                     applicant: projectApplicant
                 }
             }

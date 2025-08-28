@@ -28,7 +28,7 @@ export function getCompanyPostingForOncampusDetail(jobId) {
 
 // save opportunity
 export function SaveOppurtunity(jobId, jobType) {
-  return axiosClient.post(`/application/candidate/saveopportunity`, { jobId: jobId, jobType: jobType })
+  return axiosClient.post(`/application/saveopportunity`, { jobId: jobId, jobType: jobType })
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }

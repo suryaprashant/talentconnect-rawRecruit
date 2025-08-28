@@ -7,7 +7,7 @@ axiosClient.defaults.baseURL = import.meta.env.VITE_Backend_URL;
 axiosClient.defaults.headers = {
   'Content-Type': 'application/json',
   Accept: 'application/json',
-  
+
 };
 
 // default 10sec
@@ -73,7 +73,13 @@ export function getHackathonDetail(hackathonId) {
 
 // save opportunity
 export function SaveOppurtunity(jobId, jobType) {
-  return axiosClient.post(`/application/candidate/saveopportunity`, { jobId: jobId, jobType: jobType })
+  return axiosClient.post(`/application/saveopportunity`, { jobId: jobId, jobType: jobType })
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+// get save opportunity
+export function fetchSavedJobs(applicantType) {
+  return axiosClient.get(`/application/saveopportunity`)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
 }
@@ -125,14 +131,14 @@ export const postReferralJob = (jobData) => {
 }
 
 export function getReferralJobListing() {
-    return axiosClient.get(`/api/student-dashboard/referral-jobs`)
+  return axiosClient.get(`/api/student-dashboard/referral-jobs`)
     .then(response => response)
     .catch(error => console.log("Error:", error));
 }
 
-export function getReferralJobById(referralJob){
+export function getReferralJobById(referralJob) {
   return axiosClient.get(`api/student-dashboard/referral-jobs/${referralJob}`)
-  .then(response => response)
-  .catch(error => console.log("Error: ", error));
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
 }
 

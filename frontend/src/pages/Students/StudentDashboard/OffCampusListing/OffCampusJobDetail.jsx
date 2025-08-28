@@ -38,17 +38,16 @@ function OffCampusJobDetail() {
 
   const handleApply = async () => {
     try {
-      console.log(".../n", jobDetail)
-      if (jobDetail && jobDetail.jobStatus === 'Open') { // Use jobStatus from your schema
-        const response = await ApplyForOppurtunity(jobId); // Pass jobType if 
-        if (response?.data.success === true) { // Check for boolean true
-          alert("Application submitted successfully!");
-        } else {
-          alert("Failed to submit application. Please try again.");
-        }
+      // if (jobDetail && jobDetail.jobStatus === 'Open') { // Use jobStatus from your schema
+      const response = await ApplyForOppurtunity(jobId); // Pass jobType if 
+      if (response?.data.success === true) { // Check for boolean true
+        alert("Application submitted successfully!");
       } else {
-        alert("Application is not open or job details are missing.");
+        alert("Failed to submit application. Please try again.");
       }
+      // } else {
+      //   alert("Application is not open or job details are missing.");
+      // }
     } catch (error) {
       console.error("Error during application:", error); // Use console.error
       alert('Failed to submit application. Please try again.'); // Generic error for user

@@ -7,6 +7,7 @@ import {
     fetchCandidatesbyStatus,
     fetchCollegeApplicationsByJobService,
     getApplicationService,
+    getSavedJobsService,
     saveJobService,
     // getApplicationService, 
     // getOffCampusApplicantsService, fetchShortlistedCandidates, fetchInternshipApplicationService, fetchApplicationStatusService
@@ -31,6 +32,26 @@ export async function saveJobByUser(req, res) {
         const application = await saveJobService(user?.data[0]._id, req?.user.userType, jobId, jobType);
         if (application.success === false) return res.status(403).json({ msg: application.message });
         res.status(201).json(application);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+// get saved opportunities
+export async function fetchSavedJobs(req, res) {
+    // const { applicantType } = req.params;
+    const userId = req.user._id;
+
+    try {
+        const user = await getStudentService(userId);
+
+        // if (!applicantType || !user) return res.status(404).json({ msg: "User or Job not found!" });
+
+        const application = await getSavedJobsService(user?.data[0]._id);
+        // if (application.success !== true) return res.status(403).json({ msg: application });
+        if (application.success === true) return res.status(200).json(application.data);
+        res.status(503).json(application);
     } catch (error) {
         console.log("Error: ", error);
         res.status(500).json({ error: "Internal server error" });
