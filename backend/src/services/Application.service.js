@@ -485,7 +485,7 @@ export async function ChangeStatusService(applicationId, newStatus) {
 
 // getshorlisted candidate by company
 export async function fetchCandidatesbyStatus(companyId, targetStatus, applicantType, jobType) {
-    console.log("type: ", companyId, targetStatus, applicantType, jobType);
+    // console.log("type: ", companyId, targetStatus, applicantType, jobType);
     try {
         // determine which collection to lookup based on applicantType
         let fromCollection, projectApplicant;
