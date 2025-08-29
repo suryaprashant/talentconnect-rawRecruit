@@ -46,7 +46,7 @@ const InternJobDetails = () => {
   const handleApply = async () => {
     try {
       const response = await ApplyForInternship(jobId);
-      
+      console.log(response)
       if (response && response.success === true) {
         alert("Application submitted successfully!");
       } else {
@@ -60,7 +60,7 @@ const InternJobDetails = () => {
 
   const handleSave = async () => {
     try {
-      
+
       alert('Internship saved successfully!');
     } catch (err) {
       console.error('Error saving internship:', err);
