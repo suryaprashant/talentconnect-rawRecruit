@@ -202,6 +202,20 @@ export const getInternshipPostings = async (req, res) => {
     }
 };
 
+export const getIntershipById = async (req , res) =>{
+    const{id} = req.params ;
+    try{
+        const response = await JobPostingTable.findById(id)
+        .populate('companyPosted')
+        .lean();
+        res.status(200).json(response);
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }    
+}
+
 export const getReferralJobs = async(req, res) => {
     try{
     

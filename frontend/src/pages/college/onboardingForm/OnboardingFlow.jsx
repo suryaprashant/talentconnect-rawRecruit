@@ -166,21 +166,19 @@ function OnboardingFlow() {
      if (response.data && response.data.user) {
         const updatedUserFromServer = response.data.user;
 
-        // Create the new state object correctly.
-        // This takes the fresh data from the server and merges it with the old state,
-        // ensuring new details overwrite old ones while preserving anything else (like tokens).
+       
         const finalUser = {
           ...authUser.user,
           ...updatedUserFromServer, 
         };
 
-        // Let AuthProvider handle localStorage automatically with the correct object structure.
+        
         setAuthUser({ user: finalUser });
       }
 
     
       alert('College onboarding form submitted successfully!');
-      navigate('/home'); // Redirect after successful submission
+      navigate('/home'); 
     } catch (error) {
       console.error('Submission failed:', error.response ? error.response.data : error.message);
       alert('Submission failed: ' + (error.response ? error.response.data.message : error.message));
@@ -201,7 +199,7 @@ function OnboardingFlow() {
         {steps.map(({ path, component: Component }) => (
           <Route
             key={path}
-            path={path.replace('/college-onboarding', '')} // strip base path for internal match
+            path={path.replace('/college-onboarding', '')} 
             element={
               <Component
                 formData={formData}

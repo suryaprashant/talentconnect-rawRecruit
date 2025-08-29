@@ -32,42 +32,41 @@ export const signup = async (req, res) => {
   //console.log("User Type", userType);
 
   try {
-    const { email, password, userType } = req.body; // Add userType to destructuring
-    // console.log("User Type from DB or localStorage:", userType);
+    const { email, password, userType } = req.body;
 
-    // Basic validation
-    if (!email || !password || !userType) { // Add userType validation
+
+    if (!email || !password || !userType) { 
       return res.status(400).json({
         message: "Email, password and userType are required"
       });
     }
 
-    // Check if user already exists
+  
     const existingUser = await Auth.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: "Email already registered" });
     }
 
-    // Hash password
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user with userType
+
     const newUser = await Auth.create({
       email,
       password: hashedPassword,
-      userType // Add userType to the created user
+      userType 
     });
 
-    // Generate token and set cookie
+
     const token = createTokenAndSaveCookie(newUser._id, newUser.email, res, newUser.userType);
 
-    // Send response with userType
     res.status(201).json({
       message: "Signup successful",
       user: {
         _id: newUser._id,
         email: newUser.email,
-        userType: newUser.userType // Include userType in response
+        userType: newUser.userType ,
+        onboardingCompleted : newUser.onboardingCompleted
       },
       token
     });
@@ -79,20 +78,17 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Find user
     const user = await Auth.findOne({ email });
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // Generate token and set cookie
+ 
     const token = createTokenAndSaveCookie(user._id, user.email, res, user.userType);
 
     // Get basic details if they exist
@@ -107,7 +103,8 @@ export const login = async (req, res) => {
         email: user.email,
         userType: user.userType,
         name: basicDetails?.name || user.name,
-        basicDetails: basicDetails
+        basicDetails: basicDetails,
+        onboardingCompleted : user.onboardingCompleted
       }
     });
   } catch (error) {

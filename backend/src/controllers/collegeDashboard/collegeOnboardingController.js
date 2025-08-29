@@ -16,174 +16,6 @@ const streamUpload = (buffer, folder) => {
   });
 };
 
-// export const submitCollegeOnboarding = async (req, res) => {
-//   try {
-
-
-//     console.log('User ID from secureRoute (req.user._id):', req.user?._id);
-
-//     const userId = req.user?._id; // Using optional chaining for safety
-//     console.log('Uploaded Files (req.files):', req.files);
-//     const files = req.files; 
-
-
-//     if (!userId) {
-//       console.log('Error: User not authenticated or ID missing in req.user._id.');
-//       return res.status(401).json({ message: 'User not authenticated or ID missing.' });
-//     }
-
-    
-//     const {
-//       collegeUniversityDetails,
-//       placementCoordinatorDetails,
-//       placementRecruitmentDetails,
-//       profileAchievements,
-//       workshops,
-//       volunteering,
-//       awards
-//     } = req.body;
-
-//     // Parse JSON strings back to objects
-//     // Use try-catch for JSON.parse in case of malformed strings
-//     let parsedCollegeUniversityDetails = {};
-//     try { parsedCollegeUniversityDetails = JSON.parse(collegeUniversityDetails || '{}'); } catch (e) { console.error("Failed to parse collegeUniversityDetails:", e); }
-
-//     let parsedPlacementCoordinatorDetails = {};
-//     try { parsedPlacementCoordinatorDetails = JSON.parse(placementCoordinatorDetails || '{}'); } catch (e) { console.error("Failed to parse placementCoordinatorDetails:", e); }
-
-//     let parsedPlacementRecruitmentDetails = {};
-//     try { parsedPlacementRecruitmentDetails = JSON.parse(placementRecruitmentDetails || '{}'); } catch (e) { console.error("Failed to parse placementRecruitmentDetails:", e); }
-
-//     let parsedProfileAchievements = {};
-//     try { parsedProfileAchievements = JSON.parse(profileAchievements || '{}'); } catch (e) { console.error("Failed to parse profileAchievements:", e); }
-
-//     let parsedWorkshops = [];
-//     try { parsedWorkshops = JSON.parse(workshops || '[]'); } catch (e) { console.error("Failed to parse workshops:", e); }
-
-//     let parsedVolunteering = [];
-//     try { parsedVolunteering = JSON.parse(volunteering || '[]'); } catch (e) { console.error("Failed to parse volunteering:", e); }
-
-//     let parsedAwards = [];
-//     try { parsedAwards = JSON.parse(awards || '[]'); } catch (e) { console.error("Failed to parse awards:", e); }
-
-//     // 3. Log parsed data
-//     console.log('Parsed College University Details:', parsedCollegeUniversityDetails);
-//     // ... add more logs for other parsed fields if needed
-
-//     let collegeBrochureUrl = '';
-//     let profileImageUrl = '';
-//     let backgroundImageUrl = '';
-
-//     // Upload files if they exist
-//     if (files?.collegeBrochure?.[0]) {
-//       try {
-//         const brochureUpload = await streamUpload(files.collegeBrochure[0].buffer, 'collegeBrochures');
-//         collegeBrochureUrl = brochureUpload.secure_url;
-//         console.log('Uploaded collegeBrochureUrl:', collegeBrochureUrl);
-//       } catch (uploadError) {
-//         console.error('Error uploading collegeBrochure:', uploadError);
-//         // Decide how to handle upload errors: stop, or continue without the file
-//       }
-//     }
-
-//     if (files?.profileImage?.[0]) {
-//       try {
-//         const profileImageUpload = await streamUpload(files.profileImage[0].buffer, 'profileImages');
-//         profileImageUrl = profileImageUpload.secure_url;
-//         console.log('Uploaded profileImageUrl:', profileImageUrl);
-//       } catch (uploadError) {
-//         console.error('Error uploading profileImage:', uploadError);
-//       }
-//     }
-
-//     if (files?.backgroundImage?.[0]) {
-//       try {
-//         const backgroundImageUpload = await streamUpload(files.backgroundImage[0].buffer, 'backgroundImages');
-//         backgroundImageUrl = backgroundImageUpload.secure_url;
-//         console.log('Uploaded backgroundImageUrl:', backgroundImageUrl);
-//       } catch (uploadError) {
-//         console.error('Error uploading backgroundImage:', uploadError);
-//       }
-//     }
-
-//     // 4. Check if profile already exists for this user
-//     let onboardingData = await CollegeOnboarding.findOne({ userId });
-//     console.log('Existing onboardingData found (or null if not found):', onboardingData);
-
-//     if (onboardingData) {
-//       // Update existing profile
-//       onboardingData.collegeUniversityDetails = {
-//         ...onboardingData.collegeUniversityDetails,
-//         ...parsedCollegeUniversityDetails
-//       };
-//       onboardingData.placementCoordinatorDetails = {
-//         ...onboardingData.placementCoordinatorDetails,
-//         ...parsedPlacementCoordinatorDetails
-//       };
-//       onboardingData.placementRecruitmentDetails = {
-//         ...onboardingData.placementRecruitmentDetails,
-//         ...parsedPlacementRecruitmentDetails,
-//         collegeBrochureUrl: collegeBrochureUrl || onboardingData.placementRecruitmentDetails.collegeBrochureUrl // Update only if new brochure provided
-//       };
-//       onboardingData.profileAchievements = {
-//         ...onboardingData.profileAchievements,
-//         ...parsedProfileAchievements
-//       };
-
-//       if (profileImageUrl) onboardingData.profileImage = profileImageUrl;
-//       if (backgroundImageUrl) onboardingData.backgroundImage = backgroundImageUrl;
-
-//       onboardingData.workshops = parsedWorkshops;
-//       onboardingData.volunteering = parsedVolunteering;
-//       onboardingData.awards = parsedAwards;
-
-//       // 5. Save the updated document
-//       await onboardingData.save();
-//       console.log('College onboarding form UPDATED successfully for userId:', userId);
-
-//       res.status(200).json({
-//         message: 'College onboarding form updated successfully',
-//         data: onboardingData
-//       });
-//     } else {
-//       // Create new profile
-//       onboardingData = await CollegeOnboarding.create({
-//         userId, // <-- userId is correctly passed here for creation
-//         collegeUniversityDetails: parsedCollegeUniversityDetails,
-//         placementCoordinatorDetails: parsedPlacementCoordinatorDetails,
-//         placementRecruitmentDetails: {
-//           ...parsedPlacementRecruitmentDetails,
-//           collegeBrochureUrl
-//         },
-//         profileAchievements: parsedProfileAchievements,
-//         profileImage: profileImageUrl,
-//         backgroundImage: backgroundImageUrl,
-//         workshops: parsedWorkshops,
-//         volunteering: parsedVolunteering,
-//         awards: parsedAwards
-//       });
-
-//       // 6. Log the newly created document
-//       console.log('College onboarding form CREATED successfully for userId:', userId);
-//       console.log('Newly created onboardingData:', onboardingData);
-
-//       res.status(201).json({
-//         message: 'College onboarding form submitted successfully',
-//         data: onboardingData
-//       });
-//     }
-//     console.log('--- submitCollegeOnboarding END ---');
-//   } catch (error) {
-//     console.error("Error in submitCollegeOnboarding:", error);
-//     if (error.code === 11000) {
-//       // Duplicate key error (userId unique constraint violation)
-//       console.log('Duplicate key error (11000): A profile already exists for this user.');
-//       return res.status(409).json({ message: 'A profile already exists for this user. Please update the existing profile.', error: error.message });
-//     }
-//     res.status(500).json({ message: 'Submission failed', error: error.message });
-//   }
-// };
-
 
 export const submitCollegeOnboarding = async (req, res) => {
   try {
@@ -233,7 +65,7 @@ export const submitCollegeOnboarding = async (req, res) => {
 
     // 3. Log parsed data
     console.log('Parsed College University Details:', parsedCollegeUniversityDetails);
-    // ... add more logs for other parsed fields if needed
+  
 
     let collegeBrochureUrl = '';
     let profileImageUrl = '';
@@ -304,7 +136,7 @@ export const submitCollegeOnboarding = async (req, res) => {
 
       // 5. Save the updated document
       await onboardingData.save();
-      console.log('College onboarding form UPDATED successfully for userId:', userId);
+     // console.log('College onboarding form UPDATED successfully for userId:', userId);
 
     } else {
       // Create new profile
@@ -324,29 +156,30 @@ export const submitCollegeOnboarding = async (req, res) => {
         awards: parsedAwards
       });
 
-      // 6. Log the newly created document
-      console.log('College onboarding form CREATED successfully for userId:', userId);
-      console.log('Newly created onboardingData:', onboardingData);
+      
     }
 
-    // --- UPDATE USER TYPE IN AUTH MODEL ---
-    let finalUserTypeForResponse = "college";
-    // Update the user's role in the Auth model to "college"
-    await Auth.findByIdAndUpdate(userId, { userType: "college" });
-    console.log(`User ${req.user.email} userType updated to college`);
+     const updatedUser = await Auth.findByIdAndUpdate(
+      userId,
+      { 
+        userType: "college",
+        onboardingCompleted: true, 
+        onboardingStep: 6 
+      },
+      { new: true } 
+    ).select("-password");
 
-    // Fetch the complete, updated user
-    const updatedUser = await Auth.findById(userId).select("-password");
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found after update." });
     }
+
+    console.log(`User ${updatedUser.email} updated: userType=college, onboardingCompleted=true`);
 
     console.log('--- submitCollegeOnboarding END ---');
     
     res.status(onboardingData.isNew ? 201 : 200).json({
       message: `College onboarding form ${onboardingData.isNew ? 'submitted' : 'updated'} successfully`,
-      userType: finalUserTypeForResponse,
-      user: updatedUser,
+      user: updatedUser, // Send the COMPLETE updated user object
       data: onboardingData
     });
 
@@ -360,11 +193,11 @@ export const submitCollegeOnboarding = async (req, res) => {
     res.status(500).json({ message: 'Submission failed', error: error.message });
   }
 };
-// Renamed from getAllCollegeOnboarding to be more specific
+
 export const getCollegeOnboardingByUserId = async (req, res) => {
  
   try {
-    const userId = req.user._id; // Assuming req.user._id is populated by secureRoute
+    const userId = req.user._id; 
 
     if (!userId) {
       return res.status(401).json({ message: 'User not authenticated or ID missing.' });

@@ -65,18 +65,31 @@ export const createCompanyProfile = async (req, res) => {
     });
 
        // Update the user's role in the Auth model to "company"
-    await Auth.findByIdAndUpdate(userId, { userType: "company" });
-    console.log(`User ${req.user.email} userType updated to company`);
+    // await Auth.findByIdAndUpdate(userId, { userType: "company" });
+    // console.log(`User ${req.user.email} userType updated to company`);
 
-    const updatedUser = await Auth.findById(userId).select("-password");
+    // const updatedUser = await Auth.findById(userId).select("-password");
+    // if (!updatedUser) {
+    //   return res.status(404).json({ error: "User not found after update." });
+    // }
+    const updatedUser = await Auth.findByIdAndUpdate(
+      userId,
+      { 
+        userType: "company", // Changed from "college" to "company"
+        onboardingCompleted: true,
+        onboardingStep: 6
+      },
+      { new: true }
+    ).select("-password");
+
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found after update." });
     }
-      
+
     res.status(201).json({
       message: 'Company profile created successfully',
       profile: companyProfile,
-      user : updatedUser
+      user: updatedUser // Send the updated user with onboardingCompleted: true
     });
 
    

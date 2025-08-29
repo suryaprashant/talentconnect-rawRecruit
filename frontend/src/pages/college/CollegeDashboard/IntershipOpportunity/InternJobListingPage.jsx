@@ -265,8 +265,8 @@ const InternJobsListingPage = () => {
                                             id: job._id,
                                             logo: job.companyPosted?.profileImageUrl || 'https://via.placeholder.com/150',
                                             company: job.companyPosted?.companyDetails?.companyName || 'N/A',
-                                            degree: job.jobTitle || 'N/A',
-                                            university: job.companyPosted?.companyDetails?.companyName || 'N/A',
+                                            jobTitle: job.jobTitle || 'N/A',
+                                            companyName: job.companyPosted?.companyDetails?.companyName || 'N/A',
                                         }}
                                     />
                                 ))

@@ -475,10 +475,9 @@
 
 
 
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getInternshipDetail } from '@/lib/User_AxiosInstance';
+import { getInternshipById } from '@/lib/User_AxiosInstance';
 
 const InternJobDetailPage = () => {
     const { id } = useParams();
@@ -496,63 +495,66 @@ const InternJobDetailPage = () => {
             }
             try {
                 setLoading(true);
-                const data = await getInternshipDetail(id);
+                const response = await getInternshipById(id);
+                const jobData = response.data;
                 
-                if (data) {
+                if (jobData) {
                     const mappedJob = {
-                        _id: data._id,
-                        company: data.companyPosted?.companyDetails?.companyName || 'Not specified',
-                        title: data.jobTitle || 'Not specified',
-                        description: data.description || 'No description provided.',
+                        _id: jobData._id,
+                        company: jobData.companyPosted?.companyDetails?.companyName || 'Not specified',
+                        title: jobData.jobTitle || 'Not specified',
+                        description: jobData.description || 'No description provided.',
                         eventDates: {
-                            start: data.startDate ? new Date(data.startDate).toLocaleDateString() : 'N/A',
-                            end: data.endDate ? new Date(data.endDate).toLocaleDateString() : 'N/A',
+                            start: jobData.startDate ? new Date(jobData.startDate).toLocaleDateString() : 'N/A',
+                            end: jobData.endDate ? new Date(jobData.endDate).toLocaleDateString() : 'N/A',
                         },
-                        isHybridEvent: data.workMode === 'Hybrid',
+                        isHybridEvent: jobData.workMode === 'Hybrid',
                         companyInfo: {
-                            website: data.companyPosted?.companyDetails?.websiteUrl || 'N/A',
-                            about: data.companyPosted?.companyDetails?.description || 'N/A',
+                            website: jobData.companyPosted?.companyDetails?.websiteUrl || 'N/A',
+                            about: jobData.companyPosted?.companyDetails?.description || 'N/A',
                             stats: {
-                                employees: data.companyPosted?.companyDetails?.numberOfEmployees || 'N/A',
+                                employees: jobData.companyPosted?.companyDetails?.numberOfEmployees || 'N/A',
                                 revenue: 'N/A', // Not in schema
-                                industries: data.companyPosted?.companyDetails?.industryType || 'N/A',
-                                countries: 'N/A', // Not in schema
+                                industries: jobData.companyPosted?.companyDetails?.industryType || 'N/A',
+                                countries: jobData.companyPosted?.companyDetails?.country ||'N/A',
                             },
                         },
                         programDetails: {
-                            eligibleDegrees: data.degree || [],
+                            eligibleDegrees: jobData.minEducation || 'Not specified',
                             cutoff: 'Not specified', // Not in schema
-                            locations: data.location || [],
+                            locations: jobData.location || [],
                             compensation: {
-                                amount: data.minPackage?.amount ? `₹${data.minPackage.amount}` : 'N/A',
-                                details: data.minPackage?.currency || 'N/A',
+                                amount: jobData.minPackage?.amount ? `${jobData.minPackage.currency} ${jobData.minPackage.amount.toLocaleString()}` : 'N/A',
+                                details: 'Per Annum' 
                             },
                         },
                         jobDetails: {
-                            role: (data.jobRoles || []).join(', ') || 'N/A',
-                            industry: data.companyPosted?.companyDetails?.industryType || 'N/A',
+                            role: (jobData.jobRoles || []).join(', ') || 'N/A',
+                            industry: jobData.companyPosted?.companyDetails?.industryType || 'N/A',
                             department: 'N/A', // Not in schema
-                            employmentType: data.employmentType || 'N/A',
+                            employmentType: jobData.employmentType || 'N/A',
                             roleCategory: 'N/A', // Not in schema
-                            workMode: data.workMode || 'N/A',
-                            locations: data.location || [],
+                            workMode: jobData.workMode || 'N/A',
+                            locations: jobData.location || [],
                             joiningDate: 'N/A', // Not in schema
                         },
                         eligibility: {
-                            degrees: data.degree || [],
-                            branches: data.studentStreams || [],
+                            degrees: jobData.degree || [],
+                            branches: jobData.studentStreams || [],
                             graduationYear: 'N/A', // Not in schema
                             minimumScores: {
-                                tenth: 'N/A', // Not in schema
-                                twelfth: 'N/A', // Not in schema
-                                cgpa: 'N/A', // Not in schema
+                                tenth: 'N/A', 
+                                twelfth: 'N/A', 
+                                cgpa: 'N/A',
                             },
                         },
+                        skills: jobData.skills || [],
+                        certifications: jobData.certifications || [],
                         benefits: ['Health Insurance', 'Paid Time Off', 'Flexible Hours'], // Placeholder
                         selectionProcess: {
-                            steps: data.rounds || ['N/A'],
+                            steps: jobData.rounds?.length > 0 ? jobData.rounds : ['N/A'],
                             dates: {
-                                registrationDeadline: data.endDate ? new Date(data.endDate).toLocaleDateString() : 'N/A',
+                                registrationDeadline: jobData.endDate ? new Date(jobData.endDate).toLocaleDateString() : 'N/A',
                                 onlineTest: 'N/A',
                                 interview: 'N/A',
                                 offerRollout: 'N/A',
@@ -560,9 +562,9 @@ const InternJobDetailPage = () => {
                         },
                         requiredDocuments: ['Resume', 'Cover Letter', 'Transcripts'], // Placeholder
                         contactInfo: {
-                            name: data.contactPerson?.name || 'N/A',
-                            email: data.contactPerson?.email || 'N/A',
-                            phone: data.contactPerson?.mobile || 'N/A',
+                            name: jobData.contactPerson?.name || 'N/A',
+                            email: jobData.contactPerson?.email || 'N/A',
+                            phone: jobData.contactPerson?.mobile || 'N/A',
                         },
                     };
                     setJob(mappedJob);
@@ -729,8 +731,8 @@ const InternJobDetailPage = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                                 <div>
-                                    <div className="font-medium text-gray-900">{job.programDetails.eligibleDegrees.join(', ')}</div>
-                                    <div className="text-sm text-gray-500">(2025 batch)</div>
+                                    <div className="font-medium text-gray-900">{job.programDetails.eligibleDegrees}</div>
+                                    <div className="text-sm text-gray-500">(Minimum Education)</div>
                                 </div>
                             </div>
                             <div className="flex items-start">
@@ -824,6 +826,36 @@ const InternJobDetailPage = () => {
                         </div>
                     </div>
                     
+                    {/* Skills Section */}
+                    <div className="px-6 py-6 border-t border-gray-200">
+                        <h2 className="text-xl font-bold text-gray-900 mb-4">Skills Required</h2>
+                        {job.skills && job.skills.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                                {job.skills.map((skill, index) => (
+                                    <span key={index} className="bg-gray-100 text-gray-800 text-sm font-medium px-3 py-1 rounded-full">
+                                        {skill}
+                                    </span>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-600">No specific skills listed.</p>
+                        )}
+                    </div>
+
+                    {/* Certifications Section */}
+                    <div className="px-6 py-6 border-t border-gray-200">
+                        <h2 className="text-xl font-bold text-gray-900 mb-4">Certifications</h2>
+                        {job.certifications && job.certifications.length > 0 ? (
+                            <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                                {job.certifications.map((cert, index) => (
+                                    <li key={index}>{cert}</li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-gray-600">No certifications required.</p>
+                        )}
+                    </div>
+                    
                     {/* Eligibility Criteria */}
                     <div className="px-6 py-6 border-t border-gray-200">
                         <h2 className="text-xl font-bold text-gray-900 mb-4">Eligibility Criteria</h2>
@@ -869,15 +901,15 @@ const InternJobDetailPage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <div className="text-sm font-medium text-gray-500">Total CTC</div>
-                                <div className="text-xl font-bold text-gray-900">₹5.00 LPA</div>
+                                <div className="text-xl font-bold text-gray-900">{job.programDetails.compensation.amount}</div>
                             </div>
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <div className="text-sm font-medium text-gray-500">Fixed Pay</div>
-                                <div className="text-xl font-bold text-gray-900">₹4.60 LPA</div>
+                                <div className="text-xl font-bold text-gray-900">N/A</div>
                             </div>
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <div className="text-sm font-medium text-gray-500">Joining Bonus</div>
-                                <div className="text-xl font-bold text-gray-900">₹40,000</div>
+                                <div className="text-xl font-bold text-gray-900">N/A</div>
                             </div>
                         </div>
                         
@@ -1036,4 +1068,4 @@ const InternJobDetailPage = () => {
     );
 };
 
-export default InternJobDetailPage;
+export default InternJobDetailPage; 

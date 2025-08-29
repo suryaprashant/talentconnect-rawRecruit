@@ -1,5 +1,5 @@
 import express from 'express';
-import { getInternshipPostings, getJobPostings, getOffCampusPostings, getOnCampusPostingForCollegebyID, getOnCampusPostingForCompanybyID, getOnCampusPostings, getOnCampusPostingsForCollege, getOnCampusPostingsForCompany, getPoolCampusForCollege, getPoolCampusForCompany, getPoolCampusJobByIdForCollege, getPoolCampusJobByIdForCompany, getReferralJobById, getReferralJobs } from '../../controllers/studentDashboard/studentDashboardController.js';
+import { getInternshipPostings, getIntershipById, getJobPostings, getOffCampusPostings, getOnCampusPostingForCollegebyID, getOnCampusPostingForCompanybyID, getOnCampusPostings, getOnCampusPostingsForCollege, getOnCampusPostingsForCompany, getPoolCampusForCollege, getPoolCampusForCompany, getPoolCampusJobByIdForCollege, getPoolCampusJobByIdForCompany, getReferralJobById, getReferralJobs } from '../../controllers/studentDashboard/studentDashboardController.js';
 import secureRoute from '../../middlewares/secureRoute.js';
 
 const router = express.Router(); 
@@ -20,6 +20,7 @@ router.get('/pool-campus/company/:id', secureRoute, getPoolCampusJobByIdForCompa
 
 router.get('/job-postings', secureRoute, getJobPostings);
 router.get('/internship-postings', secureRoute,getInternshipPostings);
+router.get('/getInternshipDetail/:id',secureRoute , getIntershipById)
 
 router.get('/referral-jobs', secureRoute , getReferralJobs) ;
 router.get('/referral-jobs/:id', secureRoute , getReferralJobById) ;

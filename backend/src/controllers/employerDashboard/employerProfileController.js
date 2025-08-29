@@ -48,15 +48,23 @@ export const createEmployerOnboarding = async (req, res) => {
             hiringPreferences: JSON.parse(hiringPreferences),
         });
 
-         await Auth.findByIdAndUpdate(userId, { userType: "employer" });
-        console.log(`User ${req.user.email} userType updated to employer`);
+       const updatedUser = await Auth.findByIdAndUpdate(
+            userId,
+            { 
+                userType: "employer",
+                onboardingCompleted: true, // Set onboarding as completed
+                onboardingStep: 6 // Set to final step
+            },
+            { new: true } // Return the updated document
+        ).select("-password");
 
-        const updatedUser = await Auth.findById(userId).select("-password");
+        if (!updatedUser) {
+            return res.status(404).json({ error: "User not found after update." });
+        }
 
         res.status(201).json({
            message: 'Onboarding created successfully.',
            profile: onboardingData,
-           userType: "employer",
            user: updatedUser
          });
     } catch (error) {

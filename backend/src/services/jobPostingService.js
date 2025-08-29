@@ -17,7 +17,8 @@ export const createPostingService = async (postingData) => {
 
 export const getJobPostingsByJobTypeService = async (jobType) => {
     try {
-        const postings = await JobPostingTable.find({ jobType }).populate('companyPosted');
+        const postings = await JobPostingTable.find({ jobType }).populate('companyPosted')
+        .sort({ createdAt: -1 });
 
         const currentDate = new Date();
         const updatedPostings = postings.map(posting => {

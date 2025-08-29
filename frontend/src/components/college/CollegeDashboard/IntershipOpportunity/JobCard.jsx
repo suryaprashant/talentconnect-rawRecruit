@@ -14,8 +14,8 @@ const JobCard = ({ job }) => {
             </div>
             <div className="p-4">
                 <div className="text-center mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">{job.degree} Intern</h3>
-                    <p className="text-sm text-gray-600">{job.university}</p>
+                    <h3 className="text-lg font-semibold text-gray-900">{job.jobTitle} Intern</h3>
+                    <p className="text-sm text-gray-600">{job.companyName}</p>
                 </div>
                 <Link 
                     to={`/college-dashboard/internship-opportunities/${job.id}`}

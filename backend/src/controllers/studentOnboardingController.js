@@ -355,25 +355,35 @@ export const submitOnboardingForm = async (req, res) => {
 
    
     let finalUserTypeForResponse = "candidate";
+    let authUserType = "candidate";
+    
     if (req.body.profileType) {
-      let authUserType = req.body.profileType.toLowerCase();
+      authUserType = req.body.profileType.toLowerCase();
       if (authUserType === "student") authUserType = "student";
       else if (authUserType === "fresher") authUserType = "fresher";
       else if (authUserType === "professional") authUserType = "professional";
       else authUserType = "candidate";
 
-      await Auth.findByIdAndUpdate(req.user._id, { userType: authUserType });
-      console.log(`User ${req.user.email} userType updated to ${authUserType}`);
       finalUserTypeForResponse = authUserType;
     }
 
-    
-    const updatedUser = await Auth.findById(req.user._id).select("-password");
-    
+    // Update user with onboarding completed status
+    const updatedUser = await Auth.findByIdAndUpdate(
+      req.user._id,
+      { 
+        userType: authUserType,
+        onboardingCompleted: true, // Set onboarding as completed
+        onboardingStep: 6 // Set to final step
+      },
+      { new: true } // Return the updated document
+    ).select("-password");
+
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found after update." });
     }
-    
+
+    console.log(`User ${req.user.email} updated: userType=${authUserType}, onboardingCompleted=true`);
+
     res.status(201).json({
       message: "Form submitted successfully!",
       profileType: req.body.profileType,
@@ -381,7 +391,6 @@ export const submitOnboardingForm = async (req, res) => {
       user: updatedUser,
       onboarding: updatedOnboarding
     });
-
   } catch (error) {
     console.error("Form submission error (backend):", error);
     

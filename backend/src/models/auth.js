@@ -18,15 +18,23 @@ const AuthSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-    linkedinId: {
-        type: String,
-        unique: true,
-        sparse: true
-    },
-    isNewUser: { // To track if it's a new user for onboarding redirect
-        type: Boolean,
-        default: true
-    },
+  linkedinId: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  isNewUser: { 
+    type: Boolean,
+    default: true
+  },
+  onboardingCompleted:{
+    type: Boolean ,
+    default : false 
+  },
+  onboardingStep:{
+    type : Number ,
+    default: 1
+  },
   userType: {
     type: String,
     enum: ['candidate', 'college', 'company', 'student', 'fresher', 'professional', 'employer'],
