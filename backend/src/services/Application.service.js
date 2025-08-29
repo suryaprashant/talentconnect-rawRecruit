@@ -84,7 +84,10 @@ export async function createApplicationService(userId, userType, jobId, jobType)
     try {
         const existing = await getApplicationService(userId, userType, jobId, jobType);
         // console.log("existing response: ", existing.response);
-        if (existing?.response[0]?.currentStatus === "Applied") {
+        if (existing?.response[0]?.currentStatus === "Shortlisted" || existing?.response[0]?.currentStatus === "Accepted" || existing?.response[0]?.currentStatus === "Rejected") {
+            return { success: false, message: `currentStatus: ${existing?.response[0]?.currentStatus}` };
+        }
+        else if (existing?.response[0]?.currentStatus === "Applied") {
             return { success: false, message: "Already Applied" };
         }
         else if (existing?.response[0]?.currentStatus === "Saved") {
@@ -174,6 +177,7 @@ export async function fetchApplicationsByJobService(jobId, jobType) {
                     job: new mongoose.Types.ObjectId(jobId),
                     jobType: jobType,
                     // currentStatus not equal to "saved"
+                    currentStatus: { $ne: "Saved" }
                 }
             },
             {
@@ -481,7 +485,7 @@ export async function ChangeStatusService(applicationId, newStatus) {
 
 // getshorlisted candidate by company
 export async function fetchCandidatesbyStatus(companyId, targetStatus, applicantType, jobType) {
-    // console.log("type: ", companyId, targetStatus, applicantType, jobType);
+    console.log("type: ", companyId, targetStatus, applicantType, jobType);
     try {
         // determine which collection to lookup based on applicantType
         let fromCollection, projectApplicant;

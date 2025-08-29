@@ -192,7 +192,7 @@ export default function JobListingPage() {
       {/* Candidates grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {candidates.map(candidate => (
-          <div key={candidate.id} className="border rounded-lg p-6 shadow-sm">
+          <div key={candidate._id} className="border rounded-lg p-6 shadow-sm">
             <div className="flex items-start mb-4">
               {/* Avatar */}
               <div className="relative w-16 h-16 mr-4">
