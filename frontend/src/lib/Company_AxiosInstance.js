@@ -71,6 +71,12 @@ export function getPostedJobs(jobType) {
     .catch(error => console.log("Error: ", error));
 }
 
+export function deleteJobById(jobId) {
+  return axiosClient.delete(`/company/jobmanagement/${jobId}`)
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
 export function getApplicationsForJob(jobId, jobType) {
   return axiosClient.get(`application/manage`,
     {

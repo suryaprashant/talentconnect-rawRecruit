@@ -4,7 +4,7 @@ import {
   ChevronLeft, ChevronRight, Filter, X
 } from 'lucide-react';
 import ApplicantDetails from './ApplicantDetails';
-import { getPostedJobs } from '@/lib/Company_AxiosInstance';
+import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
 
 export default function OffCampusJobManagement() {
   // State variables
@@ -97,9 +97,17 @@ export default function OffCampusJobManagement() {
     // In a real app: trigger API call to export job data
   };
 
-  const handleDelete = (jobId) => {
-    console.log(`Delete job with ID: ${jobId}`);
-    // In a real app: show confirmation and delete on confirmation
+  const handleDelete = async (jobId) => {
+    try {
+      const confirmed = window.confirm("This action can't be undone! Are you sure you want to delete the job?");
+      if (confirmed) {
+        const response = await deleteJobById(jobId);
+        fetchJobs();
+        alert(`Job with Id: ${jobId} deleted`);
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+    }
   };
 
   // College request detail handlers
@@ -142,9 +150,9 @@ export default function OffCampusJobManagement() {
             <h1 className="text-3xl font-bold">Manage Off-Campus Applications</h1>
             <p className="text-gray-600 mt-2">Track Your Job Listings and Streamline Candidate Applications</p>
           </div>
-          <button className="bg-black text-white px-4 py-2 rounded-md">
+          {/* <button className="bg-black text-white px-4 py-2 rounded-md">
             Post a Job
-          </button>
+          </button> */}
         </div>
 
         <div className="border rounded-md mt-10">
@@ -206,7 +214,7 @@ export default function OffCampusJobManagement() {
                   <th className="px-4 py-3 text-left">Job Title</th>
                   <th className="px-4 py-3 text-left">Status</th>
                   <th className="px-4 py-3 text-left">Deadline</th>
-                  <th className="px-4 py-3 text-left">Views</th>
+                  {/* <th className="px-4 py-3 text-left">Views</th> */}
                   <th className="px-4 py-3 text-left">Applications</th>
                   <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
@@ -247,14 +255,14 @@ export default function OffCampusJobManagement() {
                         </span>
                       </td>
                       <td className="px-4 py-3">{new Date(job?.endDate).toUTCString().slice(0, 16)}</td>
-                      <td className="px-4 py-3">{job.views}</td>
-                      <td className="px-4 py-3">{job.applications}</td>
+                      {/* <td className="px-4 py-3">{job.views}</td> */}
+                      <td className="px-4 py-3">{job?.applications}</td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <div className="flex gap-2">
                           <button onClick={() => handleView(job._id)} className="text-gray-500 hover:text-gray-700" title="View Job">
                             <Eye size={18} />
                           </button>
-                          <button onClick={() => handleEdit(job._id)} className="text-gray-500 hover:text-gray-700" title="Edit Job">
+                          {/* <button onClick={() => handleEdit(job._id)} className="text-gray-500 hover:text-gray-700" title="Edit Job">
                             <Edit size={18} />
                           </button>
                           <button onClick={() => handleApplications(job._id)} className="text-gray-500 hover:text-gray-700" title="View Applications">
@@ -262,7 +270,7 @@ export default function OffCampusJobManagement() {
                           </button>
                           <button onClick={() => handleExport(job._id)} className="text-gray-500 hover:text-gray-700" title="Export Job Data">
                             <FileText size={18} />
-                          </button>
+                          </button> */}
                           <button onClick={() => handleDelete(job._id)} className="text-gray-500 hover:text-gray-700" title="Delete Job">
                             <Trash size={18} />
                           </button>

@@ -679,10 +679,10 @@
 // }
 
 import { useState, useEffect } from 'react';
-import { Search, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Eye, ChevronLeft, ChevronRight, Trash } from 'lucide-react';
 import axios from 'axios';
 import CollegeRequestDetail from './CollegeRequestDetail';
-import { acceptCandidate, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
+import { acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 // import { format, isValid } from 'date-fns';
 
 const API_BASE_URL = import.meta.env.VITE_Backend_URL;
@@ -764,6 +764,19 @@ export default function OnCampusJobManagement() {
     } catch (err) {
       console.error("Error updating application status:", err);
       setError(err.response?.data?.message || err.message || "Failed to update status.");
+    }
+  };
+
+  const handleDelete = async (jobId) => {
+    try {
+      const confirmed = window.confirm("This action can't be undone! Are you sure you want to delete the job?");
+      if (confirmed) {
+        const response = await deleteJobById(jobId);
+        fetchJobs();
+        alert(`Job with Id: ${jobId} deleted`);
+      }
+    } catch (error) {
+      console.log("Error: ", error);
     }
   };
 
@@ -945,6 +958,9 @@ export default function OnCampusJobManagement() {
                             title="View College Applications"
                           >
                             <Eye size={18} />
+                          </button>
+                          <button onClick={() => handleDelete(job._id)} className="text-gray-500 hover:text-gray-700" title="Delete Job">
+                            <Trash size={18} />
                           </button>
                         </div>
                       </td>

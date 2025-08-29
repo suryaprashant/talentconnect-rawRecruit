@@ -46,6 +46,12 @@ export function ApplyForOnCampus(jobId) {
     .catch(error => console.log("Error: ", error));
 }
 
+export function ApplyForCampusInternship(jobId) {
+  return axiosClient.post(`/application/college/internship`, { jobId: jobId })
+    .then(response => response)
+    .catch(error => console.log("Error: ", error));
+}
+
 export function getOncampusJobs() {
   return axiosClient.post(`/api/rawrecruit/college/oncampus`)
     .then(response => response)

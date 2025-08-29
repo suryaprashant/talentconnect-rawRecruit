@@ -56,7 +56,7 @@ export const getJobPostingsByJobTypeService = async (jobType) => {
 export const getJobPostingsByCollegeService = async (jobType) => {
     try {
         const postings = await JobPostingTable.find({ jobType }).populate('collegePosted');
-        
+
         const currentDate = new Date();
         const updatedPostings = postings.map(posting => {
             let status = posting.jobStatus;
@@ -65,7 +65,7 @@ export const getJobPostingsByCollegeService = async (jobType) => {
             if (posting.startDate && posting.endDate) {
                 const startDate = new Date(posting.startDate);
                 const endDate = new Date(posting.endDate);
-                
+
                 if (currentDate < startDate) {
                     status = "Pending";
                 } else if (currentDate >= startDate && currentDate <= endDate) {
@@ -93,7 +93,7 @@ export const getJobPostingsByCollegeService = async (jobType) => {
 // export const getJobPostingsByCollegeService = async (jobType) => {
 //     try {
 //         const postings = await JobPostingTable.find({ jobType }).populate('collegePosted');
-        
+
 //         const currentDate = new Date();
 //         const updatedPostings = postings.map(posting => {
 //             let status = posting.jobStatus;
@@ -102,7 +102,7 @@ export const getJobPostingsByCollegeService = async (jobType) => {
 //             if (posting.startDate && posting.endDate) {
 //                 const startDate = new Date(posting.startDate);
 //                 const endDate = new Date(posting.endDate);
-                
+
 //                 if (currentDate < startDate) {
 //                     status = "Pending";
 //                 } else if (currentDate >= startDate && currentDate <= endDate) {
@@ -130,6 +130,17 @@ export const getJobPostedByCompanyService = async (companyId, jobType) => {
         const response = await JobPostingTable.find({ companyPosted: companyId, jobType: jobType }).lean();
         // console.log(response);
         return { success: true, response: response };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+
+export const deleteJobByIdService = async (jobId,companyId) => {
+    try {
+        const response = await JobPostingTable.findOneAndDelete({ _id: jobId, companyPosted: companyId });
+        // console.log(response);
+        return { success: true, msg: "Job Deleted" };
     } catch (error) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");

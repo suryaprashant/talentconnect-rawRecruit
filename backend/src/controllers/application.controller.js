@@ -25,6 +25,8 @@ export async function saveJobByUser(req, res) {
     try {
         const user = await getStudentService(userId);
 
+        console.log(user);
+
         // if (!userId || !jobId) return res.status(404).json({ msg: "Fields missing" });
         if (!jobId || !user) return res.status(404).json({ msg: "User or Job not found!" });
         // if (await getApplicationService(user.data[0]._id, req.user.userType, jobId, jobType).success === true) return res.status(403).json({ msg: "Already Applied" });
@@ -158,6 +160,28 @@ export async function createPoolcampusApplication(req, res) {
 
         const application = await createApplicationService(user.data[0]._id, req.user.userType, jobId, "Pool-campus");
         if (application.success === false) return res.status(403).json({ msg: application.message });
+
+        res.status(201).json(application);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+// campus-internship
+export async function createCampusInternshipApplication(req, res) {
+    const { jobId } = req.body;
+    const userId = req.user._id;
+
+    try {
+        // to get collegeId from college database
+        const user = await getCollegeService(userId);
+
+        if (!user || !jobId) return res.status(404).json({ msg: "Invalid" });
+        if (await getApplicationService(user.data[0]._id, req.user.userType, jobId, "Internship") === true) return res.status(403).json({ msg: "Already Applied" });
+
+        const application = await createApplicationService(user.data[0]._id, req.user.userType, jobId, "Internship");
+        if (application.success === false) return res.status(403).json(application);
 
         res.status(201).json(application);
     } catch (error) {
@@ -314,7 +338,8 @@ export async function getShortlistedCandidatesByCompany(req, res) {
     try {
         const company = await CompanyProfile.find({ userId: companyId }).lean();
         if (!company) return res.status(404).json({ msg: "company not found!" });
-        const response = await fetchCandidatesbyStatus(company._id, "Shortlisted", applicantType, jobType);
+        // console.log(company);
+        const response = await fetchCandidatesbyStatus(company[0]._id, "Shortlisted", applicantType, jobType);
         // console.log(response);
         res.status(200).json(response);
     } catch (error) {

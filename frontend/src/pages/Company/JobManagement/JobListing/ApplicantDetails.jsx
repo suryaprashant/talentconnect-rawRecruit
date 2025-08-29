@@ -229,7 +229,7 @@ const ApplicantDetails = ({ job, onClose }) => {
 
   return (
     <>
-      <button onClick={()=>onClose()}>Back</button>
+      <button onClick={() => onClose()}>Back</button>
       <div className="bg-white min-h-screen flex">
         {/* Filters Sidebar */}
         <div className="w-1/4 p-6 border-r border-gray-200">

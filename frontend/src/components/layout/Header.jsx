@@ -8,10 +8,10 @@ import SearchBar from '../ui/SearchBar';
 import Avatar from '../ui/Avatar';
 import NotificationsDropdown from './NotificationDropdown';
 import ProfileSwitchDropdown from '../Employer/ProfileSwitchDropdown';
-import StandardProfileDropdown from './ProfileDropdown'; 
+import StandardProfileDropdown from './ProfileDropdown';
 
 function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
-    const [authuser] = useAuth(); 
+    const [authuser] = useAuth();
 
 
     const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -37,7 +37,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
         }
     }, [authuser]);
 
-    
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (profileRef.current && !profileRef.current.contains(event.target)) {
@@ -51,7 +51,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [setProfileOpen]);
 
-    console.log("ye to authuser hai na" ,authuser)
+    // console.log("ye to authuser hai na" ,authuser)
 
     return (
         <header className="sticky top-0 z-30 flex items-center h-16 px-4 bg-white border-b border-gray-200 shadow-sm">
@@ -93,7 +93,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
                             )}
                         </div>
 
-                       
+
                         <div className="relative" ref={profileRef}>
                             <button
                                 type="button"
@@ -107,7 +107,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
                                 <FiChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileOpen ? 'transform rotate-180' : ''}`} />
                             </button>
 
-                        
+
                             {profileOpen && (
                                 authuser.user.userType === 'employer'
                                     ? <ProfileSwitchDropdown />
