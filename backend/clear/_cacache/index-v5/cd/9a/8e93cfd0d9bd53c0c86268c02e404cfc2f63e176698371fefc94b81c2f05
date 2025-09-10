@@ -1,0 +1,2 @@
+
+60a0498648103ff323bf84a16bf74784aae7f292	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/json-bignum","integrity":null,"time":1757445483319,"size":"0","metadata":{"time":1757445483319,"url":"http://registry.npmjs.org/json-bignum","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 09 Sep 2025 19:18:02 GMT","location":"https://registry.npmjs.org/json-bignum","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

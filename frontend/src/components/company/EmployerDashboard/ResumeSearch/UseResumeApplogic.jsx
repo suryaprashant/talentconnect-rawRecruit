@@ -44,7 +44,7 @@ const useResumeAppLogic = () => {
   };
 
   const handleSearch = (searchParams) => {
-    // console.log('Searching with params:', searchParams);
+    console.log('Searching with params:', searchParams);
     getProfileByResume(searchParams);
     setView('applications');
   };

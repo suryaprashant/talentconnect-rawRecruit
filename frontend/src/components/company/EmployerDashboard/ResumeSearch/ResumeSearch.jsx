@@ -33,7 +33,7 @@ function ResumeSearch({ onSearch, onFileUpload }) {
             value={searchParams.query}
             onChange={handleChange}
             placeholder="Search by job title, skills, or keywords"
-            className="w-full p-3 pl-10 border border-gray-300 rounded"
+            className="w-full p-3 pl-10 border border-gray-300 rounded bg-black text-white"
           />
           <svg className="absolute left-3 top-3.5 text-gray-400 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -47,7 +47,7 @@ function ResumeSearch({ onSearch, onFileUpload }) {
               name="location"
               value={searchParams.location}
               onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded appearance-none"
+              className="w-full p-3 border border-gray-300 rounded appearance-none bg-black text-white"
             >
               <option value="">Select</option>
               <option value="Remote">Remote</option>
@@ -75,7 +75,7 @@ function ResumeSearch({ onSearch, onFileUpload }) {
               value={searchParams.experience}
               onChange={handleChange}
               placeholder="Minimum years of experience"
-              className="w-full p-3 border border-gray-300 rounded"
+              className="w-full p-3 border border-gray-300 rounded  bg-black text-white"
             />
           </div>
         </div>
@@ -86,7 +86,7 @@ function ResumeSearch({ onSearch, onFileUpload }) {
             name="salary"
             value={searchParams.salary}
             onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded appearance-none"
+            className="w-full p-3 border border-gray-300 rounded appearance-none  bg-black text-white"
           >
             <option value="">Select range</option>
             <option value="0-50000">$0 - $50,000</option>

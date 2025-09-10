@@ -1,0 +1,2 @@
+
+0aa4cf5a6a154f605cdd960d248076d38701a116	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/color-name/-/color-name-1.1.4.tgz","integrity":null,"time":1756734315526,"size":"0","metadata":{"time":1756734315526,"url":"http://registry.npmjs.org/color-name/-/color-name-1.1.4.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Mon, 01 Sep 2025 13:45:10 GMT","location":"https://registry.npmjs.org/color-name/-/color-name-1.1.4.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

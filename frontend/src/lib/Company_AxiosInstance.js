@@ -33,11 +33,13 @@ export function getAcceptedOffCampusCandidates(jobId) {
     .catch(error => console.log("Error: ", error));
 }
 
-export function getProfileByResume(searchParams) {
-  return axiosClient.get(`/company/dashboard/resume`, { params: searchParams })
+
+export function getProfileByResume(searchParams){
+  return axiosClient.post('api/resumes/search',searchParams)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
-}
+
+};
 
 export function createCompanyProfile(formData) {
   return axiosClient.post(`/company`, formData)

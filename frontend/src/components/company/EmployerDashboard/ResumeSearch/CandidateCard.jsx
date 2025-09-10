@@ -1,5 +1,4 @@
 
-
 function CandidateCard({ candidate, onShortlist }) {
     return (
       <div className="bg-white rounded shadow p-4">

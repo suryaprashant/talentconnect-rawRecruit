@@ -1,0 +1,2 @@
+
+0088b7c34d3099de7ac28f8b33cde2e4c645a893	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@firebase/firestore/-/firestore-4.7.17.tgz","integrity":null,"time":1756734334073,"size":"0","metadata":{"time":1756734334073,"url":"http://registry.npmjs.org/@firebase/firestore/-/firestore-4.7.17.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Mon, 01 Sep 2025 13:45:29 GMT","location":"https://registry.npmjs.org/@firebase/firestore/-/firestore-4.7.17.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

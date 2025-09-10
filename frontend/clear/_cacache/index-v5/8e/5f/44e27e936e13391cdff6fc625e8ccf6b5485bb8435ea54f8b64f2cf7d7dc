@@ -1,0 +1,2 @@
+
+025acffaa5332759e004103067538c2a33176aa2	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/espree/-/espree-10.3.0.tgz","integrity":null,"time":1756734329773,"size":"0","metadata":{"time":1756734329773,"url":"http://registry.npmjs.org/espree/-/espree-10.3.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Mon, 01 Sep 2025 13:45:09 GMT","location":"https://registry.npmjs.org/espree/-/espree-10.3.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

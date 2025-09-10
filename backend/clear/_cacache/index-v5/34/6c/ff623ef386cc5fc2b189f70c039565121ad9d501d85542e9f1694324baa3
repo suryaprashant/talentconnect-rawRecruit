@@ -1,0 +1,2 @@
+
+b8168958a628ada6c1e527dbbe09358de0d2ebb1	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@opentelemetry/api/-/api-1.9.0.tgz","integrity":null,"time":1757445488686,"size":"0","metadata":{"time":1757445488686,"url":"http://registry.npmjs.org/@opentelemetry/api/-/api-1.9.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 09 Sep 2025 19:18:08 GMT","location":"https://registry.npmjs.org/@opentelemetry/api/-/api-1.9.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

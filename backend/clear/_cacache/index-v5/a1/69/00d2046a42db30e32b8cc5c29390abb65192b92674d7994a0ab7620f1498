@@ -1,0 +1,2 @@
+
+0fc1673a731f5308efcb4603bed0a9f6d63f2577	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/command-line-args","integrity":null,"time":1757445483602,"size":"0","metadata":{"time":1757445483601,"url":"http://registry.npmjs.org/command-line-args","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 09 Sep 2025 19:18:03 GMT","location":"https://registry.npmjs.org/command-line-args","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
