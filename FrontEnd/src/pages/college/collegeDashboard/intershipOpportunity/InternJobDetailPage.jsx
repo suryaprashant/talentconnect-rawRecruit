@@ -156,12 +156,11 @@ const InternJobDetailPage = () => {
             const response = await ApplyForCampusInternship(id);
             // console.log("apply res: ", response);
 
-            if (response.data?.success === true) alert("Applied");
-            // }
-            else alert(response?.response.data.message);
+            if (response.data?.success === true) toast.success("Applied!");
+            else toast.error(response.response?.data?.msg || "Could not apply.");
         } catch (error) {
             console.log("Error: ", error);
-            alert(`Something went wrong`);
+            toast.error('Something went wrong');
         }
     };
     const handleSave = async (jobId, jobType) => {
@@ -169,12 +168,11 @@ const InternJobDetailPage = () => {
 
         try {
             const response = await SaveOppurtunity(jobId, jobType);
-            if (response.success === true) alert("Saved");
-            // }
-            // else alert("Application Closed!")
+            if (response.data?.success === true) toast.success("Saved!");
+            else toast.error(response.response?.data?.msg || "Could not apply.");
         } catch (error) {
             console.log("Error: ", error);
-            alert("Error!");
+            toast.error('Something went wrong');
         }
     };
 

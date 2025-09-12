@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import SidebarNavItem from './SidebarNavItem';
 import SidebarNavGroup from './SidebarNavGroup';
 import { 
@@ -9,14 +9,14 @@ import {
   FiClipboard, 
   FiSearch, 
   FiHelpCircle, 
-  FiSettings,
+  // FiSettings,
   FiMessageCircle,
   FiBriefcase,
   FiAward,
   FiUsers,
   FiLayers,
-  FiTarget,
-  FiCalendar,
+  // FiTarget,
+  // FiCalendar,
   FiFileText,
   FiTrendingUp,
   FiMic,
@@ -56,12 +56,12 @@ function StudentSidebar({ activePath }) {
           label="Referral Jobs" 
           active={activePath === '/student-dashboard/Referral-Jobs'} 
         />
-        <SidebarNavItem 
+        {/* <SidebarNavItem 
           to="/student-dashboard/hackathon" 
           icon={<FiAward />} 
           label="Hackathon" 
           active={activePath === '/student-dashboard/hackathon'} 
-        />
+        /> */}
       </SidebarNavGroup>
 
       <SidebarNavGroup label="Service Request" icon={<FiClipboard />} active={activePath.includes('/service-request')}>

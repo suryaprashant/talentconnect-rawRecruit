@@ -25,18 +25,23 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
   const shortlistApplicant = async (applicantionId) => {
     try {
       const response = await shortlistCandidate(applicantionId);
-      if (response.success === true) alert("Shortlisted!");
+      // console.log("shortlist: ", response)
+      if (response?.data?.success === true) toast.success("Shortlisted!");
+      else toast.error(response.response?.data?.msg);
     } catch (error) {
       console.log("Error: ", error);
+      toast.error('Something went wrong!')
     }
   }
 
   const rejectApplicant = async (applicantionId) => {
     try {
       const response = await rejectCandidate(applicantionId);
-      if (response.success === true) alert("Rejected!");
+      if (response?.data?.success === true) toast.success("Rejected!");
+      else toast.error(response.response?.data?.msg);
     } catch (error) {
       console.log("Error: ", error);
+      toast.error('Something went wrong!')
     }
   }
 

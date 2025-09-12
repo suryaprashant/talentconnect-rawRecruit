@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { ChevronDown, Mail, Phone, Link, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function RequestInfo() {
-  
+
   const degreeOptions = [
     'Associate Degree',
     'Bachelor of Arts (B.A.)',
@@ -28,7 +29,7 @@ export default function RequestInfo() {
   ];
 
   const locationOptions = [
-     'Bangalore', 'Mumbai', 'Delhi NCR', 'Hyderabad',
+    'Bangalore', 'Mumbai', 'Delhi NCR', 'Hyderabad',
     'Chennai', 'Pune', 'Kolkata', 'Ahmedabad', 'Gurgaon', 'Noida'
   ];
 
@@ -39,14 +40,14 @@ export default function RequestInfo() {
   ];
 
   const skillsOptions = [
-    'JavaScript', 'Python', 'Java', 'React', 'Node.js', 
-    'HTML/CSS', 'SQL', 'MongoDB', 'AWS', 'Docker', 
-    'Kubernetes', 'Machine Learning', 'Data Structures', 
+    'JavaScript', 'Python', 'Java', 'React', 'Node.js',
+    'HTML/CSS', 'SQL', 'MongoDB', 'AWS', 'Docker',
+    'Kubernetes', 'Machine Learning', 'Data Structures',
     'Algorithms', 'Git', 'REST APIs'
   ];
 
   const roundsOptions = [
-    '1 Round', '2 Rounds', '3 Rounds', '4 Rounds', 
+    '1 Round', '2 Rounds', '3 Rounds', '4 Rounds',
     '5 Rounds', '6 Rounds', '7+ Rounds'
   ];
 
@@ -75,7 +76,7 @@ export default function RequestInfo() {
   const benefitsOptions = [
     'Health Insurance', 'Provident Fund (PF)', 'Paid Time Off (PTO)', 'Work from Home', 'Performance Bonus', 'Stock Options'
   ];
-  
+
   // --- Component State and Logic ---
   const initialData = {
     degree: '',
@@ -98,14 +99,14 @@ export default function RequestInfo() {
     linkedin: '',
     minimumStudents: '',
     eligibilityCriteria: '',
-    description :'' ,
+    description: '',
     amenitiesRequired: [],
     benefits: []
   };
-  
+
   const [formData, setFormData] = useState(initialData);
   const [currency, setCurrency] = useState('INR');
-  
+
   const [dropdownOpen, setDropdownOpen] = useState({
     stream: false,
     preferredLocations: false,
@@ -153,7 +154,7 @@ export default function RequestInfo() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-  
+
   const handleMultiSelect = (field, value) => {
     setFormData(prev => {
       const currentValues = prev[field] || [];
@@ -218,7 +219,7 @@ export default function RequestInfo() {
         },
         minimumStudents: formData.minimumStudents,
         eligibilityCriteria: formData.eligibilityCriteria,
-        description : formData.description ,
+        description: formData.description,
         amenitiesRequired: formData.amenitiesRequired,
         benefits: formData.benefits,
         jobType: 'On-campus',
@@ -237,18 +238,18 @@ export default function RequestInfo() {
       );
 
       if (response.status === 201) {
-        alert('Form submitted successfully!');
+        toast.success('On-campus opportunity posted');
         setFormData(initialData);
         setCurrency('INR');
       }
     } catch (err) {
       console.error(err);
       if (err.response) {
-        alert(`Submission failed: ${err.response.data.message || err.response.data.error}`);
+        toast.error(`Submission failed: ${err.response.data.message || err.response.data.error}`);
       } else if (err.request) {
-        alert('Submission failed: No response from server.');
+        toast.error('Submission failed: No response from server.');
       } else {
-        alert(`An error occurred: ${err.message}`);
+        toast.error(`Something went wrong!`);
       }
     }
   };
@@ -415,7 +416,7 @@ export default function RequestInfo() {
         <div>
           <label className="block mb-2 font-medium">Work Mode</label>
           <div className="flex space-x-2">
-             <button
+            <button
               type="button"
               className={`px-4 py-1 border ${formData.workMode === 'Hybrid' ? 'bg-black text-white' : 'bg-white text-black'} rounded`}
               onClick={() => handleOptionSelect('workMode', 'Hybrid')}
@@ -525,11 +526,11 @@ export default function RequestInfo() {
 
         {/* Description  */}
 
-         <div>
-            <label className="block mb-1 font-medium">Job Description <span className="text-red-500">*</span></label>
-            <textarea name="description" value={formData.description}  onChange={handleInputChange} 
- placeholder="Provide a detailed job description..." className="w-full p-2 border rounded resize-none h-24" required></textarea>
-          </div>
+        <div>
+          <label className="block mb-1 font-medium">Job Description <span className="text-red-500">*</span></label>
+          <textarea name="description" value={formData.description} onChange={handleInputChange}
+            placeholder="Provide a detailed job description..." className="w-full p-2 border rounded resize-none h-24" required></textarea>
+        </div>
 
         {/* Amenities/Facilities Required */}
         <div ref={amenitiesRef} className="relative">
@@ -611,29 +612,29 @@ export default function RequestInfo() {
         <div>
           <label className="block mb-2 font-medium">Minimum Salary Offered</label>
           <div className="flex">
-             <div className="relative w-16">
-               <select
-                 id="currency"
-                 name="currency"
-                 className="w-full h-full p-2 border border-gray-300 rounded-l appearance-none bg-white pr-6"
-                 value={currency}
-                 onChange={(e) => setCurrency(e.target.value)}
-               >
-                 <option value="INR">INR</option>
-                 <option value="USD">USD</option>
-                 <option value="EUR">EUR</option>
-                 <option value="GBP">GBP</option>
-               </select>
-               <ChevronDown className="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400" size={12} />
-             </div>
-             <input
-               type="text"
-               name="minimumSalary"
-               placeholder="Placeholder"
-               className="flex-1 p-2 border border-l-0 border-gray-300 rounded-r"
-               value={formData.minimumSalary}
-               onChange={handleInputChange}
-             />
+            <div className="relative w-16">
+              <select
+                id="currency"
+                name="currency"
+                className="w-full h-full p-2 border border-gray-300 rounded-l appearance-none bg-white pr-6"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+              >
+                <option value="INR">INR</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+              </select>
+              <ChevronDown className="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400" size={12} />
+            </div>
+            <input
+              type="text"
+              name="minimumSalary"
+              placeholder="Placeholder"
+              className="flex-1 p-2 border border-l-0 border-gray-300 rounded-r"
+              value={formData.minimumSalary}
+              onChange={handleInputChange}
+            />
           </div>
         </div>
 
@@ -663,7 +664,7 @@ export default function RequestInfo() {
             </div>
           </div>
         </div>
-        
+
         {/* Number of Rounds */}
         <div>
           <label htmlFor="rounds" className="block mb-2 font-medium">Number of Rounds</label>
@@ -737,7 +738,7 @@ export default function RequestInfo() {
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
           </div>
         </div>
-        
+
         {/* Contact person email */}
         <div>
           <label htmlFor="email" className="block mb-2 font-medium">Contact person email <span className="text-red-500">*</span></label>
@@ -771,7 +772,7 @@ export default function RequestInfo() {
             />
           </div>
         </div>
-        
+
         {/* Contact person LinkedIn Profile */}
         <div>
           <label htmlFor="linkedin" className="block mb-2 font-medium">Contact person LinkedIn Profile</label>

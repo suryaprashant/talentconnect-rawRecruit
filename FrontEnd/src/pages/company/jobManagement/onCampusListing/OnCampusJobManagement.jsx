@@ -4,6 +4,7 @@ import { Search, Eye, ChevronLeft, ChevronRight, Trash } from 'lucide-react';
 import axios from 'axios';
 import CollegeRequestDetail from './CollegeRequestDetail';
 import { acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
+import toast from 'react-hot-toast';
 // import { format, isValid } from 'date-fns';
 
 const API_BASE_URL = import.meta.env.VITE_Backend_URL;
@@ -80,11 +81,13 @@ export default function OnCampusJobManagement() {
         default:
           alert("Invalid Action!");
       }
-      console.log(response)
-      // if (response.success === true) alert(`Application status updated to: ${status}`);
+      // console.log("campus: ", response)
+      if (response?.data?.success === true) toast.success(`Application status updated to: ${status}`);
+      else toast.error(response?.response?.data.msg);
     } catch (err) {
       console.error("Error updating application status:", err);
       setError(err.response?.data?.message || err.message || "Failed to update status.");
+      toast.error('Something went wrong!')
     }
   };
 
@@ -94,7 +97,7 @@ export default function OnCampusJobManagement() {
       if (confirmed) {
         const response = await deleteJobById(jobId);
         fetchJobs();
-        alert(`Job with Id: ${jobId} deleted`);
+        toast.success(`Job with Id: ${jobId} deleted`);
       }
     } catch (error) {
       console.log("Error: ", error);

@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 // import { jobListings, detailedJobData } from '@/constants/offCampusListing'
 import { ApplyForOppurtunity, getJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
+import toast from 'react-hot-toast';
 
 
 function OffCampusJobDetail() {
@@ -29,7 +30,6 @@ function OffCampusJobDetail() {
   };
 
   useEffect(() => {
-
     loadJobDetails();
   }, [jobId]);
 
@@ -40,12 +40,11 @@ function OffCampusJobDetail() {
   const handleSave = async () => {
     try {
       const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
-      console.log(response)
-      if (response.response?.data?.success===true) alert('Job saved!');
-      else alert(response.response.data?.msg)
+      if (response?.data?.success === true) toast.success('Job saved!');
+      else toast.error(response.response.data?.msg)
     } catch (err) {
       console.error('Error applying for job:', err);
-      alert('Failed to submit application. Please try again.');
+      toast.error('Something went wrong!');
     }
   };
 
@@ -53,11 +52,11 @@ function OffCampusJobDetail() {
     try {
       // if (jobDetail?.status === 'Open') {
       const response = await ApplyForOppurtunity(jobId, jobDetail.jobType);
-      if (response.data.success === 'true') alert("Applied");
-      // }
-      else alert("Something went wrong!")
+      if (response?.data?.success === true) toast.success('Application submitted!');
+      else toast.error(response.response.data?.msg)
     } catch (error) {
       console.log("Error: ", error);
+      toast.error('Something went wrong!');
     }
   };
 

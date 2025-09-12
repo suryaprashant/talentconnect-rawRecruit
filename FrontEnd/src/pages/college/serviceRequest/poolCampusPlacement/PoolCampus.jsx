@@ -29,8 +29,8 @@ export default function PoolCampusPlacement() {
   };
 
   const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    alert("Form submitted successfully!");
+    // console.log("Form submitted:", formData);
+    toast.success("Form submitted successfully!");
     setShowRegistration(false);
   };
 

@@ -3,12 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import JobCard from '@/components/student/studentDashboard/intershipOpportunity/JobCard';
 import { ApplyForInternship, getReferralJobById } from '@/lib/User_AxiosInstance';
+import toast from 'react-hot-toast';
 
 const RefferalDetails = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const [jobDetails, setJobDetails] = useState(null);
-  const [similarJobs, setSimilarJobs] = useState([]); 
+  const [similarJobs, setSimilarJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -17,9 +18,9 @@ const RefferalDetails = () => {
       try {
         setIsLoading(true);
 
-        
+
         const response = await getReferralJobById(jobId);
-        
+
         setJobDetails(response.data);
         console.log("Internship Details:", response.data);
 
@@ -32,7 +33,7 @@ const RefferalDetails = () => {
       }
     };
 
-    if (jobId) { 
+    if (jobId) {
       loadJobDetails();
     }
   }, [jobId]);
@@ -40,25 +41,22 @@ const RefferalDetails = () => {
   const handleApply = async () => {
     try {
       const response = await ApplyForInternship(jobId);
-      
-      if (response && response.success === true) {
-        alert("Application submitted successfully!");
-      } else {
-        alert("Failed to submit application. Please try again.");
-      }
+
+      if (response?.data?.success === true) toast.success('Application submitted!');
+      else toast.error(response.response.data?.msg);
     } catch (err) {
       console.error('Error applying for internship:', err);
-      alert('Failed to submit application. Please try again.');
+      toast.error('Something went wrong!');
     }
   };
 
   const handleSave = async () => {
     try {
-      
+
       alert('Internship saved successfully!');
     } catch (err) {
       console.error('Error saving internship:', err);
-      alert('Failed to save internship. Please try again.');
+      toast.error('Something went wrong!');
     }
   };
 
@@ -99,8 +97,8 @@ const RefferalDetails = () => {
               <span className="inline-flex items-center mr-4">
                 <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" />
-                </svg>Experiences: 
-                { jobDetails.yearsOfExperience || 'N/A'}
+                </svg>Experiences:
+                {jobDetails.yearsOfExperience || 'N/A'}
               </span>
               <span className="inline-flex items-center capitalize">
                 <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">

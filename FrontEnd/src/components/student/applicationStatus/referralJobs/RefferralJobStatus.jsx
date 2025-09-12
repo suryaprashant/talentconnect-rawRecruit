@@ -15,7 +15,7 @@ const RefferralStatus = () => {
       const response = await getUserApplicationStatus("Refferral");
       setInternshipJobs(response.data.data);
       setSelectedJob(response.data.data[0]);
-      console.log("response: ", response.data.data[0]);
+      // console.log("response: ", response.data.data[0]);
     } catch (error) {
       console.log("Error: ", error);
     }
@@ -26,7 +26,7 @@ const RefferralStatus = () => {
   }, [])
 
   const filteredJobs = internshipJobs?.filter(job =>
-    job?.jobDetails[0]?.jobTitle?.toLowerCase().includes(searchTerm.toLowerCase()) || job?.companyDetails[0].companyDetails.companyName.toLowerCase().includes(searchTerm.toLowerCase())
+    job?.jobDetails[0]?.jobTitle?.toLowerCase().includes(searchTerm.toLowerCase()) || job?.companyDetails[0]?.companyDetails?.companyName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStatusIndex = (status) => statusSteps.findIndex(step => step === status);
@@ -80,7 +80,7 @@ const RefferralStatus = () => {
               onClick={() => setSelectedJob(job)}
             >
               <h3 className="font-medium">{job.jobDetails[0].jobTitle}</h3>
-              <p className="text-sm text-gray-600">{job.companyDetails[0].companyDetails.companyName}</p>
+              <p className="text-sm text-gray-600">{job?.companyDetails[0]?.companyDetails?.companyName}</p>
               <div className="mt-2 flex items-center text-xs text-gray-500">
                 <Clock className="h-3 w-3 mr-1" />
                 <span>{job.jobDetails[0].yearsOfExperience}</span>
@@ -129,7 +129,7 @@ const RefferralStatus = () => {
                 <div className="flex justify-between">
                   <div>
                     <h2 className="text-xl font-semibold text-gray-800">{selectedJob.jobDetails[0].jobTitle}</h2>
-                    <p className="text-gray-600">{selectedJob.companyDetails[0].companyDetails.companyName}</p>
+                    <p className="text-gray-600">{selectedJob?.companyDetails[0]?.companyDetails.companyName}</p>
                     <div className="mt-2 text-sm text-gray-500">
                       <p>Job ID: {selectedJob._id}</p>
                       <div className="flex items-center mt-1">

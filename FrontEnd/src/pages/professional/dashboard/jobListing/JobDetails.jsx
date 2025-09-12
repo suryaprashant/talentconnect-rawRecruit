@@ -3,19 +3,19 @@ import { useParams, useNavigate } from 'react-router-dom';
 //  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
 import JobCard from '@/components/student/studentDashboard/jobListing/JobCard';
 import { ApplyForJobListingOppurtunity, getJobLisingJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
+import toast from 'react-hot-toast';
 
 const JobDetails = () => {
   const { jobId } = useParams();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [jobDetails, setJobDetails] = useState(null);
-  const [similarJobs, setSimilarJobs] = useState([]);
+  // const [similarJobs, setSimilarJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const loadJobDetails = async () => {
     try {
       setIsLoading(true);
-
       // Fetch job details
       const details = await getJobLisingJobDetails(jobId);
       // console.log("..../", details.data[0]);
@@ -39,21 +39,22 @@ const JobDetails = () => {
   const handleApply = async () => {
     try {
       const response = await ApplyForJobListingOppurtunity(jobId);
-      console.log("Application: ", response);
-      if (response) alert('Application submitted successfully!');
+      if (response?.data?.success === true) toast.success('Application submitted!');
+      else toast.error(response.response.data?.msg)
     } catch (err) {
       console.error('Error applying for job:', err);
-      alert('Failed to submit application. Please try again.');
+      toast.error('Something went wrong!');
     }
   };
 
   const handleSave = async () => {
     try {
       const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
-      if (response) alert('Job saved!');
+      if (response?.data?.success === true) toast.success('Job saved!');
+      else toast.error(response.response.data?.msg);
     } catch (err) {
       console.error('Error applying for job:', err);
-      alert('Failed to submit application. Please try again.');
+      toast.error('Something went wrong!');
     }
   };
 
