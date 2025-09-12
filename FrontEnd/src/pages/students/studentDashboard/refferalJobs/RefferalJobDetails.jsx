@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import JobCard from '@/components/student/studentDashboard/intershipOpportunity/JobCard';
-import { ApplyForInternship, getReferralJobById } from '@/lib/User_AxiosInstance';
+import { ApplyForInternship, getReferralJobById, SaveOppurtunity } from '@/lib/User_AxiosInstance';
+import toast from 'react-hot-toast';
 
 const StudentRefferalJobDetails = () => {
   const { jobId } = useParams();
@@ -40,25 +41,23 @@ const StudentRefferalJobDetails = () => {
   const handleApply = async () => {
     try {
       const response = await ApplyForInternship(jobId);
-      
-      if (response && response.success === true) {
-        alert("Application submitted successfully!");
-      } else {
-        alert("Failed to submit application. Please try again.");
-      }
+      if (response?.data?.success === true) toast.success('Application submitted!');
+      else toast.error(response.response.data?.msg);
     } catch (err) {
       console.error('Error applying for internship:', err);
-      alert('Failed to submit application. Please try again.');
+      toast.error('Something went wrong!');
     }
   };
-
+  
   const handleSave = async () => {
     try {
-      
-      alert('Internship saved successfully!');
+      const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
+      // console.log(response)
+      if (response?.data?.success === true) toast.success('Job saved!');
+      else toast.error(response.response.data?.msg)
     } catch (err) {
       console.error('Error saving internship:', err);
-      alert('Failed to save internship. Please try again.');
+      toast.error('Something went wrong!');
     }
   };
 

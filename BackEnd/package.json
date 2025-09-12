@@ -5,7 +5,7 @@
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
-    "dev" : "nodemon src/app.js"
+    "dev" : "node --watch ./src/app.js"
   },
   "keywords": [],
   "author": "",
@@ -29,7 +29,6 @@
     "mongoose": "^8.15.0",
     "multer": "^2.0.0",
     "nodemailer": "^7.0.3",
-    "nodemon": "^3.1.10",
     "path": "^0.12.7",
     "socket.io": "^4.8.1",
     "streamifier": "^0.1.1"

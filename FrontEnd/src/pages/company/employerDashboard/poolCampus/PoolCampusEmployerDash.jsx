@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getPoolCampusJobByIdForCompany } from '../../../../lib/College_AxiosIntance'; // Assuming the API function is in this file
 import { format } from 'date-fns'; // A useful library for formatting dates
-import { ApplyForOncampusOppurtunity, SaveOppurtunity } from '@/lib/Company_AxiosInstance';
+import { ApplyForPoolcampusOppurtunity, SaveOppurtunity } from '@/lib/Company_AxiosInstance';
+import toast from 'react-hot-toast';
 
 const PoolCampusEmployeeDash = () => {
     const { id } = useParams();
@@ -36,24 +37,24 @@ const PoolCampusEmployeeDash = () => {
     const handleSave = async (jobId) => {
         try {
             const response = await SaveOppurtunity(jobId, posting?.jobType);
-            if (response.data.success === true) alert("Saved");
+            if (response.data?.success === true) toast.success("Saved");
             // }
-            // else alert("Application Closed!")
+            else toast.error(response?.response.data.msg);
         } catch (error) {
             console.log("Error: ", error);
-            alert("Error!");
+            toast.error("Something went wrong!");
         }
     };
 
     const handleApply = async (jobId) => {
         try {
-            const response = await ApplyForOncampusOppurtunity(jobId);
-            if (response.data?.success === true) alert("Applied");
+            const response = await ApplyForPoolcampusOppurtunity(jobId);
+            if (response.data?.success === true) toast.success("Applied");
             // }
-            else alert(response?.response.data.msg);
+            else toast.error(response?.response.data.msg);
         } catch (error) {
             console.log("Error: ", error);
-            alert(`Something went wrong`);
+            toast.error(`Something went wrong`);
         }
     };
 
@@ -287,8 +288,8 @@ const PoolCampusEmployeeDash = () => {
                             <button className="flex items-center border border-gray-300 rounded px-4 py-2 text-sm text-gray-700">Suggest Alternate Date</button>
                         </div>
                         <div className="flex gap-2">
-                            <button className="bg-blue-600 text-white px-6 py-2 rounded font-medium">Accept Invitation</button>
-                            <button className="border border-red-500 text-red-500 px-6 py-2 rounded font-medium">Reject Invitation</button>
+                            <button className="bg-blue-600 text-white px-6 py-2 rounded font-medium" onClick={() => handleApply(id)}>Accept Invitation</button>
+                            {/* <button className="border border-red-500 text-red-500 px-6 py-2 rounded font-medium">Reject Invitation</button> */}
                         </div>
                     </div>
                 </div>

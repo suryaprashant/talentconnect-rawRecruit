@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, X } from 'lucide-react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export default function PostJob() {
   const initialState = {
@@ -156,7 +157,7 @@ export default function PostJob() {
     for (const key in requiredFields) {
         const value = key.includes('.') ? formData.minPackage.amount : formData[key];
         if (!value || (Array.isArray(value) && value.length === 0)) {
-            alert(`Please fill the required field: ${requiredFields[key]}`);
+            toast.error(`Please fill the required field: ${requiredFields[key]}`);
             setIsSubmitting(false);
             return;
         }
@@ -196,12 +197,12 @@ export default function PostJob() {
         }
       );
 
-      alert("Internship posted successfully!");
+      toast.success("Internship posted");
       setFormData(initialState);
 
     } catch (error) {
       console.error("Detailed error:", error);
-      alert(`Error posting job: ${error.response?.data?.error || error.response?.data?.message || error.message}`);
+      toast.error(`Error posting job: ${error.response?.data?.error || error.response?.data?.message || error.message}`);
     } finally {
       setIsSubmitting(false);
     }

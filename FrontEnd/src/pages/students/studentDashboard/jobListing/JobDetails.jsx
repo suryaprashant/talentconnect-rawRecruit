@@ -21,7 +21,7 @@ const JobDetails = () => {
 
                 // Fetch job details
                 const details = await getJobLisingJobDetails(jobId);
-                console.log("..../", details.data[0]);
+                // console.log("..../", details.data[0]);
                 setJobDetails(details.data[0]);
 
                 // Fetch similar jobs
@@ -31,7 +31,7 @@ const JobDetails = () => {
             } catch (err) {
                 setError('Failed to load job details. Please try again later.');
                 toast.error('Something went wrong')
-                console.error('Error fetching job details:', err);
+                // console.error('Error fetching job details:', err);
             } finally {
                 setIsLoading(false);
             }
@@ -43,23 +43,24 @@ const JobDetails = () => {
     const handleSave = async () => {
         try {
             const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
-            // console.log(response)
-            if (response.response?.data?.success === true) toast.success('Job saved!');
+            // console.log("Applicaiton: ", response);
+            if (response?.data?.success === true) toast.success('Job saved!');
             else toast.error(response.response.data?.msg);
         } catch (err) {
-            console.error('Error applying for job:', err);
-            alert('Failed to submit application. Please try again.');
+            // console.error('Error applying for job:', err);
+            toast.error('Something went wrong!');
         }
     };
 
     const handleApply = async () => {
         try {
             const response = await ApplyForJobListingOppurtunity(jobId);
-            if (response.response?.data?.status === true) alert('Application submitted successfully!');
+            // console.log("Applicaiton: ", response);
+            if (response?.data?.success === true) toast.success('Application submitted!');
             else toast.error(response.response.data?.msg);
         } catch (err) {
-            console.error('Error applying for job:', err);
-            alert('Failed to submit application. Please try again.');
+            // console.error('Error applying for job:', err);
+            toast.error('Something went wrong!');
         }
     };
 

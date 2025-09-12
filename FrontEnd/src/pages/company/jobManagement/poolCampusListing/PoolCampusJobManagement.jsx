@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Search, Eye, ChevronLeft, ChevronRight, Trash } from 'lucide-react';
 import CollegeRequestDetail from './CollegeRequestDetail';
 import { acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
+import toast from 'react-hot-toast';
 
 
 // Helper function to safely format dates
@@ -73,11 +74,12 @@ export default function OnCampusJobManagement() {
         default:
           alert("Invalid Action!");
       }
-      console.log(response)
-      // if (response.success === true) alert(`Application status updated to: ${status}`);
+      if (response?.data?.success === true) toast.success(`Application status updated to: ${status}`);
+      else toast.error(response?.response?.data.msg);
     } catch (err) {
       console.error("Error updating application status:", err);
       setError(err.response?.data?.message || err.message || "Failed to update status.");
+      toast.error('Something went wrong!')
     }
   };
 

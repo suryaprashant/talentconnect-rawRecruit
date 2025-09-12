@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ApplyForOncampusOppurtunity, getCollegeDetail, SaveOppurtunity } from '@/lib/Company_AxiosInstance';
+import toast from 'react-hot-toast';
 
 // Utility function to format dates
 const formatDate = (dateString) => {
@@ -41,12 +42,11 @@ const CollegeDetailsPage = () => {
   const handleSave = async (jobId) => {
     try {
       const response = await SaveOppurtunity(jobId, jobPosting?.jobType);
-      if (response.data.success === true) alert("Saved");
-      // }
-      // else alert("Application Closed!")
+      if (response.data?.success === true) toast.success("Saved!");
+      else toast.error(response?.response.data.msg);
     } catch (error) {
       console.log("Error: ", error);
-      alert("Error!");
+      toast.error(`Something went wrong`);
     }
   };
 
@@ -54,13 +54,11 @@ const CollegeDetailsPage = () => {
     try {
       const response = await ApplyForOncampusOppurtunity(jobId);
       // console.log("apply res: ", response);
-
-      if (response.data?.success === true) alert("Applied");
-      // }
-      else alert(response?.response.data.msg);
+      if (response.data?.success === true) toast.success("Applied");
+      else toast.error(response?.response.data.msg);
     } catch (error) {
       console.log("Error: ", error);
-      alert(`Something went wrong`);
+      toast.error(`Something went wrong`);
     }
   };
 

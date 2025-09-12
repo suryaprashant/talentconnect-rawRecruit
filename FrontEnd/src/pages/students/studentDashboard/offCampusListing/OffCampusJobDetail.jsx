@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ApplyForOppurtunity, getJobDetails } from '@/lib/User_AxiosInstance';
 // ADDED: Imported Navigation for Drive Venue
 import { MapPin, ArrowLeft, Building2, Users, Navigation } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 function OffCampusJobDetail() {
   const { jobId } = useParams();
@@ -19,7 +20,7 @@ function OffCampusJobDetail() {
       setError(null);
     } catch (err) {
       setError('Failed to load job details. Please try again later.');
-      console.error('Error fetching job details:', err);
+      // console.error('Error fetching job details:', err);
     } finally {
       setIsLoading(false);
     }
@@ -38,14 +39,11 @@ function OffCampusJobDetail() {
   const handleApply = async () => {
     try {
       const response = await ApplyForOppurtunity(jobId);
-      if (response?.data.success === true) {
-        alert("Application submitted successfully!");
-      } else {
-        alert("Failed to submit application. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error during application:", error);
-      alert('Failed to submit application. Please try again.');
+      if (response?.data?.success === true) toast.success('Application submitted!');
+      else toast.error(response.response.data?.msg);
+    } catch (err) {
+      // console.error('Error applying for job:', err);
+      toast.error('Something went wrong!');
     }
   };
 
@@ -187,7 +185,7 @@ function OffCampusJobDetail() {
           <div className="flex items-start col-span-1 sm:col-span-2"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg><div><div className="font-medium">Benefits Offered</div>{renderTags(jobDetail.benefits)}</div></div>
         </div>
       </section>
-      
+
       {/* Hiring Process */}
       <section className="mb-8">
         <h3 className="text-lg font-semibold mb-3">Hiring Process</h3>
@@ -208,7 +206,7 @@ function OffCampusJobDetail() {
         <h3 className="text-lg font-semibold mb-3">Eligibility Criteria</h3>
         <p className="text-gray-700 whitespace-pre-wrap">{jobDetail.eligibilityCriteria || 'No criteria specified.'}</p>
       </section>
-      
+
       {/* Important Dates */}
       <section>
         <h3 className="text-lg font-semibold mb-3">Important Dates</h3>
