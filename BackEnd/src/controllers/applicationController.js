@@ -51,7 +51,7 @@ export async function saveJobByUser(req, res) {
 
         const application = await saveJobService(user?.data[0]._id, userType, jobId, jobType);
         if (application.success === false) return res.status(403).json({ msg: application.message });
-        res.status(201).json(application );
+        res.status(201).json(application);
     } catch (error) {
         console.log("Error: ", error);
         res.status(500).json({ error: "Internal server error" });
@@ -135,6 +135,27 @@ export async function createIntershipApplication(req, res) {
         if (!user || !internshipId) return res.status(404).json({ msg: "Invalid" });
 
         const application = await createApplicationService(user.data[0]._id, req.user.userType, internshipId, "Internship");
+        if (application.success === false) return res.status(403).json({ msg: application.message });
+
+        res.status(201).json(application);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+// referral
+export async function createReferralApplication(req, res) {
+    const { referralId } = req.body;
+    const userId = req.user._id;
+
+    try {
+        // to get userId from user database
+        const user = await getStudentService(userId);
+        console.log(user, " ", referralId); 
+        if (!user || !referralId) return res.status(404).json({ msg: "Invalid" });
+
+        const application = await createApplicationService(user.data[0]._id, req.user.userType, referralId, "Refferral");
         if (application.success === false) return res.status(403).json({ msg: application.message });
 
         res.status(201).json(application);
