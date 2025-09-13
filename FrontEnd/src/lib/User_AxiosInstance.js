@@ -111,6 +111,12 @@ export function ApplyForInternship(internshipId) {
     .catch(error => error);
 }
 
+export function ApplyForReferral(referralId) {
+  return axiosClient.post(`/application/candidate/referral`, { referralId: referralId })
+    .then(response => response)
+    .catch(error => error);
+}
+
 // export function getJobListingApplicationStatus() {
 //   return axiosClient.get(`/application/candidate/joblisting`)
 //     .then(response => response)

@@ -1,5 +1,5 @@
 import express from "express";
-import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus } from "../controllers/applicationController.js";
+import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
@@ -22,6 +22,9 @@ router.post('/candidate/joblisting', secureRoute, createJobListingApplication);
 // internship
 router.post('/candidate/internship', secureRoute, createIntershipApplication);
 // router.get('/candidate/internship', secureRoute, getInternshipUserApplication);
+
+// referral
+router.post('/candidate/referral', secureRoute, createReferralApplication);
 
 // company and college-- oncampus poolcampus campus-internship 
 router.post('/oncampus', secureRoute, createOncampusApplication);
