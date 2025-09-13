@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import JobCard from '@/components/student/studentDashboard/intershipOpportunity/JobCard';
-import { ApplyForInternship, getReferralJobById, SaveOppurtunity } from '@/lib/User_AxiosInstance';
+import { ApplyForInternship, ApplyForReferral, getReferralJobById, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 
 const RefferalJobDetails = () => {
@@ -36,7 +36,7 @@ const RefferalJobDetails = () => {
 
   const handleApply = async () => {
     try {
-      const response = await ApplyForInternship(jobId);
+      const response = await ApplyForReferral(jobId);
       if (response?.data?.success === true) toast.success('Application submitted!');
       else toast.error(response.response.data?.msg)
     } catch (err) {
