@@ -128,7 +128,7 @@ export const getJobPostingsByCollegeService = async (jobType) => {
 export const getJobPostedByCompanyService = async (companyId, jobType) => {
     try {
         const response = await JobPostingTable.find({ companyPosted: companyId, jobType: jobType }).lean();
-        // console.log(response);
+         console.log(response);
         return { success: true, response: response };
     } catch (error) {
         console.log("Error: ", error.message);

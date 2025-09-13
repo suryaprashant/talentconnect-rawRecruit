@@ -144,6 +144,13 @@ function CompanySidebar({ activePath }) {
           label="Job Listings"
           active={activePath === '/job-management/job-listings'}
         />
+
+          <SidebarNavItem
+          to="/job-management/internship-listings"
+          icon={<FiFileText />}
+          label="Internship Listings"
+          active={activePath === '/job-management/internship-listings'}
+        />
       </SidebarNavGroup>
 
       <SidebarNavGroup label="Shortlisted Candidates/Colleges" icon={<FiCheckCircle />} active={activePath.includes('/shortlisted')}>
@@ -165,6 +172,21 @@ function CompanySidebar({ activePath }) {
           label="Pool Campus Listings"
           active={activePath === '/shortlisted/pool-campus-listings'}
         />
+
+         <SidebarNavItem
+          to="/shortlisted/jobs-listings"
+          icon={<FiFileText />}
+          label="Job Listings"
+          active={activePath === '/shortlisted/jobs-listings'}
+        />
+        
+         <SidebarNavItem
+          to="/shortlisted/internship-listings"
+          icon={<FiLayers />}
+          label="Internship"
+          active={activePath === '/shortlisted/internship-listings'}
+        />
+
       </SidebarNavGroup>
 
       <SidebarNavGroup label="Accepted Candidates/Colleges" icon={<FiThumbsUp />} active={activePath.includes('/accepted')}>
@@ -185,6 +207,20 @@ function CompanySidebar({ activePath }) {
           icon={<FiUsers />}
           label="Pool Campus Listings"
           active={activePath === '/accepted/pool-campus-listings'}
+        />
+
+         <SidebarNavItem
+          to="/accepted/jobs-listings"
+          icon={<FiFileText />}
+          label="Job Listings"
+          active={activePath === '/accepted/jobs-listings'}
+        />
+
+         <SidebarNavItem
+          to="/accepted/internship-listings"
+          icon={<FiUsers />}
+          label="Intership"
+          active={activePath === '/accepted/internship-listings'}
         />
       </SidebarNavGroup>
 

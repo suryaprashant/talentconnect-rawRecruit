@@ -212,6 +212,11 @@ import StudentReferralJobs from './pages/students/studentDashboard/refferalJobs/
 import StudentRefferalJobDetails from './pages/students/studentDashboard/refferalJobs/RefferalJobDetails'
 import OncampusApplicationStatus from "./pages/company/applicationStatus/OncampusApplicationStatus";
 import PoolcampusApplicationStatus from "./pages/company/applicationStatus/PoolcampusApplicationStatus";
+import JobManagementApplicationForPool from "./pages/college/manageApplication/PoolCampusPlacement/JobManagementForPool";
+import JobDetailForPool from "./pages/college/manageApplication/PoolCampusPlacement/JobDetailForPool";
+import InternshipListing from "./pages/company/jobManagement/internship/internahipListing";
+import IntershipListingPage from "./pages/company/shortlistedCollege/internship/InternshipListingPage";
+import AcceptedInternshipList from './pages/company/acceptedCollegeOrCandidate/internship/AcceptedInternshipList' ;
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -349,7 +354,6 @@ function AppRoutes() {
 
               <Route path="/employer-dashboard/on-campus-request" element={<CollegeListingPage />} />
               <Route path="/employer-dashboard/on-campus-request/:id" element={<CollegeDetailsPage />} />
-
               <Route path="/employer-dashboard/pool-campus-requests" element={<PoolEmployeeListing/>} />
               <Route path="/employer-dashboard/pool-campus-requests/:id" element={<PoolCampusEmployeeDash />} />
 
@@ -367,17 +371,19 @@ function AppRoutes() {
              <Route path="/job-management/pool-campus-listings" element={<PoolCampusJobManagement/>} />
              <Route path="/job-management/off-campus-listings" element={<OffCampusJobManagement/>} />
              <Route path="/job-management/job-listings" element={<JobListingJobManagement/>} />
+             <Route path ="job-management/internship-listings" element={<InternshipListing/>} />
 
               
               {/* Accepted college / candidates  */}
               <Route path="/accepted/on-campus-listings" element={<AcceptedShortlistDrive/>} />
               <Route path="/accepted/on-campus-listings/:driveId" element={<AcceptedDriveDetail/>} />
-
               <Route path="/accepted/pool-campus-listings" element={<AcceptedPoolShortlist/>} />
               <Route path="/accepted/pool-campus-listings/:driveId" element={<AcceptedPoolDriveDetail/>} />
-    
-              <Route path="/acceptedJobList" element={<AcceptedJobList/>} />
+  
+              <Route path="/accepted/jobs-listings" element={<AcceptedJobList/>} />
               <Route path="/accepted/off-campus-listings" element={<AcceptedOffCampusList/>} />
+
+              <Route path= "/accepted/internship-listings" element={<AcceptedInternshipList/>} />
 
               
               {/* shortlisted candidate  */}
@@ -389,7 +395,10 @@ function AppRoutes() {
               <Route path="/shortlisted/pool-campus-listings/:driveId" element={<PoolCampusDetailPage/>} />
       
               <Route path="/shortlisted/off-campus-listings" element={<OffCampusListingPage/>} />
-              <Route path="/joblistingPage" element={<JobListingPage/>} />
+
+              <Route path="/shortlisted/jobs-listings" element={<JobListingPage/>} />
+
+              <Route path="/shortlisted/internship-listings" element={<IntershipListingPage/>} />
 
               {/* Hiring Channel  */}
               
@@ -485,6 +494,10 @@ function AppRoutes() {
 
               <Route path="/manage-application/campus-placement" element={<JobProvider><JobManagementApplication/> </JobProvider> }/>
               <Route path="/manage-application/campus-placement/:jobId" element={<JobProvider><JobDetail /> </JobProvider>}/>
+
+              <Route path="/manage-application/PoolCampus-placement" element={<JobProvider><JobManagementApplicationForPool/></JobProvider>} />
+              <Route path="/manage-application/PoolCampus-placement/:jobId" element={<JobProvider><JobDetailForPool /> </JobProvider>}/>
+              
 
               <Route path="/application-status/oncampus" element={<CollegeOncampusApplicationStatus />}/>
               <Route path="/application-status/poolcampus" element={<CollegePoolcampusApplicationStatus />}/>

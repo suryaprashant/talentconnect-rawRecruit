@@ -74,6 +74,13 @@ function CollegeSidebar({ activePath }) {
           label="Campus Placement" 
           active={activePath === '/manage-application/campus-placement'} 
         />
+
+         <SidebarNavItem 
+          to="/manage-application/poolCampus-placement" 
+          icon={<FiBriefcase />} 
+          label="Pool-Campus Placement" 
+          active={activePath === '/manage-application/PoolCampus-placement'} 
+        />
       </SidebarNavGroup>
 
       <SidebarNavGroup label="Application Status" icon={<FiTool />} active={activePath.includes('/manage-application')}>

@@ -8,7 +8,7 @@ export const getPostedJobs = async (req, res) => {
     const companyId = req.user._id;
     const { jobType } = req.params;
     if (!jobType) return res.status(404).json({ msg: "job not found!" });
-    // console.log("companyid: ", companyId);   
+     console.log("companyid: ", companyId);   
     try {
         const companyProfile = await CompanyProfile.findOne({ userId: companyId });
         if (!companyProfile) {
@@ -16,7 +16,7 @@ export const getPostedJobs = async (req, res) => {
         }
 
         const response = await getJobPostedByCompanyService(companyProfile._id, jobType);
-        // console.log(response);
+         console.log(response);
         res.status(200).json(response);
     } catch (error) {
         console.log("Error: ", error);
