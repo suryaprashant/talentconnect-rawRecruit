@@ -37,6 +37,7 @@ app.use(cookieParser());
 // Auth and Profile Routes
 import authRoutes from "./routes/authRoute.js";
 import uploadRoutes from "./routes/uploadRoutesRoute.js";
+// import uploadRoutes from "./routes/uploadRoutesRoute.js";
 import studentProfileRoutes from "./routes/studentProfileRoutes.js";
 import fresherProfileRoutes from "./routes/fresherProfileRoutes.js";
 import professionalProfileRoutes from "./routes/professionalProfileRoutes.js";
@@ -70,7 +71,7 @@ import servicerequest_oncampusplacement from "./routes/servicerequestOncampuspla
 import servicerequest_studenttraining from "./routes/servicerequestStudenttrainingRoute.js";
 import studentroute from "./routes/studentRoute.js";
 import application_to_admin from "./routes/applicationToAdminRoute.js";
-import uploadResumeRoute from "./routes/uploadresumeRoute.js";
+// import uploadResumeRoute from "./routes/uploadresumeRoute.js";
 // import manage_application from "./routes/manage_applicationRoute.js";
 // import jobapplication from "./routes/jobApplication.js";
 // import registeroncampus from "./controllers/registeredcandidates_oncampusapplication.js";
@@ -110,7 +111,7 @@ import EmployerHiringChannelRoute from './routes/employerHiringChannel/hiringCha
 app.use("/api/auth", authRoutes);
 app.use("/api", student_onboardingroutes);
 app.use("/api/hiring-channels", jobPosting);
-app.use("/api/upload", uploadRoutes);
+// app.use("/api/upload", uploadRoutesRoute);
 app.use("/api/student-profile", studentProfileRoutes);
 app.use("/api/fresher-profile", fresherProfileRoutes);
 app.use("/api/professional-profile", professionalProfileRoutes);
@@ -178,7 +179,8 @@ app.use("/api/rawrecruit", [
   // education,
   // resume,
 ]);
-app.use("/api/rawrecruit/resume", uploadResumeRoute);
+// app.use("/api/rawrecruit/resume", uploadResumeRoute);
+app.use("/api/upload", uploadRoutes);
 app.use("/rawrecruit/link", basicdetails);
 // app.use("/rawrecruit", jobinterest);
 

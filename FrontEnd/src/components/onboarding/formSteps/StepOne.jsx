@@ -1,13 +1,54 @@
 import React, { useState } from "react";
-import { ProgressIndicator } from "../ProgressIndicator";
-import { UploadIcon } from "lucide-react";
+import { ProgressIndicator } from "../ProgressIndicator"; // Assuming this component exists
+import { UploadIcon } from "lucide-react"; // Assuming you have lucide-react installed
 
-export const StepOne = ({ onNext, onCancel }) => {
+export const StepOne = ({ onNext, onCancel, onChange }) => {
+  // State from both files combined
   const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+  // The complete handleFileChange function with API logic
+  const handleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+
+    setFile(selectedFile);
+    setIsLoading(true);
+    setMessage("Parsing your resume... Please wait.");
+
+    const data = new FormData();
+    // 'resume' must match the key your backend expects
+    data.append('resume', selectedFile); 
+
+    try {
+      // Fetch call to your backend endpoint
+      const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/upload/resume`, {
+        method: 'POST',
+        body: data,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to parse resume. Please try again.');
+      }
+
+      const parsedData = await response.json();
+      
+      // Update the parent component's state with the parsed data
+      onChange(parsedData);
+      
+      setMessage(`Success! Data has been extracted.`);
+      setIsLoading(false);
+      
+      // Automatically move to the next step after a short delay
+      setTimeout(() => {
+        onNext();
+      }, 1000);
+
+    } catch (error) {
+      console.error("Error uploading resume:", error);
+      setMessage(error.message);
+      setIsLoading(false);
     }
   };
 
@@ -42,8 +83,11 @@ export const StepOne = ({ onNext, onCancel }) => {
                 accept=".pdf"
                 className="hidden"
                 onChange={handleFileChange}
+                disabled={isLoading} 
               />
             </label>
+            {/* Display feedback messages to the user */}
+            {message && <p className="text-sm mt-2">{message}</p>}
           </div>
 
           <div className="flex min-h-12 w-full gap-2.5 whitespace-nowrap mt-6 max-md:max-w-full">
@@ -56,9 +100,10 @@ export const StepOne = ({ onNext, onCancel }) => {
               </button>
               <button
                 onClick={onNext}
-                className="self-stretch bg-black gap-2 text-white px-6 py-3 max-md:px-5 cursor-pointer"
+                className="self-stretch bg-black gap-2 text-white px-6 py-3 max-md:px-5 cursor-pointer disabled:bg-gray-400"
+                disabled={isLoading || !file} 
               >
-                Next
+                {isLoading ? "Processing..." : "Next"}
               </button>
             </div>
           </div>
@@ -67,7 +112,3 @@ export const StepOne = ({ onNext, onCancel }) => {
     </div>
   );
 };
-
-
-
-
