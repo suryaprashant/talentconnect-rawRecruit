@@ -1,8 +1,10 @@
 import express from "express";
 import { 
-    // createHackathon, 
+    createHackathon, 
     getHackathons,
-    getHackathon
+    getHackathon,
+    updateHackathon,
+    deleteHackathon
 } from "../controllers/hackathonController.js";
 
 const router=express.Router();
@@ -10,6 +12,8 @@ const router=express.Router();
 // api '.../hackathon'
 router.get('/',getHackathons);
 router.get('/:id',getHackathon);
-// router.post('/',createHackathon);
+router.post('/create', createHackathon);
+router.put('/:id', updateHackathon);
+router.delete('/:id', deleteHackathon);
 
 export default router;

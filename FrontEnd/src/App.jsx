@@ -35,6 +35,7 @@ import ReviewDetails from "./components/company/editform/ReviewDetails";
 import EmployerIntroduction from "./components/company/editform/EmployerIntroduction";
 
 import CompanyProfile from "./pages/company/dashboard/CompanyProfile";
+import HostHackathon from "./pages/company/hosting/HostHackathon";
 
 
 import FormContainer from "./components/company/FormContainer";
@@ -343,6 +344,7 @@ function AppRoutes() {
               {/* Company  */}
               <Route path="home" element={<Dashboard />} />
               <Route path="/company-profile" element={<CompanyProfile />}/> 
+              <Route path="/company/hosting/host-hackathon" element={<HostHackathon />}/>
 
               <Route path="/employer-dashboard/resume-search" element={<ResumeApp />} />
               <Route path="/interviews" element={<InterviewScheduler />} />

@@ -1,56 +1,158 @@
 import Hackathon from "../models/hackathonModel.js";
-// import cloudinary from '../config/cloudinary.js';
 
-// export const createHackathon = async (req, res, next) => {
-//     try {
-//         const {
-//             title,
-//             description,
-//             hackathonType,
-//             startDate,
-//             endDate,
-//             venue,
-//             maxTeamSize,
-//             registrationDeadline,
-//             rewardsAndBenefits
-//         } = req.body;
+export const createHackathon = async (req, res, next) => {
+    try {
+        // Debug: Log the incoming request body
+        console.log('Received request body:', JSON.stringify(req.body, null, 2));
+        
+        const {
+            title,
+            subTitle,
+            description,
+            goal,
+            mode,
+            visibility,
+            participationType,
+            startDate,
+            endDate,
+            location,
+            maxParticipants,
+            maxTeams,
+            minTeamMembers,
+            maxTeamMembers,
+            numberOfRounds,
+            rounds,
+            rewards,
+            registrationDeadline,
+            requirements,
+            rules,
+            website,
+            contactEmail,
+            tags
+        } = req.body;
+        
+        // Debug: Log the extracted location value
+        console.log('Extracted location value:', location);
 
-//         // Upload banner image to Cloudinary
-//         if (!req.file) {
-//             return res.status(400).json({
-//                 success: false,
-//                 error: 'Please upload a banner image'
-//             });
-//         }
+        // Handle logo upload if provided (optional for now)
+        let logoUrl = '';
+        if (req.file) {
+            console.log('File upload detected but not processed yet:', req.file);
+            // TODO: Implement file upload when Cloudinary is properly configured
+        }
 
-//         const result = await cloudinary.uploader.upload(req.file.path, {
-//             folder: 'hackathon_banners',
-//             width: 1200,
-//             crop: 'scale'
-//         });
+        // Transform rewards data to match model structure
+        const rewardsAndBenefits = [];
+        
+        // Add main prizes
+        if (rewards.firstPlace) {
+            rewardsAndBenefits.push({
+                title: '1st Place',
+                rank: 'Winner',
+                type: 'Cash',
+                amount: parseInt(rewards.firstPlace)
+            });
+        }
+        
+        if (rewards.secondPlace) {
+            rewardsAndBenefits.push({
+                title: '2nd Place',
+                rank: '1st Runner-up',
+                type: 'Cash',
+                amount: parseInt(rewards.secondPlace)
+            });
+        }
+        
+        if (rewards.thirdPlace) {
+            rewardsAndBenefits.push({
+                title: '3rd Place',
+                rank: '2nd Runner-up',
+                type: 'Cash',
+                amount: parseInt(rewards.thirdPlace)
+            });
+        }
 
-//         // Create hackathon
-//         const hackathon = await Hackathon.create({
-//             title,
-//             description,
-//             hackathonType,
-//             startDate,
-//             endDate,
-//             venue,
-//             bannerImage: result.secure_url,
-//             maxTeamSize,
-//             registrationDeadline,
-//             rewardsAndBenefits: rewardsAndBenefits ? JSON.parse(rewardsAndBenefits) : []
-//         });
+        // Add special awards
+        if (rewards.specialAwards && rewards.specialAwards.length > 0) {
+            rewards.specialAwards.forEach(award => {
+                if (award.name && award.amount) {
+                    rewardsAndBenefits.push({
+                        title: award.name,
+                        type: 'Cash',
+                        amount: parseInt(award.amount)
+                    });
+                }
+            });
+        }
 
-//         res.status(201).json({
-//             success: true,
-//             data: hackathon
-//         });
-//     } catch (error) {
-//         next(error);
-//     }
-// };
+        // Determine hackathon type based on mode
+        let hackathonType = 'Virtual';
+        if (mode === 'Online') hackathonType = 'Virtual';
+        else if (mode === 'Hybrid') hackathonType = 'Hybrid';
+        else if (mode === 'Private') hackathonType = 'In-person';
+
+        // Determine max team size based on participation type
+        let maxTeamSize = 1;
+        if (participationType === 'Team') {
+            maxTeamSize = parseInt(maxTeamMembers) || 5;
+        } else if (participationType === 'Both') {
+            maxTeamSize = parseInt(maxTeamMembers) || 5;
+        }
+
+        // Validate required fields
+        if (!location || location.trim() === '') {
+            return res.status(400).json({
+                success: false,
+                message: 'Location is required',
+                error: 'Please provide a location for the hackathon'
+            });
+        }
+
+        // Create hackathon
+        const hackathon = await Hackathon.create({
+            title,
+            description,
+            hackathonType,
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
+            venue: location,
+            location: location, // Add location field explicitly
+            bannerImage: logoUrl,
+            maxTeamSize,
+            registrationDeadline: new Date(registrationDeadline),
+            rewardsAndBenefits,
+            // Additional fields for our enhanced form
+            subTitle,
+            goal,
+            visibility,
+            participationType,
+            maxParticipants: maxParticipants ? parseInt(maxParticipants) : null,
+            maxTeams: maxTeams ? parseInt(maxTeams) : null,
+            minTeamMembers: minTeamMembers ? parseInt(minTeamMembers) : null,
+            maxTeamMembers: maxTeamMembers ? parseInt(maxTeamMembers) : null,
+            numberOfRounds: numberOfRounds ? parseInt(numberOfRounds) : 1,
+            rounds: rounds || [],
+            requirements,
+            rules,
+            website,
+            contactEmail,
+            tags: tags ? tags.split(',').map(tag => tag.trim()) : []
+        });
+
+        res.status(201).json({
+            success: true,
+            message: 'Hackathon created successfully',
+            data: hackathon
+        });
+    } catch (error) {
+        console.error('Error creating hackathon:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create hackathon',
+            error: error.message
+        });
+    }
+};
 
 // @desc    Update hackathon
 export const updateHackathon = async (req, res, next) => {

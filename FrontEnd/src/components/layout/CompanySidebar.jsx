@@ -19,7 +19,9 @@ import {
   FiBarChart2,
   FiMic,
   FiThumbsUp,
-  FiFilePlus
+  FiFilePlus,
+  FiFlag,
+  FiCode
 } from 'react-icons/fi';
 
 function CompanySidebar({ activePath }) {
@@ -119,6 +121,15 @@ function CompanySidebar({ activePath }) {
         />
       </SidebarNavGroup>
 
+      <SidebarNavGroup label="Hosting" icon={<FiFlag />} active={activePath.includes('/employer-dashboard')}>
+        <SidebarNavItem
+          to="/company/hosting/host-hackathon"
+          icon={<FiAward />}
+          label="Hackathon"
+          active={activePath === '/company/hosting/host-hackathon'}
+        />
+      </SidebarNavGroup>
+      
       <SidebarNavGroup label="Job Management" icon={<FiBriefcase />} active={activePath.includes('/job-management')}>
         <SidebarNavItem
           to="/job-management/on-campus-listings"
