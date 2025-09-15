@@ -1,9 +1,5 @@
 import express from 'express';
 import { esClient } from '../elasticsearch/client.js';
-import {
-    resumeSearch,
-    // saveParsedResume 
-} from "../controllers/resume.controller.js";
 const router = express.Router();
 
 // Upload / insert a candidate resume
@@ -32,7 +28,7 @@ router.post('.../company/dashboard/resume', async (req, res) => {
         query: {
           bool: {
             must: [
-              query ? { multi_match: { query, fields: ['name', 'skills'] } } : { match_all: {} },
+              query ? { multi_match: { query, fields: ['name', 'skills','designation'] } } : { match_all: {} },
             ],
             filter: [
               location ? { term: { location } } : null,

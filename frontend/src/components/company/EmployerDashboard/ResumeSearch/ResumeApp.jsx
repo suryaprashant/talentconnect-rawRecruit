@@ -1,7 +1,7 @@
 import ResumeSearch from './ResumeSearch';
 import ApplicationStatus from './ApplicationStatus';
 import useResumeAppLogic from './useResumeAppLogic';
-
+import dummyCandidates from './dummyCandidates';
 const ResumeApp = () => {
   const {
     view,
@@ -20,7 +20,7 @@ const ResumeApp = () => {
         <ResumeSearch onSearch={handleSearch} onFileUpload={handleFileUpload} />
       ) : (
         <ApplicationStatus
-          candidates={candidates}
+          candidates={dummyCandidates}
           filters={filters}
           updateFilters={updateFilters}
           shortlistCandidate={shortlistCandidate}

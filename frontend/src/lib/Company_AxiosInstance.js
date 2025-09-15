@@ -38,7 +38,6 @@ export function getProfileByResume(searchParams){
   return axiosClient.post('api/resumes/search',searchParams)
     .then(response => response)
     .catch(error => console.log("Error: ", error));
-
 };
 
 export function createCompanyProfile(formData) {

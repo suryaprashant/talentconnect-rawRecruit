@@ -8,4 +8,3 @@ export const esClient = new Client({
   serverMode: 'serverless',
 });
 
-
