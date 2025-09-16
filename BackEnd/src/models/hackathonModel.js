@@ -100,6 +100,10 @@ const HackathonSchema = new mongoose.Schema({
                 type: String,
                 required: true
             },
+            description: {
+                type: String,
+                maxlength: [1000, 'Round description cannot be more than 1000 characters']
+            },
             startDate: {
                 type: Date,
                 required: true

@@ -29,11 +29,13 @@ const HostHackathon = () => {
       {
         roundNumber: 1,
         roundName: 'Round 1',
+        description: '',
         startDate: '',
         endDate: ''
       }
     ],
     rewards: {
+      rewardType: 'Amount',
       firstPlace: '',
       secondPlace: '',
       thirdPlace: '',
@@ -58,6 +60,7 @@ const HostHackathon = () => {
       newRounds.push({
         roundNumber: i,
         roundName: formData.rounds[i-1]?.roundName || `Round ${i}`,
+        description: formData.rounds[i-1]?.description || '',
         startDate: formData.rounds[i-1]?.startDate || '',
         endDate: formData.rounds[i-1]?.endDate || ''
       });
@@ -83,7 +86,7 @@ const HostHackathon = () => {
 
   // Helper functions for special awards management
   const addSpecialAward = () => {
-    const newAward = { name: '', amount: '' };
+    const newAward = { name: '', amount: '', perk: '' };
     setFormData(prev => ({
       ...prev,
       rewards: {
@@ -631,6 +634,18 @@ const HostHackathon = () => {
                             <p className="text-red-500 text-sm mt-1">{errors[`round${index}EndDate`]}</p>
                           )}
                         </div>
+                        <div className="md:col-span-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Description
+                          </label>
+                          <input
+                            type="text"
+                            value={round.description}
+                            onChange={(e) => updateRoundData(index, 'description', e.target.value)}
+                            className="w-[783px] px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Brief about this round"
+                          />
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -760,6 +775,21 @@ const HostHackathon = () => {
             </h2>
             
             <div className="space-y-6">
+              {/* Reward Type Selector */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Reward Type</label>
+                <select
+                  value={formData.rewards.rewardType}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    rewards: { ...prev.rewards, rewardType: e.target.value }
+                  }))}
+                  className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="Amount">Amount</option>
+                  <option value="Perks">Perks/Gifts</option>
+                </select>
+              </div>  
               {/* Main Prizes */}
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Main Prizes</h3>
@@ -768,6 +798,7 @@ const HostHackathon = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       🥇 1st Place *
                     </label>
+                    {formData.rewards.rewardType === 'Amount' ? (
                     <input
                       type="number"
                       value={formData.rewards.firstPlace}
@@ -781,6 +812,20 @@ const HostHackathon = () => {
                       placeholder="e.g., 50000"
                       min="0"
                     />
+                  ) : (
+                    <input
+                      type="text"
+                      value={formData.rewards.firstPlace}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        rewards: { ...prev.rewards, firstPlace: e.target.value }
+                      }))}
+                      className={`w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        errors.firstPlace ? 'border-red-500' : ''
+                     }`}
+                      placeholder="e.g., MacBook, Gift Hamper"
+                    />
+                  )}                 
                     {errors.firstPlace && <p className="text-red-500 text-sm mt-1">{errors.firstPlace}</p>}
                   </div>
 
@@ -788,6 +833,7 @@ const HostHackathon = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       🥈 2nd Place *
                     </label>
+                    {formData.rewards.rewardType === 'Amount' ? (
                     <input
                       type="number"
                       value={formData.rewards.secondPlace}
@@ -801,6 +847,20 @@ const HostHackathon = () => {
                       placeholder="e.g., 30000"
                       min="0"
                     />
+                  ) : (
+                    <input
+                      type="text"
+                      value={formData.rewards.secondPlace}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        rewards: { ...prev.rewards, secondPlace: e.target.value }
+                      }))}
+                      className={`w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        errors.secondPlace ? 'border-red-500' : ''
+                      }`}
+                      placeholder="e.g., Headphones, Swag Kit"
+                    />
+                  )}
                     {errors.secondPlace && <p className="text-red-500 text-sm mt-1">{errors.secondPlace}</p>}
                   </div>
 
@@ -808,6 +868,7 @@ const HostHackathon = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       🥉 3rd Place *
                     </label>
+                    {formData.rewards.rewardType === 'Amount' ? (
                     <input
                       type="number"
                       value={formData.rewards.thirdPlace}
@@ -821,6 +882,20 @@ const HostHackathon = () => {
                       placeholder="e.g., 20000"
                       min="0"
                     />
+                  ) : (
+                    <input
+                      type="text"
+                      value={formData.rewards.thirdPlace}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        rewards: { ...prev.rewards, thirdPlace: e.target.value }
+                      }))}
+                      className={`w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                        errors.thirdPlace ? 'border-red-500' : ''
+                      }`}
+                      placeholder="e.g., Gift Vouchers"
+                    />
+                  )}
                     {errors.thirdPlace && <p className="text-red-500 text-sm mt-1">{errors.thirdPlace}</p>}
                   </div>
                 </div>
@@ -855,6 +930,7 @@ const HostHackathon = () => {
                             placeholder="Award name (e.g., Best Innovation, Most Creative)"
                           />
                         </div>
+                        {formData.rewards.rewardType === 'Amount' ? (
                         <div className="w-32">
                           <input
                             type="number"
@@ -862,9 +938,20 @@ const HostHackathon = () => {
                             onChange={(e) => updateSpecialAward(index, 'amount', e.target.value)}
                             className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Amount"
-                  min="0"
-                />
+                            min="0"
+                          />
                         </div>
+                      ) : (
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={award.perk}
+                            onChange={(e) => updateSpecialAward(index, 'perk', e.target.value)}
+                            className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Perk/Gift description"
+                          />
+                        </div>
+                      )}
                         <button
                           type="button"
                           onClick={() => removeSpecialAward(index)}

@@ -43,14 +43,16 @@ export const createHackathon = async (req, res, next) => {
 
         // Transform rewards data to match model structure
         const rewardsAndBenefits = [];
+
+        const isAmount = rewards?.rewardType === 'Amount';
         
         // Add main prizes
         if (rewards.firstPlace) {
             rewardsAndBenefits.push({
                 title: '1st Place',
                 rank: 'Winner',
-                type: 'Cash',
-                amount: parseInt(rewards.firstPlace)
+                type: isAmount ? 'Cash' : 'Other',
+                amount: isAmount ? parseInt(rewards.firstPlace) : undefined,
             });
         }
         
@@ -58,8 +60,8 @@ export const createHackathon = async (req, res, next) => {
             rewardsAndBenefits.push({
                 title: '2nd Place',
                 rank: '1st Runner-up',
-                type: 'Cash',
-                amount: parseInt(rewards.secondPlace)
+                type: isAmount ? 'Cash' : 'Other',
+                amount: isAmount ? parseInt(rewards.secondPlace) : undefined,
             });
         }
         
@@ -67,19 +69,25 @@ export const createHackathon = async (req, res, next) => {
             rewardsAndBenefits.push({
                 title: '3rd Place',
                 rank: '2nd Runner-up',
-                type: 'Cash',
-                amount: parseInt(rewards.thirdPlace)
+                type: isAmount ? 'Cash' : 'Other',
+                amount: isAmount ? parseInt(rewards.thirdPlace) : undefined,
             });
         }
 
         // Add special awards
         if (rewards.specialAwards && rewards.specialAwards.length > 0) {
             rewards.specialAwards.forEach(award => {
-                if (award.name && award.amount) {
+                if (!award?.name) return;
+                if (isAmount && award.amount) {
                     rewardsAndBenefits.push({
                         title: award.name,
                         type: 'Cash',
                         amount: parseInt(award.amount)
+                    });
+                } else if (!isAmount && award.perk) {
+                    rewardsAndBenefits.push({
+                        title: award.name,
+                        type: 'Other',
                     });
                 }
             });
@@ -108,6 +116,16 @@ export const createHackathon = async (req, res, next) => {
             });
         }
 
+        // Normalize rounds input (support JSON string from multipart/form-data)
+        let normalizedRounds = rounds;
+        if (typeof normalizedRounds === 'string') {
+            try {
+                normalizedRounds = JSON.parse(normalizedRounds);
+            } catch (e) {
+                console.warn('Failed to parse rounds JSON string, keeping as-is.');
+            }
+        }
+
         // Create hackathon
         const hackathon = await Hackathon.create({
             title,
@@ -131,7 +149,7 @@ export const createHackathon = async (req, res, next) => {
             minTeamMembers: minTeamMembers ? parseInt(minTeamMembers) : null,
             maxTeamMembers: maxTeamMembers ? parseInt(maxTeamMembers) : null,
             numberOfRounds: numberOfRounds ? parseInt(numberOfRounds) : 1,
-            rounds: rounds || [],
+            rounds: normalizedRounds || [],
             requirements,
             rules,
             website,
@@ -189,6 +207,15 @@ export const updateHackathon = async (req, res, next) => {
         // Handle rewards and benefits if provided as a string
         if (req.body.rewardsAndBenefits && typeof req.body.rewardsAndBenefits === 'string') {
             req.body.rewardsAndBenefits = JSON.parse(req.body.rewardsAndBenefits);
+        }
+
+        // Normalize rounds input on update as well
+        if (req.body.rounds && typeof req.body.rounds === 'string') {
+            try {
+                req.body.rounds = JSON.parse(req.body.rounds);
+            } catch (e) {
+                console.warn('Failed to parse rounds JSON string on update, keeping as-is.');
+            }
         }
 
         hackathon = await Hackathon.findByIdAndUpdate(req.params.id, req.body, {
