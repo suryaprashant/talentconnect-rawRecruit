@@ -53,6 +53,8 @@ import Internship from "./routes/internshipRoute.js";
 import Application from "./routes/applicationRoute.js";
 import Resume from "./routes/resumeRoute.js";
 import Hackathon from "./routes/hackathonRoute.js";
+import eventParticipation from "./Routes/eventParticipationRoute.js";
+
 import EmployerDashboard from "./routes/employerDahsboardRoute.js";
 import Company from "./routes/companyRoute.js";
 
@@ -138,6 +140,7 @@ app.use("/internship", Internship);
 app.use("/application", Application);
 app.use("/college/application",CollegeApplication);
 app.use("/hackathon", Hackathon);
+app.use("/eventParticipation", eventParticipation);
 app.use("/company/dashboard", EmployerDashboard);
 app.use("/company/dashboard/resume", Resume);
 app.use("/company", Company);
