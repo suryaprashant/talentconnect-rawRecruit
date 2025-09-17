@@ -9,7 +9,7 @@ export const createHackathon = async (req, res, next) => {
             title,
             subTitle,
             description,
-            goal,
+            problemStatements, // Changed from goal to problemStatements
             mode,
             visibility,
             participationType,
@@ -28,7 +28,11 @@ export const createHackathon = async (req, res, next) => {
             rules,
             website,
             contactEmail,
-            tags
+            tags,
+            faqs,
+            panelMembers,
+            eligibility,
+            domains
         } = req.body;
         
         // Debug: Log the extracted location value
@@ -126,6 +130,48 @@ export const createHackathon = async (req, res, next) => {
             }
         }
 
+        // Normalize faqs input (support JSON string from multipart/form-data)
+        let normalizedFaqs = faqs;
+        if (typeof normalizedFaqs === 'string') {
+            try {
+                normalizedFaqs = JSON.parse(normalizedFaqs);
+            } catch (e) {
+                normalizedFaqs = [];
+            }
+        }
+        // Filter out empty FAQ entries
+        if (Array.isArray(normalizedFaqs)) {
+            normalizedFaqs = normalizedFaqs.filter(f => f.question && f.answer);
+        } else {
+            normalizedFaqs = [];
+        }
+
+        // Normalize panelMembers input (support JSON string from multipart/form-data)
+        let normalizedPanelMembers = panelMembers;
+        if (typeof normalizedPanelMembers === 'string') {
+            try {
+                normalizedPanelMembers = JSON.parse(normalizedPanelMembers);
+            } catch (e) {
+                normalizedPanelMembers = [];
+            }
+        }
+        // Ensure all panel member IDs are valid ObjectIds (as strings)
+        if (Array.isArray(normalizedPanelMembers)) {
+            normalizedPanelMembers = normalizedPanelMembers.filter(id => !!id);
+        } else {
+            normalizedPanelMembers = [];
+        }
+
+        // Normalize domains input
+        let normalizedDomains = domains;
+        if (typeof domains === 'string') {
+            normalizedDomains = domains.split(',').map(domain => domain.trim()).filter(domain => domain);
+        } else if (Array.isArray(domains)) {
+            normalizedDomains = domains.filter(domain => domain && typeof domain === 'string');
+        } else {
+            normalizedDomains = [];
+        }
+
         // Create hackathon
         const hackathon = await Hackathon.create({
             title,
@@ -134,14 +180,16 @@ export const createHackathon = async (req, res, next) => {
             startDate: new Date(startDate),
             endDate: new Date(endDate),
             venue: location,
-            location: location, // Add location field explicitly
+            location: location,
             bannerImage: logoUrl,
             maxTeamSize,
             registrationDeadline: new Date(registrationDeadline),
             rewardsAndBenefits,
-            // Additional fields for our enhanced form
+            faqs: normalizedFaqs,
+            panelMembers: normalizedPanelMembers,
+            // Changed goal to problemStatements
+            problemStatements: problemStatements || [],
             subTitle,
-            goal,
             visibility,
             participationType,
             maxParticipants: maxParticipants ? parseInt(maxParticipants) : null,
@@ -154,7 +202,9 @@ export const createHackathon = async (req, res, next) => {
             rules,
             website,
             contactEmail,
-            tags: tags ? tags.split(',').map(tag => tag.trim()) : []
+            tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+            eligibility: eligibility || '', // Ensure eligibility is included
+            domains: normalizedDomains,    // Add normalized domains
         });
 
         res.status(201).json({
@@ -215,6 +265,24 @@ export const updateHackathon = async (req, res, next) => {
                 req.body.rounds = JSON.parse(req.body.rounds);
             } catch (e) {
                 console.warn('Failed to parse rounds JSON string on update, keeping as-is.');
+            }
+        }
+
+        // Normalize faqs input on update as well
+        if (req.body.faqs && typeof req.body.faqs === 'string') {
+            try {
+                req.body.faqs = JSON.parse(req.body.faqs);
+            } catch (e) {
+                req.body.faqs = [];
+            }
+        }
+
+        // Normalize panelMembers input on update as well
+        if (req.body.panelMembers && typeof req.body.panelMembers === 'string') {
+            try {
+                req.body.panelMembers = JSON.parse(req.body.panelMembers);
+            } catch (e) {
+                req.body.panelMembers = [];
             }
         }
 

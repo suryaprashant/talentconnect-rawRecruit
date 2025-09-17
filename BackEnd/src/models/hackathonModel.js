@@ -18,11 +18,22 @@ const HackathonSchema = new mongoose.Schema({
         required: [true, 'Please add a description'],
         maxlength: [5000, 'Description cannot be more than 5000 characters']
     },
-    goal: {
-        type: String,
-        required: [true, 'Please add a hackathon goal'],
-        maxlength: [1000, 'Goal cannot be more than 1000 characters']
-    },
+    problemStatements: [{
+        title: {
+            type: String,
+            required: true,
+            maxlength: [200, 'Problem title cannot be more than 200 characters']
+        },
+        description: {
+            type: String,
+            required: true,
+            maxlength: [2000, 'Problem description cannot be more than 2000 characters']
+        },
+        technology: {
+            type: [String],
+            required: true
+        }
+    }],
     hackathonType: {
         type: String,
         required: [true, 'Please specify the hackathon type'],
@@ -168,12 +179,48 @@ const HackathonSchema = new mongoose.Schema({
 
         }
     ],
-    panelMembers: [
+    faqs: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'PanelMember'
+            question: { type: String, required: true },
+            answer: { type: String, required: true }
         }
     ],
+    panelMembers: [{
+        type: String,
+        validate: {
+            validator: function(v) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+            },
+            message: 'Please provide valid email addresses for panel members'
+        }
+    }],
+    eligibility: {
+        type: String,
+        trim: true,  // Add trim to remove whitespace
+        maxlength: [2000, 'Eligibility description cannot be more than 2000 characters']
+    },
+    domains: {
+        type: [{
+            type: String,
+            trim: true,
+            maxlength: [100, 'Domain name cannot be more than 100 characters']
+        }],
+        validate: {
+            validator: function(v) {
+                return v.length > 0; // Ensure at least one domain is provided
+            },
+            message: 'At least one domain must be specified'
+        },
+        default: []
+    },
+    descriptionTitle: {
+        type: String,
+        maxlength: [200, 'Description title cannot be more than 200 characters']
+    },
+    technology: {
+        type: String,
+        maxlength: [500, 'Technology description cannot be more than 500 characters']
+    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -188,6 +235,15 @@ const HackathonSchema = new mongoose.Schema({
 HackathonSchema.pre('validate', function (next) {
     if (this.endDate && this.startDate && this.endDate < this.startDate) {
         this.invalidate('endDate', 'End date must be after start date');
+    }
+    next();
+});
+
+// Add a pre-save hook to clean up domains
+HackathonSchema.pre('save', function(next) {
+    // Remove empty domains and duplicates
+    if (this.domains) {
+        this.domains = [...new Set(this.domains.filter(domain => domain.trim()))];
     }
     next();
 });

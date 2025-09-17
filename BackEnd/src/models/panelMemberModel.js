@@ -6,6 +6,13 @@ const PanelMemberSchema = new mongoose.Schema({
         required: [true, 'Please add a name'],
         trim: true
     },
+    email: {
+        type: String,
+        required: [true, 'Please add an email'],
+        unique: true,
+        trim: true,
+        match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Please provide a valid email address']
+    },
     role: {
         type: String,
         required: [true, 'Please specify the role'],
