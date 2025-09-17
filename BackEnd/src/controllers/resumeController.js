@@ -1,23 +1,25 @@
 import { fetchAllResumeService, saveParsedResumeService } from "../services/resumeService.js";
 import { calculateMatchScore } from "../utils/weightedResumeSearch.js";
+import { parseResume } from '../services/resumeParserService.js';
+export const uploadResume = async (req, res) => {
+  try {
+    // --- All Pre-checks are here in the controller ---
+    console.log("Resume upload request received by controller.");
+    if (!req.file) {
+      return res.status(400).json({ message: "No resume file was uploaded." });
+    }
 
-// export const saveParsedResume = async (req, res) => {
-//     const resumeData = req.body;
-//     if (!resumeData) return res.status(404).json({ msg: "No data" });
+    // Call the service to do the hard work
+    const extractedData = await parseResume(req.file.buffer);
+    
+    // Send the successful response
+    res.status(200).json(extractedData);
 
-//     try {
-//         // call ml model api
-
-//         // returns parsedData
-
-//         // save in resume collection
-//         await saveParsedResumeService(resumeData);
-//         res.status(201).json({ msg: "Created!" });
-//     } catch (error) {
-//         console.log("error ", error);
-//         res.status(500).json({ error: "Internal server error" });
-//     }
-// }
+  } catch (error) {
+    console.error("Error in uploadResume controller:", error.message);
+    res.status(500).json({ message: "Server error during resume parsing." });
+  }
+};
 
 export async function resumeSearch(req, res) {
     // reqbody jobdesc. 
@@ -40,4 +42,5 @@ export async function resumeSearch(req, res) {
         console.log(error);
         res.status(500).json({ error: "Internal server error" });
     }
+    
 }
