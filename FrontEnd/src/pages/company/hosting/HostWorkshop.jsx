@@ -4,7 +4,7 @@ import { Calendar, MapPin, Users, Trophy, Clock, DollarSign, FileText, Globe, Ta
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const HostHackathon = () => {
+const HostWorkshop = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     logo: '',
@@ -230,7 +230,7 @@ const HostHackathon = () => {
         panelMembers,
       };
       const response = await axios.post(
-        `${backendUrl}/hackathon/create`,
+        `${backendUrl}/workshop/create`,
         payload,
         {
           headers: {
@@ -241,16 +241,16 @@ const HostHackathon = () => {
       );
   
       if (response.status === 201 || response.status === 200) {
-        toast.success("Hackathon created successfully!");
-        console.log("Hackathon created successfully:", response.data);
+        toast.success("Workshop created successfully!");
+        console.log("Workshop created successfully:", response.data);
   
         // Navigate back to company profile/dashboard
         navigate("/company-profile");
       }
      } catch (err) {
        const errorMessage =
-         err.response?.data?.message || "Failed to create hackathon.";
-       console.error("Error creating hackathon:", err);
+         err.response?.data?.message || "Failed to create workshop.";
+       console.error("Error creating workshop:", err);
        toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -349,10 +349,10 @@ const HostHackathon = () => {
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-3 mb-4">
             <Trophy className="h-8 w-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Host a Hackathon</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Host a Workshop</h1>
           </div>
           <p className="text-gray-600">
-            Create an exciting hackathon event to engage with talented developers and innovators.
+            Create an exciting workshop event to engage with talented developers and innovators.
           </p>
         </div>
 
@@ -371,7 +371,7 @@ const HostHackathon = () => {
                   {/*Title*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Hackathon Title *
+                      Workshop Title *
                     </label>
                     <input
                       type="text"
@@ -381,14 +381,14 @@ const HostHackathon = () => {
                       className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500  ${
                         errors.title ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="Enter hackathon title"
+                      placeholder="Enter workshop title"
                     />
                     {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
                   </div>
                   {/*Subtitle*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Hackathon Sub-Title *
+                      Workshop Sub-Title *
                     </label>
                     <input
                       type="text"
@@ -398,7 +398,7 @@ const HostHackathon = () => {
                       className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                         errors.subTitle ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="Enter hackathon sub-title"
+                      placeholder="Enter workshop sub-title"
                     />
                     {errors.subTitle && <p className="text-red-500 text-sm mt-1">{errors.subTitle}</p>}
                   </div>
@@ -513,7 +513,7 @@ const HostHackathon = () => {
                     className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       errors.description ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder="Describe your hackathon, themes, and what participants can expect..."
+                    placeholder="Describe your workshop, themes, and what participants can expect..."
                   />
                   {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
                 </div>
@@ -587,7 +587,7 @@ const HostHackathon = () => {
                     onChange={handleInputChange}
                     rows={3}
                     className="w-full px-3 py-2 bg-white text-black border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Specify who can participate in this hackathon..."
+                    placeholder="Specify who can participate in this workshop..."
                   />
                 </div>
               </div>
@@ -789,7 +789,7 @@ const HostHackathon = () => {
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
                   <Clock className="h-5 w-5" />
-                  Hackathon Rounds
+                  Workshop Rounds
                 </h2>
                 
                 <div className="space-y-6">
@@ -1311,7 +1311,7 @@ const HostHackathon = () => {
                   onChange={handleInputChange}
                   rows={3}
                   className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Hackathon rules, submission guidelines, etc."
+                  placeholder="Workshop rules, submission guidelines, etc."
                 />
               </div>
 
@@ -1325,7 +1325,7 @@ const HostHackathon = () => {
                   value={formData.website}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://your-hackathon-website.com"
+                  placeholder="https://your-workshop-website.com"
                 />
               </div>
 
@@ -1366,7 +1366,7 @@ const HostHackathon = () => {
               ) : (
                 <>
                   <Trophy className="h-4 w-4" />
-                  Create Hackathon
+                  Create Workshop
                 </>
               )}
             </button>
@@ -1381,4 +1381,4 @@ const HostHackathon = () => {
   );
 };
 
-export default HostHackathon;
+export default HostWorkshop;

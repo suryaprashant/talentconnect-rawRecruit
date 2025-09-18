@@ -12,7 +12,7 @@ const HackathonDetail = () => {
   const getHackathon = async () => {
     try {
       const response = await getHackathonDetail(id);
-      console.log("data : ", response.data.data);
+      console.log(response.data.data);
       
       setHackathon(response.data.data);
     } catch (error) {
@@ -95,7 +95,7 @@ const HackathonDetail = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            {hackathon.hackathonType ? hackathon.hackathonType : hackathon.location}
+            {hackathon.hackathonType==="Virtual" ? hackathon.hackathonType : hackathon.location}
           </div>
         </div>
       </div>
@@ -115,7 +115,7 @@ const HackathonDetail = () => {
               </svg>
             </div>
             <h3 className="text-center font-semibold">Team Size</h3>
-            <p className="text-center">{hackathon.maxTeamSize}</p>
+            <p className="text-center">{hackathon.maxTeamSize || 1}</p>
           </div>
 
           <div className="border border-gray-200 rounded-md p-4">
@@ -162,9 +162,9 @@ const HackathonDetail = () => {
                 className="absolute w-8 h-8 bg-black text-white rounded-full flex items-center justify-center -left-10"
                 style={{ top: '-4px' }}
               >
-                {round.id}
+                {round.roundNumber}
               </div>
-              <div className="mb-1">{round.date}</div>
+              <div className="mb-1">{new Date(round.startDate).toLocaleDateString()} - {new Date(round.endDate).toLocaleDateString()}</div>
               <h3 className="text-lg font-semibold">{round.roundName}</h3>
               <p className="text-gray-700">{round.description}</p>
             </div>
@@ -194,7 +194,7 @@ const HackathonDetail = () => {
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Rewards</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {hackathon.rewards?.map((reward, index) => (
+          {hackathon.rewardsAndBenefits?.map((reward, index) => (
             <div key={index} className="border border-gray-200 rounded-md p-4 text-center">
               <div className="flex justify-center mb-4">
                 {index === 0 ? (

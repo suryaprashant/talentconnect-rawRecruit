@@ -9,7 +9,7 @@ export const createHackathon = async (req, res, next) => {
             title,
             subTitle,
             description,
-            goal,
+            problemStatements, // Changed from goal to problemStatements
             mode,
             visibility,
             participationType,
@@ -28,7 +28,11 @@ export const createHackathon = async (req, res, next) => {
             rules,
             website,
             contactEmail,
-            tags
+            tags,
+            faqs,
+            panelMembers,
+            eligibility,
+            domains
         } = req.body;
         
         // Debug: Log the extracted location value
@@ -43,14 +47,16 @@ export const createHackathon = async (req, res, next) => {
 
         // Transform rewards data to match model structure
         const rewardsAndBenefits = [];
+
+        const isAmount = rewards?.rewardType === 'Amount';
         
         // Add main prizes
         if (rewards.firstPlace) {
             rewardsAndBenefits.push({
                 title: '1st Place',
                 rank: 'Winner',
-                type: 'Cash',
-                amount: parseInt(rewards.firstPlace)
+                type: isAmount ? 'Cash' : 'Other',
+                amount: isAmount ? parseInt(rewards.firstPlace) : undefined,
             });
         }
         
@@ -58,8 +64,8 @@ export const createHackathon = async (req, res, next) => {
             rewardsAndBenefits.push({
                 title: '2nd Place',
                 rank: '1st Runner-up',
-                type: 'Cash',
-                amount: parseInt(rewards.secondPlace)
+                type: isAmount ? 'Cash' : 'Other',
+                amount: isAmount ? parseInt(rewards.secondPlace) : undefined,
             });
         }
         
@@ -67,19 +73,25 @@ export const createHackathon = async (req, res, next) => {
             rewardsAndBenefits.push({
                 title: '3rd Place',
                 rank: '2nd Runner-up',
-                type: 'Cash',
-                amount: parseInt(rewards.thirdPlace)
+                type: isAmount ? 'Cash' : 'Other',
+                amount: isAmount ? parseInt(rewards.thirdPlace) : undefined,
             });
         }
 
         // Add special awards
         if (rewards.specialAwards && rewards.specialAwards.length > 0) {
             rewards.specialAwards.forEach(award => {
-                if (award.name && award.amount) {
+                if (!award?.name) return;
+                if (isAmount && award.amount) {
                     rewardsAndBenefits.push({
                         title: award.name,
                         type: 'Cash',
                         amount: parseInt(award.amount)
+                    });
+                } else if (!isAmount && award.perk) {
+                    rewardsAndBenefits.push({
+                        title: award.name,
+                        type: 'Other',
                     });
                 }
             });
@@ -108,6 +120,58 @@ export const createHackathon = async (req, res, next) => {
             });
         }
 
+        // Normalize rounds input (support JSON string from multipart/form-data)
+        let normalizedRounds = rounds;
+        if (typeof normalizedRounds === 'string') {
+            try {
+                normalizedRounds = JSON.parse(normalizedRounds);
+            } catch (e) {
+                console.warn('Failed to parse rounds JSON string, keeping as-is.');
+            }
+        }
+
+        // Normalize faqs input (support JSON string from multipart/form-data)
+        let normalizedFaqs = faqs;
+        if (typeof normalizedFaqs === 'string') {
+            try {
+                normalizedFaqs = JSON.parse(normalizedFaqs);
+            } catch (e) {
+                normalizedFaqs = [];
+            }
+        }
+        // Filter out empty FAQ entries
+        if (Array.isArray(normalizedFaqs)) {
+            normalizedFaqs = normalizedFaqs.filter(f => f.question && f.answer);
+        } else {
+            normalizedFaqs = [];
+        }
+
+        // Normalize panelMembers input (support JSON string from multipart/form-data)
+        let normalizedPanelMembers = panelMembers;
+        if (typeof normalizedPanelMembers === 'string') {
+            try {
+                normalizedPanelMembers = JSON.parse(normalizedPanelMembers);
+            } catch (e) {
+                normalizedPanelMembers = [];
+            }
+        }
+        // Ensure all panel member IDs are valid ObjectIds (as strings)
+        if (Array.isArray(normalizedPanelMembers)) {
+            normalizedPanelMembers = normalizedPanelMembers.filter(id => !!id);
+        } else {
+            normalizedPanelMembers = [];
+        }
+
+        // Normalize domains input
+        let normalizedDomains = domains;
+        if (typeof domains === 'string') {
+            normalizedDomains = domains.split(',').map(domain => domain.trim()).filter(domain => domain);
+        } else if (Array.isArray(domains)) {
+            normalizedDomains = domains.filter(domain => domain && typeof domain === 'string');
+        } else {
+            normalizedDomains = [];
+        }
+
         // Create hackathon
         const hackathon = await Hackathon.create({
             title,
@@ -116,14 +180,16 @@ export const createHackathon = async (req, res, next) => {
             startDate: new Date(startDate),
             endDate: new Date(endDate),
             venue: location,
-            location: location, // Add location field explicitly
+            location: location,
             bannerImage: logoUrl,
             maxTeamSize,
             registrationDeadline: new Date(registrationDeadline),
             rewardsAndBenefits,
-            // Additional fields for our enhanced form
+            faqs: normalizedFaqs,
+            panelMembers: normalizedPanelMembers,
+            // Changed goal to problemStatements
+            problemStatements: problemStatements || [],
             subTitle,
-            goal,
             visibility,
             participationType,
             maxParticipants: maxParticipants ? parseInt(maxParticipants) : null,
@@ -131,12 +197,14 @@ export const createHackathon = async (req, res, next) => {
             minTeamMembers: minTeamMembers ? parseInt(minTeamMembers) : null,
             maxTeamMembers: maxTeamMembers ? parseInt(maxTeamMembers) : null,
             numberOfRounds: numberOfRounds ? parseInt(numberOfRounds) : 1,
-            rounds: rounds || [],
+            rounds: normalizedRounds || [],
             requirements,
             rules,
             website,
             contactEmail,
-            tags: tags ? tags.split(',').map(tag => tag.trim()) : []
+            tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+            eligibility: eligibility || '', // Ensure eligibility is included
+            domains: normalizedDomains,    // Add normalized domains
         });
 
         res.status(201).json({
@@ -189,6 +257,33 @@ export const updateHackathon = async (req, res, next) => {
         // Handle rewards and benefits if provided as a string
         if (req.body.rewardsAndBenefits && typeof req.body.rewardsAndBenefits === 'string') {
             req.body.rewardsAndBenefits = JSON.parse(req.body.rewardsAndBenefits);
+        }
+
+        // Normalize rounds input on update as well
+        if (req.body.rounds && typeof req.body.rounds === 'string') {
+            try {
+                req.body.rounds = JSON.parse(req.body.rounds);
+            } catch (e) {
+                console.warn('Failed to parse rounds JSON string on update, keeping as-is.');
+            }
+        }
+
+        // Normalize faqs input on update as well
+        if (req.body.faqs && typeof req.body.faqs === 'string') {
+            try {
+                req.body.faqs = JSON.parse(req.body.faqs);
+            } catch (e) {
+                req.body.faqs = [];
+            }
+        }
+
+        // Normalize panelMembers input on update as well
+        if (req.body.panelMembers && typeof req.body.panelMembers === 'string') {
+            try {
+                req.body.panelMembers = JSON.parse(req.body.panelMembers);
+            } catch (e) {
+                req.body.panelMembers = [];
+            }
         }
 
         hackathon = await Hackathon.findByIdAndUpdate(req.params.id, req.body, {

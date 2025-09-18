@@ -128,6 +128,12 @@ function CompanySidebar({ activePath }) {
           label="Hackathon"
           active={activePath === '/company/hosting/host-hackathon'}
         />
+        <SidebarNavItem
+          to="/company/hosting/host-workshop"
+          icon={<FiTool />}
+          label="Workshop"
+          active={activePath === '/company/hosting/host-workshop'}
+        />
       </SidebarNavGroup>
       
       <SidebarNavGroup label="Job Management" icon={<FiBriefcase />} active={activePath.includes('/job-management')}>
