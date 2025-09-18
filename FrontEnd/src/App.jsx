@@ -76,6 +76,7 @@ import ResumeApp from "./components/company/employerDashboard/resumeSearch/Resum
 
 import Hackathon from "./pages/students/studentDashboard/hackathon/Hackthon";
 import Detail from "./pages/students/studentDashboard/hackathon/Detail";
+import HackathonRegistration from "./pages/students/studentDashboard/hackathon/HackathonRegistration";
 import JobListings from "./pages/students/studentDashboard/jobListing/JobListings";
 import JobDetails from "./pages/students/studentDashboard/jobListing/JobDetails";
 import OffCampusJobListings from "./pages/students/studentDashboard/offCampusListing/offCampusJobListing";
@@ -271,6 +272,7 @@ function AppRoutes() {
               <Route path="/student-dashboard/off-campus-listings/:jobId" element={<OffCampusJobDetail/>} />
               <Route path="/student-dashboard/hackathon" element={<Hackathon/>} />
               <Route path="/student-dashboard/hackathon/:id" element={<Detail />} />
+              <Route path="/student-dashboard/hackathon/register/:event_ID" element={<HackathonRegistration />} />
               <Route path="/student-dashboard/Referral-Jobs" element={<StudentReferralJobs/>} />
               <Route path="/student-dashboard/Referral-Jobs/:jobId" element={<StudentRefferalJobDetails />} />
               {/* service request  */}

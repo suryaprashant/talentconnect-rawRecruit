@@ -3,9 +3,10 @@ import sgMail from '@sendgrid/mail';
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const sendEmail = async (to, subject, html) => {
+  debugger;
   const msg = {
     to,
-    from: 'your_verified_sender@example.com', // Must be verified in SendGrid
+    from: 'srq687@gmail.com', //your_verified_sender@example.com', // Must be verified in SendGrid
     subject,
     html,
   };

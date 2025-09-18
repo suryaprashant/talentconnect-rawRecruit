@@ -12,6 +12,8 @@ const HackathonDetail = () => {
   const getHackathon = async () => {
     try {
       const response = await getHackathonDetail(id);
+      console.log("data : ", response.data.data);
+      
       setHackathon(response.data.data);
     } catch (error) {
       console.log("Error: ", error);
@@ -63,7 +65,8 @@ const HackathonDetail = () => {
         </div>
 
         <div className="flex flex-wrap gap-4 mt-4">
-          <button className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800">
+          <button className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800"
+            onClick={() => navigate(`/student-dashboard/hackathon/register/${id}`)}>
             Register Now
           </button>
           <button className="border border-gray-300 px-6 py-2 rounded-md flex items-center hover:bg-gray-50">
@@ -92,7 +95,7 @@ const HackathonDetail = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            {hackathon.hackathonType ? hackathon.hackathonType : hackathon.venue}
+            {hackathon.hackathonType ? hackathon.hackathonType : hackathon.location}
           </div>
         </div>
       </div>
@@ -145,7 +148,7 @@ const HackathonDetail = () => {
               </svg>
             </div>
             <h3 className="text-center font-semibold">Location</h3>
-            <p className="text-center">{hackathon.venue ? hackathon.venue : hackathon.hackathonType}</p>
+            <p className="text-center">{hackathon.location ? hackathon.location : hackathon.hackathonType}</p>
           </div>
         </div>
       </div>
@@ -162,7 +165,7 @@ const HackathonDetail = () => {
                 {round.id}
               </div>
               <div className="mb-1">{round.date}</div>
-              <h3 className="text-lg font-semibold">{round.name}</h3>
+              <h3 className="text-lg font-semibold">{round.roundName}</h3>
               <p className="text-gray-700">{round.description}</p>
             </div>
           ))}
