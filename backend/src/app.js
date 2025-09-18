@@ -106,7 +106,7 @@ import notificationRoute from "./Routes/notificationRoute.js"
 import jobPosting from './Routes/jobPostingsRoute.js' ;
 import studentDashboardRoute from './Routes/studentDashboard/studentDashboardRoute.js';
 import EmployerHiringChannelRoute from './Routes/employerHiringChannel/hiringChannel.route.js'
-import resumeRoutes from './Routes/resumeRoutes.js';
+import resumeRoutes from './Routes/Resume.route.js';
 app.use("/api/auth", authRoutes);
 app.use("/api", student_onboardingroutes);
 app.use("/api/hiring-channels", jobPosting);
@@ -181,7 +181,7 @@ app.use("/api/rawrecruit", [
 app.use("/api/rawrecruit/resume", uploadResumeRoute);
 app.use("/rawrecruit/link", basicdetails);
 app.use("/rawrecruit", jobinterest);
-app.use('/api', resumeRoutes);
+app.use("/api/resumes", resumeRoutes);
 
 // Start the server
 server.listen(PORT, async () => {

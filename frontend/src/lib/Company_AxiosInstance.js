@@ -35,8 +35,8 @@ export function getAcceptedOffCampusCandidates(jobId) {
 
 
 export function getProfileByResume(searchParams){
-  return axiosClient.post('api/resumes/search',searchParams)
-    .then(response => response)
+  return axiosClient.get('api/resumes/search',{ params: searchParams })
+    .then(response => response.data)
     .catch(error => console.log("Error: ", error));
 };
 

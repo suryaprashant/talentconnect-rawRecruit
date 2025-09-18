@@ -70,7 +70,7 @@ function ApplicationStatus({ candidates, filters, updateFilters, shortlistCandid
     setSearchQuery("");
   };
 
-  const filteredCandidates = candidates.filter((candidate) => {
+  const filteredCandidates = (candidates || []).filter((candidate) => {
     if (
       searchQuery &&
       !candidate.name.toLowerCase().includes(searchQuery.toLowerCase()) &&

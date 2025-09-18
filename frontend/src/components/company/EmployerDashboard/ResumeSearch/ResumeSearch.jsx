@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function ResumeSearch({ onSearch, onFileUpload }) {
   const [searchParams, setSearchParams] = useState({
