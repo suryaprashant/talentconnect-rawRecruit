@@ -229,29 +229,50 @@ const HostWorkshop = () => {
         faqs,
         panelMembers,
       };
+
+      // Debug logging
+      console.log('Backend URL:', backendUrl);
+      console.log('Full API endpoint:', `${backendUrl}/api/hosting/workshop/create`); // Updated endpoint
+      console.log('Request payload:', JSON.stringify(payload, null, 2));
+      console.log('Request headers:', {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      });
+
       const response = await axios.post(
-        `${backendUrl}/workshop/create`,
+        `${backendUrl}/api/hosting/workshop/create`, // Updated endpoint
         payload,
         {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+          withCredentials: true,
         }
       );
   
       if (response.status === 201 || response.status === 200) {
         toast.success("Workshop created successfully!");
         console.log("Workshop created successfully:", response.data);
-  
-        // Navigate back to company profile/dashboard
         navigate("/company-profile");
       }
-     } catch (err) {
-       const errorMessage =
-         err.response?.data?.message || "Failed to create workshop.";
-       console.error("Error creating workshop:", err);
-       toast.error(errorMessage);
+    } catch (err) {
+      // Enhanced error logging
+      console.error('Error creating workshop:', {
+        message: err.message,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        responseData: err.response?.data,
+        requestURL: err.config?.url,
+        requestMethod: err.config?.method,
+        requestHeaders: err.config?.headers,
+      });
+
+      // Log the full error object
+      console.error('Full error object:', err);
+
+      const errorMessage = err.response?.data?.message || "Failed to create workshop.";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
