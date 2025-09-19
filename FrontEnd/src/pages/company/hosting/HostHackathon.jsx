@@ -149,51 +149,218 @@ const HostHackathon = () => {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.title.trim()) newErrors.title = 'Title is required';
-    if (!formData.description.trim()) newErrors.description = 'Description is required';
-    // Replace goal validation with problem statements validation
+    // Basic Information Validation
+    if (!formData.title.trim()) {
+      newErrors.title = 'Hackathon title is required';
+    } else if (formData.title.length > 100) {
+      newErrors.title = 'Title cannot exceed 100 characters';
+    }
+    
+    if (!formData.subTitle.trim()) {
+      newErrors.subTitle = 'Sub-title is required';
+    } else if (formData.subTitle.length > 200) {
+      newErrors.subTitle = 'Sub-title cannot exceed 200 characters';
+    }
+    
+    if (!formData.description.trim()) {
+      newErrors.description = 'Description is required';
+    } else if (formData.description.length > 5000) {
+      newErrors.description = 'Description cannot exceed 5000 characters';
+    }
+    
+    // Problem Statements Validation
     if (!formData.problemStatements.length) {
       newErrors.problemStatements = 'At least one problem statement is required';
     } else {
       formData.problemStatements.forEach((problem, index) => {
         if (!problem.title.trim()) {
           newErrors[`problemTitle${index}`] = 'Problem title is required';
+        } else if (problem.title.length > 200) {
+          newErrors[`problemTitle${index}`] = 'Problem title cannot exceed 200 characters';
         }
+        
         if (!problem.description.trim()) {
           newErrors[`problemDescription${index}`] = 'Problem description is required';
+        } else if (problem.description.length > 2000) {
+          newErrors[`problemDescription${index}`] = 'Problem description cannot exceed 2000 characters';
         }
-        if (!problem.technology.length) {
+        
+        if (!problem.technology.length || (problem.technology.length === 1 && !problem.technology[0].trim())) {
           newErrors[`problemTechnology${index}`] = 'At least one technology is required';
         }
       });
     }
     
-    if (!formData.startDate) newErrors.startDate = 'Start date is required';
-    if (!formData.endDate) newErrors.endDate = 'End date is required';
-    if (!formData.location.trim()) newErrors.location = 'Location is required';
+    // Contact Email Validation
+    if (!formData.contactEmail.trim()) {
+      newErrors.contactEmail = 'Contact email is required';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.contactEmail)) {
+        newErrors.contactEmail = 'Please enter a valid email address';
+      }
+    }
     
-    // Validate participation fields based on participation type
+    // Mode and Visibility Validation
+    if (!formData.mode) {
+      newErrors.mode = 'Mode is required';
+    }
+    
+    if (!formData.visibility) {
+      newErrors.visibility = 'Visibility is required';
+    }
+    
+    if (!formData.participationType) {
+      newErrors.participationType = 'Participation type is required';
+    }
+    
+    // Date Validation
+    const now = new Date();
+    const startDate = new Date(formData.startDate);
+    const endDate = new Date(formData.endDate);
+    const registrationDeadline = new Date(formData.registrationDeadline);
+    
+    if (!formData.startDate) {
+      newErrors.startDate = 'Start date is required';
+    } else if (isNaN(startDate.getTime())) {
+      newErrors.startDate = 'Please enter a valid start date';
+    } else if (startDate < now) {
+      newErrors.startDate = 'Start date cannot be in the past';
+    }
+    
+    if (!formData.endDate) {
+      newErrors.endDate = 'End date is required';
+    } else if (isNaN(endDate.getTime())) {
+      newErrors.endDate = 'Please enter a valid end date';
+    } else if (formData.startDate && endDate <= startDate) {
+      newErrors.endDate = 'End date must be after start date';
+    }
+    
+    if (!formData.registrationDeadline) {
+      newErrors.registrationDeadline = 'Registration deadline is required';
+    } else if (isNaN(registrationDeadline.getTime())) {
+      newErrors.registrationDeadline = 'Please enter a valid registration deadline';
+    } else if (registrationDeadline < now) {
+      newErrors.registrationDeadline = 'Registration deadline cannot be in the past';
+    } else if (formData.startDate && registrationDeadline > startDate) {
+      newErrors.registrationDeadline = 'Registration deadline must be before start date';
+    }
+    
+    // Location Validation
+    if (!formData.location.trim()) {
+      newErrors.location = 'Location is required';
+    } else if (formData.location.length > 200) {
+      newErrors.location = 'Location cannot exceed 200 characters';
+    }
+    
+    // Participation Fields Validation
     if (formData.participationType === 'Individual' || formData.participationType === 'Both') {
-    if (!formData.maxParticipants) newErrors.maxParticipants = 'Max participants is required';
+      if (!formData.maxParticipants) {
+        newErrors.maxParticipants = 'Max participants is required';
+      } else if (isNaN(formData.maxParticipants) || formData.maxParticipants < 1) {
+        newErrors.maxParticipants = 'Max participants must be a positive number';
+      }
     }
     
     if (formData.participationType === 'Team' || formData.participationType === 'Both') {
-      if (!formData.maxTeams) newErrors.maxTeams = 'Max teams is required';
-      if (!formData.minTeamMembers) newErrors.minTeamMembers = 'Min team members is required';
-      if (!formData.maxTeamMembers) newErrors.maxTeamMembers = 'Max team members is required';
+      if (!formData.maxTeams) {
+        newErrors.maxTeams = 'Max teams is required';
+      } else if (isNaN(formData.maxTeams) || formData.maxTeams < 1) {
+        newErrors.maxTeams = 'Max teams must be a positive number';
+      }
+      
+      if (!formData.minTeamMembers) {
+        newErrors.minTeamMembers = 'Min team members is required';
+      } else if (isNaN(formData.minTeamMembers) || formData.minTeamMembers < 1) {
+        newErrors.minTeamMembers = 'Min team members must be a positive number';
+      }
+      
+      if (!formData.maxTeamMembers) {
+        newErrors.maxTeamMembers = 'Max team members is required';
+      } else if (isNaN(formData.maxTeamMembers) || formData.maxTeamMembers < 1) {
+        newErrors.maxTeamMembers = 'Max team members must be a positive number';
+      } else if (formData.minTeamMembers && parseInt(formData.maxTeamMembers) < parseInt(formData.minTeamMembers)) {
+        newErrors.maxTeamMembers = 'Max team members must be greater than or equal to min team members';
+      }
     }
     
-    if (!formData.rewards.firstPlace) newErrors.firstPlace = 'First place reward is required';
-    if (!formData.rewards.secondPlace) newErrors.secondPlace = 'Second place reward is required';
-    if (!formData.rewards.thirdPlace) newErrors.thirdPlace = 'Third place reward is required';
-    if (!formData.registrationDeadline) newErrors.registrationDeadline = 'Registration deadline is required';
-    if (!formData.contactEmail.trim()) newErrors.contactEmail = 'Contact email is required';
+    // Rewards Validation
+    if (!formData.rewards.firstPlace) {
+      newErrors.firstPlace = 'First place reward is required';
+    }
+    if (!formData.rewards.secondPlace) {
+      newErrors.secondPlace = 'Second place reward is required';
+    }
+    if (!formData.rewards.thirdPlace) {
+      newErrors.thirdPlace = 'Third place reward is required';
+    }
     
-    // Validate rounds
+    // Rounds Validation
+    if (formData.numberOfRounds < 1 || formData.numberOfRounds > 10) {
+      newErrors.numberOfRounds = 'Number of rounds must be between 1 and 10';
+    }
+    
     formData.rounds.forEach((round, index) => {
-      if (!round.startDate) newErrors[`round${index}StartDate`] = `Round ${index + 1} start date is required`;
-      if (!round.endDate) newErrors[`round${index}EndDate`] = `Round ${index + 1} end date is required`;
+      const roundStartDate = new Date(round.startDate);
+      const roundEndDate = new Date(round.endDate);
+      
+      if (!round.roundName.trim()) {
+        newErrors[`round${index}Name`] = `Round ${index + 1} name is required`;
+      }
+      
+      if (!round.startDate) {
+        newErrors[`round${index}StartDate`] = `Round ${index + 1} start date is required`;
+      } else if (isNaN(roundStartDate.getTime())) {
+        newErrors[`round${index}StartDate`] = `Round ${index + 1} start date is invalid`;
+      } else if (formData.startDate && roundStartDate < startDate) {
+        newErrors[`round${index}StartDate`] = `Round ${index + 1} start date cannot be before hackathon start date`;
+      }
+      
+      if (!round.endDate) {
+        newErrors[`round${index}EndDate`] = `Round ${index + 1} end date is required`;
+      } else if (isNaN(roundEndDate.getTime())) {
+        newErrors[`round${index}EndDate`] = `Round ${index + 1} end date is invalid`;
+      } else if (round.startDate && roundEndDate <= roundStartDate) {
+        newErrors[`round${index}EndDate`] = `Round ${index + 1} end date must be after start date`;
+      } else if (formData.endDate && roundEndDate > endDate) {
+        newErrors[`round${index}EndDate`] = `Round ${index + 1} end date cannot be after hackathon end date`;
+      }
+      
+      if (round.description && round.description.length > 1000) {
+        newErrors[`round${index}Description`] = `Round ${index + 1} description cannot exceed 1000 characters`;
+      }
     });
+    
+    // Domain Validation
+    if (!formData.domains.length || (formData.domains.length === 1 && !formData.domains[0].trim())) {
+      newErrors.domains = 'At least one domain is required';
+    } else {
+      formData.domains.forEach((domain, index) => {
+        if (domain.trim() && domain.length > 100) {
+          newErrors[`domain${index}`] = `Domain ${index + 1} cannot exceed 100 characters`;
+        }
+      });
+    }
+    
+    // Optional fields validation
+    if (formData.website && formData.website.trim()) {
+      const urlRegex = /^https?:\/\/.+/;
+      if (!urlRegex.test(formData.website)) {
+        newErrors.website = 'Website must be a valid URL starting with http:// or https://';
+      }
+    }
+    
+    if (formData.requirements && formData.requirements.length > 2000) {
+      newErrors.requirements = 'Requirements cannot exceed 2000 characters';
+    }
+    
+    if (formData.rules && formData.rules.length > 2000) {
+      newErrors.rules = 'Rules cannot exceed 2000 characters';
+    }
+    
+    if (formData.eligibility && formData.eligibility.length > 2000) {
+      newErrors.eligibility = 'Eligibility description cannot exceed 2000 characters';
+    }
     
     setErrors(newErrors);
     const isValid = Object.keys(newErrors).length === 0;
@@ -202,6 +369,8 @@ const HostHackathon = () => {
     console.log('Form validation result:', isValid);
     if (!isValid) {
       console.log('Validation errors:', newErrors);
+      // Show a toast message for validation errors
+      toast.error('Please fix the validation errors before submitting');
     }
     
     return isValid;
@@ -674,8 +843,8 @@ const HostHackathon = () => {
                       }`}
                     >
                       <option value="">Select mode</option>
-                      <option value="public">Online</option>
-                      <option value="private">Private</option>
+                      <option value="Online">Online</option>
+                      <option value="Offline">Offline</option>
                       <option value="Hybrid">Hybrid</option>
                     </select>
                     {errors.mode && (

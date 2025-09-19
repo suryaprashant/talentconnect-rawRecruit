@@ -41,7 +41,7 @@ const WorkshopSchema = new mongoose.Schema({
     },
     mode: {
         type: String,
-        enum: ['Online', 'Private', 'Hybrid']
+        enum: ['Online', 'Offline', 'Hybrid']
     },
     visibility: {
         type: String,
