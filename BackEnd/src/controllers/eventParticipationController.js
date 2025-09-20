@@ -5,60 +5,6 @@ import sendInvitationEmail from '../utils/sendInvitationEmail.js';
 
 // @desc    Create a new event participation entry
 // @route   POST /eventParticipation/register
-// export const registerParticipant = async (req, res) => {
-//   try {
-//     const {
-//       eventID,
-//       name,
-//       email,
-//       projectTitle,
-//       teamMembers
-//     } = req.body;
-
-//     // 1. Fetch the hackathon to get max team size
-//     // const hackathon = await Hackathon.findById(eventID);
-//     // if (!hackathon) {
-//     //   return res.status(404).json({ success: false, message: 'Hackathon not found' });
-//     // }
-
-//     // 2. Parse and check team size limit
-//     // const maxTeamSize = parseInt(hackathon.participationModel.teamSize || 1, 10);
-//     // const actualTeamSize = teamMembers?.length || 0;
-
-//     // if (actualTeamSize > maxTeamSize) {
-//     //   return res.status(400).json({
-//     //     success: false,
-//     //     message: `Team size exceeds the maximum allowed (${maxTeamSize})`
-//     //   });
-//     // }
-
-//     // 3. Create participant entry
-//     const newParticipant = await EventParticipation.create({
-//       eventID,
-//       name,
-//       email,
-//       projectTitle,
-//       teamMembers
-//     });
-
-//     res.status(201).json({
-//       success: true,
-//       message: 'Participant registered successfully',
-//       data: newParticipant
-//     });
-
-//   } catch (error) {
-//     console.error('Registration error:', error.message);
-//     res.status(500).json({
-//       success: false,
-//       message: 'Server error',
-//       error: error.message
-//     });
-//   }
-// };
-
-
-
 export const registerParticipant = async (req, res) => {
   try {
     const {
