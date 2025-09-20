@@ -134,6 +134,12 @@ function CompanySidebar({ activePath }) {
           label="Workshop"
           active={activePath === '/company/hosting/host-workshop'}
         />
+        <SidebarNavItem
+          to="/company/hosting/host-case-studies"
+          icon={<FiBook />}
+          label="Case Studies"
+          active={activePath === '/company/hosting/host-case-studies'}
+        />
       </SidebarNavGroup>
       
       <SidebarNavGroup label="Job Management" icon={<FiBriefcase />} active={activePath.includes('/job-management')}>

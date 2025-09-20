@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 import './panelMemberModel.js'
 
-const HackathonSchema = new mongoose.Schema({
+const CasestudySchema = new mongoose.Schema({
     title: {
         type: String,
-        required: [true, 'Please add a hackathon title'],
+        required: [true, 'Please add a case study title'],
         trim: true,
-        maxlength: [100, 'Hackathon title cannot be more than 100 characters']
+        maxlength: [100, 'Case study title cannot be more than 100 characters']
     },
     subTitle: {
         type: String,
@@ -34,9 +34,9 @@ const HackathonSchema = new mongoose.Schema({
             required: true
         }
     }],
-    hackathonType: {
+    casestudyType: {
         type: String,
-        required: [true, 'Please specify the hackathon type'],
+        required: [true, 'Please specify the case study type'],
         enum: ['In-person', 'Virtual', 'Hybrid']
     },
     mode: {
@@ -62,7 +62,7 @@ const HackathonSchema = new mongoose.Schema({
     venue: {
         type: String,
         required: function () {
-            return this.hackathonType !== 'Virtual';
+            return this.casestudyType !== 'Virtual';
         },
         maxlength: [200, 'Venue cannot be more than 200 characters']
     },
@@ -232,7 +232,7 @@ const HackathonSchema = new mongoose.Schema({
     });
 
 // Ensure end date is after start date
-HackathonSchema.pre('validate', function (next) {
+CasestudySchema.pre('validate', function (next) {
     if (this.endDate && this.startDate && this.endDate < this.startDate) {
         this.invalidate('endDate', 'End date must be after start date');
     }
@@ -240,7 +240,7 @@ HackathonSchema.pre('validate', function (next) {
 });
 
 // Add a pre-save hook to clean up domains
-HackathonSchema.pre('save', function(next) {
+CasestudySchema.pre('save', function(next) {
     // Remove empty domains and duplicates
     if (this.domains) {
         this.domains = [...new Set(this.domains.filter(domain => domain.trim()))];
@@ -249,5 +249,5 @@ HackathonSchema.pre('save', function(next) {
 });
 
 
-const Hackathon = mongoose.model('Hackathon', HackathonSchema);
-export default Hackathon;
+const Casestudy = mongoose.model('Casestudy', CasestudySchema);
+export default Casestudy;
