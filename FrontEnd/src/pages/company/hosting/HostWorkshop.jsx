@@ -561,7 +561,7 @@ const HostWorkshop = () => {
                   {/*Title*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Workshop Title *
+                      Workshop Title 
                     </label>
                     <input
                       type="text"
@@ -578,7 +578,7 @@ const HostWorkshop = () => {
                   {/*Subtitle*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Workshop Sub-Title *
+                      Workshop Sub-Title 
                     </label>
                     <input
                       type="text"
@@ -598,7 +598,7 @@ const HostWorkshop = () => {
                   <div className="flex items-center justify-between mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       <Target className="inline h-4 w-4 mr-1" />
-                      Problem Statements *
+                      Problem Statements    
                     </label>
                     <button
                       type="button"
@@ -675,7 +675,7 @@ const HostWorkshop = () => {
                   {/*Contact Email*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Contact Email *
+                      Contact Email 
                     </label>
                     <input
                       type="email"
@@ -693,7 +693,7 @@ const HostWorkshop = () => {
                 {/*discription*/}
                 <div className="mt-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
+                    Description 
                   </label>
                   <textarea
                     name="description"
@@ -831,7 +831,7 @@ const HostWorkshop = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Visibility *
+                      Visibility 
                     </label>
                     <select
                       name="visibility"
@@ -853,7 +853,7 @@ const HostWorkshop = () => {
                   {/*mode*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Mode *
+                      Mode 
                     </label>
                     <select
                       name="mode"
@@ -876,7 +876,7 @@ const HostWorkshop = () => {
                   {/*participation type*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Participation Type *
+                        Participation Type        
                     </label>
                     <select
                       name="participationType"
@@ -909,7 +909,7 @@ const HostWorkshop = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Start Date *
+                      Start Date 
                     </label>
                     <input
                       type="datetime-local"
@@ -925,7 +925,7 @@ const HostWorkshop = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      End Date *
+                      End Date
                     </label>
                     <input
                       type="datetime-local"
@@ -941,7 +941,7 @@ const HostWorkshop = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Registration Deadline *
+                      Registration Deadline 
                     </label>
                     <input
                       type="datetime-local"
@@ -958,7 +958,7 @@ const HostWorkshop = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <MapPin className="inline h-4 w-4 mr-1" />
-                      Location *
+                      Location 
                     </label>
                     <input
                       type="text"
@@ -986,7 +986,7 @@ const HostWorkshop = () => {
                   {/* Number of Rounds */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Number of Rounds *
+                      Number of Rounds 
                     </label>
                     <select
                       value={formData.numberOfRounds}
@@ -1020,7 +1020,7 @@ const HostWorkshop = () => {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Start Date *
+                            Start Date 
                           </label>
                           <input
                             type="datetime-local"
@@ -1036,7 +1036,7 @@ const HostWorkshop = () => {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            End Date *
+                            End Date
                           </label>
                           <input
                             type="datetime-local"
@@ -1095,7 +1095,7 @@ const HostWorkshop = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <Users className="inline h-4 w-4 mr-1" />
-                    Max Individual Participants *
+                    Max Individual Participants 
                 </label>
                 <input
                   type="number"
@@ -1118,7 +1118,7 @@ const HostWorkshop = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <Users className="inline h-4 w-4 mr-1" />
-                      Max Teams *
+                      Max Teams 
                     </label>
                     <input
                       type="number"
@@ -1137,7 +1137,7 @@ const HostWorkshop = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Min Team Members *
+                        Min Team Members 
                       </label>
                       <input
                         type="number"
@@ -1155,7 +1155,7 @@ const HostWorkshop = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Max Team Members *
+                        Max Team Members 
                 </label>
                 <input
                   type="number"
@@ -1212,7 +1212,7 @@ const HostWorkshop = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      🥇 1st Place *
+                      🥇 1st Place 
                     </label>
                     {formData.rewards.rewardType === 'Amount' ? (
                     <input
@@ -1247,7 +1247,7 @@ const HostWorkshop = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      🥈 2nd Place *
+                      🥈 2nd Place 
                     </label>
                     {formData.rewards.rewardType === 'Amount' ? (
                     <input
@@ -1282,7 +1282,7 @@ const HostWorkshop = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      🥉 3rd Place *
+                      🥉 3rd Place 
                     </label>
                     {formData.rewards.rewardType === 'Amount' ? (
                     <input
