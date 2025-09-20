@@ -1,5 +1,5 @@
 import React from 'react';
-import HackathonDetail from '@/components/student/studentDashboard/hackathon/HackathonDetail';
+import HackathonDetail from '@/components/student/events/hackathon/HackathonDetail';
 
 const FresherDetail = () => {
   return (

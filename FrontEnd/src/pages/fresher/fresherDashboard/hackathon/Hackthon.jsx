@@ -1,5 +1,5 @@
 import React from 'react';
-import HackathonList from '@/components/student/studentDashboard/hackathon/HackthonList';
+import HackathonList from '@/components/student/events/hackathon/HackthonList';
 
 const FresherHackathon = () => {
   return (

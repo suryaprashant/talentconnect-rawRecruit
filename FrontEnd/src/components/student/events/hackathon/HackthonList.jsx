@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import HackathonCard from './HackathonCard';
-import SearchBar from './SearchBar';
+import SearchBar from '../SearchBar';
 import { getHackathons } from '@/lib/User_AxiosInstance';
 // import { hackathons } from '@/constants/hackthonData';
 

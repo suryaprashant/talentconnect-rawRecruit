@@ -78,6 +78,9 @@ import ResumeApp from "./components/company/employerDashboard/resumeSearch/Resum
 import Hackathon from "./pages/students/studentDashboard/hackathon/Hackthon";
 import Detail from "./pages/students/studentDashboard/hackathon/Detail";
 import HackathonRegistration from "./pages/students/studentDashboard/hackathon/HackathonRegistration";
+import WorkShope from "./pages/students/events/workshope/Workshop";
+import WorkShopeDetailView from "./pages/students/events/workshope/WorkShopDetail";
+import WorkShopRegistration from "./pages/students/events/workshope/WorkShopRegistration";
 import JobListings from "./pages/students/studentDashboard/jobListing/JobListings";
 import JobDetails from "./pages/students/studentDashboard/jobListing/JobDetails";
 import OffCampusJobListings from "./pages/students/studentDashboard/offCampusListing/offCampusJobListing";
@@ -270,12 +273,16 @@ function AppRoutes() {
               <Route path="/student-dashboard/internship-opportunities" element={<InternJobListings />} />
               <Route path="/student-dashboard/internship-opportunities/:jobId" element={<InternJobDetails />} />
               <Route path="/student-dashboard/off-campus-listings" element={<OffCampusJobListings />} />
-              <Route path="/student-dashboard/off-campus-listings/:jobId" element={<OffCampusJobDetail/>} />
-              <Route path="/student-dashboard/hackathon" element={<Hackathon/>} />
-              <Route path="/student-dashboard/hackathon/:id" element={<Detail />} />
-              <Route path="/student-dashboard/hackathon/register/:event_ID" element={<HackathonRegistration />} />
+              <Route path="/student-dashboard/off-campus-listings/:jobId" element={<OffCampusJobDetail/>} />              
               <Route path="/student-dashboard/Referral-Jobs" element={<StudentReferralJobs/>} />
               <Route path="/student-dashboard/Referral-Jobs/:jobId" element={<StudentRefferalJobDetails />} />
+              <Route path="/student-events/hackathon" element={<Hackathon/>} />
+              <Route path="/student-events/hackathon/:id" element={<Detail />} />
+              <Route path="/student-events/hackathon/register/:event_ID" element={<HackathonRegistration />} />
+              <Route path="/student-events/work-shope" element={<WorkShope/>} />
+              <Route path="/student-events/work-shope/:id" element={<WorkShopeDetailView />} />
+              <Route path="/student-events/work-shope/register/:event_ID" element={<WorkShopRegistration />} />
+              
               {/* service request  */}
               <Route path ='service-request/career-craft' element={<CareerCraft/>}/>
               <Route path ='service-request/mock-interview' element={<MockInterview/>}/>

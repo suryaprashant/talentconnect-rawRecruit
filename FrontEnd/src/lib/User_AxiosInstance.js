@@ -72,8 +72,18 @@ export function getHackathons() {
     .then(response => response)
     .catch(error => error);
 }
+export function getEvents() {
+  return axiosClient.get(`/hackathon`)
+    .then(response => response)
+    .catch(error => error);
+}
 
 export function getHackathonDetail(hackathonId) {
+  return axiosClient.get(`/hackathon/${hackathonId}`)
+    .then(response => response)
+    .catch(error => error);
+}
+export function getEventDetail(eventId) {
   return axiosClient.get(`/hackathon/${hackathonId}`)
     .then(response => response)
     .catch(error => error);

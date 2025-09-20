@@ -1,40 +1,40 @@
-import { getHackathonDetail } from '@/lib/User_AxiosInstance';
+import { getEventDetail } from '@/lib/User_AxiosInstance';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-// import { hackathons } from '@/constants/hackthonData';
+// import { events } from '@/constants/hackthonData';
 
-const HackathonDetail = () => {
+const EventDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  // const hackathon = hackathons.find(h => h.id === parseInt(id));
-  const [hackathon, setHackathon] = useState();
+  // const event = events.find(h => h.id === parseInt(id));
+  const [event, setEvent] = useState();
 
-  const getHackathon = async () => {
+  const getEvent = async () => {
     try {
-      const response = await getHackathonDetail(id);
+      const response = await getEventDetail(id);
       console.log(response.data.data);
       
-      setHackathon(response.data.data);
+      setEvent(response.data.data);
     } catch (error) {
       console.log("Error: ", error);
     }
   }
 
   useEffect(() => {
-    getHackathon();
+    getEvent();
   }, [])
 
   const [expandedFaq, setExpandedFaq] = useState(null);
 
-  if (!hackathon) {
+  if (!event) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
-        <h2 className="text-2xl font-bold mb-4">Hackathon not found </h2>
+        <h2 className="text-2xl font-bold mb-4">Event not found </h2>
         <button
-          onClick={() => navigate('/student-dashboard/hackathon')}
+          onClick={() => navigate('/student-events/hackathon')}
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
         >
-          Back to Hackathons
+          Back to Events
         </button>
       </div>
     );
@@ -54,8 +54,8 @@ const HackathonDetail = () => {
         <p className="text-sm text-gray-600 mb-2">Registrations Open</p>
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-3xl font-bold mb-2">{hackathon.title}</h1>
-            <p className="text-lg mb-4">{hackathon.description}</p>
+            <h1 className="text-3xl font-bold mb-2">{event.title}</h1>
+            <p className="text-lg mb-4">{event.description}</p>
           </div>
           <div className="w-24 h-24 bg-gray-200 rounded-md flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -66,7 +66,7 @@ const HackathonDetail = () => {
 
         <div className="flex flex-wrap gap-4 mt-4">
           <button className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800"
-            onClick={() => navigate(`/student-dashboard/hackathon/register/${id}`)}>
+            onClick={() => navigate(`/student-events/hackathon/register/${id}`)}>
             Register Now
           </button>
           <button className="border border-gray-300 px-6 py-2 rounded-md flex items-center hover:bg-gray-50">
@@ -88,23 +88,23 @@ const HackathonDetail = () => {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            {new Date(hackathon.startDate).toLocaleDateString()} - {new Date(hackathon.endDate).toLocaleDateString()}
+            {new Date(event.startDate).toLocaleDateString()} - {new Date(event.endDate).toLocaleDateString()}
           </div>
           <div className="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            {hackathon.hackathonType==="Virtual" ? hackathon.hackathonType : hackathon.location}
+            {event.eventType==="Virtual" ? event.eventType : event.location}
           </div>
         </div>
       </div>
 
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">About the Hackathon</h2>
+        <h2 className="text-xl font-semibold mb-4">About the Event</h2>
         <p className="text-gray-700">
-          {/* {hackathon.shortDescription} This is your chance to showcase your innovation and technical skills while solving real-world problems. */}
-          {hackathon.description}
+          {/* {event.shortDescription} This is your chance to showcase your innovation and technical skills while solving real-world problems. */}
+          {event.description}
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
@@ -115,7 +115,7 @@ const HackathonDetail = () => {
               </svg>
             </div>
             <h3 className="text-center font-semibold">Team Size</h3>
-            <p className="text-center">{hackathon.maxTeamSize || 1}</p>
+            <p className="text-center">{event.maxTeamSize || 1}</p>
           </div>
 
           <div className="border border-gray-200 rounded-md p-4">
@@ -127,7 +127,7 @@ const HackathonDetail = () => {
               </svg>
             </div>
             <h3 className="text-center font-semibold">Eligibility</h3>
-            <p className="text-center">{hackathon.eligibility || "All"}</p>
+            <p className="text-center">{event.eligibility || "All"}</p>
           </div>
 
           <div className="border border-gray-200 rounded-md p-4">
@@ -137,7 +137,7 @@ const HackathonDetail = () => {
               </svg>
             </div>
             <h3 className="text-center font-semibold">Domains</h3>
-            <p className="text-center">{hackathon.domains?.join(', ') || "Not Specified"}</p>
+            <p className="text-center">{event.domains?.join(', ') || "Not Specified"}</p>
           </div>
 
           <div className="border border-gray-200 rounded-md p-4">
@@ -148,15 +148,15 @@ const HackathonDetail = () => {
               </svg>
             </div>
             <h3 className="text-center font-semibold">Location</h3>
-            <p className="text-center">{hackathon.location ? hackathon.location : hackathon.hackathonType}</p>
+            <p className="text-center">{event.location ? event.location : event.eventType}</p>
           </div>
         </div>
       </div>
 
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Hackathon Rounds</h2>
+        <h2 className="text-xl font-semibold mb-4">Event Rounds</h2>
         <div className="relative border-l-2 border-gray-200 pl-6 ml-4">
-          {hackathon.rounds?.map((round, index) => (
+          {event.rounds?.map((round, index) => (
             <div key={index} className="mb-8 relative">
               <div
                 className="absolute w-8 h-8 bg-black text-white rounded-full flex items-center justify-center -left-10"
@@ -174,7 +174,7 @@ const HackathonDetail = () => {
 
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Problem Statements</h2>
-        {hackathon.problemStatements?.map((problem, index) => (
+        {event.problemStatements?.map((problem, index) => (
           <div key={index} className="border border-gray-200 rounded-md p-4 mb-4">
             <div className="flex justify-between">
               <h3 className="font-semibold">{problem.title}</h3>
@@ -194,7 +194,7 @@ const HackathonDetail = () => {
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Rewards</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {hackathon.rewardsAndBenefits?.map((reward, index) => (
+          {event.rewardsAndBenefits?.map((reward, index) => (
             <div key={index} className="border border-gray-200 rounded-md p-4 text-center">
               <div className="flex justify-center mb-4">
                 {index === 0 ? (
@@ -218,7 +218,7 @@ const HackathonDetail = () => {
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Frequently Asked Questions</h2>
         <div className="space-y-4">
-          {hackathon.faqs?.map((faq, index) => (
+          {event.faqs?.map((faq, index) => (
             <div key={index} className="border border-gray-200 rounded-md overflow-hidden">
               <button
                 className="w-full text-left p-4 flex justify-between items-center focus:outline-none"
@@ -272,4 +272,4 @@ const HackathonDetail = () => {
   );
 };
 
-export default HackathonDetail;
+export default EventDetail;

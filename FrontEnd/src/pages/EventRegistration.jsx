@@ -103,7 +103,7 @@ const EventRegistration = () => {
       if (response.status === 200 || response.status === 201) {
         alert("Request submitted successfully!");
         setTimeout(() => {
-          navigate(`/${localStorage.getItem('selectedRole')}-dashboard/hackathon/${event_ID}`);
+          navigate(`/${localStorage.getItem('selectedRole')}-events/hackathon/${event_ID}`);
         }, 1);
       }
     } catch (err) {
