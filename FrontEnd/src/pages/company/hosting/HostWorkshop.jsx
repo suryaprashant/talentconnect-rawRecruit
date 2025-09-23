@@ -149,51 +149,218 @@ const HostWorkshop = () => {
   const validateForm = () => {
     const newErrors = {};
     
-    if (!formData.title.trim()) newErrors.title = 'Title is required';
-    if (!formData.description.trim()) newErrors.description = 'Description is required';
-    // Replace goal validation with problem statements validation
+    // Basic Information Validation
+    if (!formData.title.trim()) {
+      newErrors.title = 'Workshop title is required';
+    } else if (formData.title.length > 100) {
+      newErrors.title = 'Title cannot exceed 100 characters';
+    }
+    
+    if (!formData.subTitle.trim()) {
+      newErrors.subTitle = 'Sub-title is required';
+    } else if (formData.subTitle.length > 200) {
+      newErrors.subTitle = 'Sub-title cannot exceed 200 characters';
+    }
+    
+    if (!formData.description.trim()) {
+      newErrors.description = 'Description is required';
+    } else if (formData.description.length > 5000) {
+      newErrors.description = 'Description cannot exceed 5000 characters';
+    }
+    
+    // Problem Statements Validation
     if (!formData.problemStatements.length) {
       newErrors.problemStatements = 'At least one problem statement is required';
     } else {
       formData.problemStatements.forEach((problem, index) => {
         if (!problem.title.trim()) {
           newErrors[`problemTitle${index}`] = 'Problem title is required';
+        } else if (problem.title.length > 200) {
+          newErrors[`problemTitle${index}`] = 'Problem title cannot exceed 200 characters';
         }
+        
         if (!problem.description.trim()) {
           newErrors[`problemDescription${index}`] = 'Problem description is required';
+        } else if (problem.description.length > 2000) {
+          newErrors[`problemDescription${index}`] = 'Problem description cannot exceed 2000 characters';
         }
-        if (!problem.technology.length) {
+        
+        if (!problem.technology.length || (problem.technology.length === 1 && !problem.technology[0].trim())) {
           newErrors[`problemTechnology${index}`] = 'At least one technology is required';
         }
       });
     }
     
-    if (!formData.startDate) newErrors.startDate = 'Start date is required';
-    if (!formData.endDate) newErrors.endDate = 'End date is required';
-    if (!formData.location.trim()) newErrors.location = 'Location is required';
+    // Contact Email Validation
+    if (!formData.contactEmail.trim()) {
+      newErrors.contactEmail = 'Contact email is required';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.contactEmail)) {
+        newErrors.contactEmail = 'Please enter a valid email address';
+      }
+    }
     
-    // Validate participation fields based on participation type
+    // Mode and Visibility Validation
+    if (!formData.mode) {
+      newErrors.mode = 'Mode is required';
+    }
+    
+    if (!formData.visibility) {
+      newErrors.visibility = 'Visibility is required';
+    }
+    
+    if (!formData.participationType) {
+      newErrors.participationType = 'Participation type is required';
+    }
+    
+    // Date Validation
+    const now = new Date();
+    const startDate = new Date(formData.startDate);
+    const endDate = new Date(formData.endDate);
+    const registrationDeadline = new Date(formData.registrationDeadline);
+    
+    if (!formData.startDate) {
+      newErrors.startDate = 'Start date is required';
+    } else if (isNaN(startDate.getTime())) {
+      newErrors.startDate = 'Please enter a valid start date';
+    } else if (startDate < now) {
+      newErrors.startDate = 'Start date cannot be in the past';
+    }
+    
+    if (!formData.endDate) {
+      newErrors.endDate = 'End date is required';
+    } else if (isNaN(endDate.getTime())) {
+      newErrors.endDate = 'Please enter a valid end date';
+    } else if (formData.startDate && endDate <= startDate) {
+      newErrors.endDate = 'End date must be after start date';
+    }
+    
+    if (!formData.registrationDeadline) {
+      newErrors.registrationDeadline = 'Registration deadline is required';
+    } else if (isNaN(registrationDeadline.getTime())) {
+      newErrors.registrationDeadline = 'Please enter a valid registration deadline';
+    } else if (registrationDeadline < now) {
+      newErrors.registrationDeadline = 'Registration deadline cannot be in the past';
+    } else if (formData.startDate && registrationDeadline > startDate) {
+      newErrors.registrationDeadline = 'Registration deadline must be before start date';
+    }
+    
+    // Location Validation
+    if (!formData.location.trim()) {
+      newErrors.location = 'Location is required';
+    } else if (formData.location.length > 200) {
+      newErrors.location = 'Location cannot exceed 200 characters';
+    }
+    
+    // Participation Fields Validation
     if (formData.participationType === 'Individual' || formData.participationType === 'Both') {
-    if (!formData.maxParticipants) newErrors.maxParticipants = 'Max participants is required';
+      if (!formData.maxParticipants) {
+        newErrors.maxParticipants = 'Max participants is required';
+      } else if (isNaN(formData.maxParticipants) || formData.maxParticipants < 1) {
+        newErrors.maxParticipants = 'Max participants must be a positive number';
+      }
     }
     
     if (formData.participationType === 'Team' || formData.participationType === 'Both') {
-      if (!formData.maxTeams) newErrors.maxTeams = 'Max teams is required';
-      if (!formData.minTeamMembers) newErrors.minTeamMembers = 'Min team members is required';
-      if (!formData.maxTeamMembers) newErrors.maxTeamMembers = 'Max team members is required';
+      if (!formData.maxTeams) {
+        newErrors.maxTeams = 'Max teams is required';
+      } else if (isNaN(formData.maxTeams) || formData.maxTeams < 1) {
+        newErrors.maxTeams = 'Max teams must be a positive number';
+      }
+      
+      if (!formData.minTeamMembers) {
+        newErrors.minTeamMembers = 'Min team members is required';
+      } else if (isNaN(formData.minTeamMembers) || formData.minTeamMembers < 1) {
+        newErrors.minTeamMembers = 'Min team members must be a positive number';
+      }
+      
+      if (!formData.maxTeamMembers) {
+        newErrors.maxTeamMembers = 'Max team members is required';
+      } else if (isNaN(formData.maxTeamMembers) || formData.maxTeamMembers < 1) {
+        newErrors.maxTeamMembers = 'Max team members must be a positive number';
+      } else if (formData.minTeamMembers && parseInt(formData.maxTeamMembers) < parseInt(formData.minTeamMembers)) {
+        newErrors.maxTeamMembers = 'Max team members must be greater than or equal to min team members';
+      }
     }
     
-    if (!formData.rewards.firstPlace) newErrors.firstPlace = 'First place reward is required';
-    if (!formData.rewards.secondPlace) newErrors.secondPlace = 'Second place reward is required';
-    if (!formData.rewards.thirdPlace) newErrors.thirdPlace = 'Third place reward is required';
-    if (!formData.registrationDeadline) newErrors.registrationDeadline = 'Registration deadline is required';
-    if (!formData.contactEmail.trim()) newErrors.contactEmail = 'Contact email is required';
+    // Rewards Validation
+    if (!formData.rewards.firstPlace) {
+      newErrors.firstPlace = 'First place reward is required';
+    }
+    if (!formData.rewards.secondPlace) {
+      newErrors.secondPlace = 'Second place reward is required';
+    }
+    if (!formData.rewards.thirdPlace) {
+      newErrors.thirdPlace = 'Third place reward is required';
+    }
     
-    // Validate rounds
+    // Rounds Validation
+    if (formData.numberOfRounds < 1 || formData.numberOfRounds > 10) {
+      newErrors.numberOfRounds = 'Number of rounds must be between 1 and 10';
+    }
+    
     formData.rounds.forEach((round, index) => {
-      if (!round.startDate) newErrors[`round${index}StartDate`] = `Round ${index + 1} start date is required`;
-      if (!round.endDate) newErrors[`round${index}EndDate`] = `Round ${index + 1} end date is required`;
+      const roundStartDate = new Date(round.startDate);
+      const roundEndDate = new Date(round.endDate);
+      
+      if (!round.roundName.trim()) {
+        newErrors[`round${index}Name`] = `Round ${index + 1} name is required`;
+      }
+      
+      if (!round.startDate) {
+        newErrors[`round${index}StartDate`] = `Round ${index + 1} start date is required`;
+      } else if (isNaN(roundStartDate.getTime())) {
+        newErrors[`round${index}StartDate`] = `Round ${index + 1} start date is invalid`;
+      } else if (formData.startDate && roundStartDate < startDate) {
+        newErrors[`round${index}StartDate`] = `Round ${index + 1} start date cannot be before workshop start date`;
+      }
+      
+      if (!round.endDate) {
+        newErrors[`round${index}EndDate`] = `Round ${index + 1} end date is required`;
+      } else if (isNaN(roundEndDate.getTime())) {
+        newErrors[`round${index}EndDate`] = `Round ${index + 1} end date is invalid`;
+      } else if (round.startDate && roundEndDate <= roundStartDate) {
+        newErrors[`round${index}EndDate`] = `Round ${index + 1} end date must be after start date`;
+      } else if (formData.endDate && roundEndDate > endDate) {
+        newErrors[`round${index}EndDate`] = `Round ${index + 1} end date cannot be after workshop end date`;
+      }
+      
+      if (round.description && round.description.length > 1000) {
+        newErrors[`round${index}Description`] = `Round ${index + 1} description cannot exceed 1000 characters`;
+      }
     });
+    
+    // Domain Validation
+    if (!formData.domains.length || (formData.domains.length === 1 && !formData.domains[0].trim())) {
+      newErrors.domains = 'At least one domain is required';
+    } else {
+      formData.domains.forEach((domain, index) => {
+        if (domain.trim() && domain.length > 100) {
+          newErrors[`domain${index}`] = `Domain ${index + 1} cannot exceed 100 characters`;
+        }
+      });
+    }
+    
+    // Optional fields validation
+    if (formData.website && formData.website.trim()) {
+      const urlRegex = /^https?:\/\/.+/;
+      if (!urlRegex.test(formData.website)) {
+        newErrors.website = 'Website must be a valid URL starting with http:// or https://';
+      }
+    }
+    
+    if (formData.requirements && formData.requirements.length > 2000) {
+      newErrors.requirements = 'Requirements cannot exceed 2000 characters';
+    }
+    
+    if (formData.rules && formData.rules.length > 2000) {
+      newErrors.rules = 'Rules cannot exceed 2000 characters';
+    }
+    
+    if (formData.eligibility && formData.eligibility.length > 2000) {
+      newErrors.eligibility = 'Eligibility description cannot exceed 2000 characters';
+    }
     
     setErrors(newErrors);
     const isValid = Object.keys(newErrors).length === 0;
@@ -202,6 +369,8 @@ const HostWorkshop = () => {
     console.log('Form validation result:', isValid);
     if (!isValid) {
       console.log('Validation errors:', newErrors);
+      // Show a toast message for validation errors
+      toast.error('Please fix the validation errors before submitting');
     }
     
     return isValid;
@@ -392,7 +561,7 @@ const HostWorkshop = () => {
                   {/*Title*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Workshop Title *
+                      Workshop Title 
                     </label>
                     <input
                       type="text"
@@ -409,7 +578,7 @@ const HostWorkshop = () => {
                   {/*Subtitle*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Workshop Sub-Title *
+                      Workshop Sub-Title 
                     </label>
                     <input
                       type="text"
@@ -429,7 +598,7 @@ const HostWorkshop = () => {
                   <div className="flex items-center justify-between mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       <Target className="inline h-4 w-4 mr-1" />
-                      Problem Statements *
+                      Problem Statements    
                     </label>
                     <button
                       type="button"
@@ -506,7 +675,7 @@ const HostWorkshop = () => {
                   {/*Contact Email*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Contact Email *
+                      Contact Email 
                     </label>
                     <input
                       type="email"
@@ -524,7 +693,7 @@ const HostWorkshop = () => {
                 {/*discription*/}
                 <div className="mt-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description *
+                    Description 
                   </label>
                   <textarea
                     name="description"
@@ -662,7 +831,7 @@ const HostWorkshop = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Visibility *
+                      Visibility 
                     </label>
                     <select
                       name="visibility"
@@ -684,7 +853,7 @@ const HostWorkshop = () => {
                   {/*mode*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Mode *
+                      Mode 
                     </label>
                     <select
                       name="mode"
@@ -695,8 +864,8 @@ const HostWorkshop = () => {
                       }`}
                     >
                       <option value="">Select mode</option>
-                      <option value="public">Online</option>
-                      <option value="private">Private</option>
+                      <option value="Online">Online</option>
+                      <option value="Offline">Offline</option>
                       <option value="Hybrid">Hybrid</option>
                     </select>
                     {errors.mode && (
@@ -707,7 +876,7 @@ const HostWorkshop = () => {
                   {/*participation type*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Participation Type *
+                        Participation Type        
                     </label>
                     <select
                       name="participationType"
@@ -740,7 +909,7 @@ const HostWorkshop = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Start Date *
+                      Start Date 
                     </label>
                     <input
                       type="datetime-local"
@@ -756,7 +925,7 @@ const HostWorkshop = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      End Date *
+                      End Date
                     </label>
                     <input
                       type="datetime-local"
@@ -772,7 +941,7 @@ const HostWorkshop = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Registration Deadline *
+                      Registration Deadline 
                     </label>
                     <input
                       type="datetime-local"
@@ -789,7 +958,7 @@ const HostWorkshop = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <MapPin className="inline h-4 w-4 mr-1" />
-                      Location *
+                      Location 
                     </label>
                     <input
                       type="text"
@@ -817,7 +986,7 @@ const HostWorkshop = () => {
                   {/* Number of Rounds */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Number of Rounds *
+                      Number of Rounds 
                     </label>
                     <select
                       value={formData.numberOfRounds}
@@ -851,7 +1020,7 @@ const HostWorkshop = () => {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Start Date *
+                            Start Date 
                           </label>
                           <input
                             type="datetime-local"
@@ -867,7 +1036,7 @@ const HostWorkshop = () => {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            End Date *
+                            End Date
                           </label>
                           <input
                             type="datetime-local"
@@ -926,7 +1095,7 @@ const HostWorkshop = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <Users className="inline h-4 w-4 mr-1" />
-                    Max Individual Participants *
+                    Max Individual Participants 
                 </label>
                 <input
                   type="number"
@@ -949,7 +1118,7 @@ const HostWorkshop = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <Users className="inline h-4 w-4 mr-1" />
-                      Max Teams *
+                      Max Teams 
                     </label>
                     <input
                       type="number"
@@ -968,7 +1137,7 @@ const HostWorkshop = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Min Team Members *
+                        Min Team Members 
                       </label>
                       <input
                         type="number"
@@ -986,7 +1155,7 @@ const HostWorkshop = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Max Team Members *
+                        Max Team Members 
                 </label>
                 <input
                   type="number"
@@ -1043,7 +1212,7 @@ const HostWorkshop = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      🥇 1st Place *
+                      🥇 1st Place 
                     </label>
                     {formData.rewards.rewardType === 'Amount' ? (
                     <input
@@ -1078,7 +1247,7 @@ const HostWorkshop = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      🥈 2nd Place *
+                      🥈 2nd Place 
                     </label>
                     {formData.rewards.rewardType === 'Amount' ? (
                     <input
@@ -1113,7 +1282,7 @@ const HostWorkshop = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      🥉 3rd Place *
+                      🥉 3rd Place 
                     </label>
                     {formData.rewards.rewardType === 'Amount' ? (
                     <input

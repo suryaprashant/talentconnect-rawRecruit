@@ -4,7 +4,7 @@ import { Calendar, MapPin, Users, Trophy, Clock, DollarSign, FileText, Globe, Ta
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const HostHackathon = () => {
+const HostCasestudies = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     logo: '',
@@ -151,7 +151,7 @@ const HostHackathon = () => {
     
     // Basic Information Validation
     if (!formData.title.trim()) {
-      newErrors.title = 'Hackathon title is required';
+      newErrors.title = 'Case study title is required';
     } else if (formData.title.length > 100) {
       newErrors.title = 'Title cannot exceed 100 characters';
     }
@@ -313,7 +313,7 @@ const HostHackathon = () => {
       } else if (isNaN(roundStartDate.getTime())) {
         newErrors[`round${index}StartDate`] = `Round ${index + 1} start date is invalid`;
       } else if (formData.startDate && roundStartDate < startDate) {
-        newErrors[`round${index}StartDate`] = `Round ${index + 1} start date cannot be before hackathon start date`;
+        newErrors[`round${index}StartDate`] = `Round ${index + 1} start date cannot be before case study start date`;
       }
       
       if (!round.endDate) {
@@ -323,7 +323,7 @@ const HostHackathon = () => {
       } else if (round.startDate && roundEndDate <= roundStartDate) {
         newErrors[`round${index}EndDate`] = `Round ${index + 1} end date must be after start date`;
       } else if (formData.endDate && roundEndDate > endDate) {
-        newErrors[`round${index}EndDate`] = `Round ${index + 1} end date cannot be after hackathon end date`;
+        newErrors[`round${index}EndDate`] = `Round ${index + 1} end date cannot be after case study end date`;
       }
       
       if (round.description && round.description.length > 1000) {
@@ -399,7 +399,7 @@ const HostHackathon = () => {
         panelMembers,
       };
       const response = await axios.post(
-        `${backendUrl}/hackathon/create`,
+        `${backendUrl}/casestudy/create`,
         payload,
         {
           headers: {
@@ -410,16 +410,16 @@ const HostHackathon = () => {
       );
   
       if (response.status === 201 || response.status === 200) {
-        toast.success("Hackathon created successfully!");
-        console.log("Hackathon created successfully:", response.data);
+        toast.success("Case study created successfully!");
+        console.log("Case study created successfully:", response.data);
   
         // Navigate back to company profile/dashboard
         navigate("/company-profile");
       }
      } catch (err) {
        const errorMessage =
-         err.response?.data?.message || "Failed to create hackathon.";
-       console.error("Error creating hackathon:", err);
+         err.response?.data?.message || "Failed to create case study.";
+       console.error("Error creating case study:", err);
        toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -518,10 +518,10 @@ const HostHackathon = () => {
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-3 mb-4">
             <Trophy className="h-8 w-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Host a Hackathon</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Host a Case Study</h1>
           </div>
           <p className="text-gray-600">
-            Create an exciting hackathon event to engage with talented developers and innovators.
+            Create an engaging case study event to challenge participants with real-world business problems.
           </p>
         </div>
 
@@ -540,7 +540,7 @@ const HostHackathon = () => {
                   {/*Title*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Hackathon Title 
+                      Case Study Title 
                     </label>
                     <input
                       type="text"
@@ -550,14 +550,14 @@ const HostHackathon = () => {
                       className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500  ${
                         errors.title ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="Enter hackathon title"
+                      placeholder="Enter case study title"
                     />
                     {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
                   </div>
                   {/*Subtitle*/}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Hackathon Sub-Title 
+                      Case Study Sub-Title 
                     </label>
                     <input
                       type="text"
@@ -567,7 +567,7 @@ const HostHackathon = () => {
                       className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                         errors.subTitle ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="Enter hackathon sub-title"
+                      placeholder="Enter case study sub-title"
                     />
                     {errors.subTitle && <p className="text-red-500 text-sm mt-1">{errors.subTitle}</p>}
                   </div>
@@ -682,7 +682,7 @@ const HostHackathon = () => {
                     className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       errors.description ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder="Describe your hackathon, themes, and what participants can expect..."
+                    placeholder="Describe your case study, themes, and what participants can expect..."
                   />
                   {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
                 </div>
@@ -756,7 +756,7 @@ const HostHackathon = () => {
                     onChange={handleInputChange}
                     rows={3}
                     className="w-full px-3 py-2 bg-white text-black border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Specify who can participate in this hackathon..."
+                    placeholder="Specify who can participate in this case study..."
                   />
                 </div>
               </div>
@@ -958,7 +958,7 @@ const HostHackathon = () => {
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
                   <Clock className="h-5 w-5" />
-                  Hackathon Rounds
+                  Case Study Rounds
                 </h2>
                 
                 <div className="space-y-6">
@@ -1480,7 +1480,7 @@ const HostHackathon = () => {
                   onChange={handleInputChange}
                   rows={3}
                   className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Hackathon rules, submission guidelines, etc."
+                  placeholder="Case study rules, submission guidelines, etc."
                 />
               </div>
 
@@ -1494,7 +1494,7 @@ const HostHackathon = () => {
                   value={formData.website}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://your-hackathon-website.com"
+                  placeholder="https://your-casestudy-website.com"
                 />
               </div>
 
@@ -1535,7 +1535,7 @@ const HostHackathon = () => {
               ) : (
                 <>
                   <Trophy className="h-4 w-4" />
-                  Create Hackathon
+                  Create Case Study
                 </>
               )}
             </button>
@@ -1550,4 +1550,4 @@ const HostHackathon = () => {
   );
 };
 
-export default HostHackathon;
+export default HostCasestudies;

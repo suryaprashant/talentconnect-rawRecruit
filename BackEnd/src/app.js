@@ -54,6 +54,7 @@ import Application from "./routes/applicationRoute.js";
 import Resume from "./routes/resumeRoute.js";
 import Hackathon from "./routes/hackathonRoute.js";
 import Casestudy from "./routes/casestudyRoute.js";
+import Casestudy from "./routes/casestudyRoute.js";
 import Workshop from "./routes/workshopRoute.js";
 import eventParticipation from "./Routes/eventParticipationRoute.js";
 
