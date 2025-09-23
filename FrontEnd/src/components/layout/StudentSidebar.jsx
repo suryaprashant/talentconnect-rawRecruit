@@ -59,10 +59,10 @@ function StudentSidebar({ activePath }) {
       </SidebarNavGroup>
       <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>
         <SidebarNavItem 
-          to="/student-events/case-studies" 
+          to="/student-events/casestudy" 
           icon={<FiBookmark />} 
           label="Case Studies" 
-          active={activePath === '/student-events/case-studies'} 
+          active={activePath === '/student-events/casestudy'} 
         />
         <SidebarNavItem 
           to="/student-events/hackathon" 

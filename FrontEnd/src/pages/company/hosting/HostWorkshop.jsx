@@ -232,7 +232,7 @@ const HostWorkshop = () => {
 
       // Debug logging
       console.log('Backend URL:', backendUrl);
-      console.log('Full API endpoint:', `${backendUrl}/api/hosting/workshop/create`); // Updated endpoint
+      console.log('Full API endpoint:', `${backendUrl}/workshop/create`); // Updated endpoint
       console.log('Request payload:', JSON.stringify(payload, null, 2));
       console.log('Request headers:', {
         "Content-Type": "application/json",
@@ -240,7 +240,7 @@ const HostWorkshop = () => {
       });
 
       const response = await axios.post(
-        `${backendUrl}/api/hosting/workshop/create`, // Updated endpoint
+        `${backendUrl}/workshop/create`, // Updated endpoint
         payload,
         {
           headers: {

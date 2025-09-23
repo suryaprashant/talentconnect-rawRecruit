@@ -4,15 +4,17 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 // import { events } from '@/constants/hackthonData';
 
 const EventDetail = () => {
-  const { id } = useParams();
+  const { id,event_name } = useParams();
+  // console.log("id is ",id ,"and event name is ", event_name);
+  
   const navigate = useNavigate();
   // const event = events.find(h => h.id === parseInt(id));
   const [event, setEvent] = useState();
 
   const getEvent = async () => {
     try {
-      const response = await getEventDetail(id);
-      console.log(response.data.data);
+      const response = await getEventDetail(id,event_name);
+      // console.log(response.data.data);
       
       setEvent(response.data.data);
     } catch (error) {
@@ -31,7 +33,7 @@ const EventDetail = () => {
       <div className="container mx-auto px-4 py-16 text-center">
         <h2 className="text-2xl font-bold mb-4">Event not found </h2>
         <button
-          onClick={() => navigate('/student-events/hackathon')}
+          onClick={() => navigate('/student-events/work-shop')}
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
         >
           Back to Events
@@ -66,7 +68,7 @@ const EventDetail = () => {
 
         <div className="flex flex-wrap gap-4 mt-4">
           <button className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800"
-            onClick={() => navigate(`/student-events/hackathon/register/${id}`)}>
+            onClick={() => navigate(`/student-events/${event_name}/register/${id}`)}>
             Register Now
           </button>
           <button className="border border-gray-300 px-6 py-2 rounded-md flex items-center hover:bg-gray-50">

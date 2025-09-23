@@ -1,12 +1,12 @@
 import React from 'react';
 import EventList from '@/components/student/events/EventList';
 
-const WorkShop = () => {
+const CaseStudy = () => {
   return (
     <div className='bg-white'>
-      <EventList event_name="workshop" />
+      <EventList event_name="casestudy" />
     </div>
   );
 };
 
-export default WorkShop;
+export default CaseStudy;

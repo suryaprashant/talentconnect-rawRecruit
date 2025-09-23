@@ -1,26 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import EventCard from './EventCard';
 import SearchBar from './SearchBar';
-import { getEvents } from '@/lib/User_AxiosInstance';
+import { getWorkShops, getCaseStudy, getHackathons } from '@/lib/User_AxiosInstance';
 import { useParams} from 'react-router-dom';
 // import { Events } from '@/constants/hackthonData';
 
-const EventList = () => {
-  const { event_name } = useParams();
+const EventList = ({event_name}) => {
   const [events, setEvents] = useState();
   const [filteredEvents, setFilteredEvents] = useState();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('');
 
   const loadEvents = async () => {
-    try {
-      const response = await getEvents();
-      // console.log("loaded", response);
-      setEvents(response.data.data);
-    } catch (error) {
-      console.log("Error: ", error);
+  try {
+    // console.log(event_name,"is event name");
+    
+    let response; 
+    switch(event_name){
+      case 'hackathon':
+        response = await getHackathons();
+        // console.log("hackathon",response);
+        break;
+      case 'workshop':
+        response = await getWorkShops();
+        // console.log("WorkShop");
+        break;
+      case 'casestudy':
+        response = await getCaseStudy();
+        break;
+      default:
+        response = await getHackathons();
+        break;
     }
+
+    setEvents(response.data.data); 
+    setFilteredEvents(response.data.data); 
+  } catch (error) {
+    console.log("Error: ", error);
   }
+}
+
   useEffect(() => {
     loadEvents();
   }, []);
@@ -43,7 +62,7 @@ const EventList = () => {
     }
 
     setFilteredEvents(filtered);
-  }, [searchTerm, sortBy]);
+  }, [searchTerm, sortBy, events]);
 
   const handleSearch = (term) => {
     setSearchTerm(term);
@@ -61,8 +80,8 @@ const EventList = () => {
       <SearchBar onSearch={handleSearch} onSort={handleSort} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {events?.map(event => (
-          <EventCard key={event._id} event={event} />
+        {events?.map(event => ( //{filteredEvents?.map(event => ( //
+          <EventCard key={event._id} event={event} event_name={event_name} />
         ))}
       </div>
     </div>

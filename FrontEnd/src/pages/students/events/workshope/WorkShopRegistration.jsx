@@ -6,7 +6,7 @@ import EventRegistration from '@/pages/EventRegistration';
 const WorkShopRegistration = () => {
   return (
     <div className='bg-white'>
-      <EventRegistration/>  
+      <EventRegistration event_name="workshop"/>  
     </div>
   );
 };

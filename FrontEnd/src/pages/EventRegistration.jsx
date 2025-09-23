@@ -10,8 +10,10 @@ const dummyParticipants = [
   { teamMemberId: "68c96e21ae6c1d433000a004", name: "Diana Prince", email: "diana@example.com" },
 ];
 
-const EventRegistration = () => {
-  const { event_ID } = useParams();
+const EventRegistration = () => {  
+  const { event_ID ,event_name} = useParams();
+  // console.log(event_ID," and ",event_name);
+  
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -103,7 +105,7 @@ const EventRegistration = () => {
       if (response.status === 200 || response.status === 201) {
         alert("Request submitted successfully!");
         setTimeout(() => {
-          navigate(`/${localStorage.getItem('selectedRole')}-events/hackathon/${event_ID}`);
+          navigate(`/${localStorage.getItem('selectedRole')}-events/${event_name}/${event_ID}`);
         }, 1);
       }
     } catch (err) {

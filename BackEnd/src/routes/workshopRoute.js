@@ -9,7 +9,7 @@ import {
 
 const router = express.Router();
 
-// Base route: '/api/hosting/workshop'
+// Base route: '/workshop'
 router.post('/create', createWorkshop);
 router.get('/', getWorkshops);
 router.get('/:id', getWorkshop);
