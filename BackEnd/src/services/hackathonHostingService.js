@@ -1,4 +1,4 @@
-import Hackathon from "../models/hackathonHostingModel.js";
+import Hackathon from "../models/hackathonModel.js";
 import { v2 as cloudinary } from 'cloudinary';
 
 /**
