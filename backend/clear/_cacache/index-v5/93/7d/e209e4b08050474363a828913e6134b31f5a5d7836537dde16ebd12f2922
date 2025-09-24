@@ -1,2 +1,0 @@
-
-50e3f184b511464a43050783008ec58dede28978	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/find-replace/-/find-replace-5.0.2.tgz","integrity":null,"time":1757445488521,"size":"0","metadata":{"time":1757445488521,"url":"http://registry.npmjs.org/find-replace/-/find-replace-5.0.2.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 09 Sep 2025 19:18:08 GMT","location":"https://registry.npmjs.org/find-replace/-/find-replace-5.0.2.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

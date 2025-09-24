@@ -1,2 +1,0 @@
-
-3e2f3b2805a4d5d5dd944bf247706327baf4a6d7	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/jsonwebtoken","integrity":null,"time":1758717970670,"size":"0","metadata":{"time":1758717970670,"url":"http://registry.npmjs.org/jsonwebtoken","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Wed, 24 Sep 2025 12:46:08 GMT","location":"https://registry.npmjs.org/jsonwebtoken","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

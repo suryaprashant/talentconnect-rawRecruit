@@ -1,2 +1,0 @@
-
-3dc6dbaebc5e4d4708e2096dce7089838d0d084b	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/validator","integrity":null,"time":1758053043467,"size":"0","metadata":{"time":1758053043467,"url":"http://registry.npmjs.org/validator","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 16 Sep 2025 20:04:03 GMT","location":"https://registry.npmjs.org/validator","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

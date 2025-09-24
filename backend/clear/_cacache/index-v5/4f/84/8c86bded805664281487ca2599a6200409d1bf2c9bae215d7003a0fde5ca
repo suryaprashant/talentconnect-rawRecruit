@@ -1,2 +1,0 @@
-
-7b3f41637afc4458f4495ed6cd5f68838cb147c9	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/sift/-/sift-17.1.3.tgz","integrity":null,"time":1757078798450,"size":"0","metadata":{"time":1757078798449,"url":"http://registry.npmjs.org/sift/-/sift-17.1.3.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Fri, 05 Sep 2025 13:26:36 GMT","location":"https://registry.npmjs.org/sift/-/sift-17.1.3.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

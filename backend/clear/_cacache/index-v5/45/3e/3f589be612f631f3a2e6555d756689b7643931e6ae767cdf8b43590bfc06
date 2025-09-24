@@ -1,2 +1,0 @@
-
-e2639b35fdbd9739edd01515ad91dbee4d4b6ff3	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/cookie-parser/-/cookie-parser-1.4.7.tgz","integrity":null,"time":1757078800439,"size":"0","metadata":{"time":1757078800439,"url":"http://registry.npmjs.org/cookie-parser/-/cookie-parser-1.4.7.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Fri, 05 Sep 2025 13:26:38 GMT","location":"https://registry.npmjs.org/cookie-parser/-/cookie-parser-1.4.7.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

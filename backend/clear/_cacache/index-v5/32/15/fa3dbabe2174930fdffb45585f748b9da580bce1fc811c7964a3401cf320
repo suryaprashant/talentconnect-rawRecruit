@@ -1,2 +1,0 @@
-
-604a8488e5a5c0f4a1facd0fa7a73503819e82c0	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@sendgrid/mail/-/mail-8.1.5.tgz","integrity":null,"time":1757078801287,"size":"0","metadata":{"time":1757078801287,"url":"http://registry.npmjs.org/@sendgrid/mail/-/mail-8.1.5.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Fri, 05 Sep 2025 13:26:39 GMT","location":"https://registry.npmjs.org/@sendgrid/mail/-/mail-8.1.5.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
