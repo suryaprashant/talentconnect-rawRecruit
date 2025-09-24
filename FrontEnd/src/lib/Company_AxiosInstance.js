@@ -128,20 +128,20 @@ export function getAcceptedCandidateByCompany(applicantType, jobType) {
 }
 
 // shortlist candidate
-export function shortlistCandidate(applicationId, jobRole, companyName) {
-  return axiosClient.patch(`/application/manage/shortlist/${applicationId}`, { jobRole, companyName })
+export function shortlistCandidate(applicationId, jobRole) {
+  return axiosClient.patch(`/application/manage/shortlist/${applicationId}`, { jobRole })
     .then(response => response)
     .catch(error => error);
 }
 // reject
-export function rejectCandidate(applicationId) {
-  return axiosClient.patch(`/application/manage/reject/${applicationId}`)
+export function rejectCandidate(applicationId,jobRole) {
+  return axiosClient.patch(`/application/manage/reject/${applicationId}`,{ jobRole })
     .then(response => response)
     .catch(error => error);
 }
 // accept candidate
-export function acceptCandidate(applicationId) {
-  return axiosClient.patch(`/application/manage/accept/${applicationId}`)
+export function acceptCandidate(applicationId,jobRole) {
+  return axiosClient.patch(`/application/manage/accept/${applicationId}`,{ jobRole })
     .then(response => response)
     .catch(error => error);
 }

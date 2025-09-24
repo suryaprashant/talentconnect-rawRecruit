@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
   Search, Eye, Edit, Users, FileText, Trash,
-  ChevronLeft, ChevronRight, Filter, X
+  ChevronLeft, ChevronRight, Filter
 } from 'lucide-react';
 import ApplicantDetails from './ApplicantDetails';
 import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';

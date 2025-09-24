@@ -376,17 +376,16 @@ export async function getCollegeApplicationsByJob(req, res) {
 // shortlist/accept candidate/college
 export async function shortlistApplicant(req, res) {
     const { applicationId } = req.params;
-    const { jobRole, companyName } = req.body;
+    const { jobRole } = req.body;
     if (!applicationId) return res.status(404).json({ msg: "Application not found!" });
     try {
         const response = await ChangeStatusService(applicationId, "Shortlisted");
 
         if (response.success === true) {
-
             // service -> send mail to candidate
             const candidateMail = await getCandidatEmail(response.data.applicant);
             if (candidateMail.success) {
-                await sendStatusChangeEmail(candidateMail.email, response.data.currentStatus, response.data._id, jobRole, companyName);
+                await sendStatusChangeEmail(candidateMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
             }
 
             return res.status(200).json(response);
@@ -400,13 +399,19 @@ export async function shortlistApplicant(req, res) {
 
 export async function rejectApplicant(req, res) {
     const { applicationId } = req.params;
+    const { jobRole } = req.body;
     if (!applicationId) return res.status(404).json({ msg: "Application not found!" });
     try {
         const response = await ChangeStatusService(applicationId, "Rejected");
 
-        // service -> send mail to candidate
+        if (response.success === true) {
+            const candidateMail = await getCandidatEmail(response.data.applicant);
+            if (candidateMail.success) {
+                await sendStatusChangeEmail(candidateMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
+            }
 
-        if (response.success === true) return res.status(200).json(response);
+            return res.status(200).json(response);
+        }
         return res.status(404).json(response);
     } catch (error) {
         console.log("Error: ", error);
@@ -416,13 +421,18 @@ export async function rejectApplicant(req, res) {
 
 export async function acceptApplicant(req, res) {
     const { applicationId } = req.params;
+    const { jobRole } = req.body;
     if (!applicationId) return res.status(404).json({ msg: "Application not found!" });
     try {
         const response = await ChangeStatusService(applicationId, "Accepted");
 
-        // service -> send mail to candidate
-
-        if (response.success === true) return res.status(200).json(response);
+        if (response.success === true) {
+            const candidateMail = await getCandidatEmail(response.data.applicant);
+            if (candidateMail.success) {
+                await sendStatusChangeEmail(candidateMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
+            }
+            return res.status(200).json(response);
+        }
         return res.status(404).json(response);
     } catch (error) {
         console.log("Error: ", error);

@@ -1,13 +1,12 @@
 
 import { useState, useEffect } from 'react';
 import { Search, Eye, ChevronLeft, ChevronRight, Trash } from 'lucide-react';
-import axios from 'axios';
+// import axios from 'axios';
 import CollegeRequestDetail from './CollegeRequestDetail';
 import { acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 // import { format, isValid } from 'date-fns';
 
-const API_BASE_URL = import.meta.env.VITE_Backend_URL;
 
 // Helper function to safely format dates
 // const safeFormatDate = (dateString, formatStr = 'MMM d, yyyy') => {
@@ -70,13 +69,13 @@ export default function OnCampusJobManagement() {
       switch (status) {
         case "Shortlisted":
           console.log("res")
-          response = await shortlistCandidate(applicationId);
+          response = await shortlistCandidate(applicationId, jobs?.jobRoles);
           break;
         case "Rejected":
-          response = await rejectCandidate(applicationId);
+          response = await rejectCandidate(applicationId, jobs?.jobRoles);
           break;
         case "Accepted":
-          response = await acceptCandidate(applicationId);
+          response = await acceptCandidate(applicationId, jobs?.jobRoles);
           break;
         default:
           alert("Invalid Action!");
@@ -108,7 +107,7 @@ export default function OnCampusJobManagement() {
     fetchJobs();
   }, []);
 
-  const filteredJobs = jobs.filter(job => {
+  const filteredJobs = jobs?.filter(job => {
     const searchLower = searchQuery.toLowerCase();
     const locationsMatch = Array.isArray(job.location)
       ? job.location.some(location =>
@@ -122,14 +121,14 @@ export default function OnCampusJobManagement() {
     );
   });
 
-  const totalItems = filteredJobs.length;
+  const totalItems = filteredJobs?.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentJobs = filteredJobs.slice(startIndex, startIndex + itemsPerPage);
+  const currentJobs = filteredJobs?.slice(startIndex, startIndex + itemsPerPage);
   // console.log("currentJobs: ", currentJobs);
 
   const handleViewColleges = (job) => {
-    if (job.applicationCount === 0) {
+    if (job?.applicationCount === 0) {
       alert("No colleges have applied for this drive yet.");
       return;
     }
@@ -161,10 +160,10 @@ export default function OnCampusJobManagement() {
 
           <div className="mb-4">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Applications for: {selectedJob.lookingFor || 'N/A'}
+              Applications for: {selectedJob?.lookingFor || 'N/A'}
             </h2>
             <p className="text-gray-600 capitalize">
-              {displayLocations(selectedJob.location)} • {selectedJob.employmentType || 'N/A Type'}
+              {displayLocations(selectedJob?.location)} • {selectedJob?.employmentType || 'N/A Type'}
             </p>
           </div>
           {collegesLoading ? (
@@ -176,7 +175,7 @@ export default function OnCampusJobManagement() {
             <div className="p-4 text-red-700 bg-red-100 border border-red-200 rounded-md m-4">
               Error: {error}
             </div>
-          ) : colleges.length === 0 ? (
+          ) : colleges?.length === 0 ? (
             <div className="p-8 text-center text-gray-500 bg-white rounded-lg shadow-sm">
               No colleges have applied for this drive yet.
             </div>
@@ -249,7 +248,7 @@ export default function OnCampusJobManagement() {
                       <p className="mt-4 text-gray-600">Loading drives...</p>
                     </td>
                   </tr>
-                ) : currentJobs.length === 0 ? (
+                ) : currentJobs?.length === 0 ? (
                   <tr>
                     <td colSpan="5" className="text-center py-8 text-gray-500">
                       No drives found matching your criteria.

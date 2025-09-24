@@ -24,7 +24,7 @@ const InternshipDetails = ({ job, onClose }) => {
 
   const acceptApplicant = async (applicantionId) => {
     try {
-      const response = await acceptCandidate(applicantionId);
+      const response = await acceptCandidate(applicantionId, job?.jobTitle);
       // console.log("shortlist: ", response)
       if (response?.data?.success === true) toast.success("Accpeted!");
       else toast.error(response.response?.data?.msg);
@@ -36,7 +36,7 @@ const InternshipDetails = ({ job, onClose }) => {
 
   const shortlistApplicant = async (applicantionId) => {
     try {
-      const response = await shortlistCandidate(applicantionId);
+      const response = await shortlistCandidate(applicantionId, job?.jobTitle);
       if (response?.data?.success === true) toast.success("Shortlisted!");
       else toast.error(response.response?.data?.msg);
     } catch (error) {
@@ -47,10 +47,12 @@ const InternshipDetails = ({ job, onClose }) => {
 
   const rejectApplicant = async (applicantionId) => {
     try {
-      const response = await rejectCandidate(applicantionId);
-      if (response.success === true) alert("Rejected!");
+      const response = await rejectCandidate(applicantionId, job?.jobTitle);
+      if (response?.data?.success === true) toast.success("Rejected!");
+      else toast.error(response.response?.data?.msg);
     } catch (error) {
       console.log("Error: ", error);
+      toast.error('Something went wrong!')
     }
   }
 
