@@ -1,11 +1,12 @@
 import Casestudy from "../models/casestudyModel.js";
 import { v2 as cloudinary } from 'cloudinary';
+import EventRegistration from '../models/eventParticipationDetails.js'
 
 /**
  * Service class for handling case study-related business logic
  */
 class CasestudyService {
-    
+
     /**
      * Create a new case study
      * @param {Object} casestudyData - The case study data from request body
@@ -199,10 +200,17 @@ class CasestudyService {
      * @returns {Array} Array of case studies
      */
     async getAllCasestudies() {
-        const casestudies = await Casestudy.find()
-            .sort('-createdAt');
-
-        return casestudies;
+        const casestudies = await Casestudy.find().sort('-createdAt');
+        const casestudiesWithRegistrations = await Promise.all(
+            casestudies.map(async (casestudy) => {
+                const count = await EventRegistration.countDocuments({ eventID: casestudy._id });
+                return {
+                    ...casestudy.toObject(),
+                    registeredUsers: count
+                };
+            })
+        );
+        return casestudiesWithRegistrations;
     }
 
     /**
@@ -231,11 +239,11 @@ class CasestudyService {
      */
     _transformRewardsData(rewards) {
         const rewardsAndBenefits = [];
-        
+
         if (!rewards) return rewardsAndBenefits;
 
         const isAmount = rewards?.rewardType === 'Amount';
-        
+
         // Add main prizes
         if (rewards.firstPlace) {
             rewardsAndBenefits.push({
@@ -245,7 +253,7 @@ class CasestudyService {
                 amount: isAmount ? parseInt(rewards.firstPlace) : undefined,
             });
         }
-        
+
         if (rewards.secondPlace) {
             rewardsAndBenefits.push({
                 title: '2nd Place',
@@ -254,7 +262,7 @@ class CasestudyService {
                 amount: isAmount ? parseInt(rewards.secondPlace) : undefined,
             });
         }
-        
+
         if (rewards.thirdPlace) {
             rewardsAndBenefits.push({
                 title: '3rd Place',
@@ -350,14 +358,14 @@ class CasestudyService {
      */
     _normalizeFaqs(faqs) {
         let normalizedFaqs = this._normalizeJsonInput(faqs, []);
-        
+
         // Filter out empty FAQ entries
         if (Array.isArray(normalizedFaqs)) {
             normalizedFaqs = normalizedFaqs.filter(f => f.question && f.answer);
         } else {
             normalizedFaqs = [];
         }
-        
+
         return normalizedFaqs;
     }
 
@@ -368,14 +376,14 @@ class CasestudyService {
      */
     _normalizePanelMembers(panelMembers) {
         let normalizedPanelMembers = this._normalizeJsonInput(panelMembers, []);
-        
+
         // Ensure all panel member IDs are valid ObjectIds (as strings)
         if (Array.isArray(normalizedPanelMembers)) {
             normalizedPanelMembers = normalizedPanelMembers.filter(id => !!id);
         } else {
             normalizedPanelMembers = [];
         }
-        
+
         return normalizedPanelMembers;
     }
 
@@ -386,7 +394,7 @@ class CasestudyService {
      */
     _normalizeDomains(domains) {
         let normalizedDomains = domains;
-        
+
         if (typeof domains === 'string') {
             normalizedDomains = domains.split(',').map(domain => domain.trim()).filter(domain => domain);
         } else if (Array.isArray(domains)) {
@@ -394,7 +402,7 @@ class CasestudyService {
         } else {
             normalizedDomains = [];
         }
-        
+
         return normalizedDomains;
     }
 }

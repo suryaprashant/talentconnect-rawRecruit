@@ -41,7 +41,7 @@ const EventCard = ({ event_name,event }) => {
                 <span>{new Date(event.startDate).toLocaleDateString()}</span>
                 <span className="mx-2">•</span>
                 {/* <span>{event.prizes?.join(', ')}</span> */}
-                <span>Cash and Swags</span>
+                <span>{event.rewardsAndBenefits.length > 0 && event.rewardsAndBenefits[0].amount? `₹${event.rewardsAndBenefits[0].amount}`: "Exciting Prizes"}</span>
                 <span className="mx-2">•</span>
                 <span>{event.registeredUsers} Users Registered</span>
               </div>

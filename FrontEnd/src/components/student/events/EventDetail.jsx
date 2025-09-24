@@ -29,14 +29,15 @@ const EventDetail = () => {
   const [expandedFaq, setExpandedFaq] = useState(null);
 
   if (!event) {
+    let nameofEvent= event_name=="workshop"?"work-shop":event_name;
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h2 className="text-2xl font-bold mb-4">Event not found </h2>
         <button
-          onClick={() => navigate('/student-events/work-shop')}
+          onClick={() => navigate(`/student-events/${nameofEvent}`)}
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
         >
-          Back to Events
+          Back to {nameofEvent}
         </button>
       </div>
     );

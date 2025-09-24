@@ -10,11 +10,26 @@ const dummyParticipants = [
   { teamMemberId: "68c96e21ae6c1d433000a004", name: "Diana Prince", email: "diana@example.com" },
 ];
 
-const EventRegistration = () => {  
-  const { event_ID ,event_name} = useParams();
+const EventRegistration = () => {
+  const { event_ID, event_name } = useParams();
   // console.log(event_ID," and ",event_name);
-  
+
   const navigate = useNavigate();
+  const [event, setEvent] = useState();
+
+  const getEvent = async () => {
+    try {
+      const response = await getEventDetail(id, event_name);
+      // console.log(response.data.data);
+
+      setEvent(response.data.data);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
+  useEffect(() => {
+    getEvent();
+  }, [])
 
   const [formData, setFormData] = useState({
     teamLeaderId: '',

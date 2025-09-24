@@ -282,7 +282,7 @@ function AppRoutes() {
               <Route path="/student-events/hackathon" element={<Hackathon/>} />
               {/* <Route path="/student-events/hackathon/:id" element={<Detail />} /> */}
               {/* <Route path="/student-events/hackathon/register/:event_ID" element={<HackathonRegistration />} /> */}
-              <Route path="/student-events/work-shope" element={<WorkShop/>} />
+              <Route path="/student-events/work-shop" element={<WorkShop/>} />
               <Route path="/student-events/:event_name/:id" element={<WorkShopDetailView />} />
               <Route path="/student-events/:event_name/register/:event_ID" element={<WorkShopRegistration />} />
               <Route path="/student-events/casestudy" element={<CaseStudy/>} />

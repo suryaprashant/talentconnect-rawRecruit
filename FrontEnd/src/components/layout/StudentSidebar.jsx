@@ -71,10 +71,10 @@ function StudentSidebar({ activePath }) {
           active={activePath === '/student-events/hackathon'} 
         />
         <SidebarNavItem 
-          to="/student-events/work-shope" 
+          to="/student-events/work-shop" 
           icon={<FiTool/>} 
           label="Work Shope" 
-          active={activePath === '/student-events/work-shope'} 
+          active={activePath === '/student-events/work-shop'} 
         />
       </SidebarNavGroup>
 
