@@ -1,0 +1,2 @@
+
+4088c2b8258ba035a462d75397820d8bb0d661f6	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/color-convert","integrity":null,"time":1757445487926,"size":"0","metadata":{"time":1757445487925,"url":"http://registry.npmjs.org/color-convert","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 09 Sep 2025 19:18:07 GMT","location":"https://registry.npmjs.org/color-convert","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

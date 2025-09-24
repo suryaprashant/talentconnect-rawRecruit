@@ -1,0 +1,2 @@
+
+8ae659e40d0154a9903fa29c272fd3fa401a29cf	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/agent-base/-/agent-base-7.1.3.tgz","integrity":null,"time":1757078801272,"size":"0","metadata":{"time":1757078801272,"url":"http://registry.npmjs.org/agent-base/-/agent-base-7.1.3.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Fri, 05 Sep 2025 13:26:39 GMT","location":"https://registry.npmjs.org/agent-base/-/agent-base-7.1.3.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

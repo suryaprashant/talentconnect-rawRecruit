@@ -1,0 +1,2 @@
+
+f72700894733c6f49d084c057e5a022126edb99f	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/yoctocolors-cjs/-/yoctocolors-cjs-2.1.2.tgz","integrity":null,"time":1756734440640,"size":"0","metadata":{"time":1756734440640,"url":"http://registry.npmjs.org/yoctocolors-cjs/-/yoctocolors-cjs-2.1.2.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Mon, 01 Sep 2025 13:45:03 GMT","location":"https://registry.npmjs.org/yoctocolors-cjs/-/yoctocolors-cjs-2.1.2.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

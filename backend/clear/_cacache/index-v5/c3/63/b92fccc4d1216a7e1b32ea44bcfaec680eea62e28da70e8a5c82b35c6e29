@@ -1,0 +1,2 @@
+
+c9de16abd93730e99f6cc0b3f769f12f710e00b1	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@mongodb-js/saslprep/-/saslprep-1.2.2.tgz","integrity":null,"time":1757078801901,"size":"0","metadata":{"time":1757078801901,"url":"http://registry.npmjs.org/@mongodb-js/saslprep/-/saslprep-1.2.2.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Fri, 05 Sep 2025 13:26:39 GMT","location":"https://registry.npmjs.org/@mongodb-js/saslprep/-/saslprep-1.2.2.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
