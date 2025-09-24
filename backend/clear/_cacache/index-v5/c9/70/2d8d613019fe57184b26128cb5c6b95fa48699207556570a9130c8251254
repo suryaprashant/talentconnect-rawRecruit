@@ -1,2 +1,0 @@
-
-59bca4e95facaa2b9774b20c0990eb5d32366ee3	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/chalk-template","integrity":null,"time":1757445485311,"size":"0","metadata":{"time":1757445485310,"url":"http://registry.npmjs.org/chalk-template","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 09 Sep 2025 19:18:04 GMT","location":"https://registry.npmjs.org/chalk-template","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

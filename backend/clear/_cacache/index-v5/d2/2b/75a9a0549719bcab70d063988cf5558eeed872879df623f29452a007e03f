@@ -1,2 +1,0 @@
-
-57530b7ce3de147229eea2c3706060ca627b2445	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/gtoken/-/gtoken-7.1.0.tgz","integrity":null,"time":1757078799662,"size":"0","metadata":{"time":1757078799662,"url":"http://registry.npmjs.org/gtoken/-/gtoken-7.1.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Fri, 05 Sep 2025 13:26:37 GMT","location":"https://registry.npmjs.org/gtoken/-/gtoken-7.1.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

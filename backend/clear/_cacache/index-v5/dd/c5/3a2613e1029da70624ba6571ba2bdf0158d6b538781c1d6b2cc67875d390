@@ -1,2 +1,0 @@
-
-ae83121a90ef3ce0349e31ca4210d1ed928a2ad3	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/wordwrapjs","integrity":null,"time":1757445486590,"size":"0","metadata":{"time":1757445486589,"url":"http://registry.npmjs.org/wordwrapjs","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 09 Sep 2025 19:18:06 GMT","location":"https://registry.npmjs.org/wordwrapjs","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

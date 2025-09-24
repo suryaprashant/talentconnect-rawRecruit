@@ -1,2 +1,0 @@
-
-7ff37b1fca101e927c2d1ecb2df82fc0c1b5eadb	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/apache-arrow","integrity":null,"time":1757445480929,"size":"0","metadata":{"time":1757445480928,"url":"http://registry.npmjs.org/apache-arrow","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 09 Sep 2025 19:18:00 GMT","location":"https://registry.npmjs.org/apache-arrow","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

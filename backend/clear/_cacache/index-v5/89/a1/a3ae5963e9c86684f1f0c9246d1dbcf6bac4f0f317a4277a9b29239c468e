@@ -1,2 +1,0 @@
-
-1f5ccb3fb420016beb03045283979d588beb720a	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/undici","integrity":null,"time":1757445483080,"size":"0","metadata":{"time":1757445483080,"url":"http://registry.npmjs.org/undici","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 09 Sep 2025 19:18:02 GMT","location":"https://registry.npmjs.org/undici","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
