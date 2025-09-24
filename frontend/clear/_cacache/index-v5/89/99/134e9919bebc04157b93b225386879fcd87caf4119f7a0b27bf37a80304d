@@ -1,2 +1,0 @@
-
-bd65e4057de9504ddb7ef6f899d2876a363667aa	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@radix-ui/rect/-/rect-1.1.1.tgz","integrity":null,"time":1756734317122,"size":"0","metadata":{"time":1756734317122,"url":"http://registry.npmjs.org/@radix-ui/rect/-/rect-1.1.1.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Mon, 01 Sep 2025 13:45:12 GMT","location":"https://registry.npmjs.org/@radix-ui/rect/-/rect-1.1.1.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

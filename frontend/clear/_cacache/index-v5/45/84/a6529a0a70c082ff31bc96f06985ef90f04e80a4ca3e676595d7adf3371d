@@ -1,2 +1,0 @@
-
-ebaefd3802b1d9b10d87e0f58735494a314b4c05	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/hasown/-/hasown-2.0.2.tgz","integrity":null,"time":1756734313304,"size":"0","metadata":{"time":1756734313304,"url":"http://registry.npmjs.org/hasown/-/hasown-2.0.2.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Mon, 01 Sep 2025 13:45:08 GMT","location":"https://registry.npmjs.org/hasown/-/hasown-2.0.2.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

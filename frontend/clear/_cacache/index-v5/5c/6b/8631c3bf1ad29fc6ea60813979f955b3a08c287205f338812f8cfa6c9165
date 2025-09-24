@@ -1,2 +1,0 @@
-
-f81b9c9d48a50a9167311249e65dcf1a93d921fa	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@isaacs/cliui/-/cliui-8.0.2.tgz","integrity":null,"time":1756734346185,"size":"0","metadata":{"time":1756734346185,"url":"http://registry.npmjs.org/@isaacs/cliui/-/cliui-8.0.2.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Mon, 01 Sep 2025 13:45:26 GMT","location":"https://registry.npmjs.org/@isaacs/cliui/-/cliui-8.0.2.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

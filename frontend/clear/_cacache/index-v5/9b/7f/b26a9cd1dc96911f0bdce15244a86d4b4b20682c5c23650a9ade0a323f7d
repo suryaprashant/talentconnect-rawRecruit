@@ -1,2 +1,0 @@
-
-a761a0024ceaf1a67897e4917b8db61185ddf912	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@babel/types/-/types-7.27.0.tgz","integrity":null,"time":1756734335161,"size":"0","metadata":{"time":1756734335161,"url":"http://registry.npmjs.org/@babel/types/-/types-7.27.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Mon, 01 Sep 2025 13:45:30 GMT","location":"https://registry.npmjs.org/@babel/types/-/types-7.27.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

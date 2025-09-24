@@ -1,2 +1,0 @@
-
-a637ba89af39db28789c6c73d72d2ca1b64d5b42	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz","integrity":null,"time":1756734312816,"size":"0","metadata":{"time":1756734312816,"url":"http://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Mon, 01 Sep 2025 13:45:07 GMT","location":"https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
