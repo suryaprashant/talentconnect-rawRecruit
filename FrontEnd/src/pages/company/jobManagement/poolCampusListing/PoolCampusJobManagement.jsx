@@ -62,7 +62,6 @@ export default function OnCampusJobManagement() {
       let response;
       switch (status) {
         case "Shortlisted":
-          // console.log("res")
           response = await shortlistCandidate(applicationId, jobs?.jobRoles);
           break;
         case "Rejected":
