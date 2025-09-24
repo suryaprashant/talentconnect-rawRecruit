@@ -222,6 +222,9 @@ import JobDetailForPool from "./pages/college/manageApplication/PoolCampusPlacem
 import InternshipListing from "./pages/company/jobManagement/internship/internahipListing";
 import IntershipListingPage from "./pages/company/shortlistedCollege/internship/InternshipListingPage";
 import AcceptedInternshipList from './pages/company/acceptedCollegeOrCandidate/internship/AcceptedInternshipList';
+import EventList from './components/student/events/EventList';
+import EventDetail from './components/student/events/EventDetail';
+import EventRegistration from './pages/EventRegistration';
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -283,6 +286,12 @@ function AppRoutes() {
               <Route path="/student-dashboard/hackathon/register/:event_ID" element={<HackathonRegistration />} />
               <Route path="/student-dashboard/Referral" element={<StudentReferralJobs />} />
               <Route path="/student-dashboard/Referral/:jobId" element={<StudentRefferalJobDetails />} />
+              {/* Student Events Routes */}
+              <Route path="/student-events/hackathon" element={<EventList event_name="hackathon" />} />
+              <Route path="/student-events/workshop" element={<EventList event_name="workshop" />} />
+              <Route path="/student-events/casestudy" element={<EventList event_name="casestudy" />} />
+              <Route path="/student-events/:event_name/:id" element={<EventDetail />} />
+              <Route path="/student-events/:event_name/register/:event_ID" element={<EventRegistration />} />
               {/* service request  */}
               <Route path='service-request/career-craft' element={<CareerCraft />} />
               <Route path='service-request/mock-interview' element={<MockInterview />} />
@@ -320,6 +329,12 @@ function AppRoutes() {
 
               <Route path="/fresher-dashboard/hackathon" element={<FresherHackathon />} />
               <Route path="/fresher-dashboard/hackathon/:id" element={<FresherDetail />} />
+              {/* Fresher Events Routes */}
+              <Route path="/fresher-events/hackathon" element={<EventList event_name="hackathon" />} />
+              <Route path="/fresher-events/workshop" element={<EventList event_name="workshop" />} />
+              <Route path="/fresher-events/casestudy" element={<EventList event_name="casestudy" />} />
+              <Route path="/fresher-events/:event_name/:id" element={<EventDetail />} />
+              <Route path="/fresher-events/:event_name/register/:event_ID" element={<EventRegistration />} />
               {/* service request  */}
               <Route path='/fresher-dashboard/service-request/career-craft' element={<FresherCareerCraft />} />
               <Route path='/fresher-dashboard/service-request/mock-interview' element={<FresherMockInterview />} />
@@ -348,6 +363,12 @@ function AppRoutes() {
               <Route path='professional/service-request/referral' element={<ManageReferralJobs />} />
               <Route path='professional/service-request/totalapplicants' element={<TotalApplicantsPage />} />
               <Route path='professional/service-request/applicant' element={<OffCampusApplicant />} />
+              {/* Professional Events Routes */}
+              <Route path="/professional-events/hackathon" element={<EventList event_name="hackathon" />} />
+              <Route path="/professional-events/workshop" element={<EventList event_name="workshop" />} />
+              <Route path="/professional-events/casestudy" element={<EventList event_name="casestudy" />} />
+              <Route path="/professional-events/:event_name/:id" element={<EventDetail />} />
+              <Route path="/professional-events/:event_name/register/:event_ID" element={<EventRegistration />} />
 
 
 

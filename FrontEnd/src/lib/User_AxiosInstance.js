@@ -72,9 +72,24 @@ export function getHackathons() {
     .then(response => response)
     .catch(error => error);
 }
+export function getWorkShops() {
+  return axiosClient.get(`/workshop`)
+    .then(response => response)
+    .catch(error => error);
+}
+export function getCaseStudy() {
+  return axiosClient.get(`/casestudy`)
+    .then(response => response)
+    .catch(error => error);
+}
 
 export function getHackathonDetail(hackathonId) {
   return axiosClient.get(`/hackathon/${hackathonId}`)
+    .then(response => response)
+    .catch(error => error);
+}
+export function getEventDetail(eventId,event_name) {
+  return axiosClient.get(`/${event_name}/${eventId}`)
     .then(response => response)
     .catch(error => error);
 }
@@ -155,4 +170,5 @@ export function getReferralJobById(referralJob) {
     .then(response => response)
     .catch(error => error);
 }
+
 
