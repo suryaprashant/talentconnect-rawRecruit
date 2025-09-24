@@ -4,10 +4,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-    service: "SendGrid",
+    service: "gmail",
     auth: {
-        user: "apikey",
-        pass: process.env.SENDGRID_API_KEY,
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
     },
 });
 
@@ -18,14 +18,14 @@ const transporter = nodemailer.createTransport({
  * @param {string} status - New application status
  * @param {string} [appId] - Optional application ID
  */
-const sendStatusChangeEmail = async (to, status, appId, jobRole, companyName) => {
+const sendStatusChangeEmail = async (to, status, appId, jobRole, companyName="") => {
     const mailOptions = {
         from: `<${process.env.MAIL_USER}>`,
         to,
-        subject: "Your Application Status Has Changed",
+        subject: "Your application status has changed",
         html: `
       <p>Dear Candidate,</p>
-      <p>Your application${appId ? ` (ID: ${appId})` : ''} for job-role: ${jobRole} at ${companyName} status has been updated to: <strong>${status}</strong>.</p>
+      <p>Your application${appId ? ` (ID: ${appId})` : ''} for job-role: ${jobRole} status has been updated to: <strong>${status}</strong>.</p>
       <p>Please log in to your account for more details.</p>
       <p>Thanks</p>
     `

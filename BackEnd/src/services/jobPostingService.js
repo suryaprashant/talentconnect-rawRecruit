@@ -5,7 +5,7 @@ export const createPostingService = async (postingData) => {
         const newPosting = new JobPostingTable(postingData);
         console.log("New Posting Data:", newPosting);
         const savedPosting = await newPosting.save();
-        console.log("Saved Posting Data:", savedPosting);
+        // console.log("Saved Posting Data:", savedPosting);
         return savedPosting;
     } catch (error) {
 
@@ -43,7 +43,7 @@ export const getJobPostingsByJobTypeService = async (jobType) => {
                 jobStatus: status
             };
         });
-        console.log("Updated Postings:", updatedPostings);
+        // console.log("Updated Postings:", updatedPostings);
         return updatedPostings;
     } catch (error) {
         console.error("Error in getJobPostingsByJobTypeService:", error.message);
@@ -80,7 +80,7 @@ export const getJobPostingsByCollegeService = async (jobType) => {
                 jobStatus: status
             };
         });
-        console.log("Updated Postings:", updatedPostings);
+        // console.log("Updated Postings:", updatedPostings);
         return updatedPostings;
     } catch (error) {
         console.error("Error in getJobPostingsByJobTypeService:", error.message);
@@ -128,7 +128,7 @@ export const getJobPostingsByCollegeService = async (jobType) => {
 export const getJobPostedByCompanyService = async (companyId, jobType) => {
     try {
         const response = await JobPostingTable.find({ companyPosted: companyId, jobType: jobType }).lean();
-         console.log(response);
+        //  console.log(response);
         return { success: true, response: response };
     } catch (error) {
         console.log("Error: ", error.message);

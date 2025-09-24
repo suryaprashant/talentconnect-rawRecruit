@@ -12,8 +12,7 @@ export async function getStudentService(studentId) {
 
 export async function getCandidatEmail(studentId) {
     try {
-        const student = await OnboardingModel.findOne({ userId: studentId }).lean();
-        console.log("student: ",student);
+        const student = await OnboardingModel.findOne({ _id: studentId }).lean();
         return { success: true, email: student.email };
     } catch (error) {
         console.log("Error: ", error.message);

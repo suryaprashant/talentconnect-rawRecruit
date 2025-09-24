@@ -108,7 +108,6 @@ export async function createApplicationService(userId, userType, jobId, jobType)
             });
             await newApplication.save();
 
-            console.log("new application: ", newApplication);
         }
 
         return { success: true, message: 'Application submited!' };

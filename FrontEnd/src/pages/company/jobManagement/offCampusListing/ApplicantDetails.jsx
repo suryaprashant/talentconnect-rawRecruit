@@ -25,7 +25,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
 
   const acceptApplicant = async (applicantionId) => {
     try {
-      const response = await acceptCandidate(applicantionId);
+      const response = await acceptCandidate(applicantionId, job?.jobRoles);
       // console.log("shortlist: ", response)
       if (response?.data?.success === true) toast.success("Accpeted!");
       else toast.error(response.response?.data?.msg);
@@ -37,7 +37,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
 
   const shortlistApplicant = async (applicantionId) => {
     try {
-      const response = await shortlistCandidate(applicantionId);
+      const response = await shortlistCandidate(applicantionId, job?.jobRoles);
       // console.log("shortlist: ", response)
       if (response?.data?.success === true) toast.success("Shortlisted!");
       else toast.error(response.response?.data?.msg);
@@ -49,7 +49,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
 
   const rejectApplicant = async (applicantionId) => {
     try {
-      const response = await rejectCandidate(applicantionId);
+      const response = await rejectCandidate(applicantionId, job?.jobRoles);
       if (response?.data?.success === true) toast.success("Rejected!");
       else toast.error(response.response?.data?.msg);
     } catch (error) {
