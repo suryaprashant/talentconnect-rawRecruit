@@ -1,11 +1,12 @@
 import Workshop from "../models/workshopModel.js";
 import { v2 as cloudinary } from 'cloudinary';
+import EventRegistration from '../models/eventParticipationDetails.js'
 
 /**
  * Service class for handling workshop-related business logic
  */
 class WorkshopService {
-    
+
     /**
      * Create a new workshop
      * @param {Object} workshopData - The workshop data from request body
@@ -199,11 +200,19 @@ class WorkshopService {
      * @returns {Array} Array of workshops
      */
     async getAllWorkshops() {
-        const workshops = await Workshop.find()
-            .sort('-createdAt');
-
-        return workshops;
+        const workshops = await Workshop.find().sort('-createdAt');
+        const workshopsWithRegistrations = await Promise.all(
+            workshops.map(async (workshop) => {
+                const count = await EventRegistration.countDocuments({ eventID: workshop._id });
+                return {
+                    ...workshop.toObject(),
+                    registeredUsers: count
+                };
+            })
+        );
+        return workshopsWithRegistrations;
     }
+
 
     /**
      * Get a single workshop by ID
@@ -231,11 +240,11 @@ class WorkshopService {
      */
     _transformRewardsData(rewards) {
         const rewardsAndBenefits = [];
-        
+
         if (!rewards) return rewardsAndBenefits;
 
         const isAmount = rewards?.rewardType === 'Amount';
-        
+
         // Add main prizes
         if (rewards.firstPlace) {
             rewardsAndBenefits.push({
@@ -245,7 +254,7 @@ class WorkshopService {
                 amount: isAmount ? parseInt(rewards.firstPlace) : undefined,
             });
         }
-        
+
         if (rewards.secondPlace) {
             rewardsAndBenefits.push({
                 title: '2nd Place',
@@ -254,7 +263,7 @@ class WorkshopService {
                 amount: isAmount ? parseInt(rewards.secondPlace) : undefined,
             });
         }
-        
+
         if (rewards.thirdPlace) {
             rewardsAndBenefits.push({
                 title: '3rd Place',
@@ -350,14 +359,14 @@ class WorkshopService {
      */
     _normalizeFaqs(faqs) {
         let normalizedFaqs = this._normalizeJsonInput(faqs, []);
-        
+
         // Filter out empty FAQ entries
         if (Array.isArray(normalizedFaqs)) {
             normalizedFaqs = normalizedFaqs.filter(f => f.question && f.answer);
         } else {
             normalizedFaqs = [];
         }
-        
+
         return normalizedFaqs;
     }
 
@@ -368,14 +377,14 @@ class WorkshopService {
      */
     _normalizePanelMembers(panelMembers) {
         let normalizedPanelMembers = this._normalizeJsonInput(panelMembers, []);
-        
+
         // Ensure all panel member IDs are valid ObjectIds (as strings)
         if (Array.isArray(normalizedPanelMembers)) {
             normalizedPanelMembers = normalizedPanelMembers.filter(id => !!id);
         } else {
             normalizedPanelMembers = [];
         }
-        
+
         return normalizedPanelMembers;
     }
 
@@ -386,7 +395,7 @@ class WorkshopService {
      */
     _normalizeDomains(domains) {
         let normalizedDomains = domains;
-        
+
         if (typeof domains === 'string') {
             normalizedDomains = domains.split(',').map(domain => domain.trim()).filter(domain => domain);
         } else if (Array.isArray(domains)) {
@@ -394,7 +403,7 @@ class WorkshopService {
         } else {
             normalizedDomains = [];
         }
-        
+
         return normalizedDomains;
     }
 }

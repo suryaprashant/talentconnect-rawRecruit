@@ -6,7 +6,7 @@ import EventRegistration from '@/pages/EventRegistration';
 const HackathonRegistration = () => {
   return (
     <div className='bg-white'>
-      <EventRegistration/>  
+      <EventRegistration event_name="hackathon"/>  
     </div>
   );
 };
