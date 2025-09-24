@@ -1,0 +1,2 @@
+
+04cf843dbea68b4bddd654cf57e5dc1d6bdb90bc	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/flat-cache/-/flat-cache-4.0.1.tgz","integrity":null,"time":1756734313856,"size":"0","metadata":{"time":1756734313855,"url":"http://registry.npmjs.org/flat-cache/-/flat-cache-4.0.1.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Mon, 01 Sep 2025 13:45:09 GMT","location":"https://registry.npmjs.org/flat-cache/-/flat-cache-4.0.1.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

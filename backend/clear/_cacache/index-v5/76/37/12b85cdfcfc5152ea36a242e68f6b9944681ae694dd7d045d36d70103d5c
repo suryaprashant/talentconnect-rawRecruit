@@ -1,0 +1,2 @@
+
+165a5702183d8d2e741ee851187722e15a913780	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@hapi/hoek/-/hoek-9.3.0.tgz","integrity":null,"time":1757078801900,"size":"0","metadata":{"time":1757078801900,"url":"http://registry.npmjs.org/@hapi/hoek/-/hoek-9.3.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Fri, 05 Sep 2025 13:26:39 GMT","location":"https://registry.npmjs.org/@hapi/hoek/-/hoek-9.3.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

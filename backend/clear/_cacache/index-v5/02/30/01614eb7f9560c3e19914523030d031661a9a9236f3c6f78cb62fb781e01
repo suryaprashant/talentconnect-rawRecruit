@@ -1,0 +1,2 @@
+
+ac39ee1f4cf3d678c08a9fe64b4a684456588afc	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/gcp-metadata/-/gcp-metadata-6.1.1.tgz","integrity":null,"time":1757078802273,"size":"0","metadata":{"time":1757078802273,"url":"http://registry.npmjs.org/gcp-metadata/-/gcp-metadata-6.1.1.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Fri, 05 Sep 2025 13:26:39 GMT","location":"https://registry.npmjs.org/gcp-metadata/-/gcp-metadata-6.1.1.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
