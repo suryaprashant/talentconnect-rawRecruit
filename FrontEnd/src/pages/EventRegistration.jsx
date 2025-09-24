@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { getEventDetail } from '@/lib/User_AxiosInstance';
 
 // Existing users (for email filter)
 const dummyParticipants = [
@@ -10,9 +11,26 @@ const dummyParticipants = [
   { teamMemberId: "68c96e21ae6c1d433000a004", name: "Diana Prince", email: "diana@example.com" },
 ];
 
-const EventRegistration = () => { 
-  const { event_ID } = useParams();
+const EventRegistration = () => {
+  const { event_ID, event_name } = useParams();
+  // console.log(event_ID," and ",event_name);
+
   const navigate = useNavigate();
+  const [event, setEvent] = useState();
+
+  const getEvent = async () => {
+    try {
+      const response = await getEventDetail(event_ID, event_name);
+      // console.log(response.data.data);
+
+      setEvent(response.data.data);
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }
+  useEffect(() => {
+    getEvent();
+  }, [])
 
   const [formData, setFormData] = useState({
     teamLeaderId: '',
@@ -103,7 +121,7 @@ const EventRegistration = () => {
       if (response.status === 200 || response.status === 201) {
         alert("Request submitted successfully!");
         setTimeout(() => {
-          navigate(`/${localStorage.getItem('selectedRole')}-dashboard/hackathon/${event_ID}`);
+          navigate(`/${localStorage.getItem('selectedRole')}-events/${event_name}/${event_ID}`);
         }, 1);
       }
     } catch (err) {
