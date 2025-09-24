@@ -1,2 +1,0 @@
-
-9a8a9370c708ad8cf11d219cdad610da14a630a4	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/motion-dom/-/motion-dom-12.9.1.tgz","integrity":null,"time":1756734311419,"size":"0","metadata":{"time":1756734311419,"url":"http://registry.npmjs.org/motion-dom/-/motion-dom-12.9.1.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Mon, 01 Sep 2025 13:45:06 GMT","location":"https://registry.npmjs.org/motion-dom/-/motion-dom-12.9.1.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

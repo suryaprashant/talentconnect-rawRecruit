@@ -1,2 +1,0 @@
-
-3b97a9c5d0cb5bec05f6a7358c09337a775d9c3e	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@grpc/proto-loader/-/proto-loader-0.7.15.tgz","integrity":null,"time":1756734333039,"size":"0","metadata":{"time":1756734333039,"url":"http://registry.npmjs.org/@grpc/proto-loader/-/proto-loader-0.7.15.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Mon, 01 Sep 2025 13:45:28 GMT","location":"https://registry.npmjs.org/@grpc/proto-loader/-/proto-loader-0.7.15.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

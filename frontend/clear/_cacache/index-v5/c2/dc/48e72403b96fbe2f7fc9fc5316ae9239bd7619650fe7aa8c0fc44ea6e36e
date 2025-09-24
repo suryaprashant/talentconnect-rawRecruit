@@ -1,2 +1,0 @@
-
-77b702dc4f0a66e47f4c5d38dd7d32ba49fdb789	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/proxy-from-env/-/proxy-from-env-1.1.0.tgz","integrity":null,"time":1756734310076,"size":"0","metadata":{"time":1756734310076,"url":"http://registry.npmjs.org/proxy-from-env/-/proxy-from-env-1.1.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Mon, 01 Sep 2025 13:45:05 GMT","location":"https://registry.npmjs.org/proxy-from-env/-/proxy-from-env-1.1.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
