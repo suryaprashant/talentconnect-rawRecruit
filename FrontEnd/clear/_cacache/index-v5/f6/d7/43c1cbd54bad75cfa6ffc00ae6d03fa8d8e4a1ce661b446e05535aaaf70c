@@ -1,0 +1,2 @@
+
+74ae256230a9977ba5e070aa274d22c512529dad	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/execa/-/execa-7.2.0.tgz","integrity":null,"time":1758794517867,"size":"0","metadata":{"time":1758794517867,"url":"http://registry.npmjs.org/execa/-/execa-7.2.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:57 GMT","location":"https://registry.npmjs.org/execa/-/execa-7.2.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

@@ -1,0 +1,2 @@
+
+857d8c1bbd3580b21f57360f61d7f9a0c1e78eb0	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/eventsource/-/eventsource-3.0.7.tgz","integrity":null,"time":1758794517872,"size":"0","metadata":{"time":1758794517871,"url":"http://registry.npmjs.org/eventsource/-/eventsource-3.0.7.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:57 GMT","location":"https://registry.npmjs.org/eventsource/-/eventsource-3.0.7.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

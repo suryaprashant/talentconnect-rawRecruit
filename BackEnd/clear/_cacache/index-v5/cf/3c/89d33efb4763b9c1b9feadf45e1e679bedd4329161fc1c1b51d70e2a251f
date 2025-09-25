@@ -1,0 +1,2 @@
+
+c8c7b854ea06706c54d1a7f27b94e813fbf95894	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/uuid/-/uuid-9.0.1.tgz","integrity":null,"time":1758794456669,"size":"0","metadata":{"time":1758794456669,"url":"http://registry.npmjs.org/uuid/-/uuid-9.0.1.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:00:56 GMT","location":"https://registry.npmjs.org/uuid/-/uuid-9.0.1.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

@@ -1,0 +1,2 @@
+
+0a720d89f51ecc5df1a5616f0461974f54d884ae	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@sideway/formula/-/formula-3.0.1.tgz","integrity":null,"time":1758794459955,"size":"0","metadata":{"time":1758794459954,"url":"http://registry.npmjs.org/@sideway/formula/-/formula-3.0.1.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:00:59 GMT","location":"https://registry.npmjs.org/@sideway/formula/-/formula-3.0.1.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

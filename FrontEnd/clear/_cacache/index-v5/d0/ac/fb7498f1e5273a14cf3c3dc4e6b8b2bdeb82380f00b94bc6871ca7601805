@@ -1,0 +1,2 @@
+
+07e11d3c320db7ada458dc391172c74f1089fb7e	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/pkce-challenge/-/pkce-challenge-5.0.0.tgz","integrity":null,"time":1758794515791,"size":"0","metadata":{"time":1758794515791,"url":"http://registry.npmjs.org/pkce-challenge/-/pkce-challenge-5.0.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:55 GMT","location":"https://registry.npmjs.org/pkce-challenge/-/pkce-challenge-5.0.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
