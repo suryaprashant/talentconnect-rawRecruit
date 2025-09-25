@@ -1,0 +1,2 @@
+
+77befbfcdc0219b5d38712b411a18eb3ea002874	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/kareem/-/kareem-2.6.3.tgz","integrity":null,"time":1758794457714,"size":"0","metadata":{"time":1758794457714,"url":"http://registry.npmjs.org/kareem/-/kareem-2.6.3.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:00:57 GMT","location":"https://registry.npmjs.org/kareem/-/kareem-2.6.3.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

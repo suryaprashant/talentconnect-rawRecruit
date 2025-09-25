@@ -1,0 +1,2 @@
+
+fc82931d96d9c92cdb80b48f0ac95f70db5aa7b7	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@antfu/ni/-/ni-23.3.1.tgz","integrity":null,"time":1758794521151,"size":"0","metadata":{"time":1758794521151,"url":"http://registry.npmjs.org/@antfu/ni/-/ni-23.3.1.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:02:00 GMT","location":"https://registry.npmjs.org/@antfu/ni/-/ni-23.3.1.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

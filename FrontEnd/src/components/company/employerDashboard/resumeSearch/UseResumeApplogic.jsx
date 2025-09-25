@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { parseResume } from '@/constants/parser';
 import { getProfileByResume } from '@/lib/Company_AxiosInstance';
 
 const useResumeAppLogic = () => {
   const [view, setView] = useState('search');
-  const [candidates, setCandidates] = useState([]);
   const [filters, setFilters] = useState({
     location: '',
     experience: '',
@@ -22,6 +21,9 @@ const useResumeAppLogic = () => {
       user5: false,
     },
   });
+
+   const [candidates, setCandidates] = useState([]);
+
 
   const handleFileUpload = async (event) => {
     const files = event.target.files;
@@ -43,9 +45,9 @@ const useResumeAppLogic = () => {
     setView('applications');
   };
 
-  const handleSearch = (searchParams) => {
-    // console.log('Searching with params:', searchParams);
-    getProfileByResume(searchParams);
+  const handleSearch = async (searchParams) => {
+    const results = await getProfileByResume(searchParams);
+    setCandidates(results.results);
     setView('applications');
   };
 
