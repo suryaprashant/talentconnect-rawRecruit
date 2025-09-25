@@ -1,0 +1,2 @@
+
+eb54b6687840f5cce4bb45ac61a3455e761a0997	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/yaml/-/yaml-2.8.1.tgz","integrity":null,"time":1758794512948,"size":"0","metadata":{"time":1758794512948,"url":"http://registry.npmjs.org/yaml/-/yaml-2.8.1.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:52 GMT","location":"https://registry.npmjs.org/yaml/-/yaml-2.8.1.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

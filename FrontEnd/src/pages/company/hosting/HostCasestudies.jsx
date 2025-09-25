@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Users, Trophy, Clock, DollarSign, FileText, Globe, Target, Plus, X } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { scrollToFirstError } from '../../../utils/scrollToError';
 
 const HostCasestudies = () => {
   const navigate = useNavigate();
@@ -60,6 +61,41 @@ const HostCasestudies = () => {
   const [faqs, setFaqs] = useState([{ question: '', answer: '' }]);
   const [panelMembers, setPanelMembers] = useState([]);
   const [panelInput, setPanelInput] = useState('');
+  const formRef = useRef(null);
+
+  // Decide which step an error belongs to
+  const determineErrorStep = (errs = {}) => {
+    const step2Keys = new Set([
+      'maxParticipants',
+      'maxTeams',
+      'minTeamMembers',
+      'maxTeamMembers',
+      'firstPlace',
+      'secondPlace',
+      'thirdPlace',
+      'website',
+      'requirements',
+      'rules',
+    ]);
+    for (const key of Object.keys(errs)) {
+      if (step2Keys.has(key)) return 2;
+    }
+    return 1; // default to step 1 for all other fields
+  };
+
+  // Scroll to the first error whenever validation errors are set
+  useEffect(() => {
+    if (errors && Object.keys(errors).length > 0) {
+      const targetStep = determineErrorStep(errors);
+      if (step !== targetStep) {
+        setStep(targetStep);
+        return; // wait for step UI to render, effect will run again
+      }
+      requestAnimationFrame(() => {
+        scrollToFirstError({ container: formRef.current || document, block: 'center' });
+      });
+    }
+  }, [errors, step]);
 
   // Helper functions for rounds management
   const updateNumberOfRounds = (count) => {
@@ -526,7 +562,7 @@ const HostCasestudies = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
           {step === 1 && (  
             <>
               <div className="bg-white rounded-lg shadow-sm p-6">

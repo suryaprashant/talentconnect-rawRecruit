@@ -1,0 +1,2 @@
+
+a1c7ef91c662f377f5edd58631aa305c0bd02259	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@grpc/grpc-js/-/grpc-js-1.9.15.tgz","integrity":null,"time":1758794519981,"size":"0","metadata":{"time":1758794519981,"url":"http://registry.npmjs.org/@grpc/grpc-js/-/grpc-js-1.9.15.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:59 GMT","location":"https://registry.npmjs.org/@grpc/grpc-js/-/grpc-js-1.9.15.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

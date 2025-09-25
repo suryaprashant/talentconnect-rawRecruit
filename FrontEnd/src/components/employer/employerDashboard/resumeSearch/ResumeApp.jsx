@@ -1,8 +1,7 @@
 import ResumeSearch from './ResumeSearch';
 import ApplicationStatus from './ApplicationStatus';
 import useResumeAppLogic from './useResumeAppLogic';
-
-const EmployerResumeApp = () => {
+const ResumeApp = () => {
   const {
     view,
     candidates,
@@ -31,4 +30,4 @@ const EmployerResumeApp = () => {
   );
 };
 
-export default EmployerResumeApp;
+export default ResumeApp;

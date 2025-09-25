@@ -45,7 +45,7 @@ const projectsHandledSchema = new mongoose.Schema({
 });
 
 
-const onboardingSchema = new mongoose.Schema(
+const studentOnboardingSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -143,5 +143,5 @@ const onboardingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const OnboardingModel = mongoose.model("Onboarding", onboardingSchema);
-export default OnboardingModel;
+export default mongoose.models.Onboarding ||
+  mongoose.model("Onboarding", studentOnboardingSchema);

@@ -1,0 +1,2 @@
+
+5f209764f97448f513045fa42f1d872196f02325	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/path/-/path-0.12.7.tgz","integrity":null,"time":1758794457185,"size":"0","metadata":{"time":1758794457185,"url":"http://registry.npmjs.org/path/-/path-0.12.7.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:00:57 GMT","location":"https://registry.npmjs.org/path/-/path-0.12.7.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
