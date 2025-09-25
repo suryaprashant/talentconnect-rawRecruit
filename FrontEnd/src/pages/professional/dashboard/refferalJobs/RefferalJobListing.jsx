@@ -54,7 +54,7 @@ const RefferalListings = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <JobListSection
-        title="Internships based on your profile"
+        title="Referral jobs based on your profile"
         description="Explore internship opportunities tailored to your academic background and skills."
         jobs={profileJobs}
         userType={localStorage.getItem('selectedRole')} // Pass userType to JobListSection
