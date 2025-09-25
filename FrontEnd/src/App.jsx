@@ -298,7 +298,7 @@ function AppRoutes() {
               <Route path='service-request/counselling' element={<Counselling />} />
               {/* Application status  */}
               <Route path="/application-status/Job-listing" element={<JobTracker />} />
-              <Route path="/application-status/Off-campus-listing" element={<OffcampusStatus />} />
+              <Route path="/application-status/Off-campus" element={<OffcampusStatus />} />
               <Route path="/application-status/Internship" element={<InternshipStatus />} />
               <Route path="/application-status/Referral" element={<RefferralJobStatus />} />
               <Route path="/application-status/hackathon" element={<HackthonStatus />} />
@@ -341,7 +341,7 @@ function AppRoutes() {
               <Route path='/fresher-dashboard/service-request/counselling' element={<FresherCounselling />} />
               {/* Application status  */}
               {/* <Route path="fresher/application-status/Job-listing" element={<JobTracker/>} />
-              <Route path="/application-status/off-campus-listing" element={<OffcampusStatus/>} />
+              <Route path="/application-status/Off-campus" element={<OffcampusStatus/>} />
               <Route path="/application-status/Internship" element={<InternshipStatus/>} />
               <Route path="/application-status/Referral" element={<RefferralJobStatus/>} />
               <Route path="/application-status/hackathon" element={<HackthonStatus/>} /> */}
