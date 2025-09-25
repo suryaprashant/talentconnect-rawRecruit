@@ -13,6 +13,7 @@ import { FresherStepFour } from "./formSteps/FresherStepFour";
 import { ProfessionalStepFour } from "./formSteps/ProfessionalStepFour";
 import { useRole } from "@/context/RoleContext/RoleContext";
 import {StepSix} from "./formSteps/StepSix"; 
+import { ProfessionalDetailsStep } from "./formSteps/ProfessionalDetailsStep";
 
 export const OnboardingForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -69,9 +70,17 @@ export const OnboardingForm = () => {
           return <StepFour onNext={handleNext} onBack={handleBack} formData={formData} onChange={handleFormDataChange} />;
         }
       case 5: return <StepFive onNext={handleNext} onBack={handleBack} formData={formData} onChange={handleFormDataChange} />;
-       case 6: 
+      case 6: 
         return <StepSix onNext={handleNext} onBack={handleBack} formData={formData} onChange={handleFormDataChange} />;
-      case 7: return <Confirmation onSubmit={handleSubmit} onCancel={handleBack} />;
+      
+      case 7: 
+      if(role == "professional"){
+        return <ProfessionalDetailsStep onNext={handleNext} onBack={handleBack} formData={formData} onChange={handleFormDataChange} /> ;
+      }
+      else{
+        return <Confirmation onSubmit={handleSubmit} onCancel={handleBack} />;
+      }
+      case 8: return <Confirmation onSubmit={handleSubmit} onCancel={handleBack} />;
       default: return <Welcome onNext={handleNext} onCancel={handleCancel} />;
     }
   };
