@@ -22,12 +22,12 @@ const StudentRefferalJobDetails = () => {
         const response = await getReferralJobById(jobId);
 
         setJobDetails(response.data);
-        console.log("Internship Details:", response.data);
+        console.log("Details:", response.data);
 
         setError(null);
       } catch (err) {
-        setError('Failed to load internship details. Please try again later.');
-        console.error('Error fetching internship details:', err);
+        setError('Failed to load details. Please try again later.');
+        console.error('Error fetching details:', err);
       } finally {
         setIsLoading(false);
       }

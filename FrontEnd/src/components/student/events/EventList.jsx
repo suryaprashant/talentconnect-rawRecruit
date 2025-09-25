@@ -53,7 +53,7 @@ console.log("Full response:", response);
 
   useEffect(() => {
     loadEvents();
-  }, []);
+  }, [event_name]);
 
   useEffect(() => {
     if (!events) return;
@@ -87,7 +87,7 @@ console.log("Full response:", response);
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-2">{event_name}</h1>
+      <h1 className="text-2xl font-bold mb-2 capitalize">{event_name}</h1>
       <p className="text-gray-600 mb-6">Discover upcoming {event_name} and innovation challenges.</p>
 
       <SearchBar onSearch={handleSearch} onSort={handleSort} />
