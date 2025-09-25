@@ -281,7 +281,8 @@ export const submitOnboardingForm = async (req, res) => {
       gender: req.body.gender ,
       openToShift: req.body.openToShift,
       noticePeriod: req.body.noticePeriod,
-      servingNotivePeriod: req.body.servingNoticePeriod,
+
+      servingNotivePeriod: req.body.servingNoticePeriod=='true',
       totalYearsOfExperience: req.body.totalYearsOfExperience,
       languagesKnown: req.body.languagesKnown ? req.body.languagesKnown.split(",") : [],
       toolsAndPlatforms: req.body.toolsAndPlatforms
@@ -463,7 +464,7 @@ export const updateOnboardingForm = async (req, res) => {
         }
     });
 
-       const jsonFields = ['experiences', 'leadership', 'internationalExperience', 'awards', 'publications', 'achievements'];
+       const jsonFields = ['experiences', 'leadership', 'internationalExperience', 'awards', 'publications', 'achievements' , 'projectsHandled'];
     jsonFields.forEach(field => {
         if (updates[field] && typeof updates[field] === 'string') {
             updates[field] = JSON.parse(updates[field]);
