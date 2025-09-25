@@ -2692,20 +2692,6 @@ function ProfProfile() {
                           </div>
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Languages</h5>
-                          <div className="flex flex-wrap gap-2">
-                            {profileData.languages && profileData.languages.length > 0 ? (
-                              profileData.languages.map((lang) => (
-                                <Badge key={lang} variant="primary" size="md" className="bg-gray-100 text-gray-800">
-                                  {lang}
-                                </Badge>
-                              ))
-                            ) : (
-                              <span className="text-gray-600">N/A</span>
-                            )}
-                          </div>
-                        </div>
 
                         <div className="p-4 border border-gray-200 rounded-lg">
                           <h5 className="font-medium text-gray-900 mb-2">Interested Industry Type</h5>
@@ -2840,6 +2826,22 @@ function ProfProfile() {
                           ) : (
                             <span className="text-gray-600">No articles added.</span>
                           )}
+                        </div>
+
+                      
+                         <div className="p-4 border border-gray-200 rounded-lg">
+                            <h5 className="font-medium text-gray-900 mb-2">Languages Known</h5>
+                            <div className="flex flex-wrap gap-2">
+                                {profileData.languagesKnown && profileData.languagesKnown.length > 0 ? (
+                                profileData.languagesKnown.map((lang) => (
+                                    <Badge key={lang} variant="primary" size="md" className="bg-gray-100 text-gray-800">
+                                    {lang}
+                                    </Badge>
+                                ))
+                                ) : (
+                                <span className="text-gray-600">N/A</span>
+                                )}
+                            </div>
                         </div>
 
                         <div className="p-4 border border-gray-200 rounded-lg">
