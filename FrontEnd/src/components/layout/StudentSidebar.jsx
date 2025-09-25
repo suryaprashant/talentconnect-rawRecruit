@@ -33,28 +33,28 @@ function StudentSidebar({ activePath }) {
 
       <SidebarNavGroup label="Student Dashboard" icon={<FiPieChart />} active={activePath.includes('/student-dashboard')}>
         <SidebarNavItem 
-          to="/student-dashboard/job-listing" 
+          to="/student-dashboard/Job-listing" 
           icon={<FiBriefcase />} 
           label="Job Listing" 
-          active={activePath === '/student-dashboard/job-listing'} 
+          active={activePath === '/student-dashboard/Job-listing'} 
         />
         <SidebarNavItem 
-          to="/student-dashboard/off-campus-listings" 
+          to="/student-dashboard/Off-campus" 
           icon={<FiLayers />} 
           label="Off-Campus Listings" 
-          active={activePath === '/student-dashboard/off-campus-listings'} 
+          active={activePath === '/student-dashboard/Off-campus'} 
         />
         <SidebarNavItem 
-          to="/student-dashboard/internship-opportunities" 
+          to="/student-dashboard/Internship" 
           icon={<FiTrendingUp />} 
           label="Internship Opportunities" 
-          active={activePath === '/student-dashboard/internship-opportunities'} 
+          active={activePath === '/student-dashboard/Internship'} 
         />
         <SidebarNavItem 
-          to="/student-dashboard/Referral-Jobs" 
+          to="/student-dashboard/Referral" 
           icon={<FiUsers />} 
           label="Referral Jobs" 
-          active={activePath === '/student-dashboard/Referral-Jobs'} 
+          active={activePath === '/student-dashboard/Referral'} 
         />
       </SidebarNavGroup>
       <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>
@@ -101,28 +101,28 @@ function StudentSidebar({ activePath }) {
 
       <SidebarNavGroup label="Application Status" icon={<FiFileText />} active={activePath.includes('/application-status')}>
         <SidebarNavItem 
-          to="/application-status/job-listing" 
+          to="/application-status/Job-listing" 
           icon={<FiBriefcase />} 
           label="Job Listing" 
-          active={activePath === '/application-status/job-listing'} 
+          active={activePath === '/application-status/Job-listing'} 
         />
         <SidebarNavItem 
-          to="/application-status/off-campus-listing" 
+          to="/application-status/Off-campus" 
           icon={<FiLayers />} 
           label="Off-Campus Listing" 
-          active={activePath === '/application-status/off-campus-listing'} 
+          active={activePath === '/application-status/Off-campus'} 
         />
         <SidebarNavItem 
-          to="/application-status/internship-opportunities" 
+          to="/application-status/Internship" 
           icon={<FiTrendingUp />} 
           label="Internship Opportunities" 
-          active={activePath === '/application-status/internship-opportunities'} 
+          active={activePath === '/application-status/Internship'} 
         />
         <SidebarNavItem 
-          to="/application-status/referral-jobs" 
+          to="/application-status/Referral" 
           icon={<FiUsers />} 
           label="Referral Jobs" 
-          active={activePath === '/application-status/referral-jobs'} 
+          active={activePath === '/application-status/Referral'} 
         />
         <SidebarNavItem 
           to="/application-status/hackathon" 
