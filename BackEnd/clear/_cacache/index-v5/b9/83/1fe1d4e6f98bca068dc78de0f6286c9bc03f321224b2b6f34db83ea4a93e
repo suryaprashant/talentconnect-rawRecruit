@@ -1,2 +1,0 @@
-
-d7074aa80c9be22df481f067b655bda314f8b78b	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/router/-/router-2.2.0.tgz","integrity":null,"time":1758794457019,"size":"0","metadata":{"time":1758794457018,"url":"http://registry.npmjs.org/router/-/router-2.2.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:00:56 GMT","location":"https://registry.npmjs.org/router/-/router-2.2.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
