@@ -63,10 +63,10 @@ function ProfessionalSidebar({ activePath }) {
 
       <SidebarNavGroup label="Application Status" icon={<FiCheckCircle />} active={activePath.includes('/application-status')}>
         <SidebarNavItem 
-          to="/application-status/job-listing" 
+          to="/application-status/Job-listing" 
           icon={<FiBriefcase />} 
           label="Job Listing" 
-          active={activePath === '/application-status/job-listing'} 
+          active={activePath === '/application-status/Job-listing'} 
         />
         <SidebarNavItem 
           to="/application-status/Referral" 
@@ -75,7 +75,7 @@ function ProfessionalSidebar({ activePath }) {
           active={activePath === '/application-status/Referral'} 
         />
         {/* <SidebarNavItem 
-          to="/application-status/off-campus-listing" 
+          to="/application-status/Off-campus" 
           icon={<FiLayers />} 
           label="Off-Campus Jobs" 
           active={activePath === '/application-status/off-campus-jobs'} 

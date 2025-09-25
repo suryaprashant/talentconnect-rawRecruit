@@ -83,7 +83,7 @@ const JobDetails = () => {
                     <p className="mt-2 text-slate-600">We couldn't retrieve the details for this job posting.</p>
                     <button
                         className="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg"
-                        onClick={() => navigate('/student-dashboard/job-listing')}
+                        onClick={() => navigate('/student-dashboard/Job-listing')}
                     >
                         Back to Job Listings
                     </button>
