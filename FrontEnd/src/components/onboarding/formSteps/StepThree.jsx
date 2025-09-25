@@ -114,7 +114,7 @@ export const StepThree = ({
 
   return (
     <div className="justify-center items-stretch bg-white z-0 flex min-w-60 flex-col w-[560px] my-auto p-12 max-md:max-w-full max-md:px-5">
-      <ProgressIndicator currentStep={3} totalSteps={5} />
+      <ProgressIndicator currentStep={3} totalSteps={6} />
       <div className="flex w-full flex-col items-stretch justify-center mt-8 max-md:max-w-full">
         <div className="w-full text-black max-md:max-w-full">
           <h2 className="text-[32px] font-bold leading-[42px] max-md:max-w-full">

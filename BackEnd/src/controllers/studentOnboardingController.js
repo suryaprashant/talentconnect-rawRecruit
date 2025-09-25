@@ -272,10 +272,32 @@ export const submitOnboardingForm = async (req, res) => {
       leadership: req.body.leadership ? JSON.parse(req.body.leadership) : [],
       internationalExperience: req.body.internationalExperience ? JSON.parse(req.body.internationalExperience) : [],
       awards: req.body.awards ? JSON.parse(req.body.awards) : [],
-    };
-    console.log("Parsed updateData:", JSON.stringify(updateData, null, 2));
-    const files = req.files;
 
+      publications: req.body.publications ? JSON.parse(req.body.publications) : [],
+      achievements: req.body.achievements ? JSON.parse(req.body.achievements) : [],
+
+      // adding new fields
+      about : req.body.about,
+      gender: req.body.gender ,
+      openToShift: req.body.openToShift,
+      noticePeriod: req.body.noticePeriod,
+      servingNotivePeriod: req.body.servingNoticePeriod,
+      totalYearsOfExperience: req.body.totalYearsOfExperience,
+      languagesKnown: req.body.languagesKnown ? req.body.languagesKnown.split(",") : [],
+      toolsAndPlatforms: req.body.toolsAndPlatforms
+        ? req.body.toolsAndPlatforms.split(",")
+        : [],
+      domainKnowledge: req.body.domainKnowledge
+        ? req.body.domainKnowledge.split(",")
+        : [],
+      currentCompany: req.body.currentCompany,
+
+
+    };
+    
+    const files = req.files;
+    
+    console.log("Recieve date", updateData) ;
     
     if (files?.resume?.[0]) {
       const upload = await streamUpload(files.resume[0].buffer, "resumes");
@@ -382,7 +404,7 @@ export const submitOnboardingForm = async (req, res) => {
       return res.status(404).json({ error: "User not found after update." });
     }
 
-    console.log(`User ${req.user.email} updated: userType=${authUserType}, onboardingCompleted=true`);
+   
 
     res.status(201).json({
       message: "Form submitted successfully!",
@@ -402,6 +424,7 @@ export const submitOnboardingForm = async (req, res) => {
       .json({ error: "Form submission failed.", details: error.message });
   }
 };
+
 
 export const getOnboardingForm = async (req, res) => {
   try {
@@ -423,7 +446,6 @@ export const getOnboardingForm = async (req, res) => {
   }
 };
 
-
 export const updateOnboardingForm = async (req, res) => {
   try {
     if (!req.user || !req.user._id) {
@@ -434,17 +456,21 @@ export const updateOnboardingForm = async (req, res) => {
     const updates = { ...req.body };
     const files = req.files;
 
-    // Parse stringified arrays/objects from form data
-    const fieldsToParse = ['jobRoles', 'locations', 'industry', 'skills'];
+    const fieldsToParse = ['jobRoles', 'locations', 'industry', 'skills', 'languagesKnown', 'toolsAndPlatforms', 'domainKnowledge'];
     fieldsToParse.forEach(field => {
-        if (updates[field]) updates[field] = updates[field].split(',');
+        if (updates[field] && typeof updates[field] === 'string') {
+            updates[field] = updates[field].split(',');
+        }
     });
 
-    const jsonFields = ['experiences', 'leadership', 'internationalExperience', 'awards'];
+       const jsonFields = ['experiences', 'leadership', 'internationalExperience', 'awards', 'publications', 'achievements'];
     jsonFields.forEach(field => {
-        if (updates[field]) updates[field] = JSON.parse(updates[field]);
+        if (updates[field] && typeof updates[field] === 'string') {
+            updates[field] = JSON.parse(updates[field]);
+        }
     });
-
+        console.log('Type of publications received by backend:', typeof updates.publications);
+    console.log('Value of publications before saving to DB:', updates.publications);
   
     const fileFields = {
         resume: 'resumes',
@@ -471,7 +497,7 @@ export const updateOnboardingForm = async (req, res) => {
             const certs = files[fieldName];
             let certIndex = 0;
             for (let i = 0; i < updates[certFileFields[fieldName].modelField].length; i++) {
-                // If the experience item doesn't have a certificate URL and there are certs left to assign
+         
                 if (!updates[certFileFields[fieldName].modelField][i][certFileFields[fieldName].certField] && certIndex < certs.length) {
                     const uploadedCert = await streamUpload(certs[certIndex].buffer, certFileFields[fieldName].folder);
                     updates[certFileFields[fieldName].modelField][i][certFileFields[fieldName].certField] = uploadedCert.secure_url;

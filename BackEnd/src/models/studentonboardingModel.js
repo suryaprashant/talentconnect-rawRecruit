@@ -20,11 +20,32 @@ const internationalExperienceSchema = new mongoose.Schema({
 
 
 const awardSchema = new mongoose.Schema({
+  // title: String,
+  // organization: String,
+  // startDate: String,
+  // endDate: String,
+  // description: String,
+
+  name: String,     // Changed from 'title' to 'name'
+  issuer: String,   // Changed from 'organization' to 'issuer'
+  date: String,
+});
+
+const publicationSchema = new mongoose.Schema({
   title: String,
-  organization: String,
-  startDate: String,
-  endDate: String,
-  description: String,
+  url: String,
+});
+
+const achievementSchema = new mongoose.Schema({
+  title: String,
+  event: String,
+  date: String,
+});
+
+const projectsHandledSchema = new mongoose.Schema({
+  numberOfProjects: Number,
+  budget: String,
+  impact: String,
 });
 
 
@@ -86,7 +107,33 @@ const onboardingSchema = new mongoose.Schema(
     internationalExperience: [internationalExperienceSchema],
 
     awards: [awardSchema],
+
+    publications: [publicationSchema],
+    achievements: [achievementSchema],
+    projectsHandled: projectsHandledSchema,
+
     skills: [String],
+    languagesKnown: [String],
+    toolsAndPlatforms: [String],
+    domainKnowledge: [String],
+
+    dob: String,
+    gender: String,
+    ethnicity: String,
+    maritalStatus: String,
+    visaStatus: String,
+    openToShift: String,
+    clientLocation: String,
+
+    about :String ,
+
+    currentCompany: String,
+    noticePeriod: String,
+    servingNoticePeriod: Boolean,
+    totalYearsOfExperience: String,
+
+
+
     certifications: String,
     linkedin: String,
     github: String,

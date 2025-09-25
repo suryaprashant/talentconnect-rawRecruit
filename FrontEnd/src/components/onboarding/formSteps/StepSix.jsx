@@ -1,33 +1,32 @@
 import React, { useState } from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
-import { ChevronDownIcon, XIcon } from "lucide-react"; // Make sure XIcon is imported
+import { ChevronDownIcon, UploadIcon, XIcon } from "lucide-react";
 
-export const StepFiveAdditional = ({ onNext, onBack, formData, onChange }) => {
-  // Local state to manage the form efficiently
+export const StepSix = ({ onNext, onCancel, onBack = onCancel, formData, onChange }) => {
   const [localFormData, setLocalFormData] = useState({
-    about: "",
+    about: formData.about || "",
     gender: "",
-    toolsPlatforms: [],
-    openToShift: [],
-    languages: [],
+    toolsAndPlatforms: formData.toolsAndPlatforms || [],
+    openToShift: formData.openToShift || [],
+    languagesKnown: formData.languagesKnown || [],
   });
 
   // Options for dropdowns and checkboxes
   const genderOptions = ["Male", "Female", "Non-binary", "Prefer not to say"];
   
-  const toolsPlatformOptions = [
+  const toolsAndPlatforms = [
     "VS Code", "Figma", "JIRA", "Slack", "Trello", "Postman", "AWS Console",
     "Google Cloud Platform", "Azure Portal", "Docker", "Kubernetes", "Jenkins",
     "GitHub", "GitLab", "Bitbucket", "Notion", "Confluence"
   ];
 
-  const shiftOptions = [
+  const openToShift = [
     { value: "day", label: "Day Shift" },
     { value: "night", label: "Night Shift" },
     { value: "rotational", label: "Rotational Shift" }
   ];
 
-  const languageOptions = [
+  const languagesKnown = [
     "English", "Hindi", "Spanish", "French", "German", "Chinese", "Japanese",
     "Arabic", "Portuguese", "Russian", "Bengali", "Tamil", "Telugu", "Marathi"
   ];
@@ -37,20 +36,23 @@ export const StepFiveAdditional = ({ onNext, onBack, formData, onChange }) => {
     setLocalFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleToolsSelect = (e) => {
+   const handleToolsSelect = (e) => {
     const tool = e.target.value;
-    if (tool && !localFormData.toolsPlatforms.includes(tool)) {
+
+    if (tool && !localFormData.toolsAndPlatforms.includes(tool)) {
       setLocalFormData((prev) => ({
         ...prev,
-        toolsPlatforms: [...prev.toolsPlatforms, tool],
+        toolsAndPlatforms: [...prev.toolsAndPlatforms, tool],
       }));
     }
   };
 
+ 
   const removeTool = (toolToRemove) => {
+ 
     setLocalFormData((prev) => ({
       ...prev,
-      toolsPlatforms: prev.toolsPlatforms.filter((tool) => tool !== toolToRemove),
+      toolsAndPlatforms: prev.toolsAndPlatforms.filter((tool) => tool !== toolToRemove),
     }));
   };
 
@@ -71,20 +73,22 @@ export const StepFiveAdditional = ({ onNext, onBack, formData, onChange }) => {
     });
   };
 
-  const handleLanguageSelect = (e) => {
+const handleLanguageSelect = (e) => {
     const language = e.target.value;
-    if (language && !localFormData.languages.includes(language)) {
+   
+    if (language && !localFormData.languagesKnown.includes(language)) {
       setLocalFormData((prev) => ({
         ...prev,
-        languages: [...prev.languages, language],
+        languagesKnown: [...prev.languagesKnown, language],
       }));
     }
   };
 
   const removeLanguage = (languageToRemove) => {
+
     setLocalFormData((prev) => ({
       ...prev,
-      languages: prev.languages.filter((language) => language !== languageToRemove),
+      languagesKnown: prev.languagesKnown.filter((language) => language !== languageToRemove),
     }));
   };
 
@@ -95,13 +99,17 @@ export const StepFiveAdditional = ({ onNext, onBack, formData, onChange }) => {
 
   return (
     <div className="justify-center items-stretch bg-white z-0 flex min-w-60 flex-col w-[560px] my-auto p-12 max-md:max-w-full max-md:px-5">
+      <ProgressIndicator currentStep={6} totalSteps={6} />
+      
       <div className="flex w-full flex-col items-stretch justify-center mt-8 max-md:max-w-full">
-        <h2 className="text-[32px] font-bold leading-[42px] max-md:max-w-full">
-          Additional Information
-        </h2>
-        <p className="text-base font-normal leading-6 mt-2 max-md:max-w-full">
-          Help us understand you better with these details.
-        </p>
+        <div className="w-full text-black max-md:max-w-full">
+          <h2 className="text-[32px] font-bold leading-[42px] max-md:max-w-full">
+            Additional Information
+          </h2>
+          <p className="text-base font-normal leading-6 mt-2 max-md:max-w-full">
+            Help us understand you better with these details.
+          </p>
+        </div>
 
         <form className="w-full text-base font-normal mt-8 max-md:max-w-full">
           {/* About Section */}
@@ -149,14 +157,14 @@ export const StepFiveAdditional = ({ onNext, onBack, formData, onChange }) => {
                 className="appearance-none bg-white flex min-h-12 w-full p-3 border border-gray-300 rounded"
               >
                 <option value="" disabled>Select a tool or platform</option>
-                {toolsPlatformOptions.map(tool => (
+                {toolsAndPlatforms.map(tool => (
                   <option key={tool} value={tool}>{tool}</option>
                 ))}
               </select>
               <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
-              {localFormData.toolsPlatforms.map((tool) => (
+              {localFormData.toolsAndPlatforms.map((tool) => (
                 <div key={tool} className="flex items-center bg-gray-200 text-black rounded-full px-3 py-1 text-sm">
                   {tool}
                   <button type="button" onClick={() => removeTool(tool)} className="ml-2 focus:outline-none">
@@ -171,7 +179,7 @@ export const StepFiveAdditional = ({ onNext, onBack, formData, onChange }) => {
           <div className="w-full mt-6">
             <label className="block text-black mb-2">Open to Shift</label>
             <div className="flex flex-wrap gap-4 mt-2">
-              {shiftOptions.map((shift) => (
+              {openToShift.map((shift) => (
                 <label key={shift.value} className="flex items-center">
                   <input
                     type="checkbox"
@@ -196,14 +204,14 @@ export const StepFiveAdditional = ({ onNext, onBack, formData, onChange }) => {
                 className="appearance-none bg-white flex min-h-12 w-full p-3 border border-gray-300 rounded"
               >
                 <option value="" disabled>Select a language</option>
-                {languageOptions.map(language => (
+                {languagesKnown.map(language => (
                   <option key={language} value={language}>{language}</option>
                 ))}
               </select>
               <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
-              {localFormData.languages.map((language) => (
+              {localFormData.languagesKnown.map((language) => (
                 <div key={language} className="flex items-center bg-gray-200 text-black rounded-full px-3 py-1 text-sm">
                   {language}
                   <button type="button" onClick={() => removeLanguage(language)} className="ml-2 focus:outline-none">
@@ -216,11 +224,19 @@ export const StepFiveAdditional = ({ onNext, onBack, formData, onChange }) => {
 
           {/* Buttons */}
           <div className="flex gap-4 mt-8">
-            <button type="button" onClick={onBack} className="px-6 py-3 border border-gray-300 rounded-md hover:bg-gray-50">
+            <button 
+              type="button" 
+              onClick={onBack} 
+              className="px-6 py-3 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
               Back
             </button>
-            <button type="button" onClick={handleNextClick} className="bg-black text-white px-6 py-3 border border-black rounded-md hover:bg-gray-800">
-              Continue
+            <button 
+              type="button" 
+              onClick={handleNextClick} 
+              className="bg-black text-white px-6 py-3 border border-black rounded-md hover:bg-gray-800"
+            >
+              Next
             </button>
           </div>
         </form>
@@ -228,4 +244,3 @@ export const StepFiveAdditional = ({ onNext, onBack, formData, onChange }) => {
     </div>
   );
 };
-
