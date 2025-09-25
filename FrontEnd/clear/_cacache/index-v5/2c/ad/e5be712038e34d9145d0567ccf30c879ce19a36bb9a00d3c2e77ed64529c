@@ -1,0 +1,2 @@
+
+79c95c10afe1b076763e2bc477d3e9dc9d20d76b	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/strip-ansi/-/strip-ansi-7.1.2.tgz","integrity":null,"time":1758794514390,"size":"0","metadata":{"time":1758794514390,"url":"http://registry.npmjs.org/strip-ansi/-/strip-ansi-7.1.2.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:54 GMT","location":"https://registry.npmjs.org/strip-ansi/-/strip-ansi-7.1.2.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

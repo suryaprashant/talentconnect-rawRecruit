@@ -1,0 +1,2 @@
+
+ac95395a97b7e76997e2690b93e6143a390add2c	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/jsonify/-/jsonify-0.0.1.tgz","integrity":null,"time":1758794457770,"size":"0","metadata":{"time":1758794457770,"url":"http://registry.npmjs.org/jsonify/-/jsonify-0.0.1.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:00:57 GMT","location":"https://registry.npmjs.org/jsonify/-/jsonify-0.0.1.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
