@@ -1,4 +1,5 @@
 import express from 'express';
+import secureRoute from '../middlewares/secureRouteMiddleware.js';
 import {
   registerParticipant,
   getAllParticipants,
@@ -19,7 +20,7 @@ router.get('/:eventID', getParticipantsByEvent);
 
 // @desc    Register a new participant
 // @route   POST /eventParticipation/register
-router.post('/register', registerParticipant);
+router.post('/register',secureRoute, registerParticipant);
 
 // @desc    Update participant by ID
 // @route   PUT /eventParticipation/update/:id

@@ -14,6 +14,7 @@ export const registerParticipant = async (req, res) => {
       projectTitle,
       teamMembers = [],
     } = req.body;
+    const teamLeaderId = req.user._id;
     console.log("before sending mail");
     
     // 1. Send invitation email to team members who don't have a teamMemberId
@@ -31,6 +32,7 @@ export const registerParticipant = async (req, res) => {
     
     // 2. Save participant in DB
     const newParticipation = new EventParticipation({
+      teamLeaderId,
       eventID,
       name,
       email,
