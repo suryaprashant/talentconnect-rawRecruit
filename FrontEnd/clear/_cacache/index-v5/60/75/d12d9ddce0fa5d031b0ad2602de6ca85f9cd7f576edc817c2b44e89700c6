@@ -1,2 +1,0 @@
-
-43e1af850963aa8203a3b6b782b79bd8894d834c	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/optionator/-/optionator-0.9.4.tgz","integrity":null,"time":1758794516113,"size":"0","metadata":{"time":1758794516112,"url":"http://registry.npmjs.org/optionator/-/optionator-0.9.4.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:55 GMT","location":"https://registry.npmjs.org/optionator/-/optionator-0.9.4.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

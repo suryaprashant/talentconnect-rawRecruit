@@ -1,2 +1,0 @@
-
-6a43f23714caf3cf4126a8bc24943b16f279bded	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/is-regexp/-/is-regexp-3.1.0.tgz","integrity":null,"time":1758794516860,"size":"0","metadata":{"time":1758794516860,"url":"http://registry.npmjs.org/is-regexp/-/is-regexp-3.1.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:56 GMT","location":"https://registry.npmjs.org/is-regexp/-/is-regexp-3.1.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
