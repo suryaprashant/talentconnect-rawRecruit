@@ -143,6 +143,7 @@ app.use("/internship", Internship);
 app.use("/application", Application);
 app.use("/college/application",CollegeApplication);
 app.use("/hackathon", Hackathon);
+app.use("/workshop", Workshop);
 app.use("/casestudy", Casestudy);
 app.use("/api/hosting/workshop", Workshop);
 app.use("/eventParticipation", eventParticipation);
