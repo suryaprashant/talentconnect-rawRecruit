@@ -1,2 +1,0 @@
-
-49e646f503a5a7546f1c06a5482e1873657ed579	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@protobufjs/aspromise/-/aspromise-1.1.2.tgz","integrity":null,"time":1758794519532,"size":"0","metadata":{"time":1758794519532,"url":"http://registry.npmjs.org/@protobufjs/aspromise/-/aspromise-1.1.2.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:59 GMT","location":"https://registry.npmjs.org/@protobufjs/aspromise/-/aspromise-1.1.2.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
