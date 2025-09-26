@@ -37,7 +37,7 @@ const PoolCollegeCard = ({ college }) => {
         </h3>
 
         <Link
-          to={`/employer-dashboard/pool-campus-requests/${college._id}`}
+          to={`/employer-dashboard/Pool-campus/${college._id}`}
           className="block w-full text-center border border-gray-300 rounded py-2 text-sm hover:bg-blue-600 transition"
         >
           Contact
