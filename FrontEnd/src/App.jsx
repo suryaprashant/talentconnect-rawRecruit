@@ -381,8 +381,8 @@ function AppRoutes() {
               <Route path="/employer-dashboard/resume-search" element={<ResumeApp />} />
               <Route path="/interviews" element={<InterviewScheduler />} />
 
-              <Route path="/employer-dashboard/on-campus-request" element={<CollegeListingPage />} />
-              <Route path="/employer-dashboard/on-campus-request/:id" element={<CollegeDetailsPage />} />
+              <Route path="/employer-dashboard/On-campus" element={<CollegeListingPage />} />
+              <Route path="/employer-dashboard/On-campus/:id" element={<CollegeDetailsPage />} />
               <Route path="/employer-dashboard/pool-campus-requests" element={<PoolEmployeeListing />} />
               <Route path="/employer-dashboard/pool-campus-requests/:id" element={<PoolCampusEmployeeDash />} />
 
@@ -451,8 +451,8 @@ function AppRoutes() {
 
               <Route path="/interviews" element={<EmployerInterviewScheduler />} />
               <Route path="/employer-dashboard/resume-search" element={<EmployerResumeApp />} />
-              <Route path="/employer-dashboard/on-campus-request" element={<EmployerListingPage />} />
-              <Route path="/employer-dashboard/on-campus-request/:id" element={<EmployerDetailsPage />} />
+              <Route path="/employer-dashboard/On-campus" element={<EmployerListingPage />} />
+              <Route path="/employer-dashboard/On-campus/:id" element={<EmployerDetailsPage />} />
 
               <Route path="/employer-dashboard/pool-campus-requests" element={<EmployerPoolEmployeeListing />} />
               <Route path="/employer-dashboard/pool-campus-requests/:id" element={<EmployerPoolCampus />} />

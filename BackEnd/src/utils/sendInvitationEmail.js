@@ -1,20 +1,16 @@
-// utils/sendInvitationEmail.js
-import nodemailer from "nodemailer";
+
+import sgMail from "@sendgrid/mail";
 import dotenv from 'dotenv';
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-  service: "gmail", // or use SMTP credentials
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 
 const sendInvitationEmail = async (to, name) => {
-  const mailOptions = {
-    from: `"Hackathon Team" <${process.env.MAIL_USER}>`,
+  const sender = process.env.SENDGRID_SENDER || "no-reply@yourdomain.com";
+  const msg = {
     to,
+    from: `Hackathon Team <${sender}>`,
     subject: "You've been invited to join a Hackathon team!",
     html: `
       <p>Hi ${name || "there"},</p>
@@ -23,8 +19,7 @@ const sendInvitationEmail = async (to, name) => {
       <p>Thanks,<br/>Hackathon Organizers</p>
     `
   };
-
-  await transporter.sendMail(mailOptions);
+  await sgMail.send(msg);
 };
 
 export default sendInvitationEmail;
