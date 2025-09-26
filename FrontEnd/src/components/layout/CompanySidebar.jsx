@@ -34,10 +34,10 @@ function CompanySidebar({ activePath }) {
 
       <SidebarNavGroup label="Company Dashboard" icon={<FiPieChart />} active={activePath.includes('/employer-dashboard')}>
         <SidebarNavItem
-          to="/employer-dashboard/on-campus-request"
+          to="/employer-dashboard/On-campus"
           icon={<FiMapPin />}
           label="On-campus Request"
-          active={activePath === '/employer-dashboard/on-campus-request'}
+          active={activePath === '/employer-dashboard/On-campus'}
         />
         <SidebarNavItem
           to="/employer-dashboard/pool-campus-requests"
