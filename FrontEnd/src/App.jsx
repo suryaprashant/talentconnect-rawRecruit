@@ -378,13 +378,13 @@ function AppRoutes() {
 
               <Route path="/company/saved-jobs/*" element={<JobRoutes />} />
 
-              <Route path="/employer-dashboard/resume-search" element={<ResumeApp />} />
+              <Route path="/company-dashboard/resume-search" element={<ResumeApp />} />
               <Route path="/interviews" element={<InterviewScheduler />} />
 
-              <Route path="/employer-dashboard/On-campus" element={<CollegeListingPage />} />
-              <Route path="/employer-dashboard/On-campus/:id" element={<CollegeDetailsPage />} />
-              <Route path="/employer-dashboard/pool-campus-requests" element={<PoolEmployeeListing />} />
-              <Route path="/employer-dashboard/pool-campus-requests/:id" element={<PoolCampusEmployeeDash />} />
+              <Route path="/company-dashboard/On-campus" element={<CollegeListingPage />} />
+              <Route path="/company-dashboard/On-campus/:id" element={<CollegeDetailsPage />} />
+              <Route path="/company-dashboard/pool-campus" element={<PoolEmployeeListing />} />
+              <Route path="/company-dashboard/pool-campus/:id" element={<PoolCampusEmployeeDash />} />
 
               {/* service request  */}
               <Route path="/service-request/workforce-solution" element={<Workforce />} />
@@ -401,11 +401,11 @@ function AppRoutes() {
               <Route path="/company/application-status/poolcampus" element={<PoolcampusApplicationStatus />} />
 
               {/* Job Management   */}
-              <Route path="/job-management/on-campus-listings" element={<OnCampusJobManagement />} />
-              <Route path="/job-management/pool-campus-listings" element={<PoolCampusJobManagement />} />
+              <Route path="/job-management/On-campus" element={<OnCampusJobManagement />} />
+              <Route path="/job-management/Pool-campus" element={<PoolCampusJobManagement />} />
               <Route path="/job-management/Off-campus" element={<OffCampusJobManagement />} />
-              <Route path="/job-management/job-listings" element={<JobListingJobManagement />} />
-              <Route path="job-management/internship-listings" element={<InternshipListing />} />
+              <Route path="/job-management/Job-listings" element={<JobListingJobManagement />} />
+              <Route path="job-management/Internship" element={<InternshipListing />} />
 
 
               {/* Accepted college / candidates  */}

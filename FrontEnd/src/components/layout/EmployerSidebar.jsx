@@ -38,10 +38,10 @@ function EmployerSidebar({ activePath }) {
           active={activePath === '/employer-dashboard/On-campus'} 
         />
         <SidebarNavItem 
-          to="/employer-dashboard/pool-campus-requests" 
+          to="/employer-dashboard/Pool-campus" 
           icon={<FiUsers />} 
           label="Pool Campus Requests" 
-          active={activePath === '/employer-dashboard/pool-campus-requests'} 
+          active={activePath === '/employer-dashboard/Pool-campus'} 
         />
         <SidebarNavItem 
           to="/employer-dashboard/resume-search" 
