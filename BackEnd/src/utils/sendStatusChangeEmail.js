@@ -1,37 +1,25 @@
-// utils/sendStatusChangeEmail.js
-import nodemailer from "nodemailer";
+import sgMail from "@sendgrid/mail";
 import dotenv from 'dotenv';
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-    },
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-/**
- * Send an email to user when their application status changes.
- * @param {string} to - Recipient email address
- * @param {string} name - Recipient name
- * @param {string} status - New application status
- * @param {string} [appId] - Optional application ID
- */
-const sendStatusChangeEmail = async (to, status, appId, jobRole, companyName="") => {
-    const mailOptions = {
-        from: `<${process.env.MAIL_USER}>`,
-        to,
-        subject: "Your application status has changed",
-        html: `
+const sendStatusChangeEmail = async (to, status, appId, jobRole, companyName = "") => {
+  const sender = process.env.SENDGRID_SENDER || "no-reply@yourdomain.com";
+  const msg = {
+    to,
+    from: `<${sender}>`,
+    subject: "Your application status has changed",
+    html: `
       <p>Dear Candidate,</p>
-      <p>Your application${appId ? ` (ID: ${appId})` : ''} for job-role: ${jobRole} status has been updated to: <strong>${status}</strong>.</p>
+      <p>Your application${appId ? ` (ID: ${appId})` : ''} for <strong>${jobRole}</strong> ${companyName ? ` at ${companyName}` : ''} status has been updated to: <strong>${status}</strong>.</p>
       <p>Please log in to your account for more details.</p>
       <p>Thanks</p>
+      <p>From</p>
+      <p>Team TalentConnect</p>
     `
-    };
-
-    await transporter.sendMail(mailOptions);
+  };
+  await sgMail.send(msg);
 };
 
 export default sendStatusChangeEmail;

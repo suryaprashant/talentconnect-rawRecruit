@@ -1,2 +1,0 @@
-
-3c8f438d7c7cde6e350ac5e63f05f774ebfc4e6f	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/is-core-module/-/is-core-module-2.16.1.tgz","integrity":null,"time":1758794516905,"size":"0","metadata":{"time":1758794516905,"url":"http://registry.npmjs.org/is-core-module/-/is-core-module-2.16.1.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:56 GMT","location":"https://registry.npmjs.org/is-core-module/-/is-core-module-2.16.1.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

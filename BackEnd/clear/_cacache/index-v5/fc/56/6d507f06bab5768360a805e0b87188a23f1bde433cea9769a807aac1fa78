@@ -1,2 +1,0 @@
-
-e643aa0788da72f74fac4e4c9a6d00f3945940ca	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/patch-package/-/patch-package-8.0.0.tgz","integrity":null,"time":1758794457233,"size":"0","metadata":{"time":1758794457232,"url":"http://registry.npmjs.org/patch-package/-/patch-package-8.0.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:00:57 GMT","location":"https://registry.npmjs.org/patch-package/-/patch-package-8.0.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

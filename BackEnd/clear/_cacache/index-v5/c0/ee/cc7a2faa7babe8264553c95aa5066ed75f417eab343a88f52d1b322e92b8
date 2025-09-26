@@ -1,2 +1,0 @@
-
-8dbc37e52806801f405555d3956bdf5e4e9a3637	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@sendgrid/client/-/client-8.1.5.tgz","integrity":null,"time":1758794460049,"size":"0","metadata":{"time":1758794460049,"url":"http://registry.npmjs.org/@sendgrid/client/-/client-8.1.5.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:00:59 GMT","location":"https://registry.npmjs.org/@sendgrid/client/-/client-8.1.5.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

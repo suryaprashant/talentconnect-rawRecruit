@@ -51,7 +51,7 @@ import messageRoute from "./routes/messageRoute.js";
 import Jobs from "./routes/jobsRoute.js";
 import Internship from "./routes/internshipRoute.js";
 import Application from "./routes/applicationRoute.js";
-import Resume from "./routes/Resume.route.js";
+import Resume from "./routes/resumeroute.js";
 import Hackathon from "./routes/hackathonRoute.js";
 import Casestudy from "./routes/casestudyRoute.js";
 import Workshop from "./routes/workshopRoute.js";
@@ -110,7 +110,7 @@ import jobPosting from './routes/jobPostingsRoute.js' ;
 import studentDashboardRoute from './routes/studentDashboard/studentDashboardRoute.js';
 import EmployerHiringChannelRoute from './routes/employerHiringChannel/hiringChannelRoute.js'
 import CollegeJobManagement from "./routes/collegeJobManageRoute.js" ;
-import resumeRoutes from './routes/Resume.route.js';
+import resumeRoutes from './routes/resumeroute.js';
 app.use("/api/auth", authRoutes);
 app.use("/api", student_onboardingroutes);
 app.use("/api/hiring-channels", jobPosting);
