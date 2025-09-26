@@ -3,7 +3,7 @@ import { Search, MapPin, Clock } from 'lucide-react';
 import { statusSteps, similarJobs } from '../../../constants/data.js';
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
 
-export default function OncampusApplicationStatus () {
+export default function OncampusApplicationStatus() {
   const [oncampusJobs, setOncampusJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,9 +28,10 @@ export default function OncampusApplicationStatus () {
           degree: jobDetail?.degree?.join(", ") ?? "-",
           employmentType: jobDetail?.employmentType ?? "-",
           city: jobDetail?.city ?? "-",
-          state: jobDetail?.state ?? "-",
+          state: jobDetail?.state ?? jobDetail?.location[0],
           country: jobDetail?.country ?? "-",
           skills: Array.isArray(jobDetail?.skills) ? jobDetail.skills.join(", ") : "-",
+          description: jobDetail?.description
         };
       });
 
@@ -175,6 +176,10 @@ export default function OncampusApplicationStatus () {
                   <p className="text-gray-700">
                     Job Type: {selectedJob.employmentType}
                   </p>
+                </div>
+                <div>
+                  <h3 className='font-semibold mt-2'>Description</h3>
+                  <p>{selectedJob.description}</p>
                 </div>
 
                 <div className="mt-6">
