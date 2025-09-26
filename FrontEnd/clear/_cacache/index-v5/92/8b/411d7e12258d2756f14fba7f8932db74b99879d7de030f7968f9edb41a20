@@ -1,2 +1,0 @@
-
-a629683980ae688c884e0da971c3208448298a99	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/gensync/-/gensync-1.0.0-beta.2.tgz","integrity":null,"time":1758794517433,"size":"0","metadata":{"time":1758794517433,"url":"http://registry.npmjs.org/gensync/-/gensync-1.0.0-beta.2.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:57 GMT","location":"https://registry.npmjs.org/gensync/-/gensync-1.0.0-beta.2.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

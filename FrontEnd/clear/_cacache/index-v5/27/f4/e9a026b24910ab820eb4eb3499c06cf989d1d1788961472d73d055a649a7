@@ -1,2 +1,0 @@
-
-19b46b4a3cf0355310de78f1c15643a7b548c55b	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/eslint-scope/-/eslint-scope-8.4.0.tgz","integrity":null,"time":1758794517932,"size":"0","metadata":{"time":1758794517932,"url":"http://registry.npmjs.org/eslint-scope/-/eslint-scope-8.4.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:57 GMT","location":"https://registry.npmjs.org/eslint-scope/-/eslint-scope-8.4.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

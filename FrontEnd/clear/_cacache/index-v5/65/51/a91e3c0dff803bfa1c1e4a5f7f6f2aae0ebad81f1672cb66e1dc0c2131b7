@@ -1,2 +1,0 @@
-
-f85e270441bcc680d03a5f494af6e8b5bbafa7eb	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/cosmiconfig/-/cosmiconfig-8.3.6.tgz","integrity":null,"time":1758794521478,"size":"0","metadata":{"time":1758794521478,"url":"http://registry.npmjs.org/cosmiconfig/-/cosmiconfig-8.3.6.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:02:01 GMT","location":"https://registry.npmjs.org/cosmiconfig/-/cosmiconfig-8.3.6.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

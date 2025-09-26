@@ -20,15 +20,11 @@ const internationalExperienceSchema = new mongoose.Schema({
 
 
 const awardSchema = new mongoose.Schema({
-  // title: String,
-  // organization: String,
-  // startDate: String,
-  // endDate: String,
-  // description: String,
-
-  name: String,     // Changed from 'title' to 'name'
-  issuer: String,   // Changed from 'organization' to 'issuer'
-  date: String,
+  title: String,
+  organization: String,
+  startDate: String,
+  endDate: String,
+  description: String,
 });
 
 const publicationSchema = new mongoose.Schema({
@@ -130,6 +126,7 @@ const studentOnboardingSchema = new mongoose.Schema(
     currentCompany: String,
     noticePeriod: String,
     servingNoticePeriod: Boolean,
+    noticePeriodStartDate: String,
     totalYearsOfExperience: String,
 
 

@@ -1,2 +1,0 @@
-
-55c1044e451037a91b16903b89610bbcbea11fb9	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/idb/-/idb-7.1.1.tgz","integrity":null,"time":1758794517082,"size":"0","metadata":{"time":1758794517082,"url":"http://registry.npmjs.org/idb/-/idb-7.1.1.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:56 GMT","location":"https://registry.npmjs.org/idb/-/idb-7.1.1.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

@@ -1,2 +1,0 @@
-
-d7941028472de262ebba396430bd74359c37427a	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/run-parallel/-/run-parallel-1.2.0.tgz","integrity":null,"time":1758794514913,"size":"0","metadata":{"time":1758794514912,"url":"http://registry.npmjs.org/run-parallel/-/run-parallel-1.2.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:54 GMT","location":"https://registry.npmjs.org/run-parallel/-/run-parallel-1.2.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

@@ -1,2 +1,0 @@
-
-7a7a167f18e0ff7826eb60198f3614e04ab102c7	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/msw/-/msw-2.11.3.tgz","integrity":null,"time":1758794516314,"size":"0","metadata":{"time":1758794516314,"url":"http://registry.npmjs.org/msw/-/msw-2.11.3.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:56 GMT","location":"https://registry.npmjs.org/msw/-/msw-2.11.3.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
