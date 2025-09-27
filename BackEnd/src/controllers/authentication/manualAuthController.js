@@ -1,10 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import Auth from '../../models/authModel.js';
-// import dotenv from 'dotenv';
-// import BasicDetails from '../../models/Onboarding_basicdetails.js';
-
-// dotenv.config();
+import Conversation from '../../models/conversationModel.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -130,7 +127,7 @@ export const logout = async (req, res) => {
   }
 };
 
-// Optional: Add this if you need to get all users (excluding current user)
+// Add this if you need to get all users (excluding current user)
 export const allUsers = async (req, res) => {
   console.log("hey Budy")
   try {
