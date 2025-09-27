@@ -1,2 +1,0 @@
-
-a46b696c7bde237a9a32b9114fbfbf51e7bc619c	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/@tanstack/query-core/-/query-core-5.90.2.tgz","integrity":null,"time":1758794519120,"size":"0","metadata":{"time":1758794519120,"url":"http://registry.npmjs.org/@tanstack/query-core/-/query-core-5.90.2.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:58 GMT","location":"https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.90.2.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

@@ -1,2 +1,0 @@
-
-ff8381e8a32591f6f3e44efb70a62802e15acd16	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/is-wsl/-/is-wsl-2.2.0.tgz","integrity":null,"time":1758794457841,"size":"0","metadata":{"time":1758794457841,"url":"http://registry.npmjs.org/is-wsl/-/is-wsl-2.2.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:00:57 GMT","location":"https://registry.npmjs.org/is-wsl/-/is-wsl-2.2.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

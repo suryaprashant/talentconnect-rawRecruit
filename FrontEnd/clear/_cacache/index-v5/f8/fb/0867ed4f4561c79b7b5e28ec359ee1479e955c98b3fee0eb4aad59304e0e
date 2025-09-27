@@ -1,2 +1,0 @@
-
-27c654bd1bdf3b0d2b7885b6ca316bf2c31e3b79	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz","integrity":null,"time":1758794518740,"size":"0","metadata":{"time":1758794518740,"url":"http://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:58 GMT","location":"https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

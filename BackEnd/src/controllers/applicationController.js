@@ -385,7 +385,7 @@ export async function shortlistApplicant(req, res) {
             // service -> send mail to candidate
             const candidateMail = await getCandidatEmail(response.data.applicant);
             if (candidateMail.success) {
-                await sendStatusChangeEmail(candidateMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
+                sendStatusChangeEmail(candidateMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
             }
 
             return res.status(200).json(response);
@@ -407,7 +407,7 @@ export async function rejectApplicant(req, res) {
         if (response.success === true) {
             const candidateMail = await getCandidatEmail(response.data.applicant);
             if (candidateMail.success) {
-                await sendStatusChangeEmail(candidateMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
+                sendStatusChangeEmail(candidateMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
             }
 
             return res.status(200).json(response);
@@ -429,7 +429,7 @@ export async function acceptApplicant(req, res) {
         if (response.success === true) {
             const candidateMail = await getCandidatEmail(response.data.applicant);
             if (candidateMail.success) {
-                await sendStatusChangeEmail(candidateMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
+                sendStatusChangeEmail(candidateMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
             }
             return res.status(200).json(response);
         }

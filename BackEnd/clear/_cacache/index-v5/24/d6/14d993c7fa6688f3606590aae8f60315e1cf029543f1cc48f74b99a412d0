@@ -1,2 +1,0 @@
-
-1a869929de84b78b8804b39988be50658a8be15a	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/micromatch/-/micromatch-4.0.8.tgz","integrity":null,"time":1758794457364,"size":"0","metadata":{"time":1758794457364,"url":"http://registry.npmjs.org/micromatch/-/micromatch-4.0.8.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:00:57 GMT","location":"https://registry.npmjs.org/micromatch/-/micromatch-4.0.8.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

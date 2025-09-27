@@ -22,7 +22,7 @@ const HackathonDetail = () => {
 
   useEffect(() => {
     getHackathon();
-  }, [])
+  }, [id])
 
   const [expandedFaq, setExpandedFaq] = useState(null);
 

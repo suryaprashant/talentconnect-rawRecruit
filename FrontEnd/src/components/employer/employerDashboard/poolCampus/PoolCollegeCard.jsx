@@ -12,7 +12,7 @@ const PoolCollegeCard = ({ college }) => {
         <div className="font-medium mb-1 text-center">Degree</div>
         <div className="text-sm text-gray-600 mb-3 text-center">{college.name}</div>
         <Link 
-          to={`/employer-dashboard/pool-campus-requests/${college.id}`}
+          to={`/employer-dashboard/Pool-campus/${college.id}`}
           className="block w-full text-center border border-gray-300 rounded py-2 text-sm hover:bg-gray-50 transition"
         >
           Contact

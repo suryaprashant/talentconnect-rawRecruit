@@ -263,7 +263,7 @@ export default function OnCampusJobManagement() {
                       <td className="px-4 py-4">
                         {new Date(job.endDate).toUTCString().slice(0, 16)}
                       </td>
-                      <td className="px-4 py-4">{job.applicationCount || null}</td>
+                      <td className="px-4 py-4">{job?.applicationCount}</td>
                       <td className="px-4 py-4">
                         <div className="flex gap-2">
                           <button

@@ -1,2 +1,0 @@
-
-fd04b103a9653c53b3b10983d19d7de9897216ba	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/bignumber.js/-/bignumber.js-9.3.0.tgz","integrity":null,"time":1758794459275,"size":"0","metadata":{"time":1758794459275,"url":"http://registry.npmjs.org/bignumber.js/-/bignumber.js-9.3.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:00:58 GMT","location":"https://registry.npmjs.org/bignumber.js/-/bignumber.js-9.3.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}
