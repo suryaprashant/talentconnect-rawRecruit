@@ -2714,6 +2714,7 @@ function ProfProfile() {
                                                         {profileData.degree || 'N/A'} at {profileData.college || 'N/A'}, {profileData.yearOfGraduation || 'N/A'}
                                                     </p>
                                                    
+                                                   
                                                 </div>
                                                 <div className="flex gap-2">
                                                     {profileData.linkedin && (

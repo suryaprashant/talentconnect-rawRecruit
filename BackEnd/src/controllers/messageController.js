@@ -1,6 +1,8 @@
 import { getReceiverSocketId, io } from "../socketIO/server.js";
 import Conversation from "../models/conversationModel.js";
 import Message from "../models/message.model.js";
+
+
 export const sendMessage = async (req, res) => {
   try {
     const { message } = req.body;
@@ -36,6 +38,8 @@ export const sendMessage = async (req, res) => {
   }
 };
 
+
+
 export const getMessage = async (req, res) => {
   try {
     const { id: chatUser } = req.params;
@@ -46,7 +50,8 @@ export const getMessage = async (req, res) => {
     if (!conversation) {
       return res.status(201).json([]);
     }
-    const messages = conversation.messages;
+    const messages = conversation.messages || [];
+    console.log("Messages of the chats" , messages);
     res.status(201).json(messages);
   } catch (error) {
     console.log("Error in getMessage", error);

@@ -12,4 +12,16 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+
+   server: {
+    port: 5173, // The port your frontend will run on
+    proxy: {
+      // Requests to any path starting with /api will be forwarded
+      '/api': {
+        target: 'http://localhost:5000', // Your backend server address
+        changeOrigin: true, // Recommended for virtual hosted sites
+        secure: false,      // Set to false if your backend is http
+      },
+    },
+  },
 })
