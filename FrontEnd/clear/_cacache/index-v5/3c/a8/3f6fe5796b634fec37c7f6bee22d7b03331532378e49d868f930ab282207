@@ -1,2 +1,0 @@
-
-08dafa3c6f0865aebc43f412ccd49f718e2a524c	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/web-vitals/-/web-vitals-4.2.4.tgz","integrity":null,"time":1758794513498,"size":"0","metadata":{"time":1758794513498,"url":"http://registry.npmjs.org/web-vitals/-/web-vitals-4.2.4.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:53 GMT","location":"https://registry.npmjs.org/web-vitals/-/web-vitals-4.2.4.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

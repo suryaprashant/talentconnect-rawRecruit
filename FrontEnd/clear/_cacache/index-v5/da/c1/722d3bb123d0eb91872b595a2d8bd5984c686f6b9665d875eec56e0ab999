@@ -1,2 +1,0 @@
-
-e0056de01cfef9a5a2f0d2dea390dd676b22f928	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/keygrip/-/keygrip-1.1.0.tgz","integrity":null,"time":1758794516703,"size":"0","metadata":{"time":1758794516703,"url":"http://registry.npmjs.org/keygrip/-/keygrip-1.1.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:56 GMT","location":"https://registry.npmjs.org/keygrip/-/keygrip-1.1.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

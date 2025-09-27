@@ -1,2 +1,0 @@
-
-b621beba9b2fdff1e827f21cad73e71e2213774e	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz","integrity":null,"time":1758794518770,"size":"0","metadata":{"time":1758794518770,"url":"http://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Thu, 25 Sep 2025 10:01:58 GMT","location":"https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

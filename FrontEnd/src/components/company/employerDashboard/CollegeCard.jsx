@@ -34,7 +34,7 @@ const CollegeCard = ({ college }) => {
         </h3>
         
         <Link
-          to={`/employer-dashboard/on-campus-request/${college._id || college.id}`}
+          to={`/company-dashboard/On-campus/${college._id || college.id}`}
           className="block w-full text-center border border-gray-300 rounded py-2 text-sm hover:bg-blue-600 transition"
         >
           Contact

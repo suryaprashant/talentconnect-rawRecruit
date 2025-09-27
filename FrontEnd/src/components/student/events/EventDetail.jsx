@@ -24,7 +24,7 @@ const EventDetail = () => {
 
   useEffect(() => {
     getEvent();
-  }, [])
+  }, [id])
 
   const [expandedFaq, setExpandedFaq] = useState(null);
 
