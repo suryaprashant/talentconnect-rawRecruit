@@ -1,7 +1,9 @@
-import { createPostingService } from "../services/jobPostingService.js"
-import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
+import { createPostingService } from "../services/jobPostingService.js";
 import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
 import OnboardingModel from "../models/studentonboardingModel.js";
+import { getCompanyService } from "../services/companyService.js";
+import { getCollegeService } from "../services/collegeService.js";
+import { getStudentService } from "../services/studentService.js";
 
 
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
@@ -9,27 +11,27 @@ const sendError = (res, statusCode, message) => res.status(statusCode).json({ me
 
 
 export const createOffCampusJobPosting = async (req, res) => {
-   
-    try{
-       const userId = req.user._id;
-   
-       const companyPostedId = await CompanyProfile.findOne({ userId });
-   
-       if (!companyPostedId) {
-         return res.status(404).json({ error: "Company profile not found" });
-       }
-   
-       const postingData ={
-           ...req.body,
-           companyPosted: companyPostedId._id,
-           jobType: "Off-campus",
-       }
-       
-       const newPosting = await createPostingService(postingData);
-       if (!newPosting) {
-         return sendError(res, 500, "Failed to create job posting");
-       }
-       sendResponse(res, 201, { message: "Off-campus posting created successfully!", data: newPosting });
+
+    try {
+        const userId = req.user._id;
+
+        const companyPostedId = await getCompanyService(userId);
+
+        if (!companyPostedId) {
+            return res.status(404).json({ error: "Company profile not found" });
+        }
+
+        const postingData = {
+            ...req.body,
+            companyPosted: companyPostedId.data[0]._id,
+            jobType: "Off-campus",
+        }
+
+        const newPosting = await createPostingService(postingData);
+        if (!newPosting) {
+            return sendError(res, 500, "Failed to create job posting");
+        }
+        sendResponse(res, 201, { message: "Off-campus posting created successfully!", data: newPosting });
     }
     catch (error) {
         console.error("Error in createOffCampusJobPosting:", error.message);
@@ -41,18 +43,16 @@ export const createOnCampusPosting = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        const companyPostedId = await CompanyProfile.findOne({ userId });            
+        const companyPostedId = await getCompanyService(userId);
         if (!companyPostedId) {
             return res.status(404).json({ error: "Company profile not found" });
         }
 
         const postingData = {
             ...req.body,
-            companyPosted: companyPostedId._id,
+            companyPosted: companyPostedId.data[0]._id,
             jobType: "On-campus",
             visibleTo: "College", // Default visibility, can be changed based on requirements
-
-            
         };
 
         const newPosting = await createPostingService(postingData);
@@ -69,26 +69,26 @@ export const createOnCampusPosting = async (req, res) => {
 
 // college Request 
 export const createOnCampusCollegeRequest = async (req, res) => {
-   
+
     try {
         const userId = req.user._id;
-        console.log("User ID milega bhai :", userId);
-        const collegeProfile = await collegeOnboardingModel.findOne({ userId });
+        // console.log("User ID milega bhai :", userId);
+        const collegeProfile = await getCollegeService(userId);
         if (!collegeProfile) {
             return res.status(404).json({ error: "College profile not found" });
-        }   
+        }
         const postingData = {
             ...req.body,
-            collegePosted: collegeProfile._id,
+            collegePosted: collegeProfile.data[0]._id,
             jobType: "On-campus",
             visibleTo: "Company", // Default visibility for college requests
-        };  
+        };
         const newPosting = await createPostingService(postingData);
         if (!newPosting) {
             return sendError(res, 500, "Failed to create job posting");
         }
         sendResponse(res, 201, { message: "On-campus college request created successfully!", data: newPosting });
-        
+
     } catch (error) {
         console.error("Error in createOnCampusCollegeRequest:", error.message);
         sendError(res, 500, "Internal server error");
@@ -99,13 +99,13 @@ export const createOnCampusCollegeRequest = async (req, res) => {
 export const createPoolCampusCollegeRequest = async (req, res) => {
     try {
         const userId = req.user._id;
-        const companyPostedId = await collegeOnboardingModel.findOne({ userId });
-        if (!companyPostedId) {
+        const collegePostedId = await getCollegeService(userId);
+        if (!collegePostedId) {
             return res.status(404).json({ error: "College profile not found" });
         }
         const postingData = {
             ...req.body,
-            collegePosted: companyPostedId._id,
+            collegePosted: collegePostedId.data[0]._id,
             jobType: "Pool-campus",
             visibleTo: "Company", // Default visibility for college requests
         };
@@ -124,16 +124,16 @@ export const createPoolCampusPosting = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        const companyPostedId = await CompanyProfile.findOne({ userId });            
+        const companyPostedId = await getCompanyService(userId);
         if (!companyPostedId) {
             return res.status(404).json({ error: "Company profile not found" });
         }
         const postingData = {
             ...req.body,
-            companyPosted: companyPostedId._id,
+            companyPosted: companyPostedId.data[0]._id,
             jobType: "Pool-campus",
-            visibleTo: "College", 
-             
+            visibleTo: "College",
+
         };
         const newPosting = await createPostingService(postingData);
         if (!newPosting) {
@@ -147,18 +147,17 @@ export const createPoolCampusPosting = async (req, res) => {
     }
 }
 
-
 export const createJobPosting = async (req, res) => {
     try {
         const userId = req.user._id;
-        console.log("User ID:", userId);
-        const companyPostedId = await CompanyProfile.findOne({ userId });
+        // console.log("User ID:", userId);
+        const companyPostedId = await getCompanyService(userId);
         if (!companyPostedId) {
             return res.status(404).json({ error: "Company profile not found" });
-        }       
+        }
         const postingData = {
             ...req.body,
-            companyPosted: companyPostedId._id,
+            companyPosted: companyPostedId.data[0]._id,
             jobType: "Job-listing",
         };
         const newPosting = await createPostingService(postingData);
@@ -166,7 +165,7 @@ export const createJobPosting = async (req, res) => {
             return sendError(res, 500, "Failed to create job posting");
         }
         sendResponse(res, 201, { message: "Job posting created successfully!", data: newPosting });
-    }       
+    }
     catch (error) {
         console.error("Error in createJobPosting:", error.message);
         sendError(res, 500, "Internal server error");
@@ -178,13 +177,13 @@ export const createInternshipPosting = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        const companyPostedId = await CompanyProfile.findOne({ userId });
+        const companyPostedId = await getCompanyService(userId);
         if (!companyPostedId) {
             return res.status(404).json({ error: "Company profile not found" });
         }
         const postingData = {
             ...req.body,
-            companyPosted: companyPostedId._id,
+            companyPosted: companyPostedId.data[0]._id,
             jobType: "Internship",
         };
         const newPosting = await createPostingService(postingData);
@@ -199,17 +198,17 @@ export const createInternshipPosting = async (req, res) => {
     }
 }
 
-export const createRefferralPosting = async (req, res) =>{
-    try{
+export const createRefferralPosting = async (req, res) => {
+    try {
         const userId = req.user._id;
 
-        const companyPostedId = await OnboardingModel.findOne({ userId });
-        if (!companyPostedId) {
+        const user = await getStudentService(userId);
+        if (!user) {
             return res.status(404).json({ error: "User profile not found" });
-        }   
+        }
         const postingData = {
             ...req.body,
-            candidatePosted: companyPostedId._id,
+            candidatePosted: user.data[0]._id,
             jobType: "Referral",
         };
         const newPosting = await createPostingService(postingData);
@@ -223,6 +222,6 @@ export const createRefferralPosting = async (req, res) =>{
         console.error("Error in createRefferralPosting:", error.message);
         sendError(res, 500, "Internal server error");
     }
-    
+
 }
 

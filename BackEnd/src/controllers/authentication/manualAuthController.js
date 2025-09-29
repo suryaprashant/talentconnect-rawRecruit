@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import Auth from '../../models/authModel.js';
-import Conversation from '../../models/conversationModel.js';
+// import Conversation from '../../models/conversationModel.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 

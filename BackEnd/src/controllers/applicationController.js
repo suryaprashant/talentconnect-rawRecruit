@@ -1,4 +1,3 @@
-import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import {
     ChangeStatusService,
     createApplicationService,
@@ -302,43 +301,7 @@ export async function getUserApplicationStatus(req, res) {
     }
 }
 
-// export async function getJobListingUserApplication(req, res) {
-//     const userId = req.user._id;
-
-//     try {
-//         const user = await getStudentService(userId);
-//         if (!user) return res.status(404).json({ error: "Invalid user" });
-
-//         const response = await fetchApplicationStatusService(user.data[0]._id, "Job-listing");
-
-//         if (response.success) res.status(200).json(response);
-//         else res.status(404).json(response);
-//     } catch (error) {
-//         console.log("Error: ", error);
-//         res.status(500).json({ Error: "Internal server error" });
-//     }
-// }
-
-// export async function getInternshipUserApplication(req, res) {
-//     const userId = req.user._id;
-
-//     try {
-//         const user = await getStudentService(userId);
-//         if (!user) return res.status(404).json({ error: "Invalid user" });
-
-//         const response = await fetchInternshipApplicationService(user.data[0]._id);
-//         // console.log(response);
-
-//         if (response.success) res.status(200).json(response);
-//         else res.status(404).json(response);
-//     } catch (error) {
-//         console.log("Error: ", error);
-//         res.status(500).json({ Error: "Internal server error" });
-//     }
-// }
-
 // action by company
-
 // offcampus and joblisting
 export async function getApplicationsByJob(req, res) {
     const { jobId, jobType } = req.query;
@@ -447,10 +410,10 @@ export async function getShortlistedCandidatesByCompany(req, res) {
     if (!applicantType || !jobType) return res.status(404).json({ msg: "Applicant not defined!" });
 
     try {
-        const company = await CompanyProfile.find({ userId: companyId }).lean();
+        const company = await getCompanyService(companyId);
         if (!company) return res.status(404).json({ msg: "company not found!" });
         // console.log(company);
-        const response = await fetchCandidatesbyStatus(company[0]._id, "Shortlisted", applicantType, jobType);
+        const response = await fetchCandidatesbyStatus(company.data[0]._id, "Shortlisted", applicantType, jobType);
         // console.log(response);
         res.status(200).json(response);
     } catch (error) {
@@ -466,9 +429,9 @@ export async function getAcceptedCandidatesByCompany(req, res) {
     if (!applicantType || !jobType) return res.status(404).json({ msg: "Applicant not defined!" });
 
     try {
-        const company = await CompanyProfile.find({ userId: companyId }).lean();
+        const company = await getCompanyService(companyId);
         if (!company) return res.status(404).json({ msg: "company not found!" });
-        const response = await fetchCandidatesbyStatus(company[0]._id, "Accepted", applicantType, jobType);
+        const response = await fetchCandidatesbyStatus(company.data[0]._id, "Accepted", applicantType, jobType);
         // console.log(response);
         res.status(200).json(response);
     } catch (error) {
@@ -476,19 +439,3 @@ export async function getAcceptedCandidatesByCompany(req, res) {
         res.status(500).json({ Error: "Internal server error" });
     }
 }
-
-
-// oncampus (no use)
-// export async function getAcceptedCandidatesFromCollege(req, res) {
-//     const { companyId } = req.params;
-//     if (!companyId) return res.status(404).json({ error: 'Job not found!' });
-
-//     try {
-//         const response = await getAcceptedOnCampusService(companyId);
-
-//         res.status(200).json(response.data);
-//     } catch (error) {
-//         console.log("Error: ", error);
-//         res.status(500).json({ Error: "Internal server error" });
-//     }
-// }
