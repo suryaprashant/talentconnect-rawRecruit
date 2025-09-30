@@ -1,30 +1,34 @@
 import express from "express";
 
-import { fetchOpportunitiesForCollegeStudent, findRelevantJoblistingOpportunity, findRelevantOpportunityById } from "../controllers/relevantJobsController.js";
-import { fetchOnCampusOpportunities, findJobListingOpportunityById, findOffcampusOpportunityById, findOpportunityById } from "../controllers/jobController.js";
+// import { fetchOpportunitiesForCollegeStudent, findRelevantJoblistingOpportunity, findRelevantOpportunityById } from "../controllers/relevantJobsController.js";
+import {
+    // fetchOnCampusOpportunities, 
+    findJobListingOpportunityById, findOffcampusOpportunityById,
+    // findOpportunityById
+} from "../controllers/jobController.js";
 import secureRoute from "../middlewares/secureRouteMiddleware.js";
 
 const router = express.Router();
 
 // api '.../jobs'
 
-// company
-// router.post('/:companyId', createJob);
+// // company
+// // router.post('/:companyId', createJob);
 
-// colleges
-router.get('/oncampus', fetchOnCampusOpportunities);
+// // colleges
+// router.get('/oncampus', fetchOnCampusOpportunities);
 
-// user
-// find jobs to collegeStudents
-router.get('/campus/:collegeId', fetchOpportunitiesForCollegeStudent);
-// professional
-// router.get('/professional');
+// // user
+// // find jobs to collegeStudents
+// router.get('/campus/:collegeId', fetchOpportunitiesForCollegeStudent);
+// // professional
+// // router.get('/professional');
 
-router.get('/relevantjobs/offcampus', secureRoute, findRelevantOpportunityById);
-router.get('/relevantjobs/joblisting', secureRoute, findRelevantJoblistingOpportunity);
+// router.get('/relevantjobs/offcampus', secureRoute, findRelevantOpportunityById);
+// router.get('/relevantjobs/joblisting', secureRoute, findRelevantJoblistingOpportunity);
 router.get('/jobDetails/:jobId', findOffcampusOpportunityById);
 router.get('/jobDetails/joblisting/:jobId', findJobListingOpportunityById);
-// router.get('/campusopportunity', fetchCampusOpportunities);
+// // router.get('/campusopportunity', fetchCampusOpportunities);
 
 
 export default router;
