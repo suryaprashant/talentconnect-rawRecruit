@@ -1,51 +1,73 @@
 import EventParticipation from '../models/eventParticipationDetails.js';
-import { sendEmail } from "../utils/sendEmail.js"
-import sendInvitationEmail from '../utils/sendInvitationEmail.js';
-// import Hackathon from '../models/hackathon.js';
+import eventParticipationService from '../services/eventParticipationService.js';
 
 // @desc    Create a new event participation entry
 // @route   POST /eventParticipation/register
+// export const registerParticipant = async (req, res) => {
+//   try {
+//     const {
+//       eventID,
+//       name,
+//       email,
+//       projectTitle,
+//       teamMembers = [],
+//     } = req.body;
+//     const teamLeaderId = req.user._id;
+
+//     console.log("before sending mail");
+    
+//     // 1. Send invitation email to team members who don't have a teamMemberId
+//     for (const member of teamMembers) {
+//       if (!member.teamMemberId) {
+//         try {
+//           await sendInvitationEmail(member.email, member.name);
+//           console.log(`Invitation sent to ${member.email}`);
+//         } catch (emailErr) {
+//           console.error(`Failed to send email to ${member.email}:`, emailErr.message);
+//         }
+//       }
+//     }
+//     console.log("After sending mail");
+    
+//     // 2. Save participant in DB
+//     const newParticipation = new EventParticipation({
+//       teamLeaderId,
+//       eventID,
+//       name,
+//       email,
+//       projectTitle,
+//       teamMembers,
+//     });
+
+//     await newParticipation.save();
+
+//     res.status(201).json({
+//       success: true,
+//       message: 'Participant registered successfully',
+//       data: newParticipation,
+//     });
+
+//   } catch (error) {
+//     console.error('Registration Error:', error);
+//     res.status(500).json({
+//       success: false,
+//       message: 'Server error during registration',
+//       error: error.message,
+//     });
+//   }
+// };
 export const registerParticipant = async (req, res) => {
   try {
-    const {
-      eventID,
-      name,
-      email,
-      projectTitle,
-      teamMembers = [],
-    } = req.body;
-    console.log("before sending mail");
-    
-    // 1. Send invitation email to team members who don't have a teamMemberId
-    for (const member of teamMembers) {
-      if (!member.teamMemberId) {
-        try {
-          await sendInvitationEmail(member.email, member.name);
-          console.log(`Invitation sent to ${member.email}`);
-        } catch (emailErr) {
-          console.error(`Failed to send email to ${member.email}:`, emailErr.message);
-        }
-      }
-    }
-    console.log("After sending mail");
-    
-    // 2. Save participant in DB
-    const newParticipation = new EventParticipation({
-      eventID,
-      name,
-      email,
-      projectTitle,
-      teamMembers,
-    });
+    const participantData = req.body;
+    const teamLeaderId = req.user._id;
 
-    await newParticipation.save();
+    const newParticipant = await registerParticipantService(participantData, teamLeaderId);
 
     res.status(201).json({
       success: true,
       message: 'Participant registered successfully',
-      data: newParticipation,
+      data: newParticipant,
     });
-
   } catch (error) {
     console.error('Registration Error:', error);
     res.status(500).json({
@@ -56,15 +78,13 @@ export const registerParticipant = async (req, res) => {
   }
 };
 
-
-
 // @desc    Get all participants for an event
 // @route   GET /eventParticipation/:eventID
 export const getParticipantsByEvent = async (req, res) => {
   try {
     const { eventID } = req.params;
 
-    const participants = await EventParticipation.find({ eventID });
+    const participants = await eventParticipationService.getByEventId({ eventID });
 
     res.status(200).json({
       success: true,
@@ -80,12 +100,31 @@ export const getParticipantsByEvent = async (req, res) => {
     });
   }
 };
-// // @desc    Get all participants 
+// // @desc    Get all participants   
 // // @route   GET /eventParticipation
 export const getAllParticipants = async (req, res) => {
   try {
-    const participants = await EventParticipation.find();
+    const participants = await eventParticipationService.getall();
 
+    res.status(200).json({
+      success: true,
+      count: participants.length,
+      data: participants
+    });
+  } catch (error) {
+    console.error('Error fetching all participants:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+};
+// // @desc    Get by participantId 
+// // @route   GET /eventParticipation/byParticipantId
+export const getByParticipantId = async (req, res) => {
+  try {
+    const participants = await eventParticipationService.getByParticipantId();
     res.status(200).json({
       success: true,
       count: participants.length,
@@ -105,11 +144,9 @@ export const getAllParticipants = async (req, res) => {
 export const updateParticipant = async (req, res) => {
   try {
     const { id } = req.params;
+    const updateData = req.body;
 
-    const updated = await EventParticipation.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true
-    });
+    const updated = await updateParticipantService(id, updateData);
 
     if (!updated) {
       return res.status(404).json({
@@ -132,6 +169,7 @@ export const updateParticipant = async (req, res) => {
     });
   }
 };
+
 // // @desc    delete al participand
 // // @route   GET /eventParticipation/delete/:eventID
 export const deleteParticipant = async (req, res) => {

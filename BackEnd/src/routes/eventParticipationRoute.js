@@ -1,10 +1,12 @@
 import express from 'express';
+import secureRoute from '../middlewares/secureRouteMiddleware.js';
 import {
   registerParticipant,
   getAllParticipants,
   getParticipantsByEvent,
   updateParticipant,
-  deleteParticipant
+  deleteParticipant,
+  getByParticipantId
 } from '../controllers/eventParticipationController.js';
 
 const router = express.Router();
@@ -13,13 +15,17 @@ const router = express.Router();
 // @route   GET /eventParticipation
 router.get('/', getAllParticipants);
 
+router.get('/byParticipent', getByParticipantId);
+
 // @desc    Get participants by event ID
 // GET /eventParticipation/:eventID
 router.get('/:eventID', getParticipantsByEvent);
 
+// router.get('/')
+
 // @desc    Register a new participant
 // @route   POST /eventParticipation/register
-router.post('/register', registerParticipant);
+router.post('/register',secureRoute, registerParticipant);
 
 // @desc    Update participant by ID
 // @route   PUT /eventParticipation/update/:id

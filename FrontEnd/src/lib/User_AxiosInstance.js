@@ -64,7 +64,11 @@ export function getInternshipById(internshipId) {
     .then(response => response)
     .catch(error => error);
 }
-
+export function getEventApplicationStatus(){
+  return axiosClient.get(`/eventParticipation`)
+    .then(response => response)
+    .catch(error => error);
+}
 
 
 export function getHackathons() {
