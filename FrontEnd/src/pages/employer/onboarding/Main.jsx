@@ -1,6 +1,6 @@
 
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import IntroduceYourself from "./Introduction";
 import ConnectToCompany from "./ConnecToCompany";
 import DefineHiringPreferences from "./HiringPrefrences";
@@ -16,6 +16,15 @@ const OnboardingFlowForm = () => {
   const navigate = useNavigate();
   const[authUser , setAuthUser] = useAuth() ;
 
+   useEffect(() => {
+    if (authUser?.user?.email && !formData.email) {
+      setFormData(prev => ({
+        ...prev,
+        email: authUser.user.email,
+      }));
+    }
+  }, [authUser, formData.email]);
+
   const updateFormData = (newData) => {
     setFormData((prev) => ({ ...prev, ...newData }));
   };
@@ -27,7 +36,7 @@ const OnboardingFlowForm = () => {
   const prevStep = () => {
     setCurrentStep((prev) => prev - 1);
   };
-
+  console.log("aa gya mail",authUser?.user?.email )
   const handleSubmit = async () => {
     try {
       const finalFormData = new FormData();
@@ -36,7 +45,7 @@ const OnboardingFlowForm = () => {
       const employerDetails = {
         name: formData.name,
         designation: formData.designation,
-        workEmail:authUser?.user?.email ||formData.email,
+        workEmail:formData.email,
         mobile: formData.mobile,
         linkedIn: formData.linkedin,
       };

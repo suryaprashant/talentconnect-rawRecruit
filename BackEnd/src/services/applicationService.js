@@ -507,7 +507,14 @@ export async function fetchCandidatesbyStatus(companyId, targetStatus, applicant
             projectApplicant = {
                 college: "$applicantDetails.collegeUniversityDetails"
             };
-        } else {
+        } 
+        else if(applicantType == "company"){
+            fromCollection = "CompanyProfile" ;
+            projectApplicant = {
+                company: "$applicantDetails.companyDetails"
+            }
+        }
+        else {
             throw new Error(`Unsupported applicantType: ${applicantType}`);
         }
 

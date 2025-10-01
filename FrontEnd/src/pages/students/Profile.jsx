@@ -1557,7 +1557,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import Badge from '@/components/ui/Badge';
-import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown } from 'react-icons/fi';
+import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown,FiTrash2 } from 'react-icons/fi';
 import axios from 'axios';
 
 function Profile() {
@@ -2217,268 +2217,354 @@ function Profile() {
     const displayFieldWrapperStyle = "relative mt-1";
 
     switch (activeTab) {
-      case 'overview':
-        return (
-          <div className="space-y-6">
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">What recruiters will see</h3>
-              <div className="border-2 border-gray-200 rounded-lg divide-y divide-gray-200">
-                <div className="p-6">
-                  <div className="flex items-start gap-4">
-                    <Avatar size="lg" name={profileData.fullName} src={profileData.profileImageUrl} />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
-                        <div>
-                          <h4 className="text-lg font-medium text-gray-900">{profileData.fullName || 'N/A'}</h4>
-                          <p className="text-sm text-gray-600">
-                            {profileData.degree || 'N/A'} in {profileData.specialization || 'N/A'} at {profileData.college || 'N/A'}
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          {profileData.linkedin && (
-                            <a href={profileData.linkedin} target="_blank" rel="noopener noreferrer">
-                              <Button variant="outline" size="sm" className="border-black text-black hover:bg-gray-50">
-                                <FiLinkedin className="w-4 h-4" />
-                              </Button>
-                            </a>
-                          )}
-                          {profileData.github && (
-                            <a href={profileData.github} target="_blank" rel="noopener noreferrer">
-                              <Button variant="outline" size="sm" className="border-black text-black hover:bg-gray-50">
-                                <FiGithub className="w-4 h-4" />
-                              </Button>
-                            </a>
-                          )}
-                          {profileData.portfolio && (
-                            <a href={profileData.portfolio} target="_blank" rel="noopener noreferrer">
-                              <Button variant="outline" size="sm" className="border-black text-black hover:bg-gray-50">
-                                <FiGlobe className="w-4 h-4" />
-                              </Button>
-                            </a>
-                          )}
-                        </div>
+     case 'overview':
+  return (
+    <div className="space-y-6">
+      <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">What recruiters will see</h3>
+        <div className="border-2 border-gray-200 rounded-lg divide-y divide-gray-200">
+          <div className="p-6">
+            <div className="flex items-start gap-4">
+              <Avatar size="lg" name={profileData.fullName} src={profileData.profileImageUrl} />
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                  <div>
+                    <h4 className="text-lg font-medium text-gray-900">{profileData.fullName || 'N/A'}</h4>
+                    <p className="text-sm text-gray-600">
+                      {profileData.degree || 'N/A'} in {profileData.specialization || 'N/A'} at {profileData.college || 'N/A'}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    {profileData.linkedin && (
+                      <a href={profileData.linkedin} target="_blank" rel="noopener noreferrer">
+                        <Button variant="outline" size="sm" className="border-black text-black hover:bg-gray-50">
+                          <FiLinkedin className="w-4 h-4" />
+                        </Button>
+                      </a>
+                    )}
+                    {profileData.github && (
+                      <a href={profileData.github} target="_blank" rel="noopener noreferrer">
+                        <Button variant="outline" size="sm" className="border-black text-black hover:bg-gray-50">
+                          <FiGithub className="w-4 h-4" />
+                        </Button>
+                      </a>
+                    )}
+                    {profileData.portfolio && (
+                      <a href={profileData.portfolio} target="_blank" rel="noopener noreferrer">
+                        <Button variant="outline" size="sm" className="border-black text-black hover:bg-gray-50">
+                          <FiGlobe className="w-4 h-4" />
+                        </Button>
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                   <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      About
+                    </h5>
+                    <p className="text-gray-600">{profileData.about || 'No information provided.'}</p>
+                  </div>
+
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Contact Information
+                    </h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-500">Email address</p>
+                        <p className="text-gray-900">{profileData.email || 'N/A'}</p>
                       </div>
-
-                      <div className="space-y-6">
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">About</h5>
-                          <p className="text-gray-600">{profileData.about || 'No information provided.'}</p>
-                        </div>
-
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Contact Information</h5>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-sm text-gray-500">Email address</p>
-                              <p className="text-gray-900">{profileData.email || 'N/A'}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-500">Mobile Number</p>
-                              <p className="text-gray-900">{profileData.phone || 'N/A'}</p>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* New Personal Details in Overview */}
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Personal Details</h5>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-sm text-gray-500">Date of Birth</p>
-                              <p className="text-gray-900">{profileData.dob || 'N/A'}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-500">Gender</p>
-                              <p className="text-gray-900">{profileData.gender || 'N/A'}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-500">Marital Status</p>
-                              <p className="text-gray-900">{profileData.maritalStatus || 'N/A'}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-500">Ethnicity</p>
-                              <p className="text-gray-900">{profileData.ethnicity || 'N/A'}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-500">Visa / Work Authorization</p>
-                              <p className="text-gray-900">{profileData.visaStatus || 'N/A'}</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Education</h5>
-                          <p className="text-gray-900">{profileData.degree || 'N/A'} in {profileData.specialization || 'N/A'}- <span>cgpa: {profileData.cgpa}</span></p>
-                          <p className="text-gray-600">{profileData.college || 'N/A'} </p>
-                        </div>
-
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Skills</h5>
-                          <div className="flex flex-wrap gap-2">
-                            {profileData.skills && profileData.skills.length > 0 ? (
-                              profileData.skills.map((skill) => (
-                                <Badge key={skill} variant="primary" size="md" className="bg-gray-100 text-gray-800">
-                                  {skill}
-                                </Badge>
-                              ))
-                            ) : (
-                              <span className="text-gray-600">N/A</span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                            <h5 className="font-medium text-gray-900 mb-2">Tools & Platforms</h5>
-                            <div className="flex flex-wrap gap-2">
-                                {profileData.toolsAndPlatforms && profileData.toolsAndPlatforms.length > 0 ? (
-                                    profileData.toolsAndPlatforms.map((tool) => (
-                                        <Badge key={tool} variant="primary" size="md" className="bg-gray-100 text-gray-800">
-                                            {tool}
-                                        </Badge>
-                                    ))
-                                ) : (
-                                    <span className="text-gray-600">N/A</span>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Interested Industry Type</h5>
-                          <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.industry && profileData.industry.length > 0 ? profileData.industry[0] : 'N/A'}</Badge>
-                        </div>
-
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Interested Job Roles</h5>
-                          <div className="flex flex-wrap gap-2">
-                            {profileData.jobRoles && profileData.jobRoles.length > 0 ? (
-                              profileData.jobRoles.map((role) => (
-                                <Badge key={role} variant="primary" size="md" className="bg-gray-100 text-gray-800">{role}</Badge>
-                              ))
-                            ) : (
-                              <span className="text-gray-600">N/A</span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Preferred Job Locations</h5>
-                          <div className="flex flex-wrap gap-2">
-                            {profileData.locations && profileData.locations.length > 0 ? (
-                              profileData.locations.map((location) => (
-                                <Badge key={location} variant="primary" size="md" className="bg-gray-100 text-gray-800">
-                                  {location}
-                                </Badge>
-                              ))
-                            ) : (
-                              <span className="text-gray-600">N/A</span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Looking for</h5>
-                          <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.lookingFor || 'N/A'}</Badge>
-                        </div>
-
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Employment Type</h5>
-                          <div className="flex gap-2">
-                            {profileData.employmentType ? (
-                              <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.employmentType}</Badge>
-                            ) : (
-                              <span className="text-gray-600">N/A</span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                            <h5 className="font-medium text-gray-900 mb-2">Shift Preference</h5>
-                            <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.openToShift || 'N/A'}</Badge>
-                        </div>
-                        
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Certifications</h5>
-                          {profileData.certifications && profileData.certifications.length > 0 ? (
-                            <ul className="list-disc list-inside text-gray-600">
-                              {profileData.certifications.map((cert, idx) => (
-                                <li key={idx}>
-                                  {cert.name || 'N/A'}
-                                  {cert.url && (
-                                    <a href={cert.url} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-600 hover:underline">
-                                      (Link)
-                                    </a>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <span className="text-gray-600">No certifications added.</span>
-                          )}
-                        </div>
-
-                        {/* New Sections in Overview */}
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Awards & Recognition</h5>
-                          {profileData.awards && profileData.awards.length > 0 ? (
-                            profileData.awards.map((award, idx) => (
-                              <div key={idx} className="mb-2">
-                                <p className="font-medium text-gray-800">{award.name}</p>
-                                <p className="text-sm text-gray-600">{award.issuer} - {award.date}</p>
-                              </div>
-                            ))
-                          ) : (<span className="text-gray-600">No awards added.</span>)}
-                        </div>
-                        
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Published Articles/Blogs</h5>
-                          {profileData.publications && profileData.publications.length > 0 ? (
-                             <ul className="list-disc list-inside text-gray-600">
-                               {profileData.publications.map((pub, idx) => (
-                                 <li key={idx}>
-                                   {pub.url ? (
-                                     <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{pub.title}</a>
-                                   ) : pub.title}
-                                 </li>
-                               ))}
-                             </ul>
-                          ) : (<span className="text-gray-600">No publications added.</span>)}
-                        </div>
-
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Achievements</h5>
-                          {profileData.achievements && profileData.achievements.length > 0 ? (
-                            profileData.achievements.map((ach, idx) => (
-                              <div key={idx} className="mb-2">
-                                <p className="font-medium text-gray-800">{ach.title}</p>
-                                <p className="text-sm text-gray-600">{ach.event} - {ach.date}</p>
-                              </div>
-                            ))
-                          ) : (<span className="text-gray-600">No achievements added.</span>)}
-                        </div>
-
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                            <h5 className="font-medium text-gray-900 mb-2">Languages Known</h5>
-                            <div className="flex flex-wrap gap-2">
-                                {profileData.languagesKnown && profileData.languagesKnown.length > 0 ? (
-                                    profileData.languagesKnown.map((lang) => (
-                                        <Badge key={lang} variant="primary" size="md" className="bg-gray-100 text-gray-800">
-                                            {lang}
-                                        </Badge>
-                                    ))
-                                ) : (
-                                    <span className="text-gray-600">N/A</span>
-                                )}
-                            </div>
-                        </div>
-
+                      <div>
+                        <p className="text-sm text-gray-500">Mobile Number</p>
+                        <p className="text-gray-900">{profileData.phone || 'N/A'}</p>
                       </div>
                     </div>
                   </div>
+
+                  {/* New Personal Details in Overview */}
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Personal Details
+                    </h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-500">Date of Birth</p>
+                        <p className="text-gray-900">{profileData.dob || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Gender</p>
+                        <p className="text-gray-900">{profileData.gender || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Marital Status</p>
+                        <p className="text-gray-900">{profileData.maritalStatus || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Ethnicity</p>
+                        <p className="text-gray-900">{profileData.ethnicity || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Visa / Work Authorization</p>
+                        <p className="text-gray-900">{profileData.visaStatus || 'N/A'}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* START OF MODIFIED ACADEMIC SECTION */}
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Academic Background
+                    </h5>
+                    
+                    <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
+                      {/* Degree & Specialization */}
+                      <div className="col-span-2 sm:col-span-1">
+                        <p className="text-gray-500">Degree & Specialization</p>
+                        <p className="font-semibold text-gray-900">
+                          {profileData.degree || 'N/A'} / {profileData.specialization || 'N/A'}
+                        </p>
+                      </div>
+
+                      {/* CGPA / Percentage */}
+                      <div className="col-span-2 sm:col-span-1">
+                        <p className="text-gray-500">CGPA / Percentage</p>
+                        <p className="font-semibold text-gray-900">{profileData.cgpa || 'N/A'}</p>
+                      </div>
+
+                      {/* Institution */}
+                      <div className="col-span-2">
+                        <p className="text-gray-500">Institution</p>
+                        <p className="font-semibold text-gray-900">{profileData.college || 'N/A'}</p>
+                      </div>
+                      
+                      {/* Graduation Date */}
+                      <div className="col-span-2">
+                        <p className="text-gray-500">Graduation Date</p>
+                        <p className="font-semibold text-green-600">
+                          {profileData.yearOfGraduation || 'N/A'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* END OF MODIFIED ACADEMIC SECTION */}
+ <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Skills
+                    </h5>
+                    <div className="flex flex-wrap gap-2">
+                      {profileData.skills && profileData.skills.length > 0 ? (
+                        profileData.skills.map((skill) => (
+                          <Badge key={skill} variant="primary" size="md" className="bg-gray-100 text-gray-800">
+                            {skill}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-gray-600">N/A</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Tools and Platforms
+                    </h5>
+                    <div className="flex flex-wrap gap-2">
+                      {profileData.toolsAndPlatforms && profileData.toolsAndPlatforms.length > 0 ? (
+                        profileData.toolsAndPlatforms.map((tool) => (
+                          <Badge key={tool} variant="primary" size="md" className="bg-gray-100 text-gray-800">
+                            {tool}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-gray-600">N/A</span>
+                      )}
+                    </div>
+                  </div>
+
+                   <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Interested Industry type
+                    </h5>
+                    <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.industry && profileData.industry.length > 0 ? profileData.industry[0] : 'N/A'}</Badge>
+                  </div>
+
+ <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Interested Job Roles
+                    </h5>
+                    <div className="flex flex-wrap gap-2">
+                      {profileData.jobRoles && profileData.jobRoles.length > 0 ? (
+                        profileData.jobRoles.map((role) => (
+                          <Badge key={role} variant="primary" size="md" className="bg-gray-100 text-gray-800">{role}</Badge>
+                        ))
+                      ) : (
+                        <span className="text-gray-600">N/A</span>
+                      )}
+                    </div>
+                  </div>
+
+                   <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Preferred Job Locations
+                    </h5>
+                    <div className="flex flex-wrap gap-2">
+                      {profileData.locations && profileData.locations.length > 0 ? (
+                        profileData.locations.map((location) => (
+                          <Badge key={location} variant="primary" size="md" className="bg-gray-100 text-gray-800">
+                            {location}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-gray-600">N/A</span>
+                      )}
+                    </div>
+                  </div>
+
+ <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Looking for
+                    </h5>
+                    <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.lookingFor || 'N/A'}</Badge>
+                  </div>
+
+                   <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Employment type
+                    </h5>
+                    <div className="flex gap-2">
+                      {profileData.employmentType ? (
+                        <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.employmentType}</Badge>
+                      ) : (
+                        <span className="text-gray-600">N/A</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Shift Preference
+                    </h5>
+                    <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.openToShift || 'N/A'}</Badge>
+                  </div>
+
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Certifications
+                    </h5>
+                    {profileData.certifications && profileData.certifications.length > 0 ? (
+                      <ul className="list-disc list-inside text-gray-600">
+                        {profileData.certifications.map((cert, idx) => (
+                          <li key={idx}>
+                            {cert.name || 'N/A'}
+                            {cert.url && (
+                              <a href={cert.url} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-600 hover:underline">
+                                (Link)
+                              </a>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <span className="text-gray-600">No certifications added.</span>
+                    )}
+                  </div>
+
+                 {/* New Awards & Recognition Section */}
+<div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+  <h5 className="text-lg font-bold text-gray-800 mb-4">
+    Awards & Recognition
+  </h5>
+  {profileData.awards && Array.isArray(profileData.awards) && profileData.awards.length > 0 ? (
+    <div className="space-y-4">
+      {profileData.awards.map((award, idx) => (
+        <div key={idx} className="pb-3 border-b border-gray-200 last:border-b-0 last:pb-0">
+          {/* Title and Organization */}
+          <p className="text-base font-semibold text-gray-900">
+            {/* Using 'title' and 'organization' */}
+            {award.title || 'Award Title N/A'}
+          </p>
+          <p className="text-sm text-gray-600 mb-1">
+            {award.organization || 'Issuer N/A'}
+          </p>
+          
+          {/* Dates */}
+          <p className="text-xs text-gray-500">
+            {/* Displaying Start and End Date */}
+            {award.startDate || 'N/A'} {award.endDate ? `— ${award.endDate}` : ''}
+          </p>
+          
+          {/* Description (Optional) */}
+          {award.description && (
+            <p className="text-sm text-gray-700 mt-2 italic border-l-2 border-indigo-300 pl-2">
+              {award.description}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  ) : (
+    <span className="text-gray-600">No awards added.</span>
+  )}
+</div>
+
+                   <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Published Blogs/Articles
+                    </h5>
+                    {profileData.publications && profileData.publications.length > 0 ? (
+                        <ul className="list-disc list-inside text-gray-600">
+                          {profileData.publications.map((pub, idx) => (
+                              <li key={idx}>
+                                {pub.url ? (
+                                  <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{pub.title}</a>
+                                ) : pub.title}
+                              </li>
+                          ))}
+                        </ul>
+                    ) : (<span className="text-gray-600">No publications added.</span>)}
+                  </div>
+
+ <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Achievements 
+                    </h5>
+                    {profileData.achievements && profileData.achievements.length > 0 ? (
+                      profileData.achievements.map((ach, idx) => (
+                        <div key={idx} className="mb-2">
+                          <p className="font-medium text-gray-800">{ach.title}</p>
+                          <p className="text-sm text-gray-600">{ach.event} - {ach.date}</p>
+                        </div>
+                      ))
+                    ) : (<span className="text-gray-600">No achievements added.</span>)}
+                  </div>
+
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Known Languages
+                    </h5>
+                    <div className="flex flex-wrap gap-2">
+                      {profileData.languagesKnown && profileData.languagesKnown.length > 0 ? (
+                        profileData.languagesKnown.map((lang) => (
+                          <Badge key={lang} variant="primary" size="md" className="bg-gray-100 text-gray-800">
+                            {lang}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-gray-600">N/A</span>
+                      )}
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
           </div>
-        );
+        </div>
+      </div>
+    </div>
+  );
       case 'profile':
         return (
           <div className="space-y-6">
@@ -3243,35 +3329,121 @@ function Profile() {
                 </Button>
               )}
             </div>
+         
+          {/* New Awards & Recognition Section */}
+<div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+    <div className="mb-4">
+        <h3 className="text-lg font-medium text-gray-900">Awards & Recognition</h3>
+        <p className="text-sm text-gray-600">Showcase your awards and recognitions.</p>
+    </div>
+    
+    {profileData.awards.map((award, index) => (
+        <div key={index} className="relative mb-6 p-4 border border-gray-200 rounded-xl space-y-4 shadow-sm bg-gray-50">
+            {isProfileEditing && (
+                <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => removeAward(index)} 
+                    className="absolute top-2 right-2 text-red-600 hover:bg-red-50"
+                >
+                    <FiTrash2 className="w-4 h-4 mr-1" /> Remove
+                </Button>
+            )}
             
-            {/* New Awards & Recognition Section */}
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-                <div className="mb-4">
-                    <h3 className="text-lg font-medium text-gray-900">Awards & Recognition</h3>
-                    <p className="text-sm text-gray-600">Showcase your awards and recognitions.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Field: title (Mapped from 'name') */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Award Title</label>
+                    {isProfileEditing ? (
+                        <input 
+                            type="text" 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                            value={award.title} 
+                            onChange={(e) => handleAwardChange(index, 'title', e.target.value)} 
+                            placeholder="e.g., Dean's List, Best Capstone Project"
+                        />
+                    ) : (
+                        <div className={displayFieldStyle}>{award.title || "N/A"}</div>
+                    )}
                 </div>
-                {profileData.awards.map((award, index) => (
-                    <div key={index} className="relative mb-4 p-4 border border-gray-200 rounded-lg space-y-4">
-                        {isProfileEditing && (<Button variant="ghost" size="sm" onClick={() => removeAward(index)} className="absolute top-2 right-2 text-red-600 hover:bg-red-50">Remove</Button>)}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Award Name</label>
-                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md" value={award.name} onChange={(e) => handleAwardChange(index, 'name', e.target.value)} />) : (<div className={displayFieldStyle}>{award.name || "N/A"}</div>)}
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Issuer</label>
-                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md" value={award.issuer} onChange={(e) => handleAwardChange(index, 'issuer', e.target.value)} />) : (<div className={displayFieldStyle}>{award.issuer || "N/A"}</div>)}
-                            </div>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                            {isProfileEditing ? (<input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md" value={award.date} onChange={(e) => handleAwardChange(index, 'date', e.target.value)} />) : (<div className={displayFieldStyle}>{award.date || "N/A"}</div>)}
-                        </div>
-                    </div>
-                ))}
-                {isProfileEditing && (<Button variant="outline" size="sm" onClick={addAward}><FiPlus className="w-4 h-4 mr-2" /> Add Award</Button>)}
+                
+                {/* Field: organization (Mapped from 'issuer') */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Organization / Issuer</label>
+                    {isProfileEditing ? (
+                        <input 
+                            type="text" 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                            value={award.organization} 
+                            onChange={(e) => handleAwardChange(index, 'organization', e.target.value)} 
+                            placeholder="e.g., Google, IEEE, University Name"
+                        />
+                    ) : (
+                        <div className={displayFieldStyle}>{award.organization || "N/A"}</div>
+                    )}
+                </div>
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+                {/* Field: startDate (Mapped from 'date') */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Start Date / Received Date</label>
+                    {isProfileEditing ? (
+                        <input 
+                            type="date" 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                            value={award.startDate} 
+                            onChange={(e) => handleAwardChange(index, 'startDate', e.target.value)} 
+                        />
+                    ) : (
+                        <div className={displayFieldStyle}>{award.startDate || "N/A"}</div>
+                    )}
+                </div>
+                
+                {/* Field: endDate */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">End Date (Optional)</label>
+                    {isProfileEditing ? (
+                        <input 
+                            type="date" 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                            value={award.endDate} 
+                            onChange={(e) => handleAwardChange(index, 'endDate', e.target.value)} 
+                        />
+                    ) : (
+                        <div className={displayFieldStyle}>{award.endDate || "N/A"}</div>
+                    )}
+                </div>
+            </div>
+
+            {/* Field: description */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description / Notes</label>
+                {isProfileEditing ? (
+                    <textarea
+                        rows="3"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                        value={award.description} 
+                        onChange={(e) => handleAwardChange(index, 'description', e.target.value)} 
+                        placeholder="Briefly describe the award and your role or contribution."
+                    />
+                ) : (
+                    <div className={displayFieldStyle}>{award.description || "N/A"}</div>
+                )}
+            </div>
+        </div>
+    ))}
+    
+    {profileData.awards.length === 0 && !isProfileEditing && (
+        <p className="text-gray-500 italic text-center py-4">No awards or recognition added yet.</p>
+    )}
+
+    {isProfileEditing && (
+        <Button variant="outline" size="sm" onClick={addAward} className="mt-4">
+            <FiPlus className="w-4 h-4 mr-2" /> Add Award
+        </Button>
+    )}
+</div>
             {/* New Published Articles/Blogs Section */}
             <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                 <div className="mb-4">

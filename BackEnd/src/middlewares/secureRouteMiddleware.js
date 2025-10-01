@@ -6,11 +6,10 @@ import Auth from "../models/authModel.js";
     if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET is not configured");
     }
-
+      
     const token = req.cookies.jwt || req.headers.authorization?.split(" ")[1];
-
- 
-
+     
+     
     if (!token) {
       return res.status(401).json({ error: "No token, authorization denied" });
     }

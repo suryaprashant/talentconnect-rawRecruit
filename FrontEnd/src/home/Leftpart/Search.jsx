@@ -1,3 +1,54 @@
+// import React, { useState } from "react";
+// import { FaSearch } from "react-icons/fa";
+// import useGetAllUsers from "../../context/useGetAllUsers";
+// import useConversation from "../../statemanage/useConversation";
+// import toast from "react-hot-toast";
+
+// function Search() {
+//   const [search, setSearch] = useState("");
+//   const [allUsers] = useGetAllUsers();
+//   const { setSelectedConversation } = useConversation();
+
+//   const handleSubmit = (e) => {
+//     e.preventDefault();
+//     if (!search) return;
+//     const conversation = allUsers.find((user) =>
+//       user.fullname?.toLowerCase().includes(search.toLowerCase())
+//     );
+//     if (conversation) {
+//       setSelectedConversation(conversation);
+//       setSearch("");
+//     } else {
+//       toast.error("User not found");
+//     }
+//   };
+
+//   return (
+//     <div className="p-4 border-b border-blue-700"> {/* Adjusted padding and added bottom border */}
+//       <form onSubmit={handleSubmit}>
+//         <div className="flex space-x-3 items-center"> {/* Added items-center for vertical alignment */}
+//           <label className="flex-1 border border-blue-600 bg-blue-900 rounded-full p-2 flex items-center gap-2"> {/* Rounded full, blue borders, slightly darker blue background */}
+//             <input
+//               type="text"
+//               className="grow outline-none bg-transparent text-white placeholder-blue-300" // Placeholder color
+//               placeholder="Search users..." // More descriptive placeholder
+//               value={search}
+//               onChange={(e) => setSearch(e.target.value)}
+//             />
+//           </label>
+//           <button type="submit" className="p-2 rounded-full bg-blue-600 hover:bg-blue-500 duration-300"> {/* Button styling */}
+//             <FaSearch className="text-xl text-white" /> {/* White icon */}
+//           </button>
+//         </div>
+//       </form>
+//     </div>
+//   );
+// }
+
+// export default Search;
+
+
+
 import React, { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import useGetAllUsers from "../../context/useGetAllUsers";
@@ -6,15 +57,19 @@ import toast from "react-hot-toast";
 
 function Search() {
   const [search, setSearch] = useState("");
-  const [allUsers] = useGetAllUsers();
+  const [allUsers, loading, unreadCounts] = useGetAllUsers();
   const { setSelectedConversation } = useConversation();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!search) return;
+    
+    // Search in both name and email
     const conversation = allUsers.find((user) =>
-      user.fullname?.toLowerCase().includes(search.toLowerCase())
+      user.name?.toLowerCase().includes(search.toLowerCase()) ||
+      user.email?.toLowerCase().includes(search.toLowerCase())
     );
+    
     if (conversation) {
       setSelectedConversation(conversation);
       setSearch("");
@@ -24,20 +79,20 @@ function Search() {
   };
 
   return (
-    <div className="p-4 border-b border-blue-700"> {/* Adjusted padding and added bottom border */}
+    <div className="p-4 border-b border-blue-700">
       <form onSubmit={handleSubmit}>
-        <div className="flex space-x-3 items-center"> {/* Added items-center for vertical alignment */}
-          <label className="flex-1 border border-blue-600 bg-blue-900 rounded-full p-2 flex items-center gap-2"> {/* Rounded full, blue borders, slightly darker blue background */}
+        <div className="flex space-x-3 items-center">
+          <label className="flex-1 border border-blue-600 bg-blue-900 rounded-full p-2 flex items-center gap-2">
             <input
               type="text"
-              className="grow outline-none bg-transparent text-white placeholder-blue-300" // Placeholder color
-              placeholder="Search users..." // More descriptive placeholder
+              className="grow outline-none bg-transparent text-white placeholder-blue-300"
+              placeholder="Search by name or email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </label>
-          <button type="submit" className="p-2 rounded-full bg-blue-600 hover:bg-blue-500 duration-300"> {/* Button styling */}
-            <FaSearch className="text-xl text-white" /> {/* White icon */}
+          <button type="submit" className="p-2 rounded-full bg-blue-600 hover:bg-blue-500 duration-300">
+            <FaSearch className="text-xl text-white" />
           </button>
         </div>
       </form>

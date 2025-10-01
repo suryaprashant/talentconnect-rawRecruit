@@ -1,5 +1,5 @@
 import express from "express";
-import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication } from "../controllers/applicationController.js";
+import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication,getShortlistedCompaniesForCollege } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
@@ -36,6 +36,7 @@ router.post('/internship', secureRoute, createCampusInternshipApplication);
 // shortlist
 router.patch('/manage/shortlist/:applicationId', secureRoute, shortlistApplicant);
 router.get('/manage/shortlist/', secureRoute, getShortlistedCandidatesByCompany);
+router.get('/manage/college/shortlist/', secureRoute , getShortlistedCompaniesForCollege ) ;
 
 // reject
 router.patch('/manage/reject/:applicationId', secureRoute, rejectApplicant);
@@ -43,6 +44,9 @@ router.patch('/manage/reject/:applicationId', secureRoute, rejectApplicant);
 // accept
 router.patch('/manage/accept/:applicationId', secureRoute, acceptApplicant);
 router.get('/manage/accept/', secureRoute, getAcceptedCandidatesByCompany);
+
+
+
 
 // get candidates by job
 router.get('/manage', getApplicationsByJob);

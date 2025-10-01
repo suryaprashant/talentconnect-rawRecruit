@@ -2742,13 +2742,19 @@ function ProfProfile() {
                                             </div>
 
                                             <div className="space-y-6">
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">About</h5>
+                                               
+                         <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      About
+                    </h5>
                                                     <p className="text-gray-600">{profileData.about || 'No information provided.'}</p>
                                                 </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Contact Information</h5>
+                                                
+                         <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Contact Information
+                    </h5>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                         <div>
                                                             <p className="text-sm text-gray-500">Email address</p>
@@ -2760,43 +2766,74 @@ function ProfProfile() {
                                                         </div>
                                                     </div>
                                                 </div>
+     <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Personal Information
+                    </h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-sm text-gray-500">Date of Birth</p>
+                              <p className="text-gray-900">{profileData.dob || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-500">Gender</p>
+                                <p className="text-gray-900">{profileData.gender || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Marital Status</p>
+                              <p className="text-gray-900">{profileData.maritalStatus || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Ethnicity</p>
+                              <p className="text-gray-900">{profileData.ethnicity || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Visa / Work Authorization</p>
+                              <p className="text-gray-900">{profileData.visaStatus || 'N/A'}</p>
+                            </div>
+                          </div>
+                        </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Personal Details</h5>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        <div>
-                                                            <p className="text-sm text-gray-500">Date of Birth</p>
-                                                            <p className="text-gray-900">{profileData.dob || 'N/A'}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm text-gray-500">Gender</p>
-                                                            <p className="text-gray-900">{profileData.gender || 'N/A'}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm text-gray-500">Marital Status</p>
-                                                            <p className="text-gray-900">{profileData.maritalStatus || 'N/A'}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm text-gray-500">Ethnicity</p>
-                                                            <p className="text-gray-900">{profileData.ethnicity || 'N/A'}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm text-gray-500">Visa / Work Authorization</p>
-                                                            <p className="text-gray-900">{profileData.visaStatus || 'N/A'}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
+            <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Academic Background
+                    </h5>
+                    
+                    <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
+                      {/* Degree & Specialization */}
+                      <div className="col-span-2 sm:col-span-1">
+                        <p className="text-gray-500">Degree & Specialization</p>
+                        <p className="font-semibold text-gray-900">
+                          {profileData.degree || 'N/A'} / {profileData.specialization || 'N/A'}
+                        </p>
+                      </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Education</h5>
-                                                    <p className="font-semibold text-gray-900">{profileData.degree || 'N/A'} in {profileData.specialization || 'N/A'}</p>
-                                                    <p className="text-gray-600">{profileData.college || 'N/A'}, {profileData.yearOfGraduation || 'N/A'}</p>
-                                                    {profileData.semester && <p className="text-sm text-gray-500 mt-1">Current Semester: {profileData.semester}</p>}
-                                                    {profileData.cgpa && <p className="text-sm text-gray-500 mt-1">CGPA: {profileData.cgpa}</p>}
-                                                </div>
+                      {/* CGPA / Percentage */}
+                      <div className="col-span-2 sm:col-span-1">
+                        <p className="text-gray-500">CGPA / Percentage</p>
+                        <p className="font-semibold text-gray-900">{profileData.cgpa || 'N/A'}</p>
+                      </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Skills</h5>
+                      {/* Institution */}
+                      <div className="col-span-2">
+                        <p className="text-gray-500">Institution</p>
+                        <p className="font-semibold text-gray-900">{profileData.college || 'N/A'}</p>
+                      </div>
+                      
+                      {/* Graduation Date */}
+                      <div className="col-span-2">
+                        <p className="text-gray-500">Graduation Year</p>
+                        <p className="font-semibold text-green-600">
+                          {profileData.yearOfGraduation || 'N/A'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                                                 <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Skills
+                    </h5>
                                                     <div className="flex flex-wrap gap-2">
                                                         {profileData.skills && profileData.skills.length > 0 ? (
                                                             profileData.skills.map((skill) => (
@@ -2810,8 +2847,10 @@ function ProfProfile() {
                                                     </div>
                                                 </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Tools & Platforms</h5>
+                                                 <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Tools & Platforms
+                    </h5>
                                                     <div className="flex flex-wrap gap-2">
                                                         {profileData.toolsAndPlatforms && profileData.toolsAndPlatforms.length > 0 ? (
                                                             profileData.toolsAndPlatforms.map((tool) => (
@@ -2824,8 +2863,10 @@ function ProfProfile() {
                                                         )}
                                                     </div>
                                                 </div>
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Domain Knowledge</h5>
+                                                <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Domain Knowledge
+                    </h5>
                                                     <div className="flex flex-wrap gap-2">
                                                         {profileData.domainKnowledge && profileData.domainKnowledge.length > 0 ? (
                                                             profileData.domainKnowledge.map((domain) => (
@@ -2839,31 +2880,56 @@ function ProfProfile() {
                                                     </div>
                                                 </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Current Employment</h5>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        <div>
-                                                            <p className="text-sm text-gray-500">Current Company</p>
-                                                            <p className="text-gray-900">{profileData.currentCompany || 'N/A'}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm text-gray-500">Total Experience</p>
-                                                            <p className="text-gray-900">{profileData.totalYearsOfExperience ? `${profileData.totalYearsOfExperience} years` : 'N/A'}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm text-gray-500">Notice Period</p>
-                                                            <p className="text-gray-900">{profileData.noticePeriod || 'N/A'}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm text-gray-500">Serving Notice Period</p>
-                                                            <p className="text-gray-900">{profileData.servingNoticePeriod ? `Yes, since ${profileData.noticePeriodStartDate}` : 'No'}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+    <h5 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
+        Current Employment Status
+    </h5>
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 text-sm">
+        
+        {/* --- Column 1: Company & Experience --- */}
+        <div>
+            <p className="text-sm text-gray-500">Current Company</p>
+            <p className="text-base font-semibold text-gray-900">
+                {profileData.currentCompany || 'N/A'}
+            </p>
+        </div>
+        
+        <div>
+            <p className="text-sm text-gray-500">Total Experience</p>
+            <p className="text-base font-semibold text-gray-900">
+                {profileData.totalYearsOfExperience ? `${profileData.totalYearsOfExperience}` : 'N/A'}
+            </p>
+        </div>
+        
+        {/* --- Column 2: Notice Period Details --- */}
+        <div className="md:col-span-2">
+            <p className="text-sm text-gray-500">Notice Period Required</p>
+            <p className="text-base font-semibold text-gray-900">
+                {profileData.noticePeriod ? `${profileData.noticePeriod} days` : 'N/A'}
+            </p>
+        </div>
+        
+        <div className="md:col-span-2">
+            <p className="text-sm text-gray-500">Serving Notice?</p>
+            <p className={`text-base font-semibold ${profileData.servingNoticePeriod ? 'text-red-600' : 'text-green-600'}`}>
+                {profileData.servingNoticePeriod ? (
+                    <>
+                        Yes <span className="font-normal text-sm text-gray-700">(Since {profileData.noticePeriodStartDate || 'N/A'})</span>
+                    </>
+                ) : (
+                    'No'
+                )}
+            </p>
+        </div>
+    </div>
+</div>
 
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Career Preferences</h5>
+                                                 <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Career Preferences
+                    </h5>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                         <div>
                                                             <p className="text-sm text-gray-500">Interested Industry</p>
@@ -2899,7 +2965,7 @@ function ProfProfile() {
                                                                 ) : (
                                                                 <span className="text-gray-600">N/A</span>
                                                                 )}
-                                                            </div>
+                                                            </div>      
                                                         </div>
                                                         <div className="md:col-span-2">
                                                             <p className="text-sm text-gray-500">Preferred Locations</p>
@@ -2918,8 +2984,12 @@ function ProfProfile() {
                                                     </div>
                                                 </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Salary Information</h5>
+                                                
+
+                                                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Salary Information
+                    </h5>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                         <div>
                                                             <p className="text-sm text-gray-500">Current Salary</p>
@@ -2932,8 +3002,10 @@ function ProfProfile() {
                                                     </div>
                                                 </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Work Experience</h5>
+                                                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Work Experiences
+                    </h5>
                                                     {workExperiences && workExperiences.length > 0 ? (
                                                         workExperiences.map((exp, idx) => (
                                                             <div key={idx} className="mb-4 border-b pb-2 last:border-b-0">
@@ -2953,8 +3025,10 @@ function ProfProfile() {
                                                     )}
                                                 </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Achievements</h5>
+                                               <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Achievement
+                    </h5>
                                                     {achievements && achievements.length > 0 ? (
                                                         achievements.map((ach, idx) => (
                                                             <div key={idx} className="mb-4 border-b pb-2 last:border-b-0">
@@ -2967,8 +3041,10 @@ function ProfProfile() {
                                                     )}
                                                 </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Awards</h5>
+                                                <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Awards & Recognition
+                    </h5>
                                                     {awards && awards.length > 0 ? (
                                                         awards.map((award, idx) => (
                                                             <div key={idx} className="mb-4 border-b pb-2 last:border-b-0">
@@ -2982,8 +3058,10 @@ function ProfProfile() {
                                                     )}
                                                 </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Publications</h5>
+                                                <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Published Articles/Blogs
+                    </h5>
                                                     {publications && publications.length > 0 ? (
                                                         <ul className="list-disc list-inside text-gray-600">
                                                             {publications.map((pub, idx) => (
@@ -3002,8 +3080,10 @@ function ProfProfile() {
                                                     )}
                                                 </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Projects Handled</h5>
+                                                 <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Project Handled
+                    </h5>
                                                     {projectsHandled && projectsHandled.numberOfProjects ? (
                                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                             <div>
@@ -3024,8 +3104,10 @@ function ProfProfile() {
                                                     )}
                                                 </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Certifications</h5>
+                                                 <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Certification
+                    </h5>
                                                     {profileData.certifications && profileData.certifications.length > 0 ? (
                                                         <ul className="list-disc list-inside text-gray-600">
                                                             {profileData.certifications.map((cert, idx) => (
@@ -3044,8 +3126,10 @@ function ProfProfile() {
                                                     )}
                                                 </div>
                                                 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Languages Known</h5>
+                                                 <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Known Languages
+                    </h5>
                                                     <div className="flex flex-wrap gap-2">
                                                         {profileData.languagesKnown && profileData.languagesKnown.length > 0 ? (
                                                         profileData.languagesKnown.map((lang) => (
@@ -3059,8 +3143,10 @@ function ProfProfile() {
                                                     </div>
                                                 </div>
 
-                                                <div className="p-4 border border-gray-200 rounded-lg">
-                                                    <h5 className="font-medium text-gray-900 mb-2">Referral Source</h5>
+                                                 <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Referral Sources
+                    </h5>
                                                     <p className="text-gray-900">{profileData.referralSource || 'N/A'}</p>
                                                 </div>
                                             </div>
@@ -3176,7 +3262,7 @@ function ProfProfile() {
                                         )}
                                     </div>
                                 </div>
-                                <div>
+                                {/* <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Profile Type</label>
                                     {isProfileEditing ? (
                                         <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500" value={profileData.profileType} onChange={(e) => handleProfileDataChange('profileType', e.target.value)}>
@@ -3184,7 +3270,7 @@ function ProfProfile() {
                                             {predefinedProfileTypes.map(type => <option key={type} value={type} className="capitalize">{type}</option>)}
                                         </select>
                                     ) : (<div className="capitalize ">{profileData.profileType || "N/A"}</div>)}
-                                </div>
+                                </div> */}
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-1">About</label>
                                     {isProfileEditing ? (

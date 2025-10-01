@@ -1,8 +1,7 @@
 import React, { useState, useEffect , useRef} from "react";
-import { ProgressIndicator } from "../ProgressIndicator"; // Assuming this path is correct
-import { ChevronDownIcon } from "lucide-react";
+import { ProgressIndicator } from "../ProgressIndicator";
+import { ChevronDownIcon, X } from "lucide-react"; // Import X for the tags
 
-// Sample options for the dropdowns
 const experienceOptions = [
   "Less than 1 year", "1-3 years", "3-5 years", "5-8 years",
   "8-12 years", "12-15 years", "15+ years",
@@ -15,33 +14,44 @@ const noticePeriodOptions = [
 ];
 
 const domainKnowledgeOptions = [
-    "FinTech", "E-commerce", "Healthcare", "SaaS (Software as a Service)",
-    "EdTech", "Logistics & Supply Chain", "Gaming", "Telecommunications",
+  "FinTech", "E-commerce", "Healthcare", "SaaS (Software as a Service)",
+  "EdTech", "Logistics & Supply Chain", "Gaming", "Telecommunications",
 ];
 
 const companyOptions = [
-    "Tech Mahindra", "Infosys", "Tata Consultancy Services (TCS)", "Wipro",
-    "HCL Technologies", "Cognizant", "Accenture", "Capgemini", "Other"
+  "Tech Mahindra", "Infosys", "Tata Consultancy Services (TCS)", "Wipro",
+  "HCL Technologies", "Cognizant", "Accenture", "Capgemini", "Other"
 ];
+
+// --- Helper Components for Multi-Select UI (Copied from previous file for style) ---
+const SelectedTag = ({ item, onRemove }) => (
+    <div className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full text-black">
+        <span>{item}</span>
+        <button 
+            type="button" 
+            onClick={onRemove} 
+            className="ml-2 text-gray-600 hover:text-black"
+        >
+            <X size={14} />
+        </button>
+    </div>
+);
+// --- End Helper Components ---
 
 
 export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) => {
-  // Local state for this form step
   const [localFormData, setLocalFormData] = useState({
     totalExperience: "",
-    domainKnowledge: [], // Stays as an array
+    domainKnowledge: [],
     currentCompany: "",
     noticePeriod: "",
     servingNoticePeriod: false,
     noticePeriodStartDate: "",
   });
 
-  // --- New state and ref for the custom dropdown ---
   const [isDomainDropdownOpen, setIsDomainDropdownOpen] = useState(false);
   const domainDropdownRef = useRef(null);
-  // --------------------------------------------------
 
-  // Effect to populate local state from the global form data
   useEffect(() => {
     const updates = {};
     if (formData.totalExperience) updates.totalExperience = formData.totalExperience;
@@ -50,7 +60,11 @@ export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) 
     }
     if (formData.currentCompany) updates.currentCompany = formData.currentCompany;
     if (formData.noticePeriod) updates.noticePeriod = formData.noticePeriod;
-    if (formData.servingNoticePeriod) updates.servingNoticePeriod = formData.servingNoticePeriod;
+    
+    // Convert boolean string to boolean for servingNoticePeriod
+    const servingNoticeValue = formData.servingNoticePeriod === true || formData.servingNoticePeriod === 'true';
+    updates.servingNoticePeriod = servingNoticeValue;
+
     if (formData.noticePeriodStartDate) updates.noticePeriodStartDate = formData.noticePeriodStartDate;
 
     if (Object.keys(updates).length > 0) {
@@ -58,21 +72,21 @@ export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) 
     }
   }, [formData]);
 
-  // --- Effect to close dropdown on outside click ---
+  // Handle outside click logic for the custom dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
-        if (domainDropdownRef.current && !domainDropdownRef.current.contains(event.target)) {
-            setIsDomainDropdownOpen(false);
-        }
+      // Use mousedown event logic here
+      if (domainDropdownRef.current && !domainDropdownRef.current.contains(event.target)) {
+        setIsDomainDropdownOpen(false);
+      }
     };
+    // Use mousedown listener for better compatibility with interactive elements
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  // ------------------------------------------------
 
-  // Generic handler for most form inputs
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const newValue = type === "checkbox" ? checked : value;
@@ -80,20 +94,28 @@ export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) 
     setLocalFormData((prev) => ({
       ...prev,
       [name]: newValue,
+      // Clear start date if user unchecks the box
       ...(name === "servingNoticePeriod" && !checked && { noticePeriodStartDate: "" }),
     }));
   };
-
-  // --- New handler for the custom domain knowledge checkboxes ---
+  
+  // --- MODIFIED HANDLER FOR MULTI-SELECT DOMAIN KNOWLEDGE ---
   const handleDomainChange = (domain) => {
     setLocalFormData(prev => {
-        const newDomains = prev.domainKnowledge.includes(domain)
-            ? prev.domainKnowledge.filter(d => d !== domain) // Deselect
-            : [...prev.domainKnowledge, domain]; // Select
-        return {...prev, domainKnowledge: newDomains };
+      const newDomains = prev.domainKnowledge.includes(domain)
+        ? prev.domainKnowledge.filter(d => d !== domain)
+        : [...prev.domainKnowledge, domain];
+      return {...prev, domainKnowledge: newDomains };
     });
   };
-  // -----------------------------------------------------------
+
+  // Helper to remove a tag
+  const removeDomainTag = (domain) => {
+    setLocalFormData(prev => ({
+        ...prev,
+        domainKnowledge: prev.domainKnowledge.filter(d => d !== domain)
+    }));
+  }
 
   const handleNextClick = () => {
     onChange({ ...formData, ...localFormData });
@@ -101,27 +123,33 @@ export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) 
   };
   
   const calculateRemainingDays = () => {
-    if (!localFormData.servingNoticePeriod || !localFormData.noticePeriodStartDate || !localFormData.noticePeriod) {
+    if (!localFormData.servingNoticePeriod || !localFormData.noticePeriodStartDate || localFormData.noticePeriod === "") {
       return null;
     }
     const noticePeriodInDays = parseInt(localFormData.noticePeriod, 10);
+    if (isNaN(noticePeriodInDays) || noticePeriodInDays < 0) return null;
+
     const startDate = new Date(localFormData.noticePeriodStartDate);
     const today = new Date();
     startDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
+    
     const endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + noticePeriodInDays);
-    if (today > endDate) return "Notice period complete";
-    const diffTime = Math.abs(endDate - today);
+
+    if (today >= endDate) return "Notice period complete";
+    
+    const diffTime = endDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return `${diffDays} day(s) remaining`;
+    
+    return `${diffDays} day(s) remaining until ${endDate.toLocaleDateString()}`;
   };
 
   const remainingDays = calculateRemainingDays();
 
   return (
     <div className="justify-center items-stretch bg-white z-0 flex min-w-60 flex-col w-[560px] my-auto p-12 rounded-lg shadow-lg max-md:max-w-full max-md:px-5">
-      <ProgressIndicator currentStep={7} totalSteps={8} />
+      <ProgressIndicator currentStep={7} totalSteps={8} /> 
       <div className="flex w-full flex-col items-stretch justify-center mt-8 max-md:max-w-full">
         <h2 className="text-gray-900 text-[32px] font-bold leading-[42px] max-md:max-w-full">
           Your Professional Details
@@ -143,21 +171,47 @@ export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) 
             </div>
           </div>
 
-          {/* --- MODIFIED: Domain Knowledge (Custom Multi-select Dropdown) --- */}
+          {/* Domain Knowledge (Multi-Select Dropdown with Tags) */}
           <div className="w-full mt-6">
             <label className="block text-black mb-2 font-medium">Domain Knowledge</label>
+            
+            <div className="flex flex-wrap gap-2 mb-2">
+                {localFormData.domainKnowledge.map(domain => (
+                    <SelectedTag 
+                        key={domain} 
+                        item={domain} 
+                        onRemove={() => removeDomainTag(domain)} 
+                    />
+                ))}
+            </div>
+
             <div className="relative" ref={domainDropdownRef}>
-              <button type="button" onClick={() => setIsDomainDropdownOpen(!isDomainDropdownOpen)} className="text-left appearance-none bg-white flex items-center justify-between min-h-12 w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-black focus:border-black">
-                <span className="text-gray-700 truncate">
-                    {localFormData.domainKnowledge.length > 0 ? localFormData.domainKnowledge.join(', ') : 'Select your domain(s)'}
+              <button 
+                type="button" 
+                onClick={() => setIsDomainDropdownOpen(!isDomainDropdownOpen)} 
+                className="text-left appearance-none bg-white flex items-center justify-between min-h-12 w-full p-3 border border-gray-300 rounded hover:border-gray-400 focus:ring-2 focus:ring-black focus:border-black"
+              >
+                <span className={localFormData.domainKnowledge.length > 0 ? "text-gray-800" : "text-gray-500"}>
+                    Select your domain(s)
                 </span>
                 <ChevronDownIcon className={`w-6 h-6 text-gray-400 transition-transform duration-200 ${isDomainDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
+              
               {isDomainDropdownOpen && (
                 <div className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
                     {domainKnowledgeOptions.map(domain => (
-                        <label key={domain} className="flex items-center w-full px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                            <input type="checkbox" checked={localFormData.domainKnowledge.includes(domain)} onChange={() => handleDomainChange(domain)} className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black mr-3" />
+                        // Use onMouseDown to handle selection while keeping dropdown open
+                        <label 
+                            key={domain} 
+                            onMouseDown={(e) => { e.preventDefault(); handleDomainChange(domain); }} 
+                            className="flex items-center w-full px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-800"
+                        >
+                            <input 
+                                type="checkbox" 
+                                readOnly // Prevent direct click handler; let onMouseDown handle state
+                                checked={localFormData.domainKnowledge.includes(domain)} 
+                                className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black mr-3" 
+                            />
                             {domain}
                         </label>
                     ))}
@@ -165,18 +219,16 @@ export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) 
               )}
             </div>
           </div>
-          {/* ------------------------------------------------------------------ */}
 
-
-          {/* Current Company (Single-select) */}
+          {/* Current Company */}
           <div className="w-full mt-6">
             <label htmlFor="currentCompany" className="block text-black mb-2 font-medium">Current Company</label>
-             <div className="relative">
+            <div className="relative">
               <select id="currentCompany" name="currentCompany" value={localFormData.currentCompany} onChange={handleChange} className="appearance-none bg-white flex min-h-12 w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-black focus:border-black">
                 <option value="" disabled>Select your current employer</option>
                 {companyOptions.map(company => <option key={company} value={company}>{company}</option>)}
               </select>
-               <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400 pointer-events-none" />
+              <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400 pointer-events-none" />
             </div>
           </div>
 
@@ -192,22 +244,25 @@ export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) 
             </div>
           </div>
           
-          {/* Serving Notice Period Checkbox and Date Input */}
+          {/* Serving Notice Period Checkbox and Date Picker */}
           <div className="w-full mt-6">
-             <div className="flex items-center gap-3">
-               <input id="servingNoticePeriod" name="servingNoticePeriod" type="checkbox" checked={localFormData.servingNoticePeriod} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black" />
-               <label htmlFor="servingNoticePeriod" className="text-black font-medium">Are you currently serving your notice period?</label>
-             </div>
+              <div className="flex items-center gap-3">
+                <input id="servingNoticePeriod" name="servingNoticePeriod" type="checkbox" checked={localFormData.servingNoticePeriod} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black" />
+                <label htmlFor="servingNoticePeriod" className="text-black font-medium select-none">Are you currently serving your notice period?</label>
+              </div>
             {localFormData.servingNoticePeriod && (
               <div className="mt-4 pl-7">
                 <label htmlFor="noticePeriodStartDate" className="block text-black mb-2 font-medium">Notice Period Start Date</label>
                 <input id="noticePeriodStartDate" name="noticePeriodStartDate" type="date" value={localFormData.noticePeriodStartDate} onChange={handleChange} className="flex min-h-12 w-full p-3 border border-gray-300 rounded" />
-                {remainingDays && (<p className="text-sm text-gray-600 mt-2">{remainingDays}</p>)}
+                {remainingDays && (
+                    <p className={`text-sm mt-2 ${remainingDays.includes('complete') ? 'text-green-600 font-medium' : 'text-gray-600'}`}>
+                        {remainingDays}
+                    </p>
+                )}
               </div>
             )}
           </div>
           
-          {/* Buttons */}
           <div className="flex justify-end gap-4 mt-8">
             <button type="button" onClick={onBack} className="px-6 py-3 border border-gray-300 rounded-md font-semibold text-gray-700 hover:bg-gray-50">Back</button>
             <button type="button" onClick={handleNextClick} className="bg-black text-white px-6 py-3 border border-black rounded-md font-semibold hover:bg-gray-800">Next</button>
@@ -217,4 +272,3 @@ export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) 
     </div>
   );
 };
-

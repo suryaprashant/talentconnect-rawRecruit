@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import CreatableSelect from "react-select/creatable";
 import { UploadIcon } from "lucide-react";
@@ -32,7 +30,7 @@ export const StepThree = ({
     cgpa: formData.education[0]?.cgpa || "",
     degreeCertificate: formData.education[0]?.degreeCertificate || null,
   });
-  
+
   const [collegeSuggestions, setCollegeSuggestions] = useState([]);
 
   // --- ADDED: Logic to generate a list of years for the dropdown ---
@@ -49,6 +47,9 @@ export const StepThree = ({
   const yearOptions = generateYearOptions();
   // --- END OF ADDED SECTION ---
 
+  // Get the role from localStorage for conditional rendering
+  const selectedRole = localStorage.getItem('selectedRole');
+  
   // Auto-suggest parsed values
   useEffect(() => {
     const parsedCollege = formData.education[0]?.college;
@@ -94,23 +95,50 @@ export const StepThree = ({
 
   // --- MODIFIED: Added yearOfGraduation to the form data update ---
   const handleNextClick = () => {
+    // Structure the education data as an array with one entry (as implied by localFormData structure)
     const updatedFormData = {
       ...formData,
-    
-        
+      
           college: localFormData.college || "",
           degree: localFormData.degree || "",
-          semester: localFormData.semester,
-          yearOfGraduation: localFormData.yearOfGraduation, // ADDED
+         
+          semester: selectedRole === 'student' ? localFormData.semester : undefined, 
+          yearOfGraduation: localFormData.yearOfGraduation, 
           specialization: localFormData.specialization,
           cgpa: localFormData.cgpa,
           degreeCertificate: localFormData.degreeCertificate,
         
-    
+      
     };
     onChange(updatedFormData);
     onNext();
   };
+
+  // Helper component for the Graduation Year Select
+  const GraduationYearSelect = ({ flexClass = "flex-1" }) => (
+    <div className={flexClass}>
+      <label htmlFor="yearOfGraduation" className="block text-black">
+        {selectedRole === 'student' ? 'Expected Graduation Year' : 'Graduation Year'}
+      </label>
+      <select
+        id="yearOfGraduation"
+        name="yearOfGraduation"
+        value={localFormData.yearOfGraduation}
+        onChange={(e) =>
+          setLocalFormData((prev) => ({
+            ...prev,
+            yearOfGraduation: e.target.value,
+          }))
+        }
+        className="appearance-none bg-white flex min-h-12 w-full mt-2 p-3 border border-gray-300 rounded"
+      >
+        <option value="" disabled>Select Year</option>
+        {yearOptions.map(year => (
+          <option key={year} value={year}>{year}</option>
+        ))}
+      </select>
+    </div>
+  );
 
   return (
     <div className="justify-center items-stretch bg-white z-0 flex min-w-60 flex-col w-[560px] my-auto p-12 max-md:max-w-full max-md:px-5">
@@ -165,89 +193,106 @@ export const StepThree = ({
             )}
           </div>
 
-          <div className="flex w-full gap-6 mt-6">
-            {/* Degree */}
-            <div className="flex-1">
-              <label htmlFor="degree" className="block text-black">
-                Degree
-              </label>
-              <CreatableSelect
-                isClearable
-                placeholder="Select or type your degree"
-                options={degreeOptions}
-                value={
-                  localFormData.degree
-                    ? {
-                        value: localFormData.degree,
-                        label: localFormData.degree,
-                      }
-                    : null
-                }
-                onChange={(selected) =>
-                  setLocalFormData((prev) => ({
-                    ...prev,
-                    degree: selected ? selected.value : "",
-                  }))
-                }
-                className="mt-2"
-              />
-            </div>
+          
+          {selectedRole === 'student' ? (
+            // Student Layout: Degree & Semester side-by-side, Graduation Year on a new line
+            <>
+              <div className="flex w-full gap-6 mt-6">
+                {/* Degree */}
+                <div className="flex-1">
+                  <label htmlFor="degree" className="block text-black">
+                    Degree
+                  </label>
+                  <CreatableSelect
+                    isClearable
+                    placeholder="Select or type your degree"
+                    options={degreeOptions}
+                    value={
+                      localFormData.degree
+                        ? {
+                            value: localFormData.degree,
+                            label: localFormData.degree,
+                          }
+                        : null
+                    }
+                    onChange={(selected) =>
+                      setLocalFormData((prev) => ({
+                        ...prev,
+                        degree: selected ? selected.value : "",
+                      }))
+                    }
+                    className="mt-2"
+                  />
+                </div>
 
-            {/* --- MODIFIED SECTION: Conditionally render Semester or Graduation Year --- */}
-            {localStorage.selectedRole === 'student' ? (
-              <div className="flex-1">
-                <label htmlFor="semester" className="block text-black">
-                  Current Semester
-                </label>
-                <select
-                  id="semester"
-                  name="semester"
-                  value={localFormData.semester}
-                  onChange={(e) =>
-                    setLocalFormData((prev) => ({
-                      ...prev,
-                      semester: e.target.value,
-                    }))
-                  }
-                  className="appearance-none bg-white flex min-h-12 w-full mt-2 p-3 border border-gray-300 rounded"
-                >
-                  <option value="" disabled>
-                    Select semester
-                  </option>
-                  {[...Array(8)].map((_, i) => (
-                    <option key={i + 1} value={i + 1}>
-                      Semester {i + 1}
+                {/* Current Semester */}
+                <div className="flex-1">
+                  <label htmlFor="semester" className="block text-black">
+                    Current Semester
+                  </label>
+                  <select
+                    id="semester"
+                    name="semester"
+                    value={localFormData.semester}
+                    onChange={(e) =>
+                      setLocalFormData((prev) => ({
+                        ...prev,
+                        semester: e.target.value,
+                      }))
+                    }
+                    className="appearance-none bg-white flex min-h-12 w-full mt-2 p-3 border border-gray-300 rounded"
+                  >
+                    <option value="" disabled>
+                      Select semester
                     </option>
-                  ))}
-                </select>
+                    {[...Array(8)].map((_, i) => (
+                      <option key={i + 1} value={i + 1}>
+                        Semester {i + 1}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-            ) : (
+              
+              {/* Expected Graduation Year (Full Width, New Row) */}
+              <div className="flex w-full mt-6">
+                <GraduationYearSelect flexClass="w-full" />
+              </div>
+            </>
+          ) : (
+            // Non-Student Layout: Degree & Graduation Year side-by-side
+            <div className="flex w-full gap-6 mt-6">
+              {/* Degree */}
               <div className="flex-1">
-                <label htmlFor="yearOfGraduation" className="block text-black">
-                  Graduation Year
+                <label htmlFor="degree" className="block text-black">
+                  Degree
                 </label>
-                <select
-                  id="yearOfGraduation"
-                  name="yearOfGraduation"
-                  value={localFormData.yearOfGraduation}
-                  onChange={(e) =>
+                <CreatableSelect
+                  isClearable
+                  placeholder="Select or type your degree"
+                  options={degreeOptions}
+                  value={
+                    localFormData.degree
+                      ? {
+                          value: localFormData.degree,
+                          label: localFormData.degree,
+                        }
+                      : null
+                  }
+                  onChange={(selected) =>
                     setLocalFormData((prev) => ({
                       ...prev,
-                      yearOfGraduation: e.target.value,
+                      degree: selected ? selected.value : "",
                     }))
                   }
-                  className="appearance-none bg-white flex min-h-12 w-full mt-2 p-3 border border-gray-300 rounded"
-                >
-                  <option value="" disabled>Select Year</option>
-                  {yearOptions.map(year => (
-                    <option key={year} value={year}>{year}</option>
-                  ))}
-                </select>
+                  className="mt-2"
+                />
               </div>
-            )}
-            {/* --- END OF MODIFIED SECTION --- */}
-
-          </div>
+              
+              {/* Graduation Year */}
+              <GraduationYearSelect flexClass="flex-1" />
+            </div>
+          )}
 
           {/* Specialization */}
           <div className="w-full mt-6">

@@ -18,7 +18,7 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 // dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const PORT = process.env.PORT || 5000;
-
+app.use(cookieParser());
 
 // Middleware
 app.use(
@@ -32,7 +32,7 @@ app.use(
 app.use(express.json({ limit: '50mb' }));
 
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-app.use(cookieParser());
+
 
 // Auth and Profile Routes
 import authRoutes from "./routes/authRoute.js";
