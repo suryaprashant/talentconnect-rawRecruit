@@ -48,8 +48,6 @@ import employerProfileRoutes from './routes/employerDashboard/employerProfileRou
 import messageRoute from "./routes/messageRoute.js";
 
 // Main Features
-import Jobs from "./routes/jobsRoute.js";
-import Internship from "./routes/internshipRoute.js";
 import Application from "./routes/applicationRoute.js";
 import Resume from "./routes/resumeroute.js";
 import Hackathon from "./routes/hackathonRoute.js";
@@ -58,9 +56,9 @@ import Workshop from "./routes/workshopRoute.js";
 import eventParticipation from "./routes/eventParticipationRoute.js";
 import EmployerDashboard from "./routes/employerDahsboardRoute.js";
 import Company from "./routes/companyRoute.js";
+import Jobs from "./routes/jobsRoute.js"
 
 // RawRecruit APIs
-// import savedJobsRouter from "./routes/savedjobsandinternshipsRoute.js";
 import serviceRequestRouter from "./routes/servicerequestRoute.js";
 import servicerequestinterview from "./routes/servicerequestInterviewRoute.js";
 import servicerequestreferraljobs from "./routes/servicerequestReferraljobsRoute.js";
@@ -81,10 +79,6 @@ import servicerequest from "./routes/servicerequestCompanyWorkforcesolutionsRout
 import employeetraining from "./routes/servicerequestCompanyEmployeetrainingRoute.js";
 import branding from "./routes/servicerequestCompanyBrandingRoute.js";
 import employeerbranding from "./routes/servicerequestCompanyEmployeerbrandingRoute.js";
-import oncampushiring from "./routes/hiringChannelsOncampusRoute.js";
-import oncampusregister from "./routes/hiringChannelsOncampusRegisterRoute.js";
-import internship from "./routes/hiringChannelsPostinternshipsRoute.js";
-import jobs from "./routes/hiringChannelsPostjobRoute.js";
 import seminars from "./routes/servicerequestCollegeSeminarsRoute.js";
 import requestinfo from "./routes/servicerequestCollegeStudenttrainingRequestinfoRoute.js";
 import collegeoncampus from "./routes/servicerequestCollegeOncampusRoute.js";
@@ -97,15 +91,12 @@ import basicdetails from "./routes/onboardingBasicdetailsRoute.js";
 import CollegeApplication from './routes/collegeApplicationRoute.js';
 // import jobinterest from "./routes/onboardingJobinterestsRoute.js";
 import student_onboardingroutes from "./routes/studentOnboardingRoutes.js";
-import hiringOffCampus from "./routes/hiringChannelsOffCampusRoute.js";
-import HiringChannelPoolCampusRoute from "./routes/hiringChannelPoolCapusRoute.js";
 import JobManagement from "./routes/jobManagementRoute.js"
 import poolCampusRoute from "./routes/jobManagement/poolCampusRoute.js";
 import OncampusJobmanagement from "./routes/jobManagement/onCampusRoute.js"
 import TeamMemberRoute from "./routes/teamMemberRoute.js";
 import notificationRoute from "./routes/notificationRoute.js"
 import dropDownItems from "./routes/dropDownItemsRoute.js" ;
-// import onCampusHiring from './routes/employerHiringChannel/hiringChannel.route.js'
 import jobPosting from './routes/jobPostingsRoute.js' ;
 import studentDashboardRoute from './routes/studentDashboard/studentDashboardRoute.js';
 import EmployerHiringChannelRoute from './routes/employerHiringChannel/hiringChannelRoute.js'
@@ -123,8 +114,7 @@ app.use("/api/college", collegeProfileRoutes);
 app.use("/api/college-onboarding", collegeOnboardingRoutes);
 app.use("/api/dashboard", employerProfileRoutes);
 app.use("/api/messages", messageRoute);
-app.use("/api/company" , hiringOffCampus)
-app.use("/api/hiringDrive", HiringChannelPoolCampusRoute);
+// app.use("/api/company" , hiringOffCampus);
 app.use("/api/company" , poolCampusRoute);
 app.use("/api/company/jobmanagement", OncampusJobmanagement);
 app.use("/api/team-member" , TeamMemberRoute) ;
@@ -136,10 +126,9 @@ app.use("/api/student-dashboard", studentDashboardRoute);
 
 // employer Hiring channel
 app.use("/api/employer/hiring-channel", EmployerHiringChannelRoute);
-//app.use("/api/HiringChannels" , onCampusHiring) ;
 
 app.use("/jobs", Jobs);
-app.use("/internship", Internship);
+// app.use("/internship", Internship);
 app.use("/application", Application);
 app.use("/college/application",CollegeApplication);
 app.use("/hackathon", Hackathon);
@@ -175,10 +164,8 @@ app.use("/api/rawrecruit", [
   employeetraining,
   branding,
   employeerbranding,
-  oncampushiring,
-  oncampusregister,
-  internship,
-  jobs,
+  // oncampushiring,
+  // oncampusregister,
   seminars,
   requestinfo,
   collegeoncampus,

@@ -2,6 +2,7 @@ import OnboardingModel from "../models/studentonboardingModel.js";
 import Auth from "../models/authModel.js"; // Import the Auth model
 import cloudinary from "../../config/cloudinary.js"; // Assuming cloudinary config is here
 import streamifier from "streamifier";
+import { handleOnboardingUpdate } from "../services/studentService.js";
 
 // Utility for streaming upload
 const streamUpload = (buffer, folder) => {
@@ -33,15 +34,13 @@ export const getAllOnboardingForms = async (req, res) => {
   }
 };
 
+
 export const submitOnboardingForm = async (req, res) => {
   try {
     if (!req.user || !req.user._id) {
-      return res
-        .status(401)
-        .json({ error: "Unauthorized: User not authenticated." });
+      return res.status(401).json({ error: "Unauthorized: User not authenticated." });
     }
 
-   
     const updateData = {
       userId: req.user._id,
       name: req.body.name,
@@ -100,131 +99,25 @@ export const submitOnboardingForm = async (req, res) => {
     
     const files = req.files;
     
-    console.log("Recieve date", updateData) ;
-    
-    if (files?.resume?.[0]) {
-      const upload = await streamUpload(files.resume[0].buffer, "resumes");
-      updateData.resume = upload.secure_url;
-    }
-    if (files?.degreeCertificate?.[0]) {
-      const upload = await streamUpload(files.degreeCertificate[0].buffer, "degreeCertificates");
-      updateData.degreeCertificate = upload.secure_url;
-    }
-    if (files?.project?.[0]) {
-      const upload = await streamUpload(files.project[0].buffer, "projects");
-      updateData.project = upload.secure_url;
-    }
-    if (files?.backgroundImage?.[0]) {
-      const upload = await streamUpload(files.backgroundImage[0].buffer, "userBackgroundImages");
-      updateData.backgroundImage = upload.secure_url;
-    }
-    if (files?.profileImage?.[0]) {
-      const upload = await streamUpload(files.profileImage[0].buffer, "userProfileImages");
-      updateData.profileImage = upload.secure_url;
-    }
+    const result = await handleOnboardingUpdate(updateData, files);
 
-
-    if (files?.experienceCertificate && updateData.experiences) {
-      const experienceCerts = files.experienceCertificate;
-      for (let i = 0; i < updateData.experiences.length && i < experienceCerts.length; i++) {
-        const uploadedCert = await streamUpload(
-          experienceCerts[i].buffer,
-          "experienceCertificates"
-        );
-        updateData.experiences[i].experienceCertificate = uploadedCert.secure_url;
-      }
-    }
-
-  
-    if (files?.leadershipCertificate && updateData.leadership) {
-      const leadershipCerts = files.leadershipCertificate;
-      for (let i = 0; i < updateData.leadership.length && i < leadershipCerts.length; i++) {
-        const uploadedCert = await streamUpload(
-          leadershipCerts[i].buffer,
-          "leadershipCertificates"
-        );
-        updateData.leadership[i].certificate = uploadedCert.secure_url;
-      }
-    }
-
-
-    if (files?.internationalExperienceCertificate && updateData.internationalExperience) {
-      const internationalCerts = files.internationalExperienceCertificate;
-      for (let i = 0; i < updateData.internationalExperience.length && i < internationalCerts.length; i++) {
-        const uploadedCert = await streamUpload(
-          internationalCerts[i].buffer,
-          "internationalExperienceCertificates"
-        );
-        updateData.internationalExperience[i].certificate = uploadedCert.secure_url;
-      }
-    }
-
-
-    if (files?.awardCertificate && updateData.awards) {
-      const awardCerts = files.awardCertificate;
-      for (let i = 0; i < updateData.awards.length && i < awardCerts.length; i++) {
-        const uploadedCert = await streamUpload(
-          awardCerts[i].buffer,
-          "awardCertificates"
-        );
-        updateData.awards[i].certificate = uploadedCert.secure_url;
-      }
-    }
-
-    
-    const updatedOnboarding = await OnboardingModel.findOneAndUpdate(
-      { userId: req.user._id }, 
-      { $set: updateData },     
-      { upsert: true, new: true, runValidators: true } 
-    );
-
-   
-    let finalUserTypeForResponse = "candidate";
-    let authUserType = "candidate";
-    
-    if (req.body.profileType) {
-      authUserType = req.body.profileType.toLowerCase();
-      if (authUserType === "student") authUserType = "student";
-      else if (authUserType === "fresher") authUserType = "fresher";
-      else if (authUserType === "professional") authUserType = "professional";
-      else authUserType = "candidate";
-
-      finalUserTypeForResponse = authUserType;
-    }
-
-    // Update user with onboarding completed status
-    const updatedUser = await Auth.findByIdAndUpdate(
-      req.user._id,
-      { 
-        userType: authUserType,
-        onboardingCompleted: true, // Set onboarding as completed
-        onboardingStep: 6 // Set to final step
-      },
-      { new: true } // Return the updated document
-    ).select("-password");
-
-    if (!updatedUser) {
+    if (!result.updatedUser) {
       return res.status(404).json({ error: "User not found after update." });
     }
-
-   
 
     res.status(201).json({
       message: "Form submitted successfully!",
       profileType: req.body.profileType,
-      userType: finalUserTypeForResponse,
-      user: updatedUser,
-      onboarding: updatedOnboarding
+      userType: result.finalUserTypeForResponse,
+      user: result.updatedUser,
+      onboarding: result.updatedOnboarding
     });
   } catch (error) {
     console.error("Form submission error (backend):", error);
-    
     if (error.code === 11000) {
       return res.status(409).json({ error: "A profile for this user already exists." });
     }
-    res
-      .status(500)
-      .json({ error: "Form submission failed.", details: error.message });
+    res.status(500).json({ error: "Form submission failed.", details: error.message });
   }
 };
 

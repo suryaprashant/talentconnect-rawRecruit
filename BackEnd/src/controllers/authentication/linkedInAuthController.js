@@ -1,7 +1,8 @@
 import axios from 'axios';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import Auth from '../../models/authModel.js';
+import { getAuthUser, upsertLinkedInAuthUser } from '../../services/authService.js';
+
 
 // Helper to generate random string
 const generateRandomString = (length) => {
@@ -35,7 +36,7 @@ export const handleLinkedInCallback = async (req, res) => {
   const [originalState, userType] = state.split('_');
 
   try {
-    const tokenResponse = await axios.post('https://www.linkedin.com/oauth/v2/accessToken', null, {
+    const tokenResponse = await axios.post(process.env.LINKEDIN_URL, null, {
       params: {
         grant_type: 'authorization_code',
         code,
@@ -58,64 +59,14 @@ export const handleLinkedInCallback = async (req, res) => {
     const name = profile.name || `${profile.given_name} ${profile.family_name}`;
     const profileImage = profile.picture;
 
-//     let user = await Auth.findOne({ linkedinId });
-//     let isNewUser = false;
+    const { user, isNewUser } = await upsertLinkedInAuthUser({ linkedinId, email, name, profileImage, userType });
 
-//     if (!user) {
-//       user = await Auth.findOne({ email });
-//       if (user) {
-//         user.linkedinId = linkedinId;
-//         user.name = user.name || name;
-//         user.profileImage = user.profileImage || profileImage;
-//         await user.save();
-//       } else {
-//         user = new Auth({ linkedinId, email, name, profileImage, userType, isNewUser: true });
-//         await user.save();
-//         isNewUser = true;
-//       }
-//     } else {
-//       user.email = email;
-//       user.name = name;
-//       user.profileImage = profileImage;
-//       user.userType = user.userType || userType;
-//       await user.save();
-//     }
+    const token = jwt.sign(
+      { id: user._id, userType: user.userType },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
 
-//     const token = jwt.sign({ id: user._id, userType: user.userType }, process.env.JWT_SECRET, { expiresIn: '1d' });
-
-//     const redirectUrl = `${process.env.Frontend_URL}/signup-success?token=${token}&isNewUser=${isNewUser}&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.name || '')}&userType=${user.userType}&profileImage=${encodeURIComponent(user.profileImage || '')}`;
-
-//       console.log('Redirecting to frontend URL:', redirectUrl); 
-
-//     res.redirect(redirectUrl);
-//   } catch (err) {
-//     const errorMsg = encodeURIComponent(err.response?.data?.message || 'LinkedIn auth failed on server.');
-//     res.redirect(`${process.env.VITE_Frontend_URL}/signup?error=${errorMsg}`);
-//   }
-// };
-  let user = await Auth.findOne({ linkedinId });
-    let isNewUser = false;
-
-    if (!user) {
-      user = await Auth.findOne({ email });
-      if (user) {
-        user.linkedinId = linkedinId;
-        user.name = user.name || name;
-        user.profileImage = user.profileImage || profileImage;
-        await user.save();
-        isNewUser = false; // User existed via email, not new
-      } else {
-        user = new Auth({ linkedinId, email, name, profileImage, userType, isNewUser: true });
-        await user.save();
-        isNewUser = true; // First-time signup
-      }
-    } else {
-      isNewUser = false; // User already exists via LinkedIn
-    }
-
-    const token = jwt.sign({ id: user._id, userType: user.userType }, process.env.JWT_SECRET, { expiresIn: '1d' });
-
-    // Define routes based on userType and isNewUser
     const onboardingRoutes = {
       candidate: '/student-form',
       fresher: '/student-form',
@@ -134,12 +85,10 @@ export const handleLinkedInCallback = async (req, res) => {
       employer: '/home'
     };
 
-    // Determine the target route
-    const targetRoute = isNewUser 
-      ? onboardingRoutes[user.userType] || '/onboarding' 
+    const targetRoute = isNewUser
+      ? onboardingRoutes[user.userType] || '/onboarding'
       : dashboardRoutes[user.userType] || '/home';
 
-    // Redirect directly to the target route with token (no intermediate /signup-success)
     const redirectUrl = `${process.env.Frontend_URL}${targetRoute}?token=${token}&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.name || '')}&userType=${user.userType}&profileImage=${encodeURIComponent(user.profileImage || '')}`;
 
     console.log('Redirecting to:', redirectUrl);
