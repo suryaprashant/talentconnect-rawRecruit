@@ -8,6 +8,7 @@ const TeamMemberSchema = new mongoose.Schema({
 }, { _id: false });
 
 const eventParticipationDetailSchema = new mongoose.Schema({
+    teamLeaderId: { type: mongoose.Schema.Types.ObjectId, required: true },
   eventID: { type: mongoose.Schema.Types.ObjectId, ref: 'hackathon', required: true },
   name: { type: String, required: true },
   email: { type: String, required: true },
