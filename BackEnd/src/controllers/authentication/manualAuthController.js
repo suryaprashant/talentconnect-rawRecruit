@@ -127,24 +127,24 @@ export const logout = async (req, res) => {
   }
 };
 
-// Add this if you need to get all users (excluding current user)
-export const allUsers = async (req, res) => {
-  console.log("hey Budy")
-  try {
-    const loggedInUserId = req.user._id;  // Assuming userId is set in req from JWT
+// // Add this if you need to get all users (excluding current user)
+// export const allUsers = async (req, res) => {
+//   console.log("hey Budy")
+//   try {
+//     const loggedInUserId = req.user._id;  // Assuming userId is set in req from JWT
 
-    if (!loggedInUserId) {
-      console.error("Error in allUsers Controller: loggedInUserId is missing after secureRoute");
-      return res.status(401).json({ message: "Unauthorized: User ID not found." });
-    }
+//     if (!loggedInUserId) {
+//       console.error("Error in allUsers Controller: loggedInUserId is missing after secureRoute");
+//       return res.status(401).json({ message: "Unauthorized: User ID not found." });
+//     }
 
-    const filteredUsers = await Auth.find({
-      _id: { $ne: loggedInUserId }
-    }).select("-password");
+//     const filteredUsers = await Auth.find({
+//       _id: { $ne: loggedInUserId }
+//     }).select("-password");
 
-    res.status(200).json(filteredUsers);
-  } catch (error) {
-    console.error("Error in allUsers Controller:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
+//     res.status(200).json(filteredUsers);
+//   } catch (error) {
+//     console.error("Error in allUsers Controller:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };

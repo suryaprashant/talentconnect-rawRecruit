@@ -113,4 +113,22 @@ export function fetchAllCollegesName() {
     .catch(error => error);
 }
 
+// get shortlistedCompanies by college
+export function getShorlistedCompaniesByCollege(applicantType, jobType) {
+  return axiosClient.get(`/application/manage/college/shortlist/`, {
+    params: {
+      applicantType: applicantType,
+      jobType: jobType
+    }
+  })
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function rejectCompanyApplication(applicationId,jobRole) {
+  return axiosClient.patch(`/application/manage/reject/${applicationId}`,{ jobRole })
+    .then(response => response)
+    .catch(error => error);
+}
+
 

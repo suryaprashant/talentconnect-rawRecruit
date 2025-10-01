@@ -1,4 +1,7 @@
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
+
+import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
+
 import {
     ChangeStatusService,
     createApplicationService,
@@ -6,6 +9,7 @@ import {
     fetchApplicationsByJobService,
     fetchCandidatesbyStatus,
     fetchCollegeApplicationsByJobService,
+
     getApplicationService,
     getSavedJobsService,
     saveJobService,
@@ -449,13 +453,29 @@ export async function getShortlistedCandidatesByCompany(req, res) {
     try {
         const company = await CompanyProfile.find({ userId: companyId }).lean();
         if (!company) return res.status(404).json({ msg: "company not found!" });
-        // console.log(company);
+       
         const response = await fetchCandidatesbyStatus(company[0]._id, "Shortlisted", applicantType, jobType);
         // console.log(response);
         res.status(200).json(response);
     } catch (error) {
         console.log("Error: ", error);
         res.status(500).json({ Error: "Internal server error" });
+    }
+}
+
+// get shortlist comapny for the college 
+export async function getShortlistedCompaniesForCollege(req , res){
+    const  collegeId = req.user.id ;
+    const {applicantType , jobType} = req.query ;
+    if (!applicantType || !jobType) return res.status(404).json({ msg: "Applicant not defined!" });
+    try{
+       const college = await collegeOnboardingModel.find({userId: collegeId}).lean() ;
+       if(!college) return res.status(404).json({ msg: "college not found!" });
+       const response = await fetchCandidatesbyStatus(college[0].id , "Shortlisted", applicantType , jobType) ;
+       res.status(200).json(response) ;
+    }catch(error){
+       console.log("Error:", error) ;
+       res.status(500).json({Error: "Internal Server error"}) ;
     }
 }
 
@@ -476,6 +496,36 @@ export async function getAcceptedCandidatesByCompany(req, res) {
         res.status(500).json({ Error: "Internal server error" });
     }
 }
+
+// get companyAccepted By college ===> No need for now accepted in the college dashboard 
+
+// export async function  getAcceptedCompaniesByCollege(req, res) {
+//     const collegeUserId = req.user._id ;
+//     const {applicantType , jobType} = req.query ;
+
+//     if(!jobType || !applicantType){
+//         return res.status(400).json({success : false , msg : "Job type or applicant type is not found"}) ;
+//     }
+
+//     try{
+//         const collegeProfile = await collegeOnboardingModel.findOne({userId: collegeUserId}).lean() ;
+
+//         if(!collegeProfile){
+//             return res.status(404).json({success : false, msg : "College Profile is not found ! "}) ;
+//         }
+
+//         const collegeProfileId = collegeProfile._id ;
+
+//         const response = await fetchCompaniesByStatus(collegeProfileId, "Accepted" , jobType)
+
+//         res.status(200).json(response) ;
+//     }
+//     catch(error){
+//         console.log("Error in getAcceptedCompaniesByCollege" , error) ;
+//         res.status(500).json({success : false , Error : "Internal Server Error"}) ;
+//     }
+
+// }
 
 
 // oncampus (no use)

@@ -77,6 +77,7 @@ export const createOnCampusCollegeRequest = async (req, res) => {
         if (!collegeProfile) {
             return res.status(404).json({ error: "College profile not found" });
         }   
+        co
         const postingData = {
             ...req.body,
             collegePosted: collegeProfile._id,

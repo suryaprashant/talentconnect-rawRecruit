@@ -1673,7 +1673,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import Badge from '@/components/ui/Badge';
-import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown } from 'react-icons/fi';
+import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown, FiTrash2 } from 'react-icons/fi';
 import axios from 'axios';
 
 function Fresher_Profile() {
@@ -2358,13 +2358,17 @@ function Fresher_Profile() {
                       </div>
 
                       <div className="space-y-6">
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">About</h5>
+                        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      About
+                    </h5>
                           <p className="text-gray-600">{profileData.about || 'No information provided.'}</p>
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Contact Information</h5>
+                        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Contact Information
+                    </h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                               <p className="text-sm text-gray-500">Email address</p>
@@ -2377,8 +2381,10 @@ function Fresher_Profile() {
                           </div>
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Personal Details</h5>
+                         <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Personal Information
+                    </h5>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                               <p className="text-sm text-gray-500">Date of Birth</p>
@@ -2403,14 +2409,47 @@ function Fresher_Profile() {
                           </div>
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Education</h5>
-                          <p className="text-gray-900">{profileData.specialization|| 'N/A'}</p>
-                          <p className="text-gray-600">{profileData.college || 'N/A'}, {profileData.yearOfGraduation || 'N/A'}</p>
-                        </div>
+                       {/* START OF MODIFIED ACADEMIC SECTION */}
+                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Academic Background
+                    </h5>
+                    
+                    <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
+                      {/* Degree & Specialization */}
+                      <div className="col-span-2 sm:col-span-1">
+                        <p className="text-gray-500">Degree & Specialization</p>
+                        <p className="font-semibold text-gray-900">
+                          {profileData.degree || 'N/A'} / {profileData.specialization || 'N/A'}
+                        </p>
+                      </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Skills</h5>
+                      {/* CGPA / Percentage */}
+                      <div className="col-span-2 sm:col-span-1">
+                        <p className="text-gray-500">CGPA / Percentage</p>
+                        <p className="font-semibold text-gray-900">{profileData.cgpa || 'N/A'}</p>
+                      </div>
+
+                      {/* Institution */}
+                      <div className="col-span-2">
+                        <p className="text-gray-500">Institution</p>
+                        <p className="font-semibold text-gray-900">{profileData.college || 'N/A'}</p>
+                      </div>
+                      
+                      {/* Graduation Date */}
+                      <div className="col-span-2">
+                        <p className="text-gray-500">Graduation Year</p>
+                        <p className="font-semibold text-green-600">
+                          {profileData.yearOfGraduation || 'N/A'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Skills
+                    </h5>
                           <div className="flex flex-wrap gap-2">
                             {profileData.skills && profileData.skills.length > 0 ? (
                               profileData.skills.map((skill) => (
@@ -2426,8 +2465,10 @@ function Fresher_Profile() {
                         
                        
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                            <h5 className="font-medium text-gray-900 mb-2">Tools & Platforms</h5>
+                        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Tools & platforms
+                    </h5>
                             <div className="flex flex-wrap gap-2">
                                 {profileData.toolsAndPlatforms && profileData.toolsAndPlatforms.length > 0 ? (
                                 profileData.toolsAndPlatforms.map((tool) => (
@@ -2441,13 +2482,17 @@ function Fresher_Profile() {
                             </div>
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Interested Industry Type</h5>
+                         <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Interested Industry Type
+                    </h5>
                           <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.industry && profileData.industry.length > 0 ? profileData.industry[0] : 'N/A'}</Badge>
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Interested Job Roles</h5>
+                    <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Interested Job Roles
+                    </h5>
                           <div className="flex flex-wrap gap-2">
                             {profileData.jobRoles && profileData.jobRoles.length > 0 ? (
                               profileData.jobRoles.map((role) => (
@@ -2459,8 +2504,10 @@ function Fresher_Profile() {
                           </div>
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Preferred Job Locations</h5>
+                        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Preferred Job Locations
+                    </h5>
                           <div className="flex flex-wrap gap-2">
                             {profileData.locations && profileData.locations.length > 0 ? (
                               profileData.locations.map((location) => (
@@ -2474,34 +2521,70 @@ function Fresher_Profile() {
                           </div>
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Looking for</h5>
+ <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+                    <h5 className="text-lg font-bold text-gray-800 mb-4">
+                      Looking for
+                    </h5>
                           <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.lookingFor || 'N/A'}</Badge>
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Employment Type</h5>
-                          <div className="flex gap-2">
-                            {profileData.employmentType ? (
-                              <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.employmentType}</Badge>
-                            ) : (
-                              <span className="text-gray-600">N/A</span>
-                            )}
-                          </div>
-                        </div>
+                        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+  <h5 className="text-lg font-bold text-gray-800 mb-4">
+    Employment Type
+  </h5>
+  <div className="flex flex-wrap gap-2"> {/* Changed to flex-wrap and gap-2 for spacing */}
+    {/* Check if employmentType is an array and has items */}
+    {profileData.employmentType && Array.isArray(profileData.employmentType) && profileData.employmentType.length > 0 ? (
+      profileData.employmentType.map((type) => (
+        <Badge 
+          key={type} 
+          variant="primary" 
+          size="md" 
+          className="bg-gray-100 text-gray-800 capitalize" // Added capitalize for cleaner display
+        >
+          {type}
+        </Badge>
+      ))
+    ) : (
+      <span className="text-gray-600">N/A</span>
+    )}
+  </div>
+</div>
                         
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                            <h5 className="font-medium text-gray-900 mb-2">Open to Shift Work</h5>
-                            <p className="text-gray-900">{profileData.openToShift}</p>
-                        </div>
+                     {/* Shift Preference Section (Using Badge) */}
+<div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+  <h5 className="text-lg font-bold text-gray-800 mb-2">
+    Shift Preference
+  </h5>
+  <div className="flex gap-2">
+    {profileData.openToShift ? (
+      <Badge 
+        variant="primary" 
+        size="md" 
+        className="bg-gray-100 text-indigo-800 capitalize"
+      >
+        {profileData.openToShift}
+      </Badge>
+    ) : (
+      <span className="text-gray-600">N/A</span>
+    )}
+  </div>
+</div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Expected Salary</h5>
-                          <p className="text-gray-900">{profileData.expectedSalaryCurrency || 'N/A'} {profileData.expectedSalaryAmount || ''}</p>
-                        </div>
+{/* Expected Salary Section */}
+<div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+  <h5 className="text-lg font-bold text-gray-800 mb-2">
+    Expected Salary
+  </h5>
+  {/* Display currency and amount together with bold, distinct styling */}
+  <div className="text-xl font-bold text-green-500">
+    {profileData.expectedSalaryCurrency || 'N/A'}{' '}
+    {profileData.expectedSalaryAmount || 'N/A'}
+  </div>
+</div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Work Experience</h5>
+                      <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+  <h5 className="text-lg font-bold text-gray-800 mb-2">Work Experience </h5>
                           {profileData.experiences && profileData.experiences.length > 0 ? (
                             profileData.experiences.map((exp, idx) => (
                               <div key={idx} className="mb-4 border-b pb-2 last:border-b-0">
@@ -2520,8 +2603,10 @@ function Fresher_Profile() {
                           )}
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Certifications</h5>
+                    <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+  <h5 className="text-lg font-bold text-gray-800 mb-2">
+    Certifications
+  </h5>
                           {profileData.certifications && profileData.certifications.length > 0 ? (
                             <ul className="list-disc list-inside text-gray-600">
                               {profileData.certifications.map((cert, idx) => (
@@ -2540,20 +2625,48 @@ function Fresher_Profile() {
                           )}
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Awards & Recognition</h5>
-                          {profileData.awards && profileData.awards.length > 0 ? (
-                            profileData.awards.map((award, idx) => (
-                              <div key={idx} className="mb-2">
-                                <p className="font-medium text-gray-800">{award.name}</p>
-                                <p className="text-sm text-gray-600">{award.issuer} - {award.date}</p>
-                              </div>
-                            ))
-                          ) : (<span className="text-gray-600">No awards added.</span>)}
-                        </div>
+                 {/* New Awards & Recognition Section */}
+<div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+  <h5 className="text-lg font-bold text-gray-800 mb-4">
+    Awards & Recognition
+  </h5>
+  {profileData.awards && Array.isArray(profileData.awards) && profileData.awards.length > 0 ? (
+    <div className="space-y-4">
+      {profileData.awards.map((award, idx) => (
+        <div key={idx} className="pb-3 border-b border-gray-200 last:border-b-0 last:pb-0">
+          {/* Title and Organization */}
+          <p className="text-base font-semibold text-gray-900">
+            {/* Using 'title' and 'organization' */}
+            {award.title || 'Award Title N/A'}
+          </p>
+          <p className="text-sm text-gray-600 mb-1">
+            {award.organization || 'Issuer N/A'}
+          </p>
+          
+          {/* Dates */}
+          <p className="text-xs text-gray-500">
+            {/* Displaying Start and End Date */}
+            {award.startDate || 'N/A'} {award.endDate ? `— ${award.endDate}` : ''}
+          </p>
+          
+          {/* Description (Optional) */}
+          {award.description && (
+            <p className="text-sm text-gray-700 mt-2 italic border-l-2 border-indigo-300 pl-2">
+              {award.description}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  ) : (
+    <span className="text-gray-600">No awards added.</span>
+  )}
+</div>
                        
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Published Articles/Blogs</h5>
+                        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+  <h5 className="text-lg font-bold text-gray-800 mb-2">
+    Published Articles/Blogs
+  </h5>
                           {profileData.publications && profileData.publications.length > 0 ? (
                                <ul className="list-disc list-inside text-gray-600">
                                   {profileData.publications.map((pub, idx) => (
@@ -2567,8 +2680,10 @@ function Fresher_Profile() {
                           ) : (<span className="text-gray-600">No publications added.</span>)}
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Achievements</h5>
+                       <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+  <h5 className="text-lg font-bold text-gray-800 mb-2">
+    Achievement
+  </h5>
                           {profileData.achievements && profileData.achievements.length > 0 ? (
                             profileData.achievements.map((ach, idx) => (
                               <div key={idx} className="mb-2">
@@ -2579,8 +2694,10 @@ function Fresher_Profile() {
                           ) : (<span className="text-gray-600">No achievements added.</span>)}
                         </div>
 
-                         <div className="p-4 border border-gray-200 rounded-lg">
-                            <h5 className="font-medium text-gray-900 mb-2">Languages Known</h5>
+                       <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+  <h5 className="text-lg font-bold text-gray-800 mb-2">
+    Known Languages
+  </h5>
                             <div className="flex flex-wrap gap-2">
                                 {profileData.languagesKnown && profileData.languagesKnown.length > 0 ? (
                                 profileData.languagesKnown.map((lang) => (
@@ -2594,8 +2711,10 @@ function Fresher_Profile() {
                             </div>
                         </div>
 
-                        <div className="p-4 border border-gray-200 rounded-lg">
-                          <h5 className="font-medium text-gray-900 mb-2">Referral Source</h5>
+                        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
+  <h5 className="text-lg font-bold text-gray-800 mb-2">
+    Referral Sources
+  </h5>
                           <p className="text-gray-900">{profileData.referralSource || 'N/A'}</p>
                         </div>
 
@@ -3405,33 +3524,120 @@ function Fresher_Profile() {
               )}
             </div>
            
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-                  <div className="mb-4">
-                      <h3 className="text-lg font-medium text-gray-900">Awards & Recognition</h3>
-                      <p className="text-sm text-gray-600">Showcase your awards and recognitions.</p>
-                  </div>
-                  {profileData.awards.map((award, index) => (
-                      <div key={index} className="relative mb-4 p-4 border border-gray-200 rounded-lg space-y-4">
-                          {isProfileEditing && (<Button variant="ghost" size="sm" onClick={() => removeAward(index)} className="absolute top-2 right-2 text-red-600 hover:bg-red-50">Remove</Button>)}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">Award Name</label>
-                                  {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md" value={award.name} onChange={(e) => handleAwardChange(index, 'name', e.target.value)} />) : (<div className={displayFieldStyle}>{award.name || "N/A"}</div>)}
-                              </div>
-                              <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-1">Issuer</label>
-                                  {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md" value={award.issuer} onChange={(e) => handleAwardChange(index, 'issuer', e.target.value)} />) : (<div className={displayFieldStyle}>{award.issuer || "N/A"}</div>)}
-                              </div>
-                          </div>
-                          <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                              {isProfileEditing ? (<input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md" value={award.date} onChange={(e) => handleAwardChange(index, 'date', e.target.value)} />) : (<div className={displayFieldStyle}>{award.date || "N/A"}</div>)}
-                          </div>
-                      </div>
-                  ))}
-                  {isProfileEditing && (<Button variant="outline" size="sm" onClick={addAward}><FiPlus className="w-4 h-4 mr-2" /> Add Award</Button>)}
+             {/* New Awards & Recognition Section */}
+<div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+    <div className="mb-4">
+        <h3 className="text-lg font-medium text-gray-900">Awards & Recognition</h3>
+        <p className="text-sm text-gray-600">Showcase your awards and recognitions.</p>
+    </div>
+    
+    {profileData.awards.map((award, index) => (
+        <div key={index} className="relative mb-6 p-4 border border-gray-200 rounded-xl space-y-4 shadow-sm bg-gray-50">
+            {isProfileEditing && (
+                <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => removeAward(index)} 
+                    className="absolute top-2 right-2 text-red-600 hover:bg-red-50"
+                >
+                    <FiTrash2 className="w-4 h-4 mr-1" /> Remove
+                </Button>
+            )}
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Field: title (Mapped from 'name') */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Award Title</label>
+                    {isProfileEditing ? (
+                        <input 
+                            type="text" 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                            value={award.title} 
+                            onChange={(e) => handleAwardChange(index, 'title', e.target.value)} 
+                            placeholder="e.g., Dean's List, Best Capstone Project"
+                        />
+                    ) : (
+                        <div className={displayFieldStyle}>{award.title || "N/A"}</div>
+                    )}
+                </div>
+                
+                {/* Field: organization (Mapped from 'issuer') */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Organization / Issuer</label>
+                    {isProfileEditing ? (
+                        <input 
+                            type="text" 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                            value={award.organization} 
+                            onChange={(e) => handleAwardChange(index, 'organization', e.target.value)} 
+                            placeholder="e.g., Google, IEEE, University Name"
+                        />
+                    ) : (
+                        <div className={displayFieldStyle}>{award.organization || "N/A"}</div>
+                    )}
+                </div>
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+                {/* Field: startDate (Mapped from 'date') */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Start Date / Received Date</label>
+                    {isProfileEditing ? (
+                        <input 
+                            type="date" 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                            value={award.startDate} 
+                            onChange={(e) => handleAwardChange(index, 'startDate', e.target.value)} 
+                        />
+                    ) : (
+                        <div className={displayFieldStyle}>{award.startDate || "N/A"}</div>
+                    )}
+                </div>
+                
+                {/* Field: endDate */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">End Date (Optional)</label>
+                    {isProfileEditing ? (
+                        <input 
+                            type="date" 
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                            value={award.endDate} 
+                            onChange={(e) => handleAwardChange(index, 'endDate', e.target.value)} 
+                        />
+                    ) : (
+                        <div className={displayFieldStyle}>{award.endDate || "N/A"}</div>
+                    )}
+                </div>
+            </div>
+
+            {/* Field: description */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description / Notes</label>
+                {isProfileEditing ? (
+                    <textarea
+                        rows="3"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                        value={award.description} 
+                        onChange={(e) => handleAwardChange(index, 'description', e.target.value)} 
+                        placeholder="Briefly describe the award and your role or contribution."
+                    />
+                ) : (
+                    <div className={displayFieldStyle}>{award.description || "N/A"}</div>
+                )}
+            </div>
+        </div>
+    ))}
+    
+    {profileData.awards.length === 0 && !isProfileEditing && (
+        <p className="text-gray-500 italic text-center py-4">No awards or recognition added yet.</p>
+    )}
+
+    {isProfileEditing && (
+        <Button variant="outline" size="sm" onClick={addAward} className="mt-4">
+            <FiPlus className="w-4 h-4 mr-2" /> Add Award
+        </Button>
+    )}
+</div>
             <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                   <div className="mb-4">
                       <h3 className="text-lg font-medium text-gray-900">Published Articles/Blogs</h3>

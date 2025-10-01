@@ -150,7 +150,7 @@ export const StepFive = ({ onNext, onBack, formData, onChange }) => {
           {/* Buttons */}
           <div className="flex gap-4 mt-8">
             <button type="button" onClick={onBack} className="px-6 py-3 border rounded-md">Back</button>
-            <button type="button" onClick={handleNextClick} className="bg-black text-white px-6 py-3 border rounded-md">Submit</button>
+            <button type="button" onClick={handleNextClick} className="bg-black text-white px-6 py-3 border rounded-md">Next</button>
           </div>
         </form>
       </div>
