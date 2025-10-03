@@ -72,6 +72,41 @@ export const getMessage = async (req, res) => {
   }
 };
 
+// Auto-conversation creation between college and company
+export const createConversation = async (req, res) => {
+  try {
+    const { receiverId } = req.body;
+    const senderId = req.user._id;
+
+    if (!receiverId) {
+      return res.status(400).json({ error: "Receiver ID is required" });
+    }
+
+  
+    let conversation = await Conversation.findOne({
+      members: { $all: [senderId, receiverId] },
+    });
+
+ 
+    if (!conversation) {
+      conversation = await Conversation.create({
+        members: [senderId, receiverId],
+        messages: []
+      });
+    }
+
+ 
+    const populatedConversation = await Conversation.findById(conversation._id)
+      .populate('members', 'name email profileImage userType')
+      .populate('messages');
+
+    res.status(200).json(populatedConversation);
+  } catch (error) {
+    console.log("Error in createConversation", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 // controller to get unread message count 
 export const getUnreadCount = async (req, res) => {
   try {

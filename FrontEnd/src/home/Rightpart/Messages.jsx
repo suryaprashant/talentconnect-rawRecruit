@@ -6,7 +6,13 @@ import useGetSocketMessage from "../../context/useGetSocketMessage.js";
 
 function Messages() {
   const { loading, messages } = useGetMessage();
-  useGetSocketMessage(); // Listening for incoming messages
+  //useGetSocketMessage(); // Listening for incoming messages
+
+    try {
+    useGetSocketMessage(); // Listening for incoming messages
+  } catch (error) {
+    console.log("Socket message listener not available:", error);
+  }
 
   const lastMsgRef = useRef();
   useEffect(() => {

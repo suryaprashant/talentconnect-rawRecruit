@@ -218,13 +218,12 @@ export async function fetchApplicationsByJobService(jobId, jobType) {
 // oncampus and poolcampus
 export async function fetchCollegeApplicationsByJobService(jobId, jobType) {
     try {
-         
         const response = await Application.aggregate([
             {
                 $match: {
                     job: new mongoose.Types.ObjectId(jobId),
                     jobType: jobType,
-                    currentStatus:{$ne:'Saved'}
+                    currentStatus: {$ne:'Saved'}
                 }
             },
             {
@@ -239,16 +238,28 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType) {
                 $unwind: { path: "$applicant", preserveNullAndEmptyArrays: true }
             },
             {
+                $lookup: {
+                    from: "auths", // Join with Auth collection to get userId
+                    localField: "applicant.userId", // Assuming companyProfile has userId field linking to Auth
+                    foreignField: "_id",
+                    as: "authInfo"
+                }
+            },
+            {
+                $unwind: { path: "$authInfo", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $addFields: {
+                    "applicant.userId": "$authInfo._id" // Add Auth ID to applicant object
+                }
+            },
+            {
                 $project: {
-                    applicant: 1,
-                    // job: {
-                    //     _id: 1,
-                    //     jobTitle: 1
-                    // },
-                    // jobType: 1,
-                    statusHistory: 1,
-                    currentStatus: 1,
-                    createdAt: 1
+                    "applicant": 1,
+                    "statusHistory": 1,
+                    "currentStatus": 1,
+                    "createdAt": 1
+                    // Don't include authInfo field at all
                 }
             }
         ]);
@@ -258,7 +269,6 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType) {
         throw new Error("Failed to fetch");
     }
 }
-
 // count applications
 export async function countApplicationsService(jobId, jobType) {
     try {

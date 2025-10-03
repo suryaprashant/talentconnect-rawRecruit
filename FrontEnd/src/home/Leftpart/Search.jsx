@@ -66,9 +66,10 @@ function Search() {
     
     // Search in both name and email
     const conversation = allUsers.find((user) =>
-      user.name?.toLowerCase().includes(search.toLowerCase()) ||
-      user.email?.toLowerCase().includes(search.toLowerCase())
-    );
+    user.name?.toLowerCase().includes(search.toLowerCase()) ||
+    user.email?.toLowerCase().includes(search.toLowerCase()) ||
+    user.fullname?.toLowerCase().includes(search.toLowerCase()) // Add fullname search
+  );
     
     if (conversation) {
       setSelectedConversation(conversation);

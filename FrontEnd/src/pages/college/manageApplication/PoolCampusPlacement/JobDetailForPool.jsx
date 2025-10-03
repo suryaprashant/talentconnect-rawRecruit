@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getApplicationByJobOfManagement } from '@/lib/College_AxiosIntance';
+import { getApplicationByJobOfManagement, conversationWithCollege } from '@/lib/College_AxiosIntance';
+import useConversation from '@/statemanage/useConversation.js';
 import { ArrowLeft, Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, Building2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Spinner = () => (
     <div className="flex justify-center items-center h-full">
@@ -10,12 +12,52 @@ const Spinner = () => (
 );
 
 const ApplicantCard = ({ applicationData }) => {
+    const navigate = useNavigate();
+    const { setSelectedConversation } = useConversation();
+
     if (!applicationData || !applicationData.applicant) {
         return null;
     }
 
     const { applicant, currentStatus, createdAt } = applicationData;
-    const { companyDetails, profileImageUrl, employerDetails } = applicant;
+    const { companyDetails, profileImageUrl, employerDetails, userId } = applicant;
+
+    const handleMessageClick = async (e) => {
+        e.stopPropagation();
+        
+        try {
+            // Create the conversation in backend first
+            const response = await conversationWithCollege(userId);
+
+            if (response.data) {
+                // Create conversation user object with proper structure
+                const conversationUser = {
+                    _id: userId,
+                    name: companyDetails?.companyName || 'Unknown Company',
+                    email: employerDetails?.workEmail || '',
+                    profileImage: profileImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+                    userType: 'company',
+                    fullname: companyDetails?.companyName || 'Unknown Company'
+                };
+
+                console.log("Setting conversation for direct chat:", conversationUser);
+                
+                // Set the conversation in global state
+                setSelectedConversation(conversationUser);
+                
+                // Navigate to chat page with slight delay to ensure state is set
+                setTimeout(() => {
+                    navigate('/chat-application');
+                }, 100);
+                
+            } else {
+                toast.error('Failed to create conversation');
+            }
+        } catch (error) {
+            console.error('Error starting chat:', error);
+            toast.error('Error starting conversation');
+        }
+    };
 
     return (
         <div className="bg-white p-5 rounded-lg border border-gray-200 transition-shadow hover:shadow-md">
@@ -73,7 +115,10 @@ const ApplicantCard = ({ applicationData }) => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 border-t pt-4">
                 <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700 transition-colors text-center text-sm">Shortlist</button>
                 <button className="w-full bg-red-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-600 transition-colors text-center text-sm">Reject</button>
-                <button className="w-full bg-gray-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center text-center text-sm">
+                <button 
+                    onClick={handleMessageClick}
+                    className="w-full bg-gray-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center text-center text-sm"
+                >
                     <Send size={14} className="mr-2" /> Message
                 </button>
             </div>
