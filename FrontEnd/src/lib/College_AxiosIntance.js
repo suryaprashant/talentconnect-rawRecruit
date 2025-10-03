@@ -131,4 +131,12 @@ export function rejectCompanyApplication(applicationId,jobRole) {
     .catch(error => error);
 }
 
+// Auto-conversation creation between college and company
+
+export const conversationWithCollege = (companyId) => {
+  return axiosClient.post(`/api/messages/conversation`, { receiverId: companyId })
+    .then(response => response)
+    .catch(error => error);
+};
+
 

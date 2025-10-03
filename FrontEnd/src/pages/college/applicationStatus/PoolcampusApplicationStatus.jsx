@@ -3,7 +3,7 @@ import { Search, MapPin, Clock } from 'lucide-react';
 import { statusSteps, similarJobs } from '../../../constants/data.js';
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
 
-export default function () {
+export default function PoolCampusApplicationStatus () {
     const [poolcampusJobs, setPoolcampusJobs] = useState();
     const [selectedJob, setSelectedJob] = useState();
     const [searchTerm, setSearchTerm] = useState("");
