@@ -216,7 +216,14 @@ export async function fetchApplicationsByJobService(jobId, jobType) {
 }
 
 // oncampus and poolcampus
-export async function fetchCollegeApplicationsByJobService(jobId, jobType) {
+export async function fetchCollegeApplicationsByJobService(jobId, jobType, userType) {
+    let applicantDB;
+    if(userType==='college'){
+        applicantDB="companyprofiles";
+    }
+    else if(userType==='company'){
+        applicantDB="collegeonboardings";
+    }
     try {
         const response = await Application.aggregate([
             {
@@ -228,7 +235,7 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType) {
             },
             {
                 $lookup: {
-                    from: "companyprofiles",
+                    from: applicantDB,
                     localField: "applicant",
                     foreignField: "_id",
                     as: "applicant"
