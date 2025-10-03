@@ -1,6 +1,6 @@
 import Casestudy from "../models/casestudyModel.js";
 import { v2 as cloudinary } from 'cloudinary';
-import EventRegistration from '../models/eventParticipationDetails.js'
+import EventRegistration from '../models/eventParticipationModel.js'
 
 /**
  * Service class for handling case study-related business logic
@@ -228,6 +228,22 @@ class CasestudyService {
         }
 
         return casestudy;
+    }
+    /**
+     * Get a single case study rounds by ID
+     * @param {string} casestudyId - The case study ID
+     * @returns {Object} Case study object
+     */
+    async getCasestudyRoundsById(casestudyId) {
+        const casestudy = await Casestudy.findById(casestudyId).populate([
+            { path: 'panelMembers' },
+        ]);
+
+        if (!casestudy) {
+            throw new Error(`Case study not found with id of ${casestudyId}`);
+        }
+
+        return casestudy.rounds;
     }
 
     // Private helper methods

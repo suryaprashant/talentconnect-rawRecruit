@@ -1,6 +1,6 @@
 import Hackathon from "../models/hackathonModel.js";
 import { v2 as cloudinary } from 'cloudinary';
-import EventRegistration from '../models/eventParticipationDetails.js'
+import EventRegistration from '../models/eventParticipationModel.js'
 
 /**
  * Service class for handling hackathon-related business logic
@@ -200,21 +200,21 @@ class HackathonHostingService {
      * @returns {Array} Array of hackathons
      */
     async getAllHackathons() {
-    const hackathons = await Hackathon.find().sort('-createdAt');
+        const hackathons = await Hackathon.find().sort('-createdAt');
 
-    // Add registeredUsers to each hackathon
-    const hackathonsWithRegistrations = await Promise.all(
-        hackathons.map(async (hackathon) => {
-            const count = await EventRegistration.countDocuments({ eventID: hackathon._id });
-            return {
-                ...hackathon.toObject(),
-                registeredUsers: count
-            };
-        })
-    );
+        // Add registeredUsers to each hackathon
+        const hackathonsWithRegistrations = await Promise.all(
+            hackathons.map(async (hackathon) => {
+                const count = await EventRegistration.countDocuments({ eventID: hackathon._id });
+                return {
+                    ...hackathon.toObject(),
+                    registeredUsers: count
+                };
+            })
+        );
 
-    return hackathonsWithRegistrations;
-}
+        return hackathonsWithRegistrations;
+    }
 
 
     /**
@@ -223,192 +223,208 @@ class HackathonHostingService {
      * @returns {Object} Hackathon object
      */
     async getHackathonById(hackathonId) {
-    const hackathon = await Hackathon.findById(hackathonId).populate([
-        { path: 'panelMembers' },
-    ]);
+        const hackathon = await Hackathon.findById(hackathonId).populate([
+            { path: 'panelMembers' },
+        ]);
 
-    if (!hackathon) {
-        throw new Error(`Hackathon not found with id of ${hackathonId}`);
+        if (!hackathon) {
+            throw new Error(`Hackathon not found with id of ${hackathonId}`);
+        }
+
+        return hackathon;
+    }
+    /**
+     * Get a single hackathon rounds by ID
+     * @param {string} hackathonId - The hackathon ID
+     * @returns {Object} Hackathon object
+     */
+    async getHackathonRoundsById(hackathonId) {
+        const hackathon = await Hackathon.findById(hackathonId).populate([
+            { path: 'panelMembers' },
+        ]);
+
+        if (!hackathon) {
+            throw new Error(`Hackathon not found with id of ${hackathonId}`);
+        }
+
+        return hackathon.rounds;
     }
 
-    return hackathon;
-}
+    // Private helper methods
 
-// Private helper methods
+    /**
+     * Transform rewards data to match model structure
+     * @param {Object} rewards - Raw rewards data
+     * @returns {Array} Transformed rewards array
+     */
+    _transformRewardsData(rewards) {
+        const rewardsAndBenefits = [];
 
-/**
- * Transform rewards data to match model structure
- * @param {Object} rewards - Raw rewards data
- * @returns {Array} Transformed rewards array
- */
-_transformRewardsData(rewards) {
-    const rewardsAndBenefits = [];
+        if (!rewards) return rewardsAndBenefits;
 
-    if (!rewards) return rewardsAndBenefits;
+        const isAmount = rewards?.rewardType === 'Amount';
 
-    const isAmount = rewards?.rewardType === 'Amount';
+        // Add main prizes
+        if (rewards.firstPlace) {
+            rewardsAndBenefits.push({
+                title: '1st Place',
+                rank: 'Winner',
+                type: isAmount ? 'Cash' : 'Other',
+                amount: isAmount ? parseInt(rewards.firstPlace) : undefined,
+            });
+        }
 
-    // Add main prizes
-    if (rewards.firstPlace) {
-        rewardsAndBenefits.push({
-            title: '1st Place',
-            rank: 'Winner',
-            type: isAmount ? 'Cash' : 'Other',
-            amount: isAmount ? parseInt(rewards.firstPlace) : undefined,
-        });
+        if (rewards.secondPlace) {
+            rewardsAndBenefits.push({
+                title: '2nd Place',
+                rank: '1st Runner-up',
+                type: isAmount ? 'Cash' : 'Other',
+                amount: isAmount ? parseInt(rewards.secondPlace) : undefined,
+            });
+        }
+
+        if (rewards.thirdPlace) {
+            rewardsAndBenefits.push({
+                title: '3rd Place',
+                rank: '2nd Runner-up',
+                type: isAmount ? 'Cash' : 'Other',
+                amount: isAmount ? parseInt(rewards.thirdPlace) : undefined,
+            });
+        }
+
+        // Add special awards
+        if (rewards.specialAwards && rewards.specialAwards.length > 0) {
+            rewards.specialAwards.forEach(award => {
+                if (!award?.name) return;
+                if (isAmount && award.amount) {
+                    rewardsAndBenefits.push({
+                        title: award.name,
+                        type: 'Cash',
+                        amount: parseInt(award.amount)
+                    });
+                } else if (!isAmount && award.perk) {
+                    rewardsAndBenefits.push({
+                        title: award.name,
+                        type: 'Other',
+                    });
+                }
+            });
+        }
+
+        return rewardsAndBenefits;
     }
 
-    if (rewards.secondPlace) {
-        rewardsAndBenefits.push({
-            title: '2nd Place',
-            rank: '1st Runner-up',
-            type: isAmount ? 'Cash' : 'Other',
-            amount: isAmount ? parseInt(rewards.secondPlace) : undefined,
-        });
+    /**
+     * Determine hackathon type based on mode
+     * @param {string} mode - The mode value
+     * @returns {string} Hackathon type
+     */
+    _determineHackathonType(mode) {
+        let hackathonType = 'Virtual';
+        if (mode === 'Online') hackathonType = 'Virtual';
+        else if (mode === 'Hybrid') hackathonType = 'Hybrid';
+        else if (mode === 'Private') hackathonType = 'In-person';
+        return hackathonType;
     }
 
-    if (rewards.thirdPlace) {
-        rewardsAndBenefits.push({
-            title: '3rd Place',
-            rank: '2nd Runner-up',
-            type: isAmount ? 'Cash' : 'Other',
-            amount: isAmount ? parseInt(rewards.thirdPlace) : undefined,
-        });
+    /**
+     * Determine max team size based on participation type
+     * @param {string} participationType - The participation type
+     * @param {string|number} maxTeamMembers - Max team members value
+     * @returns {number} Max team size
+     */
+    _determineMaxTeamSize(participationType, maxTeamMembers) {
+        let maxTeamSize = 1;
+        if (participationType === 'Team') {
+            maxTeamSize = parseInt(maxTeamMembers) || 5;
+        } else if (participationType === 'Both') {
+            maxTeamSize = parseInt(maxTeamMembers) || 5;
+        }
+        return maxTeamSize;
     }
 
-    // Add special awards
-    if (rewards.specialAwards && rewards.specialAwards.length > 0) {
-        rewards.specialAwards.forEach(award => {
-            if (!award?.name) return;
-            if (isAmount && award.amount) {
-                rewardsAndBenefits.push({
-                    title: award.name,
-                    type: 'Cash',
-                    amount: parseInt(award.amount)
-                });
-            } else if (!isAmount && award.perk) {
-                rewardsAndBenefits.push({
-                    title: award.name,
-                    type: 'Other',
-                });
-            }
-        });
-    }
-
-    return rewardsAndBenefits;
-}
-
-/**
- * Determine hackathon type based on mode
- * @param {string} mode - The mode value
- * @returns {string} Hackathon type
- */
-_determineHackathonType(mode) {
-    let hackathonType = 'Virtual';
-    if (mode === 'Online') hackathonType = 'Virtual';
-    else if (mode === 'Hybrid') hackathonType = 'Hybrid';
-    else if (mode === 'Private') hackathonType = 'In-person';
-    return hackathonType;
-}
-
-/**
- * Determine max team size based on participation type
- * @param {string} participationType - The participation type
- * @param {string|number} maxTeamMembers - Max team members value
- * @returns {number} Max team size
- */
-_determineMaxTeamSize(participationType, maxTeamMembers) {
-    let maxTeamSize = 1;
-    if (participationType === 'Team') {
-        maxTeamSize = parseInt(maxTeamMembers) || 5;
-    } else if (participationType === 'Both') {
-        maxTeamSize = parseInt(maxTeamMembers) || 5;
-    }
-    return maxTeamSize;
-}
-
-/**
- * Validate required fields
- * @param {Object} fields - Fields to validate
- */
-_validateRequiredFields(fields) {
-    if (!fields.location || fields.location.trim() === '') {
-        throw new Error('Location is required');
-    }
-}
-
-/**
- * Normalize JSON input (support JSON string from multipart/form-data)
- * @param {string|Array|Object} input - Input to normalize
- * @param {*} defaultValue - Default value if parsing fails
- * @returns {*} Normalized input
- */
-_normalizeJsonInput(input, defaultValue = []) {
-    if (typeof input === 'string') {
-        try {
-            return JSON.parse(input);
-        } catch (e) {
-            console.warn('Failed to parse JSON string, using default value.');
-            return defaultValue;
+    /**
+     * Validate required fields
+     * @param {Object} fields - Fields to validate
+     */
+    _validateRequiredFields(fields) {
+        if (!fields.location || fields.location.trim() === '') {
+            throw new Error('Location is required');
         }
     }
-    return input || defaultValue;
-}
 
-/**
- * Normalize FAQs input
- * @param {string|Array} faqs - FAQs input
- * @returns {Array} Normalized FAQs array
- */
-_normalizeFaqs(faqs) {
-    let normalizedFaqs = this._normalizeJsonInput(faqs, []);
-
-    // Filter out empty FAQ entries
-    if (Array.isArray(normalizedFaqs)) {
-        normalizedFaqs = normalizedFaqs.filter(f => f.question && f.answer);
-    } else {
-        normalizedFaqs = [];
+    /**
+     * Normalize JSON input (support JSON string from multipart/form-data)
+     * @param {string|Array|Object} input - Input to normalize
+     * @param {*} defaultValue - Default value if parsing fails
+     * @returns {*} Normalized input
+     */
+    _normalizeJsonInput(input, defaultValue = []) {
+        if (typeof input === 'string') {
+            try {
+                return JSON.parse(input);
+            } catch (e) {
+                console.warn('Failed to parse JSON string, using default value.');
+                return defaultValue;
+            }
+        }
+        return input || defaultValue;
     }
 
-    return normalizedFaqs;
-}
+    /**
+     * Normalize FAQs input
+     * @param {string|Array} faqs - FAQs input
+     * @returns {Array} Normalized FAQs array
+     */
+    _normalizeFaqs(faqs) {
+        let normalizedFaqs = this._normalizeJsonInput(faqs, []);
 
-/**
- * Normalize panel members input
- * @param {string|Array} panelMembers - Panel members input
- * @returns {Array} Normalized panel members array
- */
-_normalizePanelMembers(panelMembers) {
-    let normalizedPanelMembers = this._normalizeJsonInput(panelMembers, []);
+        // Filter out empty FAQ entries
+        if (Array.isArray(normalizedFaqs)) {
+            normalizedFaqs = normalizedFaqs.filter(f => f.question && f.answer);
+        } else {
+            normalizedFaqs = [];
+        }
 
-    // Ensure all panel member IDs are valid ObjectIds (as strings)
-    if (Array.isArray(normalizedPanelMembers)) {
-        normalizedPanelMembers = normalizedPanelMembers.filter(id => !!id);
-    } else {
-        normalizedPanelMembers = [];
+        return normalizedFaqs;
     }
 
-    return normalizedPanelMembers;
-}
+    /**
+     * Normalize panel members input
+     * @param {string|Array} panelMembers - Panel members input
+     * @returns {Array} Normalized panel members array
+     */
+    _normalizePanelMembers(panelMembers) {
+        let normalizedPanelMembers = this._normalizeJsonInput(panelMembers, []);
 
-/**
- * Normalize domains input
- * @param {string|Array} domains - Domains input
- * @returns {Array} Normalized domains array
- */
-_normalizeDomains(domains) {
-    let normalizedDomains = domains;
+        // Ensure all panel member IDs are valid ObjectIds (as strings)
+        if (Array.isArray(normalizedPanelMembers)) {
+            normalizedPanelMembers = normalizedPanelMembers.filter(id => !!id);
+        } else {
+            normalizedPanelMembers = [];
+        }
 
-    if (typeof domains === 'string') {
-        normalizedDomains = domains.split(',').map(domain => domain.trim()).filter(domain => domain);
-    } else if (Array.isArray(domains)) {
-        normalizedDomains = domains.filter(domain => domain && typeof domain === 'string');
-    } else {
-        normalizedDomains = [];
+        return normalizedPanelMembers;
     }
 
-    return normalizedDomains;
-}
+    /**
+     * Normalize domains input
+     * @param {string|Array} domains - Domains input
+     * @returns {Array} Normalized domains array
+     */
+    _normalizeDomains(domains) {
+        let normalizedDomains = domains;
+
+        if (typeof domains === 'string') {
+            normalizedDomains = domains.split(',').map(domain => domain.trim()).filter(domain => domain);
+        } else if (Array.isArray(domains)) {
+            normalizedDomains = domains.filter(domain => domain && typeof domain === 'string');
+        } else {
+            normalizedDomains = [];
+        }
+
+        return normalizedDomains;
+    }
 }
 
 // Export a singleton instance

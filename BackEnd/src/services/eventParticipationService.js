@@ -1,4 +1,4 @@
-import EventParticipation from "../models/eventParticipationDetails.js";
+import EventParticipation from "../models/eventParticipationModel.js";
 import Hackathon from "../models/hackathonModel.js";
 import { v2 as cloudinary } from 'cloudinary';
 class EventParticipationService {
@@ -17,7 +17,7 @@ class EventParticipationService {
  * @param {string} participantId - The hackathon data from request body
  * @returns {Object} return value
  */
-    async getByParticipantId(participantId = "68d2c197c338b573957c3fbb") {
+    async getByParticipantId(participantId) {
         const eventParticipants = await EventParticipation
             .find({ teamLeaderId: participantId }) // optional: include full event details
         return eventParticipants;
@@ -27,29 +27,32 @@ class EventParticipationService {
  * get data by participantId
  * @param {string} EventId - The hackathon data from request body
  * @returns {Object} return value
- */
+ */ 
     async getByEventId(EventId) {
-        const eventParticipants = await EventParticipation
-            .find({ eventID: EventId }) // optional: include full event details
+        const eventParticipants = await EventParticipation.find({ eventID: EventId }) 
         return eventParticipants;
     }
 
     /**
      * Create a new workshop
      * @param {Object} participantData - participant data
-     * @param {String} teamLeaderId - createdby
+     * @param {String} createdBy - createdby
      * @returns {Object} Created workshop object
      */
 
-    async registerParticipantService(participantData, teamLeaderId) {
+    async registerParticipantService(participantData, createdBy) {
         const {
+
             eventID,
+            eventName,
             name,
             email,
+            rounds =[],
+            invitationClosed,
             projectTitle,
             teamMembers = [],
         } = participantData;
-
+        const teamLeaderId=createdBy;
 
         // Send invitation emails to new team members (without teamMemberId)
         for (const member of teamMembers) {
@@ -67,10 +70,14 @@ class EventParticipationService {
         const newParticipation = new EventParticipation({
             teamLeaderId,
             eventID,
+            eventName,
             name,
             email,
             projectTitle,
+            invitationClosed,
+            rounds,
             teamMembers,
+            createdBy,            
         });
 
         const savedParticipation = await newParticipation.save();
@@ -93,6 +100,15 @@ async updateParticipantService(participantId, updateData) {
   );
 
   return updatedParticipant; // May return null if not found
+}
+/**
+ * Deletes a participant by ID
+ * @param {string} registrationID - The participant document ID (MongoDB _id)
+ * @returns {Object|null} The deleted participant document or null if not found
+ */
+async deleteParticipantService(registrationID) {
+  const deletedParticipant = await EventParticipation.findByIdAndDelete(registrationID);
+  return deletedParticipant; // May return null if not found
 }
 
 }

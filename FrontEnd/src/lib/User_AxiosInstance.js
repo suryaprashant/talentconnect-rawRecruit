@@ -65,7 +65,7 @@ export function getInternshipById(internshipId) {
     .catch(error => error);
 }
 export function getEventApplicationStatus(){
-  return axiosClient.get(`/eventParticipation`)
+  return axiosClient.get(`/eventParticipation/byParticipent`)
     .then(response => response)
     .catch(error => error);
 }
