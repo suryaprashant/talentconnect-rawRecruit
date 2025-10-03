@@ -49,10 +49,10 @@ router.get('/manage/accept/', secureRoute, getAcceptedCandidatesByCompany);
 
 
 // get candidates by job
-router.get('/manage', getApplicationsByJob);
+router.get('/manage',secureRoute, getApplicationsByJob);
 
 // get college by job
-router.get('/manage/college', getCollegeApplicationsByJob);
+router.get('/manage/college',secureRoute, getCollegeApplicationsByJob);
 
 // accept offcampus
 // router.get('/accept/:id', getAcceptedCandidatesByJob);
