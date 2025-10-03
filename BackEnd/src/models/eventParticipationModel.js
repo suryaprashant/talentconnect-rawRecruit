@@ -8,8 +8,9 @@ const TeamMemberSchema = new mongoose.Schema({
 }, { _id: false });
 
 const eventParticipationDetailSchema = new mongoose.Schema({
-    teamLeaderId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  teamLeaderId: { type: mongoose.Schema.Types.ObjectId, required: true },
   eventID: { type: mongoose.Schema.Types.ObjectId, ref: 'hackathon', required: true },
+  eventName: { type: String },
   name: { type: String, required: true },
   email: { type: String, required: true },
   projectTitle: { type: String },
@@ -24,6 +25,34 @@ const eventParticipationDetailSchema = new mongoose.Schema({
     enum: ['CheckedIn', 'NotCheckedIn'],
     default: 'NotCheckedIn'
   },
+  rounds: [
+    {
+      roundNumber: {
+        type: Number,
+      },
+      rountStatus: {
+        type: String,
+        enum: ['Notdefined','Inprogress','Qualified', 'Disqualified'],
+        default: 'Notdefined'
+      },
+      userInput: {
+        type: String,
+      },
+      startDate: {
+        type: Date,
+        required: true
+      },
+      endDate: {
+        type: Date,
+        required: true
+      }
+    }
+  ],
+  invitationClosed:{
+    type:Boolean,
+    default:false,
+  },
+  createdBy: { type: mongoose.Schema.Types.ObjectId },
   createdAt: {
     type: Date,
     default: Date.now

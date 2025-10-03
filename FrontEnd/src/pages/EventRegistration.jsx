@@ -35,6 +35,7 @@ const EventRegistration = () => {
   const [formData, setFormData] = useState({
     teamLeaderId: '',
     eventID: '',
+    eventName:'',
     name: '',
     email: '',
     projectTitle: '',
@@ -46,9 +47,12 @@ const EventRegistration = () => {
 
   useEffect(() => {
     if (event_ID) {
-      setFormData((prev) => ({ ...prev, eventID: event_ID }));
+      setFormData((prev) => ({ ...prev, 
+        eventID: event_ID,
+        eventName: event_name 
+      }));
     }
-  }, [event_ID]);
+  }, [event_ID,event_name]);
 
   const handleChange = (e, index = null) => {
     const { name, value } = e.target;

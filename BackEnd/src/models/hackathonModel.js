@@ -122,6 +122,11 @@ const HackathonSchema = new mongoose.Schema({
             endDate: {
                 type: Date,
                 required: true
+            },
+            userInput: {
+                type: String,
+                enum: ['link', 'doc', 'pdf', 'ppt'],
+                default:'link'
             }
         }
     ],
@@ -220,6 +225,9 @@ const HackathonSchema = new mongoose.Schema({
     technology: {
         type: String,
         maxlength: [500, 'Technology description cannot be more than 500 characters']
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
     },
     createdAt: {
         type: Date,

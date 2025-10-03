@@ -15,13 +15,11 @@ const router = express.Router();
 // @route   GET /eventParticipation
 router.get('/', getAllParticipants);
 
-router.get('/byParticipent', getByParticipantId);
+router.get('/byParticipent',secureRoute, getByParticipantId);
 
 // @desc    Get participants by event ID
 // GET /eventParticipation/:eventID
 router.get('/:eventID', getParticipantsByEvent);
-
-// router.get('/')
 
 // @desc    Register a new participant
 // @route   POST /eventParticipation/register

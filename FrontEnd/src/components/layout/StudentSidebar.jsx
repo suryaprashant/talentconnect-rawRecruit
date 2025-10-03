@@ -125,10 +125,10 @@ function StudentSidebar({ activePath }) {
           active={activePath === '/application-status/Referral'} 
         />
         <SidebarNavItem 
-          to="/application-status/events" 
+          to="/application-status/event-status" 
           icon={<FiAward />} 
           label="Event Management" 
-          active={activePath === '/application-status/events'} 
+          active={activePath === '/application-status/event-status'} 
         />
       </SidebarNavGroup>
 
