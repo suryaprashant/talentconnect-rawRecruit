@@ -517,7 +517,8 @@ export async function fetchCandidatesbyStatus(companyId, targetStatus, applicant
             projectApplicant = {
                 cgpa: "$applicantDetails.cgpa",
                 college: "$applicantDetails.college",
-                name: "$applicantDetails.name"
+                name: "$applicantDetails.name",
+                userId: "$applicantDetails.userId"
             };
         } else if (applicantType === "college") {
             fromCollection = "collegeonboardings";
@@ -570,6 +571,7 @@ export async function fetchCandidatesbyStatus(companyId, targetStatus, applicant
             },
             {
                 $project: {
+                    _id:1 ,
                     currentStatus: 1,
                     statusHistory: 1,
                     jobTitle: "$jobDetails.jobRoles",

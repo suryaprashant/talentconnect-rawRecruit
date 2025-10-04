@@ -1,15 +1,19 @@
-
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { acceptCandidate, getApplicationsForJob, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
-// import { Calendar, MapPin, FileText, Users, CheckCircle, ArrowUpRight } from 'lucide-react';
-// import { LinkedInLogo, GitHubLogo } from '@your-icon-library'; // Assuming you have icons for these
+import useConversation from '@/statemanage/useConversation';
+import { conversationWithCollege } from '@/lib/College_AxiosIntance';
+import { Send } from 'lucide-react';
 
 const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => {
   const jobId = job._id;
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applications, setApplications] = useState();
+
+  const navigate = useNavigate();
+  const{setSelectedConversation} = useConversation();
 
   const getApplicants = async (jobId, jobType) => {
     setIsSubmitting(true);
@@ -61,6 +65,40 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
   useEffect(() => {
     getApplicants(jobId, jobType);
   }, [jobId]);
+
+   const handleMessageClick = async (applicant) => {
+        if (!applicant?.applicant?._id) {
+            toast.error("Applicant data is missing.");
+            return;
+        }
+
+        const userId = applicant.applicant._id;
+        try {
+            const response = await conversationWithCollege(userId);
+            if (response.data) {
+                const conversationUser = {
+                    _id: userId,
+                    name: applicant.applicant.name || 'Unknown Applicant',
+                    email: applicant.applicant.email || '',
+                    profileImage: applicant.applicant.profileImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+                    userType: 'candidate',
+                    fullname: applicant.applicant.name || 'Unknown Applicant'
+                };
+                
+                setSelectedConversation(conversationUser);
+                
+                setTimeout(() => {
+                    navigate('/chat-application');
+                }, 100);
+                
+            } else {
+                toast.error('Failed to create conversation');
+            }
+        } catch (error) {
+            console.error('Error starting chat:', error);
+            toast.error('Error starting conversation');
+        }
+    };
 
   return (
     <>
@@ -190,7 +228,13 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
 
                 {/* Action Buttons */}
                 <div className="flex justify-end p-6 space-x-4">
-                  <button className="px-6 py-2 shadow hover:shadow-md border rounded-md text-gray-700">Chat</button>
+                    <button
+                                        onClick={() => handleMessageClick(applicant)}
+                                        disabled={isSubmitting}
+                                        className="px-6 py-2 shadow hover:shadow-md border rounded-md text-gray-700 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"
+                                    >
+                                        <Send size={14} className="mr-2" /> Chat
+                                    </button>
                   {/* <button className="px-6 py-2 shadow hover:shadow-md border rounded-md text-gray-700">View Details</button> */}
                   <button
                     onClick={() => acceptApplicant(applicant?._id)}
