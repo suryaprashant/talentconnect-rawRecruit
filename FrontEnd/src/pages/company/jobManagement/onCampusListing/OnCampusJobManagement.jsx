@@ -32,11 +32,6 @@ export default function OnCampusJobManagement() {
     setError(null);
     try {
       const response = await getPostedJobs("On-campus");
-      // console.log("response oncampus: ", response);
-      // const processedJobs = response.data.data?.map(job => ({
-      //   ...job,
-      //   preferredLocations: Array.isArray(job.preferredLocations) ? job.preferredLocations : []
-      // })) || [];
       setJobs(response?.data);
     } catch (err) {
       console.error("Error fetching jobs:", err);

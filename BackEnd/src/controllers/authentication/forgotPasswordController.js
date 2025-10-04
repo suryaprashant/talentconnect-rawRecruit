@@ -1,53 +1,24 @@
-import Auth from '../../models/authModel.js';
-import crypto from 'crypto';
-import bcrypt from 'bcryptjs';
-import { sendEmail } from '../../utils/sendEmail.js';
+import { requestPasswordReset, performPasswordReset } from "../../services/authService.js";
 
-const resetTokens = {}; // In-memory storage (for demo only)
 
 export const sendResetLink = async (req, res) => {
-  const { email } = req.body;
-
-  try {
-    const user = await Auth.findOne({ email });
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    const token = crypto.randomBytes(32).toString('hex');
-    resetTokens[token] = { email, expires: Date.now() + 15 * 60 * 1000 }; // 15 min
-
-    const resetLink = `http://localhost:3000/reset-password/${token}`; // Frontend route
-
-    await sendEmail(
-      email,
-      'Password Reset Link',
-      `<p>Click <a href="${resetLink}">here</a> to reset your password. This link will expire in 15 minutes.</p>`
-    );
-
-    res.status(200).json({ message: 'Reset link sent to email' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Email could not be sent' });
-  }
-};
-
-export const resetPassword = async (req, res) => {
-  const { token } = req.params;
-  const { newPassword } = req.body;
-
-  try {
-    const data = resetTokens[token];
-    if (!data || data.expires < Date.now()) {
-      return res.status(400).json({ message: 'Token expired or invalid' });
+    try {
+        const { email } = req.body;
+        await requestPasswordReset({ email });      
+        res.status(200).json({ message: 'If a user with that email exists, a reset link has been sent.' });
+    } catch (error) {
+        console.error("sendResetLink Error:", error);
+        res.status(200).json({ message: 'If a user with that email exists, a reset link has been sent.' });
     }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await Auth.findOneAndUpdate({ email: data.email }, { password: hashedPassword });
-
-    delete resetTokens[token];
-
-    res.status(200).json({ message: 'Password successfully reset' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to reset password' });
-  }
+};
+export const resetPassword = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const { newPassword } = req.body;
+        await performPasswordReset({ token, newPassword });
+        res.status(200).json({ message: 'Password has been successfully reset.' });
+    } catch (error) {
+        console.error("resetPassword Error:", error);
+        res.status(error.statusCode || 500).json({ message: error.message || 'Failed to reset password.' });
+    }
 };

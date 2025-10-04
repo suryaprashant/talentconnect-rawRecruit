@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getApplicationByJobOfManagement, conversationWithCollege } from '@/lib/College_AxiosIntance.js';
+import { getApplicationByJobOfManagement, conversationWithCollege ,rejectCompanyApplicationForCollege ,shortlistCompanyByCollege } from '@/lib/College_AxiosIntance.js';
 import useConversation from '@/statemanage/useConversation.js';
 import { ArrowLeft, Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+
 
 const Spinner = () => (
   <div className="flex justify-center items-center h-full">
@@ -11,27 +13,24 @@ const Spinner = () => (
   </div>
 );
 
-const ApplicantCard = ({ applicationData }) => {
+const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
+  const [currentStatus, setCurrentStatus] = useState(applicationData.currentStatus);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   if (!applicationData || !applicationData.applicant) {
     return null;
   }
 
-  const { applicant, currentStatus, createdAt } = applicationData;
+  const { _id: applicationId, applicant, createdAt } = applicationData;
   const { companyDetails, profileImageUrl, employerDetails, userId } = applicant;
 
-  // Update the handleMessageClick function in your existing ApplicantCard component
-const handleMessageClick = async (e) => {
+  const handleMessageClick = async (e) => {
     e.stopPropagation();
-    
     try {
-        // Create the conversation in backend first
         const response = await conversationWithCollege(userId);
-
         if (response.data) {
-            // Create conversation user object with proper structure
             const conversationUser = {
                 _id: userId,
                 name: companyDetails?.companyName || 'Unknown Company',
@@ -43,10 +42,8 @@ const handleMessageClick = async (e) => {
 
             console.log("Setting conversation for direct chat:", conversationUser);
             
-            // Set the conversation in global state
             setSelectedConversation(conversationUser);
             
-            // Navigate to chat page with slight delay to ensure state is set
             setTimeout(() => {
                 navigate('/chat-application');
             }, 100);
@@ -58,7 +55,65 @@ const handleMessageClick = async (e) => {
         console.error('Error starting chat:', error);
         toast.error('Error starting conversation');
     }
-};
+  };
+
+  const handleShortlist = async (e) => {
+      e.stopPropagation();
+      if (isProcessing) return;
+
+      if (currentStatus === 'Shortlisted') {
+          toast('Company is already Shortlisted!', { icon: 'ℹ️' });
+          return;
+      }
+      
+      setIsProcessing(true);
+      try {
+          const response = await shortlistCompanyByCollege(applicationId, jobRole);
+
+          if (response.data && response.data.success) {
+              const newStatus = 'Shortlisted'; 
+              setCurrentStatus(newStatus);
+              onStatusChange(applicationId, newStatus);
+              toast.success(`Successfully Shortlisted ${companyDetails?.companyName}.`);
+          } else {
+              toast.error(response.data?.msg || 'Failed to shortlist company.');
+          }
+      } catch (error) {
+          toast.error('Error shortlisting application.');
+          console.error("Shortlist error:", error);
+      } finally {
+          setIsProcessing(false);
+      }
+  };
+
+  const handleReject = async (e) => {
+      e.stopPropagation();
+      if (isProcessing) return;
+
+      if (currentStatus === 'Rejected') {
+          toast('Company is already Rejected!', { icon: 'ℹ️' });
+          return;
+      }
+
+      setIsProcessing(true);
+      try {
+          const response = await rejectCompanyApplicationForCollege(applicationId, jobRole);
+
+          if (response.data && response.data.success) {
+              const newStatus = 'Rejected'; 
+              setCurrentStatus(newStatus);
+              onStatusChange(applicationId, newStatus);
+              toast.success(`Successfully Rejected ${companyDetails?.companyName}.`);
+          } else {
+              toast.error(response.data?.msg || 'Failed to reject company.');
+          }
+      } catch (error) {
+          toast.error('Error rejecting application.');
+          console.error("Reject error:", error);
+      } finally {
+          setIsProcessing(false);
+      }
+  };
 
   return (
     <div className="bg-white p-5 rounded-lg border border-gray-200 transition-shadow hover:shadow-md">
@@ -72,7 +127,7 @@ const handleMessageClick = async (e) => {
           <div className="flex justify-between items-start">
             <h3 className="text-xl font-bold text-gray-800">{companyDetails?.companyName}</h3>
             <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-              currentStatus === 'Shortlisted' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+              currentStatus === 'Shortlisted' ? 'bg-green-100 text-green-800' : currentStatus === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
             }`}>
               {currentStatus}
             </span>
@@ -120,15 +175,32 @@ const handleMessageClick = async (e) => {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 border-t pt-4">
-        <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700 transition-colors text-center text-sm">
-          Shortlist
+        <button 
+            onClick={handleShortlist} 
+            disabled={isProcessing}
+            className={`w-full text-white px-4 py-2 rounded-md font-semibold transition-colors text-center text-sm ${
+                currentStatus === 'Shortlisted' 
+                ? 'bg-green-600 hover:bg-green-700' 
+                : 'bg-blue-600 hover:bg-blue-700'
+            } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {isProcessing && currentStatus !== 'Rejected' ? 'Shortlisting...' : (currentStatus === 'Shortlisted' ? 'Shortlisted' : 'Shortlist')}
         </button>
-        <button className="w-full bg-red-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-red-600 transition-colors text-center text-sm">
-          Reject
+        <button 
+            onClick={handleReject}
+            disabled={isProcessing}
+            className={`w-full text-white px-4 py-2 rounded-md font-semibold transition-colors text-center text-sm ${
+                currentStatus === 'Rejected' 
+                ? 'bg-red-700 hover:bg-red-800' 
+                : 'bg-red-500 hover:bg-red-600'
+            } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {isProcessing && currentStatus !== 'Shortlisted' ? 'Rejecting...' : (currentStatus === 'Rejected' ? 'Rejected' : 'Reject')}
         </button>
         <button 
           onClick={handleMessageClick}
-          className="w-full bg-gray-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center text-center text-sm"
+          disabled={isProcessing}
+          className={`w-full bg-gray-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center text-center text-sm ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           <Send size={14} className="mr-2" /> Message
         </button>
@@ -143,6 +215,15 @@ function JobDetailPage() {
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [jobRole, setJobRole] = useState("On-campus");
+
+  const handleApplicantStatusChange = (applicationId, newStatus) => {
+    setApplicants(prevApplicants => 
+      prevApplicants.map(app => 
+        app._id === applicationId ? { ...app, currentStatus: newStatus } : app
+      )
+    );
+  };
 
   useEffect(() => {
     if (!jobId) {
@@ -156,6 +237,9 @@ function JobDetailPage() {
         const response = await getApplicationByJobOfManagement(jobId, 'On-campus');
         if (response.data && Array.isArray(response.data)) {
           setApplicants(response.data);
+          if (response.data.length > 0 && response.data[0].job && response.data[0].job.jobTitle) {
+              setJobRole(response.data[0].job.jobTitle); 
+          }
         } else {
           throw new Error("Invalid data format received from server.");
         }
@@ -198,7 +282,12 @@ function JobDetailPage() {
         <div className="space-y-4">
           {applicants.length > 0 ? (
             applicants.map(application => (
-              <ApplicantCard key={application._id} applicationData={application} />
+              <ApplicantCard 
+                  key={application._id} 
+                  applicationData={application} 
+                  jobRole={jobRole}
+                  onStatusChange={handleApplicantStatusChange}
+              />
             ))
           ) : (
             <div className="text-center py-12 bg-white rounded-lg border">
