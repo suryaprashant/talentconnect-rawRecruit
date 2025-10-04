@@ -122,6 +122,11 @@ const HackathonSchema = new mongoose.Schema({
             endDate: {
                 type: Date,
                 required: true
+            },
+            userInput: {
+                type: String,
+                enum: ['link', 'doc', 'pdf', 'ppt'],
+                default:'link'
             }
         }
     ],
