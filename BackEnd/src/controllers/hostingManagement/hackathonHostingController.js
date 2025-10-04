@@ -1,5 +1,5 @@
 import Hackathon from '../../models/hackathonModel.js';
-import EventParticipation from '../../models/eventParticipationDetails.js';
+import EventParticipation from '../../models/eventParticipationModel.js';
 import Auth from '../../models/authModel.js';
 import StudentOverview from '../../models/studentModel.js';
 import ProfessionalProfile from '../../models/professionalProfileModel.js';
