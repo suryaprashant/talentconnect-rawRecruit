@@ -122,7 +122,7 @@ function CompanySidebar({ activePath }) {
         />
       </SidebarNavGroup>
 
-      <SidebarNavGroup label="Hosting" icon={<FiFlag />} active={activePath.includes('/employer-dashboard')}>
+      <SidebarNavGroup label="Hosting" icon={<FiFlag />} active={activePath.includes('/company/hosting')}>
         <SidebarNavItem
           to="/company/hosting/host-hackathon"
           icon={<FiAward />}
@@ -142,6 +142,13 @@ function CompanySidebar({ activePath }) {
           active={activePath === '/company/hosting/host-case-studies'}
         />
       </SidebarNavGroup>
+
+      <SidebarNavItem
+        to="/hosting-management"
+        icon={<FiUsers />}
+        label="Hosting Management"
+        active={activePath.includes('/hosting-management')}
+      />
 
       <SidebarNavGroup label="Job Management" icon={<FiBriefcase />} active={activePath.includes('/job-management')}>
         <SidebarNavItem

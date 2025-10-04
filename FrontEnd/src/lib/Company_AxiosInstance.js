@@ -180,3 +180,55 @@ export function fetchAllCompaniesName() {
     .then(response => response)
     .catch(error => error);
 }
+
+// Hosting Management APIs
+
+// Hackathon Registration Management
+export function getCompanyHackathonsWithRegistrations() {
+  return axiosClient.get(`/hosting-management/hackathons`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function getHackathonRegistrations(hackathonId) {
+  return axiosClient.get(`/hosting-management/hackathons/${hackathonId}/registrations`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function confirmHackathonRegistration(registrationId) {
+  return axiosClient.put(`/hosting-management/registrations/${registrationId}/confirm`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function rejectHackathonRegistration(registrationId, data) {
+  return axiosClient.put(`/hosting-management/registrations/${registrationId}/reject`, data)
+    .then(response => response)
+    .catch(error => error);
+}
+
+// Case Study Registration Management
+export function getCompanyCasestudiesWithRegistrations() {
+  return axiosClient.get(`/hosting-management/casestudies`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function getCasestudyRegistrations(casestudyId) {
+  return axiosClient.get(`/hosting-management/casestudies/${casestudyId}/registrations`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function confirmCasestudyRegistration(registrationId) {
+  return axiosClient.put(`/hosting-management/registrations/${registrationId}/confirm`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function rejectCasestudyRegistration(registrationId, data) {
+  return axiosClient.put(`/hosting-management/registrations/${registrationId}/reject`, data)
+    .then(response => response)
+    .catch(error => error);
+}

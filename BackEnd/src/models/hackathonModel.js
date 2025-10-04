@@ -221,15 +221,20 @@ const HackathonSchema = new mongoose.Schema({
         type: String,
         maxlength: [500, 'Technology description cannot be more than 500 characters']
     },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Auth',
+        required: [true, 'Creator ID is required']
+    },
     createdAt: {
         type: Date,
         default: Date.now
     }
 },
-    {
-        toJSON: { virtuals: true },
-        toObject: { virtuals: true }
-    });
+{
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
 
 // Ensure end date is after start date
 HackathonSchema.pre('validate', function (next) {

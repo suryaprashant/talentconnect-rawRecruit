@@ -221,6 +221,11 @@ const WorkshopSchema = new mongoose.Schema({
         type: String,
         maxlength: [500, 'Technology description cannot be more than 500 characters']
     },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Auth',
+        required: [true, 'Creator ID is required']
+    },
     createdAt: {
         type: Date,
         default: Date.now

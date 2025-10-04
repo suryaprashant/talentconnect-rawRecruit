@@ -111,6 +111,8 @@ import studentDashboardRoute from './routes/studentDashboard/studentDashboardRou
 import EmployerHiringChannelRoute from './routes/employerHiringChannel/hiringChannelRoute.js'
 import CollegeJobManagement from "./routes/collegeJobManageRoute.js" ;
 import resumeRoutes from './routes/Resume.route.js';
+import hackathonHostingRoute from './routes/hostingManagement/hackathonHostingRoute.js';
+import casestudyHostingRoute from './routes/hostingManagement/casestudyHostingRoute.js';
 app.use("/api/auth", authRoutes);
 app.use("/api", student_onboardingroutes);
 app.use("/api/hiring-channels", jobPosting);
@@ -151,6 +153,8 @@ app.use("/company/dashboard/resume", Resume);
 app.use("/company", Company);
 app.use('/company/jobmanagement',JobManagement);
 app.use('/college/jobmanagement',CollegeJobManagement) ;
+app.use('/hosting-management', hackathonHostingRoute);
+app.use('/hosting-management', casestudyHostingRoute);
 
 // RawRecruit API Mounts
 app.use("/api/rawrecruit", [
