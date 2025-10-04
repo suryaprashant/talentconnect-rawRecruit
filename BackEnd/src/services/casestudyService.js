@@ -11,9 +11,10 @@ class CasestudyService {
      * Create a new case study
      * @param {Object} casestudyData - The case study data from request body
      * @param {Object} file - The uploaded file (if any)
+     * @param {string} createdBy - The ID of the user creating the case study
      * @returns {Object} Created case study object
      */
-    async createCasestudy(casestudyData, file = null) {
+    async createCasestudy(casestudyData, file = null, createdBy = null) {
         const {
             title,
             subTitle,
@@ -101,6 +102,7 @@ class CasestudyService {
             tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
             eligibility: eligibility || '',
             domains: normalizedDomains,
+            createdBy: createdBy
         });
 
         return casestudy;

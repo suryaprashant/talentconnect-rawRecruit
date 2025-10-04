@@ -9,7 +9,7 @@ export const createCasestudy = async (req, res, next) => {
         console.log('Extracted location value:', req.body.location);
 
         // Use the service to create case study
-        const casestudy = await casestudyService.createCasestudy(req.body, req.file);
+        const casestudy = await casestudyService.createCasestudy(req.body, req.file, req.user?.id);
 
         res.status(201).json({
             success: true,

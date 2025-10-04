@@ -11,9 +11,10 @@ class HackathonHostingService {
      * Create a new hackathon
      * @param {Object} hackathonData - The hackathon data from request body
      * @param {Object} file - The uploaded file (if any)
+     * @param {string} createdBy - The ID of the user creating the hackathon
      * @returns {Object} Created hackathon object
      */
-    async createHackathon(hackathonData, file = null) {
+    async createHackathon(hackathonData, file = null, createdBy = null) {
         const {
             title,
             subTitle,
@@ -61,7 +62,7 @@ class HackathonHostingService {
         const maxTeamSize = this._determineMaxTeamSize(participationType, maxTeamMembers);
 
         // Validate required fields
-        this._validateRequiredFields({ location });
+        this._validateRequiredFields({ location, createdBy });
 
         // Normalize various inputs
         const normalizedRounds = this._normalizeJsonInput(rounds, []);
@@ -101,6 +102,7 @@ class HackathonHostingService {
             tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
             eligibility: eligibility || '',
             domains: normalizedDomains,
+            createdBy: createdBy
         });
 
         return hackathon;
@@ -334,6 +336,9 @@ _determineMaxTeamSize(participationType, maxTeamMembers) {
 _validateRequiredFields(fields) {
     if (!fields.location || fields.location.trim() === '') {
         throw new Error('Location is required');
+    }
+    if (!fields.createdBy) {
+        throw new Error('Creator ID is required - user must be authenticated');
     }
 }
 

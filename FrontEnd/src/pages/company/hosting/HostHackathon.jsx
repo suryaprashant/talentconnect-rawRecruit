@@ -58,6 +58,7 @@ const HostHackathon = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [step, setStep] = useState(1);
+  const [shouldScrollToError, setShouldScrollToError] = useState(false);
   const [faqs, setFaqs] = useState([{ question: '', answer: '' }]);
   const [panelMembers, setPanelMembers] = useState([]);
   const [panelInput, setPanelInput] = useState('');
@@ -83,9 +84,9 @@ const HostHackathon = () => {
     return 1; // default to step 1 for all other fields
   };
 
-  // Scroll to the first error whenever validation errors are set
+  // Scroll to the first error only when shouldScrollToError is true
   useEffect(() => {
-    if (errors && Object.keys(errors).length > 0) {
+    if (errors && Object.keys(errors).length > 0 && shouldScrollToError) {
       const targetStep = determineErrorStep(errors);
       if (step !== targetStep) {
         setStep(targetStep);
@@ -93,9 +94,10 @@ const HostHackathon = () => {
       }
       requestAnimationFrame(() => {
         scrollToFirstError({ container: formRef.current || document, block: 'center' });
+        setShouldScrollToError(false); // Reset after scrolling
       });
     }
-  }, [errors, step]);
+  }, [errors, step, shouldScrollToError]);
 
   // Helper functions for rounds management
   const updateNumberOfRounds = (count) => {
@@ -420,6 +422,7 @@ const HostHackathon = () => {
   
     if (!validateForm()) {
       console.log('Form validation failed, stopping submission');
+      setShouldScrollToError(true); // Enable scrolling for validation errors
       return;
     }
   

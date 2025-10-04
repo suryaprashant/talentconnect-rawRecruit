@@ -11,9 +11,10 @@ class WorkshopService {
      * Create a new workshop
      * @param {Object} workshopData - The workshop data from request body
      * @param {Object} file - The uploaded file (if any)
+     * @param {string} createdBy - The ID of the user creating the workshop
      * @returns {Object} Created workshop object
      */
-    async createWorkshop(workshopData, file = null) {
+    async createWorkshop(workshopData, file = null, createdBy = null) {
         const {
             title,
             subTitle,
@@ -101,6 +102,7 @@ class WorkshopService {
             tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
             eligibility: eligibility || '',
             domains: normalizedDomains,
+            createdBy: createdBy
         });
 
         return workshop;

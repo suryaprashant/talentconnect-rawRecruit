@@ -140,6 +140,11 @@ import HostHackathon from "./pages/company/hosting/HostHackathon";
 import HostWorkshop from "./pages/company/hosting/HostWorkshop";
 import HostCasestudies from "./pages/company/hosting/HostCasestudies";
 
+// Hosting Management
+import HostingManagement from "./pages/company/hostingManagement/HostingManagement";
+import HackathonRegistrations from "./pages/company/hostingManagement/HackathonRegistrations";
+import CasestudyRegistrations from "./pages/company/hostingManagement/CasestudyRegistrations";
+
 import OnCampusJobManagement from "./pages/company/jobManagement/onCampusListing/OnCampusJobManagement";
 import JobListingJobManagement from "./pages/company/jobManagement/jobListing/JobListingJobManagement";
 import CampusPlacement from "./pages/college/serviceRequest/campusPlacement/CampusPlacement";
@@ -395,6 +400,11 @@ function AppRoutes() {
               <Route path="/company/hosting/host-hackathon" element={<HostHackathon />} />
               <Route path="/company/hosting/host-workshop" element={<HostWorkshop />} />
               <Route path="/company/hosting/host-case-studies" element={<HostCasestudies />} />
+
+              {/* hosting management */}
+              <Route path="/hosting-management" element={<HostingManagement />} />
+              <Route path="/hosting-management/hackathons" element={<HackathonRegistrations />} />
+              <Route path="/hosting-management/case-studies" element={<CasestudyRegistrations />} />
 
               {/* application status */}
               <Route path="/company/application-status/oncampus" element={<OncampusApplicationStatus />} />
