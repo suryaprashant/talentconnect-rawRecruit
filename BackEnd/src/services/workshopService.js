@@ -1,6 +1,6 @@
 import Workshop from "../models/workshopModel.js";
 import { v2 as cloudinary } from 'cloudinary';
-import EventRegistration from '../models/eventParticipationDetails.js'
+import EventRegistration from '../models/eventParticipationModel.js'
 
 /**
  * Service class for handling workshop-related business logic
@@ -231,6 +231,23 @@ class WorkshopService {
         }
 
         return workshop;
+    }
+
+/**
+     * Get a single workshop round by ID
+     * @param {string} workshopId - The workshop ID
+     * @returns {Object} Workshop object
+     */
+    async getWorkshopRoundsById(workshopId) {
+        const workshop = await Workshop.findById(workshopId).populate([
+            { path: 'panelMembers' },
+        ]);
+
+        if (!workshop) {
+            throw new Error(`Workshop not found with id of ${workshopId}`);
+        }
+
+        return workshop.rounds;
     }
 
     // Private helper methods

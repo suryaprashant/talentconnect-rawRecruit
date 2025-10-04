@@ -130,7 +130,7 @@ import MockInterview from "./pages/students/serviceRequest/Mock_Interview";
 import OffcampusStatus from "./components/student/applicationStatus/offCampusListing/OffcampusStatus";
 import InternshipStatus from "./components/student/applicationStatus/intershipOpportunities/InternshipStatus";
 import RefferralJobStatus from "./components/student/applicationStatus/referralJobs/RefferralJobStatus";
-import HackthonStatus from "./components/student/applicationStatus/hackthon/HackthonStatus";
+import EventStatus from "./components/student/applicationStatus/events/EventStatus";
 import AIDrivenJob from "./components/student/aiDrivenJobSearch/AIDrivenJob";
 import Workforce from "./pages/company/serviceRequest/workforceSolution/Workforce";
 import EmployeeTraining from "./pages/company/serviceRequest/employeeTraining/EmployeeTraining";
@@ -306,7 +306,7 @@ function AppRoutes() {
               <Route path="/application-status/Off-campus" element={<OffcampusStatus />} />
               <Route path="/application-status/Internship" element={<InternshipStatus />} />
               <Route path="/application-status/Referral" element={<RefferralJobStatus />} />
-              <Route path="/application-status/hackathon" element={<HackthonStatus />} />
+              <Route path="/application-status/event-status" element={<EventStatus />} />
               <Route path='/notifications' element={<NotificationSettings />} />
               <Route path='/Faq' element={<FAQPage />} />
               <Route path="/saved-jobs/*" element={<JobRoutes />} />
@@ -339,6 +339,7 @@ function AppRoutes() {
               <Route path="/fresher-events/workshop" element={<EventList event_name="workshop" />} />
               <Route path="/fresher-events/casestudy" element={<EventList event_name="casestudy" />} />
               <Route path="/fresher-events/:event_name/:id" element={<EventDetail />} />
+              <Route path="/fresher-events/:event_name/:EventId/:regId" element={<EventDetail />} />
               <Route path="/fresher-events/:event_name/register/:event_ID" element={<EventRegistration />} />
               {/* service request  */}
               <Route path='/fresher-dashboard/service-request/career-craft' element={<FresherCareerCraft />} />
