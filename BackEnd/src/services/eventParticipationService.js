@@ -1,6 +1,8 @@
 import EventParticipation from "../models/eventParticipationModel.js";
 import Hackathon from "../models/hackathonModel.js";
 import { v2 as cloudinary } from 'cloudinary';
+import sendInvitationEmail from '../utils/sendInvitationEmail.js';
+
 class EventParticipationService {
 
     /**
@@ -47,15 +49,21 @@ class EventParticipationService {
             eventName,
             name,
             email,
-            rounds =[],
+            rounds = [],
             invitationClosed,
             projectTitle,
             teamMembers = [],
         } = participantData;
         const teamLeaderId=createdBy;
 
+        // Filter out empty team members (those with empty name or email)
+        const validTeamMembers = teamMembers.filter(member => 
+            member.name && member.name.trim() !== '' && 
+            member.email && member.email.trim() !== ''
+        );
+
         // Send invitation emails to new team members (without teamMemberId)
-        for (const member of teamMembers) {
+        for (const member of validTeamMembers) {
             if (!member.teamMemberId) {
                 try {
                     await sendInvitationEmail(member.email, member.name);
@@ -76,7 +84,7 @@ class EventParticipationService {
             projectTitle,
             invitationClosed,
             rounds,
-            teamMembers,
+            teamMembers: validTeamMembers,
             createdBy,            
         });
 
