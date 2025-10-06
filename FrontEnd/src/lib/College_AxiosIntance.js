@@ -114,6 +114,13 @@ export function fetchAllCollegesName() {
 }
 
 // get shortlistedCompanies by college
+
+export function shortlistCompanyByCollege(applicationId,jobRole) {
+  return axiosClient.patch(`/application/manage/college/shortlist/${applicationId}`,{ jobRole })
+    .then(response => response)
+    .catch(error => error);
+}
+
 export function getShorlistedCompaniesByCollege(applicantType, jobType) {
   return axiosClient.get(`/application/manage/college/shortlist/`, {
     params: {
@@ -130,5 +137,20 @@ export function rejectCompanyApplication(applicationId,jobRole) {
     .then(response => response)
     .catch(error => error);
 }
+
+// reject  application
+export function rejectCompanyApplicationForCollege(applicationId,jobRole) {
+   return axiosClient.patch(`/application/manage/college/reject/${applicationId}`,{ jobRole })
+    .then(response => response)
+    .catch(error => error);
+}
+
+
+// Auto-conversation creation between college and company
+export const conversationWithCollege = (companyId) => {
+  return axiosClient.post(`/api/messages/conversation`, { receiverId: companyId })
+    .then(response => response)
+    .catch(error => error);
+};
 
 
