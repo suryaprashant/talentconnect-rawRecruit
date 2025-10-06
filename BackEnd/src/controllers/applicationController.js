@@ -363,6 +363,38 @@ export async function shortlistApplicant(req, res) {
     }
 }
 
+// shortList applicant of company by college
+export async function shortlistApplicantForCompany(req, res) {
+    const { applicationId } = req.params;
+    const { jobRole } = req.body;
+    if (!applicationId) return res.status(404).json({ msg: "Application not found!" });
+    try {
+        const response = await ChangeStatusService(applicationId, "Shortlisted");
+
+        if (response.success === true) {
+            // service -> send mail to company
+            const companyMail = await getCompanyService(response.data.applicant);
+            const companyData = companyMail.data ? companyMail.data[0] : null;
+            const workEmail = companyData?.employerDetails?.workEmail;
+            
+            if (companyMail.success && workEmail) {
+                sendStatusChangeEmail(
+                    workEmail,
+                    response.data.currentStatus,
+                    response.data._id,
+                    jobRole
+                );
+            }
+
+            return res.status(200).json(response);
+        }
+        return res.status(404).json(response);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ Error: "Internal server error" });
+    }
+}
+
 export async function rejectApplicant(req, res) {
     const { applicationId } = req.params;
     const { jobRole } = req.body;
@@ -381,6 +413,43 @@ export async function rejectApplicant(req, res) {
         return res.status(404).json(response);
     } catch (error) {
         console.log("Error: ", error);
+        res.status(500).json({ Error: "Internal server error" });
+    }
+}
+
+// New backend function for college rejecting company applications
+export async function rejectCompanyApplicationByCollege(req, res) {
+    const { applicationId } = req.params;
+    const { jobRole } = req.body;
+    
+    if (!applicationId) return res.status(404).json({ msg: "Application not found!" });
+
+    try {
+        const response = await ChangeStatusService(applicationId, "Rejected");
+
+        if (response.success === true) {
+            // For college rejecting company, we need to send email to the COMPANY
+            const companyMail = await getCompanyService(response.data.applicant);
+            const companyData = companyMail.data ? companyMail.data[0] : null;
+            const workEmail = companyData?.employerDetails?.workEmail;
+            
+            console.log("Company work email for rejection:", workEmail);
+
+            if (companyMail.success && workEmail) {
+                sendStatusChangeEmail(
+                    workEmail,
+                    response.data.currentStatus,
+                    response.data._id,
+                    jobRole
+                );
+            }
+
+            return res.status(200).json(response);
+        }
+
+        return res.status(404).json(response);
+    } catch (error) {
+        console.log("Error in rejectCompanyApplicationByCollege: ", error);
         res.status(500).json({ Error: "Internal server error" });
     }
 }

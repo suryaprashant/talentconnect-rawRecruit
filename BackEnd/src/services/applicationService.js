@@ -225,13 +225,12 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
         applicantDB="collegeonboardings";
     }
     try {
-         
         const response = await Application.aggregate([
             {
                 $match: {
                     job: new mongoose.Types.ObjectId(jobId),
                     jobType: jobType,
-                    currentStatus:{$ne:'Saved'}
+                    currentStatus: {$ne:'Saved'}
                 }
             },
             {
@@ -246,16 +245,28 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
                 $unwind: { path: "$applicant", preserveNullAndEmptyArrays: true }
             },
             {
+                $lookup: {
+                    from: "auths", // Join with Auth collection to get userId
+                    localField: "applicant.userId", // Assuming companyProfile has userId field linking to Auth
+                    foreignField: "_id",
+                    as: "authInfo"
+                }
+            },
+            {
+                $unwind: { path: "$authInfo", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $addFields: {
+                    "applicant.userId": "$authInfo._id" // Add Auth ID to applicant object
+                }
+            },
+            {
                 $project: {
-                    applicant: 1,
-                    // job: {
-                    //     _id: 1,
-                    //     jobTitle: 1
-                    // },
-                    // jobType: 1,
-                    statusHistory: 1,
-                    currentStatus: 1,
-                    createdAt: 1
+                    "applicant": 1,
+                    "statusHistory": 1,
+                    "currentStatus": 1,
+                    "createdAt": 1
+                    // Don't include authInfo field at all
                 }
             }
         ]);
@@ -265,7 +276,6 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
         throw new Error("Failed to fetch");
     }
 }
-
 // count applications
 export async function countApplicationsService(jobId, jobType) {
     try {
@@ -507,7 +517,8 @@ export async function fetchCandidatesbyStatus(companyId, targetStatus, applicant
             projectApplicant = {
                 cgpa: "$applicantDetails.cgpa",
                 college: "$applicantDetails.college",
-                name: "$applicantDetails.name"
+                name: "$applicantDetails.name",
+                userId: "$applicantDetails.userId"
             };
         } else if (applicantType === "college") {
             fromCollection = "collegeonboardings";
@@ -560,6 +571,7 @@ export async function fetchCandidatesbyStatus(companyId, targetStatus, applicant
             },
             {
                 $project: {
+                    _id:1 ,
                     currentStatus: 1,
                     statusHistory: 1,
                     jobTitle: "$jobDetails.jobRoles",
