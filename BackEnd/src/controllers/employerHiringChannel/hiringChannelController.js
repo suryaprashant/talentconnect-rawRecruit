@@ -1,7 +1,8 @@
 
-import Auth from '../../models/authModel.js' ;
+import Auth from '../../models/authModel.js';
 import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js';
 import { createPostingService } from '../../services/jobPostingService.js';
+import { getCompanyService } from "../../services/companyService.js";
 
 // Helper fuction to consistent response handling
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
@@ -10,12 +11,12 @@ const sendError = (res, statusCode, message) => res.status(statusCode).json({ me
 // Helper Function to determine which compny ID to use for a job opsting
 
 const getCompanyIdToPostAs = async (userId) => {
-    try{
-       
-        if(!userId){
-            return {error : 'Authentication required.'};
+    try {
+
+        if (!userId) {
+            return { error: 'Authentication required.' };
         }
-       
+
         const user = await Auth.findById(userId);
         if (!user) {
             return { error: 'User not found.' };
@@ -28,13 +29,13 @@ const getCompanyIdToPostAs = async (userId) => {
             }
             companyIdToUse = user.activeCompanyId;
         } else {
-            const ownProfile = await CompanyProfile.findOne({ userId });
+            const ownProfile = await getCompanyService(userId);
             if (!ownProfile) {
                 return { error: 'You must create a company profile before you can post a job.' };
             }
-            companyIdToUse = ownProfile._id;
+            companyIdToUse = ownProfile.data[0]._id;
         }
-        return { companyId: companyIdToUse , error: null };
+        return { companyId: companyIdToUse, error: null };
     }
     catch (error) {
         console.error("Error in getCompanyIdToPostAs:", error);
@@ -48,7 +49,7 @@ export const createJobPosting = async (req, res) => {
     try {
         const userId = req.user.id;
         const { companyId, error } = await getCompanyIdToPostAs(userId);
-        
+
         if (error) {
             return sendError(res, 400, error);
         }
@@ -76,7 +77,7 @@ export const createOffCampusJobPosting = async (req, res) => {
     try {
         const userId = req.user.id;
         const { companyId, error } = await getCompanyIdToPostAs(userId);
-        
+
         if (error) {
             return sendError(res, 400, error);
         }
@@ -103,7 +104,7 @@ export const createOnCampusPosting = async (req, res) => {
     try {
         const userId = req.user.id;
         const { companyId, error } = await getCompanyIdToPostAs(userId);
-        
+
         if (error) {
             return sendError(res, 400, error);
         }
@@ -130,7 +131,7 @@ export const createPoolCampusPosting = async (req, res) => {
     try {
         const userId = req.user.id;
         const { companyId, error } = await getCompanyIdToPostAs(userId);
-        
+
         if (error) {
             return sendError(res, 400, error);
         }
@@ -158,7 +159,7 @@ export const createInternshipPosting = async (req, res) => {
         console.log("Creating internship posting...");
         const userId = req.user.id;
         const { companyId, error } = await getCompanyIdToPostAs(userId);
-        
+
         if (error) {
             return sendError(res, 400, error);
         }

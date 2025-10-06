@@ -2,7 +2,7 @@ import Auth from '../models/authModel.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { sendEmail } from '../utils/sendEmail.js';  
+import { sendEmail } from '../utils/sendEmail.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -16,28 +16,38 @@ export async function getAuthUser(attribute) {
     }
 }
 
-export const upsertLinkedInAuthUser = async ({ linkedinId, email, name, profileImage, userType }) => {
-  let user = await Auth.findOne({ linkedinId });
-  let isNewUser = false;
-
-  if (!user) {
-    user = await getAuthUser(email)?.data;
-    if (user) {
-      user.linkedinId = linkedinId;
-      user.name = user.name || name;
-      user.profileImage = user.profileImage || profileImage;
-      await user.save();
-      isNewUser = false;
-    } else {
-      user = new Auth({ linkedinId, email, name, profileImage, userType, isNewUser: true });
-      await user.save();
-      isNewUser = true;
+export async function updateAuthUserService(userId, data) {
+    try {
+        const user = await Auth.findByIdAndUpdate(userId,data,{ new: true }).select("-password");
+        return user;
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
     }
-  } else {
-    isNewUser = false;
-  }
+}
 
-  return { user, isNewUser };
+export const upsertLinkedInAuthUser = async ({ linkedinId, email, name, profileImage, userType }) => {
+    let user = await Auth.findOne({ linkedinId });
+    let isNewUser = false;
+
+    if (!user) {
+        user = await getAuthUser(email)?.data;
+        if (user) {
+            user.linkedinId = linkedinId;
+            user.name = user.name || name;
+            user.profileImage = user.profileImage || profileImage;
+            await user.save();
+            isNewUser = false;
+        } else {
+            user = new Auth({ linkedinId, email, name, profileImage, userType, isNewUser: true });
+            await user.save();
+            isNewUser = true;
+        }
+    } else {
+        isNewUser = false;
+    }
+
+    return { user, isNewUser };
 };
 
 
@@ -46,7 +56,7 @@ export const registerUser = async ({ email, password, userType }) => {
     const existingUser = await Auth.findOne({ email });
     if (existingUser) {
         const error = new Error("Email already registered");
-        error.statusCode = 409; 
+        error.statusCode = 409;
         throw error;
     }
 
@@ -121,19 +131,19 @@ export const handleLinkedInLogin = async ({ code, state }) => {
     });
     const accessToken = tokenResponse.data.access_token;
 
-    
+
     const profileResponse = await axios.get('https://api.linkedin.com/v2/userinfo', {
         headers: { Authorization: `Bearer ${accessToken}` },
     });
     const profile = profileResponse.data;
 
-  
+
     const linkedinId = profile.sub;
     const email = profile.email;
     const name = profile.name || `${profile.given_name} ${profile.family_name}`;
     const profileImage = profile.picture;
 
-    
+
     const { user, isNewUser } = await upsertLinkedInAuthUser({ linkedinId, email, name, profileImage, userType });
 
     return { user, isNewUser };
@@ -151,7 +161,7 @@ export const requestPasswordReset = async ({ email }) => {
     }
     const token = crypto.randomBytes(32).toString('hex');
 
-    resetTokens[token] = { email, expires: Date.now() + 15 * 60 * 1000 }; 
+    resetTokens[token] = { email, expires: Date.now() + 15 * 60 * 1000 };
 
     const resetLink = `${process.env.Frontend_URL}/reset-password/${token}`;
 
@@ -164,7 +174,7 @@ export const requestPasswordReset = async ({ email }) => {
 
 
 export const performPasswordReset = async ({ token, newPassword }) => {
-    
+
     const tokenData = resetTokens[token];
     if (!tokenData || tokenData.expires < Date.now()) {
         const error = new Error('Token is invalid or has expired.');
