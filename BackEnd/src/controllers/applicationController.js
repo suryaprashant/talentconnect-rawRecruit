@@ -323,11 +323,11 @@ export async function getApplicationsByJob(req, res) {
 // oncampus and poolcampus
 export async function getCollegeApplicationsByJob(req, res) {
     const { jobId, jobType } = req.query;
-    const userType=req.user.userType;
+    const userType = req.user.userType;
     if (!jobId || !jobType) return res.status(404).json({ msg: "Job not found!" });
 
     try {
-        const response = await fetchCollegeApplicationsByJobService(jobId, jobType,userType);
+        const response = await fetchCollegeApplicationsByJobService(jobId, jobType, userType);
 
         // to be implement -- sorting feature like ATS
 
@@ -346,7 +346,8 @@ export async function shortlistApplicant(req, res) {
     try {
         const response = await ChangeStatusService(applicationId, "Shortlisted");
 
-        if (response.success === true) {
+        // currently email service is unavilable for college and company applicants
+        if (response.success === true && response.data.jobType != 'On-campus' && response.data.jobType != 'Pool-campus') {
             // service -> send mail to candidate
             const candidateMail = await getCandidatEmail(response.data.applicant);
             if (candidateMail.success) {
@@ -425,18 +426,18 @@ export async function getShortlistedCandidatesByCompany(req, res) {
 }
 
 // get shortlist comapny for the college 
-export async function getShortlistedCompaniesForCollege(req , res){
-    const  collegeId = req.user.id ;
-    const {applicantType , jobType} = req.query ;
+export async function getShortlistedCompaniesForCollege(req, res) {
+    const collegeId = req.user.id;
+    const { applicantType, jobType } = req.query;
     if (!applicantType || !jobType) return res.status(404).json({ msg: "Applicant not defined!" });
-    try{
-       const college = await collegeOnboardingModel.find({userId: collegeId}).lean() ;
-       if(!college) return res.status(404).json({ msg: "college not found!" });
-       const response = await fetchCandidatesbyStatus(college[0].id , "Shortlisted", applicantType , jobType) ;
-       res.status(200).json(response) ;
-    }catch(error){
-       console.log("Error:", error) ;
-       res.status(500).json({Error: "Internal Server error"}) ;
+    try {
+        const college = await getCollegeService(collegeId);
+        if (!college) return res.status(404).json({ msg: "college not found!" });
+        const response = await fetchCandidatesbyStatus(college.data[0]._id, "Shortlisted", applicantType, jobType);
+        res.status(200).json(response);
+    } catch (error) {
+        console.log("Error:", error);
+        res.status(500).json({ Error: "Internal Server error" });
     }
 }
 
