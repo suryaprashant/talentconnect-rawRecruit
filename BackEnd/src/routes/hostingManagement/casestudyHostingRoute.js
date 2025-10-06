@@ -4,9 +4,11 @@ import {
   getCasestudyRegistrations,
   confirmCasestudyRegistration,
   rejectCasestudyRegistration,
-  getCasestudyRegistrationDetails
+  getCasestudyRegistrationDetails,
+  sendFileToConfirmedUsers
 } from '../../controllers/hostingManagement/casestudyHostingController.js';
 import secureRoute from '../../middlewares/secureRouteMiddleware.js';
+import upload from '../../utils/multer.js';
 
 const router = express.Router();
 
@@ -24,5 +26,8 @@ router.put('/registrations/:registrationId/confirm', secureRoute, confirmCasestu
 
 // Route to reject a registration
 router.put('/registrations/:registrationId/reject', secureRoute, rejectCasestudyRegistration);
+
+// Route to send file to confirmed users
+router.post('/casestudies/:casestudyId/send-file', secureRoute, upload.single('file'), sendFileToConfirmedUsers);
 
 export default router;

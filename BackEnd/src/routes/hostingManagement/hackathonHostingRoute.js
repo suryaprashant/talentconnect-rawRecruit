@@ -4,9 +4,11 @@ import {
   getHackathonRegistrations,
   confirmRegistration,
   rejectRegistration,
-  getRegistrationDetails
+  getRegistrationDetails,
+  sendFileToConfirmedUsers
 } from '../../controllers/hostingManagement/hackathonHostingController.js';
 import secureRoute from '../../middlewares/secureRouteMiddleware.js';
+import upload from '../../utils/multer.js';
 
 const router = express.Router();
 
@@ -24,5 +26,8 @@ router.put('/registrations/:registrationId/confirm', secureRoute, confirmRegistr
 
 // Route to reject a registration
 router.put('/registrations/:registrationId/reject', secureRoute, rejectRegistration);
+
+// Route to send file to confirmed users
+router.post('/hackathons/:hackathonId/send-file', secureRoute, upload.single('file'), sendFileToConfirmedUsers);
 
 export default router;

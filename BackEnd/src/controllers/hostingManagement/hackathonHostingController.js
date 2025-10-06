@@ -5,6 +5,8 @@ import StudentOverview from '../../models/studentModel.js';
 import ProfessionalProfile from '../../models/professionalProfileModel.js';
 import FresherProfile from '../../models/fresherProfileModel.js';
 import { sendEmail } from '../../utils/sendEmail.js';
+import { sendBulkNotifications } from '../../utils/sendNotification.js';
+import cloudinary from '../../../config/cloudinary.js';
 
 // Helper function to get user details by email
 const getUserDetailsByEmail = async (email) => {
@@ -414,6 +416,142 @@ export const rejectRegistration = async (req, res) => {
     });
   } catch (error) {
     console.error('Error rejecting registration:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Send file to confirmed registrations
+// @route   POST /hosting-management/hackathons/:hackathonId/send-file
+export const sendFileToConfirmedUsers = async (req, res) => {
+  try {
+    const { hackathonId } = req.params;
+    const { fileUrl, fileName, message } = req.body;
+    const companyId = req.user.id;
+    let uploadedFileUrl = fileUrl;
+    let uploadedFileName = fileName;
+    
+    // Parse selectedCandidates from FormData (comes as array with [] notation)
+    const selectedCandidates = req.body['selectedCandidates[]'] 
+      ? (Array.isArray(req.body['selectedCandidates[]']) 
+          ? req.body['selectedCandidates[]'] 
+          : [req.body['selectedCandidates[]']])
+      : null;
+
+    // Verify that the hackathon belongs to the company
+    const hackathon = await Hackathon.findOne({ 
+      _id: hackathonId, 
+      createdBy: companyId 
+    });
+
+    if (!hackathon) {
+      return res.status(404).json({
+        success: false,
+        message: 'Hackathon not found or you do not have permission'
+      });
+    }
+
+    // Handle file upload if file is provided
+    if (req.file) {
+      try {
+        // Upload file to Cloudinary using buffer stream
+        const uploadPromise = new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { 
+              resource_type: 'auto', 
+              folder: 'hackathon_files',
+              use_filename: true,
+              unique_filename: true
+            },
+            (error, result) => {
+              if (result) resolve(result);
+              else reject(error);
+            }
+          );
+          stream.end(req.file.buffer);
+        });
+
+        const result = await uploadPromise;
+        uploadedFileUrl = result.secure_url;
+        uploadedFileName = req.file.originalname;
+      } catch (uploadError) {
+        console.error('Error uploading file to Cloudinary:', uploadError);
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to upload file',
+          error: uploadError.message
+        });
+      }
+    }
+
+    // Validate that we have file URL and name
+    if (!uploadedFileUrl || !uploadedFileName) {
+      return res.status(400).json({
+        success: false,
+        message: 'File URL and file name are required'
+      });
+    }
+
+    // Determine which registrations to send to
+    let targetRegistrations;
+    
+    if (selectedCandidates && selectedCandidates.length > 0) {
+      // Send to specific selected candidates
+      targetRegistrations = await EventParticipation.find({ 
+        _id: { $in: selectedCandidates },
+        eventID: hackathonId
+      });
+    } else {
+      // Send to all confirmed registrations (default behavior)
+      targetRegistrations = await EventParticipation.find({ 
+        eventID: hackathonId,
+        registrationStatus: 'Confirmed'
+      });
+    }
+
+    if (targetRegistrations.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No registrations found to send file to'
+      });
+    }
+
+    // Send notifications to each target user
+    const recipientEmails = targetRegistrations.map(reg => reg.email);
+    
+    const notificationMessage = message 
+      ? `${message}\n\nFile: ${uploadedFileName}` 
+      : `A new file has been shared for ${hackathon.title}. Download: ${uploadedFileName}`;
+    
+    const results = await sendBulkNotifications(recipientEmails, {
+      senderId: companyId,
+      type: 'FILE_SHARED',
+      message: notificationMessage,
+      referenceId: hackathonId,
+      fileUrl: uploadedFileUrl,
+      fileName: uploadedFileName,
+      eventTitle: hackathon.title
+    });
+
+    const successCount = results.filter(r => r.success).length;
+    const failCount = results.filter(r => !r.success).length;
+
+    res.status(200).json({
+      success: true,
+      message: `File sent to ${successCount} user(s)`,
+      data: {
+        totalSent: successCount,
+        totalFailed: failCount,
+        fileUrl: uploadedFileUrl,
+        fileName: uploadedFileName,
+        results: results
+      }
+    });
+  } catch (error) {
+    console.error('Error sending file:', error.message);
     res.status(500).json({
       success: false,
       message: 'Server error',
