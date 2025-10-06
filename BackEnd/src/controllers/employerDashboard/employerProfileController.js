@@ -1,8 +1,10 @@
 
-import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js';
+// import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js';
 import cloudinary from '../../../config/cloudinary.js';
 import streamifier from 'streamifier';
 import Auth from '../../models/authModel.js'
+import { getCompanyService, updateCompanyProfileService, createProfileService } from '../../services/companyService.js';
+import { updateAuthUserService } from '../../services/authService.js';
 
 // Helper function to upload a file stream to Cloudinary
 const streamUpload = (buffer, folder) => {
@@ -22,8 +24,8 @@ const streamUpload = (buffer, folder) => {
 export const createEmployerOnboarding = async (req, res) => {
     try {
         const userId = req.user._id;
-
-        if (await CompanyProfile.findOne({ userId })) {
+        const company = await getCompanyService(userId)
+        if (company) {
             return res.status(400).json({ message: 'Onboarding already exists for this user.' });
         }
 
@@ -39,34 +41,30 @@ export const createEmployerOnboarding = async (req, res) => {
             uploads.backgroundImageUrl = (await streamUpload(files.backgroundImage[0].buffer, 'employerBackgroundImages')).secure_url;
         }
 
-        // Create the new document
-        const onboardingData = await CompanyProfile.create({
+        // Create the new document using service
+        const onboardingData = await createProfileService({
             userId,
-            ...uploads, 
+            ...uploads,
             employerDetails: JSON.parse(employerDetails),
             companyDetails: JSON.parse(companyDetails),
             hiringPreferences: JSON.parse(hiringPreferences),
         });
 
-       const updatedUser = await Auth.findByIdAndUpdate(
-            userId,
-            { 
-                userType: "employer",
-                onboardingCompleted: true, // Set onboarding as completed
-                onboardingStep: 6 // Set to final step
-            },
-            { new: true } // Return the updated document
-        ).select("-password");
+        const updatedUser = await updateAuthUserService(userId, {
+            userType: "employer",
+            onboardingCompleted: true, // Set onboarding as completed
+            onboardingStep: 6 // Set to final step
+        });
 
         if (!updatedUser) {
             return res.status(404).json({ error: "User not found after update." });
         }
 
         res.status(201).json({
-           message: 'Onboarding created successfully.',
-           profile: onboardingData,
-           user: updatedUser
-         });
+            message: 'Onboarding created successfully.',
+            profile: onboardingData,
+            user: updatedUser
+        });
     } catch (error) {
         console.error('Error in createEmployerOnboarding:', error);
         res.status(500).json({ message: 'Failed to create onboarding.', error: error.message });
@@ -75,16 +73,16 @@ export const createEmployerOnboarding = async (req, res) => {
 
 // GET: Fetch onboarding profile
 export const getEmployerOnboarding = async (req, res) => {
- 
+
     try {
         const userId = req.user._id;
-        const onboarding = await CompanyProfile.findOne({ userId }).select('-__v').lean();
+        const onboarding = await getCompanyService(userId);
         //console.log(onboarding);
         if (!onboarding) {
             return res.status(404).json({ message: 'No onboarding data found.' });
         }
-     //   console.log("Employer data aa rha hai ");
-        res.status(200).json({ message: 'Success', profile: onboarding });
+        //   console.log("Employer data aa rha hai ");
+        res.status(200).json({ message: 'Success', profile: onboarding.data[0] });
     } catch (error) {
         console.error('Error in getEmployerOnboarding:', error);
         res.status(500).json({ message: 'Failed to fetch onboarding.', error: error.message });
@@ -125,12 +123,8 @@ export const updateEmployerOnboarding = async (req, res) => {
                 updates[`hiringPreferences.${key}`] = value;
             });
         }
-        
-        const updatedProfile = await CompanyProfile.findOneAndUpdate(
-            { userId },
-            { $set: updates },
-            { new: true, runValidators: true }
-        );
+
+        const updatedProfile = await updateCompanyProfileService({ userId }, updates);
 
         if (!updatedProfile) {
             return res.status(404).json({ message: 'No onboarding profile found to update.' });

@@ -1,169 +1,64 @@
-import Registration from "../models/hiringChannelsOncampusregisterModel.js";
-import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
-import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
+// import Registration from "../models/hiringChannelsOncampusregisterModel.js";
 // import { oncampusApplicationService, poolcampusApplicationService } from "../services/Application.service.js";
-import OnCampusApplication from "../models/oncampusApplicationModel.js";
-import { JobPostingTable } from "../models/jobPostingsModel.js";
+// import OnCampusApplication from "../models/oncampusApplicationModel.js";
+// import { getCompanyService } from "../services/companyService.js";
+import { getJobDetailByIdService } from "../services/hiringChannelService.js";
+import { getCollegeService } from "../services/collegeService.js";
 
-export const submitRegistration = async (req, res) => {
-  try {
+// export const submitRegistration = async (req, res) => {
+//   try {
 
-    const userId = req.user._id;
+//     const userId = req.user._id;
 
-    const companyProfile = await CompanyProfile.findOne({ userId });
+//     const companyProfile = await getCompanyService(userId);
 
-    if (!companyProfile) {
-      return res.status(404).json({ error: "Company profile not found" });
-    }
+//     if (!companyProfile) {
+//       return res.status(404).json({ error: "Company profile not found" });
+//     }
 
-    const registration = new Registration({
-      ...req.body,
-      companyPosted: companyProfile._id, // Store the company ID
-    });
-    console.log("Registration Data:", registration);
-    await registration.save();
-    //console.log("Registration saved successfully");
-    res.status(201).json({
-      success: true,
-      //  message: "Pool campus hiring request submitted successfully",
-      data: registration,
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+//     const registration = new Registration({
+//       ...req.body,
+//       companyPosted: companyProfile.data[0]._id, // Store the company ID
+//     });
+//     // console.log("Registration Data:", registration);
+//     await registration.save();
+//     //console.log("Registration saved successfully");
+//     res.status(201).json({
+//       success: true,
+//       //  message: "Pool campus hiring request submitted successfully",
+//       data: registration,
+//     });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
 
-export const getAllRegistrations = async (req, res) => {
-  try {
+// export const getAllRegistrations = async (req, res) => {
+//   try {
 
-    const response = await Registration.find()
-      .populate({
-        path: 'companyPosted',
-        select: 'companyDetails profileImage', // Add fields you need
-      })
-      .lean();
-    //  console.log("API Response:", JSON.stringify(response, null, 2));
-    res.status(200).json({ success: true, data: response });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
+//     const response = await Registration.find()
+//       .populate({
+//         path: 'companyPosted',
+//         select: 'companyDetails profileImage', // Add fields you need
+//       })
+//       .lean();
+//     //  console.log("API Response:", JSON.stringify(response, null, 2));
+//     res.status(200).json({ success: true, data: response });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// }
 
 export const getRegistrationDetail = async (req, res) => {
   const { id } = req.params;
   try {
-    const response = await JobPostingTable.findById(id)
-      .populate({
-        path: 'companyPosted',
-        select: 'companyDetails profileImage hiringPreferences',
-      })
-      .lean();
+    const response = await getJobDetailByIdService(id);
 
     res.status(200).json(response);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 }
-
-
-
-// export const getCompanyOnCampusHiringWithApplications = async (req, res) => {
-//     try {
-//         const authUserId = req.user._id;
-//         const companyProfile = await CompanyProfile.findOne({ userId: authUserId });
-
-//         if (!companyProfile) {
-//             return res.status(404).json({ message: "Company profile not found for this user." });
-//         }
-
-//         const companyId = companyProfile._id; 
-//         const currentDate = new Date(); 
-
-
-//         const companyHiringData = await Registration.aggregate([
-//             {
-
-//                 $match: {
-//                     companyPosted: companyId,
-//                     //  endDate: { $gte: new Date() } 
-//                 }
-//             },
-//             {
-
-//                 $lookup: {
-//                     from: OnCampusApplication.collection.name, 
-//                     localField: "_id",
-//                     foreignField: "drive",
-//                     as: "applications"
-//                 }
-//             },
-//             {
-
-//                 $addFields: {
-//                     applicationCount: { $size: "$applications" }
-//                 }
-//             },
-//             {
-
-//                 $project: {
-//                     companyPosted: 1,
-//                     degree: 1,
-//                     preferredLocations:  { $arrayElemAt: ["$preferredLocations", 0] },
-//                     lookingFor: 1,
-//                     employmentType: 1,
-//                     minimumSalary: 1,
-//                     startDate: 1,
-//                     endDate: 1,
-//                     rounds: 1,
-//                     selectionProcess: 1,
-//                     contactPerson: 1,
-//                     contactDesignation: 1,
-//                     email: 1,
-//                     mobile: 1,
-//                     linkedin: 1,
-//                     minimumStudents: 1,
-//                     createdAt: 1,
-//                     updatedAt: 1,
-//                     applicationCount: 1, // Include the calculated application count
-//                     "applications.college": 1, // Include college ID from applications
-//                     "applications.currentStatus": 1 // Include current status from applications
-//                 }
-//             },
-//             {
-
-//                 $lookup: {
-//                     from: "collegeonboardings", 
-//                     localField: "applications.college", 
-//                     foreignField: "_id",
-//                     as: "appliedCollegesDetails" 
-//                 }
-//             },
-//             {
-
-//                 $project: {
-//                     applications: 0,
-//                 }
-//             }
-//         ]);
-
-//          console.log("Company Hiring Data:", companyHiringData);
-//         if (companyHiringData.length === 0) {
-//             return res.status(200).json({ message: "No active on-campus hiring drives found for this company.", data: [] });
-//         }
-
-
-//         res.status(200).json({
-//             success: true,
-//             count: companyHiringData.length,
-//             data: companyHiringData,
-//         });
-
-//     } catch (error) {
-//         console.error("Error fetching company on-campus hiring data:", error);
-//         res.status(500).json({ message: "Internal server error." });
-//     }
-// };
-
 
 // export const getCollegesForOnCampusJob = async (req, res) => {
 //     try {
@@ -201,13 +96,13 @@ export const getRegistrationDetail = async (req, res) => {
 export const getCompanyOnCampusHiringWithApplications = async (req, res) => {
   try {
     const authUserId = req.user._id;
-    const companyProfile = await CompanyProfile.findOne({ userId: authUserId });
+    const companyProfile = await getCompanyService(authUserId);
 
     if (!companyProfile) {
       return res.status(404).json({ message: "Company profile not found for this user." });
     }
 
-    const companyId = companyProfile._id;
+    const companyId = companyProfile.data[0]._id;
 
     const companyHiringData = await Registration.aggregate([
       {
@@ -337,13 +232,13 @@ export async function getOncampusCollegeApplication(req, res) {
   const collegeId = req.user._id;
 
   try {
-    const college = await collegeOnboardingModel.find({ userId: collegeId });
+    const college = await getCollegeService(collegeId);
     if (!college) return res.status(404).json({ error: "Invalid college" });
 
     // console.log(college[0]);
 
     const query = {};
-    query.college = college[0]._id;
+    query.college = college.data[0]._id;
 
     const response = await getOncampusApplicantsService(query);
     // console.log(response);

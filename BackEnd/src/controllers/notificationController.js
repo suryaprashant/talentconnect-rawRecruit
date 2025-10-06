@@ -1,12 +1,12 @@
 import Notification from '../models/notificationModel.js';
+import { getNotificationByIdService, getNotificationService } from '../services/notificationService.js';
 
 // Get all notifications for the logged-in user
 export const getNotifications = async (req, res) => {
+    const id = req.user._id;
     try {
-        const notifications = await Notification.find({ recipientId: req.user._id })
-            .populate('senderId', 'name profileImage') // Get sender's name and image
-            .sort({ createdAt: -1 });
-        
+        const notifications = await getNotificationService(id);
+
         res.status(200).json(notifications);
     } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -16,13 +16,14 @@ export const getNotifications = async (req, res) => {
 
 // Mark a single notification as read
 export const markAsRead = async (req, res) => {
+    const Id = req.params.id;
     try {
-        const notification = await Notification.findById(req.params.id);
+        const notification = await getNotificationByIdService(Id);
 
         if (!notification) {
             return res.status(404).json({ message: 'Notification not found.' });
         }
-        
+
         // Ensure the user owns this notification
         if (notification.recipientId.toString() !== req.user._id.toString()) {
             return res.status(403).json({ message: 'Unauthorized.' });

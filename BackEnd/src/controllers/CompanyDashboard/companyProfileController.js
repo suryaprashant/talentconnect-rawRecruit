@@ -1,7 +1,9 @@
 import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js'
 import cloudinary from '../../../config/cloudinary.js'
 import streamifier from 'streamifier';
-import Auth from '../../models/authModel.js'
+import { updateAuthUserService } from '../../services/authService.js';
+
+import { getCompanyService, updateCompanyProfileService } from '../../services/companyService.js'
 
 // Utility for streaming upload
 const streamUpload = (buffer, folder) => {
@@ -20,7 +22,7 @@ const streamUpload = (buffer, folder) => {
 export const createCompanyProfile = async (req, res) => {
 
   try {
-   
+
     const userId = req.user._id; // Assuming req.user._id is populated by secureRoute
     if (!userId) {
       return res.status(401).json({ message: 'User not authenticated or ID missing.' });
@@ -28,11 +30,11 @@ export const createCompanyProfile = async (req, res) => {
 
     const {
       companyDetails,
-      employerDetails ,
+      employerDetails,
       hiringPreferences,
       kycDetails
     } = req.body;
- 
+
 
     const files = req.files;
     const uploads = {};
@@ -50,11 +52,11 @@ export const createCompanyProfile = async (req, res) => {
         kycDocs.push(uploaded.secure_url);
       }
     }
-   
+
     // Create company profile
     const companyProfile = await CompanyProfile.create({
       userId,
-      employerDetails : JSON.parse(employerDetails) ,
+      employerDetails: JSON.parse(employerDetails),
       companyDetails: JSON.parse(companyDetails),
       hiringPreferences: JSON.parse(hiringPreferences),
       kycDetails: {
@@ -64,16 +66,12 @@ export const createCompanyProfile = async (req, res) => {
       backgroundImageUrl: uploads.backgroundImageUrl || ''
     });
 
- 
-    const updatedUser = await Auth.findByIdAndUpdate(
-      userId,
-      { 
-        userType: "company", // Changed from "college" to "company"
-        onboardingCompleted: true,
-        onboardingStep: 6
-      },
-      { new: true }
-    ).select("-password");
+
+    const updatedUser = await updateAuthUserService(userId, {
+      userType: "company", // Changed from "college" to "company"
+      onboardingCompleted: true,
+      onboardingStep: 6
+    })
 
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found after update." });
@@ -85,14 +83,14 @@ export const createCompanyProfile = async (req, res) => {
       user: updatedUser // Send the updated user with onboardingCompleted: true
     });
 
-   
+
 
   } catch (error) {
     console.error(error);
-     if (error.code === 11000) {
-      return res.status(409).json({ 
+    if (error.code === 11000) {
+      return res.status(409).json({
         message: 'A company profile already exists for this user.',
-        error: error.message 
+        error: error.message
       });
     }
     res.status(500).json({
@@ -106,22 +104,22 @@ export const createCompanyProfile = async (req, res) => {
 export const getCompanyProfile = async (req, res) => {
   try {
     const userId = req.user._id;
-    
-    const companyProfile = await CompanyProfile.findOne({ userId })
-       .populate('userId', 'email')
-      .select('-__v -createdAt -updatedAt')
-    
-      .lean();
+
+    const companyProfile = await getCompanyService(userId)
+    // .populate('userId', 'email')
+    // .select('-__v -createdAt -updatedAt')
+
+    // .lean();
 
     if (!companyProfile) {
-      return res.status(404).json({ 
-        message: 'Company profile not found' 
+      return res.status(404).json({
+        message: 'Company profile not found'
       });
     }
 
     res.status(200).json({
       message: 'Company profile retrieved successfully',
-      profile: companyProfile
+      profile: [companyProfile.data[0].userId, companyProfile.data[0].email]
     });
 
   } catch (error) {
@@ -184,11 +182,7 @@ export const updateCompanyProfile = async (req, res) => {
     };
 
     // Find and update the profile
-    const updatedProfile = await CompanyProfile.findOneAndUpdate(
-      { userId },
-      updateData,
-      { new: true, runValidators: true }
-    );
+    const updatedProfile = await updateCompanyProfileService({ userId }, updateData)
 
     if (!updatedProfile) {
       return res.status(404).json({

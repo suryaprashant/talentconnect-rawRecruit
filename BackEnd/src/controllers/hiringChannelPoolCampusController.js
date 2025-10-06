@@ -4,6 +4,7 @@ import PoolCampusHiring from "../models/hiringChannelPoolCampusModel.js";
 // import { checkPoolCampusApplicationExitence, poolcampusApplicationService } from '../services/Application.service.js';
 // import PoolCampusApplication from '../models/poolcampusApplicationModel.js';
 import { getCompanyService } from "../services/companyService.js";
+import { getRegistrationsService } from "../services/hiringChannelService.js";
 
 export const poolCampusRegister = async (req, res) => {
   try {
@@ -34,16 +35,7 @@ export const poolCampusRegister = async (req, res) => {
 
 export const getAllRegistrations = async (req, res) => {
   try {
-    const response = await JobPostingTable.find({
-      jobType: "Pool-campus",
-      visibleTo: "College",
-    })
-      .populate({
-        path: "companyPosted",
-        select: "companyDetails profileImage",
-      })
-      .lean()
-      .sort({ createdAt: -1 });
+    const response = await getRegistrationsService("Pool-campus", "College")
 
     res.status(200).json({ success: true, data: response });
   } catch (err) {
@@ -85,127 +77,127 @@ export const getAllRegistrations = async (req, res) => {
 //   }
 // }
 
-export const getCompanyPoolCampusHiringWithApplications = async (req, res) => {
-  try {
-    const authUserId = req.user._id;
+// export const getCompanyPoolCampusHiringWithApplications = async (req, res) => {
+//   try {
+//     const authUserId = req.user._id;
 
-    const companyProfile = await getCompanyService(authUserId);
+//     const companyProfile = await getCompanyService(authUserId);
 
-    if (!companyProfile) {
-      return res
-        .status(404)
-        .json({ message: "Company profile not found for this user." });
-    }
+//     if (!companyProfile) {
+//       return res
+//         .status(404)
+//         .json({ message: "Company profile not found for this user." });
+//     }
 
-    const companyId = companyProfile.data[0]._id;
-    const currentDate = new Date(); // Get the current date
+//     const companyId = companyProfile.data[0]._id;
+//     const currentDate = new Date(); // Get the current date
 
-    const companyHiringData = await PoolCampusHiring.aggregate([
-      {
-        $match: {
-          companyId: companyId, // Filter by the specific company's ID
-          placementEndDate: { $gte: currentDate }, // Filter where placementEndDate is today or in the future
-        },
-      },
-      {
-        $lookup: {
-          from: PoolCampusApplication.collection.name,
-          localField: "_id",
-          foreignField: "drive",
-          as: "applications",
-        },
-      },
-      {
-        $addFields: {
-          applicationCount: { $size: "$applications" },
-        },
-      },
-      {
-        $project: {
-          companyId: 1,
-          venue: 1,
-          collegeTypes: 1,
-          studentStreams: 1,
-          criteria: 1,
-          minPackage: 1,
-          workLocations: 1,
-          jobRoles: 1,
-          workMode: 1,
-          employmentType: 1,
-          placementStartDate: 1,
-          placementEndDate: 1,
-          numberOfRounds: 1,
-          selectionProcess: 1,
-          contactPerson: 1,
-          minStudents: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          applicationCount: 1,
-          "applications.college": 1,
-          "applications.currentStatus": 1,
-        },
-      },
-      {
-        $lookup: {
-          from: "collegeonboardings",
-          localField: "applications.college",
-          foreignField: "_id",
-          as: "appliedCollegesDetails",
-        },
-      },
-      {
-        $project: {
-          applications: 0,
-        },
-      },
-    ]);
+//     const companyHiringData = await PoolCampusHiring.aggregate([
+//       {
+//         $match: {
+//           companyId: companyId, // Filter by the specific company's ID
+//           placementEndDate: { $gte: currentDate }, // Filter where placementEndDate is today or in the future
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: PoolCampusApplication.collection.name,
+//           localField: "_id",
+//           foreignField: "drive",
+//           as: "applications",
+//         },
+//       },
+//       {
+//         $addFields: {
+//           applicationCount: { $size: "$applications" },
+//         },
+//       },
+//       {
+//         $project: {
+//           companyId: 1,
+//           venue: 1,
+//           collegeTypes: 1,
+//           studentStreams: 1,
+//           criteria: 1,
+//           minPackage: 1,
+//           workLocations: 1,
+//           jobRoles: 1,
+//           workMode: 1,
+//           employmentType: 1,
+//           placementStartDate: 1,
+//           placementEndDate: 1,
+//           numberOfRounds: 1,
+//           selectionProcess: 1,
+//           contactPerson: 1,
+//           minStudents: 1,
+//           createdAt: 1,
+//           updatedAt: 1,
+//           applicationCount: 1,
+//           "applications.college": 1,
+//           "applications.currentStatus": 1,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "collegeonboardings",
+//           localField: "applications.college",
+//           foreignField: "_id",
+//           as: "appliedCollegesDetails",
+//         },
+//       },
+//       {
+//         $project: {
+//           applications: 0,
+//         },
+//       },
+//     ]);
 
-    if (companyHiringData.length === 0) {
-      return res
-        .status(200)
-        .json({
-          message:
-            "No active pool campus hiring drives found for this company.",
-          data: [],
-        });
-    }
+//     if (companyHiringData.length === 0) {
+//       return res
+//         .status(200)
+//         .json({
+//           message:
+//             "No active pool campus hiring drives found for this company.",
+//           data: [],
+//         });
+//     }
 
-    res.status(200).json({
-      success: true,
-      count: companyHiringData.length,
-      data: companyHiringData,
-    });
-  } catch (error) {
-    console.error("Error fetching company pool campus hiring data:", error);
-    res.status(500).json({ message: "Internal server error." });
-  }
-};
+//     res.status(200).json({
+//       success: true,
+//       count: companyHiringData.length,
+//       data: companyHiringData,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching company pool campus hiring data:", error);
+//     res.status(500).json({ message: "Internal server error." });
+//   }
+// };
 
 // controllers/hiringChannelPoolCampus.controller.js
-export const getCollegesForJob = async (req, res) => {
-  try {
-    const { jobId } = req.params;
+// export const getCollegesForJob = async (req, res) => {
+//   try {
+//     const { jobId } = req.params;
 
-    const applications = await PoolCampusApplication.find({ drive: jobId })
-      .populate({
-        path: "college",
-        select:
-          "collegeUniversityDetails placementCoordinatorDetails profileImage",
-        model: "CollegeOnboarding",
-      })
-      .lean();
+//     const applications = await PoolCampusApplication.find({ drive: jobId })
+//       .populate({
+//         path: "college",
+//         select:
+//           "collegeUniversityDetails placementCoordinatorDetails profileImage",
+//         model: "CollegeOnboarding",
+//       })
+//       .lean();
 
-    const colleges = applications.map((app) => ({
-      ...app.college.collegeUniversityDetails,
-      coordinator: app.college.placementCoordinatorDetails,
-      profileImage: app.college.profileImage,
-      applicationId: app._id,
-      appliedAt: app.createdAt,
-    }));
+//     const colleges = applications.map((app) => ({
+//       ...app.college.collegeUniversityDetails,
+//       coordinator: app.college.placementCoordinatorDetails,
+//       profileImage: app.college.profileImage,
+//       applicationId: app._id,
+//       appliedAt: app.createdAt,
+//     }));
 
-    res.status(200).json({ success: true, data: colleges });
-  } catch (error) {
-    console.error("Error fetching colleges for job:", error);
-    res.status(500).json({ message: "Internal server error." });
-  }
-};
+//     res.status(200).json({ success: true, data: colleges });
+//   } catch (error) {
+//     console.error("Error fetching colleges for job:", error);
+//     res.status(500).json({ message: "Internal server error." });
+//   }
+// };

@@ -2,6 +2,8 @@ import CollegeOnboarding from '../../models/collegeDashboard/collegeOnboardingMo
 import cloudinary from '../../../config/cloudinary.js'; // Adjust path as needed
 import streamifier from 'streamifier';
 import Auth from '../../models/authModel.js'
+import { getCollegeService } from '../../services/collegeService.js';
+import { updateAuthUserService } from '../../services/authService.js';
 
 const streamUpload = (buffer, folder) => {
   return new Promise((resolve, reject) => {
@@ -23,7 +25,7 @@ export const submitCollegeOnboarding = async (req, res) => {
 
     const userId = req.user?._id; // Using optional chaining for safety
     console.log('Uploaded Files (req.files):', req.files);
-    const files = req.files; 
+    const files = req.files;
 
     if (!userId) {
       console.log('Error: User not authenticated or ID missing in req.user._id.');
@@ -65,7 +67,7 @@ export const submitCollegeOnboarding = async (req, res) => {
 
     // 3. Log parsed data
     console.log('Parsed College University Details:', parsedCollegeUniversityDetails);
-  
+
 
     let collegeBrochureUrl = '';
     let profileImageUrl = '';
@@ -104,8 +106,9 @@ export const submitCollegeOnboarding = async (req, res) => {
     }
 
     // 4. Check if profile already exists for this user
-    let onboardingData = await CollegeOnboarding.findOne({ userId });
-    console.log('Existing onboardingData found (or null if not found):', onboardingData);
+    let college = await getCollegeService(userId);
+    const onboardingData = college.data[0];
+    // console.log('Existing onboardingData found (or null if not found):', onboardingData);
 
     if (onboardingData) {
       // Update existing profile
@@ -136,7 +139,7 @@ export const submitCollegeOnboarding = async (req, res) => {
 
       // 5. Save the updated document
       await onboardingData.save();
-     // console.log('College onboarding form UPDATED successfully for userId:', userId);
+      // console.log('College onboarding form UPDATED successfully for userId:', userId);
 
     } else {
       // Create new profile
@@ -156,27 +159,22 @@ export const submitCollegeOnboarding = async (req, res) => {
         awards: parsedAwards
       });
 
-      
+
     }
 
-     const updatedUser = await Auth.findByIdAndUpdate(
-      userId,
-      { 
-        userType: "college",
-        onboardingCompleted: true, 
-        onboardingStep: 6 
-      },
-      { new: true } 
-    ).select("-password");
+    const updatedUser = await updateAuthUserService(userId, {
+      userType: "college",
+      onboardingCompleted: true,
+      onboardingStep: 6
+    })
 
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found after update." });
     }
 
-    console.log(`User ${updatedUser.email} updated: userType=college, onboardingCompleted=true`);
+    // console.log(`User ${updatedUser.email} updated: userType=college, onboardingCompleted=true`);
+    // console.log('--- submitCollegeOnboarding END ---');
 
-    console.log('--- submitCollegeOnboarding END ---');
-    
     res.status(onboardingData.isNew ? 201 : 200).json({
       message: `College onboarding form ${onboardingData.isNew ? 'submitted' : 'updated'} successfully`,
       user: updatedUser, // Send the COMPLETE updated user object
@@ -195,24 +193,24 @@ export const submitCollegeOnboarding = async (req, res) => {
 };
 
 export const getCollegeOnboardingByUserId = async (req, res) => {
- 
+
   try {
-    const userId = req.user._id; 
+    const userId = req.user._id;
 
     if (!userId) {
       return res.status(401).json({ message: 'User not authenticated or ID missing.' });
     }
 
-    const onboardingData = await CollegeOnboarding.findOne({ userId });
-    console.log('Result of CollegeOnboarding.findOne({ userId }):', onboardingData);
-   
+    const onboardingData = await getCollegeService(userId);
+    // console.log('Result of CollegeOnboarding.findOne({ userId }):', onboardingData);
+
     if (!onboardingData) {
       return res.status(404).json({ message: 'No college onboarding data found for this user.' });
     }
 
     res.status(200).json({
       message: 'Successfully retrieved college onboarding data for the user',
-      data: onboardingData
+      data: onboardingData.data[0]
     });
   } catch (error) {
     console.error("Error in getCollegeOnboardingByUserId:", error);
