@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, MapPin, Users, Trophy, Clock, DollarSign, FileText, Globe, Target, Plus, X } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { scrollToFirstError } from '../../../utils/scrollToError';
+import { getCasestudyById, updateCasestudy } from '@/lib/Company_AxiosInstance';
 
 const HostCasestudies = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { editMode, eventId, eventData } = location.state || {};
   const [formData, setFormData] = useState({
     logo: '',
     title: '',
@@ -61,7 +64,79 @@ const HostCasestudies = () => {
   const [faqs, setFaqs] = useState([{ question: '', answer: '' }]);
   const [panelMembers, setPanelMembers] = useState([]);
   const [panelInput, setPanelInput] = useState('');
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [casestudyId, setCasestudyId] = useState(null);
   const formRef = useRef(null);
+
+  // Load existing case study data if in edit mode
+  useEffect(() => {
+    const loadCasestudyData = async () => {
+      if (editMode && eventId) {
+        setIsEditMode(true);
+        setCasestudyId(eventId);
+        setLoading(true);
+        
+        try {
+          const response = await getCasestudyById(eventId);
+          if (response?.data?.success) {
+            const data = response.data.data;
+            
+            setFormData({
+              logo: data.bannerImage || '',
+              title: data.title || '',
+              subTitle: data.subTitle || '',
+              mode: data.mode || '',
+              visibility: data.visibility || '',
+              participationType: data.participationType || '',
+              eventDate: data.eventDate || '',
+              eventTime: data.eventTime || '',
+              description: data.description || '',
+              problemStatements: data.problemStatements || [{ title: '', description: '', technology: [] }],
+              startDate: data.startDate ? new Date(data.startDate).toISOString().slice(0, 16) : '',
+              endDate: data.endDate ? new Date(data.endDate).toISOString().slice(0, 16) : '',
+              location: data.location || '',
+              maxParticipants: data.maxParticipants || '',
+              maxTeams: data.maxTeams || '',
+              minTeamMembers: data.minTeamMembers || '',
+              maxTeamMembers: data.maxTeamMembers || '',
+              numberOfRounds: data.numberOfRounds || 1,
+              rounds: data.rounds || [{ roundNumber: 1, roundName: 'Round 1', description: '', startDate: '', endDate: '' }],
+              rewards: {
+                rewardType: data.rewardsAndBenefits?.[0]?.type === 'Cash' ? 'Amount' : 'Other',
+                firstPlace: data.rewardsAndBenefits?.find(r => r.rank === 'Winner')?.amount || '',
+                secondPlace: data.rewardsAndBenefits?.find(r => r.rank === '1st RunnerUp')?.amount || '',
+                thirdPlace: data.rewardsAndBenefits?.find(r => r.rank === '2nd RunnerUp')?.amount || '',
+                specialAwards: data.rewardsAndBenefits?.filter(r => !['Winner', '1st RunnerUp', '2nd RunnerUp'].includes(r.rank)) || []
+              },
+              registrationDeadline: data.registrationDeadline ? new Date(data.registrationDeadline).toISOString().slice(0, 16) : '',
+              requirements: data.requirements || '',
+              rules: data.rules || '',
+              website: data.website || '',
+              contactEmail: data.contactEmail || '',
+              tags: data.tags?.join(', ') || '',
+              domains: data.domains || [''],
+              eligibility: data.eligibility || '',
+              logoPreview: data.bannerImage || ''
+            });
+            
+            setFaqs(data.faqs || [{ question: '', answer: '' }]);
+            setPanelMembers(data.panelMembers || []);
+          } else {
+            toast.error('Failed to load case study data');
+            navigate('/hosting-management');
+          }
+        } catch (error) {
+          console.error('Error loading case study:', error);
+          toast.error('Failed to load case study data');
+          navigate('/hosting-management');
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    
+    loadCasestudyData();
+  }, [editMode, eventId, navigate]);
 
   // Decide which step an error belongs to
   const determineErrorStep = (errs = {}) => {
@@ -434,28 +509,36 @@ const HostCasestudies = () => {
         faqs,
         panelMembers,
       };
-      const response = await axios.post(
-        `${backendUrl}/casestudy/create`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      
+      let response;
+      if (isEditMode && casestudyId) {
+        // Update existing case study
+        response = await updateCasestudy(casestudyId, payload);
+      } else {
+        // Create new case study
+        response = await axios.post(
+          `${backendUrl}/casestudy/create`,
+          payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+      }
   
-      if (response.status === 201 || response.status === 200) {
-        toast.success("Case study created successfully!");
-        console.log("Case study created successfully:", response.data);
+      if (response.status === 201 || response.status === 200 || response?.data?.success) {
+        toast.success(isEditMode ? "Case study updated successfully!" : "Case study created successfully!");
+        console.log(isEditMode ? "Case study updated successfully:" : "Case study created successfully:", response.data);
   
-        // Navigate back to company profile/dashboard
-        navigate("/company-profile");
+        // Navigate back to hosting management
+        navigate("/hosting-management");
       }
      } catch (err) {
        const errorMessage =
-         err.response?.data?.message || "Failed to create case study.";
-       console.error("Error creating case study:", err);
+         err.response?.data?.message || (isEditMode ? "Failed to update case study." : "Failed to create case study.");
+       console.error(isEditMode ? "Error updating case study:" : "Error creating case study:", err);
        toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -463,7 +546,7 @@ const HostCasestudies = () => {
   };
 
   const handleCancel = () => {
-    navigate('/company-profile');
+    navigate('/hosting-management');
   };
 
   // FAQ handlers
@@ -554,10 +637,10 @@ const HostCasestudies = () => {
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-3 mb-4">
             <Trophy className="h-8 w-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Host a Case Study</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{isEditMode ? 'Edit Case Study' : 'Host a Case Study'}</h1>
           </div>
           <p className="text-gray-600">
-            Create an engaging case study event to challenge participants with real-world business problems.
+            {isEditMode ? 'Update your case study event details.' : 'Create an engaging case study event to challenge participants with real-world business problems.'}
           </p>
         </div>
 
@@ -1566,12 +1649,12 @@ const HostCasestudies = () => {
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Creating...
+                  {isEditMode ? 'Updating...' : 'Creating...'}
                 </>
               ) : (
                 <>
                   <Trophy className="h-4 w-4" />
-                  Create Case Study
+                  {isEditMode ? 'Update Case Study' : 'Create Case Study'}
                 </>
               )}
             </button>

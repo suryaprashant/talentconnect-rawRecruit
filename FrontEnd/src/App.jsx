@@ -132,7 +132,7 @@ import InternshipStatus from "./components/student/applicationStatus/intershipOp
 import RefferralJobStatus from "./components/student/applicationStatus/referralJobs/RefferralJobStatus";
 import EventStatus from "./components/student/applicationStatus/events/EventStatus";
 import AIDrivenJob from "./components/student/aiDrivenJobSearch/AIDrivenJob";
-import Workforce from "./pages/company/serviceRequest/workforceSolution/Workforce";
+import Workforce from "./pages/company/serviceRequest/workforceSolution/workforce";
 import EmployeeTraining from "./pages/company/serviceRequest/employeeTraining/EmployeeTraining";
 import Branding from "./pages/company/serviceRequest/branding/Branding";
 
@@ -183,7 +183,7 @@ import ProfessionalDetail from "./pages/professional/dashboard/hackathon/Detail"
 import EmployerAcceptedShortlistDrive from "./pages/employer/acceptedCollegeOrCandidate/onCampus/AcceptedShortlistDrive";
 import EmployerAcceptedDriveDetail from "./pages/employer/acceptedCollegeOrCandidate/onCampus/AcceptedDriveDetail";
 import OnboardingFlowForm from "./pages/employer/onboarding/Main";
-import EmployerResumeApp from "./components/Employer/employerDashboard/ResumeSearch/ResumeApp";
+import EmployerResumeApp from "./components/employer/employerDashboard/resumeSearch/ResumeApp";
 import EmployerInterviewScheduler from "./components/employer/interview/InterviewSchedule";
 import EmployerListingPage from "./pages/employer/employerDashboard/CollegeListingPage";
 import EmployerDetailsPage from "./pages/employer/employerDashboard/CollegeDetailPage";

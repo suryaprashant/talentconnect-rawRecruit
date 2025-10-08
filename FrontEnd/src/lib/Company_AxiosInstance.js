@@ -185,50 +185,161 @@ export function fetchAllCompaniesName() {
 
 // Hackathon Registration Management
 export function getCompanyHackathonsWithRegistrations() {
-  return axiosClient.get(`/hosting-management/hackathons`)
+  return axiosClient.get(`/api/hosting-management/hackathons`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function getHackathonRegistrations(hackathonId) {
-  return axiosClient.get(`/hosting-management/hackathons/${hackathonId}/registrations`)
+  return axiosClient.get(`/api/hosting-management/hackathons/${hackathonId}/registrations`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function confirmHackathonRegistration(registrationId) {
-  return axiosClient.put(`/hosting-management/registrations/${registrationId}/confirm`)
+  return axiosClient.put(`/api/hosting-management/hackathons/registrations/${registrationId}/confirm`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function rejectHackathonRegistration(registrationId, data) {
-  return axiosClient.put(`/hosting-management/registrations/${registrationId}/reject`, data)
+  return axiosClient.put(`/api/hosting-management/hackathons/registrations/${registrationId}/reject`, data)
     .then(response => response)
     .catch(error => error);
 }
 
 // Case Study Registration Management
 export function getCompanyCasestudiesWithRegistrations() {
-  return axiosClient.get(`/hosting-management/casestudies`)
+  return axiosClient.get(`/api/hosting-management/casestudies`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function getCasestudyRegistrations(casestudyId) {
-  return axiosClient.get(`/hosting-management/casestudies/${casestudyId}/registrations`)
+  return axiosClient.get(`/api/hosting-management/casestudies/${casestudyId}/registrations`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function confirmCasestudyRegistration(registrationId) {
-  return axiosClient.put(`/hosting-management/registrations/${registrationId}/confirm`)
+  return axiosClient.put(`/api/hosting-management/casestudies/registrations/${registrationId}/confirm`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function rejectCasestudyRegistration(registrationId, data) {
-  return axiosClient.put(`/hosting-management/registrations/${registrationId}/reject`, data)
+  return axiosClient.put(`/api/hosting-management/casestudies/registrations/${registrationId}/reject`, data)
+    .then(response => response)
+    .catch(error => error);
+}
+
+// Workshop Registration Management
+export function getCompanyWorkshopsWithRegistrations() {
+  return axiosClient.get(`/api/hosting-management/workshops`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function getWorkshopRegistrations(workshopId) {
+  return axiosClient.get(`/api/hosting-management/workshops/${workshopId}/registrations`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function confirmWorkshopRegistration(registrationId) {
+  return axiosClient.put(`/api/hosting-management/workshops/registrations/${registrationId}/confirm`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function rejectWorkshopRegistration(registrationId, data) {
+  return axiosClient.put(`/api/hosting-management/workshops/registrations/${registrationId}/reject`, data)
+    .then(response => response)
+    .catch(error => error);
+}
+
+// Event Edit/Delete APIs
+export function getHackathonById(hackathonId) {
+  return axiosClient.get(`/hackathon/${hackathonId}`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function updateHackathon(hackathonId, payload) {
+  return axiosClient.put(`/hackathon/${hackathonId}`, payload)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function deleteHackathon(hackathonId) {
+  return axiosClient.delete(`/hackathon/${hackathonId}`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function getCasestudyById(casestudyId) {
+  return axiosClient.get(`/casestudy/${casestudyId}`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function updateCasestudy(casestudyId, payload) {
+  return axiosClient.put(`/casestudy/${casestudyId}`, payload)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function deleteCasestudy(casestudyId) {
+  return axiosClient.delete(`/casestudy/${casestudyId}`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function getWorkshopById(workshopId) {
+  return axiosClient.get(`/workshop/${workshopId}`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function updateWorkshop(workshopId, payload) {
+  return axiosClient.put(`/workshop/${workshopId}`, payload)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function deleteWorkshop(workshopId) {
+  return axiosClient.delete(`/workshop/${workshopId}`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+// Send file to confirmed users
+export function sendFileToHackathonUsers(hackathonId, formData) {
+  return axiosClient.post(`/hosting-management/hackathons/${hackathonId}/send-file`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function sendFileToCasestudyUsers(casestudyId, formData) {
+  return axiosClient.post(`/hosting-management/casestudies/${casestudyId}/send-file`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function sendFileToWorkshopUsers(workshopId, formData) {
+  return axiosClient.post(`/hosting-management/workshops/${workshopId}/send-file`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
     .then(response => response)
     .catch(error => error);
 }
