@@ -1,6 +1,12 @@
 import Hackathon from "../models/hackathonModel.js";
 import { v2 as cloudinary } from 'cloudinary';
-import EventRegistration from '../models/eventParticipationModel.js'
+import EventParticipation from "../models/eventParticipationModel.js";
+import Auth from "../models/authModel.js";
+import StudentOverview from "../models/studentModel.js";
+import ProfessionalProfile from "../models/professionalProfileModel.js";
+import FresherProfile from "../models/fresherProfileModel.js";
+import { sendEmail } from "../utils/sendEmail.js";
+import { sendBulkNotifications } from "../utils/sendNotification.js";
 
 /**
  * Service class for handling hackathon-related business logic
@@ -207,7 +213,7 @@ class HackathonHostingService {
         // Add registeredUsers to each hackathon
         const hackathonsWithRegistrations = await Promise.all(
             hackathons.map(async (hackathon) => {
-                const count = await EventRegistration.countDocuments({ eventID: hackathon._id });
+                const count = await EventParticipation.countDocuments({ eventID: hackathon._id });
                 return {
                     ...hackathon.toObject(),
                     registeredUsers: count
@@ -429,6 +435,247 @@ _validateRequiredFields(fields) {
         }
 
         return normalizedDomains;
+    }
+    
+    
+    // ==========================================
+    // HOSTING MANAGEMENT OPERATIONS
+    // ==========================================
+
+    async getUserDetailsByEmail(email) {
+        const authUser = await Auth.findOne({ email });
+        if (!authUser) return null;
+
+        let userDetails = {
+            name: authUser.name,
+            email: authUser.email,
+            userType: authUser.userType
+        };
+
+        let profile;
+        switch (authUser.userType) {
+            case "student":
+                profile = await StudentOverview.findOne({ email });
+                if (profile) userDetails = { ...userDetails, ...profile.toObject() };
+                break;
+            case "professional":
+                profile = await ProfessionalProfile.findOne({ email });
+                if (profile) userDetails = { ...userDetails, ...profile.toObject() };
+                break;
+            case "fresher":
+                profile = await FresherProfile.findOne({ email });
+                if (profile) userDetails = { ...userDetails, ...profile.toObject() };
+                break;
+        }
+        return userDetails;
+    }
+
+    async getCompanyHackathonsWithRegistrations(companyId) {
+        const hackathons = await Hackathon.find({ createdBy: companyId }).sort({ createdAt: -1 });
+
+        const hackathonsWithCounts = await Promise.all(
+            hackathons.map(async (h) => {
+                const total = await EventParticipation.countDocuments({ eventID: h._id });
+                const pending = await EventParticipation.countDocuments({ eventID: h._id, registrationStatus: "Pending" });
+                const confirmed = await EventParticipation.countDocuments({ eventID: h._id, registrationStatus: "Confirmed" });
+                const rejected = await EventParticipation.countDocuments({ eventID: h._id, registrationStatus: "Rejected" });
+
+                return {
+                    ...h.toObject(),
+                    registrationCounts: { total, pending, confirmed, rejected }
+                };
+            })
+        );
+        return hackathonsWithCounts;
+    }
+
+    async getHackathonRegistrations(hackathonId, companyId) {
+        const hackathon = await Hackathon.findOne({ _id: hackathonId, createdBy: companyId });
+        if (!hackathon) throw new Error("Hackathon not found or unauthorized");
+
+        const registrations = await EventParticipation.find({ eventID: hackathonId }).sort({ createdAt: -1 });
+
+        const detailed = await Promise.all(
+            registrations.map(async (r) => ({
+                ...r.toObject(),
+                userDetails: await this.getUserDetailsByEmail(r.email)
+            }))
+        );
+        return detailed;
+    }
+
+    async getHackathonRegistrationDetails(registrationId, companyId) {
+        const registration = await EventParticipation.findById(registrationId);
+        if (!registration) throw new Error("Registration not found");
+
+        const hackathon = await Hackathon.findOne({ _id: registration.eventID, createdBy: companyId });
+        if (!hackathon) throw new Error("Unauthorized to view this registration");
+
+        const userDetails = await this.getUserDetailsByEmail(registration.email);
+
+        const teamMembersWithDetails = await Promise.all(
+            registration.teamMembers.map(async (m) => ({
+                ...m.toObject(),
+                userDetails: await this.getUserDetailsByEmail(m.email)
+            }))
+        );
+
+        return { ...registration.toObject(), hackathon, userDetails, teamMembers: teamMembersWithDetails };
+    }
+
+    async confirmHackathonRegistration(registrationId, companyId) {
+        const registration = await EventParticipation.findById(registrationId);
+        if (!registration) {
+            const error = new Error("Registration not found");
+            error.statusCode = 404;
+            throw error;
+        }
+    
+        const hackathon = await Hackathon.findById(registration.eventID);
+        if (!hackathon) {
+            const error = new Error("Hackathon not found");
+            error.statusCode = 404;
+            throw error;
+        }
+    
+        // Convert both to strings for comparison (in case one is ObjectId)
+        const hackathonCreatorId = hackathon.createdBy?.toString();
+        const requestingCompanyId = companyId?.toString();
+    
+        console.log('Debug - Registration ID:', registrationId);
+        console.log('Debug - Event ID:', registration.eventID);
+        console.log('Debug - Hackathon Creator ID:', hackathonCreatorId);
+        console.log('Debug - Requesting Company ID:', requestingCompanyId);
+        console.log('Debug - Match:', hackathonCreatorId === requestingCompanyId);
+    
+        if (hackathonCreatorId !== requestingCompanyId) {
+            const error = new Error(
+                `Unauthorized: You do not have permission to confirm this registration. ` +
+                `Hackathon creator: ${hackathonCreatorId}, Your ID: ${requestingCompanyId}`
+            );
+            error.statusCode = 403;
+            throw error;
+        }
+    
+        registration.registrationStatus = "Confirmed";
+        await registration.save();
+    
+        const emailSubject = `Registration Confirmed - ${hackathon.title}`;
+        const emailBody = `
+        Dear ${registration.name},
+    
+        Your registration for "${hackathon.title}" has been confirmed.
+        Start Date: ${new Date(hackathon.startDate).toLocaleDateString()}
+        End Date: ${new Date(hackathon.endDate).toLocaleDateString()}
+        Location: ${hackathon.location}
+    
+        Regards,
+        ${hackathon.contactEmail}
+        `;
+        
+        try {
+            await sendEmail(registration.email, emailSubject, emailBody);
+        } catch (emailError) {
+            console.error('Failed to send confirmation email:', emailError);
+            // Don't throw - registration is still confirmed
+        }
+    
+        return registration;
+    }
+
+    async rejectHackathonRegistration(registrationId, companyId, reason) {
+        const registration = await EventParticipation.findById(registrationId);
+        if (!registration) throw new Error("Registration not found");
+
+        const hackathon = await Hackathon.findOne({ _id: registration.eventID, createdBy: companyId });
+        if (!hackathon) throw new Error("Unauthorized");
+
+        registration.registrationStatus = "Rejected";
+        registration.rejectionReason = reason || "No reason provided";
+        await registration.save();
+
+        const emailSubject = `Registration Update - ${hackathon.title}`;
+        const emailBody = `
+        Dear ${registration.name},
+        Unfortunately, your registration for "${hackathon.title}" has been rejected.
+        Reason: ${reason || "Not specified"}
+
+        Regards,
+        ${hackathon.contactEmail}
+        `;
+        await sendEmail(registration.email, emailSubject, emailBody);
+
+        return registration;
+    }
+
+    async sendFileToConfirmedUsers(req, companyId) {
+        const { hackathonId } = req.params;
+        const { fileUrl, fileName, message } = req.body;
+
+        let uploadedFileUrl = fileUrl;
+        let uploadedFileName = fileName;
+
+        const selectedCandidates = req.body['selectedCandidates[]'] 
+            ? (Array.isArray(req.body['selectedCandidates[]']) 
+                ? req.body['selectedCandidates[]'] 
+                : [req.body['selectedCandidates[]']])
+            : null;
+
+        const hackathon = await Hackathon.findOne({ _id: hackathonId, createdBy: companyId });
+        if (!hackathon) throw new Error("Hackathon not found or unauthorized");
+
+        if (req.file) {
+            const result = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { resource_type: "auto", folder: "hackathon_files", use_filename: true, unique_filename: true },
+                    (error, result) => (error ? reject(error) : resolve(result))
+                );
+                stream.end(req.file.buffer);
+            });
+
+            uploadedFileUrl = result.secure_url;
+            uploadedFileName = req.file.originalname;
+        }
+
+        if (!uploadedFileUrl || !uploadedFileName) throw new Error("File upload failed or missing data");
+
+        let targetRegs;
+        if (selectedCandidates && selectedCandidates.length > 0) {
+            targetRegs = await EventParticipation.find({ 
+                _id: { $in: selectedCandidates },
+                eventID: hackathonId
+            });
+        } else {
+            targetRegs = await EventParticipation.find({
+                eventID: hackathonId,
+                registrationStatus: "Confirmed"
+            });
+        }
+
+        if (targetRegs.length === 0) throw new Error("No registrations found to send file to");
+
+        const emails = targetRegs.map((r) => r.email);
+        const notificationMessage = message 
+            ? `${message}\n\nFile: ${uploadedFileName}` 
+            : `A new file has been shared for ${hackathon.title}. Download: ${uploadedFileName}`;
+
+        const results = await sendBulkNotifications(emails, {
+            senderId: companyId,
+            type: "FILE_SHARED",
+            message: notificationMessage,
+            referenceId: hackathonId,
+            fileUrl: uploadedFileUrl,
+            fileName: uploadedFileName,
+            eventTitle: hackathon.title
+        });
+
+        const successCount = results.filter((r) => r.success).length;
+        const failCount = results.length - successCount;
+
+        return {
+            message: `File sent to ${successCount} users, failed for ${failCount}`,
+            data: { results, fileUrl: uploadedFileUrl, fileName: uploadedFileName }
+        };
     }
 }
 

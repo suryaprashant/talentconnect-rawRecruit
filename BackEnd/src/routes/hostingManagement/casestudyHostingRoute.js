@@ -4,9 +4,11 @@ import {
   getCasestudyRegistrations,
   confirmCasestudyRegistration,
   rejectCasestudyRegistration,
-  getCasestudyRegistrationDetails
+  getCasestudyRegistrationDetails,
+  sendFileToConfirmedUsers
 } from '../../controllers/hostingManagement/casestudyHostingController.js';
 import secureRoute from '../../middlewares/secureRouteMiddleware.js';
+import upload from '../../utils/multer.js';
 
 const router = express.Router();
 
@@ -17,12 +19,15 @@ router.get('/casestudies', secureRoute, getCompanyCasestudiesWithRegistrations);
 router.get('/casestudies/:casestudyId/registrations', secureRoute, getCasestudyRegistrations);
 
 // Route to get detailed information about a specific registration
-router.get('/registrations/:registrationId', secureRoute, getCasestudyRegistrationDetails);
+router.get('/casestudies/registrations/:registrationId', secureRoute, getCasestudyRegistrationDetails);
 
 // Route to confirm a registration
-router.put('/registrations/:registrationId/confirm', secureRoute, confirmCasestudyRegistration);
+router.put('/casestudies/registrations/:registrationId/confirm', secureRoute, confirmCasestudyRegistration);
 
 // Route to reject a registration
-router.put('/registrations/:registrationId/reject', secureRoute, rejectCasestudyRegistration);
+router.put('/casestudies/registrations/:registrationId/reject', secureRoute, rejectCasestudyRegistration);
+
+// Route to send file to confirmed users
+router.post('/casestudies/:casestudyId/send-file', secureRoute, upload.single('file'), sendFileToConfirmedUsers);
 
 export default router;

@@ -1,10 +1,10 @@
-import hackathonService from "../../services/hackathonHostingService.js";
+import workshopService from "../../services/workshopService.js";
 
-// @desc    Get all hackathons hosted by a company with registration counts
-// @route   GET /hosting-management/hackathons
-export const getCompanyHackathonsWithRegistrations = async (req, res, next) => {
+// @desc    Get all workshops hosted by a company with registration counts
+// @route   GET /hosting-management/workshops
+export const getCompanyWorkshopsWithRegistrations = async (req, res, next) => {
   try {
-    const data = await hackathonService.getCompanyHackathonsWithRegistrations(req.user.id);
+    const data = await workshopService.getCompanyWorkshopsWithRegistrations(req.user.id);
 
     res.status(200).json({
       success: true,
@@ -12,20 +12,20 @@ export const getCompanyHackathonsWithRegistrations = async (req, res, next) => {
       data
     });
   } catch (error) {
-    console.error("Error fetching company hackathons:", error);
+    console.error("Error fetching company workshops:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch company hackathons",
+      message: "Failed to fetch company workshops",
       error: error.message
     });
   }
 };
 
-// @desc    Get all registrations for a specific hackathon
-// @route   GET /hosting-management/hackathons/:hackathonId/registrations
-export const getHackathonRegistrations = async (req, res, next) => {
+// @desc    Get all registrations for a specific workshop
+// @route   GET /hosting-management/workshops/:workshopId/registrations
+export const getWorkshopRegistrations = async (req, res, next) => {
   try {
-    const data = await hackathonService.getHackathonRegistrations(req.params.hackathonId, req.user.id);
+    const data = await workshopService.getWorkshopRegistrations(req.params.workshopId, req.user.id);
 
     res.status(200).json({
       success: true,
@@ -33,7 +33,7 @@ export const getHackathonRegistrations = async (req, res, next) => {
       data
     });
   } catch (error) {
-    console.error("Error fetching hackathon registrations:", error);
+    console.error("Error fetching workshop registrations:", error);
     res.status(error.statusCode || 500).json({
       success: false,
       message: error.message
@@ -45,7 +45,7 @@ export const getHackathonRegistrations = async (req, res, next) => {
 // @route   GET /hosting-management/registrations/:registrationId
 export const getRegistrationDetails = async (req, res, next) => {
   try {
-    const data = await hackathonService.getHackathonRegistrationDetails(req.params.registrationId, req.user.id);
+    const data = await workshopService.getWorkshopRegistrationDetails(req.params.registrationId, req.user.id);
 
     res.status(200).json({
       success: true,
@@ -64,7 +64,7 @@ export const getRegistrationDetails = async (req, res, next) => {
 // @route   PUT /hosting-management/registrations/:registrationId/confirm
 export const confirmRegistration = async (req, res, next) => {
   try {
-    const data = await hackathonService.confirmHackathonRegistration(req.params.registrationId, req.user.id);
+    const data = await workshopService.confirmWorkshopRegistration(req.params.registrationId, req.user.id);
 
     res.status(200).json({
       success: true,
@@ -84,7 +84,7 @@ export const confirmRegistration = async (req, res, next) => {
 // @route   PUT /hosting-management/registrations/:registrationId/reject
 export const rejectRegistration = async (req, res, next) => {
   try {
-    const data = await hackathonService.rejectHackathonRegistration(
+    const data = await workshopService.rejectWorkshopRegistration(
       req.params.registrationId,
       req.user.id,
       req.body.reason
@@ -105,10 +105,10 @@ export const rejectRegistration = async (req, res, next) => {
 };
 
 // @desc    Send file to confirmed registrations
-// @route   POST /hosting-management/hackathons/:hackathonId/send-file
+// @route   POST /hosting-management/workshops/:workshopId/send-file
 export const sendFileToConfirmedUsers = async (req, res, next) => {
   try {
-    const result = await hackathonService.sendFileToConfirmedUsers(req, req.user.id);
+    const result = await workshopService.sendFileToConfirmedUsers(req, req.user.id);
 
     res.status(200).json({
       success: true,
