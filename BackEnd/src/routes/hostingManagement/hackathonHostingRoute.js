@@ -19,13 +19,13 @@ router.get('/hackathons', secureRoute, getCompanyHackathonsWithRegistrations);
 router.get('/hackathons/:hackathonId/registrations', secureRoute, getHackathonRegistrations);
 
 // Route to get detailed information about a specific registration
-router.get('/registrations/:registrationId', secureRoute, getRegistrationDetails);
+router.get('/hackathons/registrations/:registrationId', secureRoute, getRegistrationDetails);
 
 // Route to confirm a registration
-router.put('/registrations/:registrationId/confirm', secureRoute, confirmRegistration);
+router.put('/hackathons/registrations/:registrationId/confirm', secureRoute, confirmRegistration);
 
 // Route to reject a registration
-router.put('/registrations/:registrationId/reject', secureRoute, rejectRegistration);
+router.put('/hackathons/registrations/:registrationId/reject', secureRoute, rejectRegistration);
 
 // Route to send file to confirmed users
 router.post('/hackathons/:hackathonId/send-file', secureRoute, upload.single('file'), sendFileToConfirmedUsers);

@@ -155,9 +155,9 @@ app.use("/company/dashboard/resume", Resume);
 app.use("/company", Company);
 app.use('/company/jobmanagement',JobManagement);
 app.use('/college/jobmanagement',CollegeJobManagement) ;
-app.use('/hosting-management', hackathonHostingRoute);
-app.use('/hosting-management', casestudyHostingRoute);
-app.use('/hosting-management', workshopHostingRoute);
+app.use('/api/hosting-management', hackathonHostingRoute);
+app.use('/api/hosting-management', casestudyHostingRoute);
+app.use('/api/hosting-management', workshopHostingRoute);
 
 // RawRecruit API Mounts
 app.use("/api/rawrecruit", [
