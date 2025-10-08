@@ -4,6 +4,45 @@ import { v2 as cloudinary } from 'cloudinary';
 import sendInvitationEmail from '../utils/sendInvitationEmail.js';
 
 class EventParticipationService {
+/**
+ * Updates the user input for a specific round in a participation record
+ * @param {Object} payload - EventParticipation data
+ * @returns {Object} Updated EventParticipation document
+ */
+async updateUserInputService(payload) {
+  try {
+    const { _id, roundNumber, userInput } = payload; // ✅ Destructure the needed fields
+
+    console.log("eventparticipantId:", _id);
+
+    const participation = await EventParticipation.findById(_id);
+
+    if (!participation) {
+      throw new Error('Participation not found');
+    }
+
+    // Find the round with the given roundNumber
+    const roundToUpdate = participation.rounds.find(
+      (round) => round.roundNumber === roundNumber
+    );
+
+    if (!roundToUpdate) {
+      throw new Error(`Round ${roundNumber} not found`);
+    }
+
+    // Update the user input
+    roundToUpdate.userInput = userInput;
+
+    // Save the updated document
+    const updatedParticipation = await participation.save();
+    return updatedParticipation;
+  } catch (err) {
+    console.error('Error in updateUserInputService:', err.message);
+    throw err;
+  }
+}
+
+
 
     /**
 * Select all data from EventParticipationDetails
@@ -109,6 +148,7 @@ async updateParticipantService(participantId, updateData) {
 
   return updatedParticipant; // May return null if not found
 }
+
 /**
  * Deletes a participant by ID
  * @param {string} registrationID - The participant document ID (MongoDB _id)
