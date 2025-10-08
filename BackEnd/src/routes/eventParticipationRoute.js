@@ -6,7 +6,8 @@ import {
   getParticipantsByEvent,
   updateParticipant,
   deleteParticipant,
-  getByParticipantId
+  getByParticipantId,
+  updateUserInput
 } from '../controllers/eventParticipationController.js';
 
 const router = express.Router();
@@ -24,6 +25,7 @@ router.get('/:eventID', getParticipantsByEvent);
 // @desc    Register a new participant
 // @route   POST /eventParticipation/register
 router.post('/register',secureRoute, registerParticipant);
+router.post('/updateUserInput',updateUserInput)
 
 // @desc    Update participant by ID
 // @route   PUT /eventParticipation/update/:id

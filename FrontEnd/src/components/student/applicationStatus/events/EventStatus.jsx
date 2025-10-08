@@ -2,29 +2,143 @@ import { useEffect, useState } from 'react';
 import { Search, MapPin, Clock } from 'lucide-react';
 import { getEventApplicationStatus } from '@/lib/User_AxiosInstance';
 import { statusSteps } from '../../../../constants/data.js'
+import axios from 'axios';
 const EventStatus = () => {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  const [formData, setFormData] = useState(null);
 
   const fetchEventApplications = async () => {
     try {
       const response = await getEventApplicationStatus();
-      console.log("data", response.data.data);
-
+      const firstEvent = response.data.data[0];
+      const participant = firstEvent.participant;
       setEvents(response.data.data);
-      console.log(response.data.data[0]);
+      setSelectedEvent(firstEvent);
 
-      setSelectedEvent(response.data.data[0]);
+      if (firstEvent?.participant) {
+        
+        
+        setFormData({
+          teamLeaderId: participant.teamLeaderId || '',
+          eventID: participant.eventID || '',
+          eventName: participant.eventName || '',
+          name: participant.name || '',
+          email: participant.email || '',
+          projectTitle: participant.projectTitle || '',
+          teamMembers: participant.teamMembers || [],
+          rounds: (participant.rounds || []).map(round => ({
+            roundNumber: round.roundNumber || '',
+            rountStatus: round.rountStatus || '',
+            userInput: round.userInput || '',
+          })),
+        });
+      }
     } catch (error) {
       console.log("Error fetching event data: ", error);
     }
   };
+  const onEventChange = (event) => {
+    setSelectedEvent(event);
+    const participant = event.participant;
+    if (participant) {
+
+      setFormData({
+        teamLeaderId: participant.teamLeaderId || '',
+        eventID: participant.eventID || '',
+        eventName: participant.eventName || '',
+        name: participant.name || '',
+        email: participant.email || '',
+        projectTitle: participant.projectTitle || '',
+        teamMembers: participant.teamMembers || [],
+        rounds: (participant.rounds || []).map(round => ({
+          roundNumber: round.roundNumber || '',
+          rountStatus: round.rountStatus || '',
+          userInput: round.userInput || '',
+        })),
+      });
+    }
+
+  };
+  const handleSubmit = async (e, roundNumber, source,id) => {
+     e.preventDefault()
+    console.log(roundNumber," : ",id)
+    if (source === "link") {
+      await handleLinkSubmit(e, roundNumber,id)
+    }
+    else {
+      await handleFileSubmit(e, roundNumber,id)
+    }
+  };
+  const saveData = async (payload) => {
+    try {
+      debugger
+      const response = await axios.post(
+        `${import.meta.env.VITE_Backend_URL}/eventParticipation/updateUserInput`,
+        payload
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        alert("Request submitted successfully!");
+      }
+    } catch (err) {
+      alert("Failed to submit request: " + (err.response?.data?.message || err.message));
+    }
+  }
+
+
 
   useEffect(() => {
     fetchEventApplications();
   }, []);
+  const handleLinkSubmit = async (e, roundNumber,id) => {
+    e.preventDefault();
+    const form = new FormData(e.target);
+    const link = form.get('submissionLink');
+
+    // 🧠 Update formData: set userInput = link for the correct round
+    const updatedRounds = formData.rounds.map(round =>
+      round.roundNumber === roundNumber
+        ? { ...round, userInput: link }
+        : round
+    );
+
+    setFormData(prev => ({
+      ...prev,
+      rounds: updatedRounds,
+    }));
+    const payload = { userInput: link, roundNumber, _id: id }; // ✅ Proper declaration
+  await saveData(payload);
+    console.log(`After Link submitted for round ${roundNumber}:`, formData);
+  };
+
+  const handleFileSubmit = async (e, roundNumber,id) => {
+    e.preventDefault();
+    const file = e.target.submissionFile.files[0];
+
+    if (!file) {
+      alert('Please select a file.');
+      return;
+    }
+
+    // 🧠 Update formData: set userInput = file.name for the correct round
+    const updatedRounds = formData.rounds.map(round =>
+      round.roundNumber === roundNumber
+        ? { ...round, userInput: file.name }
+        : round
+    );
+
+    setFormData(prev => ({
+      ...prev,
+      rounds: updatedRounds,
+    }));
+    const payload = { userInput: file.name, roundNumber, _id: id }; // ✅ Proper declaration
+  await saveData(payload);
+    console.log(`after File submitted for round ${roundNumber}:`, formData);
+  };
+
 
   // const filteredEvents = events?.filter(event =>
   //   event?.eventName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -73,7 +187,7 @@ const EventStatus = () => {
             events.map((event) => (
               <div
                 key={event._id}
-                onClick={() => setSelectedEvent(event)}
+                onClick={() => onEventChange(event)}
                 className={`p-4 cursor-pointer hover:bg-blue-50 border-b ${selectedEvent?._id === event._id ? 'bg-blue-100' : ''
                   }`}
               >
@@ -145,40 +259,55 @@ const EventStatus = () => {
                     {/* Logo Placeholder */}
                   </div>
                 </div>
-
                 {/* Event Rounds */}
                 <div className="mt-8">
                   <h3 className="text-lg font-semibold mb-4">Event Rounds</h3>
                   <div className="border-l-2 border-gray-200 pl-6 relative">
                     {selectedEvent.rounds?.map((round, index) => (
                       <div key={index} className="mb-8 relative">
+                        {/* Round Number Badge */}
                         <div
                           className="absolute w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center -left-10 text-sm font-semibold"
                           style={{ top: '-4px' }}
                         >
                           {round.roundNumber}
                         </div>
+
+                        {/* Round Info */}
                         <div className="text-sm text-gray-500 mb-1">
                           {new Date(round.startDate).toLocaleDateString()} - {new Date(round.endDate).toLocaleDateString()}
                         </div>
                         <h4 className="text-md font-semibold text-gray-800">{round.roundName}</h4>
                         <p className="text-gray-600 mb-2">{round.description}</p>
-                        {/* Conditional Input */}
+
+                        {/* Link Submission Form */}
                         {round.userInput === 'link' ? (
-                          <div>
+                          <form onSubmit={(e) =>
+                            handleSubmit(e, round.roundNumber, "link",selectedEvent.participant._id)} className="space-y-2">
                             <input
+                              name="submissionLink"
                               type="url"
                               placeholder="Enter link"
                               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                              required
                             />
-                            <button className='bg-blue'> submit </button>
-                          </div>
+                            <div className="flex justify-end">
+                              <button
+                                type="submit"
+                                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                              >
+                                Submit Link
+                              </button>
+                            </div>
+                          </form>
                         ) : (
-                          <div>
+                          <form onSubmit={(e) => handleSubmit(e, round.roundNumber, "file",selectedEvent.participant._id)} className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Upload //round.userInput.toUpperCase()// file:
+                              {/* {round.userInput.toUpperCase()} */}
+                              Upload file:
                             </label>
                             <input
+                              name="submissionFile"
                               type="file"
                               accept={
                                 round.userInput === 'doc'
@@ -190,13 +319,24 @@ const EventStatus = () => {
                                       : '*'
                               }
                               className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:border-0 file:rounded-md file:bg-blue-500 file:text-white hover:file:bg-blue-600"
+                              required
                             />
-                          </div>
+                            <div className="flex justify-end">
+                              <button
+                                type="submit"
+                                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                              >
+                                Submit File
+                              </button>
+                            </div>
+                          </form>
                         )}
                       </div>
                     ))}
                   </div>
                 </div>
+
+
                 {/* Horizontal Split: Participation & Notifications */}
                 <div className="flex flex-col md:flex-row gap-6">
                   {/* Team Participation */}

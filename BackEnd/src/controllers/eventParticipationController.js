@@ -5,6 +5,7 @@ import workshopService from '../services/workshopService.js';
 
 // @desc    Create a new event participation entry
 // @route   POST /eventParticipation/register
+
 export const registerParticipant = async (req, res) => {
   try {
     const participantData = req.body;
@@ -53,7 +54,20 @@ export const registerParticipant = async (req, res) => {
   }
     
 };
+export const updateUserInput = async (req, res) => {
+  try {
+    const payload = req.body;
+    console.log('Received payload:', payload);
+    const update = await eventParticipationService.updateUserInputService(payload);
+    // You can add logic here to process the payload, e.g., save to DB
 
+    console.log('Received payload:', update);
+    res.status(200).json({ message: 'Payload received', payload });
+  } catch (error) {
+    console.error('Error in updateUserInput:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
 // @desc    Get all participants for an event
 // @route   GET /eventParticipation/:eventID
 export const getParticipantsByEvent = async (req, res) => {
@@ -148,6 +162,8 @@ export const getByParticipantId = async (req, res) => {
 // // @route   GET /eventParticipation/update/:eventID
 export const updateParticipant = async (req, res) => {
   try {
+    console.log("I am  in backends");
+    
     const { id } = req.params;
     const updateData = req.body;
 
@@ -174,6 +190,7 @@ export const updateParticipant = async (req, res) => {
     });
   }
 };
+
 
 // // @desc    delete al participand
 // // @route   GET /eventParticipation/delete/:eventID
