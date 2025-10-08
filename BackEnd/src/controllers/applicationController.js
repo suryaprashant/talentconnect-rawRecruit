@@ -12,8 +12,8 @@ import {
     // getApplicationService, 
     // getOffCampusApplicantsService, fetchShortlistedCandidates, fetchInternshipApplicationService, fetchApplicationStatusService
 } from "../services/applicationService.js";
-import { getCollegeService } from "../services/collegeService.js";
-import { getCompanyService } from "../services/companyService.js";
+import { getCollegeEmail, getCollegeService } from "../services/collegeService.js";
+import { getCompanyEmail, getCompanyService } from "../services/companyService.js";
 // import { checkJobListingOpportunityService, checkOpportunityService } from "../services/Job.service.js";
 import { getCandidatEmail, getStudentService } from "../services/studentService.js";
 import sendStatusChangeEmail from "../utils/sendStatusChangeEmail.js";
@@ -346,12 +346,26 @@ export async function shortlistApplicant(req, res) {
     try {
         const response = await ChangeStatusService(applicationId, "Shortlisted");
 
-        // currently email service is unavilable for college and company applicants
-        if (response.success === true && response.data.jobType != 'On-campus' && response.data.jobType != 'Pool-campus') {
+        if (response.success === true) {
             // service -> send mail to candidate
-            const candidateMail = await getCandidatEmail(response.data.applicant);
-            if (candidateMail.success) {
-                sendStatusChangeEmail(candidateMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
+            let applicantMail;
+            switch (response.data.applicantType) {
+                case ('student'):
+                case ('fresher'):
+                case ('professional'):
+                    applicantMail = await getCandidatEmail(response.data.applicant);
+                    break;
+                case ('college'):
+                    applicantMail = await getCollegeEmail(response.data.applicant);
+                    break;
+                case ('company'):
+                    applicantMail = await getCompanyEmail(response.data.applicant);
+                    break;
+                default:
+                    break;
+            }
+            if (applicantMail.success) {
+                sendStatusChangeEmail(applicantMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
             }
 
             return res.status(200).json(response);
@@ -376,7 +390,7 @@ export async function shortlistApplicantForCompany(req, res) {
             const companyMail = await getCompanyService(response.data.applicant);
             const companyData = companyMail.data ? companyMail.data[0] : null;
             const workEmail = companyData?.employerDetails?.workEmail;
-            
+
             if (companyMail.success && workEmail) {
                 sendStatusChangeEmail(
                     workEmail,
@@ -403,9 +417,25 @@ export async function rejectApplicant(req, res) {
         const response = await ChangeStatusService(applicationId, "Rejected");
 
         if (response.success === true) {
-            const candidateMail = await getCandidatEmail(response.data.applicant);
-            if (candidateMail.success) {
-                sendStatusChangeEmail(candidateMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
+            // service -> send mail to candidate
+            let applicantMail;
+            switch (response.data.applicantType) {
+                case ('student'):
+                case ('fresher'):
+                case ('professional'):
+                    applicantMail = await getCandidatEmail(response.data.applicant);
+                    break;
+                case ('college'):
+                    applicantMail = await getCollegeEmail(response.data.applicant);
+                    break;
+                case ('company'):
+                    applicantMail = await getCompanyEmail(response.data.applicant);
+                    break;
+                default:
+                    break;
+            }
+            if (applicantMail.success) {
+                sendStatusChangeEmail(applicantMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
             }
 
             return res.status(200).json(response);
@@ -421,7 +451,7 @@ export async function rejectApplicant(req, res) {
 export async function rejectCompanyApplicationByCollege(req, res) {
     const { applicationId } = req.params;
     const { jobRole } = req.body;
-    
+
     if (!applicationId) return res.status(404).json({ msg: "Application not found!" });
 
     try {
@@ -432,7 +462,7 @@ export async function rejectCompanyApplicationByCollege(req, res) {
             const companyMail = await getCompanyService(response.data.applicant);
             const companyData = companyMail.data ? companyMail.data[0] : null;
             const workEmail = companyData?.employerDetails?.workEmail;
-            
+
             console.log("Company work email for rejection:", workEmail);
 
             if (companyMail.success && workEmail) {
@@ -462,10 +492,27 @@ export async function acceptApplicant(req, res) {
         const response = await ChangeStatusService(applicationId, "Accepted");
 
         if (response.success === true) {
-            const candidateMail = await getCandidatEmail(response.data.applicant);
-            if (candidateMail.success) {
-                sendStatusChangeEmail(candidateMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
+            // service -> send mail to candidate
+            let applicantMail;
+            switch (response.data.applicantType) {
+                case ('student'):
+                case ('fresher'):
+                case ('professional'):
+                    applicantMail = await getCandidatEmail(response.data.applicant);
+                    break;
+                case ('college'):
+                    applicantMail = await getCollegeEmail(response.data.applicant);
+                    break;
+                case ('company'):
+                    applicantMail = await getCompanyEmail(response.data.applicant);
+                    break;
+                default:
+                    break;
             }
+            if (applicantMail.success) {
+                sendStatusChangeEmail(applicantMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
+            }
+
             return res.status(200).json(response);
         }
         return res.status(404).json(response);

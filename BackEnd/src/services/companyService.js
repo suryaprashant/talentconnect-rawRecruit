@@ -1,4 +1,5 @@
 import CompanyProfile from '../models/companyDashboard/companyProfileModel.js';
+import Auth from "../models/authModel.js";
 
 export async function createProfileService(profileData) {
     try {
@@ -34,6 +35,17 @@ export async function updateCompanyProfileService(userId, data) {
             { new: true, runValidators: true }
         );
         return company;
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+
+export async function getCompanyEmail(companyId) {
+    try {
+        const company = await CompanyProfile.findOne({ _id: companyId });
+        const user = await Auth.findById(company.userId);
+        return { success: true, email: user.email };
     } catch (error) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");
