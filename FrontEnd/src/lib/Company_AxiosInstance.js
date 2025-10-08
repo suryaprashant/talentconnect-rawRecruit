@@ -185,75 +185,75 @@ export function fetchAllCompaniesName() {
 
 // Hackathon Registration Management
 export function getCompanyHackathonsWithRegistrations() {
-  return axiosClient.get(`/hosting-management/hackathons`)
+  return axiosClient.get(`/api/hosting-management/hackathons`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function getHackathonRegistrations(hackathonId) {
-  return axiosClient.get(`/hosting-management/hackathons/${hackathonId}/registrations`)
+  return axiosClient.get(`/api/hosting-management/hackathons/${hackathonId}/registrations`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function confirmHackathonRegistration(registrationId) {
-  return axiosClient.put(`/hosting-management/registrations/${registrationId}/confirm`)
+  return axiosClient.put(`/api/hosting-management/hackathons/registrations/${registrationId}/confirm`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function rejectHackathonRegistration(registrationId, data) {
-  return axiosClient.put(`/hosting-management/registrations/${registrationId}/reject`, data)
+  return axiosClient.put(`/api/hosting-management/hackathons/registrations/${registrationId}/reject`, data)
     .then(response => response)
     .catch(error => error);
 }
 
 // Case Study Registration Management
 export function getCompanyCasestudiesWithRegistrations() {
-  return axiosClient.get(`/hosting-management/casestudies`)
+  return axiosClient.get(`/api/hosting-management/casestudies`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function getCasestudyRegistrations(casestudyId) {
-  return axiosClient.get(`/hosting-management/casestudies/${casestudyId}/registrations`)
+  return axiosClient.get(`/api/hosting-management/casestudies/${casestudyId}/registrations`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function confirmCasestudyRegistration(registrationId) {
-  return axiosClient.put(`/hosting-management/registrations/${registrationId}/confirm`)
+  return axiosClient.put(`/api/hosting-management/casestudies/registrations/${registrationId}/confirm`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function rejectCasestudyRegistration(registrationId, data) {
-  return axiosClient.put(`/hosting-management/registrations/${registrationId}/reject`, data)
+  return axiosClient.put(`/api/hosting-management/casestudies/registrations/${registrationId}/reject`, data)
     .then(response => response)
     .catch(error => error);
 }
 
 // Workshop Registration Management
 export function getCompanyWorkshopsWithRegistrations() {
-  return axiosClient.get(`/hosting-management/workshops`)
+  return axiosClient.get(`/api/hosting-management/workshops`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function getWorkshopRegistrations(workshopId) {
-  return axiosClient.get(`/hosting-management/workshops/${workshopId}/registrations`)
+  return axiosClient.get(`/api/hosting-management/workshops/${workshopId}/registrations`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function confirmWorkshopRegistration(registrationId) {
-  return axiosClient.put(`/hosting-management/registrations/${registrationId}/confirm`)
+  return axiosClient.put(`/api/hosting-management/workshops/registrations/${registrationId}/confirm`)
     .then(response => response)
     .catch(error => error);
 }
 
 export function rejectWorkshopRegistration(registrationId, data) {
-  return axiosClient.put(`/hosting-management/registrations/${registrationId}/reject`, data)
+  return axiosClient.put(`/api/hosting-management/workshops/registrations/${registrationId}/reject`, data)
     .then(response => response)
     .catch(error => error);
 }

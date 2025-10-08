@@ -19,13 +19,13 @@ router.get('/workshops', secureRoute, getCompanyWorkshopsWithRegistrations);
 router.get('/workshops/:workshopId/registrations', secureRoute, getWorkshopRegistrations);
 
 // Route to get detailed information about a specific registration
-router.get('/registrations/:registrationId', secureRoute, getRegistrationDetails);
+router.get('/workshops/registrations/:registrationId', secureRoute, getRegistrationDetails);
 
 // Route to confirm a registration
-router.put('/registrations/:registrationId/confirm', secureRoute, confirmRegistration);
+router.put('/workshops/registrations/:registrationId/confirm', secureRoute, confirmRegistration);
 
 // Route to reject a registration
-router.put('/registrations/:registrationId/reject', secureRoute, rejectRegistration);
+router.put('/workshops/registrations/:registrationId/reject', secureRoute, rejectRegistration);
 
 // Route to send file to confirmed users
 router.post('/workshops/:workshopId/send-file', secureRoute, upload.single('file'), sendFileToConfirmedUsers);
