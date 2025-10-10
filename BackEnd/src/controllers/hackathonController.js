@@ -9,7 +9,7 @@ export const createHackathon = async (req, res, next) => {
         // console.log('Extracted location value:', req.body.location);
 
         // Use the service to create hackathon
-        const hackathon = await hackathonHostingService.createHackathon(req.body, req.file);
+        const hackathon = await hackathonHostingService.createHackathon(req.body, req.file, req.user?.id);
 
         res.status(201).json({
             success: true,

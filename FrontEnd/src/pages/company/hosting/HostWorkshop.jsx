@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, MapPin, Users, Trophy, Clock, DollarSign, FileText, Globe, Target, Plus, X } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { scrollToFirstError } from '../../../utils/scrollToError';
+import { getWorkshopById, updateWorkshop } from '@/lib/Company_AxiosInstance';
 
 const HostWorkshop = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { editMode, eventId, eventData } = location.state || {};
   const [formData, setFormData] = useState({
     logo: '',
     title: '',
@@ -36,7 +39,8 @@ const HostWorkshop = () => {
         roundName: 'Round 1',
         description: '',
         startDate: '',
-        endDate: ''
+        endDate: '',
+        inputType: 'link' // Add default inputType
       }
     ],
     rewards: {
@@ -61,7 +65,79 @@ const HostWorkshop = () => {
   const [faqs, setFaqs] = useState([{ question: '', answer: '' }]);
   const [panelMembers, setPanelMembers] = useState([]);
   const [panelInput, setPanelInput] = useState('');
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [workshopId, setWorkshopId] = useState(null);
   const formRef = useRef(null);
+
+  // Load existing workshop data if in edit mode
+  useEffect(() => {
+    const loadWorkshopData = async () => {
+      if (editMode && eventId) {
+        setIsEditMode(true);
+        setWorkshopId(eventId);
+        setLoading(true);
+        
+        try {
+          const response = await getWorkshopById(eventId);
+          if (response?.data?.success) {
+            const data = response.data.data;
+            
+            setFormData({
+              logo: data.bannerImage || '',
+              title: data.title || '',
+              subTitle: data.subTitle || '',
+              mode: data.mode || '',
+              visibility: data.visibility || '',
+              participationType: data.participationType || '',
+              eventDate: data.eventDate || '',
+              eventTime: data.eventTime || '',
+              description: data.description || '',
+              problemStatements: data.problemStatements || [{ title: '', description: '', technology: [] }],
+              startDate: data.startDate ? new Date(data.startDate).toISOString().slice(0, 16) : '',
+              endDate: data.endDate ? new Date(data.endDate).toISOString().slice(0, 16) : '',
+              location: data.location || '',
+              maxParticipants: data.maxParticipants || '',
+              maxTeams: data.maxTeams || '',
+              minTeamMembers: data.minTeamMembers || '',
+              maxTeamMembers: data.maxTeamMembers || '',
+              numberOfRounds: data.numberOfRounds || 1,
+              rounds: data.rounds || [{ roundNumber: 1, roundName: 'Round 1', description: '', startDate: '', endDate: '' }],
+              rewards: {
+                rewardType: data.rewardsAndBenefits?.[0]?.type === 'Cash' ? 'Amount' : 'Other',
+                firstPlace: data.rewardsAndBenefits?.find(r => r.rank === 'Winner')?.amount || '',
+                secondPlace: data.rewardsAndBenefits?.find(r => r.rank === '1st RunnerUp')?.amount || '',
+                thirdPlace: data.rewardsAndBenefits?.find(r => r.rank === '2nd RunnerUp')?.amount || '',
+                specialAwards: data.rewardsAndBenefits?.filter(r => !['Winner', '1st RunnerUp', '2nd RunnerUp'].includes(r.rank)) || []
+              },
+              registrationDeadline: data.registrationDeadline ? new Date(data.registrationDeadline).toISOString().slice(0, 16) : '',
+              requirements: data.requirements || '',
+              rules: data.rules || '',
+              website: data.website || '',
+              contactEmail: data.contactEmail || '',
+              tags: data.tags?.join(', ') || '',
+              domains: data.domains || [''],
+              eligibility: data.eligibility || '',
+              logoPreview: data.bannerImage || ''
+            });
+            
+            setFaqs(data.faqs || [{ question: '', answer: '' }]);
+            setPanelMembers(data.panelMembers || []);
+          } else {
+            toast.error('Failed to load workshop data');
+            navigate('/hosting-management');
+          }
+        } catch (error) {
+          console.error('Error loading workshop:', error);
+          toast.error('Failed to load workshop data');
+          navigate('/hosting-management');
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    
+    loadWorkshopData();
+  }, [editMode, eventId, navigate]);
 
   // Decide which step an error belongs to
   const determineErrorStep = (errs = {}) => {
@@ -106,7 +182,8 @@ const HostWorkshop = () => {
         roundName: formData.rounds[i-1]?.roundName || `Round ${i}`,
         description: formData.rounds[i-1]?.description || '',
         startDate: formData.rounds[i-1]?.startDate || '',
-        endDate: formData.rounds[i-1]?.endDate || ''
+        endDate: formData.rounds[i-1]?.endDate || '',
+        inputType: formData.rounds[i-1]?.inputType || 'link'
       });
     }
     setFormData(prev => ({
@@ -365,6 +442,11 @@ const HostWorkshop = () => {
       if (round.description && round.description.length > 1000) {
         newErrors[`round${index}Description`] = `Round ${index + 1} description cannot exceed 1000 characters`;
       }
+      
+      // Add validation for input type
+      if (!round.inputType) {
+        newErrors[`round${index}InputType`] = `Input type is required for Round ${index + 1}`;
+      }
     });
     
     // Domain Validation
@@ -434,49 +516,34 @@ const HostWorkshop = () => {
         faqs,
         panelMembers,
       };
-
-      // Debug logging
-      console.log('Backend URL:', backendUrl);
-      console.log('Full API endpoint:', `${backendUrl}/workshop/create`); // Updated endpoint
-      console.log('Request payload:', JSON.stringify(payload, null, 2));
-      console.log('Request headers:', {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-      });
-
-      const response = await axios.post(
-        `${backendUrl}/workshop/create`, // Updated endpoint
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          withCredentials: true,
-        }
-      );
+      
+      let response;
+      if (isEditMode && workshopId) {
+        // Update existing workshop
+        response = await updateWorkshop(workshopId, payload);
+      } else {
+        // Create new workshop
+        response = await axios.post(
+          `${backendUrl}/workshop/create`,
+          payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            withCredentials: true,
+          }
+        );
+      }
   
-      if (response.status === 201 || response.status === 200) {
-        toast.success("Workshop created successfully!");
-        console.log("Workshop created successfully:", response.data);
-        navigate("/company-profile");
+      if (response.status === 201 || response.status === 200 || response?.data?.success) {
+        toast.success(isEditMode ? "Workshop updated successfully!" : "Workshop created successfully!");
+        console.log(isEditMode ? "Workshop updated successfully:" : "Workshop created successfully:", response.data);
+        navigate("/hosting-management");
       }
     } catch (err) {
-      // Enhanced error logging
-      console.error('Error creating workshop:', {
-        message: err.message,
-        status: err.response?.status,
-        statusText: err.response?.statusText,
-        responseData: err.response?.data,
-        requestURL: err.config?.url,
-        requestMethod: err.config?.method,
-        requestHeaders: err.config?.headers,
-      });
-
-      // Log the full error object
-      console.error('Full error object:', err);
-
-      const errorMessage = err.response?.data?.message || "Failed to create workshop.";
+      console.error(isEditMode ? 'Error updating workshop:' : 'Error creating workshop:', err);
+      const errorMessage = err.response?.data?.message || (isEditMode ? "Failed to update workshop." : "Failed to create workshop.");
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -484,7 +551,7 @@ const HostWorkshop = () => {
   };
 
   const handleCancel = () => {
-    navigate('/company-profile');
+    navigate('/hosting-management');
   };
 
   // FAQ handlers
@@ -575,10 +642,10 @@ const HostWorkshop = () => {
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-3 mb-4">
             <Trophy className="h-8 w-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Host a Workshop</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{isEditMode ? 'Edit Workshop' : 'Host a Workshop'}</h1>
           </div>
           <p className="text-gray-600">
-            Create an exciting workshop event to engage with talented developers and innovators.
+            {isEditMode ? 'Update your workshop event details.' : 'Create an exciting workshop event to engage with talented developers and innovators.'}
           </p>
         </div>
 
@@ -1094,11 +1161,35 @@ const HostWorkshop = () => {
                             type="text"
                             value={round.description}
                             onChange={(e) => updateRoundData(index, 'description', e.target.value)}
-                            className="w-[783px] px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Brief about this round"
                           />
                         </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Input Type
+                          </label>
+                          <select
+                            name="inputType"
+                            value={round.inputType}
+                            onChange={(e) => updateRoundData(index, 'inputType', e.target.value)}
+                            className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                              errors[`round${index}InputType`] ? 'border-red-500' : 'border-gray-300' 
+                            }`}
+                          >
+                            <option value="">Select input type</option>
+                            <option value="link">Link</option>
+                            <option value="doc">Document</option>\
+                            <option value="pdf">PDF</option>
+                            <option value="ppt">PowerPoint</option>
+                          </select>
+                          {errors[`round${index}InputType`] && (
+                            <p className="text-red-500 text-sm mt-1">{errors[`round${index}InputType`]}</p>
+                          )}
+                        </div>
                       </div>
+
+                      
                     </div>
                   ))}
                 </div>
@@ -1587,12 +1678,12 @@ const HostWorkshop = () => {
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Creating...
+                  {isEditMode ? 'Updating...' : 'Creating...'}
                 </>
               ) : (
                 <>
                   <Trophy className="h-4 w-4" />
-                  Create Workshop
+                  {isEditMode ? 'Update Workshop' : 'Create Workshop'}
                 </>
               )}
             </button>

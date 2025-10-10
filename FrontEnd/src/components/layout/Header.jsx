@@ -5,7 +5,7 @@ import axios from 'axios';
 import SearchBar from '../ui/SearchBar';
 import Avatar from '../ui/Avatar';
 import NotificationsDropdown from './NotificationDropdown';
-import ProfileSwitchDropdown from '../Employer/ProfileSwitchDropdown';
+import ProfileSwitchDropdown from '../employer/ProfileSwitchDropdown';
 import StandardProfileDropdown from './ProfileDropdown';
 
 function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
