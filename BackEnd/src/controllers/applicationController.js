@@ -305,11 +305,11 @@ export async function getUserApplicationStatus(req, res) {
 // action by company
 // offcampus and joblisting
 export async function getApplicationsByJob(req, res) {
-    const { jobId, jobType } = req.query;
+    const { jobId, jobType, targetStatus } = req.query;
     if (!jobId || !jobType) return res.status(404).json({ msg: "Job not found!" });
 
     try {
-        const response = await fetchApplicationsByJobService(jobId, jobType);
+        const response = await fetchApplicationsByJobService(jobId, jobType, targetStatus);
 
         // to be implement -- sorting feature like ATS
 
@@ -322,12 +322,12 @@ export async function getApplicationsByJob(req, res) {
 
 // oncampus and poolcampus
 export async function getCollegeApplicationsByJob(req, res) {
-    const { jobId, jobType } = req.query;
+    const { jobId, jobType, targetStatus } = req.query;
     const userType = req.user.userType;
-    if (!jobId || !jobType) return res.status(404).json({ msg: "Job not found!" });
+    if (!jobId || !jobType || !targetStatus) return res.status(404).json({ msg: "Job not found with given criteria!" });
 
     try {
-        const response = await fetchCollegeApplicationsByJobService(jobId, jobType, userType);
+        const response = await fetchCollegeApplicationsByJobService(jobId, jobType, userType, targetStatus);
 
         // to be implement -- sorting feature like ATS
 

@@ -18,7 +18,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
   const getApplicants = async (jobId, jobType) => {
     setIsSubmitting(true);
     try {
-      const response = await getApplicationsForJob(jobId, jobType, "Applied");
+      const response = await getApplicationsForJob(jobId, jobType, "Shortlisted");
       // console.log("ye wala response: ", response.data);
       setApplications(response.data);
     } catch (error) {
@@ -248,7 +248,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                     disabled={isSubmitting}
                     className="px-6 py-2 shadow hover:shadow-md text-yellow-500 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50"
                   >
-                    Shortlist Candidate
+                    Schedule Interview
                   </button>
                   <button
                     onClick={() => rejectApplicant(applicant._id)}

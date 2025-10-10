@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { acceptCandidate, getApplicationsForJob, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
+import { acceptCandidate, getApplicationsForJob, rejectCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 import useConversation from '@/statemanage/useConversation';
-import { conversationWithCollege } from '@/lib/College_AxiosIntance';
+import { useNavigate } from 'react-router-dom';
 import { Send } from 'lucide-react';
+import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 
-const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => {
+const InternshipDetails = ({ job, onClose }) => {
   const jobId = job._id;
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,7 +18,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
   const getApplicants = async (jobId, jobType) => {
     setIsSubmitting(true);
     try {
-      const response = await getApplicationsForJob(jobId, jobType, "Applied");
+      const response = await getApplicationsForJob(jobId, jobType, "Shortlisted");
       // console.log("ye wala response: ", response.data);
       setApplications(response.data);
     } catch (error) {
@@ -29,7 +29,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
 
   const acceptApplicant = async (applicantionId) => {
     try {
-      const response = await acceptCandidate(applicantionId, job?.jobRoles);
+      const response = await acceptCandidate(applicantionId, job?.jobTitle);
       // console.log("shortlist: ", response)
       if (response?.data?.success === true) toast.success("Accpeted!");
       else toast.error(response.response?.data?.msg);
@@ -39,21 +39,9 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
     }
   }
 
-  const shortlistApplicant = async (applicantionId) => {
-    try {
-      const response = await shortlistCandidate(applicantionId, job?.jobRoles);
-      // console.log("shortlist: ", response)
-      if (response?.data?.success === true) toast.success("Shortlisted!");
-      else toast.error(response.response?.data?.msg);
-    } catch (error) {
-      console.log("Error: ", error);
-      toast.error('Something went wrong!')
-    }
-  }
-
   const rejectApplicant = async (applicantionId) => {
     try {
-      const response = await rejectCandidate(applicantionId, job?.jobRoles);
+      const response = await rejectCandidate(applicantionId, job?.jobTitle);
       if (response?.data?.success === true) toast.success("Rejected!");
       else toast.error(response.response?.data?.msg);
     } catch (error) {
@@ -74,7 +62,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
 
     const userId = applicant.applicant._id;
     try {
-      const response = await conversationWithCollege(userId);
+      const response = await conversationWithCandidate(userId);
       if (response.data) {
         const conversationUser = {
           _id: userId,
@@ -99,6 +87,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
       toast.error('Error starting conversation');
     }
   };
+
 
   return (
     <>
@@ -155,10 +144,10 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
 
                   <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-6">
                     <div className="flex items-center">
-                      <p className="font-bold mr-2">Current Salary:</p> <span>{applicant?.applicant.currentSalaryCurrency} {applicant?.applicant.currentSalaryAmount}</span>
+                      <p className="font-bold mr-2">Current Salary:</p> <span>{applicant?.applicant?.currentSalaryCurrency} {applicant?.applicant.currentSalaryAmount || "N/A"}</span>
                     </div>
                     <div className="flex items-center">
-                      <p className="font-bold mr-2">Current Salary:</p> <span>{applicant?.applicant.expectedSalaryCurrency} {applicant?.applicant.expectedSalaryAmount}</span>
+                      <p className="font-bold mr-2">Expected Salary:</p> <span>{applicant?.applicant.expectedSalaryCurrency} {applicant?.applicant.expectedSalaryAmount || "N/A"}</span>
                     </div>
                     <div className="flex items-center">
                       <p className="font-bold mr-2">Email:</p> <span className="underline">{applicant?.applicant.email}</span>
@@ -168,6 +157,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                     </div>
                   </div>
 
+                  <h3 className='font-bold text-gray-700 mb-2'>Related Links</h3>
                   <div className="flex space-x-4 mb-8">
                     <button className="px-6 py-2 border rounded-md">
                       {applicant?.applicant.linkedIn}
@@ -200,14 +190,14 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                     <div className="flex items-center">
                       <p className="font-bold mr-2">Key Info:</p>
                       <div className="flex items-center">
-                        <span className="mr-4">{applicant?.applicant.degree} ({applicant?.applicant.specialization})</span>
+                        <span className="mr-4 capitalize">{applicant?.applicant.degree} ({applicant?.applicant.specialization})</span>
                       </div>
                     </div>
                     <div className="flex items-center">
-                      <p className="font-bold mr-2">Language:</p> <span className="mr-4"></span>
+                      <p className="font-bold mr-2">Language:</p> <span className="mr-4">Not Specified</span>
                     </div>
                     <div className="flex items-center">
-                      <p className="font-bold mr-2">Designation:</p> <span>Backend Developer at TalentConnects</span>
+                      <p className="font-bold mr-2">Designation:</p> <span>Not Specified</span>
                     </div>
                     <div className="flex items-center">
                       <p className="font-bold mr-2">Industry:</p> <span>{applicant?.applicant.industry}</span>
@@ -237,23 +227,23 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                   </button>
                   {/* <button className="px-6 py-2 shadow hover:shadow-md border rounded-md text-gray-700">View Details</button> */}
                   <button
-                    onClick={() => acceptApplicant(applicant?._id)}
+                    onClick={() => acceptApplicant(applicant._id)}
                     disabled={isSubmitting}
                     className="px-6 py-2 shadow hover:shadow-md text-green-500 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50"
                   >
-                    Accept Candidate
+                    Accept Application
                   </button>
                   <button
-                    onClick={() => shortlistApplicant(applicant?._id)}
+                    onClick={() => scheduleInterview(applicant._id)}
                     disabled={isSubmitting}
                     className="px-6 py-2 shadow hover:shadow-md text-yellow-500 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50"
                   >
-                    Shortlist Candidate
+                    Schedule Interview
                   </button>
                   <button
                     onClick={() => rejectApplicant(applicant._id)}
                     disabled={isSubmitting}
-                    className="px-6 py-2 shadow hover:shadow-md border rounded-md text-red-500 hover:bg-gray-50 disabled:opacity-50"
+                    className="px-6 py-2 shadow hover:shadow-md rounded-md text-red-500 hover:bg-gray-50 disabled:opacity-50"
                   >
                     <svg className="inline-block w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     Reject Application
@@ -268,4 +258,4 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
   );
 };
 
-export default ApplicantDetails;
+export default InternshipDetails;

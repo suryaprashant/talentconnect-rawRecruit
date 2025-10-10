@@ -45,7 +45,7 @@ export default function OnCampusJobManagement() {
     setCollegesLoading(true);
     setError(null);
     try {
-      const response = await getCollegeApplicationsForJob(jobId, jobType)
+      const response = await getCollegeApplicationsForJob(jobId, jobType, "Applied")
       // console.log("College: ", response);
       setColleges(response.data);
     } catch (err) {
@@ -80,6 +80,9 @@ export default function OnCampusJobManagement() {
       setError(err.response?.data?.message || err.message || "Failed to update status.");
       toast.error('Something went wrong!')
     }
+    // finally{
+    //   fetchCollegesForJob(jobs._id, jobs.jobType);
+    // }
   };
 
   const handleDelete = async (jobId) => {
@@ -251,7 +254,7 @@ export default function OnCampusJobManagement() {
                     <tr key={job._id} className="border-b border-gray-200 hover:bg-gray-50">
                       <td className="px-4 py-4">
                         <div className="font-medium text-gray-900">
-                          {job.jobRoles || 'N/A'}
+                          {job?.jobRoles || 'N/A'}
                         </div>
                         <div className="text-sm text-gray-500">
                           {job.employmentType || 'N/A Type'}
