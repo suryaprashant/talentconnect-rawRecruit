@@ -169,6 +169,23 @@ class WorkshopService {
             updateData.panelMembers = this._normalizePanelMembers(updateData.panelMembers);
         }
 
+        // Normalize rounds data while preserving inputType
+        if (updateData.rounds) {
+            const normalizedRounds = Array.isArray(updateData.rounds) 
+              ? updateData.rounds.map(round => ({
+                  ...round,
+                  roundNumber: round.roundNumber || 1,
+                  roundName: round.roundName || `Round ${round.roundNumber || 1}`,
+                  description: round.description || '',
+                  startDate: round.startDate || '',
+                  endDate: round.endDate || '',
+                  inputType: round.inputType || 'link' // Default to 'link' if not specified
+                }))
+              : [];
+            
+            updateData.rounds = normalizedRounds;
+          }
+
         workshop = await Workshop.findByIdAndUpdate(workshopId, updateData, {
             new: true,
             runValidators: true
@@ -369,7 +386,19 @@ class WorkshopService {
     _normalizeJsonInput(input, defaultValue = []) {
         if (typeof input === 'string') {
             try {
-                return JSON.parse(input);
+                const parsed = JSON.parse(input);
+                if (Array.isArray(parsed)) {
+                  return parsed.map(item => {
+                    if (item.hasOwnProperty('roundNumber')) {
+                      return {
+                        ...item,
+                        inputType: item.inputType || 'link' // Ensure inputType is always set
+                      };
+                    }
+                    return item;
+                  });
+                }
+                return parsed;
             } catch (e) {
                 console.warn('Failed to parse JSON string, using default value.');
                 return defaultValue;

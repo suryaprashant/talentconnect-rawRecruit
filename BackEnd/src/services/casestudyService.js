@@ -169,10 +169,38 @@ class CasestudyService {
             updateData.panelMembers = this._normalizePanelMembers(updateData.panelMembers);
         }
 
-        casestudy = await Casestudy.findByIdAndUpdate(casestudyId, updateData, {
-            new: true,
-            runValidators: true
-        });
+        // Normalize rounds data while preserving inputType
+        if (updateData.rounds) {
+            const normalizedRounds = Array.isArray(updateData.rounds) 
+                ? updateData.rounds.map(round => ({
+                    ...round,
+                    roundNumber: round.roundNumber || 1,
+                    roundName: round.roundName || `Round ${round.roundNumber || 1}`,
+                    description: round.description || '',
+                    startDate: round.startDate || '',
+                    endDate: round.endDate || '',
+                    inputType: round.inputType || 'link' // Default to 'link' if not specified
+                  }))
+                : [];
+            
+            updateData.rounds = normalizedRounds;
+        }
+
+        const { rounds, ...otherData } = updateData;
+
+        const normalizedRounds = rounds.map((round) => ({
+            ...round,
+            inputType: round.inputType || '' // Ensure inputType is set
+        }));
+
+        casestudy = await Casestudy.findByIdAndUpdate(
+            casestudyId,
+            { ...otherData, rounds: normalizedRounds },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
 
         return casestudy;
     }
@@ -367,7 +395,20 @@ class CasestudyService {
     _normalizeJsonInput(input, defaultValue = []) {
         if (typeof input === 'string') {
             try {
-                return JSON.parse(input);
+                const parsed = JSON.parse(input);
+                if (Array.isArray(parsed)) {
+                    return parsed.map(item => {
+                        if (item.hasOwnProperty('roundNumber')) {
+                          // This is a round object
+                          return {
+                            ...item,
+                            inputType: item.inputType || 'link' // Ensure inputType is always set
+                          };
+                        }
+                        return item;
+                    });
+                }
+                return parsed;
             } catch (e) {
                 console.warn('Failed to parse JSON string, using default value.');
                 return defaultValue;

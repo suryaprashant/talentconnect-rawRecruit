@@ -39,7 +39,8 @@ const HostCasestudies = () => {
         roundName: 'Round 1',
         description: '',
         startDate: '',
-        endDate: ''
+        endDate: '',
+        inputType: '' 
       }
     ],
     rewards: {
@@ -100,7 +101,7 @@ const HostCasestudies = () => {
               minTeamMembers: data.minTeamMembers || '',
               maxTeamMembers: data.maxTeamMembers || '',
               numberOfRounds: data.numberOfRounds || 1,
-              rounds: data.rounds || [{ roundNumber: 1, roundName: 'Round 1', description: '', startDate: '', endDate: '' }],
+              rounds: data.rounds || [{ roundNumber: 1, roundName: 'Round 1', description: '', startDate: '', endDate: '', inputType: '' }],
               rewards: {
                 rewardType: data.rewardsAndBenefits?.[0]?.type === 'Cash' ? 'Amount' : 'Other',
                 firstPlace: data.rewardsAndBenefits?.find(r => r.rank === 'Winner')?.amount || '',
@@ -158,9 +159,11 @@ const HostCasestudies = () => {
     return 1; // default to step 1 for all other fields
   };
 
+  const [isUserNavigating, setIsUserNavigating] = useState(false);
+
   // Scroll to the first error whenever validation errors are set
   useEffect(() => {
-    if (errors && Object.keys(errors).length > 0) {
+    if (errors && Object.keys(errors).length > 0 && !isUserNavigating) {
       const targetStep = determineErrorStep(errors);
       if (step !== targetStep) {
         setStep(targetStep);
@@ -170,7 +173,15 @@ const HostCasestudies = () => {
         scrollToFirstError({ container: formRef.current || document, block: 'center' });
       });
     }
-  }, [errors, step]);
+  }, [errors, step, isUserNavigating]);
+
+  // Handle Next button click
+  const handleNext = () => {
+    setIsUserNavigating(true); // Set flag to indicate user navigation
+    setStep(2);
+    // Reset the flag after a short delay to allow normal error handling
+    setTimeout(() => setIsUserNavigating(false), 0);
+  };
 
   // Helper functions for rounds management
   const updateNumberOfRounds = (count) => {
@@ -178,13 +189,14 @@ const HostCasestudies = () => {
     for (let i = 1; i <= count; i++) {
       newRounds.push({
         roundNumber: i,
-        roundName: formData.rounds[i-1]?.roundName || `Round ${i}`,
-        description: formData.rounds[i-1]?.description || '',
-        startDate: formData.rounds[i-1]?.startDate || '',
-        endDate: formData.rounds[i-1]?.endDate || ''
+        roundName: formData.rounds[i - 1]?.roundName || `Round ${i}`,
+        description: formData.rounds[i - 1]?.description || '',
+        startDate: formData.rounds[i - 1]?.startDate || '',
+        endDate: formData.rounds[i - 1]?.endDate || '',
+        inputType: formData.rounds[i - 1]?.inputType || '' 
       });
     }
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       numberOfRounds: count,
       rounds: newRounds
@@ -197,10 +209,54 @@ const HostCasestudies = () => {
       ...updatedRounds[roundIndex],
       [field]: value
     };
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       rounds: updatedRounds
     }));
+
+    // Clear the specific error when a round field is updated
+    const errorKey = `round${roundIndex}${field.charAt(0).toUpperCase() + field.slice(1)}`;
+    if (errors[errorKey]) {
+      setErrors((prev) => ({
+        ...prev,
+        [errorKey]: ''
+      }));
+    }
+
+    // Clear date-related errors when dates are updated
+    if (field === 'startDate' || field === 'endDate') {
+      // Clear start date error if start date is being updated
+      if (field === 'startDate' && errors[`round${roundIndex}StartDate`]) {
+        setErrors(prev => ({
+          ...prev,
+          [`round${roundIndex}StartDate`]: ''
+        }));
+      }
+      
+      // Clear end date error if end date is being updated
+      if (field === 'endDate' && errors[`round${roundIndex}EndDate`]) {
+        setErrors(prev => ({
+          ...prev,
+          [`round${roundIndex}EndDate`]: ''
+        }));
+      }
+      
+      // Clear round name error if it exists and we're updating dates
+      if (errors[`round${roundIndex}Name`]) {
+        setErrors(prev => ({
+          ...prev,
+          [`round${roundIndex}Name`]: ''
+        }));
+      }
+    }
+    
+    // Clear user input error if user input is being updated
+    if (field === 'inputType' && errors[`round${roundIndex}InputType`]) {
+      setErrors(prev => ({
+        ...prev,
+        [`round${roundIndex}InputType`]: ''
+      }));
+    }
   };
 
   // Helper functions for special awards management
@@ -418,6 +474,11 @@ const HostCasestudies = () => {
       if (!round.roundName.trim()) {
         newErrors[`round${index}Name`] = `Round ${index + 1} name is required`;
       }
+
+      // Add validation for input type
+      if (!round.inputType) {
+        newErrors[`round${index}InputType`] = `Input type is required for Round ${index + 1}`;
+      }
       
       if (!round.startDate) {
         newErrors[`round${index}StartDate`] = `Round ${index + 1} start date is required`;
@@ -441,6 +502,8 @@ const HostCasestudies = () => {
         newErrors[`round${index}Description`] = `Round ${index + 1} description cannot exceed 1000 characters`;
       }
     });
+
+    
     
     // Domain Validation
     if (!formData.domains.length || (formData.domains.length === 1 && !formData.domains[0].trim())) {
@@ -504,6 +567,7 @@ const HostCasestudies = () => {
     
     try {
       const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:5000";
+      console.log('inputType from first round:', formData.rounds[0]?.inputType);
       const payload = {
         ...formData,
         faqs,
@@ -599,7 +663,7 @@ const HostCasestudies = () => {
     }));
   };
 
-  // Add handlers for problem statements
+  // handlers for problem statements
   const addProblemStatement = () => {
     setFormData(prev => ({
       ...prev,
@@ -609,6 +673,14 @@ const HostCasestudies = () => {
         technology: []
       }]
     }));
+    
+    // Clear the general  error when adding a new one
+    if (errors.problemStatements) {
+      setErrors(prev => ({
+        ...prev,
+        problemStatements: ''
+      }));
+    }
   };
 
   const updateProblemStatement = (index, field, value) => {
@@ -621,6 +693,29 @@ const HostCasestudies = () => {
       ...prev,
       problemStatements: updatedStatements
     }));
+
+    // Clear the specific error when field is updated
+    const errorKey = `problem${field.charAt(0).toUpperCase() + field.slice(1)}${index}`;
+    if (errors[errorKey]) {
+      setErrors(prev => ({
+        ...prev,
+        [errorKey]: ''
+      }));
+    }
+    
+    // Clear the general problem statements error if this was the last empty statement
+    if (errors.problemStatements && value.trim()) {
+      const hasOtherEmptyStatements = updatedStatements.some(
+        (statement, i) => i !== index && (!statement.title.trim() || !statement.description.trim())
+      );
+      
+      if (!hasOtherEmptyStatements) {
+        setErrors(prev => ({
+          ...prev,
+          problemStatements: ''
+        }));
+      }
+    }
   };
 
   const removeProblemStatement = (index) => {
@@ -1156,9 +1251,32 @@ const HostCasestudies = () => {
                             type="text"
                             value={round.description}
                             onChange={(e) => updateRoundData(index, 'description', e.target.value)}
-                            className="w-[783px] px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Brief about this round"
                           />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Input Type
+                          </label>
+                          <select
+                            name="inputType"
+                            value={round.inputType}
+                            onChange={(e) => updateRoundData(index, 'inputType', e.target.value)}
+                            className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                              errors[`round${index}InputType`] ? 'border-red-500' : 'border-gray-300' 
+                            }`}
+                          >
+                            <option value="">Select input type</option>
+                            <option value="link">Link</option>
+                            <option value="doc">Document</option>\
+                            <option value="pdf">PDF</option>
+                            <option value="ppt">PowerPoint</option>
+                          </select>
+                          {errors[`round${index}InputType`] && (
+                            <p className="text-red-500 text-sm mt-1">{errors[`round${index}InputType`]}</p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1170,7 +1288,7 @@ const HostCasestudies = () => {
               <div className="bg-white rounded-lg shadow-sm p-6 flex justify-end">
                 <button
                   type="button"
-                  onClick={() => setStep(2)}
+                  onClick={handleNext} // Use handleNext instead of setStep(2)
                   className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
                   Next

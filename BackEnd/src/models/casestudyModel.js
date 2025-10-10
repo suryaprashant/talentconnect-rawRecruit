@@ -122,7 +122,13 @@ const CasestudySchema = new mongoose.Schema({
             endDate: {
                 type: Date,
                 required: true
-            }
+            },
+           
+            inputType: {
+                type: String,
+                enum: ['link', 'pdf', 'doc', 'ppt', ''],
+                default: ''
+              }
         }
     ],
     registrationDeadline: {

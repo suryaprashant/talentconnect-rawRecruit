@@ -371,15 +371,28 @@ _validateRequiredFields(fields) {
      * @returns {*} Normalized input
      */
     _normalizeJsonInput(input, defaultValue = []) {
-        if (typeof input === 'string') {
-            try {
-                return JSON.parse(input);
-            } catch (e) {
-                console.warn('Failed to parse JSON string, using default value.');
-                return defaultValue;
-            }
+      if (typeof input === 'string') {
+        try {
+          const parsed = JSON.parse(input);
+          if (Array.isArray(parsed)) {
+            return parsed.map(item => {
+              if (item.hasOwnProperty('roundNumber')) {
+                // This is a round object
+                return {
+                  ...item,
+                  inputType: item.inputType || 'link' // Ensure inputType is always set
+                };
+              }
+              return item;
+            });
+          }
+          return parsed;
+        } catch (e) {
+          console.warn('Failed to parse JSON string, using default value.');
+          return defaultValue;
         }
-        return input || defaultValue;
+      }
+      return input || defaultValue;
     }
 
     /**

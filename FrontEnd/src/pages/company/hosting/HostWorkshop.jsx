@@ -39,7 +39,8 @@ const HostWorkshop = () => {
         roundName: 'Round 1',
         description: '',
         startDate: '',
-        endDate: ''
+        endDate: '',
+        inputType: 'link' // Add default inputType
       }
     ],
     rewards: {
@@ -181,7 +182,8 @@ const HostWorkshop = () => {
         roundName: formData.rounds[i-1]?.roundName || `Round ${i}`,
         description: formData.rounds[i-1]?.description || '',
         startDate: formData.rounds[i-1]?.startDate || '',
-        endDate: formData.rounds[i-1]?.endDate || ''
+        endDate: formData.rounds[i-1]?.endDate || '',
+        inputType: formData.rounds[i-1]?.inputType || 'link'
       });
     }
     setFormData(prev => ({
@@ -439,6 +441,11 @@ const HostWorkshop = () => {
       
       if (round.description && round.description.length > 1000) {
         newErrors[`round${index}Description`] = `Round ${index + 1} description cannot exceed 1000 characters`;
+      }
+      
+      // Add validation for input type
+      if (!round.inputType) {
+        newErrors[`round${index}InputType`] = `Input type is required for Round ${index + 1}`;
       }
     });
     
@@ -1154,11 +1161,35 @@ const HostWorkshop = () => {
                             type="text"
                             value={round.description}
                             onChange={(e) => updateRoundData(index, 'description', e.target.value)}
-                            className="w-[783px] px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Brief about this round"
                           />
                         </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Input Type
+                          </label>
+                          <select
+                            name="inputType"
+                            value={round.inputType}
+                            onChange={(e) => updateRoundData(index, 'inputType', e.target.value)}
+                            className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                              errors[`round${index}InputType`] ? 'border-red-500' : 'border-gray-300' 
+                            }`}
+                          >
+                            <option value="">Select input type</option>
+                            <option value="link">Link</option>
+                            <option value="doc">Document</option>\
+                            <option value="pdf">PDF</option>
+                            <option value="ppt">PowerPoint</option>
+                          </select>
+                          {errors[`round${index}InputType`] && (
+                            <p className="text-red-500 text-sm mt-1">{errors[`round${index}InputType`]}</p>
+                          )}
+                        </div>
                       </div>
+
+                      
                     </div>
                   ))}
                 </div>

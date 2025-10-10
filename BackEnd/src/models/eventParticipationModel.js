@@ -44,7 +44,7 @@ const eventParticipationDetailSchema = new mongoose.Schema({
         enum: ['Notdefined','Inprogress','Qualified', 'Disqualified'],
         default: 'Notdefined'
       },
-      userInput: {
+      inputType: {
         type: String,
       },
       startDate: {

@@ -122,6 +122,11 @@ const WorkshopSchema = new mongoose.Schema({
             endDate: {
                 type: Date,
                 required: true
+            },
+            inputType: {
+                type: String,
+                enum: ['link', 'doc', 'pdf', 'ppt'],
+                default: 'link'
             }
         }
     ],

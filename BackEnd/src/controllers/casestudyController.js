@@ -46,13 +46,12 @@ export const updateCasestudy = async (req, res, next) => {
             data: casestudy
         });
     } catch (error) {
-        if (error.message.includes('not found')) {
-            return res.status(404).json({
-                success: false,
-                error: error.message
-            });
-        }
-        next(error);
+        console.error('Error updating case study:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update case study',
+            error: error.message
+        });
     }
 };
 
@@ -109,3 +108,4 @@ export const getCasestudy = async (req, res, next) => {
         next(error);
     }
 };
+
