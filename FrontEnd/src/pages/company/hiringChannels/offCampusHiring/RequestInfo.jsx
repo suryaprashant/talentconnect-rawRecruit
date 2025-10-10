@@ -234,6 +234,9 @@ export default function OffCampusHiringForm({ onBackClick }) {
 
       if (response.status === 201) {
         toast.success('Off-campus job posted');
+        setTimeout(() => {
+          toast.success('This job will expire after 15 days');
+        }, 2000);
         setFormData(initialState);
       }
     } catch (err) {
@@ -261,7 +264,7 @@ export default function OffCampusHiringForm({ onBackClick }) {
         </div>
         <div className="md:w-1/2">
           <p className="text-sm">
-            Reach top talent across cities, domains, and institutions—without stepping on campus. OffCampus Access helps companies connect with graduates and job seekers outside the traditional college setting.
+           Reach top talent across cities, domains, and institutions—without stepping on campus. OffCampus Access helps companies connect with graduates and job seekers outside the traditional college setting.
           </p>
         </div>
       </div>

@@ -5,14 +5,14 @@ import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { ChevronDown, X } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { City } from 'country-state-city'; 
+import { City } from 'country-state-city';
 
 export default function PoolCampusHiringForm() {
-  
+
 
   const locations = ['Online', 'Bangalore', 'Mumbai', 'Delhi', 'Hyderabad', 'Chennai', 'Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Other'];
-  
-  
+
+
   const collegeStreamMapping = {
     'Engineering': ['B.Tech', 'M.Tech', 'Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Information Technology', 'Biotechnology', 'Chemical', 'Aerospace', 'Automobile'],
     'Management': ['MBA', 'BBA'],
@@ -27,7 +27,7 @@ export default function PoolCampusHiringForm() {
   };
 
   const collegeTypes = Object.keys(collegeStreamMapping);
-  
+
   const jobRoles = ['Software Developer', 'Data Scientist', 'DevOps Engineer', 'QA Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'Mobile App Developer', 'UI/UX Designer', 'Product Manager', 'Business Analyst', 'Data Analyst', 'Machine Learning Engineer', 'Cloud Architect', 'Network Engineer', 'Cyber Security Specialist', 'Technical Writer', 'Sales Engineer', 'Marketing Specialist', 'HR Recruiter', 'Finance Analyst', 'Other'];
   const skillsOptions = ['JavaScript', 'Python', 'Java', 'React', 'Node.js', 'HTML/CSS', 'SQL', 'MongoDB', 'AWS', 'Docker', 'Kubernetes', 'Machine Learning', 'Data Structures', 'Algorithms', 'Git', 'REST APIs'];
   const benefitsOptions = ['Health Insurance', 'Provident Fund (PF)', 'Paid Time Off (PTO)', 'Work from Home', 'Performance Bonus', 'Stock Options'];
@@ -45,7 +45,7 @@ export default function PoolCampusHiringForm() {
     criteria: '',
     description: '',
     minPackage: { currency: 'INR', amount: '' },
-    workLocations: [], 
+    workLocations: [],
     jobRoles: [],
     workMode: [],
     employmentType: [],
@@ -75,7 +75,7 @@ export default function PoolCampusHiringForm() {
     jobRoles: false,
     amenities: false,
     selectionProcess: false,
-    workLocations: false, 
+    workLocations: false,
   });
 
   const studentStreamsRef = useRef(null);
@@ -84,7 +84,7 @@ export default function PoolCampusHiringForm() {
   const jobRolesRef = useRef(null);
   const amenitiesRef = useRef(null);
   const selectionProcessRef = useRef(null);
-  const workLocationsRef = useRef(null); 
+  const workLocationsRef = useRef(null);
 
   useEffect(() => {
     const citiesOfIndia = City.getCitiesOfCountry('IN').sort((a, b) => a.name.localeCompare(b.name));
@@ -100,7 +100,7 @@ export default function PoolCampusHiringForm() {
         jobRoles: jobRolesRef,
         amenities: amenitiesRef,
         selectionProcess: selectionProcessRef,
-        workLocations: workLocationsRef, 
+        workLocations: workLocationsRef,
       };
 
       for (const key in refs) {
@@ -113,10 +113,10 @@ export default function PoolCampusHiringForm() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  
+
   useEffect(() => {
-    if(formData.collegeTypes) {
-        setFormData(prev => ({ ...prev, studentStreams: [] }));
+    if (formData.collegeTypes) {
+      setFormData(prev => ({ ...prev, studentStreams: [] }));
     }
   }, [formData.collegeTypes]);
 
@@ -233,6 +233,9 @@ export default function PoolCampusHiringForm() {
 
       if (response.status === 201) {
         toast.success('Pool campus opportunity posted');
+        setTimeout(() => {
+          toast.success('This job will expire after 15 days');
+        }, 2000);
         setFormData(initialState);
       }
     } catch (err) {
@@ -245,7 +248,7 @@ export default function PoolCampusHiringForm() {
   };
 
   const availableStreams = collegeStreamMapping[formData.collegeTypes] || [];
-  const filteredCities = indianCities.filter(city => 
+  const filteredCities = indianCities.filter(city =>
     city.name.toLowerCase().includes(workLocationSearch.toLowerCase())
   );
 
@@ -307,13 +310,13 @@ export default function PoolCampusHiringForm() {
                 </div>
               ))}
             </div>
-            <div 
-                onClick={() => formData.collegeTypes && toggleDropdown('studentStreams')} 
-                className={`flex items-center justify-between p-2 w-full border rounded-md ${!formData.collegeTypes ? 'bg-gray-100 cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'}`}
+            <div
+              onClick={() => formData.collegeTypes && toggleDropdown('studentStreams')}
+              className={`flex items-center justify-between p-2 w-full border rounded-md ${!formData.collegeTypes ? 'bg-gray-100 cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'}`}
             >
               <span className="text-gray-500">
                 {formData.collegeTypes ? 'Select streams' : 'Please select a college type first'}
-                </span>
+              </span>
               <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.studentStreams ? "rotate-180" : ""}`} />
             </div>
             {dropdownOpen.studentStreams && formData.collegeTypes && (
@@ -434,42 +437,42 @@ export default function PoolCampusHiringForm() {
           <div ref={workLocationsRef} className="relative">
             <label className="block font-medium mb-2">Work Location <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">
-                {formData.workLocations.map(loc => (
-                    <div key={loc} className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full">
-                        <span>{loc}</span>
-                        <button type="button" onClick={() => removeSelectedItem('workLocations', loc)} className="ml-2 text-gray-600 hover:text-black"><X size={14} /></button>
-                    </div>
-                ))}
+              {formData.workLocations.map(loc => (
+                <div key={loc} className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full">
+                  <span>{loc}</span>
+                  <button type="button" onClick={() => removeSelectedItem('workLocations', loc)} className="ml-2 text-gray-600 hover:text-black"><X size={14} /></button>
+                </div>
+              ))}
             </div>
             <div onClick={() => toggleDropdown('workLocations')} className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400">
-                <span className="text-gray-500">Select work locations</span>
-                <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.workLocations ? "rotate-180" : ""}`} />
+              <span className="text-gray-500">Select work locations</span>
+              <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.workLocations ? "rotate-180" : ""}`} />
             </div>
             {dropdownOpen.workLocations && (
-                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-                    <div className="p-2 border-b">
-                        <input
-                            type="text"
-                            value={workLocationSearch}
-                            onChange={(e) => setWorkLocationSearch(e.target.value)}
-                            onClick={(e) => e.stopPropagation()}
-                            placeholder="Search for a city..."
-                            className="w-full p-2 border rounded"
-                        />
-                    </div>
-                    <div className="max-h-60 overflow-auto">
-                        {filteredCities.map(city => (
-                            <div
-                                key={`${city.name}-${city.stateCode}`}
-                                onClick={() => handleMultiSelect('workLocations', city.name)}
-                                className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.workLocations.includes(city.name) ? "bg-gray-100 font-medium" : ""}`}
-                            >
-                                {city.name}
-                                {formData.workLocations.includes(city.name) && <span className="float-right text-gray-500">✓</span>}
-                            </div>
-                        ))}
-                    </div>
+              <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
+                <div className="p-2 border-b">
+                  <input
+                    type="text"
+                    value={workLocationSearch}
+                    onChange={(e) => setWorkLocationSearch(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder="Search for a city..."
+                    className="w-full p-2 border rounded"
+                  />
                 </div>
+                <div className="max-h-60 overflow-auto">
+                  {filteredCities.map(city => (
+                    <div
+                      key={`${city.name}-${city.stateCode}`}
+                      onClick={() => handleMultiSelect('workLocations', city.name)}
+                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.workLocations.includes(city.name) ? "bg-gray-100 font-medium" : ""}`}
+                    >
+                      {city.name}
+                      {formData.workLocations.includes(city.name) && <span className="float-right text-gray-500">✓</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
 
