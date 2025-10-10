@@ -45,7 +45,7 @@ export default function PostJob() {
   const benefitsDropdownRef = useRef(null);
   const locationsDropdownRef = useRef(null);
   const studentStreamsDropdownRef = useRef(null);
-  
+
   // --- Dropdown Options ---
   const educationOptions = ["High School", "Bachelor's Degree", "Master's Degree", "PhD", "Diploma", "Other"];
   const fieldOfStudyOptions = ["Computer Science", "Engineering", "Business", "Arts", "Sciences", "Mathematics", "Medicine", "Law", "Other"];
@@ -54,15 +54,15 @@ export default function PostJob() {
   const workAuthOptions = ["Citizens Only", "Permanent Residents", "Work Visa Holders", "Any"];
   const allSkills = ["JavaScript", "React", "Vue", "Angular", "Node.js", "Python", "Java", "C++", "SQL", "MongoDB"];
   const allBenefits = ["Health Insurance", "Paid Time Off", "Mentorship Program", "Certificate of Completion", "Letter of Recommendation", "Flexible Hours"];
-  
+
 
   const filteredSkills = allSkills.filter(skill => skill.toLowerCase().includes(skillInput.toLowerCase()));
   const filteredBenefits = allBenefits.filter(benefit => benefit.toLowerCase().includes(benefitInput.toLowerCase()));
   const filteredCities = indianCities.filter(city => city.name.toLowerCase().includes(locationSearch.toLowerCase()));
 
-  
+
   useEffect(() => {
-   
+
     const cities = City.getCitiesOfCountry('IN').sort((a, b) => a.name.localeCompare(b.name));
     setIndianCities(cities);
   }, []);
@@ -70,16 +70,16 @@ export default function PostJob() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdownRefs = {
-          skills: skillsDropdownRef,
-          benefits: benefitsDropdownRef,
-          locations: locationsDropdownRef,
-          studentStreams: studentStreamsDropdownRef
+        skills: skillsDropdownRef,
+        benefits: benefitsDropdownRef,
+        locations: locationsDropdownRef,
+        studentStreams: studentStreamsDropdownRef
       };
 
       for (const key in dropdownRefs) {
-          if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
-              setDropdownOpen(prev => ({ ...prev, [key]: false }));
-          }
+        if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
+          setDropdownOpen(prev => ({ ...prev, [key]: false }));
+        }
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -90,7 +90,7 @@ export default function PostJob() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
+
   const handleOptionSelect = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -100,7 +100,7 @@ export default function PostJob() {
     setFormData(prev => ({ ...prev, minPackage: { ...prev.minPackage, [name]: value } }));
   };
 
-  
+
   const addItem = (field, item) => {
     if (item && !formData[field].includes(item)) {
       setFormData(prev => ({ ...prev, [field]: [...prev[field], item] }));
@@ -142,32 +142,32 @@ export default function PostJob() {
 
   const handleSelectItem = (field, item, setInput, dropdownKey) => {
     addItem(field, item);
-    if(setInput) setInput('');
-    setDropdownOpen(prev => ({...prev, [dropdownKey]: false}));
+    if (setInput) setInput('');
+    setDropdownOpen(prev => ({ ...prev, [dropdownKey]: false }));
   };
 
- 
+
   const handlePostJob = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     const requiredFields = {
-        jobTitle: "Job Title",
-        description: "Job Description",
-        location: "Location",
-        'minPackage.amount': "Stipend Amount",
-        numberOfOpenings: "No. of Openings",
-        eligibilityCriteria: "Eligibility Criteria",
-        internshipDuration: "Internship Duration",
+      jobTitle: "Job Title",
+      description: "Job Description",
+      location: "Location",
+      'minPackage.amount': "Stipend Amount",
+      numberOfOpenings: "No. of Openings",
+      eligibilityCriteria: "Eligibility Criteria",
+      internshipDuration: "Internship Duration",
     };
 
     for (const key in requiredFields) {
-        const value = key.includes('.') ? formData.minPackage.amount : formData[key];
-        if (!value || (Array.isArray(value) && value.length === 0)) {
-            toast.error(`Please fill the required field: ${requiredFields[key]}`);
-            setIsSubmitting(false);
-            return;
-        }
+      const value = key.includes('.') ? formData.minPackage.amount : formData[key];
+      if (!value || (Array.isArray(value) && value.length === 0)) {
+        toast.error(`Please fill the required field: ${requiredFields[key]}`);
+        setIsSubmitting(false);
+        return;
+      }
     }
 
     try {
@@ -180,7 +180,7 @@ export default function PostJob() {
         numberOfOpenings: parseInt(formData.numberOfOpenings, 10),
         jobType: "Internship",
       };
-      
+
       const response = await axios.post(
         `${import.meta.env.VITE_Backend_URL}/api/hiring-channels/internship-posting`,
         payload,
@@ -194,6 +194,9 @@ export default function PostJob() {
       );
 
       toast.success("Internship posted");
+      setTimeout(() => {
+        toast.success('This job will expire after 15 days');
+      }, 2000);
       setFormData(initialState);
 
     } catch (error) {
@@ -229,7 +232,7 @@ export default function PostJob() {
               <button type="button" className={`px-4 py-1 border rounded-full text-sm transition-colors ${formData.workMode === 'Hybrid' ? 'bg-black text-white border-black' : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'}`} onClick={() => handleOptionSelect('workMode', 'Hybrid')}>Hybrid</button>
             </div>
           </div>
-          
+
           {/* --- MODIFIED: Location Multi-Select with City Search --- */}
           <div ref={locationsDropdownRef} className="relative mb-4">
             <label className="block text-sm font-medium mb-2">Location <span className="text-red-500">*</span></label>
@@ -251,26 +254,26 @@ export default function PostJob() {
             {dropdownOpen.locations && (
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
                 <div className="p-2 border-b">
-                    <input
-                        type="text"
-                        value={locationSearch}
-                        onChange={(e) => setLocationSearch(e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                        placeholder="Search for a city..."
-                        className="w-full p-2 border rounded"
-                    />
+                  <input
+                    type="text"
+                    value={locationSearch}
+                    onChange={(e) => setLocationSearch(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder="Search for a city..."
+                    className="w-full p-2 border rounded"
+                  />
                 </div>
                 <div className="max-h-60 overflow-auto">
-                    {filteredCities.map(city => (
-                        <div
-                            key={`${city.name}-${city.stateCode}`}
-                            onClick={() => handleMultiSelect('location', city.name)}
-                            className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.location.includes(city.name) ? "bg-gray-100 font-medium" : ""}`}
-                        >
-                            {city.name}
-                            {formData.location.includes(city.name) && <span className="float-right text-gray-500">✓</span>}
-                        </div>
-                    ))}
+                  {filteredCities.map(city => (
+                    <div
+                      key={`${city.name}-${city.stateCode}`}
+                      onClick={() => handleMultiSelect('location', city.name)}
+                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.location.includes(city.name) ? "bg-gray-100 font-medium" : ""}`}
+                    >
+                      {city.name}
+                      {formData.location.includes(city.name) && <span className="float-right text-gray-500">✓</span>}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -290,12 +293,12 @@ export default function PostJob() {
               <input type="number" name="amount" placeholder="Enter amount" className="flex-1 p-2 border border-l-0 border-gray-300 rounded-r-md focus:ring-2 focus:ring-black" value={formData.minPackage.amount} onChange={handleSalaryChange} min="0" />
             </div>
           </div>
-          
+
           <div className="mb-4">
             <label htmlFor="numberOfOpenings" className="block text-sm font-medium mb-2">No. of Openings <span className="text-red-500">*</span></label>
             <input type="number" id="numberOfOpenings" name="numberOfOpenings" placeholder="e.g., 5" className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black" value={formData.numberOfOpenings} onChange={handleInputChange} min="1" />
           </div>
-          
+
           <div className="mb-4">
             <label htmlFor="description" className="block text-sm font-medium mb-2">Job Description <span className="text-red-500">*</span></label>
             <textarea id="description" name="description" placeholder="Describe the job responsibilities, day-to-day tasks, and requirements..." className="w-full p-2 border border-gray-300 rounded-md h-32 focus:ring-2 focus:ring-black" value={formData.description} onChange={handleInputChange}></textarea>
@@ -311,10 +314,10 @@ export default function PostJob() {
             <label htmlFor="eligibilityCriteria" className="block text-sm font-medium mb-2">Eligibility Criteria <span className="text-red-500">*</span></label>
             <textarea id="eligibilityCriteria" name="eligibilityCriteria" placeholder="e.g., Must be currently enrolled in a degree program, Minimum GPA of 3.0..." className="w-full p-2 border border-gray-300 rounded-md h-24 focus:ring-2 focus:ring-black" value={formData.eligibilityCriteria} onChange={handleInputChange}></textarea>
           </div>
-          
+
           <div className="mb-4">
             <label htmlFor="internshipDuration" className="block text-sm font-medium mb-2">Internship Duration <span className="text-red-500">*</span></label>
-              <div className="relative">
+            <div className="relative">
               <select id="internshipDuration" name="internshipDuration" className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black" value={formData.internshipDuration} onChange={handleInputChange}>
                 <option value="">Select duration</option>
                 {durationOptions.map((option, index) => (<option key={index} value={option}>{option}</option>))}
@@ -322,7 +325,7 @@ export default function PostJob() {
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
             </div>
           </div>
-          
+
           <div className="mb-4">
             <label htmlFor="minEducation" className="block text-sm font-medium mb-2">Minimum Education</label>
             <div className="relative">
@@ -376,62 +379,62 @@ export default function PostJob() {
 
           {/* --- Multi-select Skills --- */}
           <div className="mb-4" ref={skillsDropdownRef}>
-              <label className="block text-sm font-medium mb-2">Skills</label>
-              <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({...prev, skills: true}))}>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                      {formData.skills.map((skill, index) => (
-                          <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
-                              <span>{skill}</span>
-                              <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('skills', skill); }}>
-                                  <X size={14}/>
-                              </button>
-                          </div>
-                      ))}
+            <label className="block text-sm font-medium mb-2">Skills</label>
+            <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({ ...prev, skills: true }))}>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {formData.skills.map((skill, index) => (
+                  <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
+                    <span>{skill}</span>
+                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('skills', skill); }}>
+                      <X size={14} />
+                    </button>
                   </div>
-                  <input type="text" placeholder="Type a skill..." className="w-full outline-none" value={skillInput} onChange={(e) => setSkillInput(e.target.value)} onKeyDown={(e) => handleItemInputKeyDown(e, 'skills', skillInput, setSkillInput)} />
+                ))}
               </div>
-              {dropdownOpen.skills && (
-                  <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
-                      {filteredSkills.map((skill, index) => (
-                          <div key={index} className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleSelectItem('skills', skill, setSkillInput, 'skills')}>
-                              {skill}
-                          </div>
-                      ))}
+              <input type="text" placeholder="Type a skill..." className="w-full outline-none" value={skillInput} onChange={(e) => setSkillInput(e.target.value)} onKeyDown={(e) => handleItemInputKeyDown(e, 'skills', skillInput, setSkillInput)} />
+            </div>
+            {dropdownOpen.skills && (
+              <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+                {filteredSkills.map((skill, index) => (
+                  <div key={index} className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleSelectItem('skills', skill, setSkillInput, 'skills')}>
+                    {skill}
                   </div>
-              )}
+                ))}
+              </div>
+            )}
           </div>
-          
+
           {/* --- Multi-select Benefits --- */}
           <div className="mb-4" ref={benefitsDropdownRef}>
-              <label className="block text-sm font-medium mb-2">Benefits</label>
-              <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({...prev, benefits: true}))}>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                      {formData.benefits.map((benefit, index) => (
-                          <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
-                              <span>{benefit}</span>
-                              <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('benefits', benefit); }}>
-                                  <X size={14}/>
-                              </button>
-                          </div>
-                      ))}
+            <label className="block text-sm font-medium mb-2">Benefits</label>
+            <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({ ...prev, benefits: true }))}>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {formData.benefits.map((benefit, index) => (
+                  <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
+                    <span>{benefit}</span>
+                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('benefits', benefit); }}>
+                      <X size={14} />
+                    </button>
                   </div>
-                  <input type="text" placeholder="Type a benefit..." className="w-full outline-none" value={benefitInput} onChange={(e) => setBenefitInput(e.target.value)} onKeyDown={(e) => handleItemInputKeyDown(e, 'benefits', benefitInput, setBenefitInput)} />
+                ))}
               </div>
-              {dropdownOpen.benefits && (
-                  <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
-                      {filteredBenefits.map((benefit, index) => (
-                          <div key={index} className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleSelectItem('benefits', benefit, setBenefitInput, 'benefits')}>
-                              {benefit}
-                          </div>
-                      ))}
+              <input type="text" placeholder="Type a benefit..." className="w-full outline-none" value={benefitInput} onChange={(e) => setBenefitInput(e.target.value)} onKeyDown={(e) => handleItemInputKeyDown(e, 'benefits', benefitInput, setBenefitInput)} />
+            </div>
+            {dropdownOpen.benefits && (
+              <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+                {filteredBenefits.map((benefit, index) => (
+                  <div key={index} className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleSelectItem('benefits', benefit, setBenefitInput, 'benefits')}>
+                    {benefit}
                   </div>
-              )}
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="mb-4">
             <label htmlFor="certifications" className="block text-sm font-medium mb-2">Certifications (if any)</label>
             <div className="relative">
-              <select id="certifications" name="certifications" className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black" value={formData.certifications[0] || ''} onChange={(e) => setFormData(prev => ({...prev, certifications: e.target.value ? [e.target.value] : []}))}>
+              <select id="certifications" name="certifications" className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black" value={formData.certifications[0] || ''} onChange={(e) => setFormData(prev => ({ ...prev, certifications: e.target.value ? [e.target.value] : [] }))}>
                 <option value="">Select certification</option>
                 {certificationOptions.map((option, index) => (<option key={index} value={option}>{option}</option>))}
               </select>
