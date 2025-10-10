@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { acceptCandidate, getApplicationsForJob, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
+import { acceptCandidate, getApplicationsForJob, rejectCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 import useConversation from '@/statemanage/useConversation';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 import { Send } from 'lucide-react';
+import InterviewSchedulerPopup from '@/components/ui/ScheduleInterview';
 
 const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => {
   const jobId = job._id;
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toggleScheduleInterviewPopup, setToggleScheduleInterviewPopup] = useState(false);
   const [applications, setApplications] = useState();
 
   const navigate = useNavigate();
@@ -32,18 +34,6 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
       const response = await acceptCandidate(applicantionId, job?.jobRoles);
       // console.log("shortlist: ", response)
       if (response?.data?.success === true) toast.success("Accpeted!");
-      else toast.error(response.response?.data?.msg);
-    } catch (error) {
-      console.log("Error: ", error);
-      toast.error('Something went wrong!')
-    }
-  }
-
-  const shortlistApplicant = async (applicantionId) => {
-    try {
-      const response = await shortlistCandidate(applicantionId, job?.jobRoles);
-      // console.log("shortlist: ", response)
-      if (response?.data?.success === true) toast.success("Shortlisted!");
       else toast.error(response.response?.data?.msg);
     } catch (error) {
       console.log("Error: ", error);
@@ -244,7 +234,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                     Accept Candidate
                   </button>
                   <button
-                    onClick={() => shortlistApplicant(applicant?._id)}
+                    onClick={() => setToggleScheduleInterviewPopup(true)}
                     disabled={isSubmitting}
                     className="px-6 py-2 shadow hover:shadow-md text-yellow-500 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50"
                   >
@@ -259,6 +249,16 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                     Reject Application
                   </button>
                 </div>
+                {toggleScheduleInterviewPopup && (
+                  <div>
+                    <InterviewSchedulerPopup
+                      setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
+                      applicantId={applicant.applicant._id}
+                      applicantType={applicant.applicant.profileType}
+                      jobRole={job?.jobRoles[0]}
+                    />
+                  </div>
+                )}
               </div>
             ))
           }
