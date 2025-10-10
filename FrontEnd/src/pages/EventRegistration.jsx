@@ -19,6 +19,7 @@ const EventRegistration = () => {
   const [formData, setFormData] = useState({
     teamLeaderId: '',
     eventID: '',
+    eventName:'',
     name: '',
     email: '',
     projectTitle: '',
@@ -40,20 +41,13 @@ const EventRegistration = () => {
 
   useEffect(() => {
     if (event_ID) {
-      setFormData((prev) => ({ ...prev, eventID: event_ID }));
-    }
-    getEvent();
-  }, [event_ID]);
-  useEffect(() => {
-    if (event?.participationType === 'Individual') {
-      setFormData((prev) => ({
-        ...prev,
-        teamMembers: [], // clear if individual
+      setFormData((prev) => ({ ...prev, 
+        eventID: event_ID,
+        eventName: event_name 
       }));
     }
-  }, [event]);
+  }, [event_ID,event_name]);
 
-  // ✅ Handle changes for input fields
   const handleChange = (e, index = null) => {
     const { name, value } = e.target;
 

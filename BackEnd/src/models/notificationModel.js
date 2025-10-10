@@ -16,7 +16,7 @@ const notificationSchema = new mongoose.Schema({
     // Type of notification to handle different actions on the frontend
     type: {
         type: String,
-        enum: ['TEAM_INVITATION', 'MESSAGE', 'SYSTEM_UPDATE'],
+        enum: ['TEAM_INVITATION', 'MESSAGE', 'SYSTEM_UPDATE', 'FILE_SHARED', 'EVENT_UPDATE'],
         required: true,
     },
     message: {
@@ -26,7 +26,20 @@ const notificationSchema = new mongoose.Schema({
     // To link directly to the item, e.g., the invitation or a job post
     referenceId: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
+        required: false,
+    },
+    // Additional data for file sharing notifications
+    fileUrl: {
+        type: String,
+        required: false,
+    },
+    fileName: {
+        type: String,
+        required: false,
+    },
+    eventTitle: {
+        type: String,
+        required: false,
     },
     read: {
         type: Boolean,

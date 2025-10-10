@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiUserPlus } from 'react-icons/fi';
+import { FiUserPlus, FiFile, FiDownload } from 'react-icons/fi';
 import axios from 'axios';
 
 function NotificationsDropdown({ notifications, setNotifications, setUnreadCount }) {
@@ -25,11 +25,54 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
             }
         }
 
+        // Handle file download for FILE_SHARED notifications
+        if (notification.type === 'FILE_SHARED' && notification.fileUrl) {
+            handleFileDownload(notification.fileUrl, notification.fileName);
+            return;
+        }
+
         // Navigate to the correct page based on type
         if (notification.type === 'TEAM_INVITATION') {
             navigate('/invitations');
         }
         // Add other notification types here
+    };
+
+    const handleFileDownload = async (fileUrl, fileName) => {
+        try {
+            // Fetch the file as a blob
+            const response = await fetch(fileUrl);
+            const blob = await response.blob();
+            
+            // Create a temporary URL for the blob
+            const blobUrl = window.URL.createObjectURL(blob);
+            
+            // Create a temporary anchor element and trigger download
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = fileName || 'download';
+            document.body.appendChild(link);
+            link.click();
+            
+            // Clean up
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error('Error downloading file:', error);
+            // Fallback to opening in new tab if download fails
+            window.open(fileUrl, '_blank');
+        }
+    };
+
+    const getNotificationIcon = (type) => {
+        switch (type) {
+            case 'FILE_SHARED':
+                return <FiFile />;
+            case 'TEAM_INVITATION':
+                return <FiUserPlus />;
+            default:
+                return <FiUserPlus />;
+        }
     };
 
     return (
@@ -43,15 +86,31 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
                         notifications.map((notification) => (
                             <div
                                 key={notification._id}
-                                onClick={() => handleNotificationClick(notification)}
-                                className={`flex items-start px-4 py-3 text-sm cursor-pointer hover:bg-gray-100 ${!notification.read ? 'bg-blue-50' : ''}`}
+                                className={`flex items-start px-4 py-3 text-sm hover:bg-gray-100 ${!notification.read ? 'bg-blue-50' : ''}`}
                             >
                                 <div className="p-2 mr-3 text-blue-500 bg-blue-100 rounded-full">
-                                    <FiUserPlus />
+                                    {getNotificationIcon(notification.type)}
                                 </div>
                                 <div className="flex-1">
                                     <p className="text-gray-800">{notification.message}</p>
-                                    <p className="text-xs text-gray-400">
+                                    {notification.type === 'FILE_SHARED' && notification.eventTitle && (
+                                        <p className="text-xs text-gray-600 mt-1">
+                                            Event: {notification.eventTitle}
+                                        </p>
+                                    )}
+                                    {notification.type === 'FILE_SHARED' && notification.fileUrl && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleNotificationClick(notification);
+                                            }}
+                                            className="mt-2 inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
+                                        >
+                                            <FiDownload className="mr-1" />
+                                            Download {notification.fileName}
+                                        </button>
+                                    )}
+                                    <p className="text-xs text-gray-400 mt-1">
                                         {new Date(notification.createdAt).toLocaleString()}
                                     </p>
                                 </div>
