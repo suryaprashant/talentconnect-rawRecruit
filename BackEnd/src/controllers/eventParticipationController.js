@@ -28,9 +28,10 @@ export const registerParticipant = async (req, res) => {
       const mappedRounds = roundDetails.map((round) => ({
         roundNumber: round.roundNumber,
         roundStatus: 'Notdefined', 
-        userInput: '', 
+        inputType: '', 
         startDate: round.startDate,
-        endDate: round.endDate
+        endDate: round.endDate,
+        inputType: round.inputType || '' // Include inputType
       }));
 
       participantData.rounds = mappedRounds;
@@ -54,17 +55,17 @@ export const registerParticipant = async (req, res) => {
   }
     
 };
-export const updateUserInput = async (req, res) => {
+export const updateInputType = async (req, res) => {
   try {
     const payload = req.body;
     console.log('Received payload:', payload);
-    const update = await eventParticipationService.updateUserInputService(payload);
+    const update = await eventParticipationService.updateInputTypeService(payload);
     // You can add logic here to process the payload, e.g., save to DB
 
     console.log('Received payload:', update);
     res.status(200).json({ message: 'Payload received', payload });
   } catch (error) {
-    console.error('Error in updateUserInput:', error);
+    console.error('Error in updateInputType:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

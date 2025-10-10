@@ -9,9 +9,9 @@ class EventParticipationService {
  * @param {Object} payload - EventParticipation data
  * @returns {Object} Updated EventParticipation document
  */
-async updateUserInputService(payload) {
+async updateInputTypeService(payload) {
   try {
-    const { _id, roundNumber, userInput } = payload; // ✅ Destructure the needed fields
+    const { _id, roundNumber, inputType } = payload; // ✅ Destructure the needed fields
 
     console.log("eventparticipantId:", _id);
 
@@ -31,13 +31,13 @@ async updateUserInputService(payload) {
     }
 
     // Update the user input
-    roundToUpdate.userInput = userInput;
+    roundToUpdate.inputType = inputType;
 
     // Save the updated document
     const updatedParticipation = await participation.save();
     return updatedParticipation;
   } catch (err) {
-    console.error('Error in updateUserInputService:', err.message);
+    console.error('Error in updateInputTypeService:', err.message);
     throw err;
   }
 }

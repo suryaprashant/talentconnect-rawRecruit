@@ -32,7 +32,7 @@ const EventStatus = () => {
           rounds: (participant.rounds || []).map(round => ({
             roundNumber: round.roundNumber || '',
             rountStatus: round.rountStatus || '',
-            userInput: round.userInput || '',
+            inputType: round.inputType || '',
           })),
         });
       }
@@ -56,7 +56,7 @@ const EventStatus = () => {
         rounds: (participant.rounds || []).map(round => ({
           roundNumber: round.roundNumber || '',
           rountStatus: round.rountStatus || '',
-          userInput: round.userInput || '',
+          inputType: round.inputType || '',
         })),
       });
     }
@@ -76,7 +76,7 @@ const EventStatus = () => {
     try {
       debugger
       const response = await axios.post(
-        `${import.meta.env.VITE_Backend_URL}/eventParticipation/updateUserInput`,
+        `${import.meta.env.VITE_Backend_URL}/eventParticipation/updateInputType`,
         payload
       );
 
@@ -98,10 +98,10 @@ const EventStatus = () => {
     const form = new FormData(e.target);
     const link = form.get('submissionLink');
 
-    // 🧠 Update formData: set userInput = link for the correct round
+    // 🧠 Update formData: set inputType = link for the correct round
     const updatedRounds = formData.rounds.map(round =>
       round.roundNumber === roundNumber
-        ? { ...round, userInput: link }
+        ? { ...round, inputType: link }
         : round
     );
 
@@ -109,7 +109,7 @@ const EventStatus = () => {
       ...prev,
       rounds: updatedRounds,
     }));
-    const payload = { userInput: link, roundNumber, _id: id }; // ✅ Proper declaration
+    const payload = { inputType: link, roundNumber, _id: id }; // ✅ Proper declaration
   await saveData(payload);
     console.log(`After Link submitted for round ${roundNumber}:`, formData);
   };
@@ -123,10 +123,10 @@ const EventStatus = () => {
       return;
     }
 
-    // 🧠 Update formData: set userInput = file.name for the correct round
+    // 🧠 Update formData: set inputType = file.name for the correct round
     const updatedRounds = formData.rounds.map(round =>
       round.roundNumber === roundNumber
-        ? { ...round, userInput: file.name }
+        ? { ...round, inputType: file.name }
         : round
     );
 
@@ -134,7 +134,7 @@ const EventStatus = () => {
       ...prev,
       rounds: updatedRounds,
     }));
-    const payload = { userInput: file.name, roundNumber, _id: id }; // ✅ Proper declaration
+    const payload = { inputType: file.name, roundNumber, _id: id }; // ✅ Proper declaration
   await saveData(payload);
     console.log(`after File submitted for round ${roundNumber}:`, formData);
   };
@@ -281,7 +281,7 @@ const EventStatus = () => {
                         <p className="text-gray-600 mb-2">{round.description}</p>
 
                         {/* Link Submission Form */}
-                        {round.userInput === 'link' ? (
+                        {round.inputType === 'link' ? (
                           <form onSubmit={(e) =>
                             handleSubmit(e, round.roundNumber, "link",selectedEvent.participant._id)} className="space-y-2">
                             <input
@@ -303,18 +303,18 @@ const EventStatus = () => {
                         ) : (
                           <form onSubmit={(e) => handleSubmit(e, round.roundNumber, "file",selectedEvent.participant._id)} className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              {/* {round.userInput.toUpperCase()} */}
+                              {/* {round.inputType.toUpperCase()} */}
                               Upload file:
                             </label>
                             <input
                               name="submissionFile"
                               type="file"
                               accept={
-                                round.userInput === 'doc'
+                                round.inputType === 'doc'
                                   ? '.doc,.docx'
-                                  : round.userInput === 'pdf'
+                                  : round.inputType === 'pdf'
                                     ? '.pdf'
-                                    : round.userInput === 'ppt'
+                                    : round.inputType === 'ppt'
                                       ? '.ppt,.pptx'
                                       : '*'
                               }

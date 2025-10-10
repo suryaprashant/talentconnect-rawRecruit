@@ -123,10 +123,10 @@ const HackathonSchema = new mongoose.Schema({
                 type: Date,
                 required: true
             },
-            userInput: {
+            inputType: {
                 type: String,
                 enum: ['link', 'doc', 'pdf', 'ppt'],
-                default:'link'
+                default: 'link'
             }
         }
     ],
