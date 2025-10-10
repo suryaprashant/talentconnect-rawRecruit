@@ -9,6 +9,7 @@ class EventParticipationService {
  * @param {Object} payload - EventParticipation data
  * @returns {Object} Updated EventParticipation document
  */
+
 async updateInputTypeService(payload) {
   try {
     const { _id, roundNumber, inputType } = payload; // ✅ Destructure the needed fields
@@ -26,13 +27,26 @@ async updateInputTypeService(payload) {
       (round) => round.roundNumber === roundNumber
     );
 
-    if (!roundToUpdate) {
-      throw new Error(`Round ${roundNumber} not found`);
+    // if (!roundToUpdate) {
+    //   throw new Error(`Round ${roundNumber} not found`);
+    // }  
+
+    if (roundToUpdate) {
+      // ✅ Update existing round
+      roundToUpdate.inputType = inputType;
+    } else {
+      // ✅ Add new round with specified inputType
+      participation.rounds.push({
+        roundNumber,
+        inputType,
+        // userInput: '', // default if not provided
+        rountStatus: '', // optional, depends on your schema
+      });
     }
 
     // Update the user input
     roundToUpdate.inputType = inputType;
-
+    roundToUpdate.rountStatus = "Inprogress";
     // Save the updated document
     const updatedParticipation = await participation.save();
     return updatedParticipation;
