@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { type } from "os";
 
 const TeamMemberSchema = new mongoose.Schema({
   teamMemberId: String,
@@ -7,9 +6,8 @@ const TeamMemberSchema = new mongoose.Schema({
   email: { type: String, required: true }
 }, { _id: false });
 
-const eventParticipationDetailSchema = new mongoose.Schema({
-  teamLeaderId: { type: mongoose.Schema.Types.ObjectId, required: true },
-  eventID: { type: mongoose.Schema.Types.ObjectId, ref: 'hackathon', required: true },
+const casestudyParticipationDetailSchema = new mongoose.Schema({
+  eventID: { type: mongoose.Schema.Types.ObjectId, ref: 'Casestudy', required: true },
   name: { type: String, required: true },
   email: { type: String, required: true },
   projectTitle: { type: String },
@@ -19,10 +17,19 @@ const eventParticipationDetailSchema = new mongoose.Schema({
     enum: ['Qualified', 'Disqualified'],
     default: 'Qualified'
   },
+  registrationStatus: {
+    type: String,
+    enum: ['Pending', 'Confirmed', 'Rejected'],
+    default: 'Pending'
+  },
   checkInStatus: {
     type: String,
     enum: ['CheckedIn', 'NotCheckedIn'],
     default: 'NotCheckedIn'
+  },
+  rejectionReason: {
+    type: String,
+    maxlength: [500, 'Rejection reason cannot be more than 500 characters']
   },
   createdAt: {
     type: Date,
@@ -33,5 +40,5 @@ const eventParticipationDetailSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-const eventParticipation = mongoose.model('eventParticipationDetails', eventParticipationDetailSchema);
-export default eventParticipation;
+const casestudyParticipation = mongoose.model('casestudyParticipationDetails', casestudyParticipationDetailSchema);
+export default casestudyParticipation;
