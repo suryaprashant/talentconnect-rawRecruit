@@ -148,6 +148,18 @@ export function acceptCandidate(applicationId, jobRole) {
     .catch(error => error);
 }
 
+//schedule interview
+export function scheduleInterview(applicantId, applicantType, jobRole, data) {
+  return axiosClient.post(`/application/manage/schedule`, {
+    applicantId: applicantId,
+    applicantType: applicantType,
+    jobRole: jobRole,
+    data: data
+  })
+    .then(response => response)
+    .catch(error => error);
+}
+
 // company dashboard
 // save opportunity
 export function SaveOppurtunity(jobId, jobType) {

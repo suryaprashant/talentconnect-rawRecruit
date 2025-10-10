@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Calendar, MapPin, FileText, Users, ArrowUpRight, User, Mail, Phone, Link, Briefcase, DollarSign, Target, ClipboardList } from 'lucide-react';
 import { format, isValid } from 'date-fns';
+import InterviewSchedulerPopup from '@/components/ui/ScheduleInterview';
 
 const DetailRow = ({ icon: Icon, label, value }) => {
     if (!value || (Array.isArray(value) && value.length === 0)) return null;
@@ -15,8 +16,9 @@ const DetailRow = ({ icon: Icon, label, value }) => {
     );
 };
 
-const CollegeRequestDetail = ({ collegeApplication, onAccept, onShortlist, onReject }) => {
+const CollegeRequestDetail = ({ collegeApplication, jobRole, onAccept, onShortlist, onReject }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [toggleScheduleInterviewPopup, setToggleScheduleInterviewPopup] = useState(false);
 
     const safeFormatDate = (dateString, formatStr = 'MMM d, yyyy') => {
         if (!dateString) return 'Not Specified';
@@ -154,13 +156,24 @@ const CollegeRequestDetail = ({ collegeApplication, onAccept, onShortlist, onRej
                 <button onClick={() => handleAction(() => onAccept(applicationId))} disabled={isSubmitting} className="flex-1 justify-center bg-white text-green-500 py-2 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200">
                     {isSubmitting ? 'Processing...' : 'Accept Drive'}
                 </button>
-                <button onClick={() => handleAction(() => onShortlist(applicationId))} disabled={isSubmitting} className="flex-1 justify-center bg-white border border-gray-300 text-yellow-500 py-2 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200">
+                <button onClick={() => setToggleScheduleInterviewPopup(true)} disabled={isSubmitting} className="flex-1 justify-center bg-white border border-gray-300 text-yellow-500 py-2 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200">
                     {isSubmitting ? 'Processing...' : 'Schedule Meet'}
                 </button>
                 <button onClick={() => handleAction(() => onReject(applicationId))} disabled={isSubmitting} className="flex-1 justify-center bg-white border border-gray-300 text-red-500 py-2 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200">
                     {isSubmitting ? 'Processing...' : 'Reject Drive'}
                 </button>
             </div>
+
+            {toggleScheduleInterviewPopup && (
+                <div>
+                    <InterviewSchedulerPopup
+                        setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
+                        applicantId={collegeApplication.applicant._id}
+                        applicantType={'college'}
+                        jobRole={jobRole}
+                    />
+                </div>
+            )}
         </div>
     );
 };

@@ -62,10 +62,6 @@ export default function OnCampusJobManagement() {
     try {
       let response;
       switch (status) {
-        case "Shortlisted":
-          console.log("res")
-          response = await shortlistCandidate(applicationId, jobs?.jobRoles);
-          break;
         case "Rejected":
           response = await rejectCandidate(applicationId, jobs?.jobRoles);
           break;
@@ -123,10 +119,6 @@ export default function OnCampusJobManagement() {
   // console.log("currentJobs: ", currentJobs);
 
   const handleViewColleges = (job) => {
-    if (job?.applicationCount === 0) {
-      alert("No colleges have applied for this drive yet.");
-      return;
-    }
     setSelectedJob(job);
     fetchCollegesForJob(job._id, job.jobType);
   };
@@ -180,8 +172,8 @@ export default function OnCampusJobManagement() {
                 <CollegeRequestDetail
                   key={college._id}
                   collegeApplication={college} // Pass the fully merged college object
+                  jobRole={selectedJob?.jobRoles}
                   onAccept={() => handleUpdateApplicationStatus(college._id, 'Accepted')}
-                  onShortlist={() => handleUpdateApplicationStatus(college._id, 'Shortlisted')}
                   onReject={() => handleUpdateApplicationStatus(college._id, 'Rejected')}
                 />
               ))}
@@ -271,7 +263,6 @@ export default function OnCampusJobManagement() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleViewColleges(job)}
-                            disabled={job.applicationCount === 0}
                             className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             title="View College Applications"
                           >

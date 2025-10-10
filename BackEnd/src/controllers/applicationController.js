@@ -1,3 +1,4 @@
+import { response } from "express";
 import {
     ChangeStatusService,
     createApplicationService,
@@ -17,6 +18,7 @@ import { getCompanyEmail, getCompanyService } from "../services/companyService.j
 // import { checkJobListingOpportunityService, checkOpportunityService } from "../services/Job.service.js";
 import { getCandidatEmail, getStudentService } from "../services/studentService.js";
 import sendStatusChangeEmail from "../utils/sendStatusChangeEmail.js";
+import sendScheduledInterviewEmail from "../utils/sendScheduledInterviewEmail.js";
 // import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
 
 // save opportunity
@@ -569,6 +571,45 @@ export async function getAcceptedCandidatesByCompany(req, res) {
         const response = await fetchCandidatesbyStatus(company.data[0]._id, "Accepted", applicantType, jobType);
         // console.log(response);
         res.status(200).json(response);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ Error: "Internal server error" });
+    }
+}
+
+// schdule Interview
+export async function scheduleInterview(req, res) {
+    const companyId = req.user._id;
+    const { applicantId, applicantType, jobRole } = req.body;
+    const { date, time, meetLink, message } = req.body.data;
+    console.log("data", applicantId, applicantType, date, meetLink, jobRole);
+    if (!date || !time || !meetLink || !jobRole) return res.status(404).json({ msg: "required fields missing" });
+
+    try {
+        const company = await getCompanyService(companyId);
+        if (!company) return res.status(404).json({ msg: "company not found!" });
+
+        if (company.success === true) {
+            const companyName = company.data[0].companyDetails.companyName;
+            let applicantMail;
+            switch (applicantType) {
+                case ('student'):
+                case ('fresher'):
+                case ('professional'):
+                    applicantMail = await getCandidatEmail(applicantId);
+                    break;
+                case ('college'):
+                    applicantMail = await getCollegeEmail(applicantId);
+                    break;
+                case ('company'):
+                    applicantMail = await getCompanyEmail(applicantId);
+                    break;
+                default:
+                    return res.status(404).json({ msg: "Invalid User!" });
+            }
+            const response = await sendScheduledInterviewEmail(applicantMail.email, date, time, message, meetLink, jobRole, companyName);
+            res.status(200).json({ success: true, msg: "Interview Scheduled!" });
+        }
     } catch (error) {
         console.log("Error: ", error);
         res.status(500).json({ Error: "Internal server error" });

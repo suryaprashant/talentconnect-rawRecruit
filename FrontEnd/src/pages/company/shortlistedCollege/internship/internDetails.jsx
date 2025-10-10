@@ -5,11 +5,13 @@ import useConversation from '@/statemanage/useConversation';
 import { useNavigate } from 'react-router-dom';
 import { Send } from 'lucide-react';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
+import InterviewSchedulerPopup from '@/components/ui/ScheduleInterview';
 
 const InternshipDetails = ({ job, onClose }) => {
   const jobId = job._id;
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toggleScheduleInterviewPopup, setToggleScheduleInterviewPopup] = useState(false);
   const [applications, setApplications] = useState();
 
   const navigate = useNavigate();
@@ -234,7 +236,7 @@ const InternshipDetails = ({ job, onClose }) => {
                     Accept Application
                   </button>
                   <button
-                    onClick={() => scheduleInterview(applicant._id)}
+                    onClick={() => setToggleScheduleInterviewPopup(true)}
                     disabled={isSubmitting}
                     className="px-6 py-2 shadow hover:shadow-md text-yellow-500 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50"
                   >
@@ -249,6 +251,17 @@ const InternshipDetails = ({ job, onClose }) => {
                     Reject Application
                   </button>
                 </div>
+
+                {toggleScheduleInterviewPopup && (
+                  <div>
+                    <InterviewSchedulerPopup
+                      setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
+                      applicantId={applicant.applicant._id}
+                      applicantType={applicant.applicant.profileType}
+                      jobRole={job?.jobTitle}
+                    />
+                  </div>
+                )}
               </div>
             ))
           }

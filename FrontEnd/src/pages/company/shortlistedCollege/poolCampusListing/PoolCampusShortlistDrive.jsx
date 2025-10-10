@@ -61,9 +61,6 @@ export default function OnCampusJobManagement() {
     try {
       let response;
       switch (status) {
-        case "Shortlisted":
-          response = await shortlistCandidate(applicationId, jobs?.jobRoles);
-          break;
         case "Rejected":
           response = await rejectCandidate(applicationId, jobs?.jobRoles);
           break;
@@ -176,8 +173,8 @@ export default function OnCampusJobManagement() {
                 <CollegeRequestDetail
                   key={college._id}
                   collegeApplication={college} // Pass the fully merged college object
+                  jobRole={selectedJob?.jobRoles}
                   onAccept={() => handleUpdateApplicationStatus(college._id, 'Accepted')}
-                  onShortlist={() => handleUpdateApplicationStatus(college._id, 'Shortlisted')}
                   onReject={() => handleUpdateApplicationStatus(college._id, 'Rejected')}
                 />
               ))}
