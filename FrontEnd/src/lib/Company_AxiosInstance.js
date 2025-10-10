@@ -33,8 +33,8 @@ export function getAcceptedOffCampusCandidates(jobId) {
     .catch(error => error);
 }
 
-export function getProfileByResume(searchParams){
-  return axiosClient.get('api/resumes/search',{ params: searchParams })
+export function getProfileByResume(searchParams) {
+  return axiosClient.get('api/resumes/search', { params: searchParams })
     .then(response => response.data)
     .catch(error => console.log("Error: ", error));
 };
@@ -77,12 +77,13 @@ export function deleteJobById(jobId) {
     .catch(error => error);
 }
 
-export function getApplicationsForJob(jobId, jobType) {
+export function getApplicationsForJob(jobId, jobType, targetStatus) {
   return axiosClient.get(`application/manage`,
     {
       params: {
         jobId: jobId,
-        jobType: jobType
+        jobType: jobType,
+        targetStatus: targetStatus
       }
     }
   )
@@ -90,12 +91,13 @@ export function getApplicationsForJob(jobId, jobType) {
     .catch(error => error);
 }
 
-export function getCollegeApplicationsForJob(jobId, jobType) {
+export function getCollegeApplicationsForJob(jobId, jobType, targetStatus) {
   return axiosClient.get(`application/manage/college`,
     {
       params: {
         jobId: jobId,
-        jobType: jobType
+        jobType: jobType,
+        targetStatus: targetStatus
       }
     }
   )
@@ -134,14 +136,14 @@ export function shortlistCandidate(applicationId, jobRole) {
     .catch(error => error);
 }
 // reject
-export function rejectCandidate(applicationId,jobRole) {
-  return axiosClient.patch(`/application/manage/reject/${applicationId}`,{ jobRole })
+export function rejectCandidate(applicationId, jobRole) {
+  return axiosClient.patch(`/application/manage/reject/${applicationId}`, { jobRole })
     .then(response => response)
     .catch(error => error);
 }
 // accept candidate
-export function acceptCandidate(applicationId,jobRole) {
-  return axiosClient.patch(`/application/manage/accept/${applicationId}`,{ jobRole })
+export function acceptCandidate(applicationId, jobRole) {
+  return axiosClient.patch(`/application/manage/accept/${applicationId}`, { jobRole })
     .then(response => response)
     .catch(error => error);
 }

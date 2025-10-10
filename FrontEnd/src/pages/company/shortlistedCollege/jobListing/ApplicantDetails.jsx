@@ -6,19 +6,19 @@ import useConversation from '@/statemanage/useConversation';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 import { Send } from 'lucide-react';
 
-const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => {
+
+const ApplicantDetails = ({ job, onClose }) => {
   const jobId = job._id;
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applications, setApplications] = useState();
-
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
 
   const getApplicants = async (jobId, jobType) => {
     setIsSubmitting(true);
     try {
-      const response = await getApplicationsForJob(jobId, jobType, "Applied");
+      const response = await getApplicationsForJob(jobId, jobType, "Shortlisted");
       // console.log("ye wala response: ", response.data);
       setApplications(response.data);
     } catch (error) {
@@ -29,7 +29,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
 
   const acceptApplicant = async (applicantionId) => {
     try {
-      const response = await acceptCandidate(applicantionId, job?.jobRoles);
+      const response = await acceptCandidate(applicantionId, job?.jobTitle);
       // console.log("shortlist: ", response)
       if (response?.data?.success === true) toast.success("Accpeted!");
       else toast.error(response.response?.data?.msg);
@@ -38,10 +38,9 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
       toast.error('Something went wrong!')
     }
   }
-
   const shortlistApplicant = async (applicantionId) => {
     try {
-      const response = await shortlistCandidate(applicantionId, job?.jobRoles);
+      const response = await shortlistCandidate(applicantionId, job?.jobTitle);
       // console.log("shortlist: ", response)
       if (response?.data?.success === true) toast.success("Shortlisted!");
       else toast.error(response.response?.data?.msg);
@@ -53,7 +52,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
 
   const rejectApplicant = async (applicantionId) => {
     try {
-      const response = await rejectCandidate(applicantionId, job?.jobRoles);
+      const response = await rejectCandidate(applicantionId, job?.jobTitle);
       if (response?.data?.success === true) toast.success("Rejected!");
       else toast.error(response.response?.data?.msg);
     } catch (error) {
@@ -99,6 +98,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
       toast.error('Error starting conversation');
     }
   };
+
 
   return (
     <>
@@ -158,7 +158,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                       <p className="font-bold mr-2">Current Salary:</p> <span>{applicant?.applicant.currentSalaryCurrency} {applicant?.applicant.currentSalaryAmount}</span>
                     </div>
                     <div className="flex items-center">
-                      <p className="font-bold mr-2">Current Salary:</p> <span>{applicant?.applicant.expectedSalaryCurrency} {applicant?.applicant.expectedSalaryAmount}</span>
+                      <p className="font-bold mr-2">Expected Salary:</p> <span>{applicant?.applicant.expectedSalaryCurrency} {applicant?.applicant.expectedSalaryAmount}</span>
                     </div>
                     <div className="flex items-center">
                       <p className="font-bold mr-2">Email:</p> <span className="underline">{applicant?.applicant.email}</span>
@@ -168,6 +168,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                     </div>
                   </div>
 
+                  <h3 className='font-bold text-gray-700 mb-2'>Related Links</h3>
                   <div className="flex space-x-4 mb-8">
                     <button className="px-6 py-2 border rounded-md">
                       {applicant?.applicant.linkedIn}
@@ -200,14 +201,14 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                     <div className="flex items-center">
                       <p className="font-bold mr-2">Key Info:</p>
                       <div className="flex items-center">
-                        <span className="mr-4">{applicant?.applicant.degree} ({applicant?.applicant.specialization})</span>
+                        <span className="mr-4 capitalize">{applicant?.applicant.degree} ({applicant?.applicant.specialization})</span>
                       </div>
                     </div>
                     <div className="flex items-center">
-                      <p className="font-bold mr-2">Language:</p> <span className="mr-4"></span>
+                      <p className="font-bold mr-2">Language:</p> <span className="mr-4">Not Specified</span>
                     </div>
                     <div className="flex items-center">
-                      <p className="font-bold mr-2">Designation:</p> <span>Backend Developer at TalentConnects</span>
+                      <p className="font-bold mr-2">Designation:</p> <span>Not Specified</span>
                     </div>
                     <div className="flex items-center">
                       <p className="font-bold mr-2">Industry:</p> <span>{applicant?.applicant.industry}</span>
@@ -237,18 +238,18 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                   </button>
                   {/* <button className="px-6 py-2 shadow hover:shadow-md border rounded-md text-gray-700">View Details</button> */}
                   <button
-                    onClick={() => acceptApplicant(applicant?._id)}
+                    onClick={() => acceptApplicant(applicant._id)}
                     disabled={isSubmitting}
-                    className="px-6 py-2 shadow hover:shadow-md text-green-500 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50"
+                    className="px-6 py-2 shadow hover:shadow-md text-green-500 font-medium rounded-md hover:bg-gray-200 disabled:opacity-50"
                   >
-                    Accept Candidate
+                    Accepte Candidate
                   </button>
                   <button
-                    onClick={() => shortlistApplicant(applicant?._id)}
+                    onClick={() => shortlistApplicant(applicant._id)}
                     disabled={isSubmitting}
-                    className="px-6 py-2 shadow hover:shadow-md text-yellow-500 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50"
+                    className="px-6 py-2 shadow hover:shadow-md text-yellow-500 font-medium rounded-md hover:bg-gray-200 disabled:opacity-50"
                   >
-                    Shortlist Candidate
+                    Schedule Interview
                   </button>
                   <button
                     onClick={() => rejectApplicant(applicant._id)}

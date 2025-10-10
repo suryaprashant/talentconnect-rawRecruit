@@ -18,37 +18,13 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
   const getApplicants = async (jobId, jobType) => {
     setIsSubmitting(true);
     try {
-      const response = await getApplicationsForJob(jobId, jobType, "Applied");
+      const response = await getApplicationsForJob(jobId, jobType, "Accepted");
       // console.log("ye wala response: ", response.data);
       setApplications(response.data);
     } catch (error) {
       console.log("Error: ", error);
     };
     setIsSubmitting(false);
-  }
-
-  const acceptApplicant = async (applicantionId) => {
-    try {
-      const response = await acceptCandidate(applicantionId, job?.jobRoles);
-      // console.log("shortlist: ", response)
-      if (response?.data?.success === true) toast.success("Accpeted!");
-      else toast.error(response.response?.data?.msg);
-    } catch (error) {
-      console.log("Error: ", error);
-      toast.error('Something went wrong!')
-    }
-  }
-
-  const shortlistApplicant = async (applicantionId) => {
-    try {
-      const response = await shortlistCandidate(applicantionId, job?.jobRoles);
-      // console.log("shortlist: ", response)
-      if (response?.data?.success === true) toast.success("Shortlisted!");
-      else toast.error(response.response?.data?.msg);
-    } catch (error) {
-      console.log("Error: ", error);
-      toast.error('Something went wrong!')
-    }
   }
 
   const rejectApplicant = async (applicantionId) => {
@@ -236,20 +212,6 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                     <Send size={14} className="mr-2" /> Chat
                   </button>
                   {/* <button className="px-6 py-2 shadow hover:shadow-md border rounded-md text-gray-700">View Details</button> */}
-                  <button
-                    onClick={() => acceptApplicant(applicant?._id)}
-                    disabled={isSubmitting}
-                    className="px-6 py-2 shadow hover:shadow-md text-green-500 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50"
-                  >
-                    Accept Candidate
-                  </button>
-                  <button
-                    onClick={() => shortlistApplicant(applicant?._id)}
-                    disabled={isSubmitting}
-                    className="px-6 py-2 shadow hover:shadow-md text-yellow-500 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50"
-                  >
-                    Shortlist Candidate
-                  </button>
                   <button
                     onClick={() => rejectApplicant(applicant._id)}
                     disabled={isSubmitting}
