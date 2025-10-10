@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, MapPin, Users, Trophy, Clock, DollarSign, FileText, Globe, Target, Plus, X } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { scrollToFirstError } from '../../../utils/scrollToError';
+import { getCasestudyById, updateCasestudy } from '@/lib/Company_AxiosInstance';
 
 const HostCasestudies = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { editMode, eventId, eventData } = location.state || {};
   const [formData, setFormData] = useState({
     logo: '',
     title: '',
@@ -36,7 +39,8 @@ const HostCasestudies = () => {
         roundName: 'Round 1',
         description: '',
         startDate: '',
-        endDate: ''
+        endDate: '',
+        inputType: '' 
       }
     ],
     rewards: {
@@ -61,7 +65,79 @@ const HostCasestudies = () => {
   const [faqs, setFaqs] = useState([{ question: '', answer: '' }]);
   const [panelMembers, setPanelMembers] = useState([]);
   const [panelInput, setPanelInput] = useState('');
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [casestudyId, setCasestudyId] = useState(null);
   const formRef = useRef(null);
+
+  // Load existing case study data if in edit mode
+  useEffect(() => {
+    const loadCasestudyData = async () => {
+      if (editMode && eventId) {
+        setIsEditMode(true);
+        setCasestudyId(eventId);
+        setLoading(true);
+        
+        try {
+          const response = await getCasestudyById(eventId);
+          if (response?.data?.success) {
+            const data = response.data.data;
+            
+            setFormData({
+              logo: data.bannerImage || '',
+              title: data.title || '',
+              subTitle: data.subTitle || '',
+              mode: data.mode || '',
+              visibility: data.visibility || '',
+              participationType: data.participationType || '',
+              eventDate: data.eventDate || '',
+              eventTime: data.eventTime || '',
+              description: data.description || '',
+              problemStatements: data.problemStatements || [{ title: '', description: '', technology: [] }],
+              startDate: data.startDate ? new Date(data.startDate).toISOString().slice(0, 16) : '',
+              endDate: data.endDate ? new Date(data.endDate).toISOString().slice(0, 16) : '',
+              location: data.location || '',
+              maxParticipants: data.maxParticipants || '',
+              maxTeams: data.maxTeams || '',
+              minTeamMembers: data.minTeamMembers || '',
+              maxTeamMembers: data.maxTeamMembers || '',
+              numberOfRounds: data.numberOfRounds || 1,
+              rounds: data.rounds || [{ roundNumber: 1, roundName: 'Round 1', description: '', startDate: '', endDate: '', inputType: '' }],
+              rewards: {
+                rewardType: data.rewardsAndBenefits?.[0]?.type === 'Cash' ? 'Amount' : 'Other',
+                firstPlace: data.rewardsAndBenefits?.find(r => r.rank === 'Winner')?.amount || '',
+                secondPlace: data.rewardsAndBenefits?.find(r => r.rank === '1st RunnerUp')?.amount || '',
+                thirdPlace: data.rewardsAndBenefits?.find(r => r.rank === '2nd RunnerUp')?.amount || '',
+                specialAwards: data.rewardsAndBenefits?.filter(r => !['Winner', '1st RunnerUp', '2nd RunnerUp'].includes(r.rank)) || []
+              },
+              registrationDeadline: data.registrationDeadline ? new Date(data.registrationDeadline).toISOString().slice(0, 16) : '',
+              requirements: data.requirements || '',
+              rules: data.rules || '',
+              website: data.website || '',
+              contactEmail: data.contactEmail || '',
+              tags: data.tags?.join(', ') || '',
+              domains: data.domains || [''],
+              eligibility: data.eligibility || '',
+              logoPreview: data.bannerImage || ''
+            });
+            
+            setFaqs(data.faqs || [{ question: '', answer: '' }]);
+            setPanelMembers(data.panelMembers || []);
+          } else {
+            toast.error('Failed to load case study data');
+            navigate('/hosting-management');
+          }
+        } catch (error) {
+          console.error('Error loading case study:', error);
+          toast.error('Failed to load case study data');
+          navigate('/hosting-management');
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    
+    loadCasestudyData();
+  }, [editMode, eventId, navigate]);
 
   // Decide which step an error belongs to
   const determineErrorStep = (errs = {}) => {
@@ -83,9 +159,11 @@ const HostCasestudies = () => {
     return 1; // default to step 1 for all other fields
   };
 
+  const [isUserNavigating, setIsUserNavigating] = useState(false);
+
   // Scroll to the first error whenever validation errors are set
   useEffect(() => {
-    if (errors && Object.keys(errors).length > 0) {
+    if (errors && Object.keys(errors).length > 0 && !isUserNavigating) {
       const targetStep = determineErrorStep(errors);
       if (step !== targetStep) {
         setStep(targetStep);
@@ -95,7 +173,15 @@ const HostCasestudies = () => {
         scrollToFirstError({ container: formRef.current || document, block: 'center' });
       });
     }
-  }, [errors, step]);
+  }, [errors, step, isUserNavigating]);
+
+  // Handle Next button click
+  const handleNext = () => {
+    setIsUserNavigating(true); // Set flag to indicate user navigation
+    setStep(2);
+    // Reset the flag after a short delay to allow normal error handling
+    setTimeout(() => setIsUserNavigating(false), 0);
+  };
 
   // Helper functions for rounds management
   const updateNumberOfRounds = (count) => {
@@ -103,13 +189,14 @@ const HostCasestudies = () => {
     for (let i = 1; i <= count; i++) {
       newRounds.push({
         roundNumber: i,
-        roundName: formData.rounds[i-1]?.roundName || `Round ${i}`,
-        description: formData.rounds[i-1]?.description || '',
-        startDate: formData.rounds[i-1]?.startDate || '',
-        endDate: formData.rounds[i-1]?.endDate || ''
+        roundName: formData.rounds[i - 1]?.roundName || `Round ${i}`,
+        description: formData.rounds[i - 1]?.description || '',
+        startDate: formData.rounds[i - 1]?.startDate || '',
+        endDate: formData.rounds[i - 1]?.endDate || '',
+        inputType: formData.rounds[i - 1]?.inputType || '' 
       });
     }
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       numberOfRounds: count,
       rounds: newRounds
@@ -122,10 +209,54 @@ const HostCasestudies = () => {
       ...updatedRounds[roundIndex],
       [field]: value
     };
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       rounds: updatedRounds
     }));
+
+    // Clear the specific error when a round field is updated
+    const errorKey = `round${roundIndex}${field.charAt(0).toUpperCase() + field.slice(1)}`;
+    if (errors[errorKey]) {
+      setErrors((prev) => ({
+        ...prev,
+        [errorKey]: ''
+      }));
+    }
+
+    // Clear date-related errors when dates are updated
+    if (field === 'startDate' || field === 'endDate') {
+      // Clear start date error if start date is being updated
+      if (field === 'startDate' && errors[`round${roundIndex}StartDate`]) {
+        setErrors(prev => ({
+          ...prev,
+          [`round${roundIndex}StartDate`]: ''
+        }));
+      }
+      
+      // Clear end date error if end date is being updated
+      if (field === 'endDate' && errors[`round${roundIndex}EndDate`]) {
+        setErrors(prev => ({
+          ...prev,
+          [`round${roundIndex}EndDate`]: ''
+        }));
+      }
+      
+      // Clear round name error if it exists and we're updating dates
+      if (errors[`round${roundIndex}Name`]) {
+        setErrors(prev => ({
+          ...prev,
+          [`round${roundIndex}Name`]: ''
+        }));
+      }
+    }
+    
+    // Clear user input error if user input is being updated
+    if (field === 'inputType' && errors[`round${roundIndex}InputType`]) {
+      setErrors(prev => ({
+        ...prev,
+        [`round${roundIndex}InputType`]: ''
+      }));
+    }
   };
 
   // Helper functions for special awards management
@@ -343,6 +474,11 @@ const HostCasestudies = () => {
       if (!round.roundName.trim()) {
         newErrors[`round${index}Name`] = `Round ${index + 1} name is required`;
       }
+
+      // Add validation for input type
+      if (!round.inputType) {
+        newErrors[`round${index}InputType`] = `Input type is required for Round ${index + 1}`;
+      }
       
       if (!round.startDate) {
         newErrors[`round${index}StartDate`] = `Round ${index + 1} start date is required`;
@@ -366,6 +502,8 @@ const HostCasestudies = () => {
         newErrors[`round${index}Description`] = `Round ${index + 1} description cannot exceed 1000 characters`;
       }
     });
+
+    
     
     // Domain Validation
     if (!formData.domains.length || (formData.domains.length === 1 && !formData.domains[0].trim())) {
@@ -429,33 +567,42 @@ const HostCasestudies = () => {
     
     try {
       const backendUrl = import.meta.env.VITE_Backend_URL || "http://localhost:5000";
+      console.log('inputType from first round:', formData.rounds[0]?.inputType);
       const payload = {
         ...formData,
         faqs,
         panelMembers,
       };
-      const response = await axios.post(
-        `${backendUrl}/casestudy/create`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      
+      let response;
+      if (isEditMode && casestudyId) {
+        // Update existing case study
+        response = await updateCasestudy(casestudyId, payload);
+      } else {
+        // Create new case study
+        response = await axios.post(
+          `${backendUrl}/casestudy/create`,
+          payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+      }
   
-      if (response.status === 201 || response.status === 200) {
-        toast.success("Case study created successfully!");
-        console.log("Case study created successfully:", response.data);
+      if (response.status === 201 || response.status === 200 || response?.data?.success) {
+        toast.success(isEditMode ? "Case study updated successfully!" : "Case study created successfully!");
+        console.log(isEditMode ? "Case study updated successfully:" : "Case study created successfully:", response.data);
   
-        // Navigate back to company profile/dashboard
-        navigate("/company-profile");
+        // Navigate back to hosting management
+        navigate("/hosting-management");
       }
      } catch (err) {
        const errorMessage =
-         err.response?.data?.message || "Failed to create case study.";
-       console.error("Error creating case study:", err);
+         err.response?.data?.message || (isEditMode ? "Failed to update case study." : "Failed to create case study.");
+       console.error(isEditMode ? "Error updating case study:" : "Error creating case study:", err);
        toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -463,7 +610,7 @@ const HostCasestudies = () => {
   };
 
   const handleCancel = () => {
-    navigate('/company-profile');
+    navigate('/hosting-management');
   };
 
   // FAQ handlers
@@ -516,7 +663,7 @@ const HostCasestudies = () => {
     }));
   };
 
-  // Add handlers for problem statements
+  // handlers for problem statements
   const addProblemStatement = () => {
     setFormData(prev => ({
       ...prev,
@@ -526,6 +673,14 @@ const HostCasestudies = () => {
         technology: []
       }]
     }));
+    
+    // Clear the general  error when adding a new one
+    if (errors.problemStatements) {
+      setErrors(prev => ({
+        ...prev,
+        problemStatements: ''
+      }));
+    }
   };
 
   const updateProblemStatement = (index, field, value) => {
@@ -538,6 +693,29 @@ const HostCasestudies = () => {
       ...prev,
       problemStatements: updatedStatements
     }));
+
+    // Clear the specific error when field is updated
+    const errorKey = `problem${field.charAt(0).toUpperCase() + field.slice(1)}${index}`;
+    if (errors[errorKey]) {
+      setErrors(prev => ({
+        ...prev,
+        [errorKey]: ''
+      }));
+    }
+    
+    // Clear the general problem statements error if this was the last empty statement
+    if (errors.problemStatements && value.trim()) {
+      const hasOtherEmptyStatements = updatedStatements.some(
+        (statement, i) => i !== index && (!statement.title.trim() || !statement.description.trim())
+      );
+      
+      if (!hasOtherEmptyStatements) {
+        setErrors(prev => ({
+          ...prev,
+          problemStatements: ''
+        }));
+      }
+    }
   };
 
   const removeProblemStatement = (index) => {
@@ -554,10 +732,10 @@ const HostCasestudies = () => {
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-3 mb-4">
             <Trophy className="h-8 w-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Host a Case Study</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{isEditMode ? 'Edit Case Study' : 'Host a Case Study'}</h1>
           </div>
           <p className="text-gray-600">
-            Create an engaging case study event to challenge participants with real-world business problems.
+            {isEditMode ? 'Update your case study event details.' : 'Create an engaging case study event to challenge participants with real-world business problems.'}
           </p>
         </div>
 
@@ -1073,9 +1251,32 @@ const HostCasestudies = () => {
                             type="text"
                             value={round.description}
                             onChange={(e) => updateRoundData(index, 'description', e.target.value)}
-                            className="w-[783px] px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Brief about this round"
                           />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Input Type
+                          </label>
+                          <select
+                            name="inputType"
+                            value={round.inputType}
+                            onChange={(e) => updateRoundData(index, 'inputType', e.target.value)}
+                            className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                              errors[`round${index}InputType`] ? 'border-red-500' : 'border-gray-300' 
+                            }`}
+                          >
+                            <option value="">Select input type</option>
+                            <option value="link">Link</option>
+                            <option value="doc">Document</option>\
+                            <option value="pdf">PDF</option>
+                            <option value="ppt">PowerPoint</option>
+                          </select>
+                          {errors[`round${index}InputType`] && (
+                            <p className="text-red-500 text-sm mt-1">{errors[`round${index}InputType`]}</p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1087,7 +1288,7 @@ const HostCasestudies = () => {
               <div className="bg-white rounded-lg shadow-sm p-6 flex justify-end">
                 <button
                   type="button"
-                  onClick={() => setStep(2)}
+                  onClick={handleNext} // Use handleNext instead of setStep(2)
                   className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
                   Next
@@ -1566,12 +1767,12 @@ const HostCasestudies = () => {
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Creating...
+                  {isEditMode ? 'Updating...' : 'Creating...'}
                 </>
               ) : (
                 <>
                   <Trophy className="h-4 w-4" />
-                  Create Case Study
+                  {isEditMode ? 'Update Case Study' : 'Create Case Study'}
                 </>
               )}
             </button>

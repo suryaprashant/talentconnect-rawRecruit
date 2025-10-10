@@ -122,7 +122,13 @@ const CasestudySchema = new mongoose.Schema({
             endDate: {
                 type: Date,
                 required: true
-            }
+            },
+           
+            inputType: {
+                type: String,
+                enum: ['link', 'pdf', 'doc', 'ppt', ''],
+                default: ''
+              }
         }
     ],
     registrationDeadline: {
@@ -220,6 +226,11 @@ const CasestudySchema = new mongoose.Schema({
     technology: {
         type: String,
         maxlength: [500, 'Technology description cannot be more than 500 characters']
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Auth',
+        required: [true, 'Creator ID is required']
     },
     createdAt: {
         type: Date,
