@@ -11,8 +11,10 @@ export const registerParticipant = async (req, res) => {
     const participantData = req.body;
     const createdBy = req.user._id;
     let roundDetails;
+    console.log(participantData.eventName);
+    
     switch (participantData.eventName) {
-      case 'hacakthon':
+      case 'hackathon':
         roundDetails=await hackathonHostingService.getHackathonRoundsById(participantData.eventID)
         break;
       case 'casestudy':
@@ -24,6 +26,7 @@ export const registerParticipant = async (req, res) => {
       default: roundDetails=null;
         break;
     }
+    
     if (Array.isArray(roundDetails) && roundDetails.length > 0) {
       const mappedRounds = roundDetails.map((round) => ({
         roundNumber: round.roundNumber,
@@ -114,8 +117,10 @@ export const getAllParticipants = async (req, res) => {
 // // @route   GET /eventParticipation/byParticipantId
 export const getByParticipantId = async (req, res) => {
   try {
+    
     const participantId = req.user._id;
     const participants = await eventParticipationService.getByParticipantId(participantId);
+    
     const result = [];
     for (const participant of participants) {
       const eventID = participant.eventID.toString();
