@@ -5,14 +5,18 @@ import {
   getAllParticipants,
   getParticipantsByEvent,
   updateParticipant,
-  deleteParticipant
-} from 'src/controllers/eventParticipationController.js';
+  deleteParticipant,
+  getByParticipantId,
+  updateInputType
+} from '../controllers/eventParticipationController.js';
 
 const router = express.Router();
 
 // @desc    Get all participants
 // @route   GET /eventParticipation
 router.get('/', getAllParticipants);
+
+router.get('/byParticipent',secureRoute, getByParticipantId);
 
 // @desc    Get participants by event ID
 // GET /eventParticipation/:eventID
@@ -21,6 +25,7 @@ router.get('/:eventID', getParticipantsByEvent);
 // @desc    Register a new participant
 // @route   POST /eventParticipation/register
 router.post('/register',secureRoute, registerParticipant);
+router.post('/updateInputType',updateInputType)
 
 // @desc    Update participant by ID
 // @route   PUT /eventParticipation/update/:id

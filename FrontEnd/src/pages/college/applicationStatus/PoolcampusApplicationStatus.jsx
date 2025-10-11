@@ -13,7 +13,7 @@ export default function PoolCampusApplicationStatus () {
         try {
             const response = await getUserApplicationStatus("Pool-campus");
             const rawData = response?.data?.data || [];
-            const normalized = rawData.map((item) => {
+            const normalized = rawData?.map((item) => {
                 const firstHistory = Array.isArray(item?.statusHistory) && item.statusHistory.length > 0 ? item.statusHistory[0] : null;
                 const existingJobDetails = Array.isArray(item?.jobDetails) ? item.jobDetails : [];
                 const existingCompanyDetails = Array.isArray(item?.companyDetails) ? item.companyDetails : [];
@@ -109,14 +109,14 @@ export default function PoolCampusApplicationStatus () {
                             onClick={() => setSelectedJob(job)}
                         >
                             <span cla>{job?.currentStatus}</span>
-                            <h3 className="font-medium">{job.jobDetails[0].jobRoles.map((l, i) => (<span key={i}>{l + ', '}</span>))}</h3>
+                            <h3 className="font-medium">{job.jobDetails[0].jobRoles?.map((l, i) => (<span key={i}>{l + ', '}</span>))}</h3>
                             <p className="text-sm text-gray-600">{job.companyDetails[0].companyDetails.companyName}</p>
                             <div className="mt-2 flex items-center text-xs text-gray-500">
                                 <Clock className="h-3 w-3 mr-1" />
                                 <span>{job.jobDetails[0].employmentType}</span>
                                 <span className="mx-2">•</span>
                                 <MapPin className="h-3 w-3 mr-1" />
-                                {job.jobDetails[0].location.map((l, i) => (<span key={i}>{l + ', '}</span>))}
+                                {job.jobDetails[0].location?.map((l, i) => (<span key={i}>{l + ', '}</span>))}
                             </div>
                         </div>
                     ))}
@@ -158,7 +158,7 @@ export default function PoolCampusApplicationStatus () {
                             <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
                                 <div className="flex justify-between">
                                     <div>
-                                        <h3 className="text-lg font-semibold">{selectedJob.jobDetails[0].jobRoles.map((l, i) => (<span key={i}>{l + ', '}</span>))}</h3>
+                                        <h3 className="text-lg font-semibold">{selectedJob.jobDetails[0].jobRoles?.map((l, i) => (<span key={i}>{l + ', '}</span>))}</h3>
                                         <p className="text-gray-600">{selectedJob.companyDetails[0].companyDetails.companyName}</p>
                                         <div className="mt-2 text-sm text-gray-500">
                                             <p>Job ID: {selectedJob._id}</p>

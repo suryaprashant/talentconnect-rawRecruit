@@ -30,7 +30,7 @@ export default function CreateJob() {
   const [formData, setFormData] = useState(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  
+
   const [dropdownOpen, setDropdownOpen] = useState({
     skills: false,
     certifications: false,
@@ -81,17 +81,17 @@ export default function CreateJob() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdownRefs = {
-          skills: skillsDropdownRef,
-          certifications: certificationsDropdownRef,
-          locations: locationsDropdownRef,
-          benefits: benefitsDropdownRef,
-          studentStreams: studentStreamsDropdownRef
+        skills: skillsDropdownRef,
+        certifications: certificationsDropdownRef,
+        locations: locationsDropdownRef,
+        benefits: benefitsDropdownRef,
+        studentStreams: studentStreamsDropdownRef
       };
-      
+
       for (const key in dropdownRefs) {
-          if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
-              setDropdownOpen(prev => ({ ...prev, [key]: false }));
-          }
+        if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
+          setDropdownOpen(prev => ({ ...prev, [key]: false }));
+        }
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -103,7 +103,7 @@ export default function CreateJob() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
+
   const handleOptionSelect = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -112,7 +112,7 @@ export default function CreateJob() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, minPackage: { ...prev.minPackage, [name]: value } }));
   };
-  
+
   const addItem = (field, item) => {
     if (item && !formData[field].includes(item)) {
       setFormData(prev => ({ ...prev, [field]: [...prev[field], item] }));
@@ -154,7 +154,7 @@ export default function CreateJob() {
 
   const handleSelectItem = (field, item, setInput, dropdownKey) => {
     addItem(field, item);
-    if(setInput) setInput('');
+    if (setInput) setInput('');
     setDropdownOpen(prev => ({ ...prev, [dropdownKey]: false }));
   };
 
@@ -164,20 +164,20 @@ export default function CreateJob() {
     setIsSubmitting(true);
 
     const requiredFields = {
-        jobTitle: "Job Title",
-        description: "Job Description",
-        location: "Location",
-        'minPackage.amount': "Salary Amount",
-        numberOfOpenings: "No. of Openings",
+      jobTitle: "Job Title",
+      description: "Job Description",
+      location: "Location",
+      'minPackage.amount': "Salary Amount",
+      numberOfOpenings: "No. of Openings",
     };
 
     for (const key in requiredFields) {
-        const value = key.includes('.') ? formData.minPackage.amount : formData[key];
-        if (!value || (Array.isArray(value) && value.length === 0)) {
-            toast.error(`Please fill the required field: ${requiredFields[key]}`);
-            setIsSubmitting(false);
-            return;
-        }
+      const value = key.includes('.') ? formData.minPackage.amount : formData[key];
+      if (!value || (Array.isArray(value) && value.length === 0)) {
+        toast.error(`Please fill the required field: ${requiredFields[key]}`);
+        setIsSubmitting(false);
+        return;
+      }
     }
 
     try {
@@ -192,7 +192,7 @@ export default function CreateJob() {
         broadcastType: formData.broadcastType
       };
 
-      const BackendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
+      // const BackendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
       const response = await axios.post(
         `${import.meta.env.VITE_Backend_URL}/api/hiring-channels/job-posting`,
         payload,
@@ -206,6 +206,9 @@ export default function CreateJob() {
       );
 
       toast.success("Job posted");
+      setTimeout(() => {
+        toast.success('This job will expire after 15 days');
+      }, 2000);
       setFormData(initialState);
 
     } catch (error) {
@@ -235,7 +238,7 @@ export default function CreateJob() {
               <button type="button" className={`px-4 py-1 border rounded-full text-sm transition-colors ${formData.employmentType === 'Contract' ? 'bg-black text-white border-black' : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'}`} onClick={() => handleOptionSelect('employmentType', 'Contract')}>Contract</button>
             </div>
           </div>
-          
+
           <div className="mb-4">
             <label htmlFor="jobTitle" className="block text-sm font-medium mb-2">Job Title <span className="text-red-500">*</span></label>
             <input type="text" id="jobTitle" name="jobTitle" placeholder="Enter the Job Title" className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black" value={formData.jobTitle} onChange={handleInputChange} />
@@ -252,8 +255,8 @@ export default function CreateJob() {
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
             </div>
           </div>
-          
-          
+
+          {/* --- MODIFIED: Location Multi-Select with City Search --- */}
           <div ref={locationsDropdownRef} className="relative mb-4">
             <label className="block text-sm font-medium mb-2">Location <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">
@@ -272,30 +275,30 @@ export default function CreateJob() {
               <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.locations ? "rotate-180" : ""}`} />
             </div>
             {dropdownOpen.locations && (
-                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-                    <div className="p-2 border-b">
-                        <input
-                            type="text"
-                            value={locationSearch}
-                            onChange={(e) => setLocationSearch(e.target.value)}
-                            onClick={(e) => e.stopPropagation()}
-                            placeholder="Search for a city..."
-                            className="w-full p-2 border rounded"
-                        />
-                    </div>
-                    <div className="max-h-60 overflow-auto">
-                        {filteredCities.map(city => (
-                            <div
-                                key={`${city.name}-${city.stateCode}`}
-                                onClick={() => handleSelectItem('location', city.name, null, 'locations')}
-                                className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.location.includes(city.name) ? "bg-gray-100 font-medium" : ""}`}
-                            >
-                                {city.name}
-                                {formData.location.includes(city.name) && <span className="float-right text-gray-500">✓</span>}
-                            </div>
-                        ))}
-                    </div>
+              <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
+                <div className="p-2 border-b">
+                  <input
+                    type="text"
+                    value={locationSearch}
+                    onChange={(e) => setLocationSearch(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder="Search for a city..."
+                    className="w-full p-2 border rounded"
+                  />
                 </div>
+                <div className="max-h-60 overflow-auto">
+                  {filteredCities.map(city => (
+                    <div
+                      key={`${city.name}-${city.stateCode}`}
+                      onClick={() => handleSelectItem('location', city.name, null, 'locations')}
+                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.location.includes(city.name) ? "bg-gray-100 font-medium" : ""}`}
+                    >
+                      {city.name}
+                      {formData.location.includes(city.name) && <span className="float-right text-gray-500">✓</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
 
@@ -346,12 +349,12 @@ export default function CreateJob() {
               <input type="number" name="amount" placeholder="Enter amount" className="flex-1 p-2 border border-l-0 border-gray-300 rounded-r-md focus:ring-2 focus:ring-black" value={formData.minPackage.amount} onChange={handleSalaryChange} min="0" />
             </div>
           </div>
-          
+
           <div className="mb-4">
             <label htmlFor="numberOfOpenings" className="block text-sm font-medium mb-2">No. of Openings <span className="text-red-500">*</span></label>
             <input type="number" id="numberOfOpenings" name="numberOfOpenings" placeholder="Ex. 5" className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black" value={formData.numberOfOpenings} onChange={handleInputChange} min="1" />
           </div>
-          
+
           <div className="mb-4">
             <label htmlFor="description" className="block text-sm font-medium mb-2">Job Description <span className="text-red-500">*</span></label>
             <textarea id="description" name="description" placeholder="Describe the job responsibilities and requirements..." className="w-full p-2 border border-gray-300 rounded-md h-32 focus:ring-2 focus:ring-black" value={formData.description} onChange={handleInputChange}></textarea>
@@ -382,12 +385,12 @@ export default function CreateJob() {
           {/* Preferred Field of Study Multi-Select */}
           <div className="mb-4" ref={studentStreamsDropdownRef}>
             <label className="block text-sm font-medium mb-2">Preferred Field of Study</label>
-            <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({...prev, studentStreams: true}))}>
+            <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({ ...prev, studentStreams: true }))}>
               <div className="flex flex-wrap gap-2 mb-2">
                 {formData.studentStreams.map((stream, index) => (
                   <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
                     <span>{stream}</span>
-                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('studentStreams', stream); }}><X size={14}/></button>
+                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('studentStreams', stream); }}><X size={14} /></button>
                   </div>
                 ))}
               </div>
@@ -401,7 +404,7 @@ export default function CreateJob() {
               </div>
             )}
           </div>
-          
+
           <div className="mb-4">
             <label htmlFor="yearsOfExperience" className="block text-sm font-medium mb-2">Years of Experience</label>
             <div className="relative">
@@ -416,12 +419,12 @@ export default function CreateJob() {
           {/* Skills Multi-Select */}
           <div className="mb-4" ref={skillsDropdownRef}>
             <label className="block text-sm font-medium mb-2">Skills</label>
-            <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({...prev, skills: true}))}>
+            <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({ ...prev, skills: true }))}>
               <div className="flex flex-wrap gap-2 mb-2">
                 {formData.skills.map((skill, index) => (
                   <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
                     <span>{skill}</span>
-                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('skills', skill); }}><X size={14}/></button>
+                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('skills', skill); }}><X size={14} /></button>
                   </div>
                 ))}
               </div>
@@ -439,12 +442,12 @@ export default function CreateJob() {
           {/* Benefits Multi-Select */}
           <div className="mb-4" ref={benefitsDropdownRef}>
             <label className="block text-sm font-medium mb-2">Benefits</label>
-            <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({...prev, benefits: true}))}>
+            <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({ ...prev, benefits: true }))}>
               <div className="flex flex-wrap gap-2 mb-2">
                 {formData.benefits.map((benefit, index) => (
                   <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
                     <span>{benefit}</span>
-                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('benefits', benefit); }}><X size={14}/></button>
+                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('benefits', benefit); }}><X size={14} /></button>
                   </div>
                 ))}
               </div>
@@ -458,16 +461,16 @@ export default function CreateJob() {
               </div>
             )}
           </div>
-          
+
           {/* Certifications Multi-Select */}
           <div className="mb-4" ref={certificationsDropdownRef}>
             <label className="block text-sm font-medium mb-2">Certifications (if any)</label>
-            <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({...prev, certifications: true}))}>
+            <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({ ...prev, certifications: true }))}>
               <div className="flex flex-wrap gap-2 mb-2">
                 {formData.certifications.map((cert, index) => (
                   <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
                     <span>{cert}</span>
-                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('certifications', cert); }}><X size={14}/></button>
+                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('certifications', cert); }}><X size={14} /></button>
                   </div>
                 ))}
               </div>

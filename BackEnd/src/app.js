@@ -90,18 +90,21 @@ import basicdetails from "src/routes/onboardingBasicdetailsRoute.js";
 // import resume from "./routes/onboardingResumeRoute.js";
 import CollegeApplication from 'src/routes/collegeApplicationRoute.js';
 // import jobinterest from "./routes/onboardingJobinterestsRoute.js";
-import student_onboardingroutes from "src/routes/studentOnboardingRoutes.js";
-import JobManagement from "src/routes/jobManagementRoute.js"
-import poolCampusRoute from "src/routes/jobManagement/poolCampusRoute.js";
-import OncampusJobmanagement from "src/routes/jobManagement/onCampusRoute.js"
-import TeamMemberRoute from "src/routes/teamMemberRoute.js";
-import notificationRoute from "src/routes/notificationRoute.js"
-import dropDownItems from "src/routes/dropDownItemsRoute.js" ;
-import jobPosting from 'src/routes/jobPostingsRoute.js' ;
-import studentDashboardRoute from 'src/routes/studentDashboard/studentDashboardRoute.js';
-import EmployerHiringChannelRoute from 'src/routes/employerHiringChannel/hiringChannelRoute.js'
-import CollegeJobManagement from "src/routes/collegeJobManageRoute.js" ;
-import resumeRoutes from 'src/routes/resumeroute.js';
+import student_onboardingroutes from "./routes/studentOnboardingRoutes.js";
+import JobManagement from "./routes/jobManagementRoute.js"
+import poolCampusRoute from "./routes/jobManagement/poolCampusRoute.js";
+import OncampusJobmanagement from "./routes/jobManagement/onCampusRoute.js"
+import TeamMemberRoute from "./routes/teamMemberRoute.js";
+import notificationRoute from "./routes/notificationRoute.js"
+import dropDownItems from "./routes/dropDownItemsRoute.js" ;
+import jobPosting from './routes/jobPostingsRoute.js' ;
+import studentDashboardRoute from './routes/studentDashboard/studentDashboardRoute.js';
+import EmployerHiringChannelRoute from './routes/employerHiringChannel/hiringChannelRoute.js'
+import CollegeJobManagement from "./routes/collegeJobManageRoute.js" ;
+import resumeRoutes from './routes/resumeroute.js';
+import hackathonHostingRoute from './routes/hostingManagement/hackathonHostingRoute.js';
+import casestudyHostingRoute from './routes/hostingManagement/casestudyHostingRoute.js';
+import workshopHostingRoute from './routes/hostingManagement/workshopHostingRoute.js';
 app.use("/api/auth", authRoutes);
 app.use("/api", student_onboardingroutes);
 app.use("/api/hiring-channels", jobPosting);
@@ -141,6 +144,9 @@ app.use("/company/dashboard/resume", Resume);
 app.use("/company", Company);
 app.use('/company/jobmanagement',JobManagement);
 app.use('/college/jobmanagement',CollegeJobManagement) ;
+app.use('/api/hosting-management', hackathonHostingRoute);
+app.use('/api/hosting-management', casestudyHostingRoute);
+app.use('/api/hosting-management', workshopHostingRoute);
 
 // RawRecruit API Mounts
 app.use("/api/rawrecruit", [
