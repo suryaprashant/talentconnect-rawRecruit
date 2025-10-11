@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { createCollegeProfile } from 'src/controllers/collegeDashboard/collegeProfileController.js'
+import { createCollegeProfile } from '../../controllers/collegeDashboard/collegeProfileController.js'
 
 const router = express.Router();
 const storage = multer.memoryStorage();

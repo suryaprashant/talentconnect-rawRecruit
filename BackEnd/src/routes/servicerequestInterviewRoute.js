@@ -1,5 +1,5 @@
 import express from "express";
-import { scheduleInterview } from "src/controllers/servicerequestInterviewcontrollerController.js";
+import { scheduleInterview } from "../controllers/servicerequestInterviewcontrollerController.js";
 
 const router = express.Router();
 

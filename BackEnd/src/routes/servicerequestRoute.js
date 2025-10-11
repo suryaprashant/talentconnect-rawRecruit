@@ -2,8 +2,8 @@ import express from "express";
 
 const router = express.Router();
 
-import { validateServiceRequest } from "src/middlewares/validateServicerequestMiddleware.js";
-import { createServiceRequest } from "src/controllers/servicerequest.js";
+import { validateServiceRequest } from "../middlewares/validateServicerequestMiddleware.js";
+import { createServiceRequest } from "../controllers/servicerequest.js";
 
 router.post("/servicerequest", createServiceRequest);
 

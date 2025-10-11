@@ -1,4 +1,4 @@
-import workshopService from "src/services/workshopService.js";
+import workshopService from "../services/workshopService.js";
 
 export const createWorkshop = async (req, res, next) => {
     try {

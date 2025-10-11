@@ -1,8 +1,8 @@
 // import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
-import { getJobPostedByCollegeService } from "src/services/jobManagementService.js";
+import { getJobPostedByCollegeService } from "../services/jobManagementService.js";
 
 // import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js"
-import { getCollegeService } from "src/services/collegeService.js";
+import { getCollegeService } from "../services/collegeService.js";
 
 export const getCollegePostedJobs = async (req, res) => {
     const collegeId = req.user._id;

@@ -1,6 +1,6 @@
 import express from 'express' ;
-import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
-import { getNotifications, markAsRead } from 'src/controllers/teamMemberController.js';
+import secureRoute from '../middlewares/secureRouteMiddleware.js';
+import { getNotifications, markAsRead } from '../controllers/teamMemberController.js';
 
 
 

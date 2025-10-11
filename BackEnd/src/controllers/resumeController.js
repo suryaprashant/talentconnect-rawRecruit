@@ -1,6 +1,6 @@
-import { fetchAllResumeService, saveParsedResumeService } from "src/services/resumeService.js";
-import { calculateMatchScore } from "src/utils/weightedResumeSearch.js";
-import { parseResume } from 'src/services/resumeParserService.js';
+import { fetchAllResumeService, saveParsedResumeService } from "../services/resumeService.js";
+import { calculateMatchScore } from "../utils/weightedResumeSearch.js";
+import { parseResume } from '../services/resumeParserService.js';
 export const uploadResume = async (req, res) => {
   try {
     // --- All Pre-checks are here in the controller ---

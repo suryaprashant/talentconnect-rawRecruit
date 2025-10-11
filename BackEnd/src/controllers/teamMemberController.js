@@ -1,12 +1,12 @@
-import TeamMember from "src/models/teamMemberModel.js";
-import Auth from 'src/models/authModel.js' ;
-import CompanyProfile from "src/models/companyDashboard/companyProfileModel.js";
-import EmployerOnboarding from 'src/models/employerDashboard/employerOnboardingModel.js';
+import TeamMember from "../models/teamMemberModel.js";
+import Auth from '../models/authModel.js' ;
+import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
+import EmployerOnboarding from '../models/employerDashboard/employerOnboardingModel.js';
 
 
 
 
-import Notification from 'src/models/notificationModel.js';
+import Notification from '../models/notificationModel.js';
 
 
 

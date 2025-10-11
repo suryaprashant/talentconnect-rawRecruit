@@ -12,9 +12,9 @@ import {
     saveJobService,
     // getApplicationService, 
     // getOffCampusApplicantsService, fetchShortlistedCandidates, fetchInternshipApplicationService, fetchApplicationStatusService
-} from "src/services/applicationService.js";
-import { getCollegeEmail, getCollegeService } from "src/services/collegeService.js";
-import { getCompanyEmail, getCompanyService } from "src/services/companyService.js";
+} from "../services/applicationService.js";
+import { getCollegeEmail, getCollegeService } from "../services/collegeService.js";
+import { getCompanyEmail, getCompanyService } from "../services/companyService.js";
 // import { checkJobListingOpportunityService, checkOpportunityService } from "../services/Job.service.js";
 import { getCandidatEmail, getStudentService } from "../services/studentService.js";
 import sendStatusChangeEmail from "../utils/sendStatusChangeEmail.js";

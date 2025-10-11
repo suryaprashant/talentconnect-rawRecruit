@@ -1,6 +1,6 @@
 // routes/campusPlacementRoutes.js
 import express from "express";
-import { registerCampusPlacement } from "src/controllers/servicerequest_oncampusplacement.js";
+import { registerCampusPlacement } from "../controllers/servicerequest_oncampusplacement.js";
 
 const router = express.Router();
 

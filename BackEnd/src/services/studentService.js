@@ -1,7 +1,7 @@
-import OnboardingModel from 'src/models/studentonboardingModel.js';
-import Auth from 'src/models/authModel.js';
-import { updateAuthUserService } from 'src/services/authService.js';
-import { streamUpload } from 'src/utils/streamUpload.js';
+import OnboardingModel from '../models/studentonboardingModel.js';
+import Auth from '../models/authModel.js';
+import { updateAuthUserService } from '../services/authService.js';
+import { streamUpload } from '../utils/streamUpload.js';
 
 // Get all onboarding forms
 export async function getAllOnboardingFormsService() {

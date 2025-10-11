@@ -1,6 +1,6 @@
 import express from 'express';
-import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
-import { createInternshipPosting, createJobPosting, createOffCampusJobPosting, createOnCampusPosting, createPoolCampusPosting } from 'src/controllers/employerHiringChannel/hiringChannelController.js';
+import secureRoute from '../../middlewares/secureRouteMiddleware.js';
+import { createInternshipPosting, createJobPosting, createOffCampusJobPosting, createOnCampusPosting, createPoolCampusPosting } from '../../controllers/employerHiringChannel/hiringChannelController.js';
 
 
 const router = express.Router();

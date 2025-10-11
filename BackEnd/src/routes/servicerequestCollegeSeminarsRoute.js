@@ -1,5 +1,5 @@
 import express from "express";
-import { submitRequest } from "src/controllers/servicerequestCollegeSeminarController.js";
+import { submitRequest } from "../controllers/servicerequestCollegeSeminarController.js";
 
 const router = express.Router();
 

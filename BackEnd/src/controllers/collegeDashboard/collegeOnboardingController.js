@@ -1,9 +1,9 @@
-import CollegeOnboarding from 'src/models/collegeDashboard/collegeOnboardingModel.js';
-import cloudinary from '../../../../config/cloudinary.js'; // Adjust path as needed
+import CollegeOnboarding from '../../models/collegeDashboard/collegeOnboardingModel.js';
+import cloudinary from '../../../config/cloudinary.js'; // Adjust path as needed
 import streamifier from 'streamifier';
-import Auth from 'src/models/authModel.js'
-import { getCollegeService } from 'src/services/collegeService.js';
-import { updateAuthUserService } from 'src/services/authService.js';
+import Auth from '../../models/authModel.js'
+import { getCollegeService } from '../../services/collegeService.js';
+import { updateAuthUserService } from '../../services/authService.js';
 
 const streamUpload = (buffer, folder) => {
   return new Promise((resolve, reject) => {

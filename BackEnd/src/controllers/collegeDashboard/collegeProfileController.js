@@ -1,5 +1,5 @@
-import CollegeProfile from 'src/models/collegeDashboard/collegeProfileModel.js';
-import cloudinary from '../../../../config/cloudinary.js';
+import CollegeProfile from '../../models/collegeDashboard/collegeProfileModel.js';
+import cloudinary from '../../../config/cloudinary.js';
 import streamifier from 'streamifier';
 
 const streamUpload = (buffer, folder) => {

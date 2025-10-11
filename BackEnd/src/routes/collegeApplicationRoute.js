@@ -1,5 +1,5 @@
 import express from "express";
-import { AcceptCampusRequest, getAcceptedCampusRequest } from "src/controllers/collegeApplicationController.js";
+import { AcceptCampusRequest, getAcceptedCampusRequest } from "../controllers/collegeApplicationController.js";
 
 const router = express.Router();
 

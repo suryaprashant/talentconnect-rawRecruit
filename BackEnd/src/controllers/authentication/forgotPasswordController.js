@@ -1,4 +1,4 @@
-import { requestPasswordReset, performPasswordReset } from "src/services/authService.js";
+import { requestPasswordReset, performPasswordReset } from "../../services/authService.js";
 
 
 export const sendResetLink = async (req, res) => {

@@ -1,6 +1,6 @@
-import { countApplicationsService } from "src/services/applicationService.js";
-import { getCompanyService } from "src/services/companyService.js";
-import { deleteJobByIdService, getJobPostedByCompanyService } from "src/services/jobPostingService.js";
+import { countApplicationsService } from "../services/applicationService.js";
+import { getCompanyService } from "../services/companyService.js";
+import { deleteJobByIdService, getJobPostedByCompanyService } from "../services/jobPostingService.js";
 
 // all jobs posted by company
 export const getPostedJobs = async (req, res) => {

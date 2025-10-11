@@ -1,4 +1,4 @@
-import { campusPlacementRegistrationService, getCollegeDetailService, getCollegesService } from "src/services/campusPlacementService.js";
+import { campusPlacementRegistrationService, getCollegeDetailService, getCollegesService } from "../services/campusPlacementService.js";
 
 export const registerCampusPlacement = async (req, res) => {
     try {

@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
-import { createEmployerOnboarding, getEmployerOnboarding, updateEmployerOnboarding, uploadSingleImage } from 'src/controllers/employerDashboard/employerProfileController.js';
-import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
+import { createEmployerOnboarding, getEmployerOnboarding, updateEmployerOnboarding, uploadSingleImage } from '../../controllers/employerDashboard/employerProfileController.js';
+import secureRoute from '../../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
 const storage = multer.memoryStorage();

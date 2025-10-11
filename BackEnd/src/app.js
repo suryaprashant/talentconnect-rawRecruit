@@ -7,8 +7,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 // DB & Socket
-import Connection from "../../config/Db.js";
-import { app, server } from "src/socketIO/server.js";
+import Connection from "../config/Db.js";
+import { app, server } from "./socketIO/server.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,60 +35,60 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 
 // Auth and Profile Routes
-import authRoutes from "src/routes/authRoute.js";
-import uploadRoutes from "src/routes/uploadRoute.js";
-import studentProfileRoutes from "src/routes/studentProfileRoutes.js";
-import fresherProfileRoutes from "src/routes/fresherProfileRoutes.js";
-import professionalProfileRoutes from "src/routes/professionalProfileRoutes.js";
-import companyProfileRoutes from "src/routes/companyDashboard/companyProfileRoutes.js";
-import collegeProfileRoutes from "src/routes/collegeDashboard/collegeProfileRoutes.js";
-import collegeOnboardingRoutes from "src/routes/collegeDashboard/collegeOnboardingRoutes.js";
+import authRoutes from "./routes/authRoute.js";
+import uploadRoutes from "./routes/uploadRoute.js";
+import studentProfileRoutes from "./routes/studentProfileRoutes.js";
+import fresherProfileRoutes from "./routes/fresherProfileRoutes.js";
+import professionalProfileRoutes from "./routes/professionalProfileRoutes.js";
+import companyProfileRoutes from "./routes/companyDashboard/companyProfileRoutes.js";
+import collegeProfileRoutes from "./routes/collegeDashboard/collegeProfileRoutes.js";
+import collegeOnboardingRoutes from "./routes/collegeDashboard/collegeOnboardingRoutes.js";
 //import employerProfileRoutes from "./routes/employerProfileRoutes.js";
-import employerProfileRoutes from 'src/routes/employerDashboard/employerProfileRoute.js'
-import messageRoute from "src/routes/messageRoute.js";
+import employerProfileRoutes from './routes/employerDashboard/employerProfileRoute.js'
+import messageRoute from "./routes/messageRoute.js";
 
 // Main Features
-import Application from "src/routes/applicationRoute.js";
-import Resume from "src/routes/resumeroute.js";
-import Hackathon from "src/routes/hackathonRoute.js";
-import Casestudy from "src/routes/casestudyRoute.js";
-import Workshop from "src/routes/workshopRoute.js";
-import eventParticipation from "src/routes/eventParticipationRoute.js";
-import EmployerDashboard from "src/routes/employerDahsboardRoute.js";
-import Company from "src/routes/companyRoute.js";
-import Jobs from "src/routes/jobsRoute.js"
+import Application from "./routes/applicationRoute.js";
+import Resume from "./routes/resumeroute.js";
+import Hackathon from "./routes/hackathonRoute.js";
+import Casestudy from "./routes/casestudyRoute.js";
+import Workshop from "./routes/workshopRoute.js";
+import eventParticipation from "./routes/eventParticipationRoute.js";
+import EmployerDashboard from "./routes/employerDahsboardRoute.js";
+import Company from "./routes/companyRoute.js";
+import Jobs from "./routes/jobsRoute.js"
 
 // RawRecruit APIs
-import serviceRequestRouter from "src/routes/servicerequestRoute.js";
-import servicerequestinterview from "src/routes/servicerequestInterviewRoute.js";
-import servicerequestreferraljobs from "src/routes/servicerequestReferraljobsRoute.js";
-import servicerequest_offcampusinfo from "src/routes/servicerequestOffcampusinfoRoute.js";
-import servicerequest_offcampusregister from "src/routes/servicerequestOffcampusregisterRoute.js";
-import servicerequest_oncampusinfo from "src/routes/servicerequestOncampusinfoRoute.js";
-import servicerequest_oncampusregister from "src/routes/servicerequestOncampusregisterRoute.js";
-import servicerequest_ondemandtraining from "src/routes/servicerequestOndemandtrainingRoute.js";
-import servicerequest_oncampusplacement from "src/routes/servicerequestOncampusplacementRoute.js";
-import servicerequest_studenttraining from "src/routes/servicerequestStudenttrainingRoute.js";
-import studentroute from "src/routes/studentRoute.js";
-import application_to_admin from "src/routes/applicationToAdminRoute.js";
-import uploadResumeRoute from "src/routes/uploadresumeRoute.js";
+import serviceRequestRouter from "./routes/servicerequestRoute.js";
+import servicerequestinterview from "./routes/servicerequestInterviewRoute.js";
+import servicerequestreferraljobs from "./routes/servicerequestReferraljobsRoute.js";
+import servicerequest_offcampusinfo from "./routes/servicerequestOffcampusinfoRoute.js";
+import servicerequest_offcampusregister from "./routes/servicerequestOffcampusregisterRoute.js";
+import servicerequest_oncampusinfo from "./routes/servicerequestOncampusinfoRoute.js";
+import servicerequest_oncampusregister from "./routes/servicerequestOncampusregisterRoute.js";
+import servicerequest_ondemandtraining from "./routes/servicerequestOndemandtrainingRoute.js";
+import servicerequest_oncampusplacement from "./routes/servicerequestOncampusplacementRoute.js";
+import servicerequest_studenttraining from "./routes/servicerequestStudenttrainingRoute.js";
+import studentroute from "./routes/studentRoute.js";
+import application_to_admin from "./routes/applicationToAdminRoute.js";
+import uploadResumeRoute from "./routes/uploadresumeRoute.js";
 // import manage_application from "./routes/manage_applicationRoute.js";
 // import jobapplication from "./routes/jobApplication.js";
 // import registeroncampus from "./controllers/registeredcandidates_oncampusapplication.js";
-import servicerequest from "src/routes/servicerequestCompanyWorkforcesolutionsRoute.js";
-import employeetraining from "src/routes/servicerequestCompanyEmployeetrainingRoute.js";
-import branding from "src/routes/servicerequestCompanyBrandingRoute.js";
-import employeerbranding from "src/routes/servicerequestCompanyEmployeerbrandingRoute.js";
-import seminars from "src/routes/servicerequestCollegeSeminarsRoute.js";
-import requestinfo from "src/routes/servicerequestCollegeStudenttrainingRequestinfoRoute.js";
-import collegeoncampus from "src/routes/servicerequestCollegeOncampusRoute.js";
-import collegerequestinfo from "src/routes/servicerequestCollegeOncampusrequestRoute.js";
+import servicerequest from "./routes/servicerequestCompanyWorkforcesolutionsRoute.js";
+import employeetraining from "./routes/servicerequestCompanyEmployeetrainingRoute.js";
+import branding from "./routes/servicerequestCompanyBrandingRoute.js";
+import employeerbranding from "./routes/servicerequestCompanyEmployeerbrandingRoute.js";
+import seminars from "./routes/servicerequestCollegeSeminarsRoute.js";
+import requestinfo from "./routes/servicerequestCollegeStudenttrainingRequestinfoRoute.js";
+import collegeoncampus from "./routes/servicerequestCollegeOncampusRoute.js";
+import collegerequestinfo from "./routes/servicerequestCollegeOncampusrequestRoute.js";
 // import additionalinfo from "./routes/onboardingAdditionalinfoRoute.js";
 // import preferences from "./routes/onboardingPreferencesRoute.js";
 // import education from "./routes/onboardingEducationRoute.js";
-import basicdetails from "src/routes/onboardingBasicdetailsRoute.js";
+import basicdetails from "./routes/onboardingBasicdetailsRoute.js";
 // import resume from "./routes/onboardingResumeRoute.js";
-import CollegeApplication from 'src/routes/collegeApplicationRoute.js';
+import CollegeApplication from './routes/collegeApplicationRoute.js';
 // import jobinterest from "./routes/onboardingJobinterestsRoute.js";
 import student_onboardingroutes from "./routes/studentOnboardingRoutes.js";
 import JobManagement from "./routes/jobManagementRoute.js"

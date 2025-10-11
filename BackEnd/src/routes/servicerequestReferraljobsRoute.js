@@ -1,5 +1,5 @@
 import express from "express";
-import { createJob } from "src/controllers/servicerequestReferraljobsController.js";
+import { createJob } from "../controllers/servicerequestReferraljobsController.js";
 
 const router = express.Router();
 

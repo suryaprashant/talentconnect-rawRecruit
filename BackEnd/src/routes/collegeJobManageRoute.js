@@ -1,6 +1,6 @@
 import express from "express";
-import { getCollegePostedJobs } from "src/controllers/collegeJobManagementController.js";
-import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
+import { getCollegePostedJobs } from "../controllers/collegeJobManagementController.js";
+import secureRoute from '../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
 

@@ -1,4 +1,4 @@
-import OffCampusInfo from "src/models/servicerequestOffcampusinfoModel.js";
+import OffCampusInfo from "../models/servicerequestOffcampusinfoModel.js";
 
 export const submitOffCampusInfo = async (req, res) => {
   try {

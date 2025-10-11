@@ -1,4 +1,4 @@
-import casestudyService from "src/services/casestudyService.js";
+import casestudyService from "../services/casestudyService.js";
 
 export const createCasestudy = async (req, res, next) => {
     try {

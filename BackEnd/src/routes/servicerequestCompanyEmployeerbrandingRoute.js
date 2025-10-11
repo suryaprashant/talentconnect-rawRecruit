@@ -1,5 +1,5 @@
 import express from "express";
-import { submitOnDemandTrainingRequest } from "src/controllers/servicerequestCompanyEmployeerbrandingController.js";
+import { submitOnDemandTrainingRequest } from "../controllers/servicerequestCompanyEmployeerbrandingController.js";
 
 const router = express.Router();
 
