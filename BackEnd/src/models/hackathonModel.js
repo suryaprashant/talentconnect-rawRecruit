@@ -175,7 +175,7 @@ const HackathonSchema = new mongoose.Schema({
             },
             type: {
                 type: String,
-                enum: ['Cash', 'Certificate', 'Swag', 'Goodies', 'Networking', 'Other'],
+                enum: ['Cash', 'Certificate', 'Swag', 'Goodies', 'Networking', 'Special', 'Other'],
                 default: 'Other'
             },
             amount: {
@@ -194,9 +194,9 @@ const HackathonSchema = new mongoose.Schema({
         type: String,
         validate: {
             validator: function(v) {
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+                return /^https?:\/\/.+/.test(v);
             },
-            message: 'Please provide valid email addresses for panel members'
+            message: 'Please provide valid URLs for panel members'
         }
     }],
     eligibility: {
