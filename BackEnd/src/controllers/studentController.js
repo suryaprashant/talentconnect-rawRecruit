@@ -1,6 +1,6 @@
 // This file is used for testing only
 // Done by sheetal
-import StudentOverview from "src/models/studentModel.js";
+import StudentOverview from "../models/studentModel.js";
 
 // @desc    Create a new student profile
 // this is done by others i only use for testing

@@ -1,4 +1,4 @@
-import { AcceptCampusRequestService, getAcceptedCampusRequestService } from "src/services/collegeApplicationService.js";
+import { AcceptCampusRequestService, getAcceptedCampusRequestService } from "../services/collegeApplicationService.js";
 
 export async function AcceptCampusRequest(req, res) {
     const { companyId, collegeId } = req.body;

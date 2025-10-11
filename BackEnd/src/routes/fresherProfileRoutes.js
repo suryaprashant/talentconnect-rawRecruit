@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { createFresherProfile } from 'src/controllers/fresherProfileController.js';
+import { createFresherProfile } from '../controllers/fresherProfileController.js';
 
 const router = express.Router();
 const storage = multer.memoryStorage();

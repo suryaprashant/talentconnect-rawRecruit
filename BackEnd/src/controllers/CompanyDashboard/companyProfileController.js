@@ -1,9 +1,9 @@
-import CompanyProfile from 'src/models/companyDashboard/companyProfileModel.js'
-import cloudinary from '../../../../config/cloudinary.js'
+import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js'
+import cloudinary from '../../../config/cloudinary.js'
 import streamifier from 'streamifier';
-import { updateAuthUserService } from 'src/services/authService.js';
+import { updateAuthUserService } from '../../services/authService.js';
 
-import { getCompanyService, updateCompanyProfileService } from 'src/services/companyService.js'
+import { getCompanyService, updateCompanyProfileService } from '../../services/companyService.js'
 
 // Utility for streaming upload
 const streamUpload = (buffer, folder) => {

@@ -1,6 +1,6 @@
 import express from 'express';
-import { getInternshipPostings, getIntershipById, getJobPostings, getOffCampusPostings, getOnCampusPostingForCollegebyID, getOnCampusPostingForCompanybyID, getOnCampusPostings, getOnCampusPostingsForCollege, getOnCampusPostingsForCompany, getPoolCampusForCollege, getPoolCampusForCompany, getPoolCampusJobByIdForCollege, getPoolCampusJobByIdForCompany, getReferralJobById, getReferralJobs } from 'src/controllers/studentDashboard/studentDashboardController.js';
-import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
+import { getInternshipPostings, getIntershipById, getJobPostings, getOffCampusPostings, getOnCampusPostingForCollegebyID, getOnCampusPostingForCompanybyID, getOnCampusPostings, getOnCampusPostingsForCollege, getOnCampusPostingsForCompany, getPoolCampusForCollege, getPoolCampusForCompany, getPoolCampusJobByIdForCollege, getPoolCampusJobByIdForCompany, getReferralJobById, getReferralJobs } from '../../controllers/studentDashboard/studentDashboardController.js';
+import secureRoute from '../../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router(); 
 

@@ -1,5 +1,5 @@
 import express from "express";
-import { createCompanyProfile } from "src/controllers/companyController.js";
+import { createCompanyProfile } from "../controllers/companyController.js";
 
 const router = express.Router();
 

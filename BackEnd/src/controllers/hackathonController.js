@@ -1,4 +1,4 @@
-import hackathonHostingService from "src/services/hackathonHostingService.js";
+import hackathonHostingService from "../services/hackathonHostingService.js";
 
 export const createHackathon = async (req, res, next) => {
     try {

@@ -1,6 +1,6 @@
 // src/controllers/studentProfileController.js
-import StudentProfile from 'src/models/studentProfileModel.js';
-import cloudinary from '../../../config/cloudinary.js';
+import StudentProfile from '../models/studentProfileModel.js';
+import cloudinary from '../../config/cloudinary.js';
 import streamifier from 'streamifier';
 
 const streamUpload = (buffer, folder) => {

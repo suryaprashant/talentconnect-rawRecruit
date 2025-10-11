@@ -4,7 +4,7 @@ const router = express.Router();
 import {
   createServiceRequest,
   createmockinterviewrequest,
-} from "src/services/applicationToAdminService.js";
+} from "../services/applicationToAdminService.js";
 
 // we have to define the middleware so that only admin can access this route
 router.get("/counselling", createServiceRequest);

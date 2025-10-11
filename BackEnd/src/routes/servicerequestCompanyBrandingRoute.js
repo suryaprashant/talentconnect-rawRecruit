@@ -1,6 +1,6 @@
 // routes/servicerequest_company_branding.js
 import express from "express";
-import { createServiceRequest } from "src/controllers/servicerequestCompanyBrandingController.js";
+import { createServiceRequest } from "../controllers/servicerequestCompanyBrandingController.js";
 
 const router = express.Router();
 

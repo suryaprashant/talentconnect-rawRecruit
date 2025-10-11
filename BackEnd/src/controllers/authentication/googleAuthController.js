@@ -1,5 +1,5 @@
-import { authenticateWithGoogle } from "src/services/googleAuthService.js";
-import { generateToken } from "src/services/authService.js";
+import { authenticateWithGoogle } from "../../services/googleAuthService.js";
+import { generateToken } from "../..//services/authService.js";
 
 
 export const googleAuth = async (req, res) => {

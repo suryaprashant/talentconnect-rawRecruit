@@ -1,5 +1,5 @@
-import collegeOnboardingModel from "src/models/collegeDashboard/collegeOnboardingModel.js";
-import Auth from "src/models/authModel.js";
+import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
+import Auth from "../models/authModel.js";
 
 export async function getCollegeService(userId) {
     try {

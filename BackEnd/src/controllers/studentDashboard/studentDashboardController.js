@@ -1,7 +1,7 @@
-import { getJobPostingsByCollegeService, getJobPostingsByJobTypeService } from "src/services/jobPostingService.js";
-import CompanyProfile from "src/models/companyDashboard/companyProfileModel.js";
-import { JobPostingTable } from "src/models/jobPostingsModel.js";
-import OnboardingModel from "src/models/studentonboardingModel.js";
+import { getJobPostingsByCollegeService, getJobPostingsByJobTypeService } from "../../services/jobPostingService.js";
+import CompanyProfile from "../../models/companyDashboard/companyProfileModel.js";
+import { JobPostingTable } from "../../models/jobPostingsModel.js";
+import OnboardingModel from "../../models/studentonboardingModel.js";
 
 
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);

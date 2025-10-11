@@ -2,8 +2,8 @@
 // import { oncampusApplicationService, poolcampusApplicationService } from "../services/Application.service.js";
 // import OnCampusApplication from "../models/oncampusApplicationModel.js";
 // import { getCompanyService } from "../services/companyService.js";
-import { getJobDetailByIdService } from "src/services/hiringChannelService.js";
-import { getCollegeService } from "src/services/collegeService.js";
+import { getJobDetailByIdService } from "../services/hiringChannelService.js";
+import { getCollegeService } from "../services/collegeService.js";
 
 // export const submitRegistration = async (req, res) => {
 //   try {

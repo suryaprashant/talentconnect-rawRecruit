@@ -1,4 +1,4 @@
-import OffCampusRegister from "src/models/servicerequestOffcampusregisterModel.js";
+import OffCampusRegister from "../models/servicerequestOffcampusregisterModel.js";
 
 export const registerOffCampus = async (req, res) => {
   try {

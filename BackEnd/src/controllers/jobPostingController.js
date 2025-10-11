@@ -1,10 +1,10 @@
-import { createPostingService } from "src/services/jobPostingService.js";
+import { createPostingService } from "../services/jobPostingService.js";
 
-import collegeOnboardingModel from "src/models/collegeDashboard/collegeOnboardingModel.js";
-import OnboardingModel from "src/models/studentonboardingModel.js";
-import { getCompanyService } from "src/services/companyService.js";
-import { getCollegeService } from "src/services/collegeService.js";
-import { getStudentService } from "src/services/studentService.js";
+import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
+import OnboardingModel from "../models/studentonboardingModel.js";
+import { getCompanyService } from "../services/companyService.js";
+import { getCollegeService } from "../services/collegeService.js";
+import { getStudentService } from "../services/studentService.js";
 
 
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);

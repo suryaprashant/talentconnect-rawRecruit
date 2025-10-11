@@ -1,5 +1,5 @@
 import express from 'express';
-import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
+import secureRoute from '../middlewares/secureRouteMiddleware.js';
 import {
   registerParticipant,
   getAllParticipants,

@@ -1,5 +1,5 @@
-import CompanyProfile from 'src/models/companyDashboard/companyProfileModel.js';
-import Auth from "src/models/authModel.js";
+import CompanyProfile from '../models/companyDashboard/companyProfileModel.js';
+import Auth from "../models/authModel.js";
 
 export async function createProfileService(profileData) {
     try {

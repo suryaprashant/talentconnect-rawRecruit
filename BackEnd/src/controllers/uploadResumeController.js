@@ -1,5 +1,5 @@
 // controllers/uploadResume.controller.js
-import UploadResume from "src/models/servicerequestUploadresumeModel.js";
+import UploadResume from "../models/servicerequestUploadresumeModel.js";
 
 export const uploadResume = async (req, res) => {
   try {

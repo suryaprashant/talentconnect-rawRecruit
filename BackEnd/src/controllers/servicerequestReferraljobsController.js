@@ -1,4 +1,4 @@
-import Job from "src/models/servicerequestReferraljobsModel.js";
+import Job from "../models/servicerequestReferraljobsModel.js";
 
 export const createJob = async (req, res) => {
   try {
