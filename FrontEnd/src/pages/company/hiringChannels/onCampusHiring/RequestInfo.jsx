@@ -6,7 +6,7 @@ import { City } from 'country-state-city'; // <-- Import City
 
 export default function RequestInfo() {
 
-  
+
   const degreeStreamMapping = {
     'Bachelor of Engineering (B.E.)': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'],
     'Bachelor of Technology (B.Tech)': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering', 'Data Science'],
@@ -67,7 +67,7 @@ export default function RequestInfo() {
 
   const [formData, setFormData] = useState(initialData);
   const [currency, setCurrency] = useState('INR');
-  
+
   // --- NEW: State for city data and search ---
   const [indianCities, setIndianCities] = useState([]);
   const [locationSearch, setLocationSearch] = useState('');
@@ -210,6 +210,9 @@ export default function RequestInfo() {
 
       if (response.status === 201) {
         toast.success('On-campus opportunity posted');
+        setTimeout(() => {
+          toast.success('This job will expire after 15 days');
+        }, 2000);
         setFormData(initialData);
         setCurrency('INR');
       }
@@ -218,7 +221,7 @@ export default function RequestInfo() {
       toast.error(err.response?.data?.message || err.response?.data?.error || 'Submission failed. Please try again.');
     }
   };
-  
+
   const availableStreams = degreeStreamMapping[formData.degree] || [];
   const filteredCities = indianCities.filter(city =>
     city.name.toLowerCase().includes(locationSearch.toLowerCase())

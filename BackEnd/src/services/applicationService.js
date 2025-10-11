@@ -57,7 +57,7 @@ export async function saveJobService(userId, userType, jobId, jobType) {
     try {
         const existing = await getApplicationService(userId, userType, jobId, jobType);
 
-        if (existing?.response[0]?.currentStatus === "Applied" || existing?.response[0]?.currentStatus === "Shortlisted" || existing?.response[0]?.currentStatus === "Rejected"  || existing?.response[0]?.currentStatus === "Accepted") {
+        if (existing?.response[0]?.currentStatus === "Applied" || existing?.response[0]?.currentStatus === "Shortlisted" || existing?.response[0]?.currentStatus === "Rejected" || existing?.response[0]?.currentStatus === "Accepted") {
             return { success: false, message: `Already ${existing?.response[0]?.currentStatus}` };
         }
         else if (existing?.response[0]?.currentStatus === "Saved") {
@@ -125,7 +125,7 @@ export async function fetchApplicationStatusService(userId, jobType) {
                 $match: {
                     applicant: new mongoose.Types.ObjectId(userId),
                     jobType: jobType,
-                    currentStatus: {$ne: 'Saved'}
+                    currentStatus: { $ne: 'Saved' }
                 }
             },
             {
@@ -172,7 +172,7 @@ export async function fetchApplicationStatusService(userId, jobType) {
 
 // job management
 // joblisting and offcampus
-export async function fetchApplicationsByJobService(jobId, jobType) {
+export async function fetchApplicationsByJobService(jobId, jobType, targetStatus) {
     try {
         const response = await Application.aggregate([
             {
@@ -180,7 +180,7 @@ export async function fetchApplicationsByJobService(jobId, jobType) {
                     job: new mongoose.Types.ObjectId(jobId),
                     jobType: jobType,
                     // currentStatus not equal to "saved"
-                    currentStatus: { $ne: "Saved" }
+                    currentStatus: targetStatus
                 }
             },
             {
@@ -216,13 +216,13 @@ export async function fetchApplicationsByJobService(jobId, jobType) {
 }
 
 // oncampus and poolcampus
-export async function fetchCollegeApplicationsByJobService(jobId, jobType, userType) {
+export async function fetchCollegeApplicationsByJobService(jobId, jobType, userType, targetStatus) {
     let applicantDB;
-    if(userType==='college'){
-        applicantDB="companyprofiles";
+    if (userType === 'college') {
+        applicantDB = "companyprofiles";
     }
-    else if(userType==='company'){
-        applicantDB="collegeonboardings";
+    else if (userType === 'company') {
+        applicantDB = "collegeonboardings";
     }
     try {
         const response = await Application.aggregate([
@@ -230,7 +230,7 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
                 $match: {
                     job: new mongoose.Types.ObjectId(jobId),
                     jobType: jobType,
-                    currentStatus: {$ne:'Saved'}
+                    currentStatus: targetStatus
                 }
             },
             {
@@ -279,7 +279,7 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
 // count applications
 export async function countApplicationsService(jobId, jobType) {
     try {
-        const response = await Application.countDocuments({ job: jobId, jobType: jobType });
+        const response = await Application.countDocuments({ job: jobId, jobType: jobType, currentStatus: "Applied" });
         return { success: true, count: response };
     } catch (error) {
         console.log("Error: ", error.message);
@@ -299,7 +299,7 @@ export async function ChangeStatusService(applicationId, newStatus) {
             existing.currentStatus = newStatus;
             existing.statusHistory.push({ status: newStatus });
             await existing.save();
-            return { success: true, msg: `status changed to: ${newStatus}`,data: existing };
+            return { success: true, msg: `status changed to: ${newStatus}`, data: existing };
         }
         else {
             return { success: false, msg: "Error" };
@@ -525,9 +525,9 @@ export async function fetchCandidatesbyStatus(companyId, targetStatus, applicant
             projectApplicant = {
                 college: "$applicantDetails.collegeUniversityDetails"
             };
-        } 
-        else if(applicantType == "company"){
-            fromCollection = "CompanyProfile" ;
+        }
+        else if (applicantType == "company") {
+            fromCollection = "CompanyProfile";
             projectApplicant = {
                 company: "$applicantDetails.companyDetails"
             }
@@ -571,7 +571,7 @@ export async function fetchCandidatesbyStatus(companyId, targetStatus, applicant
             },
             {
                 $project: {
-                    _id:1 ,
+                    _id: 1,
                     currentStatus: 1,
                     statusHistory: 1,
                     jobTitle: "$jobDetails.jobRoles",

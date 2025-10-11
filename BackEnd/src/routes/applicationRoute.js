@@ -1,6 +1,6 @@
 import express from "express";
-import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication,getShortlistedCompaniesForCollege, shortlistApplicantForCompany,  rejectCompanyApplicationByCollege } from "src/controllers/applicationController.js";
-import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
+import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication,getShortlistedCompaniesForCollege, shortlistApplicantForCompany,  rejectCompanyApplicationByCollege, scheduleInterview } from "../controllers/applicationController.js";
+import secureRoute from '../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
 
@@ -60,5 +60,8 @@ router.get('/manage/college',secureRoute, getCollegeApplicationsByJob);
 
 // accept offcampus
 // router.get('/accept/:id', getAcceptedCandidatesByJob);
+
+// schedule interview
+router.post('/manage/schedule',secureRoute,scheduleInterview);
 
 export default router;

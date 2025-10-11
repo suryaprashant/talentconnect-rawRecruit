@@ -31,7 +31,6 @@ export async function fetchOpportunityService(query) {
     }
 }
 
-// offcampus
 export async function checkOpportunityService(jobId) {
 
     try {

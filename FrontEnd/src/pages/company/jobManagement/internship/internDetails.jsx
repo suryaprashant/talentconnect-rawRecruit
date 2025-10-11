@@ -18,8 +18,7 @@ const InternshipDetails = ({ job, onClose }) => {
   const getApplicants = async (jobId, jobType) => {
     setIsSubmitting(true);
     try {
-      const response = await getApplicationsForJob(jobId, jobType);
-      // console.log("ye wala response: ", response.data);
+      const response = await getApplicationsForJob(jobId, jobType, "Applied");
       setApplications(response.data);
     } catch (error) {
       console.log("Error: ", error);
@@ -65,39 +64,39 @@ const InternshipDetails = ({ job, onClose }) => {
     getApplicants(jobId, jobType);
   }, [jobId]);
 
-   const handleMessageClick = async (applicant) => {
-        if (!applicant?.applicant?._id) {
-            toast.error("Applicant data is missing.");
-            return;
-        }
+  const handleMessageClick = async (applicant) => {
+    if (!applicant?.applicant?._id) {
+      toast.error("Applicant data is missing.");
+      return;
+    }
 
-        const userId = applicant.applicant._id;
-        try {
-            const response = await conversationWithCandidate(userId);
-            if (response.data) {
-                const conversationUser = {
-                    _id: userId,
-                    name: applicant.applicant.name || 'Unknown Applicant',
-                    email: applicant.applicant.email || '',
-                    profileImage: applicant.applicant.profileImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-                    userType: 'candidate',
-                    fullname: applicant.applicant.name || 'Unknown Applicant'
-                };
-                
-                setSelectedConversation(conversationUser);
-                
-                setTimeout(() => {
-                    navigate('/chat-application');
-                }, 100);
-                
-            } else {
-                toast.error('Failed to create conversation');
-            }
-        } catch (error) {
-            console.error('Error starting chat:', error);
-            toast.error('Error starting conversation');
-        }
-    };
+    const userId = applicant.applicant._id;
+    try {
+      const response = await conversationWithCandidate(userId);
+      if (response.data) {
+        const conversationUser = {
+          _id: userId,
+          name: applicant.applicant.name || 'Unknown Applicant',
+          email: applicant.applicant.email || '',
+          profileImage: applicant.applicant.profileImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+          userType: 'candidate',
+          fullname: applicant.applicant.name || 'Unknown Applicant'
+        };
+
+        setSelectedConversation(conversationUser);
+
+        setTimeout(() => {
+          navigate('/chat-application');
+        }, 100);
+
+      } else {
+        toast.error('Failed to create conversation');
+      }
+    } catch (error) {
+      console.error('Error starting chat:', error);
+      toast.error('Error starting conversation');
+    }
+  };
 
 
   return (
@@ -229,13 +228,13 @@ const InternshipDetails = ({ job, onClose }) => {
 
                 {/* Action Buttons */}
                 <div className="flex justify-end p-6 space-x-4">
-                    <button
-                                        onClick={() => handleMessageClick(applicant)}
-                                        disabled={isSubmitting}
-                                        className="px-6 py-2 shadow hover:shadow-md border rounded-md text-gray-700 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"
-                                    >
-                                        <Send size={14} className="mr-2" /> Chat
-                                    </button>
+                  <button
+                    onClick={() => handleMessageClick(applicant)}
+                    disabled={isSubmitting}
+                    className="px-6 py-2 shadow hover:shadow-md border rounded-md text-gray-700 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    <Send size={14} className="mr-2" /> Chat
+                  </button>
                   {/* <button className="px-6 py-2 shadow hover:shadow-md border rounded-md text-gray-700">View Details</button> */}
                   <button
                     onClick={() => acceptApplicant(applicant._id)}

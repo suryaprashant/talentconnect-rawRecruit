@@ -46,7 +46,7 @@ export default function OnCampusJobManagement() {
     setCollegesLoading(true);
     setError(null);
     try {
-      const response = await getCollegeApplicationsForJob(jobId, jobType)
+      const response = await getCollegeApplicationsForJob(jobId, jobType,"Applied")
       // console.log("College: ", response);
       setColleges(response.data);
     } catch (err) {
@@ -155,7 +155,7 @@ export default function OnCampusJobManagement() {
 
           <div className="mb-4">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Applications for: {selectedJob?.lookingFor || 'N/A'}
+              Applications for: {selectedJob?.jobRoles || 'N/A'}
             </h2>
             <p className="text-gray-600 capitalize">
               {displayLocations(selectedJob?.location)} • {selectedJob?.employmentType || 'N/A Type'}
@@ -254,7 +254,7 @@ export default function OnCampusJobManagement() {
                     <tr key={job._id} className="border-b border-gray-200 hover:bg-gray-50">
                       <td className="px-4 py-4">
                         <div className="font-medium text-gray-900">
-                          {job.lookingFor || 'N/A'}
+                          {job.jobRoles || 'N/A'}
                         </div>
                         <div className="text-sm text-gray-500">
                           {job.employmentType || 'N/A Type'}

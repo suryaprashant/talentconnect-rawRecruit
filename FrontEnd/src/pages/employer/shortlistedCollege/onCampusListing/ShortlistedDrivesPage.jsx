@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import ShortlistedDrives from '@/components/Employer/shortlistedCollege/onCampusListing/ShortlistedDrives';
+import ShortlistedDrives from '@/components/employer/shortlistedCollege/onCampusListing/ShortlistedDrives';
 import { fetchShortlistedDrives, getMockDrives } from '../../../../constants/shortlist';
 
 const EmployerShortlistedDrivesPage = () => {

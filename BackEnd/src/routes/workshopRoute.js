@@ -5,15 +5,16 @@ import {
     getWorkshop,
     updateWorkshop,
     deleteWorkshop
-} from "src/controllers/workshopController.js";
+} from "../controllers/workshopController.js";
+import secureRoute from "../middlewares/secureRouteMiddleware.js";
 
 const router = express.Router();
 
 // Base route: '/api/hosting/workshop'
-router.post('/create', createWorkshop);
+router.post('/create', secureRoute, createWorkshop);
 router.get('/', getWorkshops);
 router.get('/:id', getWorkshop);
-router.put('/:id', updateWorkshop);
-router.delete('/:id', deleteWorkshop);
+router.put('/:id', secureRoute, updateWorkshop);
+router.delete('/:id', secureRoute, deleteWorkshop);
 
 export default router;
