@@ -1,5 +1,5 @@
 // controllers/studentRegistrationController.js
-import StudentRegistration from "../models/servicerequestCollegeStudenttrainingRequestinfoModel.js";
+import StudentRegistration from "src/models/servicerequestCollegeStudenttrainingRequestinfoModel.js";
 
 export const registerStudent = async (req, res) => {
   try {

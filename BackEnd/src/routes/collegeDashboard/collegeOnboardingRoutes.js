@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
-import { getCollegeOnboardingByUserId, submitCollegeOnboarding } from '../../controllers/collegeDashboard/collegeOnboardingController.js';
-import secureRoute from '../../middlewares/secureRouteMiddleware.js';
+import { getCollegeOnboardingByUserId, submitCollegeOnboarding } from 'src/controllers/collegeDashboard/collegeOnboardingController.js';
+import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
 const storage = multer.memoryStorage();

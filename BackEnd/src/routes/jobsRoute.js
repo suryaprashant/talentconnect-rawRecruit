@@ -5,8 +5,8 @@ import {
     // fetchOnCampusOpportunities, 
     findJobListingOpportunityById, findOffcampusOpportunityById,
     // findOpportunityById
-} from "../controllers/jobController.js";
-import secureRoute from "../middlewares/secureRouteMiddleware.js";
+} from "src/controllers/jobController.js";
+import secureRoute from "src/middlewares/secureRouteMiddleware.js";
 
 const router = express.Router();
 

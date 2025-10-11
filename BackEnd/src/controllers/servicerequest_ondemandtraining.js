@@ -1,5 +1,5 @@
 // controllers/onDemandController.js
-import OnDemandTraining from "../models/servicerequestOndemandtrainingModel.js";
+import OnDemandTraining from "src/models/servicerequestOndemandtrainingModel.js";
 
 export const submitOnDemandTrainingRequest = async (req, res) => {
   try {

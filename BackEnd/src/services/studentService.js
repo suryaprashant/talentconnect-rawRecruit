@@ -1,6 +1,7 @@
-import OnboardingModel from '../models/studentonboardingModel.js';
-import Auth from '../models/authModel.js';
-import { updateAuthUserService } from './authService.js';
+import OnboardingModel from 'src/models/studentonboardingModel.js';
+import Auth from 'src/models/authModel.js';
+import { updateAuthUserService } from 'src/services/authService.js';
+import { streamUpload } from 'src/utils/streamUpload.js';
 
 // Get all onboarding forms
 export async function getAllOnboardingFormsService() {
@@ -129,7 +130,7 @@ export async function checkStudentService(studentId) {
 
 export const handleOnboardingUpdate = async (updateData, files) => {
   // Upload files and update data (the core logic from controller)
-  const streamUpload = require('../utils/streamUpload'); // adjust import
+ // const streamUpload = require('../utils/streamUpload'); // adjust import
 
   // File uploads (same as previous controller logic)
   if (files?.resume?.[0]) {

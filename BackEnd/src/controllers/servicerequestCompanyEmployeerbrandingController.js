@@ -1,5 +1,5 @@
 // controllers/onDemandController.js
-import OnDemandTraining from "../models/servicerequestCompanyEmployeerbrandingModel.js";
+import OnDemandTraining from "src/models/servicerequestCompanyEmployeerbrandingModel.js";
 
 export const submitOnDemandTrainingRequest = async (req, res) => {
   try {

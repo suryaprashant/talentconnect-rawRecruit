@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { createProfessionalProfile } from '../controllers/professionalProfileController.js';
+import { createProfessionalProfile } from 'src/controllers/professionalProfileController.js';
 
 const router = express.Router();
 const storage = multer.memoryStorage();

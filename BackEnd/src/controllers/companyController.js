@@ -1,4 +1,4 @@
-import { createProfileService } from "../services/companyService.js";
+import { createProfileService } from "src/services/companyService.js";
 
 export async function createCompanyProfile(req, res) {
     try {

@@ -1,4 +1,4 @@
-import { loginUser, registerUser, generateToken } from "../../services/authService.js";
+import { loginUser, registerUser, generateToken } from "src/services/authService.js";
 
 const setJwtCookie = (res, token) => {
     res.cookie('jwt', token, {

@@ -1,4 +1,4 @@
-import Interview from "../models/servicerequestInterviewModel.js";
+import Interview from "src/models/servicerequestInterviewModel.js";
 
 // Controller to schedule a mock interview
 export const scheduleInterview = async (req, res) => {

@@ -1,6 +1,6 @@
 import express from "express";
-import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication,getShortlistedCompaniesForCollege, shortlistApplicantForCompany,  rejectCompanyApplicationByCollege } from "../controllers/applicationController.js";
-import secureRoute from '../middlewares/secureRouteMiddleware.js';
+import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication,getShortlistedCompaniesForCollege, shortlistApplicantForCompany,  rejectCompanyApplicationByCollege } from "src/controllers/applicationController.js";
+import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
 

@@ -1,8 +1,8 @@
 
-import Auth from '../../models/authModel.js';
-import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js';
-import { createPostingService } from '../../services/jobPostingService.js';
-import { getCompanyService } from "../../services/companyService.js";
+import Auth from 'src/models/authModel.js';
+import CompanyProfile from 'src/models/companyDashboard/companyProfileModel.js';
+import { createPostingService } from 'src/services/jobPostingService.js';
+import { getCompanyService } from "src/services/companyService.js";
 
 // Helper fuction to consistent response handling
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);

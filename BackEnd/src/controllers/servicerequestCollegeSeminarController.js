@@ -1,4 +1,4 @@
-import Requests from "../models/servicerequestCollegeSeminarsModel.js";
+import Requests from "src/models/servicerequestCollegeSeminarsModel.js";
 
 export const submitRequest = async (req, res) => {
   try {

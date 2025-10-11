@@ -1,6 +1,6 @@
 // routes/onDemandRoutes.js
 import express from "express";
-import { submitOnDemandTrainingRequest } from "../controllers/servicerequest_ondemandtraining.js";
+import { submitOnDemandTrainingRequest } from "src/controllers/servicerequest_ondemandtraining.js";
 
 const router = express.Router();
 

@@ -1,5 +1,5 @@
 import express from "express";
-import { registerOffCampus } from "../controllers/servicerequestOffcampusregisterController.js";
+import { registerOffCampus } from "src/controllers/servicerequestOffcampusregisterController.js";
 
 const router = express.Router();
 router.post("/offcampus/register", registerOffCampus);

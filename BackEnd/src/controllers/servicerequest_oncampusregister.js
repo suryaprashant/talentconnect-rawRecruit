@@ -1,4 +1,4 @@
-import Registration from "../models/servicerequestOncampusregisterModel.js";
+import Registration from "src/models/servicerequestOncampusregisterModel.js";
 
 export const submitRegistration = async (req, res) => {
   try {

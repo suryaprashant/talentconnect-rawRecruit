@@ -1,5 +1,5 @@
-import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel.js"
-import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
+import CollegeOnboarding from "src/models/collegeDashboard/collegeOnboardingModel.js"
+import CompanyProfile from "src/models/companyDashboard/companyProfileModel.js";
 
 
 // Get All companies names for dropdown

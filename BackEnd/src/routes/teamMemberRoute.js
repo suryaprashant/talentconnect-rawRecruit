@@ -1,6 +1,6 @@
 import express from 'express';
-import secureRoute from '../middlewares/secureRouteMiddleware.js';
-import { acceptInvitation, declineInvitation, getCompanyMember, getMyActiveCompanies, getPendingInvitations, getTeamMembers, inviteTeamMember, leaveCompany, removeTeamMember, searchEmployers, switchActiveProfile } from '../controllers/teamMemberController.js';
+import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
+import { acceptInvitation, declineInvitation, getCompanyMember, getMyActiveCompanies, getPendingInvitations, getTeamMembers, inviteTeamMember, leaveCompany, removeTeamMember, searchEmployers, switchActiveProfile } from 'src/controllers/teamMemberController.js';
 
 
 const router = express.Router() ;

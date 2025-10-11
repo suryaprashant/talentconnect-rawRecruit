@@ -1,7 +1,7 @@
 // src/routes/studentProfileRoutes.js
 import express from 'express';
 import multer from 'multer';
-import { createStudentProfile } from '../controllers/studentProfileController.js';
+import { createStudentProfile } from 'src/controllers/studentProfileController.js';
 
 const router = express.Router();
 const storage = multer.memoryStorage();

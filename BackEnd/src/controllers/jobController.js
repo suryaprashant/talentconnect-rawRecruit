@@ -1,7 +1,7 @@
 import { fetchInternshipByIdService, 
     // fetchInternshipService, 
     // fetchJobListingOpportunityService, 
-    fetchOpportunityService } from "../services/jobService.js";
+    fetchOpportunityService } from "src/services/jobService.js";
 
     // import { getStudentService } from "../services/studentService.js";
 

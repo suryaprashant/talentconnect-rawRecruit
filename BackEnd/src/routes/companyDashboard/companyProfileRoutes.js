@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
-import { createCompanyProfile, getCompanyProfile, updateCompanyProfile } from '../../controllers/CompanyDashboard/companyProfileController.js';
-import secureRoute from '../../middlewares/secureRouteMiddleware.js';
+import { createCompanyProfile, getCompanyProfile, updateCompanyProfile } from 'src/controllers/CompanyDashboard/companyProfileController.js';
+import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
 const upload = multer();

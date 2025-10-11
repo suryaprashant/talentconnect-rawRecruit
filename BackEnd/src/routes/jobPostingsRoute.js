@@ -1,7 +1,7 @@
 import express from 'express';
-import secureRoute from '../middlewares/secureRouteMiddleware.js';
+import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
 
-import { createOffCampusJobPosting, createOnCampusPosting, createPoolCampusPosting, createJobPosting, createInternshipPosting, createOnCampusCollegeRequest, createPoolCampusCollegeRequest, createRefferralPosting } from '../controllers/jobPostingController.js';
+import { createOffCampusJobPosting, createOnCampusPosting, createPoolCampusPosting, createJobPosting, createInternshipPosting, createOnCampusCollegeRequest, createPoolCampusCollegeRequest, createRefferralPosting } from 'src/controllers/jobPostingController.js';
 
 // api.. "/api/hiring-channels"
 

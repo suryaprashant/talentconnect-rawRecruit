@@ -5,7 +5,7 @@ import {
     getWorkshop,
     updateWorkshop,
     deleteWorkshop
-} from "../controllers/workshopController.js";
+} from "src/controllers/workshopController.js";
 
 const router = express.Router();
 

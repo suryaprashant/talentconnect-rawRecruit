@@ -1,6 +1,6 @@
 // routes/studentTrainingRoutes.js
 import express from "express";
-import { registerStudentTraining } from "../controllers/servicerequest_studenttraining.js";
+import { registerStudentTraining } from "src/controllers/servicerequest_studenttraining.js";
 
 const router = express.Router();
 

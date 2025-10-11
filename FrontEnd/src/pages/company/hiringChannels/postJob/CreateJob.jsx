@@ -23,7 +23,8 @@ export default function CreateJob() {
     workAuthorization: '',
     studentStreams: [],
     eligibilityCriteria: '',
-    benefits: []
+    benefits: [],
+    broadcastType: 'Everyone',
   };
 
   const [formData, setFormData] = useState(initialState);
@@ -188,6 +189,7 @@ export default function CreateJob() {
         },
         numberOfOpenings: parseInt(formData.numberOfOpenings, 10),
         jobType: "Job-listing",
+        broadcastType: formData.broadcastType
       };
 
       const BackendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
@@ -251,7 +253,7 @@ export default function CreateJob() {
             </div>
           </div>
           
-          {/* --- MODIFIED: Location Multi-Select with City Search --- */}
+          
           <div ref={locationsDropdownRef} className="relative mb-4">
             <label className="block text-sm font-medium mb-2">Location <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">
@@ -296,6 +298,39 @@ export default function CreateJob() {
                 </div>
             )}
           </div>
+
+          <div>
+    <label className="block mb-2 font-medium">Broadcast Options <span className="text-red-500">*</span></label>
+    <div className="flex items-center space-x-6">
+        <label className="flex items-center cursor-pointer">
+            <input
+                type="radio"
+                name="broadcastType"
+                value="Everyone"
+                checked={formData.broadcastType === 'Everyone'}
+                onChange={handleInputChange}
+                className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+            />
+            <span className="ml-2 text-gray-700">Broadcast to Everyone</span>
+        </label>
+        <label className="flex items-center cursor-pointer">
+            <input
+                type="radio"
+                name="broadcastType"
+                value="Location"
+                checked={formData.broadcastType === 'Location'}
+                onChange={handleInputChange}
+                className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+            />
+            <span className="ml-2 text-gray-700">Broadcast by Location</span>
+        </label>
+    </div>
+    <p className="text-xs text-gray-500 mt-1">
+        Select 'Broadcast by Location' to show this job only to candidates/colleges in the specified Work Locations.
+    </p>
+</div>
+
+
 
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Salary (CTC) <span className="text-red-500">*</span></label>

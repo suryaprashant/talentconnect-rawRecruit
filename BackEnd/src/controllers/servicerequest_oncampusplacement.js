@@ -1,5 +1,5 @@
 // controllers/campusPlacementController.js
-import CampusPlacement from "../models/servicerequestOncampusplacementModel.js";
+import CampusPlacement from "src/models/servicerequestOncampusplacementModel.js";
 
 export const registerCampusPlacement = async (req, res) => {
   try {

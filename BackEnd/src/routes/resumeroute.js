@@ -1,5 +1,5 @@
 import express from "express";
-import OnboardingModel from "../models/studentonboardingModel.js";
+import OnboardingModel from "src/models/studentonboardingModel.js";
 
 const router = express.Router();
 
