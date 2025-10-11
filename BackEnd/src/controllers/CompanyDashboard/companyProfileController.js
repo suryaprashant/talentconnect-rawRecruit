@@ -119,7 +119,7 @@ export const getCompanyProfile = async (req, res) => {
 
     res.status(200).json({
       message: 'Company profile retrieved successfully',
-      profile: [companyProfile.data[0].userId, companyProfile.data[0].email]
+      profile: companyProfile.data[0]
     });
 
   } catch (error) {

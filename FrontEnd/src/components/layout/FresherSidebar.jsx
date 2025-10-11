@@ -107,12 +107,12 @@ function FresherSidebar({ activePath }) {
           label="Referral Jobs" 
           active={activePath === '/application-status/Referral'} 
         />
-        <SidebarNavItem 
+        {/* <SidebarNavItem 
           to="/application-status/hackathon" 
           icon={<FiAward />} 
           label="Hackathon" 
           active={activePath === '/application-status/hackathon'} 
-        />
+        /> */}
       </SidebarNavGroup>
 
       <SidebarNavItem 
