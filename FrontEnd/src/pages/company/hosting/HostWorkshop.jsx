@@ -207,7 +207,7 @@ const HostWorkshop = () => {
 
   // Helper functions for special awards management
   const addSpecialAward = () => {
-    const newAward = { name: '', amount: '', perk: '' };
+    const newAward = { name: '', amount: '', perk: '', rewardType: 'Perks' };
     setFormData(prev => ({
       ...prev,
       rewards: {
@@ -565,20 +565,31 @@ const HostWorkshop = () => {
 
   // Panel member handlers
   const handlePanelInputChange = (e) => {
+    console.log('Panel input changed:', e.target.value);
     setPanelInput(e.target.value);
   };
 
   const addPanelMember = () => {
-    const email = panelInput.trim();
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (email && emailRegex.test(email) && !panelMembers.includes(email)) {
-      setPanelMembers([...panelMembers, email]);
+    const link = panelInput.trim();
+    console.log('Adding panel member:', link);
+    console.log('Current panel members:', panelMembers);
+    
+    // Basic URL validation
+    const urlRegex = /^https?:\/\/.+/;
+    console.log('URL validation result:', urlRegex.test(link));
+    console.log('Already exists:', panelMembers.includes(link));
+    
+    if (link && urlRegex.test(link) && !panelMembers.includes(link)) {
+      const newPanelMembers = [...panelMembers, link];
+      console.log('Setting new panel members:', newPanelMembers);
+      setPanelMembers(newPanelMembers);
       setPanelInput('');
+    } else {
+      console.log('Validation failed - link:', link, 'valid:', urlRegex.test(link), 'exists:', panelMembers.includes(link));
     }
   };
 
-  const removePanelMember = (email) => setPanelMembers(panelMembers.filter(pid => pid !== email));
+  const removePanelMember = (link) => setPanelMembers(panelMembers.filter(pid => pid !== link));
 
   // Domain handlers
   const addDomain = () => {
@@ -1473,28 +1484,43 @@ const HostWorkshop = () => {
                             placeholder="Award name (e.g., Best Innovation, Most Creative)"
                           />
                         </div>
-                        {formData.rewards.rewardType === 'Amount' ? (
-                        <div className="w-32">
-                          <input
-                            type="number"
-                            value={award.amount}
-                            onChange={(e) => updateSpecialAward(index, 'amount', e.target.value)}
+                        {/* Reward Type Selector for this specific award */}
+                        <div className="w-40">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                          <select
+                            value={award.rewardType || 'Perks'}
+                            onChange={(e) => updateSpecialAward(index, 'rewardType', e.target.value)}
                             className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Amount"
-                            min="0"
-                          />
+                          >
+                            <option value="Amount">Amount</option>
+                            <option value="Perks">Perks/Gifts</option>
+                          </select>
                         </div>
-                      ) : (
-                        <div className="flex-1">
-                          <input
-                            type="text"
-                            value={award.perk}
-                            onChange={(e) => updateSpecialAward(index, 'perk', e.target.value)}
-                            className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Perk/Gift description"
-                          />
-                        </div>
-                      )}
+                        
+                        {award.rewardType === 'Amount' ? (
+                          <div className="w-32">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                            <input
+                              type="number"
+                              value={award.amount || ''}
+                              onChange={(e) => updateSpecialAward(index, 'amount', e.target.value)}
+                              className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              placeholder="Amount"
+                              min="0"
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex-1">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <input
+                              type="text"
+                              value={award.perk || ''}
+                              onChange={(e) => updateSpecialAward(index, 'perk', e.target.value)}
+                              className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              placeholder="Perk/Gift description"
+                            />
+                          </div>
+                        )}
                         <button
                           type="button"
                           onClick={() => removeSpecialAward(index)}
@@ -1563,15 +1589,18 @@ const HostWorkshop = () => {
             </h2>
             <div className="flex gap-2 mb-4">
               <input
-                type="email"
-                placeholder="Enter Panel Member Email"
+                type="url"
+                placeholder="Enter Panel Member Link (LinkedIn, Portfolio, etc.)"
                 value={panelInput}
                 onChange={handlePanelInputChange}
                 className="flex-1 px-3 py-2 bg-white text-black border border-gray-700 rounded-md"
               />
               <button
                 type="button"
-                onClick={addPanelMember}
+                onClick={(e) => {
+                  e.preventDefault();
+                  addPanelMember();
+                }}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
                 Add
@@ -1579,12 +1608,14 @@ const HostWorkshop = () => {
             </div>
             {panelMembers.length > 0 && (
               <ul className="list-disc pl-6">
-                {panelMembers.map((email, idx) => (
+                {panelMembers.map((link, idx) => (
                   <li key={idx} className="flex items-center gap-2 mb-1">
-                    <span>{email}</span>
+                    <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                      {link}
+                    </a>
                     <button
                       type="button"
-                      onClick={() => removePanelMember(email)}
+                      onClick={() => removePanelMember(link)}
                       className="p-1 text-red-600 hover:bg-red-50 rounded-md"
                       title="Remove"
                     >
@@ -1632,19 +1663,6 @@ const HostWorkshop = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Website URL
-                </label>
-                <input
-                  type="url"
-                  name="website"
-                  value={formData.website}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://your-workshop-website.com"
-                />
-              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
