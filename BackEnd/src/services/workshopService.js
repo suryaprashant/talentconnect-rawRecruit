@@ -320,16 +320,20 @@ class WorkshopService {
         if (rewards.specialAwards && rewards.specialAwards.length > 0) {
             rewards.specialAwards.forEach(award => {
                 if (!award?.name) return;
-                if (isAmount && award.amount) {
+                
+                // Use the individual award's reward type
+                const awardRewardType = award.rewardType || 'Perks';
+                
+                if (awardRewardType === 'Amount' && award.amount) {
                     rewardsAndBenefits.push({
                         title: award.name,
                         type: 'Cash',
                         amount: parseInt(award.amount)
                     });
-                } else if (!isAmount && award.perk) {
+                } else if (awardRewardType === 'Perks' && award.perk) {
                     rewardsAndBenefits.push({
                         title: award.name,
-                        type: 'Other',
+                        type: 'Special',
                     });
                 }
             });
