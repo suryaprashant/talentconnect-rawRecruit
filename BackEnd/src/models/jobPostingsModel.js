@@ -16,6 +16,11 @@ const jobPostingSchema = new mongoose.Schema({
         enum: ["All", "College", "Company" ],
         default: "All"
     },
+    broadcastType: {
+        type: String,
+        enum: ['Everyone', 'Location'],
+        default: 'Everyone'            
+    },
     state: { type: String },
     city: { type: String },
     country: { type: String },

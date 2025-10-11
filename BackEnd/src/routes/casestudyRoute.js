@@ -5,7 +5,7 @@ import {
     getCasestudy,
     updateCasestudy,
     deleteCasestudy
-} from "../controllers/casestudyController.js";
+} from "src/controllers/casestudyController.js";
 
 const router=express.Router();
 

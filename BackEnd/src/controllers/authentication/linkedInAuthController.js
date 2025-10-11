@@ -1,4 +1,4 @@
-import { generateLinkedInAuthUrl, handleLinkedInLogin, generateToken ,  } from "../../services/authService.js";
+import { generateLinkedInAuthUrl, handleLinkedInLogin, generateToken ,  } from "src/services/authService.js";
 
 
 

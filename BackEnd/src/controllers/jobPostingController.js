@@ -1,9 +1,10 @@
-import { createPostingService } from "../services/jobPostingService.js";
-import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
-import OnboardingModel from "../models/studentonboardingModel.js";
-import { getCompanyService } from "../services/companyService.js";
-import { getCollegeService } from "../services/collegeService.js";
-import { getStudentService } from "../services/studentService.js";
+import { createPostingService } from "src/services/jobPostingService.js";
+
+import collegeOnboardingModel from "src/models/collegeDashboard/collegeOnboardingModel.js";
+import OnboardingModel from "src/models/studentonboardingModel.js";
+import { getCompanyService } from "src/services/companyService.js";
+import { getCollegeService } from "src/services/collegeService.js";
+import { getStudentService } from "src/services/studentService.js";
 
 
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
@@ -52,7 +53,7 @@ export const createOnCampusPosting = async (req, res) => {
             ...req.body,
             companyPosted: companyPostedId.data[0]._id,
             jobType: "On-campus",
-            visibleTo: "College", // Default visibility, can be changed based on requirements
+            visibleTo: "College", 
         };
 
         const newPosting = await createPostingService(postingData);

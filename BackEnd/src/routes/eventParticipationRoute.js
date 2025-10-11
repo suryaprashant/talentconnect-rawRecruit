@@ -1,12 +1,12 @@
 import express from 'express';
-import secureRoute from '../middlewares/secureRouteMiddleware.js';
+import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
 import {
   registerParticipant,
   getAllParticipants,
   getParticipantsByEvent,
   updateParticipant,
   deleteParticipant
-} from '../controllers/eventParticipationController.js';
+} from 'src/controllers/eventParticipationController.js';
 
 const router = express.Router();
 

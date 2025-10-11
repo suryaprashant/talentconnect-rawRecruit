@@ -61,7 +61,8 @@ export default function RequestInfo() {
     eligibilityCriteria: '',
     description: '',
     amenitiesRequired: [],
-    benefits: []
+    benefits: [],
+    broadcastType: 'Everyone',
   };
 
   const [formData, setFormData] = useState(initialData);
@@ -192,6 +193,7 @@ export default function RequestInfo() {
         amenitiesRequired: formData.amenitiesRequired,
         benefits: formData.benefits,
         jobType: 'On-campus',
+        broadcastType: formData.broadcastType,
       };
 
       const response = await axios.post(
@@ -330,6 +332,38 @@ export default function RequestInfo() {
             </div>
           )}
         </div>
+
+        {/* Broadcast Type (NEW) */}
+        <div>
+    <label className="block mb-2 font-medium">Broadcast Options <span className="text-red-500">*</span></label>
+    <div className="flex items-center space-x-6">
+        <label className="flex items-center cursor-pointer">
+            <input
+                type="radio"
+                name="broadcastType"
+                value="Everyone"
+                checked={formData.broadcastType === 'Everyone'}
+                onChange= {handleInputChange}
+                className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+            />
+            <span className="ml-2 text-gray-700">Broadcast to Everyone</span>
+        </label>
+        <label className="flex items-center cursor-pointer">
+            <input
+                type="radio"
+                name="broadcastType"
+                value="Location"
+                checked={formData.broadcastType === 'Location'}
+                onChange={handleInputChange}
+                className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+            />
+            <span className="ml-2 text-gray-700">Broadcast by Location</span>
+        </label>
+    </div>
+    <p className="text-xs text-gray-500 mt-1">
+        Select 'Broadcast by Location' to show this job only to candidates/colleges in the specified Work Locations.
+    </p>
+</div>
 
         {/* Looking for */}
         <div>

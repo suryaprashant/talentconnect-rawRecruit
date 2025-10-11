@@ -1,6 +1,6 @@
-import EventParticipation from '../models/eventParticipationDetails.js';
+import EventParticipation from 'src/models/eventParticipationDetails.js';
 // import { sendEmail } from "../utils/sendEmail.js"
-import sendInvitationEmail from '../utils/sendInvitationEmail.js';
+import sendInvitationEmail from 'src/utils/sendInvitationEmail.js';
 // import Hackathon from '../models/hackathon.js';
 
 // @desc    Create a new event participation entry

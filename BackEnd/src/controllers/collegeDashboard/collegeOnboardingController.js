@@ -1,9 +1,9 @@
-import CollegeOnboarding from '../../models/collegeDashboard/collegeOnboardingModel.js';
-import cloudinary from '../../../config/cloudinary.js'; // Adjust path as needed
+import CollegeOnboarding from 'src/models/collegeDashboard/collegeOnboardingModel.js';
+import cloudinary from '../../../../config/cloudinary.js'; // Adjust path as needed
 import streamifier from 'streamifier';
-import Auth from '../../models/authModel.js'
-import { getCollegeService } from '../../services/collegeService.js';
-import { updateAuthUserService } from '../../services/authService.js';
+import Auth from 'src/models/authModel.js'
+import { getCollegeService } from 'src/services/collegeService.js';
+import { updateAuthUserService } from 'src/services/authService.js';
 
 const streamUpload = (buffer, folder) => {
   return new Promise((resolve, reject) => {
@@ -42,8 +42,7 @@ export const submitCollegeOnboarding = async (req, res) => {
       awards
     } = req.body;
 
-    // Parse JSON strings back to objects
-    // Use try-catch for JSON.parse in case of malformed strings
+  
     let parsedCollegeUniversityDetails = {};
     try { parsedCollegeUniversityDetails = JSON.parse(collegeUniversityDetails || '{}'); } catch (e) { console.error("Failed to parse collegeUniversityDetails:", e); }
 
@@ -73,7 +72,7 @@ export const submitCollegeOnboarding = async (req, res) => {
     let profileImageUrl = '';
     let backgroundImageUrl = '';
 
-    // Upload files if they exist
+    
     if (files?.collegeBrochure?.[0]) {
       try {
         const brochureUpload = await streamUpload(files.collegeBrochure[0].buffer, 'collegeBrochures');
@@ -81,7 +80,7 @@ export const submitCollegeOnboarding = async (req, res) => {
         console.log('Uploaded collegeBrochureUrl:', collegeBrochureUrl);
       } catch (uploadError) {
         console.error('Error uploading collegeBrochure:', uploadError);
-        // Decide how to handle upload errors: stop, or continue without the file
+       
       }
     }
 
@@ -105,13 +104,12 @@ export const submitCollegeOnboarding = async (req, res) => {
       }
     }
 
-    // 4. Check if profile already exists for this user
     let college = await getCollegeService(userId);
     const onboardingData = college.data[0];
-    // console.log('Existing onboardingData found (or null if not found):', onboardingData);
+    
 
     if (onboardingData) {
-      // Update existing profile
+   
       onboardingData.collegeUniversityDetails = {
         ...onboardingData.collegeUniversityDetails,
         ...parsedCollegeUniversityDetails
@@ -144,7 +142,7 @@ export const submitCollegeOnboarding = async (req, res) => {
     } else {
       // Create new profile
       onboardingData = await CollegeOnboarding.create({
-        userId, // <-- userId is correctly passed here for creation
+        userId, 
         collegeUniversityDetails: parsedCollegeUniversityDetails,
         placementCoordinatorDetails: parsedPlacementCoordinatorDetails,
         placementRecruitmentDetails: {

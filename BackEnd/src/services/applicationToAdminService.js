@@ -1,6 +1,6 @@
 import express from "express";
-import serviceRequestModel from "../models/servicerequestModel.js";
-import serviceRequestInterviewModel from "../models/servicerequestInterviewModel.js";
+import serviceRequestModel from "src/models/servicerequestModel.js";
+import serviceRequestInterviewModel from "src/models/servicerequestInterviewModel.js";
 
 export const createServiceRequest = async (req, res) => {
   try {

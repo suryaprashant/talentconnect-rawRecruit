@@ -4,8 +4,8 @@ import {
   submitOnboardingForm,
   getOnboardingForm,
   updateOnboardingForm,
-} from "../controllers/studentOnboardingController.js";
-import secureRoute from "../middlewares/secureRouteMiddleware.js"; // Import your secureRoute middleware
+} from "src/controllers/studentOnboardingController.js";
+import secureRoute from "src/middlewares/secureRouteMiddleware.js"; // Import your secureRoute middleware
 import multer from "multer"; // Assuming you are using multer for file uploads
 
 const router = express.Router();

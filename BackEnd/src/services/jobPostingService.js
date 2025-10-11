@@ -1,4 +1,4 @@
-import { JobPostingTable } from '../models/jobPostingsModel.js';
+import { JobPostingTable } from 'src/models/jobPostingsModel.js';
 
 export const createPostingService = async (postingData) => {
     try {

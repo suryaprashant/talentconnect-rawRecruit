@@ -1,7 +1,7 @@
 import express from 'express' ;
 
-import { getCompanyOnCampusHiringWithApplications, getCollegesForOnCampusJob } from '../../controllers/hiringChannelsOncampusRegisterController.js';
-import secureRoute from '../../middlewares/secureRouteMiddleware.js';     
+import { getCompanyOnCampusHiringWithApplications, getCollegesForOnCampusJob } from 'src/controllers/hiringChannelsOncampusRegisterController.js';
+import secureRoute from 'src/middlewares/secureRouteMiddleware.js';     
 
 const router = express.Router() ;
 

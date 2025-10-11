@@ -4,7 +4,7 @@ import {
   updateOnboardingFormService, 
   submitOnboardingFormService, 
   handleOnboardingUpdate 
-} from "../services/studentService.js";
+} from "src/services/studentService.js";
 // ...existing code...
 
 // File upload logic moved to service layer

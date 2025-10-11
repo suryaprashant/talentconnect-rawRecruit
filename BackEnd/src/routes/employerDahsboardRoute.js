@@ -1,5 +1,5 @@
 import express from "express";
-import { getRegisteredCampus, getRegisteredCampusDetails } from "../controllers/campusPlacementController.js";
+import { getRegisteredCampus, getRegisteredCampusDetails } from "src/controllers/campusPlacementController.js";
 
 const router = express.Router();
 

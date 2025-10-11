@@ -5,7 +5,7 @@ import {
     getHackathon,
     updateHackathon,
     deleteHackathon
-} from "../controllers/hackathonController.js";
+} from "src/controllers/hackathonController.js";
 
 const router=express.Router();
 

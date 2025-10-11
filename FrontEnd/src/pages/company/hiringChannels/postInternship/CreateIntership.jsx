@@ -22,7 +22,8 @@ export default function PostJob() {
     studentStreams: [],
     eligibilityCriteria: '',
     internshipDuration: '',
-    benefits: []
+    benefits: [],
+    broadcastType: 'Everyone'
   };
 
   const [formData, setFormData] = useState(initialState);
@@ -179,6 +180,7 @@ export default function PostJob() {
         },
         numberOfOpenings: parseInt(formData.numberOfOpenings, 10),
         jobType: "Internship",
+        broadcastType: formData.broadcastType
       };
       
       const response = await axios.post(
@@ -276,7 +278,38 @@ export default function PostJob() {
             )}
           </div>
 
-          <div className="mb-4">
+          <div>
+    <label className="block mb-2 font-medium">Broadcast Options <span className="text-red-500">*</span></label>
+    <div className="flex items-center space-x-6">
+        <label className="flex items-center cursor-pointer">
+            <input
+                type="radio"
+                name="broadcastType"
+                value="Everyone"
+                checked={formData.broadcastType === 'Everyone'}
+                onChange={handleInputChange}
+                className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+            />
+            <span className="ml-2 text-gray-700">Broadcast to Everyone</span>
+        </label>
+        <label className="flex items-center cursor-pointer">
+            <input
+                type="radio"
+                name="broadcastType"
+                value="Location"
+                checked={formData.broadcastType === 'Location'}
+                onChange={handleInputChange}
+                className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+            />
+            <span className="ml-2 text-gray-700">Broadcast Only choosen Location</span>
+        </label>
+    </div>
+    <p className="text-xs text-gray-500 mt-1">
+        Select 'Broadcast by Location' to show this job only to candidates/colleges in the specified Work Locations.
+    </p>
+</div>
+
+          <div className="mb-4 mt-6">
             <label className="block text-sm font-medium mb-2">Stipend/month <span className="text-red-500">*</span></label>
             <div className="flex">
               <div className="relative w-24">

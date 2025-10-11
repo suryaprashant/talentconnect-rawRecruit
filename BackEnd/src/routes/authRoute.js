@@ -1,12 +1,12 @@
 // src/routes/auth.js
 import express from 'express';
-import { signup, login, logout } from '../controllers/authentication/manualAuthController.js';
-import { googleAuth } from '../controllers/authentication/googleAuthController.js';
-import {  handleLinkedInCallback, redirectToLinkedIn } from '../controllers/authentication/linkedInAuthController.js';
+import { signup, login, logout } from 'src/controllers/authentication/manualAuthController.js';
+import { googleAuth } from 'src/controllers/authentication/googleAuthController.js';
+import {  handleLinkedInCallback, redirectToLinkedIn } from 'src/controllers/authentication/linkedInAuthController.js';
 import {
   sendResetLink,
   resetPassword
-} from '../controllers/authentication/forgotPasswordController.js';
+} from 'src/controllers/authentication/forgotPasswordController.js';
 
 
 const router = express.Router();

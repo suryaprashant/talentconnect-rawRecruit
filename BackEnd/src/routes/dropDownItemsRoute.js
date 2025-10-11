@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { getAllColleges, getAllCompanies } from '../controllers/dropDownItemsController.js';
+import { getAllColleges, getAllCompanies } from 'src/controllers/dropDownItemsController.js';
 
 const router = express.Router();
 

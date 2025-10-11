@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Auth from '../models/auth.js';
+import Auth from 'src/models/auth.js';
 
 export const handleLinkedInAuth = async (code, userType) => {
   // 1. Exchange code for access token

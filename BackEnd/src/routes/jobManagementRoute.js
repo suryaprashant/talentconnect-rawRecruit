@@ -1,7 +1,7 @@
 import express from 'express';
-import { deleteJob, getPostedJobs } from '../controllers/jobManagementController.js';
-import secureRoute from '../middlewares/secureRouteMiddleware.js';
-import { getCollegePostedJobs } from '../controllers/collegeJobManagementController.js';
+import { deleteJob, getPostedJobs } from 'src/controllers/jobManagementController.js';
+import secureRoute from 'src/middlewares/secureRouteMiddleware.js';
+import { getCollegePostedJobs } from 'src/controllers/collegeJobManagementController.js';
 
 const router = express.Router();
 
