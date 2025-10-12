@@ -1,15 +1,13 @@
-// src/components/layout/AcceptInvitationModal.jsx
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthProvider'; // 1. Import useAuth
+import { useAuth } from '@/context/AuthProvider'; 
 
 function AcceptInvitationModal({ invitation, onClose, onSuccess }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const [authuser, setAuthuser] = useAuth(); // 2. Get the auth context and setter
+    const [authuser, setAuthuser] = useAuth(); 
 
     const handleAccept = async (workMode) => {
         setLoading(true);
@@ -21,22 +19,21 @@ function AcceptInvitationModal({ invitation, onClose, onSuccess }) {
                 { withCredentials: true }
             );
             
-            // 3. CRITICAL FIX: Update auth context and local storage with fresh user data from the backend.
-            // This assumes your API returns the updated user object like: { companyName: '...', user: { ... } }
+          
             if (data.user) {
                 const updatedAuthUser = { ...authuser, user: data.user };
                 setAuthuser(updatedAuthUser);
                 localStorage.setItem('authUser', JSON.stringify(updatedAuthUser));
             }
             console.log(authuser)
-            // Continue with existing success logic
+          
             onSuccess(invitation._id);
             navigate('/invitation-accepted', { state: { companyName: data.companyName } });
-            onClose(); // Close the modal on success
+            onClose(); 
 
         } catch (err) {
             console.error("Failed to accept invitation:", err);
-            // Display a user-friendly error inside the modal
+            
             setError(err.response?.data?.message || 'An unexpected error occurred. Please try again.');
         } finally {
             setLoading(false);
@@ -51,7 +48,6 @@ function AcceptInvitationModal({ invitation, onClose, onSuccess }) {
                     How would you like to proceed? You can switch profiles later.
                 </p>
 
-                {/* Display error message directly in the modal for better UX */}
                 {error && (
                     <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md text-sm text-center">
                         {error}

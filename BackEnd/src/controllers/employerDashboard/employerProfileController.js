@@ -25,7 +25,8 @@ export const createEmployerOnboarding = async (req, res) => {
     try {
         const userId = req.user._id;
         const company = await getCompanyService(userId)
-        if (company) {
+        
+        if (!company) {
             return res.status(400).json({ message: 'Onboarding already exists for this user.' });
         }
 

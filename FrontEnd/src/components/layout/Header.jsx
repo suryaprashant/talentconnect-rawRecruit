@@ -19,7 +19,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
     const profileRef = useRef(null);
     const notificationRef = useRef(null);
 
-    // Fetch notifications
+    
     useEffect(() => {
         if (authuser) {
             const fetchNotifications = async () => {
@@ -49,7 +49,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [setProfileOpen]);
 
-    // console.log("ye to authuser hai na" ,authuser)
+  
 
     return (
         <header className="sticky top-0 z-30 flex items-center h-16 px-4 bg-white border-b border-gray-200 shadow-sm">
@@ -60,7 +60,6 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
             >
                 <FiMenu className="w-6 h-6" aria-hidden="true" />
             </button>
-
             <div className="flex-1  max-w-2xl mx-auto  lg:max-w-xs">
                 <SearchBar placeholder="Search" />
             </div>

@@ -115,9 +115,13 @@ export const acceptInvitation = async (req, res) => {
         invitation.status = 'Active';
         await invitation.save();
 
-        //  ADDED: Update user's active company if they choose to work for the company
+        let updatedUser = await Auth.findById(acceptingUserId).select('-password'); 
+
+
         if (workMode === 'company') {
-            await Auth.findByIdAndUpdate(acceptingUserId, { activeCompanyId: invitation.companyId });
+            updatedUser = await Auth.findByIdAndUpdate(acceptingUserId, { activeCompanyId: invitation.companyId },
+                { new: true } 
+            ).select('-password');         
         }
 
         // Mark the related notification as read
@@ -132,6 +136,7 @@ export const acceptInvitation = async (req, res) => {
             message: 'Invitation accepted successfully!',
             teamMember: invitation,
             companyName: company.companyDetails.companyName,
+            user: updatedUser 
         });
 
     } catch (error) {

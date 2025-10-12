@@ -51,6 +51,54 @@ export const getJobPostingsByJobTypeService = async (jobType) => {
     }
 };
 
+export const getJobPostingsByJobTypeWithLocationBasedService = async (jobType, studentLocations = []) => {
+  try {
+    let query = { jobType };
+
+    if (studentLocations && studentLocations.length > 0) {
+      query.$or = [
+        { broadcastType: 'Everyone' },
+        { broadcastType: 'Location', location: { $in: studentLocations } }
+      ];
+    } else {
+      query.broadcastType = 'Everyone';
+    }
+
+    const postings = await JobPostingTable.find(query)
+      .populate('companyPosted')
+      .sort({ createdAt: -1 });
+
+    const currentDate = new Date();
+    const updatedPostings = postings.map(posting => {
+      let status = posting.jobStatus;
+
+      if (posting.startDate && posting.endDate) {
+        const startDate = new Date(posting.startDate);
+        const endDate = new Date(posting.endDate);
+
+        if (currentDate < startDate) {
+          status = "Pending";
+        } else if (currentDate >= startDate && currentDate <= endDate) {
+          status = "Open";
+        } else if (currentDate > endDate) {
+          status = "Closed";
+        }
+      }
+
+      return {
+        ...posting.toObject(),
+        jobStatus: status
+      };
+    });
+
+    return updatedPostings;
+  } catch (error) {
+    console.error("Error in getJobPostingsByJobTypeService:", error.message);
+    throw error;
+  }
+};
+
+
 
 
 export const getJobPostingsByCollegeService = async (jobType) => {

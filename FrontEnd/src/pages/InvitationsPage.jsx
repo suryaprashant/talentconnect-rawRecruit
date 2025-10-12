@@ -29,27 +29,27 @@ function InvitationsPage() {
         fetchInvitations();
     }, []);
     
-    // Function to remove invitation from list after decision
+   
     const handleInvitationAccepted = (invitationId) => {
         setInvitations(prev => prev.filter(inv => inv._id !== invitationId));
         setSelectedInvitation(null);
     };
 
      const handleDecline = async (invitationId) => {
-        setIsDeclining(invitationId); // Set loading state for this specific button
+        setIsDeclining(invitationId); 
         try {
             await axios.post(
                 `${import.meta.env.VITE_Backend_URL}/api/team-member/invitations/${invitationId}/decline`,
                 {},
                 { withCredentials: true }
             );
-            // On success, remove the invitation from the list
+         
             setInvitations(prev => prev.filter(inv => inv._id !== invitationId));
         } catch (err) {
             console.error("Failed to decline invitation:", err);
             alert('Could not decline the invitation. Please try again.');
         } finally {
-            setIsDeclining(null); // Reset loading state
+            setIsDeclining(null); 
         }
     };
 
