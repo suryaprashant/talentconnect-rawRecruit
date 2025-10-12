@@ -105,7 +105,7 @@ export const submitCollegeOnboarding = async (req, res) => {
     }
 
     let college = await getCollegeService(userId);
-    const onboardingData = college.data[0];
+    let onboardingData = college.data[0];
     
 
     if (onboardingData) {
