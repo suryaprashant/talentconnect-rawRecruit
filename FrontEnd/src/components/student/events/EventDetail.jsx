@@ -4,18 +4,18 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 // import { events } from '@/constants/hackthonData';
 
 const EventDetail = () => {
-  const { id,event_name } = useParams();
+  const { id, event_name } = useParams();
   // console.log("id is ",id ,"and event name is ", event_name);
-  
+
   const navigate = useNavigate();
   // const event = events.find(h => h.id === parseInt(id));
   const [event, setEvent] = useState();
 
   const getEvent = async () => {
     try {
-      const response = await getEventDetail(id,event_name);
-      // console.log(response.data.data);
-      
+      const response = await getEventDetail(id, event_name);
+      console.log(response.data.data);
+
       setEvent(response.data.data);
     } catch (error) {
       console.log("Error: ", error);
@@ -98,7 +98,7 @@ const EventDetail = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            {event.eventType==="Virtual" ? event.eventType : event.location}
+            {event.eventType === "Virtual" ? event.eventType : event.location}
           </div>
         </div>
       </div>
@@ -247,6 +247,36 @@ const EventDetail = () => {
           ))}
         </div>
       </div>
+
+      {/* Panel Members Section */}
+      {event.panelMembers && event.panelMembers.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Meet Our Panel Members</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {event.panelMembers.map((url, index) => {
+              const username = url.split("/").filter(Boolean).pop(); // extract 'test' from 'https://linkedin.com/in/test'
+              return (
+                <div
+                  key={index}
+                  className="border border-gray-200 rounded-md p-4 text-center hover:shadow transition-shadow"
+                >
+                  <p className="text-gray-700 mb-2">Panel Member {index + 1}</p>
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-blue-600 hover:underline"
+                  >
+
+                    View LinkedIn Profile of {username}
+                  </a>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
 
       <div className="mb-8">
         <div className="border border-gray-200 rounded-md p-4">
