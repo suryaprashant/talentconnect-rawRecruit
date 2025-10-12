@@ -73,7 +73,7 @@ function ProfileSwitchDropdown() {
     const handleLogout = async () => {
         try {
             await axios.post(`${import.meta.env.VITE_Backend_URL}/api/auth/logout`, {}, { withCredentials: true });
-            setAuthuser(null); // This will trigger the AuthProvider to clear localStorage
+            setAuthuser(null); 
             navigate('/', { replace: true });
         } catch (error) {
             console.error('Logout failed:', error);
@@ -94,7 +94,7 @@ function ProfileSwitchDropdown() {
                 `${import.meta.env.VITE_Backend_URL}/api/team-member/leave/${companyToLeave._id}`,
                 { withCredentials: true }
             );
-            //  Update state correctly without reloading
+          
             handleStateUpdate(data.user);
             setIsLeaveModalOpen(false);
             setCompanyToLeave(null);
@@ -142,7 +142,7 @@ function ProfileSwitchDropdown() {
     return (
         <>
             <div className="absolute right-0 z-50 w-64 mt-2 origin-top-right bg-white rounded-md shadow-lg dropdown-menu ring-1 ring-black ring-opacity-5">
-                {/* ... Main dropdown structure ... */}
+                
                 <div className="py-1">
                     <div className="px-4 py-3">
                         <p className="text-xs text-gray-500">Currently working as</p>

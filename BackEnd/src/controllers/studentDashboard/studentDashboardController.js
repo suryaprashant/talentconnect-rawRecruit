@@ -1,7 +1,8 @@
-import { getJobPostingsByCollegeService, getJobPostingsByJobTypeService } from "../../services/jobPostingService.js";
+import { getJobPostingsByCollegeService, getJobPostingsByJobTypeService, getJobPostingsByJobTypeWithLocationBasedService } from "../../services/jobPostingService.js";
 import CompanyProfile from "../../models/companyDashboard/companyProfileModel.js";
 import { JobPostingTable } from "../../models/jobPostingsModel.js";
 import OnboardingModel from "../../models/studentonboardingModel.js";
+import { getStudentService } from "../../services/studentService.js";
 
 
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
@@ -184,18 +185,53 @@ export const getPoolCampusJobByIdForCompany = async (req, res) => {
     }
 };
 
+// export const getJobPostings = async (req, res) => {
+//     try {
+//         const postings = await getJobPostingsByJobTypeService("Job-listing");
+//         sendResponse(res, 200, { data: postings });
+//     } catch (error) {
+//         sendError(res, 500, "Internal server error");
+//     }
+// };
+
 export const getJobPostings = async (req, res) => {
     try {
-        const postings = await getJobPostingsByJobTypeService("Job-listing");
+        const userId = req.user._id;
+        let studentLocations =[] ;
+
+        const studentProfile = await getStudentService(userId);
+
+        if(studentProfile.success && studentProfile.data.length > 0 && studentProfile.data[0].locations){
+            studentLocations = studentProfile.data[0].locations ;
+        }
+        const postings = await getJobPostingsByJobTypeWithLocationBasedService("Job-listing",studentLocations);
+
         sendResponse(res, 200, { data: postings });
     } catch (error) {
         sendError(res, 500, "Internal server error");
     }
 };
 
+// export const getInternshipPostings = async (req, res) => {
+//     try {
+//         const postings = await getJobPostingsByJobTypeService("Internship");
+//         sendResponse(res, 200, { data: postings });
+//     } catch (error) {
+//         sendError(res, 500, "Internal server error");
+//     }
+// };
 export const getInternshipPostings = async (req, res) => {
     try {
-        const postings = await getJobPostingsByJobTypeService("Internship");
+        const userId = req.user._id;
+        let studentLocations =[] ;
+
+        const studentProfile = await getStudentService(userId);
+        if(studentProfile.success && studentProfile.data.length > 0 && studentProfile.data[0].locations){
+            studentLocations = studentProfile.data[0].locations ;
+        }
+
+
+        const postings = await getJobPostingsByJobTypeWithLocationBasedService("Internship",studentLocations);
         sendResponse(res, 200, { data: postings });
     } catch (error) {
         sendError(res, 500, "Internal server error");

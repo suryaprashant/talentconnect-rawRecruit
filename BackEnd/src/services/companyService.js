@@ -16,10 +16,10 @@ export async function createProfileService(profileData) {
 export async function getCompanyService(userId) {
     try {
         const company = await CompanyProfile.find({ userId: userId }).lean();
-
         if (!company) {
             return { success: false, msg: "Company profile not found" };
         }
+        console.log("Company profile found:", company);
         return { success: true, data: company };
     } catch (error) {
         console.log("Error: ", error.message);

@@ -7,15 +7,16 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
     const navigate = useNavigate();
 
     const handleNotificationClick = async (notification) => {
-        // Mark as read on the backend if it's unread
+       
         if (!notification.read) {
             try {
+
                 await axios.patch(
                     `${import.meta.env.VITE_Backend_URL}/api/notifications/${notification._id}/read`,
                     {},
                     { withCredentials: true }
                 );
-                // Update state locally
+              
                 setNotifications(prev => 
                     prev.map(n => n._id === notification._id ? { ...n, read: true } : n)
                 );
@@ -25,29 +26,29 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
             }
         }
 
-        // Handle file download for FILE_SHARED notifications
+       
         if (notification.type === 'FILE_SHARED' && notification.fileUrl) {
             handleFileDownload(notification.fileUrl, notification.fileName);
             return;
         }
 
-        // Navigate to the correct page based on type
+        
         if (notification.type === 'TEAM_INVITATION') {
             navigate('/invitations');
         }
-        // Add other notification types here
+        
     };
 
     const handleFileDownload = async (fileUrl, fileName) => {
         try {
-            // Fetch the file as a blob
+            
             const response = await fetch(fileUrl);
             const blob = await response.blob();
             
-            // Create a temporary URL for the blob
+            
             const blobUrl = window.URL.createObjectURL(blob);
             
-            // Create a temporary anchor element and trigger download
+            
             const link = document.createElement('a');
             link.href = blobUrl;
             link.download = fileName || 'download';
@@ -59,7 +60,7 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
             window.URL.revokeObjectURL(blobUrl);
         } catch (error) {
             console.error('Error downloading file:', error);
-            // Fallback to opening in new tab if download fails
+           
             window.open(fileUrl, '_blank');
         }
     };
@@ -86,6 +87,7 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
                         notifications.map((notification) => (
                             <div
                                 key={notification._id}
+                                onClick={()=> handleNotificationClick(notification)}
                                 className={`flex items-start px-4 py-3 text-sm hover:bg-gray-100 ${!notification.read ? 'bg-blue-50' : ''}`}
                             >
                                 <div className="p-2 mr-3 text-blue-500 bg-blue-100 rounded-full">
