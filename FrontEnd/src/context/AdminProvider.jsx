@@ -60,8 +60,12 @@ export const AdminProvider = ({ children }) => {
         `${import.meta.env.VITE_Backend_URL}/api/admin/login`,
         { email, password },
         { 
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true
+          headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          withCredentials: true,
+          timeout: 10000 // 10 second timeout
         }
       );
 
@@ -79,10 +83,15 @@ export const AdminProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('Admin login failed:', error);
-      return { 
-        success: false, 
-        message: error.response?.data?.message || 'Login failed' 
-      };
+      let errorMessage = 'Login failed. Please try again.';
+      
+      if (error.code === 'ERR_NETWORK') {
+        errorMessage = 'Unable to connect to server. Please check your connection.';
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      
+      return { success: false, message: errorMessage };
     }
   };
 
