@@ -252,23 +252,36 @@ const EventDetail = () => {
       {event.panelMembers && event.panelMembers.length > 0 && (
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4">Meet Our Panel Members</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {event.panelMembers.map((url, index) => {
-              const username = url.split("/").filter(Boolean).pop(); // extract 'test' from 'https://linkedin.com/in/test'
+              const username = url.split("/").filter(Boolean).pop(); // extract 'test'
               return (
                 <div
                   key={index}
-                  className="border border-gray-200 rounded-md p-4 text-center hover:shadow transition-shadow"
+                  className="border border-gray-200 rounded-md p-6 text-center hover:shadow-sm transition-shadow flex flex-col items-center"
                 >
-                  <p className="text-gray-700 mb-2">Panel Member {index + 1}</p>
+                  <p className="text-gray-800 font-medium mb-2">Panel Member {index + 1}</p>
+                  {/* Circular LinkedIn Logo */}
+                  <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                      className="w-10 h-10 text-blue-700"
+                    >
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zM7.119 20.452H3.555V9h3.564v11.452z" />
+                    </svg>
+                  </div>
+
+                  {/* Label and Link */}
+                  
                   <a
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-blue-600 hover:underline"
+                    className="text-blue-600 hover:underline text-sm"
                   >
-
-                    View LinkedIn Profile of {username}
+                    View LinkedIn Profile ({username})
                   </a>
                 </div>
               );
@@ -276,6 +289,7 @@ const EventDetail = () => {
           </div>
         </div>
       )}
+
 
 
       <div className="mb-8">
