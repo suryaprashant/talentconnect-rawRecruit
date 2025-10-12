@@ -1,10 +1,8 @@
-
-
-
 import React, { useState } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios'; 
 import {useAuth} from '../../../context/AuthProvider'
+import toast from 'react-hot-toast';
 
 // Import Page Components
 import Welcome from './Welcome';
@@ -175,11 +173,11 @@ function OnboardingFlow() {
       }
 
     
-      alert('College onboarding form submitted successfully!');
+      toast.success('College onboarding form submitted successfully!');
       navigate('/home'); 
     } catch (error) {
       console.error('Submission failed:', error.response ? error.response.data : error.message);
-      alert('Submission failed: ' + (error.response ? error.response.data.message : error.message));
+      toast.error('Submission failed: ' + (error.response ? error.response.data.message : error.message));
     }
   };
 
