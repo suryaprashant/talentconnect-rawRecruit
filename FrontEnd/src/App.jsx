@@ -7,16 +7,21 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import FormProvider from "./pages/fresher/onbordingForms/FormContext";
 import { AppProvider } from "./pages/fresher/editAndReview/AppContext";
+import { AdminProvider } from "./context/AdminProvider";
 // Layout
 import Layout from "./components/layout/Layout";
+import AdminRoute from "./components/AdminRoute";
 
 // Pages - Auth
 import RoleSelection from "./pages/auth/GetStarted";
 import SignupPage from "./pages/auth/SignupPage";
 import LoginPage from "./pages/auth/LoginPage";
+import AdminLogin from "./pages/admin/adminAuth/adminLogin";
+import AdminSignup from "./pages/admin/adminAuth/adminSignup";
 
 
 // Pages - Dashboard
+import AdminDashboard from "./pages/admin/dashboard/adminDashboard";
 import Dashboard from "./pages/students/Dashboard";
 import Profile from "./pages/students/Profile";
 // import SavedJobs from "./pages/students/SavedJobs";
@@ -594,8 +599,17 @@ function AppRoutes() {
         }
       />
 
-
-
+      {/* Admin Routes - Independent from main layout */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/signup" element={<AdminSignup />} />
+      <Route 
+        path="/admin/dashboard" 
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        } 
+      />
 
       {/* fresher  */}
       <Route path="/fresher/*">
@@ -631,9 +645,11 @@ const App = () => (
       {/*   
     <Router> */}
       <AppProvider>  {/* Global app state */}
-        <FormProvider>  {/* Form-specific state */}
-          <AppRoutes />
-        </FormProvider>
+        <AdminProvider>  {/* Admin state */}
+          <FormProvider>  {/* Form-specific state */}
+            <AppRoutes />
+          </FormProvider>
+        </AdminProvider>
       </AppProvider>
       {/* </Router> */}
 

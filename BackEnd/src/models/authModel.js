@@ -37,7 +37,7 @@ const AuthSchema = new mongoose.Schema({
   },
   userType: {
     type: String,
-    enum: ['candidate', 'college', 'company', 'student', 'fresher', 'professional', 'employer'],
+    enum: ['candidate', 'college', 'company', 'student', 'fresher', 'professional', 'employer', 'admin'],
     // default: 'candidate'
   },
   authProvider: {
