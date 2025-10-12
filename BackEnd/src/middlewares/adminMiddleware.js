@@ -1,54 +1,44 @@
 import jwt from "jsonwebtoken";
 import Auth from "../models/authModel.js";
 
-// Admin middleware to protect admin routes
-export const adminAuth = async (req, res, next) => {
+const adminAuth = async (req, res, next) => {
   try {
-    if (!process.env.JWT_SECRET) {
-      throw new Error("JWT_SECRET is not configured");
+    let token;
+
+    // Check for token in headers
+    if (req.headers.authorization?.startsWith("Bearer")) {
+      token = req.headers.authorization.split(" ")[1];
     }
-      
-    const token = req.cookies.jwt || req.headers.authorization?.split(" ")[1];
-     
+    // Check for token in cookies
+    else if (req.cookies.jwt) {
+      token = req.cookies.jwt;
+    }
+
     if (!token) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        error: "No token, authorization denied" 
+        message: "Authentication required",
       });
     }
 
+    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded) {
-      return res.status(401).json({ 
-        success: false,
-        error: "Invalid Token" 
-      });
-    }
+    const user = await Auth.findById(decoded.userId);
 
-    // Check if user exists and is admin
-    const user = await Auth.findById(decoded.userId).select("-password");
-    if (!user) {
-      return res.status(401).json({ 
+    if (!user || user.userType !== "admin") {
+      return res.status(403).json({
         success: false,
-        error: "No user found" 
-      });
-    }
-
-    // Check if user is admin
-    if (user.userType !== 'admin') {
-      return res.status(403).json({ 
-        success: false,
-        error: "Access denied. Admin privileges required." 
+        message: "Not authorized as admin",
       });
     }
 
     req.user = user;
     next();
   } catch (error) {
-    console.log("Error in adminAuth middleware: ", error);
-    res.status(500).json({ 
+    console.error("Admin Auth Middleware Error:", error);
+    res.status(401).json({
       success: false,
-      error: "Internal server error" 
+      message: "Authentication failed",
     });
   }
 };
