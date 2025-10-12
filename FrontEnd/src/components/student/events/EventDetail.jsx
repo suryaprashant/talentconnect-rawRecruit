@@ -4,18 +4,18 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 // import { events } from '@/constants/hackthonData';
 
 const EventDetail = () => {
-  const { id,event_name } = useParams();
+  const { id, event_name } = useParams();
   // console.log("id is ",id ,"and event name is ", event_name);
-  
+
   const navigate = useNavigate();
   // const event = events.find(h => h.id === parseInt(id));
   const [event, setEvent] = useState();
 
   const getEvent = async () => {
     try {
-      const response = await getEventDetail(id,event_name);
-      // console.log(response.data.data);
-      
+      const response = await getEventDetail(id, event_name);
+      console.log(response.data.data);
+
       setEvent(response.data.data);
     } catch (error) {
       console.log("Error: ", error);
@@ -98,7 +98,7 @@ const EventDetail = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            {event.eventType==="Virtual" ? event.eventType : event.location}
+            {event.eventType === "Virtual" ? event.eventType : event.location}
           </div>
         </div>
       </div>
@@ -247,6 +247,50 @@ const EventDetail = () => {
           ))}
         </div>
       </div>
+
+      {/* Panel Members Section */}
+      {event.panelMembers && event.panelMembers.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Meet Our Panel Members</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {event.panelMembers.map((url, index) => {
+              const username = url.split("/").filter(Boolean).pop(); // extract 'test'
+              return (
+                <div
+                  key={index}
+                  className="border border-gray-200 rounded-md p-6 text-center hover:shadow-sm transition-shadow flex flex-col items-center"
+                >
+                  <p className="text-gray-800 font-medium mb-2">Panel Member {index + 1}</p>
+                  {/* Circular LinkedIn Logo */}
+                  <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                      className="w-10 h-10 text-blue-700"
+                    >
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zM7.119 20.452H3.555V9h3.564v11.452z" />
+                    </svg>
+                  </div>
+
+                  {/* Label and Link */}
+                  
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline text-sm"
+                  >
+                    View LinkedIn Profile ({username})
+                  </a>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+
 
       <div className="mb-8">
         <div className="border border-gray-200 rounded-md p-4">
