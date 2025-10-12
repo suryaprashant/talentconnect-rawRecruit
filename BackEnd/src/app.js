@@ -35,6 +35,8 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 
 // Auth and Profile Routes
+import adminAuth from "./routes/admin/adminAuth.js";
+import adminDashboard from "./routes/admin/adminDashboard.js";
 import authRoutes from "./routes/authRoute.js";
 import uploadRoutes from "./routes/uploadRoute.js";
 import studentProfileRoutes from "./routes/studentProfileRoutes.js";
@@ -106,6 +108,8 @@ import hackathonHostingRoute from './routes/hostingManagement/hackathonHostingRo
 import casestudyHostingRoute from './routes/hostingManagement/casestudyHostingRoute.js';
 import workshopHostingRoute from './routes/hostingManagement/workshopHostingRoute.js';
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminAuth);
+app.use("/api/admin/dashboard", adminDashboard);
 app.use("/api", student_onboardingroutes);
 app.use("/api/hiring-channels", jobPosting);
 app.use("/api/upload", uploadRoutes);
@@ -184,6 +188,7 @@ app.use("/api/rawrecruit", [
 app.use("/api/rawrecruit/resume", uploadResumeRoute);
 app.use("/rawrecruit/link", basicdetails);
 app.use("/api/resumes", resumeRoutes);
+
 // app.use("/rawrecruit", jobinterest);
 
 // Start the server
