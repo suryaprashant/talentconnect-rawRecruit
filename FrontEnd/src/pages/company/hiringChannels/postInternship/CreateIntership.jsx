@@ -162,6 +162,7 @@ export default function PostJob() {
     if (formData.description.length > 500) {
       setDescriptionError("Job description cannot exceed 500 characters.");
       toast.error("Job description cannot exceed 500 characters.");
+      setIsSubmitting(false);
       return;
     }
 
