@@ -8,11 +8,7 @@ import toast from 'react-hot-toast';
 import { City } from 'country-state-city';
 
 export default function PoolCampusHiringForm() {
-
-
   const locations = ['Online', 'Bangalore', 'Mumbai', 'Delhi', 'Hyderabad', 'Chennai', 'Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Other'];
-
-
   const collegeStreamMapping = {
     'Engineering': ['B.Tech', 'M.Tech', 'Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Information Technology', 'Biotechnology', 'Chemical', 'Aerospace', 'Automobile'],
     'Management': ['MBA', 'BBA'],
@@ -36,7 +32,6 @@ export default function PoolCampusHiringForm() {
   const selectionProcessOptions = ['Online Test', 'Coding Test', 'Aptitude Test', 'Group Discussion', 'Technical Interview', 'HR Interview', 'Case Study', 'Presentation'].sort((a, b) => a.localeCompare(b));
   const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
   const minimumStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '201-500', '500+'];
-
 
   const initialState = {
     venue: '',
@@ -63,7 +58,7 @@ export default function PoolCampusHiringForm() {
   const [formData, setFormData] = useState(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
-
+  const [descriptionError, setDescriptionError] = useState("");
 
   const [indianCities, setIndianCities] = useState([]);
   const [workLocationSearch, setWorkLocationSearch] = useState('');
@@ -122,6 +117,13 @@ export default function PoolCampusHiringForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "description") {
+      if (value.length > 500) {
+        setDescriptionError("Job description cannot exceed 500 characters.");
+      } else {
+        setDescriptionError("");
+      }
+    }
     setFormData({ ...formData, [name]: value });
   };
 
@@ -166,7 +168,11 @@ export default function PoolCampusHiringForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-
+    if (formData.description.length > 500) {
+      setDescriptionError("Job description cannot exceed 500 characters.");
+      toast.error("Job description cannot exceed 500 characters.");
+      return;
+    }
     const fieldsToValidate = [
       { key: 'studentStreams', name: 'Student Stream / Degree' },
       { key: 'skills', name: 'Skills' },
@@ -338,7 +344,19 @@ export default function PoolCampusHiringForm() {
 
           <div>
             <label className="block mb-1 font-medium">Job Description <span className="text-red-500">*</span></label>
-            <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Provide a detailed job description..." className="w-full p-2 border rounded resize-none h-24" required></textarea>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Provide a detailed job description..."
+              className="w-full p-2 border rounded resize-none h-24"
+              maxLength={600}
+              required></textarea>
+            <div className="flex justify-between text-xs mt-1">
+              <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
+                {descriptionError ? descriptionError : `${formData.description.length}/500 characters`}
+              </span>
+            </div>
           </div>
 
           <div ref={skillsRef} className="relative">

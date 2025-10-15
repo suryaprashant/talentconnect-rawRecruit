@@ -67,6 +67,7 @@ export default function RequestInfo() {
 
   const [formData, setFormData] = useState(initialData);
   const [currency, setCurrency] = useState('INR');
+  const [descriptionError, setDescriptionError] = useState("");
 
   // --- NEW: State for city data and search ---
   const [indianCities, setIndianCities] = useState([]);
@@ -128,6 +129,13 @@ export default function RequestInfo() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === "description") {
+      if (value.length > 500) {
+        setDescriptionError("Job description cannot exceed 500 characters.");
+      } else {
+        setDescriptionError("");
+      }
+    }
     setFormData({ ...formData, [name]: value });
   };
 
@@ -160,6 +168,11 @@ export default function RequestInfo() {
   };
 
   const handleSubmit = async () => {
+    if (formData.description.length > 500) {
+      setDescriptionError("Job description cannot exceed 500 characters.");
+      toast.error("Job description cannot exceed 500 characters.");
+      return;
+    }
     try {
       const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1];
 
@@ -338,35 +351,35 @@ export default function RequestInfo() {
 
         {/* Broadcast Type (NEW) */}
         <div>
-    <label className="block mb-2 font-medium">Broadcast Options <span className="text-red-500">*</span></label>
-    <div className="flex items-center space-x-6">
-        <label className="flex items-center cursor-pointer">
-            <input
+          <label className="block mb-2 font-medium">Broadcast Options <span className="text-red-500">*</span></label>
+          <div className="flex items-center space-x-6">
+            <label className="flex items-center cursor-pointer">
+              <input
                 type="radio"
                 name="broadcastType"
                 value="Everyone"
                 checked={formData.broadcastType === 'Everyone'}
-                onChange= {handleInputChange}
+                onChange={handleInputChange}
                 className="h-4 w-4 text-black border-gray-300 focus:ring-black"
-            />
-            <span className="ml-2 text-gray-700">Broadcast to Everyone</span>
-        </label>
-        <label className="flex items-center cursor-pointer">
-            <input
+              />
+              <span className="ml-2 text-gray-700">Broadcast to Everyone</span>
+            </label>
+            <label className="flex items-center cursor-pointer">
+              <input
                 type="radio"
                 name="broadcastType"
                 value="Location"
                 checked={formData.broadcastType === 'Location'}
                 onChange={handleInputChange}
                 className="h-4 w-4 text-black border-gray-300 focus:ring-black"
-            />
-            <span className="ml-2 text-gray-700">Broadcast by Location</span>
-        </label>
-    </div>
-    <p className="text-xs text-gray-500 mt-1">
-        Select 'Broadcast by Location' to show this job only to candidates/colleges in the specified Work Locations.
-    </p>
-</div>
+              />
+              <span className="ml-2 text-gray-700">Broadcast by Location</span>
+            </label>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            Select 'Broadcast by Location' to show this job only to candidates/colleges in the specified Work Locations.
+          </p>
+        </div>
 
         {/* Looking for */}
         <div>
@@ -463,7 +476,19 @@ export default function RequestInfo() {
         {/* Description  */}
         <div>
           <label className="block mb-1 font-medium">Job Description <span className="text-red-500">*</span></label>
-          <textarea name="description" value={formData.description} onChange={handleInputChange} placeholder="Provide a detailed job description..." className="w-full p-2 border rounded resize-none h-24" required></textarea>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+            placeholder="Provide a detailed job description..."
+            className="w-full p-2 border rounded resize-none h-24"
+            maxLength={600}
+            required></textarea>
+          <div className="flex justify-between text-xs mt-1">
+            <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
+              {descriptionError ? descriptionError : `${formData.description.length}/500 characters`}
+            </span>
+          </div>
         </div>
 
         {/* Amenities/Facilities Required */}

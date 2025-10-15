@@ -45,6 +45,7 @@ export default function CreateJob() {
   const [studentStreamInput, setStudentStreamInput] = useState('');
   const [locationSearch, setLocationSearch] = useState(''); // <-- State for location search
   const [indianCities, setIndianCities] = useState([]); // <-- State for city data
+  const [descriptionError, setDescriptionError] = useState("");
 
   const skillsDropdownRef = useRef(null);
   const certificationsDropdownRef = useRef(null);
@@ -101,6 +102,13 @@ export default function CreateJob() {
   // --- Generic Handlers ---
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (name === "description") {
+      if (value.length > 500) {
+        setDescriptionError("Job description cannot exceed 500 characters.");
+      } else {
+        setDescriptionError("");
+      }
+    }
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -162,6 +170,11 @@ export default function CreateJob() {
   const handlePostJob = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    if (formData.description.length > 500) {
+      setDescriptionError("Job description cannot exceed 500 characters.");
+      toast.error("Job description cannot exceed 500 characters.");
+      return;
+    }
 
     const requiredFields = {
       jobTitle: "Job Title",
@@ -303,35 +316,35 @@ export default function CreateJob() {
           </div>
 
           <div>
-    <label className="block mb-2 font-medium">Broadcast Options <span className="text-red-500">*</span></label>
-    <div className="flex items-center space-x-6">
-        <label className="flex items-center cursor-pointer">
-            <input
-                type="radio"
-                name="broadcastType"
-                value="Everyone"
-                checked={formData.broadcastType === 'Everyone'}
-                onChange={handleInputChange}
-                className="h-4 w-4 text-black border-gray-300 focus:ring-black"
-            />
-            <span className="ml-2 text-gray-700">Broadcast to Everyone</span>
-        </label>
-        <label className="flex items-center cursor-pointer">
-            <input
-                type="radio"
-                name="broadcastType"
-                value="Location"
-                checked={formData.broadcastType === 'Location'}
-                onChange={handleInputChange}
-                className="h-4 w-4 text-black border-gray-300 focus:ring-black"
-            />
-            <span className="ml-2 text-gray-700">Broadcast by Location</span>
-        </label>
-    </div>
-    <p className="text-xs text-gray-500 mt-1">
-        Select 'Broadcast by Location' to show this job only to candidates/colleges in the specified Work Locations.
-    </p>
-</div>
+            <label className="block mb-2 font-medium">Broadcast Options <span className="text-red-500">*</span></label>
+            <div className="flex items-center space-x-6">
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="broadcastType"
+                  value="Everyone"
+                  checked={formData.broadcastType === 'Everyone'}
+                  onChange={handleInputChange}
+                  className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+                />
+                <span className="ml-2 text-gray-700">Broadcast to Everyone</span>
+              </label>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="broadcastType"
+                  value="Location"
+                  checked={formData.broadcastType === 'Location'}
+                  onChange={handleInputChange}
+                  className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+                />
+                <span className="ml-2 text-gray-700">Broadcast by Location</span>
+              </label>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              Select 'Broadcast by Location' to show this job only to candidates/colleges in the specified Work Locations.
+            </p>
+          </div>
 
 
 
@@ -357,7 +370,20 @@ export default function CreateJob() {
 
           <div className="mb-4">
             <label htmlFor="description" className="block text-sm font-medium mb-2">Job Description <span className="text-red-500">*</span></label>
-            <textarea id="description" name="description" placeholder="Describe the job responsibilities and requirements..." className="w-full p-2 border border-gray-300 rounded-md h-32 focus:ring-2 focus:ring-black" value={formData.description} onChange={handleInputChange}></textarea>
+            <textarea
+              id="description"
+              name="description"
+              placeholder="Describe the job responsibilities and requirements..."
+              className="w-full p-2 border border-gray-300 rounded-md h-32 focus:ring-2 focus:ring-black"
+              value={formData.description}
+              onChange={handleInputChange}
+              maxLength={600}
+              required></textarea>
+            <div className="flex justify-between text-xs mt-1">
+              <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
+                {descriptionError ? descriptionError : `${formData.description.length}/500 characters`}
+              </span>
+            </div>
           </div>
         </div>
 
