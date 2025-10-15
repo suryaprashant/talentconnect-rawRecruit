@@ -1,17 +1,81 @@
+// import { useState } from 'react';
+// import MainPage from './MainPage';
+// import RegisterPage from './RegisterPage';
+// import RequestInfo from './RequestInfo';
+
+// export default function EmployerBranding() {
+//   const [showRegistration, setShowRegistration] = useState(false);
+//   const [showRequestInfo, setShowRequestInfo] = useState(false);
+//   const [formData, setFormData] = useState({
+//     date: "",
+//     time: "",
+//     message: "",
+//     acceptTerms: false
+//   });
+
+//   const handleRegisterClick = () => setShowRegistration(true);
+//   const handleRequestInfoClick = () => setShowRequestInfo(true);
+//   const handleBackClick = () => {
+//     setShowRegistration(false);
+//     setShowRequestInfo(false);
+//   };
+
+//   const handleInputChange = (e) => {
+//     const { name, value, type, checked } = e.target;
+//     setFormData({
+//       ...formData,
+//       [name]: type === 'checkbox' ? checked : value
+//     });
+//   };
+
+//   const handleSubmit = () => {
+//     console.log("Form submitted:", formData);
+//     alert("Form submitted successfully!");
+//     setShowRegistration(false);
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gray-50 font-sans">
+//       {showRequestInfo ? (
+//         <RequestInfo onBackClick={handleBackClick}
+//         // formData={formData} 
+//         // handleInputChange={handleInputChange}
+//         // handleSubmit={handleSubmit}
+//         />
+//       ) : showRegistration ? (
+//         <RegisterPage 
+//           onBackClick={handleBackClick}
+//           formData={formData}
+//           handleInputChange={handleInputChange}
+//           handleSubmit={handleSubmit}
+//         />
+//       ) : (
+//         <MainPage 
+//           onRegisterClick={handleRegisterClick}
+//           onRequestInfoClick={handleRequestInfoClick}
+//         />
+//       )}
+//     </div>
+//   );
+// }
+
+
 import { useState } from 'react';
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
-import RequestInfo from './RequestInfo';
+import RequestInfo from './RequestInfo'
+import { createBrandingRequest } from '@/lib/Company_AxiosInstance';
 
-export default function EmployerBranding() {
+export default function Branding() {
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
-  const [formData, setFormData] = useState({
+   const initialFormData = {
     date: "",
     time: "",
     message: "",
     acceptTerms: false
-  });
+  };
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleRegisterClick = () => setShowRegistration(true);
   const handleRequestInfoClick = () => setShowRequestInfo(true);
@@ -28,11 +92,29 @@ export default function EmployerBranding() {
     });
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    alert("Form submitted successfully!");
-    setShowRegistration(false);
-  };
+  const handleSubmit = async () => {
+       if (!formData.acceptTerms) {
+        alert("You must accept the terms before submitting.");
+        return;
+      }
+      if (!formData.date || !formData.time) {
+        alert("Please select a date and time.");
+        return;
+      }
+      try{
+       const response = await createBrandingRequest(formData);
+        alert("Request submitted successfully!");
+        setFormData(initialFormData);
+        setShowRequestInfo(false);
+      }
+      catch(error){
+        console.error("Error submitting request:", error);
+        alert("Failed to submit request. Please try again.");
+      }
+    };
+
+
+  
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">

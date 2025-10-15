@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
-import RequestInfo from './RequestInfo';
+import RequestInfo from './RequestInfo'
+import { createBrandingRequest } from '@/lib/Company_AxiosInstance';
 
 export default function Branding() {
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
-  const [formData, setFormData] = useState({
+   const initialFormData = {
     date: "",
     time: "",
     message: "",
     acceptTerms: false
-  });
+  };
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleRegisterClick = () => setShowRegistration(true);
   const handleRequestInfoClick = () => setShowRequestInfo(true);
@@ -29,40 +31,28 @@ export default function Branding() {
   };
 
   const handleSubmit = async () => {
-  const payload = {
-    user: "664c0f2a8a9c3e5b1d7d1234", // Replace with real ObjectId when ready
-    Date: formData.date, // Case sensitive
-    time: formData.time,
-    message: `Message: ${formData.message}` // Or format it like RequestInfo if needed
-  };
+       if (!formData.acceptTerms) {
+        alert("You must accept the terms before submitting.");
+        return;
+      }
+      if (!formData.date || !formData.time) {
+        alert("Please select a date and time.");
+        return;
+      }
+      try{
+       const response = await createBrandingRequest(formData);
+        alert("Request submitted successfully!");
+        setFormData(initialFormData);
+        setShowRequestInfo(false);
+      }
+      catch(error){
+        console.error("Error submitting request:", error);
+        alert("Failed to submit request. Please try again.");
+      }
+    };
 
-  console.log("Final Payload to send:", payload);
 
-  try {
-    const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/servicerequest-companybranding`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      alert("Service request submitted successfully!");
-      console.log(data);
-    } else {
-      alert(`Error: ${data.message}`);
-    }
-  } catch (err) {
-    console.error("Submission error:", err);
-    alert("An error occurred while submitting the form.");
-  }
-
-  setShowRegistration(false);
-};
-
+  
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">

@@ -176,3 +176,19 @@ export function getReferralJobById(referralJob) {
 }
 
 
+
+// Service request 
+export function createCounsellingRequest(formData) {
+  return axiosClient.post('/api/servicerequests/student/counselling', formData)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function createMockInterviewRequest(formData) {
+  return axiosClient.post('/api/servicerequests/student/mock-interview', formData)
+    .then(response => response)
+    .catch(error => error);
+}
+
+
+

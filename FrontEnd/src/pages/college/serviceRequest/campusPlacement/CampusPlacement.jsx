@@ -3,16 +3,19 @@ import MainPage from './Main';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
 import axios from 'axios';
+import { createOnCampusPlacementRequest } from '@/lib/College_AxiosIntance';
+
 
 export default function CampusPlacement() {
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
-  const [formData, setFormData] = useState({
+   const initialFormData = {
     date: "",
     time: "",
     message: "",
     acceptTerms: false
-  });
+  };
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleRegisterClick = () => setShowRegistration(true);
   const handleRequestInfoClick = () => setShowRequestInfo(true);
@@ -30,12 +33,23 @@ export default function CampusPlacement() {
   };
 
   const handleSubmit = async () => {
-    try {
-      const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/submit`, formData);
+     if (!formData.acceptTerms) {
+      alert("You must accept the terms before submitting.");
+      return;
+    }
+    if (!formData.date || !formData.time) {
+      alert("Please select a date and time.");
+      return;
+    }
+    try{
+     const response = await createOnCampusPlacementRequest(formData);
       alert("Request submitted successfully!");
+      setFormData(initialFormData);
       setShowRequestInfo(false);
-    } catch (err) {
-      alert("Failed to submit request: " + (err.response?.data?.message || err.message));
+    }
+    catch(error){
+      console.error("Error submitting request:", error);
+      alert("Failed to submit request. Please try again.");
     }
   };
 

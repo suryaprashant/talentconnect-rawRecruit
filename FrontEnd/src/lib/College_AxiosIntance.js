@@ -153,4 +153,27 @@ export const conversationWithCollege = (companyId) => {
     .catch(error => error);
 };
 
+// college service requests
+export function createOnCampusPlacementRequest(data) {
+  return axiosClient.post(`/api/servicerequests/college/On-campus-Placement`, data)
+    .then(response => response)
+    .catch(error => error);
+}
+export function createPoolCampusRequest(data) {
+  return axiosClient.post(`/api/servicerequests/college/pool-campus`, data)
+    .then(response => response)
+    .catch(error => error);
+}
+export function createStudentTrainingRequest(data) {
+  return axiosClient.post(`/api/servicerequests/college/student-training`, data)  
+    .then(response => response)
+    .catch(error => error);
+}
+export function createCollegeSeminarRequest(data) {
+  return axiosClient.post(`/api/servicerequests/college-seminar`, data)
+    .then(response => response)
+    .catch(error => error);
+}
+
+
 

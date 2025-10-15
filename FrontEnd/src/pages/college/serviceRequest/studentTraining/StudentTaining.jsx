@@ -3,16 +3,17 @@ import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
 import axios from 'axios';
+import { createStudentTrainingRequest } from '@/lib/College_AxiosIntance';
 export default function StudentTraining() {
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
-  const [formData, setFormData] = useState({
+ const initialFormData = {
     date: "",
     time: "",
     message: "",
     acceptTerms: false
-  });
-
+  };
+  const [formData, setFormData] = useState(initialFormData);
   const handleRegisterClick = () => setShowRegistration(true);
   const handleRequestInfoClick = () => setShowRequestInfo(true);
   const handleBackClick = () => {
@@ -29,15 +30,24 @@ export default function StudentTraining() {
   };
 
   const handleSubmit = async () => {
-  try {
-    const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/student-training/register`, formData); // use correct endpoint if different
-    alert("Form submitted successfully!");
-    console.log(response.data);
-    setShowRegistration(false);
-  } catch (error) {
-    console.error("Form submission error:", error);
-    alert("Failed to submit the form.");
-  }
+   if (!formData.acceptTerms) {
+          alert("You must accept the terms before submitting.");
+          return;
+        }
+        if (!formData.date || !formData.time) {
+          alert("Please select a date and time.");
+          return;
+        }
+        try{
+         const response = await createStudentTrainingRequest(formData);
+          alert("Request submitted successfully!");
+          setFormData(initialFormData);
+          setShowRequestInfo(false);
+        }
+        catch(error){
+          console.error("Error submitting request:", error);
+          alert("Failed to submit request. Please try again.");
+        }
 };
 
   return (

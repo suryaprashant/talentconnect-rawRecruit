@@ -24,7 +24,7 @@ export default function RegisterPage({ onBackClick, formData={}, handleInputChan
 
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-6">
-              <div>
+             <div>
                 <label className="block text-gray-700 font-medium mb-2">Date</label>
                 <input
                   type="date"
