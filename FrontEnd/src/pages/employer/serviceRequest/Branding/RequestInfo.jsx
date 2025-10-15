@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { createBrandingRegistration } from '@/lib/Company_AxiosInstance';
 
-export default function RequestInfo({ onBackClick}) {
-  const [numberOfEmployees, setNumberOfEmployees] = useState('');
-  const [skillTypes, setSkillTypes] = useState([]);
-  const [trainingMode, setTrainingMode] = useState('Virtual');
-  const [evaluationType, setEvaluationType] = useState('Examination');
-  const [hoursOrDays, setHoursOrDays] = useState('');
+export default function RequestInfo({ onBackClick }) {
+  // Define initial form state
+  const initialFormState = {
+    numberOfEmployees: '',
+    skillTypes: [],
+    trainingMode: 'Virtual',
+    evaluationType: 'Examination',
+    hoursOrDays: '',
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
   const [isSkillsDropdownOpen, setIsSkillsDropdownOpen] = useState(false);
@@ -16,15 +23,56 @@ export default function RequestInfo({ onBackClick}) {
   const skillOptions = ['Technical Skills', 'Soft Skills', 'Leadership', 'Domain-Specific'];
   const hoursOptions = ['1-8 hours', '9-16 hours', '2-5 days', '1 week+'];
 
-  const handleSubmit = (e) => {
-    if (e) e.preventDefault();
-    console.log({
-      numberOfEmployees,
-      skillTypes,
-      trainingMode,
-      evaluationType,
-      hoursOrDays
-    });
+  const handleSubmit = async () => {
+    // Validate required fields
+    if (!formData.numberOfEmployees || formData.skillTypes.length === 0 || !formData.hoursOrDays) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    const submitData = {
+      numberOfEmployees: formData.numberOfEmployees,
+      skills: formData.skillTypes,
+      trainingMode: formData.trainingMode,
+      evaluation: formData.evaluationType,
+      duration: formData.hoursOrDays
+    };
+
+    console.log("Form data to be submitted:", submitData);
+
+    setIsSubmitting(true);
+    
+    try {
+      const response = await createBrandingRegistration(submitData);
+      alert("Employer branding registration submitted successfully!");
+      console.log("Response:", response.data);
+      
+      // Reset form after successful submission
+      setFormData(initialFormState);
+      
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("Failed to submit registration. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Helper functions to update form data
+  const updateFormData = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSkillToggle = (skill) => {
+    setFormData(prev => ({
+      ...prev,
+      skillTypes: prev.skillTypes.includes(skill) 
+        ? prev.skillTypes.filter(item => item !== skill)
+        : [...prev.skillTypes, skill]
+    }));
   };
 
   return (
@@ -33,11 +81,11 @@ export default function RequestInfo({ onBackClick}) {
         {/* Header Section */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Employer Branding: <span>Be the brand they want to work for</span>
+            Employer Branding: <span>Be the brand they want to work for</span>
           </h1>
           <p className="text-sm text-gray-700 max-w-2xl mx-auto">
-          Stand out in a competitive hiring market by building strong brand recall among students and early-career professional. <br></br>
-          Our Employer Branding solutions help you position your company presence, curated events and digital visibility-making top talent come to you.
+            Stand out in a competitive hiring market by building strong brand recall among students and early-career professional. <br />
+            Our Employer Branding solutions help you position your company presence, curated events and digital visibility-making top talent come to you.
           </p>
         </div>
 
@@ -56,7 +104,7 @@ export default function RequestInfo({ onBackClick}) {
                   className="w-full px-4 py-2 bg-white border border-gray-300 rounded text-left flex justify-between items-center"
                   onClick={() => setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen)}
                 >
-                  <span>{numberOfEmployees || 'Select an option'}</span>
+                  <span>{formData.numberOfEmployees || 'Select an option'}</span>
                   <ChevronDown size={16} />
                 </button>
                 {isEmployeeDropdownOpen && (
@@ -66,7 +114,7 @@ export default function RequestInfo({ onBackClick}) {
                         key={option}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                         onClick={() => {
-                          setNumberOfEmployees(option);
+                          updateFormData('numberOfEmployees', option);
                           setIsEmployeeDropdownOpen(false);
                         }}
                       >
@@ -87,7 +135,7 @@ export default function RequestInfo({ onBackClick}) {
                   className="w-full px-4 py-2 bg-white border border-gray-300 rounded text-left flex justify-between items-center"
                   onClick={() => setIsSkillsDropdownOpen(!isSkillsDropdownOpen)}
                 >
-                  <span>{skillTypes.length > 0 ? skillTypes.join(', ') : 'Select skills'}</span>
+                  <span>{formData.skillTypes.length > 0 ? formData.skillTypes.join(', ') : 'Select skills'}</span>
                   <ChevronDown size={16} />
                 </button>
                 {isSkillsDropdownOpen && (
@@ -96,18 +144,12 @@ export default function RequestInfo({ onBackClick}) {
                       <div
                         key={option}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => {
-                          if (skillTypes.includes(option)) {
-                            setSkillTypes(skillTypes.filter(item => item !== option));
-                          } else {
-                            setSkillTypes([...skillTypes, option]);
-                          }
-                        }}
+                        onClick={() => handleSkillToggle(option)}
                       >
                         <div className="flex items-center">
                           <input
                             type="checkbox"
-                            checked={skillTypes.includes(option)}
+                            checked={formData.skillTypes.includes(option)}
                             readOnly
                             className="mr-2"
                           />
@@ -129,9 +171,9 @@ export default function RequestInfo({ onBackClick}) {
                     key={mode}
                     type="button"
                     className={`px-4 py-2 border border-gray-300 ${
-                      trainingMode === mode ? 'bg-black text-white' : 'bg-gray-100'
+                      formData.trainingMode === mode ? 'bg-black text-white' : 'bg-gray-100'
                     }`}
-                    onClick={() => setTrainingMode(mode)}
+                    onClick={() => updateFormData('trainingMode', mode)}
                   >
                     {mode}
                   </button>
@@ -148,9 +190,9 @@ export default function RequestInfo({ onBackClick}) {
                     key={type}
                     type="button"
                     className={`px-4 py-2 border border-gray-300 ${
-                      evaluationType === type ? 'bg-black text-white' : 'bg-gray-100'
+                      formData.evaluationType === type ? 'bg-black text-white' : 'bg-gray-100'
                     }`}
-                    onClick={() => setEvaluationType(type)}
+                    onClick={() => updateFormData('evaluationType', type)}
                   >
                     {type}
                   </button>
@@ -167,7 +209,7 @@ export default function RequestInfo({ onBackClick}) {
                   className="w-full px-4 py-2 bg-white border border-gray-300 rounded text-left flex justify-between items-center"
                   onClick={() => setIsHoursDropdownOpen(!isHoursDropdownOpen)}
                 >
-                  <span>{hoursOrDays || 'Select duration'}</span>
+                  <span>{formData.hoursOrDays || 'Select duration'}</span>
                   <ChevronDown size={16} />
                 </button>
                 {isHoursDropdownOpen && (
@@ -177,7 +219,7 @@ export default function RequestInfo({ onBackClick}) {
                         key={option}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                         onClick={() => {
-                          setHoursOrDays(option);
+                          updateFormData('hoursOrDays', option);
                           setIsHoursDropdownOpen(false);
                         }}
                       >
@@ -191,7 +233,7 @@ export default function RequestInfo({ onBackClick}) {
 
             {/* Register Button */}
             <div className="flex justify-between pt-4">
-            <button 
+              <button 
                 type="button"
                 onClick={onBackClick}
                 className="text-blue-600 hover:text-blue-800 font-medium"
@@ -200,10 +242,11 @@ export default function RequestInfo({ onBackClick}) {
               </button>  
               <button
                 type="button"
-                className="px-6 py-2 bg-black text-white rounded hover:bg-gray-800"
+                disabled={isSubmitting}
+                className="px-6 py-2 bg-black text-white rounded hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 onClick={handleSubmit}
               >
-                Register
+                {isSubmitting ? 'Submitting...' : 'Register'}
               </button>
             </div>
           </div>

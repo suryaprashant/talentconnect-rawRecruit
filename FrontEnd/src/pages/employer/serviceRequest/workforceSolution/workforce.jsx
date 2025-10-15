@@ -2,15 +2,21 @@ import { useState } from "react";
 import MainPage from "./Main";
 import RegistrationPage from "./RegistrationPage";
 import ServiceCard from "./ServiceCard";
+import "react-datepicker/dist/react-datepicker.css";
+import { createWorkforceRequest } from "@/lib/Company_AxiosInstance";
 
 export default function EmployerWorkforce() {
   const [showRegistration, setShowRegistration] = useState(false);
-  const [formData, setFormData] = useState({
+  
+  const initialFormData = {
     date: "",
     time: "",
     message: "",
     acceptTerms: false
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
+  const [startDate, setStartDate] = useState(null);
 
   const handleRegisterClick = () => setShowRegistration(true);
   const handleBackClick = () => setShowRegistration(false);
@@ -23,10 +29,37 @@ export default function EmployerWorkforce() {
     });
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    alert("Form submitted successfully!");
-    setShowRegistration(false);
+  const handleDateChange = (date) => {
+    setStartDate(date); 
+    
+    setFormData({
+      ...formData,
+      date: date ? date.toISOString().split('T')[0] : "" 
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.acceptTerms) {
+      alert("You must accept the terms before submitting.");
+      return;
+    }
+    if (!formData.date || !formData.time) {
+      alert("Please select a date and time.");
+      return;
+    }
+    try {
+      const response = await createWorkforceRequest(formData);
+      alert("Request submitted successfully!");
+      
+      // Reset all states to their initial values
+      setFormData(initialFormData);
+      setStartDate(null); // Also reset the calendar's date state
+      setShowRegistration(false); // FIX: Changed from setShowRequestInfo
+
+    } catch (error) {
+      console.error("Error submitting request:", error);
+      alert("Failed to submit request. Please try again.");
+    }
   };
 
   return (
@@ -38,6 +71,8 @@ export default function EmployerWorkforce() {
           onBackClick={handleBackClick}
           formData={formData}
           handleInputChange={handleInputChange}
+          startDate={startDate}
+          handleDateChange={handleDateChange}
           handleSubmit={handleSubmit}
         />
       )}

@@ -2,17 +2,18 @@ import { useState } from 'react';
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
+import { createCollegeSeminarRequest } from '@/lib/College_AxiosIntance';
 
 export default function Seminar() {
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
-  const [formData, setFormData] = useState({
-     date: "",
-     time: "",
-     message: "",
-     termsAccepted: false,
-  });
-
+  const initialFormData = {
+    date: "",
+    time: "",
+    message: "",
+    acceptTerms: false
+  };
+  const [formData, setFormData] = useState(initialFormData);
   const handleRegisterClick = () => setShowRegistration(true);
   const handleRequestInfoClick = () => setShowRequestInfo(true);
   const handleBackClick = () => {
@@ -20,62 +21,59 @@ export default function Seminar() {
     setShowRequestInfo(false);
   };
 
- const handleInputChange = (e) => {
+const handleInputChange = (e) => {
   const { name, value, type, checked } = e.target;
-
   setFormData({
     ...formData,
-    [name === 'acceptTerms' ? 'termsAccepted' : name]: type === 'checkbox' ? checked : value
+    [name]: type === 'checkbox' ? checked : value,
   });
 };
 
-const handleSubmitRegisterPage = async () => {
-  try {
-    const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/seminarrequest`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
 
-    if (response.ok) {
-      alert("Seminar Request submitted!");
-      setShowRegistration(false);
-    } else {
-      const error = await response.text();
-      alert("Submission failed: " + error);
-    }
-  } catch (err) {
-    console.error("Submission error:", err);
-    alert("Error submitting form: " + err.message);
-  }
-};
+// const handleSubmitRegisterPage = async () => {
+//   try {
+//     const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/seminarrequest`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(formData),
+//     });
+
+//     if (response.ok) {
+//       alert("Seminar Request submitted!");
+//       setShowRegistration(false);
+//     } else {
+//       const error = await response.text();
+//       alert("Submission failed: " + error);
+//     }
+//   } catch (err) {
+//     console.error("Submission error:", err);
+//     alert("Error submitting form: " + err.message);
+//   }
+// };
 
 
 const handleSubmitRequestInfo = async () => {
-  try {
-    const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/seminars`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-
-    if (response.ok) {
-      alert("Seminar request submitted successfully!");
-      setShowRegistration(false);
-    } else {
-      const error = await response.text();
-      alert("Submission failed: " + error);
-    }
-  } catch (err) {
-    console.error("Submission error:", err);
-    alert("Error submitting form: " + err.message);
-  }
-};
-
+       if (!formData.acceptTerms) {
+        alert("You must accept the terms before submitting.");
+        return;
+      }
+      if (!formData.date || !formData.time) {
+        alert("Please select a date and time.");
+        return;
+      }
+      try{
+       const response = await createCollegeSeminarRequest(formData);
+        alert("Request submitted successfully!");
+        setFormData(initialFormData);
+        setShowRequestInfo(false);
+      }
+      catch(error){
+        console.error("Error submitting request:", error);
+        alert("Failed to submit request. Please try again.");
+      }
+    };
 
 
   return (
@@ -90,7 +88,7 @@ const handleSubmitRequestInfo = async () => {
         onBackClick={handleBackClick}
         formData={formData}
         handleInputChange={handleInputChange}
-        handleSubmit={handleSubmitRegisterPage} // separate handler for this
+        handleSubmit={handleSubmitRequestInfo} // separate handler for this
       />
     ) : (
       <MainPage 

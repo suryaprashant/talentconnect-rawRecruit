@@ -2,15 +2,21 @@ import { useState } from "react";
 import MainPage from "./Main";
 import RegistrationPage from "./RegistrationPage";
 import ServiceCard from "./ServiceCard";
+import "react-datepicker/dist/react-datepicker.css";
+import { createWorkforceRequest } from "@/lib/Company_AxiosInstance";
 
 export default function Workforce() {
   const [showRegistration, setShowRegistration] = useState(false);
-  const [formData, setFormData] = useState({
+  
+  const initialFormData = {
     date: "",
     time: "",
     message: "",
     acceptTerms: false
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
+  const [startDate, setStartDate] = useState(null);
 
   const handleRegisterClick = () => setShowRegistration(true);
   const handleBackClick = () => setShowRegistration(false);
@@ -23,45 +29,38 @@ export default function Workforce() {
     });
   };
 
-  const handleSubmit = async () => {
-  if (!formData.acceptTerms) {
-    alert("Please accept the terms before submitting.");
-    return;
-  }
-
-  const payload = {
-    counselingtype: 1, // You can adjust this value dynamically later
-    user: "660df3e52c4236bb16abfcf1", // Hardcoded user ID for now (replace later)
-    Date: formData.date,
-    time: formData.time,
-    message: formData.message
+  const handleDateChange = (date) => {
+    setStartDate(date); 
+    
+    setFormData({
+      ...formData,
+      date: date ? date.toISOString().split('T')[0] : "" 
+    });
   };
 
-  try {
-    const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/servicerequest-workforce`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Something went wrong");
+  const handleSubmit = async () => {
+    if (!formData.acceptTerms) {
+      alert("You must accept the terms before submitting.");
+      return;
     }
+    if (!formData.date || !formData.time) {
+      alert("Please select a date and time.");
+      return;
+    }
+    try {
+      const response = await createWorkforceRequest(formData);
+      alert("Request submitted successfully!");
+      
+      // Reset all states to their initial values
+      setFormData(initialFormData);
+      setStartDate(null); // Also reset the calendar's date state
+      setShowRegistration(false); // FIX: Changed from setShowRequestInfo
 
-    const data = await response.json();
-    console.log("✅ Form submitted:", data);
-    alert("Form submitted successfully!");
-    setShowRegistration(false);
-
-  } catch (error) {
-    console.error("❌ Submission failed:", error);
-    alert("Failed to submit form. Please try again.");
-  }
-};
-
+    } catch (error) {
+      console.error("Error submitting request:", error);
+      alert("Failed to submit request. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -72,6 +71,8 @@ export default function Workforce() {
           onBackClick={handleBackClick}
           formData={formData}
           handleInputChange={handleInputChange}
+          startDate={startDate}
+          handleDateChange={handleDateChange}
           handleSubmit={handleSubmit}
         />
       )}

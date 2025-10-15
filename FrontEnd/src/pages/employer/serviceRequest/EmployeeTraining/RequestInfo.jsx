@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { createEmployeeTrainingRegistration } from '@/lib/Company_AxiosInstance';
 
-export default function RequesInfo({onBackClick}) {
-  const [numberOfEmployees, setNumberOfEmployees] = useState('');
-  const [skillTypes, setSkillTypes] = useState([]);
-  const [trainingMode, setTrainingMode] = useState('Virtual');
-  const [evaluationType, setEvaluationType] = useState('Examination');
-  const [hoursOrDays, setHoursOrDays] = useState('');
+export default function RequesInfo({ onBackClick }) {
+  // Define initial form state
+  const initialFormState = {
+    numberOfEmployees: '',
+    skillTypes: [],
+    trainingMode: 'Virtual',
+    evaluationType: 'Examination',
+    hoursOrDays: '',
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
   const [isSkillsDropdownOpen, setIsSkillsDropdownOpen] = useState(false);
@@ -16,15 +23,69 @@ export default function RequesInfo({onBackClick}) {
   const skillOptions = ['Technical Skills', 'Soft Skills', 'Leadership', 'Domain-Specific'];
   const hoursOptions = ['1-8 hours', '9-16 hours', '2-5 days', '1 week+'];
 
-  const handleSubmit = (e) => {
+  // Helper functions to update form data
+  const updateFormData = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSkillToggle = (skill) => {
+    setFormData(prev => ({
+      ...prev,
+      skillTypes: prev.skillTypes.includes(skill) 
+        ? prev.skillTypes.filter(item => item !== skill)
+        : [...prev.skillTypes, skill]
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     if (e) e.preventDefault();
-    console.log({
-      numberOfEmployees,
-      skillTypes,
-      trainingMode,
-      evaluationType,
-      hoursOrDays
-    });
+    
+    // Validate required fields
+    if (!formData.numberOfEmployees || formData.skillTypes.length === 0 || !formData.hoursOrDays) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    // Convert employee range to number
+    const getEmployeeCount = (range) => {
+      const rangeMap = {
+        '1-10': 10,
+        '11-50': 50,
+        '51-100': 100,
+        '100+': 150
+      };
+      return rangeMap[range] || 0;
+    };
+
+    const submitData = {
+      numOfEmployees: getEmployeeCount(formData.numberOfEmployees),
+      typeOfSkill: formData.skillTypes.join(', '),
+      modeOfTraining: formData.trainingMode.toLowerCase(),
+      evaluationBasedOn: formData.evaluationType.toLowerCase(),
+      numOfHoursPerDay: formData.hoursOrDays
+    };
+
+    console.log("Form data to be submitted:", submitData);
+
+    setIsSubmitting(true);
+    
+    try {
+      const response = await createEmployeeTrainingRegistration(submitData);
+      alert("Training request submitted successfully!");
+      console.log("Response:", response.data);
+      
+      // Reset form after successful submission
+      setFormData(initialFormState);
+      
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("Failed to submit request. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -57,7 +118,7 @@ export default function RequesInfo({onBackClick}) {
                   className="w-full px-4 py-2 bg-white border border-gray-300 rounded text-left flex justify-between items-center"
                   onClick={() => setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen)}
                 >
-                  <span>{numberOfEmployees || 'Select an option'}</span>
+                  <span>{formData.numberOfEmployees || 'Select an option'}</span>
                   <ChevronDown size={16} />
                 </button>
                 {isEmployeeDropdownOpen && (
@@ -67,7 +128,7 @@ export default function RequesInfo({onBackClick}) {
                         key={option}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                         onClick={() => {
-                          setNumberOfEmployees(option);
+                          updateFormData('numberOfEmployees', option);
                           setIsEmployeeDropdownOpen(false);
                         }}
                       >
@@ -88,7 +149,7 @@ export default function RequesInfo({onBackClick}) {
                   className="w-full px-4 py-2 bg-white border border-gray-300 rounded text-left flex justify-between items-center"
                   onClick={() => setIsSkillsDropdownOpen(!isSkillsDropdownOpen)}
                 >
-                  <span>{skillTypes.length > 0 ? skillTypes.join(', ') : 'Select skills'}</span>
+                  <span>{formData.skillTypes.length > 0 ? formData.skillTypes.join(', ') : 'Select skills'}</span>
                   <ChevronDown size={16} />
                 </button>
                 {isSkillsDropdownOpen && (
@@ -97,18 +158,12 @@ export default function RequesInfo({onBackClick}) {
                       <div
                         key={option}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => {
-                          if (skillTypes.includes(option)) {
-                            setSkillTypes(skillTypes.filter(item => item !== option));
-                          } else {
-                            setSkillTypes([...skillTypes, option]);
-                          }
-                        }}
+                        onClick={() => handleSkillToggle(option)}
                       >
                         <div className="flex items-center">
                           <input
                             type="checkbox"
-                            checked={skillTypes.includes(option)}
+                            checked={formData.skillTypes.includes(option)}
                             readOnly
                             className="mr-2"
                           />
@@ -130,9 +185,9 @@ export default function RequesInfo({onBackClick}) {
                     key={mode}
                     type="button"
                     className={`px-4 py-2 border border-gray-300 ${
-                      trainingMode === mode ? 'bg-black text-white' : 'bg-gray-100'
+                      formData.trainingMode === mode ? 'bg-black text-white' : 'bg-gray-100'
                     }`}
-                    onClick={() => setTrainingMode(mode)}
+                    onClick={() => updateFormData('trainingMode', mode)}
                   >
                     {mode}
                   </button>
@@ -149,9 +204,9 @@ export default function RequesInfo({onBackClick}) {
                     key={type}
                     type="button"
                     className={`px-4 py-2 border border-gray-300 ${
-                      evaluationType === type ? 'bg-black text-white' : 'bg-gray-100'
+                      formData.evaluationType === type ? 'bg-black text-white' : 'bg-gray-100'
                     }`}
-                    onClick={() => setEvaluationType(type)}
+                    onClick={() => updateFormData('evaluationType', type)}
                   >
                     {type}
                   </button>
@@ -168,7 +223,7 @@ export default function RequesInfo({onBackClick}) {
                   className="w-full px-4 py-2 bg-white border border-gray-300 rounded text-left flex justify-between items-center"
                   onClick={() => setIsHoursDropdownOpen(!isHoursDropdownOpen)}
                 >
-                  <span>{hoursOrDays || 'Select duration'}</span>
+                  <span>{formData.hoursOrDays || 'Select duration'}</span>
                   <ChevronDown size={16} />
                 </button>
                 {isHoursDropdownOpen && (
@@ -178,7 +233,7 @@ export default function RequesInfo({onBackClick}) {
                         key={option}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                         onClick={() => {
-                          setHoursOrDays(option);
+                          updateFormData('hoursOrDays', option);
                           setIsHoursDropdownOpen(false);
                         }}
                       >
@@ -192,7 +247,7 @@ export default function RequesInfo({onBackClick}) {
 
             {/* Register Button */}
             <div className="flex justify-between pt-4">
-            <button 
+              <button 
                 type="button"
                 onClick={onBackClick}
                 className="text-blue-600 hover:text-blue-800 font-medium"
@@ -201,10 +256,11 @@ export default function RequesInfo({onBackClick}) {
               </button>
               <button
                 type="button"
-                className="px-6 py-2 bg-black text-white rounded hover:bg-gray-800"
+                disabled={isSubmitting}
+                className="px-6 py-2 bg-black text-white rounded hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 onClick={handleSubmit}
               >
-                Register
+                {isSubmitting ? 'Submitting...' : 'Register'}
               </button>
             </div>
           </div>

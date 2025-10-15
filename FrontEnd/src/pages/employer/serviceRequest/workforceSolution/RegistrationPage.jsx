@@ -1,4 +1,6 @@
-export default function RegistrationPage({ onBackClick, formData, handleInputChange, handleSubmit }) {
+import DatePicker from "react-datepicker";
+
+export default function RegistrationPage({ onBackClick, formData, handleInputChange, handleSubmit, startDate, handleDateChange}) {
     return (
       <div className="container mx-auto px-4 py-8 ">
         {/* Header */}
@@ -32,17 +34,18 @@ export default function RegistrationPage({ onBackClick, formData, handleInputCha
   
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-700 mb-1">Date</label>
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded p-2 bg-white"
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
+               <div>
+              <label className="block text-gray-700 mb-1">Date</label>
+              <DatePicker
+                // UPDATED: The 'selected' prop now uses the `startDate` (Date object)
+                selected={startDate}
+                onChange={handleDateChange}
+                minDate={new Date()}
+                className="w-full border border-gray-300 rounded p-2 bg-white"
+                placeholderText="Select a date"
+                dateFormat="yyyy-MM-dd"
+              />
+            </div>
               <div>
                 <label className="block text-gray-700 mb-1">Time</label>
                 <select 

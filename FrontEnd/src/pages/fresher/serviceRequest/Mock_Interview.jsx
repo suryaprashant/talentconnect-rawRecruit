@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import dayjs from 'dayjs'; 
+import { createMockInterviewRequest } from '@/lib/User_AxiosInstance';
 
 function FresherMockInterview() {
-  const [features, setFeatures] = useState([
+  const [features] = useState([
     {
       id: 1,
       title: "Long heading is what you see here in this feature section",
@@ -26,7 +28,7 @@ function FresherMockInterview() {
 
   const suggestedSkills = ['React', 'Node.js', 'Python', 'Java', 'SQL', 'C++', 'MongoDB', 'Django'];
 
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     category: '',
     skillInput: '',
     skillset: [],
@@ -34,9 +36,11 @@ function FresherMockInterview() {
     time: '',
     message: '',
     agreeToTerms: false,
-  });
+  };
 
+  const [formData, setFormData] = useState(initialFormData);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -82,20 +86,34 @@ function FresherMockInterview() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    alert('Form submitted successfully!');
-  };
 
-  const addFeature = () => {
-    const newFeature = {
-      id: features.length + 1,
-      title: 'New Feature Section',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.',
-    };
-    setFeatures([...features, newFeature]);
+    if (!formData.agreeToTerms) {
+      alert("Please accept the terms.");
+      return;
+    }
+
+    if (!formData.category || formData.skillset.length === 0 || !formData.date || !formData.time) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      const response = await createMockInterviewRequest(formData);
+      console.log("✅ Response:", response.data);
+      alert("Mock interview scheduled successfully!");
+      
+      // Reset form after successful submission
+      setFormData(initialFormData);
+    } catch (error) {
+      console.error("❌ Submission error:", error.response?.data || error.message);
+      alert("Failed to schedule mock interview. Try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -108,17 +126,11 @@ function FresherMockInterview() {
               <h1 className="text-4xl font-bold leading-snug">
                 Long heading is what you see here in this feature section
               </h1>
-              {/* <p className="text-gray-600">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.
-
-              </p> */}
             </div>
             <div className="md:w-1/2">
               <p className="text-gray-600">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.
-
               </p>
             </div>
           </div>
@@ -138,17 +150,7 @@ function FresherMockInterview() {
           ))}
         </section>
 
-        {/* Add Feature Button */}
-        <div className="text-center">
-          <button
-            onClick={addFeature}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-          >
-            Add More Features
-          </button>
-        </div>
-
-        {/* Counselling Form */}
+        {/* Mock Interview Form */}
         <section className="bg-white shadow-lg rounded-2xl p-8 max-w-3xl mx-auto">
           <h2 className="text-3xl font-semibold text-center mb-2">Schedule a Mock Interview</h2>
           <p className="text-center text-gray-500 mb-8">
@@ -164,6 +166,7 @@ function FresherMockInterview() {
                 value={formData.category}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
               >
                 <option value="">Select</option>
                 <option value="technical">Technical</option>
@@ -232,6 +235,7 @@ function FresherMockInterview() {
                   dateFormat="MMMM d, yyyy"
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholderText="Select Date"
+                  required
                 />
               </div>
 
@@ -242,6 +246,7 @@ function FresherMockInterview() {
                   value={formData.time}
                   onChange={handleInputChange}
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
                 >
                   <option value="">Select Time</option>
                   <option value="09:00">9:00 AM</option>
@@ -274,6 +279,7 @@ function FresherMockInterview() {
                 checked={formData.agreeToTerms}
                 onChange={handleInputChange}
                 className="mr-2"
+                required
               />
               <label htmlFor="terms" className="text-sm">
                 I accept the <span className="underline cursor-pointer">Terms</span>
@@ -284,9 +290,10 @@ function FresherMockInterview() {
             <div className="text-center">
               <button
                 type="submit"
-                className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800"
+                disabled={isSubmitting}
+                className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                Submit
+                {isSubmitting ? 'Submitting...' : 'Submit'}
               </button>
             </div>
           </form>

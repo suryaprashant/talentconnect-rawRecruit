@@ -2,16 +2,18 @@ import { useState } from 'react';
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
+import { createPoolCampusRequest } from '@/lib/College_AxiosIntance';
 
 export default function PoolCampusPlacement() {
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     date: "",
     time: "",
     message: "",
     acceptTerms: false
-  });
+  };
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleRegisterClick = () => setShowRegistration(true);
   const handleRequestInfoClick = () => setShowRequestInfo(true);
@@ -28,11 +30,26 @@ export default function PoolCampusPlacement() {
     });
   };
 
-  const handleSubmit = () => {
-    // console.log("Form submitted:", formData);
-    toast.success("Form submitted successfully!");
-    setShowRegistration(false);
-  };
+  const handleSubmit = async () => {
+       if (!formData.acceptTerms) {
+        alert("You must accept the terms before submitting.");
+        return;
+      }
+      if (!formData.date || !formData.time) {
+        alert("Please select a date and time.");
+        return;
+      }
+      try{
+       const response = await createPoolCampusRequest(formData);
+        alert("Request submitted successfully!");
+        setFormData(initialFormData);
+        setShowRequestInfo(false);
+      }
+      catch(error){
+        console.error("Error submitting request:", error);
+        alert("Failed to submit request. Please try again.");
+      }
+    };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">

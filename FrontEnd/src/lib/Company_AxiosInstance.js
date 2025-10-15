@@ -357,3 +357,41 @@ export function sendFileToWorkshopUsers(workshopId, formData) {
     .then(response => response)
     .catch(error => error);
 }
+
+// ==================================================  Start  ==================================================
+
+// Service Requests APIs
+
+  // 1> request info
+export function createWorkforceRequest(formData) {
+  return axiosClient.post(`/api/servicerequests/company/workforce-recruitment`, formData)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function createEmployeeTrainingRequest(formData) {
+  return axiosClient.post(`/api/servicerequests/company/employee-training`, formData)
+    .then(response => response)
+    .catch(error => error);
+}
+export function createBrandingRequest(formData) {
+  return axiosClient.post(`/api/servicerequests/company/branding`, formData)
+    .then(response => response)
+    .catch(error => error);
+}
+
+// 2> registration info
+
+export function createEmployeeTrainingRegistration(formData) {
+  return axiosClient.post(`/api/servicerequests/company/employee-training-registration`, formData)
+    .then(response => response)
+    .catch(error => error);
+}
+export function createBrandingRegistration(formData) {
+  return axiosClient.post(`/api/servicerequests/company/branding-registration`, formData)
+    .then(response => response)
+    .catch(error => error);
+}
+
+// ==================================================  End  ==================================================
+

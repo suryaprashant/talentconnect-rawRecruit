@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import axios from 'axios';
-import dayjs from 'dayjs'; // install with: npm install dayjs
+import dayjs from 'dayjs'; 
+import { createCounsellingRequest } from '@/lib/User_AxiosInstance';
 
 function Counselling() {
-  const [features, setFeatures] = useState([
+  const [features] = useState([
     {
       id: 1,
       title: "Long heading is what you see here in this feature section",
@@ -26,13 +26,16 @@ function Counselling() {
     },
   ]);
 
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     counsellingType: '',
     date: null,
     time: '',
     message: '',
     agreeToTerms: false,
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -45,56 +48,35 @@ function Counselling() {
   const handleDateChange = (date) => {
     setFormData({ ...formData, date });
   };
-  const mapCounselingType = (type) => {
-    switch (type) {
-      case 'individual': return 1;
-      case 'couples': return 2;
-      case 'family': return 3;
-      case 'career': return 4;
-      default: return 0;
-    }
-  };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!formData.agreeToTerms) {
-    alert("Please accept the terms.");
-    return;
-  }
+    if (!formData.agreeToTerms) {
+      alert("Please accept the terms.");
+      return;
+    }
 
-  if (!formData.counsellingType || !formData.date || !formData.time) {
-    alert("Please fill in all required fields.");
-    return;
-  }
+    if (!formData.counsellingType || !formData.date || !formData.time) {
+      alert("Please fill in all required fields.");
+      return;
+    }
 
-  const payload = {
-    counselingtype: mapCounselingType(formData.counsellingType), // convert type to number
-    user: "660df3e52c4236bb16abfcf1", // replace with actual logged-in user ID
-    Date: dayjs(formData.date).format("YYYY-MM-DD"),
-    time: formData.time,
-    message: formData.message,
-  };
-
-  try {
-    const res = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/servicerequest`, payload);
-    alert("Counselling session scheduled successfully!");
-    console.log("Response:", res.data);
-  } catch (err) {
-    console.error("Error submitting form:", err.response?.data || err.message);
-    alert("Submission failed. Please try again.");
-  }
-};
-
-
-  const addFeature = () => {
-    const newFeature = {
-      id: features.length + 1,
-      title: 'New Feature Section',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.',
-    };
-    setFeatures([...features, newFeature]);
+    setIsSubmitting(true);
+    
+    try {
+      const response = await createCounsellingRequest(formData);
+      alert("Counselling session scheduled successfully!");
+      console.log("Response:", response.data);
+      
+      // Reset form after successful submission
+      setFormData(initialFormData);
+    } catch (error) {
+      console.error("Error submitting request:", error);
+      alert("Failed to submit request. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -107,10 +89,6 @@ function Counselling() {
               <h1 className="text-4xl font-bold leading-snug">
                 Long heading is what you see here in this feature section
               </h1>
-              {/* <p className="text-gray-600">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.
-                Duis cursus, mi quis viverra ornare, eros dolor interdum nulla.
-              </p> */}
             </div>
             <div className="md:w-1/2">
               <p className="text-gray-600">
@@ -137,16 +115,6 @@ function Counselling() {
           ))}
         </section>
 
-        {/* Add Feature Button */}
-        <div className="text-center">
-          <button
-            onClick={addFeature}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-          >
-            Add More Features
-          </button>
-        </div>
-
         {/* Counselling Form */}
         <section className="bg-white shadow-lg rounded-2xl p-8 max-w-3xl mx-auto">
           <h2 className="text-3xl font-semibold text-center mb-2">Schedule a Counselling Session</h2>
@@ -162,6 +130,7 @@ function Counselling() {
                 value={formData.counsellingType}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
               >
                 <option value="">Select type</option>
                 <option value="individual">Individual</option>
@@ -180,6 +149,7 @@ function Counselling() {
                   dateFormat="MMMM d, yyyy"
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholderText="Select a date"
+                  required
                 />
               </div>
 
@@ -190,6 +160,7 @@ function Counselling() {
                   value={formData.time}
                   onChange={handleInputChange}
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
                 >
                   <option value="">Select Time</option>
                   <option value="09:00">9:00 AM</option>
@@ -220,6 +191,7 @@ function Counselling() {
                 checked={formData.agreeToTerms}
                 onChange={handleInputChange}
                 className="mr-2"
+                required
               />
               <label htmlFor="terms" className="text-sm">
                 I accept the Terms
@@ -229,9 +201,10 @@ function Counselling() {
             <div className="text-center">
               <button
                 type="submit"
-                className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800"
+                disabled={isSubmitting}
+                className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                Submit
+                {isSubmitting ? 'Submitting...' : 'Submit'}
               </button>
             </div>
           </form>
