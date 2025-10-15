@@ -74,6 +74,7 @@ export default function OffCampusHiringForm({ onBackClick }) {
   const [formData, setFormData] = useState(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [descriptionError, setDescriptionError] = useState("");
   const [indianCities, setIndianCities] = useState([]);
   const [workLocationSearch, setWorkLocationSearch] = useState('');
 
@@ -121,6 +122,13 @@ export default function OffCampusHiringForm({ onBackClick }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "description") {
+      if (value.length > 500) {
+        setDescriptionError("Job description cannot exceed 500 characters.");
+      } else {
+        setDescriptionError("");
+      }
+    }
     setFormData({ ...formData, [name]: value });
   };
 
@@ -172,6 +180,12 @@ export default function OffCampusHiringForm({ onBackClick }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    if (formData.description.length > 500) {
+      setDescriptionError("Job description cannot exceed 500 characters.");
+      toast.error("Job description cannot exceed 500 characters.");
+      return;
+    }
 
     const fieldsToValidate = [
       { key: 'studentStreams', name: 'Student Stream' },
@@ -362,7 +376,20 @@ export default function OffCampusHiringForm({ onBackClick }) {
 
           <div>
             <label className="block mb-1 font-medium">Job Description <span className="text-red-500">*</span></label>
-            <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Provide a detailed job description..." className="w-full p-2 border rounded resize-none h-24" required></textarea>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Provide a detailed job description..."
+              className={`w-full p-2 border rounded resize-none h-24 ${descriptionError ? 'border-red-500' : ''}`}
+              maxLength={600}
+              required
+            ></textarea>
+            <div className="flex justify-between text-xs mt-1">
+              <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
+                {descriptionError ? descriptionError : `${formData.description.length}/500 characters`}
+              </span>
+            </div>
           </div>
 
           <div ref={skillsRef} className="relative">
