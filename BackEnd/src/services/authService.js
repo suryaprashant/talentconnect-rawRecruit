@@ -186,3 +186,15 @@ export const performPasswordReset = async ({ token, newPassword }) => {
 
     delete resetTokens[token];
 };
+
+
+// get the cout of all users
+export const getTotalUsersCount = async (filter = {}) => {
+  try {
+    const count = await Auth.countDocuments(filter);
+    return { success: true, count };
+  } catch (error) {
+    console.error("Error in getTotalUsersCount:", error.message);
+    throw new Error("Failed to get total users count");
+  }
+}

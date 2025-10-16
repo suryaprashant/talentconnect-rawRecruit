@@ -1,4 +1,4 @@
-import { loginUser, registerUser, generateToken } from "../../services/authService.js";
+import { loginUser, registerUser, generateToken,getTotalUsersCount } from "../../services/authService.js";
 
 const setJwtCookie = (res, token) => {
     res.cookie('jwt', token, {
@@ -97,3 +97,26 @@ export const logout = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+
+export const getCountOfTotalUsers= async (req, res, next) =>{
+  try {
+    // If you want filters from req (e.g. by userType), you can parse them
+    const { userType } = req.body;  // or req.query, etc.
+    const filter = {};
+    if (userType) {
+      filter.userType = userType;
+    }
+
+    const total = await getTotalUsersCount(filter);
+    return res.status(200).json({
+      success: true,
+      totalUsers: total,
+    });
+  } catch (error) {
+    console.error("Error in getTotalUsersCount controller:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+}
