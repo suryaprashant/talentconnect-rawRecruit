@@ -30,6 +30,7 @@ const AdminLogin = () => {
 
     try {
       const result = await login(form.email, form.password);
+      console.log(result, " is the result I am getting");
       
       if (result.success) {
         toast.success("Admin login successful!");
