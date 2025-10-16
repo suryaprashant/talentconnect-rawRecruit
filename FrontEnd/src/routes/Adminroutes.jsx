@@ -15,21 +15,16 @@ const AdminRoutes = () => {
       <Route path="/signup" element={<AdminSignup />} />
       {/* <Route path="/sidebar" element={<AdminSidebar/>}/> */}
       <Route
-        path=""
+        path="/*"
         element={
           <AdminRoute>
-            <AdminSidebar>
-              {/* Nested routes go here */}
-              <Routes>
-                {/* Notice: no leading slash on path */}
-                <Route path="dashboard" element={<AdminDashboard />} />
-                {/* more admin pages */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </AdminSidebar>
+            <AdminSidebar />
           </AdminRoute>
         }
-      />
+      >
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
     </Routes>
   );
 };
