@@ -278,8 +278,7 @@ function AppRoutes() {
       <Route path="OnboardingflowForm" element={<OnboardingFlowForm />} />
       
       
-      {/* Admin routes */}
-      <Route path="admin/*" element={<AdminRoutes />} />
+      
 
 
       {/* Student */}
@@ -618,6 +617,11 @@ function AppRoutes() {
         } 
       />
 ---------------------------> change from muhammad <---------------------------------------  */}
+{/* Testing */}
+        {/* Admin routes */}
+      <Route path="admin/*" element={<AdminRoutes />} />
+
+
       {/* fresher  */}
       <Route path="/fresher/*">
         {formRoutes.map((route, index) => (
