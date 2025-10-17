@@ -48,6 +48,8 @@ export default function OffCampusHiringForm({ onBackClick }) {
   const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
   const minStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '201-500', '500+'];
   const degrees = Object.keys(degreeStreamMapping).sort();
+  // Tags options for multi-select
+  const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
   // --- Component State and Logic ---
   const initialState = {
@@ -68,6 +70,7 @@ export default function OffCampusHiringForm({ onBackClick }) {
     numberOfRounds: '',
     selectionProcess: [],
     contactPerson: { name: '', designation: '', email: '', mobile: '', linkedin: '' },
+    tags: [],
     minStudents: '',
   };
 
@@ -85,6 +88,7 @@ export default function OffCampusHiringForm({ onBackClick }) {
     jobRoles: false,
     workLocations: false,
     selectionProcess: false,
+    tags: false,
   });
 
   const studentStreamsRef = useRef(null);
@@ -93,6 +97,7 @@ export default function OffCampusHiringForm({ onBackClick }) {
   const jobRolesRef = useRef(null);
   const workLocationsRef = useRef(null);
   const selectionProcessRef = useRef(null);
+  const tagsRef = useRef(null);
   
   useEffect(() => {
     const citiesOfIndia = City.getCitiesOfCountry('IN').sort((a, b) => a.name.localeCompare(b.name));
@@ -101,8 +106,8 @@ export default function OffCampusHiringForm({ onBackClick }) {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const refs = [studentStreamsRef, skillsRef, benefitsRef, jobRolesRef, workLocationsRef, selectionProcessRef];
-      const dropdownKeys = ['studentStreams', 'skills', 'benefits', 'jobRoles', 'workLocations', 'selectionProcess'];
+      const refs = [studentStreamsRef, skillsRef, benefitsRef, jobRolesRef, workLocationsRef, selectionProcessRef, tagsRef];
+      const dropdownKeys = ['studentStreams', 'skills', 'benefits', 'jobRoles', 'workLocations', 'selectionProcess', 'tags'];
 
       refs.forEach((ref, index) => {
         if (ref.current && !ref.current.contains(event.target)) {
@@ -228,6 +233,7 @@ export default function OffCampusHiringForm({ onBackClick }) {
         employmentType: formData.employmentType,
         skills: formData.skills,
         benefits: formData.benefits,
+        tags: formData.tags,
         startDate: formData.placementStartDate,
         endDate: formData.placementEndDate,
         rounds: formData.numberOfRounds ? [formData.numberOfRounds] : [],
@@ -590,6 +596,33 @@ export default function OffCampusHiringForm({ onBackClick }) {
                   >
                     {process}
                     {formData.selectionProcess.includes(process) && <span className="float-right text-gray-500">✓</span>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Tags multi-select */}
+          <div ref={tagsRef} className="relative">
+            <label className="block font-medium mb-2">Tags</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.tags.map(tag => (
+                <div key={tag} className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full">
+                  <span>{tag}</span>
+                  <button type="button" onClick={() => removeSelectedItem('tags', tag)} className="ml-2 text-gray-600 hover:text-black"><X size={14} /></button>
+                </div>
+              ))}
+            </div>
+            <div onClick={() => toggleDropdown('tags')} className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400">
+              <span className="text-gray-500">Select tags</span>
+              <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.tags ? "rotate-180" : ""}`} />
+            </div>
+            {dropdownOpen.tags && (
+              <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                {tagsOptions.map(tag => (
+                  <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.tags.includes(tag) ? "bg-gray-100 font-medium" : ""}`}>
+                    {tag}
+                    {formData.tags.includes(tag) && <span className="float-right text-gray-500">✓</span>}
                   </div>
                 ))}
               </div>

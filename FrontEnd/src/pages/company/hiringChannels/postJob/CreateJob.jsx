@@ -24,6 +24,7 @@ export default function CreateJob() {
     studentStreams: [],
     eligibilityCriteria: '',
     benefits: [],
+    tags: [],
     broadcastType: 'Everyone',
   };
 
@@ -37,6 +38,7 @@ export default function CreateJob() {
     locations: false,
     benefits: false,
     studentStreams: false,
+    tags: false,
   });
 
   const [skillInput, setSkillInput] = useState('');
@@ -52,6 +54,7 @@ export default function CreateJob() {
   const locationsDropdownRef = useRef(null);
   const benefitsDropdownRef = useRef(null);
   const studentStreamsDropdownRef = useRef(null);
+  const tagsDropdownRef = useRef(null);
 
   // --- Dropdown Options ---
   const educationOptions = ["High School", "Bachelor's Degree", "Master's Degree", "PhD", "Diploma", "Other"];
@@ -62,6 +65,7 @@ export default function CreateJob() {
   const allBenefits = ["Health Insurance", "401(k)", "Paid Time Off", "Flexible Schedule", "Dental Insurance"];
   const workAuthOptions = ["Citizens Only", "Permanent Residents", "Work Visa Holders", "Any"];
   const allSkills = ["JavaScript", "React", "Vue", "Angular", "Node.js", "Python", "Java", "C++", "SQL", "MongoDB"];
+  const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
   // --- Filtered Dropdown Lists ---
   const filteredSkills = allSkills.filter(skill => skill.toLowerCase().includes(skillInput.toLowerCase()));
@@ -88,6 +92,7 @@ export default function CreateJob() {
         benefits: benefitsDropdownRef,
         studentStreams: studentStreamsDropdownRef
       };
+      dropdownRefs.tags = tagsDropdownRef;
 
       for (const key in dropdownRefs) {
         if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
@@ -202,6 +207,7 @@ export default function CreateJob() {
           amount: parseFloat(formData.minPackage.amount)
         },
         numberOfOpenings: parseInt(formData.numberOfOpenings, 10),
+          tags: formData.tags,
         jobType: "Job-listing",
         broadcastType: formData.broadcastType
       };
@@ -484,6 +490,31 @@ export default function CreateJob() {
               <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
                 {filteredBenefits.map((benefit, index) => (
                   <div key={index} className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleSelectItem('benefits', benefit, setBenefitInput, 'benefits')}>{benefit}</div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Tags Multi-Select */}
+          <div className="mb-4" ref={tagsDropdownRef}>
+            <label className="block text-sm font-medium mb-2">Tags</label>
+            <div className="relative p-2 border border-gray-300 rounded-md" onClick={() => setDropdownOpen(prev => ({ ...prev, tags: true }))}>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {formData.tags.map((tag, index) => (
+                  <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
+                    <span>{tag}</span>
+                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('tags', tag); }}><X size={14} /></button>
+                  </div>
+                ))}
+              </div>
+              <div className="w-full cursor-pointer">
+                <div className="flex items-center justify-between text-gray-500">Select tags</div>
+              </div>
+            </div>
+            {dropdownOpen.tags && (
+              <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+                {tagsOptions.map((tag, index) => (
+                  <div key={index} className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleSelectItem('tags', tag, null, 'tags')}>{tag}</div>
                 ))}
               </div>
             )}
