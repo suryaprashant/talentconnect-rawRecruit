@@ -1,5 +1,6 @@
 import express from "express";
 import adminAuth from "../../middlewares/adminMiddleware.js";
+import {getAdminDashboardOverView} from "../../controllers/admin/adminDashboardController.js"
 
 const router = express.Router();
 
@@ -7,6 +8,7 @@ const router = express.Router();
 router.use(adminAuth);
 
 // Admin dashboard overview
+router.get('/getoverview', getAdminDashboardOverView);
 router.get("/overview", async (req, res) => {
   try {
     // TODO: Implement dashboard overview logic

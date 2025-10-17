@@ -1,5 +1,19 @@
 import { JobPostingTable } from '../models/jobPostingsModel.js';
 
+
+// get totel job posted and it is in active state 
+export const getTotalJobPostedCount = async () => {
+  try {
+    const totalJobs = await JobPostingTable.countDocuments({ jobStatus: "Open" });
+    return totalJobs;
+  } catch (error) {
+    console.error("Error in getTotalJobPostedCount:", error.message);
+    throw new Error("Failed to get total job posted count");
+  }
+};
+
+
+
 export const createPostingService = async (postingData) => {
     try {
         const newPosting = new JobPostingTable(postingData);

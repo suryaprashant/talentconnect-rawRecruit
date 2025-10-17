@@ -10,6 +10,18 @@ import { JobPostingTable } from '../models/jobPostingsModel.js';
 // import OnCampusApplication from '../models/oncampusApplicationModel.js';
 // import JobListingApplication from '../models/jobListingApplicationModel.js';
 
+export const getTotalJobApplicationSubmited = async () => {
+  try {
+    const totalapplication = await Application.countDocuments({currentStatus:"Applied"});
+    return totalapplication;
+  } catch (error) {
+    console.error("Error in getTotalJobPostedCount:", error.message);
+    throw new Error("Failed to get total job posted count");
+  }
+};
+
+
+
 // check if similar application exists
 export async function getApplicationService(userId, userType, jobId, jobType) {
     try {

@@ -36,7 +36,8 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Auth and Profile Routes
 import adminAuth from "./routes/admin/adminAuth.js";
-import adminDashboard from "./routes/admin/adminDashboard.js";
+import adminDashboard from "./routes/admin/adminDashboardRoute.js";
+// import userManagement from "./routes/admin/userManagementRoutes.js";
 import authRoutes from "./routes/authRoute.js";
 import uploadRoutes from "./routes/uploadRoute.js";
 import studentProfileRoutes from "./routes/studentProfileRoutes.js";
@@ -108,8 +109,14 @@ import hackathonHostingRoute from './routes/hostingManagement/hackathonHostingRo
 import casestudyHostingRoute from './routes/hostingManagement/casestudyHostingRoute.js';
 import workshopHostingRoute from './routes/hostingManagement/workshopHostingRoute.js';
 app.use("/api/auth", authRoutes);
+
+// admin related auths
 app.use("/api/admin", adminAuth);
 app.use("/api/admin/dashboard", adminDashboard);
+// app.use("/api/admin/dashboard",userManagement);
+
+// admin relatd auth ends
+
 app.use("/api", student_onboardingroutes);
 app.use("/api/hiring-channels", jobPosting);
 app.use("/api/upload", uploadRoutes);
