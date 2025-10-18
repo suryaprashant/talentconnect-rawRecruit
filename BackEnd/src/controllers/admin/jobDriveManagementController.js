@@ -1,9 +1,6 @@
-import { getStatusCountByUserType,getAll } from "../../services/authService.js";
+import {getTotalJobPostedCount} from "../../services/jobPostingService.js";
 
-/**
- * @desc    Get user count by status and type
- */
-export const getUserBoardOverView = async (req, res) => {
+export const getJobDriveOverViewUserBoardOverView = async (req, res) => {
   try {
     const [
       all,
@@ -35,20 +32,3 @@ export const getUserBoardOverView = async (req, res) => {
     });
   }
 };
-
-export const getAllUsers = async (req, res)=>{
-  try {
-    const users = await getAll();
-    return res.status(200).json({
-      success: true,
-      message: "All users fetched successfully",
-      data: users,
-    });
-  } catch (error) {
-    console.error("Error fetching users:", error.message);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch users",
-    });
-  }
-}
