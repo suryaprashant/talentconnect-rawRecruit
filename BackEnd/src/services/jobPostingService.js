@@ -2,15 +2,29 @@ import { JobPostingTable } from '../models/jobPostingsModel.js';
 
 
 // get totel job posted and it is in active state 
-export const getTotalJobPostedCount = async () => {
+export const getTotalJobPostedCount = async (filters = {}) => {
   try {
-    const totalJobs = await JobPostingTable.countDocuments({ jobStatus: "Open" });
+    // ✅ Default filter (current implementation)
+    const query = { jobStatus: "Open" };
+
+    // ✅ Optional filter by employmentType (array field)
+    if (filters.employmentType) {
+      query.employmentType = { $in: [filters.employmentType] };
+    }
+
+    // ✅ Optional filter by jobType (string field)
+    if (filters.jobType) {
+      query.jobType = filters.jobType;
+    }
+
+    const totalJobs = await JobPostingTable.countDocuments(query);
     return totalJobs;
   } catch (error) {
     console.error("Error in getTotalJobPostedCount:", error.message);
     throw new Error("Failed to get total job posted count");
   }
 };
+
 
 
 

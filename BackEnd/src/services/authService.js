@@ -34,6 +34,7 @@ export const getCandidateCount = async () => {
   });
 };
 
+//Get user count by status and type
 export const getStatusCountByUserType = async (userType = null) => {
   try {
     const baseFilter = userType ? { userType } : {};
@@ -51,6 +52,24 @@ export const getStatusCountByUserType = async (userType = null) => {
     throw new Error('Failed to get status counts');
   }
 };
+
+// get all users data
+export const getAll = async () => {
+  try {
+    const users = await Auth.find()
+      .select(
+        "status _id name email profileImage isNewUser onboardingCompleted onboardingStep userType activeCompanyId lastActivity createdAt"
+      )
+      .sort({ createdAt: -1 })  // sort by newest first
+      .lean();                  // return plain objects (faster)
+
+    return users;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw new Error("Failed to fetch users");
+  }
+};
+
 // Example: Get recent users (instead of recent activity from other models)
 // export const getRecentActivity = async () => {
 //   return await Auth.find()

@@ -1,9 +1,5 @@
 import express from "express";
 import adminAuth from "../../middlewares/adminMiddleware.js";
-import {
-    getUserBoardOverView,
-    getAllUsers,
-} from "../../controllers/admin/userManagementController.js"
 
 const router = express.Router();
 
@@ -11,9 +7,9 @@ const router = express.Router();
 // router.use(adminAuth); ---> commented for API testing purpose
 
 // get reports of user status(active,pending,blocked)
-router.get('/getreports', getUserBoardOverView);
+router.get('/getOverView', getJobDriveOverView);
 
 // get all users data 
-router.get('/getusers', getAllUsers);
+// router.get('/getusers', getAllUsers);
 
 export default router;
