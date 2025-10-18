@@ -293,7 +293,7 @@ export async function getUserApplicationStatus(req, res) {
 
         if (!user || !jobType) return res.status(404).json({ error: "invalid user or job" });
 
-        const response = await fetchApplicationStatusService(user.data[0]._id, jobType);
+        const response = await fetchApplicationStatusService(user.data[0]._id, jobType, userType);
         // console.log(response);
 
         if (response.success) res.status(200).json(response);
