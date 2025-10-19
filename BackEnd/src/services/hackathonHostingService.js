@@ -13,6 +13,14 @@ import { sendBulkNotifications } from "../utils/sendNotification.js";
  */
 class HackathonHostingService {
 
+    async getTotalHackathonCount() {
+    try {
+      return await Hackathon.countDocuments();
+    } catch (error) {
+      console.error("Error in getTotalHackathonCount:", error.message);
+      throw new Error("Failed to get total hackathon count");
+    }
+  }
     /**
      * Create a new hackathon
      * @param {Object} hackathonData - The hackathon data from request body
@@ -291,82 +299,82 @@ class HackathonHostingService {
             });
         }
 
-    if (rewards.thirdPlace) {
-        rewardsAndBenefits.push({
-            title: '3rd Place',
-            rank: '2nd Runner-up',
-            type: isAmount ? 'Cash' : 'Other',
-            amount: isAmount ? parseInt(rewards.thirdPlace) : undefined,
-        });
+        if (rewards.thirdPlace) {
+            rewardsAndBenefits.push({
+                title: '3rd Place',
+                rank: '2nd Runner-up',
+                type: isAmount ? 'Cash' : 'Other',
+                amount: isAmount ? parseInt(rewards.thirdPlace) : undefined,
+            });
+        }
+
+        // Add special awards
+        if (rewards.specialAwards && rewards.specialAwards.length > 0) {
+            rewards.specialAwards.forEach(award => {
+                if (!award?.name) return;
+
+                // Use the individual award's reward type
+                const awardRewardType = award.rewardType || 'Perks';
+
+                if (awardRewardType === 'Amount' && award.amount) {
+                    rewardsAndBenefits.push({
+                        title: award.name,
+                        type: 'Cash',
+                        amount: parseInt(award.amount)
+                    });
+                } else if (awardRewardType === 'Perks' && award.perk) {
+                    rewardsAndBenefits.push({
+                        title: award.name,
+                        type: 'Special',
+                    });
+                }
+            });
+        }
+
+        return rewardsAndBenefits;
     }
 
-    // Add special awards
-    if (rewards.specialAwards && rewards.specialAwards.length > 0) {
-        rewards.specialAwards.forEach(award => {
-            if (!award?.name) return;
-            
-            // Use the individual award's reward type
-            const awardRewardType = award.rewardType || 'Perks';
-            
-            if (awardRewardType === 'Amount' && award.amount) {
-                rewardsAndBenefits.push({
-                    title: award.name,
-                    type: 'Cash',
-                    amount: parseInt(award.amount)
-                });
-            } else if (awardRewardType === 'Perks' && award.perk) {
-                rewardsAndBenefits.push({
-                    title: award.name,
-                    type: 'Special',
-                });
-            }
-        });
+    /**
+     * Determine hackathon type based on mode
+     * @param {string} mode - The mode value
+     * @returns {string} Hackathon type
+     */
+    _determineHackathonType(mode) {
+        let hackathonType = 'Virtual';
+        if (mode === 'Online') hackathonType = 'Virtual';
+        else if (mode === 'Hybrid') hackathonType = 'Hybrid';
+        else if (mode === 'Private') hackathonType = 'In-person';
+        return hackathonType;
     }
 
-    return rewardsAndBenefits;
-}
-
-/**
- * Determine hackathon type based on mode
- * @param {string} mode - The mode value
- * @returns {string} Hackathon type
- */
-_determineHackathonType(mode) {
-    let hackathonType = 'Virtual';
-    if (mode === 'Online') hackathonType = 'Virtual';
-    else if (mode === 'Hybrid') hackathonType = 'Hybrid';
-    else if (mode === 'Private') hackathonType = 'In-person';
-    return hackathonType;
-}
-
-/**
- * Determine max team size based on participation type
- * @param {string} participationType - The participation type
- * @param {string|number} maxTeamMembers - Max team members value
- * @returns {number} Max team size
- */
-_determineMaxTeamSize(participationType, maxTeamMembers) {
-    let maxTeamSize = 1;
-    if (participationType === 'Team') {
-        maxTeamSize = parseInt(maxTeamMembers) || 5;
-    } else if (participationType === 'Both') {
-        maxTeamSize = parseInt(maxTeamMembers) || 5;
+    /**
+     * Determine max team size based on participation type
+     * @param {string} participationType - The participation type
+     * @param {string|number} maxTeamMembers - Max team members value
+     * @returns {number} Max team size
+     */
+    _determineMaxTeamSize(participationType, maxTeamMembers) {
+        let maxTeamSize = 1;
+        if (participationType === 'Team') {
+            maxTeamSize = parseInt(maxTeamMembers) || 5;
+        } else if (participationType === 'Both') {
+            maxTeamSize = parseInt(maxTeamMembers) || 5;
+        }
+        return maxTeamSize;
     }
-    return maxTeamSize;
-}
 
-/**
- * Validate required fields
- * @param {Object} fields - Fields to validate
- */
-_validateRequiredFields(fields) {
-    if (!fields.location || fields.location.trim() === '') {
-        throw new Error('Location is required');
+    /**
+     * Validate required fields
+     * @param {Object} fields - Fields to validate
+     */
+    _validateRequiredFields(fields) {
+        if (!fields.location || fields.location.trim() === '') {
+            throw new Error('Location is required');
+        }
+        if (!fields.createdBy) {
+            throw new Error('Creator ID is required - user must be authenticated');
+        }
     }
-    if (!fields.createdBy) {
-        throw new Error('Creator ID is required - user must be authenticated');
-    }
-}
 
     /**
      * Normalize JSON input (support JSON string from multipart/form-data)
@@ -375,28 +383,28 @@ _validateRequiredFields(fields) {
      * @returns {*} Normalized input
      */
     _normalizeJsonInput(input, defaultValue = []) {
-      if (typeof input === 'string') {
-        try {
-          const parsed = JSON.parse(input);
-          if (Array.isArray(parsed)) {
-            return parsed.map(item => {
-              if (item.hasOwnProperty('roundNumber')) {
-                // This is a round object
-                return {
-                  ...item,
-                  inputType: item.inputType || 'link' // Ensure inputType is always set
-                };
-              }
-              return item;
-            });
-          }
-          return parsed;
-        } catch (e) {
-          console.warn('Failed to parse JSON string, using default value.');
-          return defaultValue;
+        if (typeof input === 'string') {
+            try {
+                const parsed = JSON.parse(input);
+                if (Array.isArray(parsed)) {
+                    return parsed.map(item => {
+                        if (item.hasOwnProperty('roundNumber')) {
+                            // This is a round object
+                            return {
+                                ...item,
+                                inputType: item.inputType || 'link' // Ensure inputType is always set
+                            };
+                        }
+                        return item;
+                    });
+                }
+                return parsed;
+            } catch (e) {
+                console.warn('Failed to parse JSON string, using default value.');
+                return defaultValue;
+            }
         }
-      }
-      return input || defaultValue;
+        return input || defaultValue;
     }
 
     /**
@@ -453,8 +461,8 @@ _validateRequiredFields(fields) {
 
         return normalizedDomains;
     }
-    
-    
+
+
     // ==========================================
     // HOSTING MANAGEMENT OPERATIONS
     // ==========================================
@@ -547,24 +555,24 @@ _validateRequiredFields(fields) {
             error.statusCode = 404;
             throw error;
         }
-    
+
         const hackathon = await Hackathon.findById(registration.eventID);
         if (!hackathon) {
             const error = new Error("Hackathon not found");
             error.statusCode = 404;
             throw error;
         }
-    
+
         // Convert both to strings for comparison (in case one is ObjectId)
         const hackathonCreatorId = hackathon.createdBy?.toString();
         const requestingCompanyId = companyId?.toString();
-    
+
         console.log('Debug - Registration ID:', registrationId);
         console.log('Debug - Event ID:', registration.eventID);
         console.log('Debug - Hackathon Creator ID:', hackathonCreatorId);
         console.log('Debug - Requesting Company ID:', requestingCompanyId);
         console.log('Debug - Match:', hackathonCreatorId === requestingCompanyId);
-    
+
         if (hackathonCreatorId !== requestingCompanyId) {
             const error = new Error(
                 `Unauthorized: You do not have permission to confirm this registration. ` +
@@ -573,10 +581,10 @@ _validateRequiredFields(fields) {
             error.statusCode = 403;
             throw error;
         }
-    
+
         registration.registrationStatus = "Confirmed";
         await registration.save();
-    
+
         const emailSubject = `Registration Confirmed - ${hackathon.title}`;
         const emailBody = `
         Dear ${registration.name},
@@ -589,14 +597,14 @@ _validateRequiredFields(fields) {
         Regards,
         ${hackathon.contactEmail}
         `;
-        
+
         try {
             await sendEmail(registration.email, emailSubject, emailBody);
         } catch (emailError) {
             console.error('Failed to send confirmation email:', emailError);
             // Don't throw - registration is still confirmed
         }
-    
+
         return registration;
     }
 
@@ -632,9 +640,9 @@ _validateRequiredFields(fields) {
         let uploadedFileUrl = fileUrl;
         let uploadedFileName = fileName;
 
-        const selectedCandidates = req.body['selectedCandidates[]'] 
-            ? (Array.isArray(req.body['selectedCandidates[]']) 
-                ? req.body['selectedCandidates[]'] 
+        const selectedCandidates = req.body['selectedCandidates[]']
+            ? (Array.isArray(req.body['selectedCandidates[]'])
+                ? req.body['selectedCandidates[]']
                 : [req.body['selectedCandidates[]']])
             : null;
 
@@ -658,7 +666,7 @@ _validateRequiredFields(fields) {
 
         let targetRegs;
         if (selectedCandidates && selectedCandidates.length > 0) {
-            targetRegs = await EventParticipation.find({ 
+            targetRegs = await EventParticipation.find({
                 _id: { $in: selectedCandidates },
                 eventID: hackathonId
             });
@@ -672,8 +680,8 @@ _validateRequiredFields(fields) {
         if (targetRegs.length === 0) throw new Error("No registrations found to send file to");
 
         const emails = targetRegs.map((r) => r.email);
-        const notificationMessage = message 
-            ? `${message}\n\nFile: ${uploadedFileName}` 
+        const notificationMessage = message
+            ? `${message}\n\nFile: ${uploadedFileName}`
             : `A new file has been shared for ${hackathon.title}. Download: ${uploadedFileName}`;
 
         const results = await sendBulkNotifications(emails, {
