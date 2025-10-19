@@ -38,6 +38,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 import adminAuth from "./routes/admin/adminAuth.js";
 import adminDashboard from "./routes/admin/adminDashboardRoute.js";
 import userManagement from "./routes/admin/userManagementRoutes.js";
+import jobDriveManagement from "./routes/admin/jobDriveManagementRoute.js"
 import authRoutes from "./routes/authRoute.js";
 import uploadRoutes from "./routes/uploadRoute.js";
 import studentProfileRoutes from "./routes/studentProfileRoutes.js";
@@ -114,7 +115,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminAuth);
 app.use("/api/admin/dashboard", adminDashboard);
 app.use("/api/admin/users-board",userManagement);
-
+app.use("/api/admin/job-n-drive",jobDriveManagement);
 // admin relatd auth ends
 
 app.use("/api", student_onboardingroutes);

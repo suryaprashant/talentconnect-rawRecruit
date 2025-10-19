@@ -1,5 +1,9 @@
 import express from "express";
 import adminAuth from "../../middlewares/adminMiddleware.js";
+import {
+    getJobDriveOverView,
+    getAllPositions
+    } from "../../controllers/admin/jobDriveManagementController.js"
 
 const router = express.Router();
 
@@ -7,9 +11,9 @@ const router = express.Router();
 // router.use(adminAuth); ---> commented for API testing purpose
 
 // get reports of user status(active,pending,blocked)
-router.get('/getOverView', getJobDriveOverView);
+router.get('/overview', getJobDriveOverView);
 
 // get all users data 
-// router.get('/getusers', getAllUsers);
+router.get('/getposition', getAllPositions);
 
 export default router;
