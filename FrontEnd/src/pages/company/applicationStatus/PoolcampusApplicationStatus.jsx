@@ -103,8 +103,8 @@ export default function PoolcampusApplicationStatus() {
               className={`p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${selectedJob?.id === job.id ? 'bg-gray-100' : ''}`}
               onClick={() => setSelectedJob(job)}
             >
-              <h3 className="font-medium">{job.jobTitle}</h3>
-              <p className="text-sm text-gray-600">{job.company}</p>
+              <h3 className="font-medium">{job?.companyDetails[0]?.collegeUniversityDetails?.collegeName}</h3>
+              {/* <p className="text-sm text-gray-600">{job.company}</p> */}
               <div className="mt-2 flex items-center text-xs text-gray-500">
                 <Clock className="h-3 w-3 mr-1" />
                 <span>{job.degree}</span>
@@ -151,8 +151,8 @@ export default function PoolcampusApplicationStatus() {
               <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
                 <div className="flex justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-800">{selectedJob.jobTitle}</h2>
-                    <p className="text-gray-600">{selectedJob.company}</p>
+                    <h3 className="font-medium">{selectedJob?.companyDetails[0]?.collegeUniversityDetails?.collegeName}</h3>
+                    {/* <p className="text-gray-600">{selectedJob.company}</p> */}
                     <div className="mt-2 text-sm text-gray-500">
                       <p>Job ID: {selectedJob.id}</p>
                       <div className="flex items-center mt-1">

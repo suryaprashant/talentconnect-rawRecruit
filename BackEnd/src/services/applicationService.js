@@ -118,7 +118,18 @@ export async function createApplicationService(userId, userType, jobId, jobType)
 }
 
 // getStatus
-export async function fetchApplicationStatusService(userId, jobType) {
+export async function fetchApplicationStatusService(userId, jobType, userType) {
+    let fromCollection;
+    let localField;
+    if(userType==='company'){
+        fromCollection="collegeonboardings";
+        localField="jobDetails.collegePosted";
+    }
+    else{
+        fromCollection="companyprofiles";
+        localField="jobDetails.companyPosted";
+    }
+
     try {
         const applicationData = await Application.aggregate([
             {
@@ -139,8 +150,8 @@ export async function fetchApplicationStatusService(userId, jobType) {
             // { $unwind: '$jobDetails' },
             {
                 $lookup: {
-                    from: 'companyprofiles',
-                    localField: 'jobDetails.companyPosted',
+                    from: fromCollection,
+                    localField: localField,
                     foreignField: '_id',
                     as: 'companyDetails'
                 }

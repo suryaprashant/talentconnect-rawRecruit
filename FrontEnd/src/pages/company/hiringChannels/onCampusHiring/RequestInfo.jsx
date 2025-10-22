@@ -36,6 +36,7 @@ export default function RequestInfo() {
   const minStudentsOptions = ['1-5 students', '6-10 students', '11-20 students', '21-50 students', '51-100 students', '100+ students'];
   const amenitiesOptions = ['Projector', 'Auditorium', 'Interview Rooms', 'Wi-Fi Access', 'Refreshments', 'Parking'];
   const benefitsOptions = ['Health Insurance', 'Provident Fund (PF)', 'Paid Time Off (PTO)', 'Work from Home', 'Performance Bonus', 'Stock Options'];
+  const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
   // --- Component State and Logic ---
   const initialData = {
@@ -62,6 +63,7 @@ export default function RequestInfo() {
     description: '',
     amenitiesRequired: [],
     benefits: [],
+    tags: [],
     broadcastType: 'Everyone',
   };
 
@@ -80,7 +82,8 @@ export default function RequestInfo() {
     skills: false,
     selectionProcess: false,
     amenities: false,
-    benefits: false
+    benefits: false,
+    tags: false
   });
 
   const streamRef = useRef(null);
@@ -90,6 +93,7 @@ export default function RequestInfo() {
   const selectionProcessRef = useRef(null);
   const amenitiesRef = useRef(null);
   const benefitsRef = useRef(null);
+  const tagsRef = useRef(null);
 
   // --- NEW: useEffect to load city data on component mount ---
   useEffect(() => {
@@ -108,6 +112,7 @@ export default function RequestInfo() {
         selectionProcess: selectionProcessRef,
         amenities: amenitiesRef,
         benefits: benefitsRef,
+        tags: tagsRef,
       };
 
       for (const key in dropdownRefs) {
@@ -205,6 +210,7 @@ export default function RequestInfo() {
         description: formData.description,
         amenitiesRequired: formData.amenitiesRequired,
         benefits: formData.benefits,
+        tags: formData.tags,
         jobType: 'On-campus',
         broadcastType: formData.broadcastType,
       };
@@ -539,6 +545,33 @@ export default function RequestInfo() {
                 <div key={benefit} onClick={() => handleMultiSelect('benefits', benefit)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.benefits.includes(benefit) ? "bg-gray-100 font-medium" : ""}`}>
                   {benefit}
                   {formData.benefits.includes(benefit) && <span className="float-right text-gray-500">✓</span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Tags multi-select */}
+        <div ref={tagsRef} className="relative">
+          <label className="block font-medium mb-2">Tags</label>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {formData.tags.map(tag => (
+              <div key={tag} className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full">
+                <span>{tag}</span>
+                <button type="button" onClick={() => removeSelectedItem('tags', tag)} className="ml-2 text-gray-600 hover:text-black"><X size={14} /></button>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400" onClick={() => toggleDropdown('tags')}>
+            <span className="text-gray-500">Select tags</span>
+            <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.tags ? "rotate-180" : ""}`} />
+          </div>
+          {dropdownOpen.tags && (
+            <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+              {tagsOptions.map(tag => (
+                <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.tags.includes(tag) ? "bg-gray-100 font-medium" : ""}`}>
+                  {tag}
+                  {formData.tags.includes(tag) && <span className="float-right text-gray-500">✓</span>}
                 </div>
               ))}
             </div>

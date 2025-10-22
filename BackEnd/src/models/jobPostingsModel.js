@@ -17,7 +17,7 @@ const jobPostingSchema = new mongoose.Schema({
     broadcastType: {
         type: String,
         enum: ['Everyone', 'Location'],
-        default: 'Everyone'            
+        default: 'Everyone'
     },
     state: { type: String },
     city: { type: String },
@@ -94,6 +94,7 @@ const jobPostingSchema = new mongoose.Schema({
     benefits: [{
         type: String
     }],
+    tags: [{ type: String }],
 
     //expire at
     expireAt: {
