@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import useConversation from "../statemanage/useConversation.js";
-import axios from "axios";
+import axios from "../lib/axiosInstance.js";
 
 const useGetMessage = () => {
   const [loading, setLoading] = useState(false);
@@ -17,7 +17,7 @@ const useGetMessage = () => {
 
         
           
-          // Ensure we're always working with an array
+         
           const messagesData = Array.isArray(res.data) ? res.data : [];
           setMessage(messagesData);
           setLoading(false);
@@ -28,7 +28,7 @@ const useGetMessage = () => {
         }
       }
       else{
-        setMessage([]);  // clear messages when no conversation selected
+        setMessage([]);  
       }
     };
     getMessages();

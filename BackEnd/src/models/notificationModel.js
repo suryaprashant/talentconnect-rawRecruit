@@ -7,10 +7,10 @@ const notificationSchema = new mongoose.Schema({
         ref: 'Auth',
         required: true,
     },
-    // The user or entity that triggered the notification
+   
     senderId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Auth', // Can also refer to a CompanyProfile if a system sends it
+        ref: 'Auth',
         required: true,
     },
     // Type of notification to handle different actions on the frontend

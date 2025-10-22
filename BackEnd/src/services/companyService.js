@@ -30,16 +30,30 @@ export async function getCompanyService(userId) {
 export async function updateCompanyProfileService(userId, data) {
     try {
         const company = await CompanyProfile.findOneAndUpdate(
-            { userId },
+            { userId:userId },
             data,
             { new: true, runValidators: true }
         );
+
+        if(!company){
+            throw new Error('Company Profile not found') ;
+        }
+
         return company;
     } catch (error) {
-        console.log("Error: ", error.message);
-        throw new Error("Failed to fetch");
+        console.error("Update Company Profile Error: ", error.message);
+        
+        // Provide more specific error messages
+        if (error.name === 'ValidationError') {
+            throw new Error(`Validation failed: ${Object.values(error.errors).map(err => err.message).join(', ')}`);
+        } else if (error.name === 'CastError') {
+            throw new Error('Invalid user ID format');
+        } else {
+            throw new Error(`Failed to update company profile: ${error.message}`);
+        }
     }
 }
+
 
 export async function getCompanyEmail(companyId) {
     try {

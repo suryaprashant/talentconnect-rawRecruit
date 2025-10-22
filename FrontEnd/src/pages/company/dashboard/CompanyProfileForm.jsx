@@ -158,13 +158,18 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
     setIsEditing(prev => !prev);
   };
   
-  const backendUrl = 'http://localhost:5000';
+  const backendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
 
   const handleSubmit = async () => {
     try {
       const dataToSubmit = new FormData();
-      dataToSubmit.append('companyDetails', JSON.stringify(formData.companyDetails));
-      dataToSubmit.append('hiringPreferences', JSON.stringify(formData.hiringPreferences));
+       if (Object.keys(formData.companyDetails).length > 0) {
+            dataToSubmit.append('companyDetails', JSON.stringify(formData.companyDetails));
+        }
+        
+        if (Object.keys(formData.hiringPreferences).length > 0) {
+            dataToSubmit.append('hiringPreferences', JSON.stringify(formData.hiringPreferences));
+        }
 
       kycFiles.forEach(file => {
         dataToSubmit.append('kycDocuments', file);
@@ -172,14 +177,19 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
 
       const kycDetailsWithoutDocs = { ...formData.kycDetails };
       delete kycDetailsWithoutDocs.kycDocuments;
-      dataToSubmit.append('kycDetails', JSON.stringify(kycDetailsWithoutDocs));
+     if (Object.keys(kycDetailsWithoutDocs).length > 0) {
+            dataToSubmit.append('kycDetails', JSON.stringify(kycDetailsWithoutDocs));
+        }
 
+        console.log("Submitting data", dataToSubmit)
       const response = await axios.put(`${backendUrl}/api/companyDashboard/updateInformation`, dataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
+        },timeout: 30000
+
       });
+       console.log('Update successful:', response.data);
       alert('Company profile updated successfully!');
       onProfileUpdate();
       setIsEditing(false);

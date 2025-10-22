@@ -1,23 +1,81 @@
+// import React, { useState } from "react";
+// import useConversation from "../statemanage/useConversation.js";
+// import axios from "axios";
+
+
+// const useSendMessage = () => {
+//   const [loading, setLoading] = useState(false);
+//   const { messages, setMessage, selectedConversation } = useConversation();
+//   const sendMessages = async (message) => {
+//     setLoading(true);
+//     try {
+//       const res = await axios.post(
+//         `/api/messages/send/${selectedConversation._id}`,
+//         { message }
+//       );
+//       setMessage([...messages, res.data]);
+//       setLoading(false);
+//     } catch (error) {
+//       console.log("Error in send messages", error);
+//       setLoading(false);
+//     }
+//   };
+//   return { loading, sendMessages };
+// };
+
+// export default useSendMessage;
+
+
+
+
+// Enhanced useSendMessage hook
 import React, { useState } from "react";
 import useConversation from "../statemanage/useConversation.js";
-import axios from "axios";
+import axios from "../lib/axiosInstance.js";
+import toast from "react-hot-toast";
+
 const useSendMessage = () => {
   const [loading, setLoading] = useState(false);
   const { messages, setMessage, selectedConversation } = useConversation();
+  
   const sendMessages = async (message) => {
+    if (!selectedConversation || !selectedConversation._id) {
+      toast.error("No conversation selected");
+      return;
+    }
+
+    if (!message.trim()) {
+      toast.error("Message cannot be empty");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await axios.post(
-        `/api/messages/send/${selectedConversation._id}`,
-        { message }
+        `${import.meta.env.VITE_Backend_URL}/api/messages/send/${selectedConversation._id}`,
+        { message },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
       );
-      setMessage([...messages, res.data]);
-      setLoading(false);
+      
+      if (res.data && res.data._id) {
+        setMessage([...messages, res.data]);
+        // toast.success("Message sent successfully");
+      } else {
+        throw new Error("Invalid response from server");
+      }
     } catch (error) {
-      console.log("Error in send messages", error);
+      console.error("Error in send messages:", error);
+      toast.error(error.response?.data?.error || "Failed to send message");
+    } finally {
       setLoading(false);
     }
   };
+
   return { loading, sendMessages };
 };
 

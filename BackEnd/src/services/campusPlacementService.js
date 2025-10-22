@@ -27,7 +27,7 @@ export async function getCollegeDetailService(campusId) {
     try {
         const response = await CampusPlacement.findById(campusId).populate({
             path:"campusId",
-            // select:""
+            
         }).lean();
         return { success: true, data: response };
     } catch (error) {

@@ -73,6 +73,7 @@ export const registerUser = async ({ email, password, userType }) => {
 
 // login service
 export const loginUser = async ({ email, password }) => {
+    
     const user = await Auth.findOne({ email });
     if (!user) {
         const error = new Error('Invalid email or password');

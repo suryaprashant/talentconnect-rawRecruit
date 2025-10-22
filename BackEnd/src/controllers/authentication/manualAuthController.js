@@ -48,12 +48,11 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
+       
         const { email, password } = req.body;
-
-        // 1. Call service to validate credentials and get user
+        
         const user = await loginUser({ email, password });
 
-        // 2. Call service to generate a token
         const token = generateToken({
             userId: user._id,
             email: user.email,
@@ -62,7 +61,6 @@ export const login = async (req, res) => {
 
         setJwtCookie(res, token);
         
-    
         res.status(200).json({
             message: 'Login successful',
             token,

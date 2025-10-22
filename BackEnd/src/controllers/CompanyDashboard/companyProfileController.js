@@ -135,11 +135,19 @@ export const getCompanyProfile = async (req, res) => {
 export const updateCompanyProfile = async (req, res) => {
   try {
     const userId = req.user._id;
+     console.log('User ID:', userId);
     const {
       companyDetails,
       hiringPreferences,
       kycDetails
     } = req.body;
+
+
+      console.log('Request body fields present:', {
+      companyDetails: !!companyDetails,
+      hiringPreferences: !!hiringPreferences,
+      kycDetails: !!kycDetails
+    });
 
     const files = req.files;
     const updates = {};
@@ -168,21 +176,30 @@ export const updateCompanyProfile = async (req, res) => {
       }
     }
 
+    const safeJsonParse = (str, defaultValue = {}) => {
+    try {
+        return str ? JSON.parse(str) : defaultValue;
+    } catch (error) {
+        console.error('JSON parsing error:', error);
+        return defaultValue;
+    }
+};
+
     // Prepare update object
-    const updateData = {
-      ...(companyDetails && { companyDetails: JSON.parse(companyDetails) }),
-      ...(hiringPreferences && { hiringPreferences: JSON.parse(hiringPreferences) }),
-      ...(kycDetails && {
+ const updateData = {
+    ...(companyDetails && { companyDetails: safeJsonParse(companyDetails) }),
+    ...(hiringPreferences && { hiringPreferences: safeJsonParse(hiringPreferences) }),
+    ...(kycDetails && {
         kycDetails: {
-          ...JSON.parse(kycDetails),
-          ...(kycDocs.length > 0 && { kycDocuments: kycDocs })
+            ...safeJsonParse(kycDetails),
+            ...(kycDocs.length > 0 && { kycDocuments: kycDocs })
         }
-      }),
-      ...updates
-    };
+    }),
+    ...updates
+};
 
     // Find and update the profile
-    const updatedProfile = await updateCompanyProfileService({ userId }, updateData)
+    const updatedProfile = await updateCompanyProfileService(userId , updateData)
 
     if (!updatedProfile) {
       return res.status(404).json({
@@ -196,7 +213,8 @@ export const updateCompanyProfile = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("Failed to update company Profile", error);
+
     res.status(500).json({
       message: 'Failed to update company profile',
       error: error.message

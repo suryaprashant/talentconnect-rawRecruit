@@ -2,9 +2,16 @@ import { getReceiverSocketId , io } from "../socketIO/server.js";
 import Conversation from "../models/conversationModel.js";
 import Message from "../models/message.model.js";
 import Auth from "../models/authModel.js";
+import mongoose from "mongoose";
 
 
 export const createMessage = async ({ senderId, receiverId, message }) => {
+    
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error("Database not connected");
+    }
+    
+    
     let conversation = await Conversation.findOne({
         members: { $all: [senderId, receiverId] },
     });
@@ -27,9 +34,19 @@ export const createMessage = async ({ senderId, receiverId, message }) => {
 
     await Promise.all([conversation.save(), newMessage.save()]);
 
-    const receiverSocketId = getReceiverSocketId(receiverId);
-    if (receiverSocketId) {
+    // const receiverSocketId = getReceiverSocketId(receiverId);
+    // if (receiverSocketId) {
+    //     io.to(receiverSocketId).emit("newMessage", newMessage);
+    // }
+
+     try {
+      const receiverSocketId = getReceiverSocketId(receiverId);
+      if (receiverSocketId) {
         io.to(receiverSocketId).emit("newMessage", newMessage);
+      }
+    } catch (socketError) {
+      console.error("Socket emission error:", socketError);
+      // Don't throw here, message is already saved
     }
 
     return newMessage;

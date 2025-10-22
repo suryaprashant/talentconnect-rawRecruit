@@ -10,11 +10,11 @@ export const AuthProvider = ({ children }) => {
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
         
-        // Handle both formats: { user: {...} } and direct user object
+       
         if (parsedUser && parsedUser.user && parsedUser.user._id) {
-          return parsedUser; // Correct format: { user: {...} }
+          return parsedUser;
         } else if (parsedUser && parsedUser._id) {
-          return { user: parsedUser }; // Convert old format to new format
+          return { user: parsedUser }; 
         }
       }
     } catch (error) {
@@ -24,7 +24,6 @@ export const AuthProvider = ({ children }) => {
     return null;
   });
 
-  // Enhanced useEffect to handle both formats
   useEffect(() => {
     try {
       if (authUser && authUser.user && authUser.user._id) {
@@ -37,10 +36,10 @@ export const AuthProvider = ({ children }) => {
     }
   }, [authUser]);
 
-  // Create a stable setter function that maintains the correct structure
+
   const setAuthUserStable = (newAuthUser) => {
     if (newAuthUser && newAuthUser._id && !newAuthUser.user) {
-      // If we get a user object directly, wrap it in { user: ... }
+     
       setAuthUser({ user: newAuthUser });
     } else {
       setAuthUser(newAuthUser);

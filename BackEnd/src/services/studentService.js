@@ -127,12 +127,129 @@ export async function checkStudentService(studentId) {
     throw new Error("Failed to fetch");
   }
 }
+// export const handleOnboardingUpdate = async (updateData, files) => {
+//   const getCorrectUrl = (uploadResult) => {
+//     if (!uploadResult || !uploadResult.resource_type || !uploadResult.secure_url) {
+//       console.error("Invalid upload result passed to getCorrectUrl");
+//       return '';
+//     }
+//     if (uploadResult.resource_type === 'raw') {
+//       return uploadResult.secure_url.replace('/image/upload/', '/raw/upload/');
+//     }
+//     return uploadResult.secure_url;
+//   };
+
+//   if (files?.resume?.[0]) {
+//     console.log("Uploading resume:", files.resume[0].originalname);
+//     const upload = await streamUpload(files.resume[0].buffer, "resumes", files.resume[0].originalname);
+//     updateData.resume = getCorrectUrl(upload);
+//   }
+//   if (files?.degreeCertificate?.[0]) {
+//     console.log("Uploading degree cert:", files.degreeCertificate[0].originalname);
+//     const upload = await streamUpload(files.degreeCertificate[0].buffer, "degreeCertificates", files.degreeCertificate[0].originalname);
+//     updateData.degreeCertificate = getCorrectUrl(upload);
+//   }
+//   if (files?.project?.[0]) {
+//     console.log("Uploading project file:", files.project[0].originalname);
+//     const upload = await streamUpload(files.project[0].buffer, "projects", files.project[0].originalname);
+//     updateData.project = getCorrectUrl(upload);
+//   }
+//   if (files?.backgroundImage?.[0]) {
+//     const upload = await streamUpload(files.backgroundImage[0].buffer, "userBackgroundImages", files.backgroundImage[0].originalname);
+//     updateData.backgroundImage = upload.secure_url;
+//   }
+//   if (files?.profileImage?.[0]) {
+//     const upload = await streamUpload(files.profileImage[0].buffer, "userProfileImages", files.profileImage[0].originalname);
+//     updateData.profileImage = upload.secure_url;
+//   }
+
+//   if (files?.experienceCertificate && updateData.experiences) {
+//     const experienceCerts = files.experienceCertificate;
+//     for (let i = 0; i < updateData.experiences.length && i < experienceCerts.length; i++) {
+//       const file = experienceCerts[i];
+//       if (file) {
+//         console.log("Uploading experience cert:", file.originalname);
+//         const uploadedCert = await streamUpload(file.buffer, "experienceCertificates", file.originalname);
+//         updateData.experiences[i].experienceCertificate = getCorrectUrl(uploadedCert);
+//       }
+//     }
+//   }
+//   if (files?.leadershipCertificate && updateData.leadership) {
+//     const leadershipCerts = files.leadershipCertificate;
+//     for (let i = 0; i < updateData.leadership.length && i < leadershipCerts.length; i++) {
+//       const file = leadershipCerts[i];
+//       if (file) {
+//         console.log("Uploading leadership cert:", file.originalname);
+//         const uploadedCert = await streamUpload(file.buffer, "leadershipCertificates", file.originalname);
+//         updateData.leadership[i].certificate = getCorrectUrl(uploadedCert);
+//       }
+//     }
+//   }
+//   if (files?.internationalExperienceCertificate && updateData.internationalExperience) {
+//     const internationalCerts = files.internationalExperienceCertificate;
+//     for (let i = 0; i < updateData.internationalExperience.length && i < internationalCerts.length; i++) {
+//       const file = internationalCerts[i];
+//       if (file) {
+//         console.log("Uploading international cert:", file.originalname);
+//         const uploadedCert = await streamUpload(file.buffer, "internationalExperienceCertificates", file.originalname);
+//         updateData.internationalExperience[i].certificate = getCorrectUrl(uploadedCert);
+//       }
+//     }
+//   }
+//   if (files?.awardCertificate && updateData.awards) {
+//     const awardCerts = files.awardCertificate;
+//     for (let i = 0; i < updateData.awards.length && i < awardCerts.length; i++) {
+//       const file = awardCerts[i];
+//       if (file) {
+//         console.log("Uploading award cert:", file.originalname);
+//         const uploadedCert = await streamUpload(file.buffer, "awardCertificates", file.originalname);
+//         updateData.awards[i].certificate = getCorrectUrl(uploadedCert);
+//       }
+//     }
+//   }
+
+//   console.log("Data being saved to DB:", updateData);
+//   const updatedOnboarding = await OnboardingModel.findOneAndUpdate(
+//     { userId: updateData.userId },
+//     { $set: updateData },
+//     { upsert: true, new: true, runValidators: true }
+//   );
+
+//   let finalUserTypeForResponse = "candidate";
+//   let authUserType = "candidate";
+//   if (updateData.profileType) {
+//     authUserType = updateData.profileType.toLowerCase();
+//     if (!["student", "fresher", "professional"].includes(authUserType)) {
+//       authUserType = "candidate";
+//     }
+//     finalUserTypeForResponse = authUserType;
+//   }
+
+//   const updatedUser = await updateAuthUserService(updateData.userId, {
+//     userType: authUserType,
+//     onboardingCompleted: true,
+//     onboardingStep: 6
+//   });
+
+//   return {
+//     finalUserTypeForResponse,
+//     authUserType,
+//     updatedUser,
+//     updatedOnboarding
+//   };
+// };
+
 
 export const handleOnboardingUpdate = async (updateData, files) => {
-  // Upload files and update data (the core logic from controller)
- // const streamUpload = require('../utils/streamUpload'); // adjust import
 
-  // File uploads (same as previous controller logic)
+
+  // const getCorrectUrl = (uploadResult) => {
+  //   if (uploadResult.resource_type === 'raw') {
+  //     return uploadResult.secure_url.replace('/image/upload/', '/raw/upload/');
+  //   }
+  //   return uploadResult.secure_url;
+  // };
+
   if (files?.resume?.[0]) {
     const upload = await streamUpload(files.resume[0].buffer, "resumes");
     updateData.resume = upload.secure_url;
