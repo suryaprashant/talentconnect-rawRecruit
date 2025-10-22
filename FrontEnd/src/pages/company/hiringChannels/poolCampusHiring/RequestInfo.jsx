@@ -32,6 +32,7 @@ export default function PoolCampusHiringForm() {
   const selectionProcessOptions = ['Online Test', 'Coding Test', 'Aptitude Test', 'Group Discussion', 'Technical Interview', 'HR Interview', 'Case Study', 'Presentation'].sort((a, b) => a.localeCompare(b));
   const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
   const minimumStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '201-500', '500+'];
+  const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
   const initialState = {
     venue: '',
@@ -47,6 +48,7 @@ export default function PoolCampusHiringForm() {
     skills: [],
     benefits: [],
     amenities: [],
+    tags: [],
     placementStartDate: '',
     placementEndDate: '',
     numberOfRounds: '',
@@ -71,6 +73,7 @@ export default function PoolCampusHiringForm() {
     amenities: false,
     selectionProcess: false,
     workLocations: false,
+    tags: false
   });
 
   const studentStreamsRef = useRef(null);
@@ -80,6 +83,7 @@ export default function PoolCampusHiringForm() {
   const amenitiesRef = useRef(null);
   const selectionProcessRef = useRef(null);
   const workLocationsRef = useRef(null);
+  const tagsRef = useRef(null);
 
   useEffect(() => {
     const citiesOfIndia = City.getCitiesOfCountry('IN').sort((a, b) => a.name.localeCompare(b.name));
@@ -96,6 +100,7 @@ export default function PoolCampusHiringForm() {
         amenities: amenitiesRef,
         selectionProcess: selectionProcessRef,
         workLocations: workLocationsRef,
+        tags: tagsRef,
       };
 
       for (const key in refs) {
@@ -221,6 +226,7 @@ export default function PoolCampusHiringForm() {
         rounds: formData.numberOfRounds ? [formData.numberOfRounds] : [],
         selectionProcess: formData.selectionProcess.join(' + '),
         contactPerson: formData.contactPerson,
+        tags: formData.tags,
         minimumStudents: formData.minStudents,
         jobType: "Pool-campus",
       };
@@ -405,6 +411,33 @@ export default function PoolCampusHiringForm() {
                   <div key={benefit} onClick={() => handleMultiSelect('benefits', benefit)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.benefits.includes(benefit) ? "bg-gray-100 font-medium" : ""}`}>
                     {benefit}
                     {formData.benefits.includes(benefit) && <span className="float-right text-gray-500">✓</span>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Tags multi-select */}
+          <div ref={tagsRef} className="relative">
+            <label className="block font-medium mb-2">Tags</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.tags.map(tag => (
+                <div key={tag} className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full">
+                  <span>{tag}</span>
+                  <button type="button" onClick={() => removeSelectedItem('tags', tag)} className="ml-2 text-gray-600 hover:text-black"><X size={14} /></button>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400" onClick={() => toggleDropdown('tags')}>
+              <span className="text-gray-500">Select tags</span>
+              <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.tags ? "rotate-180" : ""}`} />
+            </div>
+            {dropdownOpen.tags && (
+              <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                {tagsOptions.map(tag => (
+                  <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.tags.includes(tag) ? "bg-gray-100 font-medium" : ""}`}>
+                    {tag}
+                    {formData.tags.includes(tag) && <span className="float-right text-gray-500">✓</span>}
                   </div>
                 ))}
               </div>
