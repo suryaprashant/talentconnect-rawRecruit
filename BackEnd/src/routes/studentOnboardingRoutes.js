@@ -45,11 +45,12 @@ router.put(
     { name: "degreeCertificate", maxCount: 1 },
     { name: "project", maxCount: 2 },
     { name: "experienceCertificate", maxCount: 5 },
-    { name: "profileImage", maxCount: 1 }, // Added for profile image update
+    { name: "profileImage", maxCount: 1 }, 
     { name: "backgroundImage", maxCount: 1 },
-    { name: "experienceCertificate", maxCount: 10 },
+    
     { name: "leadershipCertificate", maxCount: 10 },
-    { name: "internationalExperienceCertificate", maxCount: 10 }, // Added for background image update
+    { name: "internationalExperienceCertificate", maxCount: 10 },
+    { name: "awardCertificate", maxCount: 10 },
   ]),
   updateOnboardingForm
 );

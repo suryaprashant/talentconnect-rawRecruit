@@ -79,7 +79,7 @@ function ProfileSwitchDropdown() {
             console.error('Logout failed:', error);
         }
     };
-    console.log("Aa rha hu mai")
+    
 
     const handleOpenLeaveModal = (company) => {
         setCompanyToLeave(company);

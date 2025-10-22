@@ -1,31 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
-import { ChevronDownIcon, UploadIcon, X } from "lucide-react"; // X used instead of XIcon for consistency
+import { ChevronDownIcon, UploadIcon, X } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { City } from 'country-state-city'; // Import City for locations
-
-// NOTE: I am assuming you have a context hook like useRole to manage formData.
-// If you are passing props, you will need to replace `useRole()` with props access.
-// For this example, I will assume a similar context is available or mock it for completeness.
-// If your original component uses props: { onNext, onBack, formData, onChange }, 
-// please adjust the component signature back.
-
-// --- Mock Context for standalone completeness (Remove if using your actual context) ---
-// const useRole = () => {
-//     const [formData, setFormData] = useState({
-//         industry: [], jobRoles: [], locations: [], expectedSalaryCurrency: 'INR',
-//         experiences: [{ company: "", role: "", startDate: null, endDate: null, description: "", experienceCertificate: null }],
-//         currentSalaryCurrency: 'INR', currentSalaryAmount: '', expectedSalaryAmount: '',
-//         employmentType: [], lookingFor: 'Job',
-//     });
-//     const updateFormData = (newData) => setFormData(prev => ({ ...prev, ...newData }));
-//     return { formData, updateFormData };
-// };
-// ------------------------------------------------------------------------------------
+import { City } from 'country-state-city';
 
 
-// --- STATIC OPTIONS ---
 const industryOptions = [
   "Technology",
   "Finance",

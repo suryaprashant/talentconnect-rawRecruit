@@ -1,22 +1,22 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Trash2, X } from 'lucide-react'; // ✅ ADDED: Trash2 and X icons
+import { Search, Trash2, X } from 'lucide-react'; 
 import axios from 'axios';
 
-// import { toast } from 'react-toastify';
+
 
 export default function EmployerUserManagement() {
-    // --- STATE MANAGEMENT ---
+  
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedGroup, setSelectedGroup] = useState('all');
 
-    // ✅ ADDED: State for delete confirmation modal
-    const [userToDelete, setUserToDelete] = useState(null); // Stores the user object to be deleted
-    const [isDeleting, setIsDeleting] = useState(false); // Tracks the deletion API call status
 
-    // --- DATA FETCHING ---
+    const [userToDelete, setUserToDelete] = useState(null); 
+    const [isDeleting, setIsDeleting] = useState(false); 
+
+  
     useEffect(() => {
         const fetchTeamMembers = async () => {
             setIsLoading(true);
@@ -38,34 +38,33 @@ export default function EmployerUserManagement() {
         fetchTeamMembers();
     }, []);
 
-    //  ADDED: DELETE LOGIC
+    
     const handleConfirmDelete = async () => {
     if (!userToDelete) return;
 
     setIsDeleting(true);
     try {
-        // API call to the backend
+     
         await axios.delete(
             `${import.meta.env.VITE_Backend_URL}/api/team-member/remove/${userToDelete.id}`,
             { withCredentials: true }
         );
 
-        // SUCCESS: This part only runs if the API call was successful (returned a 2xx status)
         console.log("Successfully removed user.");
-        // Update the UI by removing the user from the state
+     
         setUsers(currentUsers => currentUsers.filter(u => u.id !== userToDelete.id));
         
-        // Close the modal on success
+      
         setUserToDelete(null);
 
     } catch (err) {
-        // ERROR: This part runs if the API call fails (returned a 4xx or 5xx status)
+       
         const errorMessage = err.response?.data?.message || "An unexpected error occurred.";
         console.error("Failed to delete user:", errorMessage);
         
-        // Show the error to the user!
+       
         alert(`Error: ${errorMessage}`); 
-        // For a better user experience, replace alert with a toast notification library.
+       
     } finally {
         // This runs regardless of success or failure
         setIsDeleting(false);
@@ -90,7 +89,7 @@ export default function EmployerUserManagement() {
         return matchesSearch && user.userType.toLowerCase().includes(selectedGroup);
     });
     
-    // --- RENDER LOGIC ---
+  
     if (isLoading) {
         return <div className="flex items-center justify-center h-screen"><p>Loading users...</p></div>;
     }

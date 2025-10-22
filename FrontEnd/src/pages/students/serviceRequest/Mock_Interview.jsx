@@ -103,7 +103,7 @@ function MockInterview() {
     
     try {
       const response = await createMockInterviewRequest(formData);
-      console.log("✅ Response:", response.data);
+    //  console.log("✅ Response:", response.data);
       alert("Mock interview scheduled successfully!");
       
       // Reset form after successful submission

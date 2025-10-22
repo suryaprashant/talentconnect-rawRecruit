@@ -69,6 +69,7 @@
 
 
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_Backend_URL,
@@ -81,7 +82,7 @@ const axiosInstance = axios.create({
 // Request interceptor to add the Authorization header dynamically
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token'); // Get the latest token
+    const token = Cookies.get('jwt') || localStorage.getItem('token'); // Get the latest token
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }

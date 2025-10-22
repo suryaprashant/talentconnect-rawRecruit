@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Search, ChevronDown, Check, Plus, Edit, Trash2, X, Mail, AlertTriangle } from 'lucide-react';
 
 // Use the backend URL you provided. In a real Vite app, this would be in a .env file.
-const VITE_Backend_URL = 'http://localhost:5000';
+// const VITE_Backend_URL =   ||'http://localhost:5000';
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -31,7 +31,7 @@ export default function UserManagement() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${VITE_Backend_URL}/api/team-member/list-members`, {
+      const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/team-member/list-members`, {
         credentials: 'include', // Sends cookies (like the jwt token) with the request
       });
 

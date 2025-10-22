@@ -20,7 +20,7 @@ export default function CompanyProfile() {
     fetchProfileData();
   }, []);
 
-   const backendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
+  const backendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
 
 const fetchProfileData = async () => {
   setLoading(true);
@@ -31,7 +31,8 @@ const fetchProfileData = async () => {
     const response = await axios.get(`${backendUrl}/api/companyDashboard/getInformation`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
+      },
+      withCredentials:true ,
     });
     console.log('Profile data fetched:', response.data);
     setProfileData(response.data.profile);
