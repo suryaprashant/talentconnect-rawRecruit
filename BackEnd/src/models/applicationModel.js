@@ -43,15 +43,16 @@ const ApplicationSchema = new mongoose.Schema(
         ],
         currentStatus: {
             type: String,
-            // enum: [
-            //     "Applied",
-            //     "Application Sent",
-            //     "Awaiting Recruiter Action",
-            //     "Shortlisted",
-            //     "Interview Scheduled",
-            //     "Offer Extended",
-            //     "Rejected"
-            // ],
+            enum: [
+                "Applied",
+                "Application Sent",
+                "Awaiting Recruiter Action",
+                "Shortlisted",
+                "Interview Scheduled",
+                "Offer Extended",
+                "Accepted",
+                "Rejected"
+            ],
             default: "Applied"
         }
     },
