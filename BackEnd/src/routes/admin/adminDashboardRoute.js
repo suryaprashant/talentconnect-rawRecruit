@@ -8,7 +8,7 @@ const router = express.Router();
 // router.use(adminAuth);  ------> commented for API tesing
 
 // Admin dashboard overview
-router.get('/getoverview', getAdminDashboardOverView);
+router.get('/overviewdata', getAdminDashboardOverView);
 router.get("/overview", async (req, res) => {
   try {
     // TODO: Implement dashboard overview logic

@@ -11,9 +11,9 @@ const router = express.Router();
 // router.use(adminAuth); ---> commented for API testing purpose
 
 // get reports of user status(active,pending,blocked)
-router.get('/getreports', getUserBoardOverView);
+router.get('/overviewdata', getUserBoardOverView);
 
 // get all users data 
-router.get('/getusers', getAllUsers);
+router.get('/getrelationdata', getAllUsers);
 
 export default router;
