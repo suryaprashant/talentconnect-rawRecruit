@@ -1,20 +1,31 @@
 import { countApplicationsService } from "../services/applicationService.js";
+import { getCollegeService } from "../services/collegeService.js";
 import { getCompanyService } from "../services/companyService.js";
 import { deleteJobByIdService, getJobPostedByCompanyService } from "../services/jobPostingService.js";
 
 // all jobs posted by company
 export const getPostedJobs = async (req, res) => {
-    const companyId = req.user._id;
+    const Id = req.user._id;
+    const userType = req.user.userType;
     const { jobType } = req.params;
     if (!jobType) return res.status(404).json({ msg: "job not found!" });
 
     try {
-        const companyProfile = await getCompanyService(companyId);
-        if (!companyProfile) {
+
+        let companyProfile;
+        if (userType === 'college') {
+            companyProfile = await getCollegeService(Id);
+        }
+        else if (userType === 'company') {
+            companyProfile = await getCompanyService(Id);
+        }
+
+        // console.log("company: ", companyProfile)
+        if (!companyProfile.data) {
             return res.status(404).json({ error: "Company profile not found" });
         }
 
-        const jobs = await getJobPostedByCompanyService(companyProfile.data[0]._id, jobType);
+        const jobs = await getJobPostedByCompanyService(companyProfile.data[0]._id, jobType,userType);
         //  console.log("res: ",jobs);
         // application count service 
         const jobsWithApplicationCount = await Promise.all(
