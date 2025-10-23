@@ -197,7 +197,7 @@ function JobManagementApplication() {
                 <div className="flex justify-between items-center mt-10 mb-4">
                     <div>
                         <h1 className="text-3xl font-bold">Manage On-Campus Applications</h1>
-                        <p className="text-gray-600 mt-2">Track Your Job Listings and Streamline Candidate Applications</p>
+                        <p className="text-gray-600 mt-2">Track Your On Campus Drives and Streamline Applications</p>
                     </div>
                     <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors">
                         Post a Job

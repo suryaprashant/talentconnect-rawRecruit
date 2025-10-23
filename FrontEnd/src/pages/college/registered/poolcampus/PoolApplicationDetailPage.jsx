@@ -103,7 +103,7 @@ const PoolApplicationDetailPage = () => {
             <section>
               <h2 className="text-xl font-bold mb-4 text-gray-800">Requirements</h2>
               <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                {application.requirements.map((req, index) => (
+                {application.requirements?.map((req, index) => (
                   <li key={index}>{req}</li>
                 ))}
               </ul>
@@ -112,7 +112,7 @@ const PoolApplicationDetailPage = () => {
             <section>
               <h2 className="text-xl font-bold mb-4 text-gray-800">Responsibilities</h2>
               <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                {application.responsibilities.map((resp, index) => (
+                {application.responsibilities?.map((resp, index) => (
                   <li key={index}>{resp}</li>
                 ))}
               </ul>

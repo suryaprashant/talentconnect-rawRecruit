@@ -238,7 +238,7 @@ function JobDetail() {
         const fetchApplicants = async () => {
             try {
                 // Fetching for 'Pool-campus' as per the original code's logic
-                const response = await getApplicationByJobOfManagement(jobId, 'Pool-campus'); 
+                const response = await getApplicationByJobOfManagement(jobId, 'Pool-campus',"Applied"); 
                 if (response.data && Array.isArray(response.data)) {
                     setApplicants(response.data);
                     // Update jobRole from the fetched data if available

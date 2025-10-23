@@ -74,7 +74,7 @@ export function getPoolCampusForCompany() {
 export function getPoolCampusJobByIdForCompany(jobId) {
   return axiosClient.get(`/api/student-dashboard/pool-campus/company/${jobId}`)
     .then(response => response)
-    .catch(error =>console.log("Error", error));
+    .catch(error => console.log("Error", error));
 }
 // /api/student-dashboard/getPoolCampusJob/${id}
 
@@ -91,18 +91,19 @@ export function getCollegePostedJobs(jobType) {
     .catch(error => error);
 }
 
-export function getApplicationByJobOfManagement(jobId, jobType) {
+export function getApplicationByJobOfManagement(jobId, jobType, targetStatus) {
   return axiosClient.get(`application/manage/college`, {
-      params: {
-        jobId: jobId,
-        jobType: jobType
-      }
-    })
+    params: {
+      jobId: jobId,
+      jobType: jobType,
+      targetStatus: targetStatus
+    }
+  })
     .then(response => response)
     .catch(error => {
       console.log("Error: ", error);
-     
-      throw error; 
+
+      throw error;
     });
 }
 
@@ -115,8 +116,8 @@ export function fetchAllCollegesName() {
 
 // get shortlistedCompanies by college
 
-export function shortlistCompanyByCollege(applicationId,jobRole) {
-  return axiosClient.patch(`/application/manage/college/shortlist/${applicationId}`,{ jobRole })
+export function shortlistCompanyByCollege(applicationId, jobRole) {
+  return axiosClient.patch(`/application/manage/college/shortlist/${applicationId}`, { jobRole })
     .then(response => response)
     .catch(error => error);
 }
@@ -132,15 +133,15 @@ export function getShorlistedCompaniesByCollege(applicantType, jobType) {
     .catch(error => error);
 }
 
-export function rejectCompanyApplication(applicationId,jobRole) {
-  return axiosClient.patch(`/application/manage/reject/${applicationId}`,{ jobRole })
+export function rejectCompanyApplication(applicationId, jobRole) {
+  return axiosClient.patch(`/application/manage/reject/${applicationId}`, { jobRole })
     .then(response => response)
     .catch(error => error);
 }
 
 // reject  application
-export function rejectCompanyApplicationForCollege(applicationId,jobRole) {
-   return axiosClient.patch(`/application/manage/college/reject/${applicationId}`,{ jobRole })
+export function rejectCompanyApplicationForCollege(applicationId, jobRole) {
+  return axiosClient.patch(`/application/manage/college/reject/${applicationId}`, { jobRole })
     .then(response => response)
     .catch(error => error);
 }
@@ -165,7 +166,7 @@ export function createPoolCampusRequest(data) {
     .catch(error => error);
 }
 export function createStudentTrainingRequest(data) {
-  return axiosClient.post(`/api/servicerequests/college/student-training`, data)  
+  return axiosClient.post(`/api/servicerequests/college/student-training`, data)
     .then(response => response)
     .catch(error => error);
 }
