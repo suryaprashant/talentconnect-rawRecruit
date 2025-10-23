@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 // Apply admin authentication 
-// router.use(adminAuth); ---> commented for API testing purpose
+router.use(adminAuth);
 
 // Admin dashboard overview
 router.post('/users-board', getUserBoardOverView);

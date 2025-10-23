@@ -3,8 +3,10 @@ import Auth from "../../models/authModel.js";
 
 /**
  * @desc    Get user count by status and type
+ * @route   GET /api/admin/users/user-status
+ * @access  Private (Admin)
  */
-export const getUserBoardOverView = async (req, res) => {
+export const getUserStatusCounts = async (req, res) => {
   try {
     const [
       all,
