@@ -45,10 +45,15 @@ const AuthSchema = new mongoose.Schema({
     enum: ['manual', 'google', 'linkedin'],
     default: 'manual'
   },
+  // ->>>> should be added below entity to the scheema
   status: {
     type: String,
     enum: ['active', 'pending', 'blocked'],
     default: 'pending',
+  },
+  lastActivity: {
+    type: Date,
+    default: Date.now
   },
 
   //  Added for password reset

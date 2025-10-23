@@ -14,6 +14,11 @@ import { sendBulkNotifications } from "../utils/sendNotification.js";
  */
 class CasestudyService {
 
+    async getTotalCaseStudyCount() {
+        return await Casestudy.countDocuments();
+    };
+
+
     /**
      * Create a new case study
      * @param {Object} casestudyData - The case study data from request body

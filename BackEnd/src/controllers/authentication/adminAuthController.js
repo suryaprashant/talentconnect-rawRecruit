@@ -6,6 +6,7 @@ import Auth from "../../models/authModel.js";
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
+console.log("find email and password from front end ",email," and ",password);
 
     if (!email || !password) {
       return res.status(400).json({ 
