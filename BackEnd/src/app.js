@@ -116,10 +116,10 @@ app.use("/api/auth", authRoutes);
 // admin related auths
 app.use("/api/admin", adminAuth);
 app.use("/api/admin/dashboard", adminDashboard);
-app.use("/api/admin/users-board",userManagement);
-app.use("/api/admin/job-n-drive",jobDriveManagement);
-app.use("/api/admin/application",applicationManagement);
-app.use("/api/admin/servicerequest",serviceRequestManagement);
+app.use("/api/admin/users", userManagement);
+app.use("/api/admin/job-n-drive", jobDriveManagement);
+app.use("/api/admin/application", applicationManagement);
+app.use("/api/admin/servicerequest", serviceRequestManagement);
 
 // admin relatd auth ends
 
