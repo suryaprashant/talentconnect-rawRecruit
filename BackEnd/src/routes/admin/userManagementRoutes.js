@@ -9,8 +9,8 @@ import {
 
 const router = express.Router();
 
-// Apply admin authentication to all dashboard routes
-router.use(adminAuth);
+// Apply admin authentication 
+// router.use(adminAuth); ---> commented for API testing purpose
 
 // Admin dashboard overview
 router.post('/users-board', getUserBoardOverView);

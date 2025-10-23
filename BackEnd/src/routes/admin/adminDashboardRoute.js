@@ -5,10 +5,10 @@ import {getAdminDashboardOverView} from "../../controllers/admin/adminDashboardC
 const router = express.Router();
 
 // Apply admin authentication to all dashboard routes
-router.use(adminAuth);
+// router.use(adminAuth);  ------> commented for API tesing
 
 // Admin dashboard overview
-router.get('/getoverview', getAdminDashboardOverView);
+router.get('/overviewdata', getAdminDashboardOverView);
 router.get("/overview", async (req, res) => {
   try {
     // TODO: Implement dashboard overview logic

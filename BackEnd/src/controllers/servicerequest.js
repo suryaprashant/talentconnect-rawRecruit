@@ -1,4 +1,4 @@
-import serviceRequestModel from "../models/servicerequestModel.js";
+import serviceRequestModel from "../models/serviceRequestModel.js";
 
 export const createServiceRequest = async (req, res) => {
   try {
