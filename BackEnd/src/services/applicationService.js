@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 import Application from '../models/applicationModel.js';
-import { JobPostingTable } from '../models/jobPostingsModel.js';
+// import { JobPostingTable } from '../models/jobPostingsModel.js';
 
 
 // import OffCampusApplication from '../models/offCampusApplicationModel.js';
