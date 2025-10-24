@@ -204,7 +204,7 @@ export const getJobPostings = async (req, res) => {
         if(studentProfile.success && studentProfile.data.length > 0 && studentProfile.data[0].locations){
             studentLocations = studentProfile.data[0].locations ;
         }
-        const postings = await getJobPostingsByJobTypeWithLocationBasedService("Job-listing",studentLocations);
+        const postings = await getJobPostingsByJobTypeWithLocationBasedService("Job-listing",studentLocations,userId);
 
         sendResponse(res, 200, { data: postings });
     } catch (error) {
