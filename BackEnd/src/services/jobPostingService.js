@@ -1,5 +1,7 @@
+import mongoose from 'mongoose';
 import { JobPostingTable } from '../models/jobPostingsModel.js';
 import Application from '../models/applicationModel.js';
+import OnboardingModel from '../models/studentonboardingModel.js';
 
 export const createPostingService = async (postingData) => {
     try {
@@ -16,7 +18,7 @@ export const createPostingService = async (postingData) => {
 };
 
 
-export const getJobPostingsByJobTypeService = async (jobType) => {
+export const getJobPostingsByJobTypeService = async (jobType, userId) => {
     try {
         const postings = await JobPostingTable.find({ jobType }).populate('companyPosted')
             .sort({ createdAt: -1 });
@@ -44,13 +46,81 @@ export const getJobPostingsByJobTypeService = async (jobType) => {
                 jobStatus: status
             };
         });
-        // console.log("Updated Postings:", updatedPostings);
+
+        if (userId) {
+            try {
+                let applicantId = null;
+                const onboarding = await OnboardingModel.findOne({ userId: userId }).select('_id').lean();
+                if (onboarding && onboarding._id) applicantId = onboarding._id;
+
+                if (!applicantId) {
+                    try {
+                        applicantId = new mongoose.Types.ObjectId(userId);
+                    } catch (e) {
+                        applicantId = userId;
+                    }
+                }
+
+                const jobIds = postings.map(p => p._id);
+                const applications = await Application.find({
+                    applicant: applicantId,
+                    job: { $in: jobIds }
+                }).select('job').lean();
+
+                const appliedJobIds = new Set(applications.map(a => String(a.job)));
+                const filteredPostings = updatedPostings.filter(p => !appliedJobIds.has(String(p._id)));
+                return filteredPostings;
+            } catch (err) {
+                console.error('Error checking applications for user:', err);
+                return updatedPostings;
+            }
+        }
         return updatedPostings;
     } catch (error) {
         console.error("Error in getJobPostingsByJobTypeService:", error.message);
         throw error;
     }
 };
+
+export const getReferralJobsService = async (jobType, candidatePostedId) => {
+    try {
+        const response = await JobPostingTable.find({
+            jobType: jobType,
+            candidatePosted: { $ne: candidatePostedId }
+        })
+            .lean()
+            .sort({ createdAt: -1 });
+
+        // If userId provided, filter out jobs the user already applied for
+        if (candidatePostedId) {
+            try {
+                let applicantId = candidatePostedId;
+
+                if (!applicantId) {
+                    try {
+                        applicantId = new mongoose.Types.ObjectId(userId);
+                    } catch (e) {
+                        applicantId = userId;
+                    }
+                }
+
+                const jobIds = response.map(r => r._id);
+                const applications = await Application.find({ applicant: applicantId, job: { $in: jobIds } }).select('job').lean();
+                const appliedJobIds = new Set(applications.map(a => String(a.job)));
+                const filtered = response.filter(r => !appliedJobIds.has(String(r._id)));
+                return filtered;
+            } catch (err) {
+                console.error('Error filtering referral jobs by applications:', err);
+                return { success: true, response };
+            }
+        }
+
+        return response;
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
 
 export const getJobPostingsByJobTypeWithLocationBasedService = async (jobType, studentLocations = [], userId) => {
     try {
@@ -92,22 +162,35 @@ export const getJobPostingsByJobTypeWithLocationBasedService = async (jobType, s
             };
         });
 
-        console.log("1.,",updatedPostings);
-
-        // If userId provided, filter out jobs the user has already applied for
+        // Filter out jobs the user has already applied for
         if (userId) {
             try {
+                let applicantId = null;
+                const onboarding = await OnboardingModel.findOne({ userId: userId }).select('_id').lean();
+                if (onboarding && onboarding._id) applicantId = onboarding._id;
+
+                if (!applicantId) {
+                    try {
+                        applicantId = new mongoose.Types.ObjectId(userId);
+                    } catch (e) {
+                        applicantId = userId;
+                    }
+                }
+
                 const jobIds = postings.map(p => p._id);
-                const applied = await Application.find({ applicant: userId, job: { $in: jobIds } }).select('job').lean();
-                const appliedJobSet = new Set(applied.map(a => String(a.job)));
-                const filtered = updatedPostings.filter(p => !appliedJobSet.has(String(p._id)));
-                return filtered;
+                const applications = await Application.find({
+                    applicant: applicantId,
+                    job: { $in: jobIds }
+                }).select('job').lean();
+
+                const appliedJobIds = new Set(applications.map(a => String(a.job)));
+                const filteredPostings = updatedPostings.filter(p => !appliedJobIds.has(String(p._id)));
+                return filteredPostings;
             } catch (err) {
-                console.error('Error checking applications for user:', err.message);
-                // If application check fails, fall back to returning all postings
+                console.error('Error checking applications for user:', err);
                 return updatedPostings;
             }
-        }console.log("2.,",updatedPostings);
+        }
 
         return updatedPostings;
     } catch (error) {
@@ -115,9 +198,6 @@ export const getJobPostingsByJobTypeWithLocationBasedService = async (jobType, s
         throw error;
     }
 };
-
-
-
 
 export const getJobPostingsByCollegeService = async (jobType) => {
     try {
