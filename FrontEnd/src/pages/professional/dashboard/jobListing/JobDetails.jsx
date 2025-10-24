@@ -1,248 +1,209 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-//  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
-import JobCard from '@/components/student/studentDashboard/jobListing/JobCard';
-import { ApplyForJobListingOppurtunity, getJobLisingJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 
+//  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
+// import JobCard from '@/components/student/studentDashboard/jobListing/JobCard';
+import { ApplyForJobListingOppurtunity, getJobLisingJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
+
 const JobDetails = () => {
-  const { jobId } = useParams();
-  // const navigate = useNavigate();
-  const [jobDetails, setJobDetails] = useState(null);
-  // const [similarJobs, setSimilarJobs] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const { jobId } = useParams();
+    const navigate = useNavigate();
+    const [jobDetails, setJobDetails] = useState(null);
+    //   const [similarJobs, setSimilarJobs] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  const loadJobDetails = async () => {
-    try {
-      setIsLoading(true);
-      // Fetch job details
-      const details = await getJobLisingJobDetails(jobId);
-      // console.log("..../", details.data[0]);
-      setJobDetails(details.data[0]);
+    useEffect(() => {
+        const loadJobDetails = async () => {
+            try {
+                setIsLoading(true);
 
-      // Fetch similar jobs
-      // const similar = await fetchSimilarJobs(jobId);
-      // setSimilarJobs(similar);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load job details. Please try again later.');
-      console.error('Error fetching job details:', err);
-    } finally {
-      setIsLoading(false);
+                // Fetch job details
+                const details = await getJobLisingJobDetails(jobId);
+                // console.log("..../", details.data[0]);
+                setJobDetails(details.data[0]);
+
+                // Fetch similar jobs
+                // const similar = await fetchSimilarJobs(jobId);
+                // setSimilarJobs(similar);
+                setError(null);
+            } catch (err) {
+                setError('Failed to load job details. Please try again later.');
+                toast.error('Something went wrong')
+                // console.error('Error fetching job details:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadJobDetails();
+    }, [jobId]);
+
+    const handleSave = async () => {
+        try {
+            const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
+            // console.log("Applicaiton: ", response);
+            if (response?.data?.success === true) toast.success('Job saved!');
+            else toast.error(response.response.data?.msg);
+        } catch (err) {
+            // console.error('Error applying for job:', err);
+            toast.error('Something went wrong!');
+        }
+    };
+
+    const handleApply = async () => {
+        try {
+            const response = await ApplyForJobListingOppurtunity(jobId);
+            // console.log("Applicaiton: ", response);
+            if (response?.data?.success === true) toast.success('Application submitted!');
+            else toast.error(response.response.data?.msg);
+        } catch (err) {
+            // console.error('Error applying for job:', err);
+            toast.error('Something went wrong!');
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-slate-50">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
+            </div>
+        );
     }
-  };
-  useEffect(() => {
-    loadJobDetails();
-  }, [jobId]);
 
-  const handleApply = async () => {
-    try {
-      const response = await ApplyForJobListingOppurtunity(jobId);
-      if (response?.data?.success === true) toast.success('Application submitted!');
-      else toast.error(response.response.data?.msg)
-    } catch (err) {
-      console.error('Error applying for job:', err);
-      toast.error('Something went wrong!');
+    if (error || !jobDetails) {
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-slate-50 p-4 text-center">
+                <div>
+                    <svg className="mx-auto h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <h2 className="mt-4 text-2xl font-bold text-slate-800">{error || "Job not found"}</h2>
+                    <p className="mt-2 text-slate-600">We couldn't retrieve the details for this job posting.</p>
+                    <button
+                        className="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg"
+                        onClick={() => navigate('/student-dashboard/Job-listing')}
+                    >
+                        Back to Job Listings
+                    </button>
+                </div>
+            </div>
+        );
     }
-  };
 
-  const handleSave = async () => {
-    try {
-      const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
-      if (response?.data?.success === true) toast.success('Job saved!');
-      else toast.error(response.response.data?.msg);
-    } catch (err) {
-      console.error('Error applying for job:', err);
-      toast.error('Something went wrong!');
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
+    const Section = ({ title, children }) => (
+        <section>
+            <h2 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-200">{title}</h2>
+            <div className="text-slate-700 leading-relaxed space-y-4">
+                {children}
+            </div>
+        </section>
     );
-  }
 
-  if (error || !jobDetails) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-red-500 text-center p-4">
-          <p className="text-xl font-semibold">{error || "Job not found"}</p>
-          <button
-            className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={() => loadJobDetails()}
-          >
-            Back to Job Listings
-          </button>
+    const InfoPill = ({ icon, text }) => (
+        <div className="flex items-center text-slate-500">
+            {icon}
+            <span className="ml-1.5">{text}</span>
         </div>
-      </div>
     );
-  }
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">{jobDetails.jobTitle}</h1>
-            <p className="text-gray-600 mb-2">{jobDetails.companyId?.companyDetails?.companyName}</p>
-            <p className="text-sm text-gray-500 mb-2">Job ID: {jobDetails._id}</p>
-            <div className="flex items-center mb-2">
-              <span className="inline-flex items-center mr-4">
-                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" />
-                </svg>
-                {jobDetails.yearsOfExperience} yrs
-              </span>
-              <span className="inline-flex items-center capitalize">
-                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                </svg>
-                {jobDetails.preferredHiringLocation}
-              </span>
+    const SnapshotListItem = ({ icon, label, value }) => (
+        <div className="flex-1 min-w-[200px]">
+            <div className="flex items-center text-sm text-slate-500">
+                {icon}
+                <span className="ml-2">{label}</span>
             </div>
-          </div>
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-            <button
-              onClick={handleSave}
-              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded shadow"
-            >
-              Save
-            </button>
-            <button
-              onClick={handleApply}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded shadow"
-            >
-              Apply
-            </button>
-          </div>
+            <p className="font-semibold text-slate-800 mt-0.5">{value}</p>
         </div>
+    );
 
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-3">Job description</h2>
-          <div className="mb-4">
-            <h3 className="font-medium mb-2">About The Role:</h3>
-            <p className="text-gray-700">{jobDetails.jobDescription}</p>
-          </div>
-          <div className="mb-4">
-            <h3 className="font-medium mb-2">What you'll do:</h3>
-            <p className="text-gray-700">{jobDetails?.responsibilities}</p>
-          </div>
+    return (
+        <div className="bg-slate-50 min-h-screen font-sans p-4 sm:p-6 lg:p-8">
+            <div className="container mx-auto max-w-5xl">
+                <main>
+                    <div className="bg-white p-8 rounded-xl shadow-md space-y-8">
+                        <header className="flex flex-col sm:flex-row items-start justify-between pb-4 border-b border-slate-200">
+                            <div>
+                                <h1 className="text-4xl font-extrabold text-slate-900 mb-2 capitalize">{jobDetails.jobTitle}</h1>
+                                <p className="text-lg text-slate-600 mb-4">at {jobDetails.companyPosted?.companyDetails?.companyName}</p>
+                                <p className="text-sm text-slate-400 mb-4">Job ID: {jobDetails._id}</p>
+                                <div className="flex flex-wrap gap-x-6 gap-y-2">
+                                    <InfoPill icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>} text={jobDetails.location} />
+                                    <InfoPill icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" /></svg>} text={`${jobDetails.yearsOfExperience} years experience`} />
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
+                                <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
+                                <button onClick={handleApply} className="bg-blue-500 hover:bg-indigo-500 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">Apply</button>
+                            </div>
+                        </header>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-            <div>
-              <p className="text-sm font-medium text-gray-500">Role:</p>
-              <p className="text-gray-700">{jobDetails.jobTitle}</p>
+                        <Section title="Job Description">
+                            <p>{jobDetails.description}</p>
+                        </Section>
+
+                        {/* <Section title="Responsibilities">
+                            <p>{jobDetails.responsibilities}</p>
+                        </Section> */}
+
+                        <Section title="Eligibility Criteria">
+                            <p>{jobDetails.eligibilityCriteria}</p>
+                        </Section>
+
+                        <Section title="Key Skills">
+                            <div className="flex flex-wrap gap-2">
+                                {jobDetails.skills?.map((skill) => (
+                                    <span key={skill} className="bg-indigo-100 text-indigo-800 px-3 py-1.5 rounded-full text-sm font-medium">{skill}</span>
+                                ))}
+                            </div>
+                        </Section>
+
+                        <Section title="Benefits">
+                            <div className="flex flex-wrap gap-2">
+                                {jobDetails.benefits?.map((benefit) => (
+                                    <span key={benefit} className="bg-green-100 text-green-800 px-3 py-1.5 rounded-full text-sm font-medium">{benefit}</span>
+                                ))}
+                            </div>
+                        </Section>
+
+                        <Section title="Education">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-sm font-medium text-slate-500">Minimum Education</p>
+                                    <p className="text-slate-700 capitalize font-semibold">{jobDetails.minEducation}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-slate-500">Preferred Field of Study</p>
+                                    <p className="text-slate-700 capitalize font-semibold">{jobDetails.studentStreams}</p>
+                                </div>
+                            </div>
+                        </Section>
+
+                        <Section title="Job Overview">
+                            <div className="flex flex-wrap gap-y-4 gap-x-8">
+                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>} label="Industry" value={jobDetails.companyPosted?.companyDetails?.industryType} />
+                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm14 1a1 1 0 11-2 0 1 1 0 012 0zM2 13a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2zm14 1a1 1 0 11-2 0 1 1 0 012 0z" clipRule="evenodd" /></svg>} label="Work Mode" value={jobDetails.workMode} />
+                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.5 2.5 0 00-1.162-.682zM11 12.849v-1.698c.22.071.412.164.567.267a2.5 2.5 0 001.162.682zM10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.5 4.5 0 00-1.876.762A4.5 4.5 0 007.5 7.75v5.5a4.5 4.5 0 003.376 4.408A4.5 4.5 0 0012.5 13.25v-5.5a4.5 4.5 0 00-1-2.908z" /></svg>} label="Salary (CTC)" value={`${jobDetails.minPackage?.amount} ${jobDetails.minPackage?.currency}`} />
+                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg>} label="Openings" value={jobDetails.numberOfOpenings} />
+                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" /></svg>} label="Department" value={jobDetails.department || "Not Specified"} />
+                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5a.997.997 0 01.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" /></svg>} label="Employment Type" value={jobDetails.employmentType} />
+                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 2a2 2 0 00-2 2v11a3 3 0 003 3h8a3 3 0 003-3V4a2 2 0 00-2-2H5zm0 2h10v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4z" clipRule="evenodd" /></svg>} label="Certificate Required" value={jobDetails.certifications.join(", ") || "No certification required"} />
+                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.72 7.97 5 10 5c2.03 0 3.488.72 4.756 1.321l.003.001c.624.305 1.135.688 1.536 1.106l-1.091.819C14.72 7.82 14.166 7.5 13 7.5c-1.276 0-2.221.48-2.638.895l-.068.071c-.693.732-.888 1.816-.949 2.887l-2.024.091a4.502 4.502 0 01-1.008-2.324zM10 15a4.5 4.5 0 100-9 4.5 4.5 0 000 9z" clipRule="evenodd" /></svg>} label="Work Authorization" value={jobDetails.workAuthorization || 'NO'} />
+                            </div>
+                        </Section>
+
+                        <Section title="About The Company">
+                            <p className="text-slate-700 mb-4">{jobDetails.companyPosted?.companyDetails.description}</p>
+                            <p className="text-sm text-slate-500">
+                                <span className="font-semibold text-slate-600">Location:</span> {`${jobDetails.companyPosted?.companyDetails.companyLocation}, ${jobDetails.companyPosted?.companyDetails.state}, ${jobDetails.companyPosted?.companyDetails.country}`}
+                            </p>
+                        </Section>
+                    </div>
+                </main>
             </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Industry Type:</p>
-              <p className="text-gray-700">{jobDetails.comapnyId?.companyDetails?.industryType}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Department:</p>
-              <p className="text-gray-700">{jobDetails?.department}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Employment Type:</p>
-              <p className="text-gray-700">{jobDetails?.employmentType}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Role Category:</p>
-              <p className="text-gray-700">{jobDetails?.jobType}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Salary Range:</p>
-              <p className="text-gray-700">{jobDetails.salaryCurrency} {jobDetails?.monthlySalary} per month</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Work Mode:</p>
-              <p className="text-gray-700">{jobDetails.preferredHiringLocation}</p>
-            </div>
-          </div>
         </div>
-
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-3">Education</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm font-medium text-gray-500">Minimum Education: <span className="text-gray-700">{jobDetails.minimumEducation}</span></p>
-              <p className="text-sm font-medium text-gray-500">Prefered field of study: <span className="text-gray-700">{jobDetails.preferredFieldOfStudy}</span></p>
-            </div>
-            {/* <div>
-              <p className="text-sm font-medium text-gray-500">PG:</p>
-              <p className="text-gray-700">{jobDetails.education?.pg}</p>
-            </div> */}
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-3">Key Skills</h2>
-          <div className="flex flex-wrap gap-2">
-            {jobDetails?.skills?.map((skill, index) => (
-              <span key={index} className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-3">About company</h2>
-          <p className="text-gray-700 mb-4">{jobDetails?.companyId?.companyDetails.description}</p>
-
-          <h3 className="font-medium mb-2">Company Info</h3>
-          <p className="text-gray-700">
-            <span className="font-medium">Address:</span> {jobDetails?.companyId?.companyDetails.companyLocation} {jobDetails?.companyId?.companyDetails.state}, {jobDetails?.companyId?.companyDetails.country}
-          </p>
-        </div>
-      </div>
-
-      {/* Similar Jobs Section */}
-      {/* <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-xl font-bold">Similar Jobs</h2>
-            <p className="text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
-          </div>
-          <div className="flex items-center">
-            <div className="relative mr-2">
-              <input
-                type="text"
-                placeholder="Search"
-                className="pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <svg className="absolute left-2 top-2.5 w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="relative">
-              <button className="flex items-center px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none">
-                <span>Sort by</span>
-                <svg className="ml-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {similarJobs?.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </div>
-
-        <div className="flex justify-end mt-4">
-          <button className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-            View all
-          </button>
-        </div>
-      </div> */}
-    </div>
-  );
+    );
 };
 
 export default JobDetails;

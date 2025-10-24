@@ -4,8 +4,8 @@ import { Search, MapPin, Clock } from 'lucide-react';
 import { statusSteps, similarJobs } from '../../../../constants/data.js';
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
 
-const RefferralStatus = () => {
-  const [internshipJobs, setInternshipJobs] = useState();
+const ReferralStatus = () => {
+  const [offcampusJobs, setOffcampusJobs] = useState();
   const [selectedJob, setSelectedJob] = useState();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
@@ -13,9 +13,39 @@ const RefferralStatus = () => {
   const fetchApplication = async () => {
     try {
       const response = await getUserApplicationStatus("Referral");
-      setInternshipJobs(response.data.data);
-      setSelectedJob(response.data.data[0]);
-      // console.log("response: ", response.data.data[0]);
+      const rawData = response?.data?.data || [];
+      const normalized = rawData.map((item) => {
+        const firstHistory = Array.isArray(item?.statusHistory) && item.statusHistory.length > 0 ? item.statusHistory[0] : null;
+        const existingJobDetails = Array.isArray(item?.jobDetails) ? item.jobDetails : [];
+        const existingCompanyDetails = Array.isArray(item?.companyDetails) ? item.companyDetails : [];
+
+        const safeJobDetails = existingJobDetails.length > 0
+          ? existingJobDetails
+          : [{
+            jobTitle: "N/A",
+            yearsOfExperience: "-",
+            workLocations: "-",
+            jobDescription: ""
+          }];
+
+        const safeCompanyDetails = existingCompanyDetails.length > 0
+          ? existingCompanyDetails
+          : [{ companyDetails: { companyName: "-" } }];
+
+        return {
+          ...item,
+          id: item?._id,
+          status: item?.currentStatus ?? item?.status ?? "",
+          date: new Date(firstHistory?.date).toUTCString().slice(0,16) ?? item?.createdAt ?? "",
+          jobDetails: safeJobDetails,
+          companyDetails: safeCompanyDetails,
+          experience: item?.experience ?? safeJobDetails?.[0]?.yearsOfExperience ?? "-"
+        };
+      });
+
+      setOffcampusJobs(normalized);
+      setSelectedJob(normalized[0]);
+      console.log("response: ", response.data.data[0]);
     } catch (error) {
       console.log("Error: ", error);
     }
@@ -25,8 +55,8 @@ const RefferralStatus = () => {
     fetchApplication();
   }, [])
 
-  const filteredJobs = internshipJobs?.filter(job =>
-    job?.jobDetails[0]?.jobTitle?.toLowerCase().includes(searchTerm.toLowerCase()) || job?.companyDetails[0]?.companyDetails?.companyName.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredJobs = offcampusJobs?.filter(job =>
+    job?.jobDetails[0]?.jobTitle?.toLowerCase().includes(searchTerm.toLowerCase()) || job?.companyDetails[0].companyDetails.companyName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getStatusIndex = (status) => statusSteps.findIndex(step => step === status);
@@ -73,23 +103,26 @@ const RefferralStatus = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* Job List Sidebar */}
         <div className="w-64 bg-white border-r border-gray-200 overflow-y-auto">
-          {filteredJobs?.map(job => (
+          {filteredJobs?.length > 0 ? filteredJobs?.map(job => (
             <div
               key={job._id}
               className={`p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${selectedJob.id === job.id ? 'bg-gray-100' : ''}`}
               onClick={() => setSelectedJob(job)}
             >
+              <span className='text-gray-400'>{job?.currentStatus}</span>
               <h3 className="font-medium">{job.jobDetails[0].jobTitle}</h3>
-              <p className="text-sm text-gray-600">{job?.companyDetails[0]?.companyDetails?.companyName}</p>
+              {/* <p className="text-sm text-gray-600">{job.companyDetails[0].companyDetails.companyName}</p> */}
               <div className="mt-2 flex items-center text-xs text-gray-500">
                 <Clock className="h-3 w-3 mr-1" />
                 <span>{job.jobDetails[0].yearsOfExperience}</span>
                 <span className="mx-2">•</span>
                 <MapPin className="h-3 w-3 mr-1" />
-                <span>{job.jobDetails[0].workLocations}</span>
+                <span>{job.jobDetails[0].location.map((l, i) => (<span key={i}>{l + ', '}</span>))}</span>
               </div>
             </div>
-          ))}
+          )) : (
+            <div className='text-red-500 p-4'>No Applications found!</div>
+          )}
         </div>
 
         {/* Job Details */}
@@ -129,7 +162,7 @@ const RefferralStatus = () => {
                 <div className="flex justify-between">
                   <div>
                     <h2 className="text-xl font-semibold text-gray-800">{selectedJob.jobDetails[0].jobTitle}</h2>
-                    <p className="text-gray-600">{selectedJob?.companyDetails[0]?.companyDetails.companyName}</p>
+                    {/* <p className="text-gray-600">{selectedJob.companyDetails[0].companyDetails.companyName}</p> */}
                     <div className="mt-2 text-sm text-gray-500">
                       <p>Job ID: {selectedJob._id}</p>
                       <div className="flex items-center mt-1">
@@ -137,7 +170,7 @@ const RefferralStatus = () => {
                         <span>{selectedJob.experience}</span>
                         <span className="mx-2">•</span>
                         <MapPin className="h-4 w-4 mr-1" />
-                        <span>{selectedJob.jobDetails[0].workLocations}</span>
+                        <span>{selectedJob?.jobDetails[0]?.location.map((l, i) => (<span key={i}>{l + ', '}</span>))}</span>
                       </div>
                     </div>
                   </div>
@@ -151,7 +184,7 @@ const RefferralStatus = () => {
                   <p className="text-gray-700">{selectedJob.jobDetails?.jobDescription}</p>
                 </div>
 
-                <div className="mt-6">
+                {/* <div className="mt-6">
                   <h3 className="font-medium mb-2">Activity on this role</h3>
                   <div className="flex border-t border-gray-200">
                     <div className="py-4 px-6 border-r border-gray-200">
@@ -163,11 +196,11 @@ const RefferralStatus = () => {
                       <p className="text-sm text-gray-500">Applications viewed by recruiter</p>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
-                <div className="mt-4">
+                {/* <div className="mt-4">
                   <button className="text-blue-500 text-sm font-medium">View full description</button>
-                </div>
+                </div> */}
               </div>
 
               {/* Similar Jobs Section */}
@@ -184,4 +217,4 @@ const RefferralStatus = () => {
   );
 };
 
-export default RefferralStatus;
+export default ReferralStatus;
