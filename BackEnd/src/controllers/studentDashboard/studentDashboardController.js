@@ -1,4 +1,4 @@
-import { getJobPostingsByCollegeService, getJobPostingsByJobTypeService, getJobPostingsByJobTypeWithLocationBasedService } from "../../services/jobPostingService.js";
+import { getJobPostingsByCollegeService, getJobPostingsByJobTypeService, getJobPostingsByJobTypeWithLocationBasedService, getReferralJobsService } from "../../services/jobPostingService.js";
 import CompanyProfile from "../../models/companyDashboard/companyProfileModel.js";
 import { JobPostingTable } from "../../models/jobPostingsModel.js";
 import OnboardingModel from "../../models/studentonboardingModel.js";
@@ -10,8 +10,9 @@ const sendError = (res, statusCode, message) => res.status(statusCode).json({ me
 
 
 export const getOffCampusPostings = async (req, res) => {
+    const userId = req.user._id;
     try {
-        const postings = await getJobPostingsByJobTypeService("Off-campus");
+        const postings = await getJobPostingsByJobTypeService("Off-campus", userId);
         sendResponse(res, 200, { data: postings });
     } catch (error) {
         sendError(res, 500, "Internal server error");
@@ -31,7 +32,7 @@ export const getOnCampusPostingsForCompany = async (req, res) => {
     try {
         // Get all on-campus postings using the existing service
         const postings = await getJobPostingsByCollegeService("On-campus");
-        
+
         // Filter the results to include only those visible to "Company"
         const filteredPostings = postings.filter(
             (posting) => posting.visibleTo === "Company"
@@ -55,13 +56,13 @@ export const getOnCampusPostingForCompanybyID = async (req, res) => {
         console.error(err);
         res.status(500).json({ error: err.message });
     }
-};          
+};
 
 export const getOnCampusPostingsForCollege = async (req, res) => {
     try {
-      
+
         const postings = await getJobPostingsByJobTypeService("On-campus");
-       
+
         const filteredPostings = postings.filter(
             (posting) => posting.visibleTo === "College"
         );
@@ -74,25 +75,25 @@ export const getOnCampusPostingsForCollege = async (req, res) => {
 };
 
 export const getOnCampusPostingForCollegebyID = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const response = await JobPostingTable.findById(id)
-      .populate({
-        path: 'companyPosted',
-        select: 'companyDetails profileImage hiringPreferences',
-      })
-      .lean();
+    const { id } = req.params;
+    try {
+        const response = await JobPostingTable.findById(id)
+            .populate({
+                path: 'companyPosted',
+                select: 'companyDetails profileImage hiringPreferences',
+            })
+            .lean();
 
-    res.status(200).json(response);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+        res.status(200).json(response);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 }
 
 // export const getPoolCampusPostingsForCollege = async (req, res) => {
 //     try {       
 //         const postings = await getJobPostingsByJobTypeService("Pool-campus");
-        
+
 //         const filteredPostings = postings.filter(
 //             (posting) => posting.visibleTo === "College"
 //         );
@@ -115,67 +116,67 @@ export const getOnCampusPostingForCollegebyID = async (req, res) => {
 //     }
 // };
 
-export const getPoolCampusForCollege = async (req, res) => { 
-   try {
-    const response = await JobPostingTable.find({ 
-     jobType: "Pool-campus",
-     visibleTo: "College"
-    })
-     .populate({
-       path: 'companyPosted',
-       select: 'companyDetails profileImage',
-     })
-     .lean()
-     .sort({ createdAt: -1 });
+export const getPoolCampusForCollege = async (req, res) => {
+    try {
+        const response = await JobPostingTable.find({
+            jobType: "Pool-campus",
+            visibleTo: "College"
+        })
+            .populate({
+                path: 'companyPosted',
+                select: 'companyDetails profileImage',
+            })
+            .lean()
+            .sort({ createdAt: -1 });
 
- res.status(200).json({ success: true, data: response });
+        res.status(200).json({ success: true, data: response });
 
-} catch (err) {
- console.error(err);
- res.status(500).json({ error: err.message });
- }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
 };
 
 export const getPoolCampusJobByIdForCollege = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const response = await JobPostingTable.findById(id)
-      .populate({
-        path: 'companyPosted',
-        select: 'companyDetails profileImage hiringPreferences',
-      })
-      .lean();
-    res.status(200).json(response);
-  }
-  catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
+    const { id } = req.params;
+    try {
+        const response = await JobPostingTable.findById(id)
+            .populate({
+                path: 'companyPosted',
+                select: 'companyDetails profileImage hiringPreferences',
+            })
+            .lean();
+        res.status(200).json(response);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
 }
 
-export const getPoolCampusForCompany = async(req, res) =>{
-    try{
+export const getPoolCampusForCompany = async (req, res) => {
+    try {
         const response = await JobPostingTable.find({
             jobType: "Pool-campus",
             visibleTo: "Company"
         })
-        .populate({ path: 'collegePosted', select: 'collegeUniversityDetails profileImage profileAchievements' })
-        .lean() 
-        .sort({ createdAt: -1 });
-        res.status(200).json({ success: true, data: response });    
+            .populate({ path: 'collegePosted', select: 'collegeUniversityDetails profileImage profileAchievements' })
+            .lean()
+            .sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: response });
     }
-    catch(err){
+    catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });
 
-    }    
+    }
 }
 
 export const getPoolCampusJobByIdForCompany = async (req, res) => {
     const { id } = req.params;
     try {
         const response = await JobPostingTable.findById(id)
-            .populate({path: 'collegePosted', select: 'collegeUniversityDetails profileImage profileAchievements'})
+            .populate({ path: 'collegePosted', select: 'collegeUniversityDetails profileImage profileAchievements' })
             .lean();
         res.status(200).json(response);
     }
@@ -197,14 +198,15 @@ export const getPoolCampusJobByIdForCompany = async (req, res) => {
 export const getJobPostings = async (req, res) => {
     try {
         const userId = req.user._id;
-        let studentLocations =[] ;
+        let studentLocations = [];
 
         const studentProfile = await getStudentService(userId);
 
-        if(studentProfile.success && studentProfile.data.length > 0 && studentProfile.data[0].locations){
-            studentLocations = studentProfile.data[0].locations ;
+        if (studentProfile.success && studentProfile.data.length > 0 && studentProfile.data[0].locations) {
+            studentLocations = studentProfile.data[0].locations;
         }
-        const postings = await getJobPostingsByJobTypeWithLocationBasedService("Job-listing",studentLocations,userId);
+        console.log("userId:\n", userId);
+        const postings = await getJobPostingsByJobTypeWithLocationBasedService("Job-listing", studentLocations, userId);
 
         sendResponse(res, 200, { data: postings });
     } catch (error) {
@@ -223,60 +225,54 @@ export const getJobPostings = async (req, res) => {
 export const getInternshipPostings = async (req, res) => {
     try {
         const userId = req.user._id;
-        let studentLocations =[] ;
+        let studentLocations = [];
 
         const studentProfile = await getStudentService(userId);
-        if(studentProfile.success && studentProfile.data.length > 0 && studentProfile.data[0].locations){
-            studentLocations = studentProfile.data[0].locations ;
+        if (studentProfile.success && studentProfile.data.length > 0 && studentProfile.data[0].locations) {
+            studentLocations = studentProfile.data[0].locations;
         }
 
 
-        const postings = await getJobPostingsByJobTypeWithLocationBasedService("Internship",studentLocations);
+        const postings = await getJobPostingsByJobTypeWithLocationBasedService("Internship", studentLocations, userId);
         sendResponse(res, 200, { data: postings });
     } catch (error) {
         sendError(res, 500, "Internal server error");
     }
 };
 
-export const getIntershipById = async (req , res) =>{
-    const{id} = req.params ;
-    try{
+export const getIntershipById = async (req, res) => {
+    const { id } = req.params;
+    try {
         const response = await JobPostingTable.findById(id)
-        .populate('companyPosted')
-        .lean();
+            .populate('companyPosted')
+            .lean();
         res.status(200).json(response);
     }
-    catch(err){
+    catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });
-    }    
-}
-
-export const getReferralJobs = async(req, res) => {
-    try{
-    
-        const userId = req.user._id ;
-        const postId = await OnboardingModel.findOne({userId})
-
-        const candidatePostedId = postId._id ;
-       
-        const response = await JobPostingTable.find({
-            jobType: "Referral",
-            candidatePosted: { $ne: candidatePostedId }
-        })
-        .lean() 
-        .sort({ createdAt: -1 });
-        res.status(200).json({ success: true, data: response });    
     }
-    catch(err){
+}
+
+export const getReferralJobs = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const postId = await getStudentService(userId);
+
+        const candidatePostedId = postId.data[0]._id;
+
+        const response = await getReferralJobsService("Referral", candidatePostedId);
+        res.status(200).json({ success: true, data: response });
+    }
+    catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });
 
-    }    
+    }
 }
 
-export const getReferralJobById = async(req, res) =>{
-      const { id } = req.params;
+export const getReferralJobById = async (req, res) => {
+    const { id } = req.params;
     try {
         const response = await JobPostingTable.findById(id)
             .populate('candidatePosted')
