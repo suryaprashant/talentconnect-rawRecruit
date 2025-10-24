@@ -183,32 +183,8 @@ const ReferralStatus = () => {
                 <div className="mt-6">
                   <p className="text-gray-700">{selectedJob.jobDetails?.jobDescription}</p>
                 </div>
-
-                {/* <div className="mt-6">
-                  <h3 className="font-medium mb-2">Activity on this role</h3>
-                  <div className="flex border-t border-gray-200">
-                    <div className="py-4 px-6 border-r border-gray-200">
-                      <p className="text-lg font-semibold">1580</p>
-                      <p className="text-sm text-gray-500">Total applications</p>
-                    </div>
-                    <div className="py-4 px-6">
-                      <p className="text-lg font-semibold">83</p>
-                      <p className="text-sm text-gray-500">Applications viewed by recruiter</p>
-                    </div>
-                  </div>
-                </div> */}
-
-                {/* <div className="mt-4">
-                  <button className="text-blue-500 text-sm font-medium">View full description</button>
-                </div> */}
               </div>
 
-              {/* Similar Jobs Section */}
-              {/* <SimilarJobs
-                jobs={similarJobs}
-                title="Similar jobs for you"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing enim in eros."
-              /> */}
             </>
           )}
         </div>
