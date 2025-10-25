@@ -1,5 +1,5 @@
 import express from "express";
-import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication,getShortlistedCompaniesForCollege, shortlistApplicantForCompany,  rejectCompanyApplicationByCollege, scheduleInterview } from "../controllers/applicationController.js";
+import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication, getShortlistedCompaniesForCollege, shortlistApplicantForCompany, rejectCompanyApplicationByCollege, scheduleInterview } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
@@ -7,7 +7,7 @@ const router = express.Router();
 // api '.../application'
 // save opportunity
 router.post("/saveopportunity", secureRoute, saveJobByUser);
-router.get("/saveopportunity",secureRoute,fetchSavedJobs);
+router.get("/saveopportunity", secureRoute, fetchSavedJobs);
 
 // offcampus
 router.post('/candidate/offcampus', secureRoute, createOffcampusApplication);
@@ -38,30 +38,26 @@ router.patch('/manage/shortlist/:applicationId', secureRoute, shortlistApplicant
 router.patch('/manage/college/shortlist/:applicationId', secureRoute, shortlistApplicantForCompany);
 
 router.get('/manage/shortlist/', secureRoute, getShortlistedCandidatesByCompany);
-router.get('/manage/college/shortlist/', secureRoute , getShortlistedCompaniesForCollege ) ;
+router.get('/manage/college/shortlist/', secureRoute, getShortlistedCompaniesForCollege);
 
 // reject
 router.patch('/manage/reject/:applicationId', secureRoute, rejectApplicant);
-
 router.patch("/manage/college/reject/:applicationId", secureRoute, rejectCompanyApplicationByCollege)
 // accept
 router.patch('/manage/accept/:applicationId', secureRoute, acceptApplicant);
-
 router.get('/manage/accept/', secureRoute, getAcceptedCandidatesByCompany);
 
 
-
-
 // get candidates by job
-router.get('/manage',secureRoute, getApplicationsByJob);
+router.get('/manage', secureRoute, getApplicationsByJob);
 
 // get college by job
-router.get('/manage/college',secureRoute, getCollegeApplicationsByJob);
+router.get('/manage/college', secureRoute, getCollegeApplicationsByJob);
 
 // accept offcampus
 // router.get('/accept/:id', getAcceptedCandidatesByJob);
 
 // schedule interview
-router.post('/manage/schedule',secureRoute,scheduleInterview);
+router.post('/manage/schedule', secureRoute, scheduleInterview);
 
 export default router;

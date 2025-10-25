@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import JobCard from '@/components/student/studentDashboard/intershipOpportunity/JobCard';
-import { ApplyForInternship, getReferralJobById } from '@/lib/User_AxiosInstance';
+// import JobCard from '@/components/student/studentDashboard/intershipOpportunity/JobCard';
+import { ApplyForReferral, getReferralJobById } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 
 const RefferalDetails = () => {
@@ -40,7 +40,7 @@ const RefferalDetails = () => {
 
   const handleApply = async () => {
     try {
-      const response = await ApplyForInternship(jobId);
+      const response = await ApplyForReferral(jobId);
 
       if (response?.data?.success === true) toast.success('Application submitted!');
       else toast.error(response.response.data?.msg);
@@ -89,7 +89,7 @@ const RefferalDetails = () => {
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="flex justify-between items-start mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">{jobDetails.jobTitle}  At {jobDetails?.candidatePosted.experiences?.[0]?.company}</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">{jobDetails.jobTitle} At {jobDetails?.candidatePosted.experiences?.[0]?.company}</h1>
             {/* Access company name from companyPosted */}
             <p className="text-gray-600 mb-2">{jobDetails?.candidatePosted.experiences?.[0]?.company}</p>
             <p className="text-sm text-gray-500 mb-2">Job ID: {jobDetails._id}</p>
@@ -126,14 +126,14 @@ const RefferalDetails = () => {
 
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-3">Referral Job Description</h2>
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <h3 className="font-medium mb-2">About The Role:</h3>
-            <p className="text-gray-700">{jobDetails.description}</p> {/* Use 'description' from your schema */}
+            <p className="text-gray-700">{jobDetails.description}</p>
           </div>
           <div className="mb-4">
             <h3 className="font-medium mb-2">What you'll do:</h3>
             <p className="text-gray-700">{jobDetails.responsibilities || 'Not specified'}</p>
-          </div>
+          </div> */}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
             <div className="flex items-center">
@@ -155,7 +155,7 @@ const RefferalDetails = () => {
             </div>
             <div className="flex items-center">
               <p className="text-sm font-medium text-gray-500 mr-1">Work Mode:</p>
-              <p className="text-gray-700 capitalize">{jobDetails.workMode}</p>
+              <p className="text-gray-700 capitalize">{jobDetails.workMode.length>0? jobDetails.workMode : jobDetails?.location}</p>
             </div>
           </div>
         </div>
@@ -182,13 +182,9 @@ const RefferalDetails = () => {
         </div>
 
         <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-3">About company</h2>
-          <p className="text-gray-700 mb-4">{jobDetails.candidatePosted?.experiences?.[0]?.description || 'No company description available.'}</p>
-
-          <h3 className="font-medium mb-2">Company Info</h3>
-          <p className="text-gray-700">
-            <span className="font-medium">Address:</span> {jobDetails.candidatePosted?.locations || 'N/A'} {jobDetails.companyPosted?.companyDetails?.state || ''}, {jobDetails.companyPosted?.companyDetails?.country || ''}
-          </p>
+          <h2 className="text-xl font-semibold mb-3">Posted By</h2>
+          <p className="text-gray-700 font-semibold">{jobDetails.candidatePosted?.name || 'No description available.'}</p>
+          <p className="text-gray-700 mb-4">{jobDetails.candidatePosted?.about || 'No description available.'}</p>
         </div>
       </div>
 
