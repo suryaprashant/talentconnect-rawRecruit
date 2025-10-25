@@ -6,7 +6,7 @@ import {
 import ApplicantDetails from './internDetails';
 import { deleteJobById, getEmployerJobs } from '@/lib/Company_AxiosInstance';
 
-export default function EmployerInternshipListing() {
+export default function InternshipListing() {
     // State variables
     const [jobs, setJobs] = useState();
     const [loading, setLoading] = useState(true);
@@ -146,8 +146,8 @@ export default function EmployerInternshipListing() {
             <div className="max-w-7xl mx-auto p-4 bg-white">
                 <div className="flex justify-between items-center mt-10 mb-4">
                     <div>
-                        <h1 className="text-3xl font-bold">Internship Shortlisted Applications</h1>
-                        <p className="text-gray-600 mt-2">Track Your Internship and Streamline shortlisted Candidate Applications</p>
+                        <h1 className="text-3xl font-bold">Internship Accepted Applications</h1>
+                        <p className="text-gray-600 mt-2">Track Your Internship and Streamline Accpeted Candidate Applications</p>
                     </div>
                     {/* <button className="bg-black text-white px-4 py-2 rounded-md">
             Post a Job

@@ -75,6 +75,7 @@ export const registerUser = async ({ email, password, userType }) => {
 export const loginUser = async ({ email, password }) => {
     
     const user = await Auth.findOne({ email });
+   
     if (!user) {
         const error = new Error('Invalid email or password');
         error.statusCode = 401; // 401 Unauthorized

@@ -443,6 +443,9 @@ export async function rejectApplicant(req, res) {
                 case ('company'):
                     applicantMail = await getCompanyEmail(response.data.applicant);
                     break;
+                case ('employer'):
+                    applicantMail = await getCompanyEmail(response.data.applicant);
+                    break;
                 default:
                     break;
             }
@@ -599,7 +602,7 @@ export async function getAcceptedCandidatesByCompany(req, res) {
     if (!applicantType || !jobType) return res.status(404).json({ msg: "Applicant not defined!" });
 
     try {
-        const company = await getCompanyService(companyId);
+        const company = await getEmployerService(companyId);
         if (!company) return res.status(404).json({ msg: "company not found!" });
         const response = await fetchCandidatesbyStatus(company.data[0]._id, "Accepted", applicantType, jobType);
         // console.log(response);

@@ -344,8 +344,8 @@ export default function EmployerPoolCampusJobManagement() {
     setLoading(true);
     setError(null);
     try {
-      const response = await getEmployerJobs("On-campus");
-      setJobs(response?.data);
+      const response = await getEmployerJobs("Pool-campus");
+      setJobs(response?.data || []);
     } catch (err) {
       console.error("Error fetching jobs:", err);
       setError(err.response?.data?.message || err.message || "Failed to fetch drives.");
