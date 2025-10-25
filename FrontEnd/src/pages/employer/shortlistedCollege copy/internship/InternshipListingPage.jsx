@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
 import {
     Search, Eye, Edit, Users, FileText, Trash,
-    ChevronLeft, ChevronRight, Filter
+    ChevronLeft, ChevronRight, Filter, X
 } from 'lucide-react';
-import ApplicantDetails from './ApplicantDetails';
+import ApplicantDetails from './internDetails';
 import { deleteJobById, getEmployerJobs } from '@/lib/Company_AxiosInstance';
 
-export default function EmployerJobListing() {
+export default function EmployerInternshipListing() {
     // State variables
     const [jobs, setJobs] = useState();
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState('');
+    const [activeTab, setActiveTab] = useState('All Jobs');
     const [showFilters, setShowFilters] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
     const [showJobDetail, setShowJobDetail] = useState(false);
@@ -24,8 +25,8 @@ export default function EmployerJobListing() {
 
     const fetchJobs = async () => {
         try {
-            const response = await getEmployerJobs("Job-listing");
-            console.log(response.data.response);
+            const response = await getEmployerJobs("Internship");
+            // console.log(response.data.response);
             setJobs(response?.data);
 
         } catch (error) {
@@ -45,13 +46,13 @@ export default function EmployerJobListing() {
             job.workMode.toLowerCase().includes(searchQuery.toLowerCase()) ||
             job.venue.toLowerCase().includes(searchQuery.toLowerCase());
 
-        // if (activeTab === 'All Jobs') {
-        //     return matchesSearch;
-        // } else if (activeTab === 'Published') {
-        //     return matchesSearch && job.status === 'Published';
-        // } else if (activeTab === 'Drafts') {
-        //     return matchesSearch && job.status === 'Draft';
-        // }
+        if (activeTab === 'All Jobs') {
+            return matchesSearch;
+        } else if (activeTab === 'Published') {
+            return matchesSearch && job.status === 'Published';
+        } else if (activeTab === 'Drafts') {
+            return matchesSearch && job.status === 'Draft';
+        }
 
         return matchesSearch;
     });
@@ -108,6 +109,24 @@ export default function EmployerJobListing() {
             console.log("Error: ", error);
         }
     };
+    // College request detail handlers
+    const handleAcceptDrive = (jobId) => {
+        console.log(`Accept drive for job ID: ${jobId}`);
+        // In a real app: call API to update status
+        setShowJobDetail(false);
+    };
+
+    const handleShortlistDrive = (jobId) => {
+        console.log(`Shortlist drive for job ID: ${jobId}`);
+        // In a real app: call API to update status
+        setShowJobDetail(false);
+    };
+
+    const handleRejectDrive = (jobId) => {
+        console.log(`Reject drive for job ID: ${jobId}`);
+        // In a real app: call API to update status
+        setShowJobDetail(false);
+    };
 
     // If showing job detail, render the detail view
     if (showJobDetail && selectedJob) {
@@ -127,8 +146,8 @@ export default function EmployerJobListing() {
             <div className="max-w-7xl mx-auto p-4 bg-white">
                 <div className="flex justify-between items-center mt-10 mb-4">
                     <div>
-                        <h1 className="text-3xl font-bold">Shortlisted Job-listing Applications</h1>
-                        <p className="text-gray-600 mt-2">Track Your Job Listings and Streamline Shortlisted Candidate Applications</p>
+                        <h1 className="text-3xl font-bold">Internship Shortlisted Applications</h1>
+                        <p className="text-gray-600 mt-2">Track Your Internship and Streamline shortlisted Candidate Applications</p>
                     </div>
                     {/* <button className="bg-black text-white px-4 py-2 rounded-md">
             Post a Job
@@ -154,7 +173,7 @@ export default function EmployerJobListing() {
                             <input
                                 type="text"
                                 className="w-full pl-10 pr-4 py-2 border rounded-md"
-                                placeholder="Search by name or email"
+                                placeholder="Search by job name"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -182,7 +201,7 @@ export default function EmployerJobListing() {
                                     <th className="px-4 py-3 text-left">Status</th>
                                     <th className="px-4 py-3 text-left">Deadline</th>
                                     {/* <th className="px-4 py-3 text-left">Views</th> */}
-                                    {/* <th className="px-4 py-3 text-left">Applications</th> */}
+                                    {/* <th className="px-4 py-3 text-left">Shortlisted</th> */}
                                     <th className="px-4 py-3 text-left">Actions</th>
                                 </tr>
                             </thead>

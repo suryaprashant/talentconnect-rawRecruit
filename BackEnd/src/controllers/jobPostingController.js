@@ -197,7 +197,6 @@ export const createInternshipPosting = async (req, res) => {
             ...req.body,
             companyPosted: companyPostedId.data[0]._id,
             jobType: "Internship",
-            // conditional - if paid user then don't put expiresAt
             expireAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
         };
         const newPosting = await createPostingService(postingData);

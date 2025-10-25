@@ -1,19 +1,18 @@
-
 import { useState } from 'react';
-import { Calendar, MapPin, FileText, Users, ArrowUpRight, User, Mail, Phone, Link, Briefcase, DollarSign, Target, ClipboardList } from 'lucide-react';
+import { Calendar, MapPin, FileText, Users, CheckCircle, ArrowUpRight, User, Mail, Phone, Link, Briefcase, DollarSign, Target, ClipboardList } from 'lucide-react';
 import { format, isValid } from 'date-fns';
 
 const DetailRow = ({ icon: Icon, label, value }) => {
-    if (!value || (Array.isArray(value) && value.length === 0)) return null;
-    return (
-        <div className="flex items-start">
-            <Icon className="w-5 h-5 mr-3 mt-1 text-gray-500 flex-shrink-0" />
-            <div>
-                <p className="font-semibold text-gray-800">{label}</p>
-                <p className="text-gray-600">{Array.isArray(value) ? value.join(', ') : value}</p>
-            </div>
-        </div>
-    );
+  if (!value || (Array.isArray(value) && value.length === 0)) return null;
+  return (
+    <div className="flex items-start">
+      <Icon className="w-5 h-5 mr-3 mt-1 text-gray-500 flex-shrink-0" />
+      <div>
+        <p className="font-semibold text-gray-800">{label}</p>
+        <p className="text-gray-600">{Array.isArray(value) ? value.join(', ') : value}</p>
+      </div>
+    </div>
+  );
 };
 
 const CollegeRequestDetail = ({ collegeApplication, onAccept, onShortlist, onReject }) => {
@@ -29,29 +28,30 @@ const CollegeRequestDetail = ({ collegeApplication, onAccept, onShortlist, onRej
     setIsSubmitting(true);
     try {
       await actionCallback();
-    } finally {
+    } catch (error) {
+      console.log("error: ", error);
+    }
+    finally {
       setIsSubmitting(false);
     }
   };
 
-  // --- DESTRUCTURE ALL FIELDS FROM THE SINGLE, MERGED PROP ---
   const {
     // College Application Data
     applicationId,
-    appliedAt,
-    currentStatus = 'Unknown',
-    
-    // College Profile Data
-    collegeName = 'Not Specified',
-    city = 'Not Specified',
-    state = 'Not Specified',
-    country = 'Not Specified',
-    pincode = 'Not Specified',
-    profileImage = null,
+    appliedAt = collegeApplication.createdAt,
+    currentStatus = collegeApplication.currentStatus,
+
+    collegeName = collegeApplication?.applicant.collegeUniversityDetails.collegeName,
+    city = collegeApplication?.applicant.collegeUniversityDetails.city,
+    state = collegeApplication?.applicant.collegeUniversityDetails.state,
+    country = collegeApplication?.applicant.collegeUniversityDetails.country,
+    pincode = collegeApplication?.applicant.collegeUniversityDetails.pincode,
+    profileImage = collegeApplication.applicant?.profileImage,
     collegeProfilePdf = null,
     collegeDescriptionPdf = null,
-    collegeWebsite = null,
-    linkedinProfile = null, // College's LinkedIn
+    collegeWebsite = collegeApplication?.applicant?.profileAchievements.collegeWebsite,
+    linkedinProfile = collegeApplication?.applicant?.profileAchievements.linkedInProfile,
     placementRate = 'Not Specified',
     highestPackage = 'Not Specified',
     averagePackage = 'Not Specified',
@@ -65,11 +65,11 @@ const CollegeRequestDetail = ({ collegeApplication, onAccept, onShortlist, onRej
     endDate = '',
     rounds = [],
     selectionProcess = [],
-    contactPerson = 'Not Specified',
-    contactDesignation = 'Not Specified',
-    email = 'Not Specified',
-    mobile = 'Not Specified',
-    linkedin = '', // Coordinator's LinkedIn
+    contactPerson = collegeApplication?.applicant?.placementCoordinatorDetails.coordinatorName,
+    contactDesignation = collegeApplication?.applicant?.placementCoordinatorDetails.designation,
+    email = collegeApplication?.applicant?.placementCoordinatorDetails.officialEmail,
+    mobile = collegeApplication?.applicant?.placementCoordinatorDetails.officialMobile,
+    linkedin = collegeApplication?.applicant?.placementCoordinatorDetails.linkedInUrl,
     minimumStudents = 'Not Specified',
   } = collegeApplication || {};
 
@@ -102,62 +102,62 @@ const CollegeRequestDetail = ({ collegeApplication, onAccept, onShortlist, onRej
       <div className="mb-6">
         <h3 className="text-lg font-bold mb-4 text-gray-800">Drive Details</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-            <DetailRow icon={Target} label="Role" value={lookingFor} />
-            <DetailRow icon={Briefcase} label="Employment Type" value={employmentType} />
-            <DetailRow icon={MapPin} label="Locations" value={preferredLocations} />
-            <DetailRow icon={DollarSign} label="Minimum Salary" value={minimumSalary} />
-            <DetailRow icon={Users} label="Minimum Students" value={minimumStudents} />
-            <DetailRow icon={Calendar} label="Drive Period" value={`${safeFormatDate(startDate)} to ${safeFormatDate(endDate)}`} />
-            <DetailRow icon={ClipboardList} label="Rounds" value={rounds} />
-            <DetailRow icon={ClipboardList} label="Selection Process" value={selectionProcess} />
+          <DetailRow icon={Target} label="Role" value={lookingFor} />
+          <DetailRow icon={Briefcase} label="Employment Type" value={employmentType} />
+          <DetailRow icon={MapPin} label="Locations" value={preferredLocations} />
+          <DetailRow icon={DollarSign} label="Minimum Salary" value={minimumSalary} />
+          <DetailRow icon={Users} label="Minimum Students" value={minimumStudents} />
+          <DetailRow icon={Calendar} label="Drive Period" value={`${safeFormatDate(startDate)} to ${safeFormatDate(endDate)}`} />
+          <DetailRow icon={ClipboardList} label="Rounds" value={rounds} />
+          <DetailRow icon={ClipboardList} label="Selection Process" value={selectionProcess} />
         </div>
       </div>
 
       {/* Proposed date */}
       <div>
-        
+
       </div>
-      
+
       {/* Coordinator and Application Status */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
-            <h3 className="text-lg font-bold mb-4 text-gray-800">Drive Coordinator</h3>
-            <div className="space-y-3 text-sm">
-                <div className="flex items-center"><User size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>{contactPerson} ({contactDesignation})</span></div>
-                <div className="flex items-center"><Mail size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>{email}</span></div>
-                <div className="flex items-center"><Phone size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>{mobile}</span></div>
-                {linkedin && <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><Link size={16} className="mr-2 flex-shrink-0" /><span>Coordinator LinkedIn</span></a>}
-            </div>
+          <h3 className="text-lg font-bold mb-4 text-gray-800">Drive Coordinator</h3>
+          <div className="space-y-3 text-sm">
+            <div className="flex items-center"><User size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>{contactPerson} ({contactDesignation})</span></div>
+            <div className="flex items-center"><Mail size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>{email}</span></div>
+            <div className="flex items-center"><Phone size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>{mobile}</span></div>
+            {linkedin && <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><Link size={16} className="mr-2 flex-shrink-0" /><span>Coordinator LinkedIn</span></a>}
+          </div>
         </div>
         <div>
-            <h3 className="text-lg font-bold mb-4 text-gray-800">College Application Status</h3>
-            <div className="space-y-3 text-sm">
-                <div className="flex items-center"><Calendar size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>Applied on: {safeFormatDate(appliedAt)}</span></div>
-                <div className="flex items-center"><FileText size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>Current Status: <span className="font-semibold">{currentStatus}</span></span></div>
-            </div>
+          <h3 className="text-lg font-bold mb-4 text-gray-800">College Application Status</h3>
+          <div className="space-y-3 text-sm">
+            <div className="flex items-center"><Calendar size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>Applied on: {safeFormatDate(appliedAt)}</span></div>
+            <div className="flex items-center"><FileText size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>Current Status: <span className="font-semibold">{currentStatus}</span></span></div>
+          </div>
         </div>
       </div>
 
       {/* College Links and Documents */}
       <div className="mb-6">
-          <h3 className="text-lg font-bold mb-4 text-gray-800">College Resources</h3>
-          <div className="flex flex-wrap gap-4 text-sm">
-              {collegeWebsite && <a href={collegeWebsite.startsWith('http') ? collegeWebsite : `https://${collegeWebsite}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><Link size={16} className="mr-2" />College Website <ArrowUpRight size={16} className="ml-1" /></a>}
-              {linkedinProfile && <a href={linkedinProfile.startsWith('http') ? linkedinProfile : `https://${linkedinProfile}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><Link size={16} className="mr-2" />College LinkedIn <ArrowUpRight size={16} className="ml-1" /></a>}
-              {collegeProfilePdf && <a href={collegeProfilePdf} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><FileText size={16} className="mr-2" />Profile PDF <ArrowUpRight size={16} className="ml-1" /></a>}
-              {collegeDescriptionPdf && <a href={collegeDescriptionPdf} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><FileText size={16} className="mr-2" />Description PDF <ArrowUpRight size={16} className="ml-1" /></a>}
-          </div>
+        <h3 className="text-lg font-bold mb-4 text-gray-800">College Resources</h3>
+        <div className="flex flex-wrap gap-4 text-sm">
+          {collegeWebsite && <a href={collegeWebsite.startsWith('http') ? collegeWebsite : `https://${collegeWebsite}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><Link size={16} className="mr-2" />College Website <ArrowUpRight size={16} className="ml-1" /></a>}
+          {linkedinProfile && <a href={linkedinProfile.startsWith('http') ? linkedinProfile : `https://${linkedinProfile}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><Link size={16} className="mr-2" />College LinkedIn <ArrowUpRight size={16} className="ml-1" /></a>}
+          {collegeProfilePdf && <a href={collegeProfilePdf} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><FileText size={16} className="mr-2" />Profile PDF <ArrowUpRight size={16} className="ml-1" /></a>}
+          {collegeDescriptionPdf && <a href={collegeDescriptionPdf} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><FileText size={16} className="mr-2" />Description PDF <ArrowUpRight size={16} className="ml-1" /></a>}
+        </div>
       </div>
 
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
-        <button onClick={() => handleAction(() => onAccept(applicationId))} disabled={isSubmitting} className="flex-1 justify-center bg-black text-white py-2 font-medium rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors duration-200">
+        <button onClick={() => handleAction(() => onAccept(applicationId))} disabled={isSubmitting} className="flex-1 justify-center bg-white text-green-500 py-2 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200">
           {isSubmitting ? 'Processing...' : 'Accept Application'}
         </button>
-        <button onClick={() => handleAction(() => onShortlist(applicationId))} disabled={isSubmitting} className="flex-1 justify-center bg-white border border-gray-300 text-gray-700 py-2 font-medium rounded-md hover:bg-gray-50 disabled:opacity-50 transition-colors duration-200">
+        <button onClick={() => handleAction(() => onShortlist(applicationId))} disabled={isSubmitting} className="flex-1 justify-center bg-white border border-gray-300 text-yellow-500 py-2 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200">
           {isSubmitting ? 'Processing...' : 'Shortlist Application'}
         </button>
-        <button onClick={() => handleAction(() => onReject(applicationId))} disabled={isSubmitting} className="flex-1 justify-center bg-white border border-gray-300 text-gray-700 py-2 font-medium rounded-md hover:bg-gray-50 disabled:opacity-50 transition-colors duration-200">
+        <button onClick={() => handleAction(() => onReject(applicationId))} disabled={isSubmitting} className="flex-1 justify-center bg-white border border-gray-300 text-red-500 py-2 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200">
           {isSubmitting ? 'Processing...' : 'Reject Application'}
         </button>
       </div>

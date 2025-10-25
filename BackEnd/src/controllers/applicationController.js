@@ -14,7 +14,7 @@ import {
     // getOffCampusApplicantsService, fetchShortlistedCandidates, fetchInternshipApplicationService, fetchApplicationStatusService
 } from "../services/applicationService.js";
 import { getCollegeEmail, getCollegeService } from "../services/collegeService.js";
-import { getCompanyEmail, getCompanyService } from "../services/companyService.js";
+import { getCompanyEmail, getCompanyService, getEmployerService } from "../services/companyService.js";
 // import { checkJobListingOpportunityService, checkOpportunityService } from "../services/Job.service.js";
 import { getCandidatEmail, getStudentService } from "../services/studentService.js";
 import sendStatusChangeEmail from "../utils/sendStatusChangeEmail.js";
@@ -44,6 +44,9 @@ export async function saveJobByUser(req, res) {
                 break;
             case 'company':
                 user = await getCompanyService(userId);
+                break;
+            case 'employer':
+                user = await getEmployerService(req.user);
                 break;
             default:
                 break;
@@ -199,6 +202,9 @@ export async function createOncampusApplication(req, res) {
             case 'company':
                 user = await getCompanyService(userId);
                 break;
+            case 'employer':
+                user = await getEmployerService(req.user);
+                break;
             default:
                 break;
         }
@@ -229,6 +235,10 @@ export async function createPoolcampusApplication(req, res) {
             case 'company':
                 user = await getCompanyService(userId);
                 break;
+            case 'employer':
+                user = await getEmployerService(req.user);
+                break;
+                
             default:
                 break;
         }
@@ -527,16 +537,39 @@ export async function acceptApplicant(req, res) {
 // getAllshortlistedcandidates
 export async function getShortlistedCandidatesByCompany(req, res) {
     const companyId = req.user._id;
+     const userType = req.user?.userType;
+
     const { applicantType, jobType } = req.query;
+
     if (!applicantType || !jobType) return res.status(404).json({ msg: "Applicant not defined!" });
 
     try {
-        const company = await getCompanyService(companyId);
-        if (!company) return res.status(404).json({ msg: "company not found!" });
-        // console.log(company);
-        const response = await fetchCandidatesbyStatus(company.data[0]._id, "Shortlisted", applicantType, jobType);
+        let profileId ;
+        switch(userType){
+            case 'company':
+                const company = await getCompanyService(companyId);
+                if (!company || !company.success || company.data.length === 0) {
+                    return res.status(404).json({ msg: "Company profile not found!" });
+                }
+                profileId = company.data[0]._id;
+            break;
+            case 'employer':
+                const employer = await getEmployerService(req.user) ;
+                if (!employer || !employer.success || employer.data.length === 0) {
+                    return res.status(404).json({ msg: employer.msg || "Employer profile not found!" });
+                }
+                profileId = employer.data[0]._id;
+                break;
+            default:
+                return res.status(403).json({ msg: "This user type cannot access this resource." });
+            }    
+
+        
+      
+        const response = await fetchCandidatesbyStatus(profileId, "Shortlisted", applicantType, jobType);
         // console.log(response);
         res.status(200).json(response);
+
     } catch (error) {
         console.log("Error: ", error);
         res.status(500).json({ Error: "Internal server error" });

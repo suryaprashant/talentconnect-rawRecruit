@@ -125,6 +125,10 @@ export async function fetchApplicationStatusService(userId, jobType, userType) {
         fromCollection="collegeonboardings";
         localField="jobDetails.collegePosted";
     }
+    if(userType==='employer'){
+        fromCollection="collegeonboardings";
+        localField="jobDetails.collegePosted";
+    }
     else{
         fromCollection="companyprofiles";
         localField="jobDetails.companyPosted";
@@ -233,6 +237,9 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
         applicantDB = "companyprofiles";
     }
     else if (userType === 'company') {
+        applicantDB = "collegeonboardings";
+    }
+    else if (userType === 'employer') {
         applicantDB = "collegeonboardings";
     }
     try {
@@ -537,7 +544,7 @@ export async function fetchCandidatesbyStatus(companyId, targetStatus, applicant
                 college: "$applicantDetails.collegeUniversityDetails"
             };
         }
-        else if (applicantType == "company") {
+        else if (applicantType == "company" || applicantType == 'employer')  {
             fromCollection = "CompanyProfile";
             projectApplicant = {
                 company: "$applicantDetails.companyDetails"

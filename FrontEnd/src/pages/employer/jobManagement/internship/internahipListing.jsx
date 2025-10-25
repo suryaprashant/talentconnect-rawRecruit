@@ -3,10 +3,10 @@ import {
   Search, Eye, Edit, Users, FileText, Trash,
   ChevronLeft, ChevronRight, Filter, X
 } from 'lucide-react';
-import ApplicantDetails from './OffCampusDetail';
+import ApplicantDetails from './internDetails';
 import { deleteJobById, getEmployerJobs } from '@/lib/Company_AxiosInstance';
 
-export default function OffCampusJobManagement() {
+export default function InternshipListing() {
   // State variables
   const [jobs, setJobs] = useState();
   const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ export default function OffCampusJobManagement() {
 
   const fetchJobs = async () => {
     try {
-      const response = await getEmployerJobs("Off-campus");
+      const response = await getEmployerJobs("Internship");
       // console.log(response.data.response);
       setJobs(response?.data);
 
@@ -42,7 +42,7 @@ export default function OffCampusJobManagement() {
 
   // Filter jobs based on search query and active tab
   const filteredJobs = jobs?.filter(job => {
-    const matchesSearch = job.jobRoles[0].toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearch = job.jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.workMode.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.venue.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -109,7 +109,6 @@ export default function OffCampusJobManagement() {
       console.log("Error: ", error);
     }
   };
-
   // College request detail handlers
   const handleAcceptDrive = (jobId) => {
     console.log(`Accept drive for job ID: ${jobId}`);
@@ -135,9 +134,9 @@ export default function OffCampusJobManagement() {
       <ApplicantDetails
         job={selectedJob}
         onClose={() => setShowJobDetail(false)}
-        onAccept={() => handleAcceptDrive(selectedJob._id)}
-        onShortlist={() => handleShortlistDrive(selectedJob._id)}
-        onReject={() => handleRejectDrive(selectedJob._id)}
+      // onAccept={() => handleAcceptDrive(selectedJob._id)}
+      // onShortlist={() => handleShortlistDrive(selectedJob._id)}
+      // onReject={() => handleRejectDrive(selectedJob._id)}
       />
     );
   }
@@ -147,7 +146,7 @@ export default function OffCampusJobManagement() {
       <div className="max-w-7xl mx-auto p-4 bg-white">
         <div className="flex justify-between items-center mt-10 mb-4">
           <div>
-            <h1 className="text-3xl font-bold">Manage Off-Campus Applications</h1>
+            <h1 className="text-3xl font-bold">Manage Internship Applications</h1>
             <p className="text-gray-600 mt-2">Track Your Job Listings and Streamline Candidate Applications</p>
           </div>
           {/* <button className="bg-black text-white px-4 py-2 rounded-md">
@@ -241,7 +240,7 @@ export default function OffCampusJobManagement() {
                       onClick={() => handleView(job._id)}
                     >
                       <td className="px-4 py-3">
-                        <div className="font-medium">{job?.jobRoles[0]}</div>
+                        <div className="font-medium">{job?.jobTitle}</div>
                         <div className="text-sm text-gray-500">
                           {job?.workMode} • {job?.location[0]}
                         </div>
