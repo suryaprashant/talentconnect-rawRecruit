@@ -14,6 +14,17 @@ import { sendBulkNotifications } from "../utils/sendNotification.js";
  */
 class WorkshopService {
 
+    async getTotalWorkShopCount() {
+        try {
+              return await Workshop.countDocuments();
+            } catch (error) {
+              console.error("Error in getTotalHackathonCount:", error.message);
+              throw new Error("Failed to get total hackathon count");
+            }
+        
+    };
+
+
     /**
      * Create a new workshop
      * @param {Object} workshopData - The workshop data from request body
@@ -171,20 +182,20 @@ class WorkshopService {
 
         // Normalize rounds data while preserving inputType
         if (updateData.rounds) {
-            const normalizedRounds = Array.isArray(updateData.rounds) 
-              ? updateData.rounds.map(round => ({
-                  ...round,
-                  roundNumber: round.roundNumber || 1,
-                  roundName: round.roundName || `Round ${round.roundNumber || 1}`,
-                  description: round.description || '',
-                  startDate: round.startDate || '',
-                  endDate: round.endDate || '',
-                  inputType: round.inputType || 'link' // Default to 'link' if not specified
+            const normalizedRounds = Array.isArray(updateData.rounds)
+                ? updateData.rounds.map(round => ({
+                    ...round,
+                    roundNumber: round.roundNumber || 1,
+                    roundName: round.roundName || `Round ${round.roundNumber || 1}`,
+                    description: round.description || '',
+                    startDate: round.startDate || '',
+                    endDate: round.endDate || '',
+                    inputType: round.inputType || 'link' // Default to 'link' if not specified
                 }))
-              : [];
-            
+                : [];
+
             updateData.rounds = normalizedRounds;
-          }
+        }
 
         workshop = await Workshop.findByIdAndUpdate(workshopId, updateData, {
             new: true,
@@ -257,11 +268,11 @@ class WorkshopService {
         return workshop;
     }
 
-/**
-     * Get a single workshop round by ID
-     * @param {string} workshopId - The workshop ID
-     * @returns {Object} Workshop object
-     */
+    /**
+         * Get a single workshop round by ID
+         * @param {string} workshopId - The workshop ID
+         * @returns {Object} Workshop object
+         */
     async getWorkshopRoundsById(workshopId) {
         const workshop = await Workshop.findById(workshopId).populate([
             { path: 'panelMembers' },
@@ -320,10 +331,10 @@ class WorkshopService {
         if (rewards.specialAwards && rewards.specialAwards.length > 0) {
             rewards.specialAwards.forEach(award => {
                 if (!award?.name) return;
-                
+
                 // Use the individual award's reward type
                 const awardRewardType = award.rewardType || 'Perks';
-                
+
                 if (awardRewardType === 'Amount' && award.amount) {
                     rewardsAndBenefits.push({
                         title: award.name,
@@ -392,15 +403,15 @@ class WorkshopService {
             try {
                 const parsed = JSON.parse(input);
                 if (Array.isArray(parsed)) {
-                  return parsed.map(item => {
-                    if (item.hasOwnProperty('roundNumber')) {
-                      return {
-                        ...item,
-                        inputType: item.inputType || 'link' // Ensure inputType is always set
-                      };
-                    }
-                    return item;
-                  });
+                    return parsed.map(item => {
+                        if (item.hasOwnProperty('roundNumber')) {
+                            return {
+                                ...item,
+                                inputType: item.inputType || 'link' // Ensure inputType is always set
+                            };
+                        }
+                        return item;
+                    });
                 }
                 return parsed;
             } catch (e) {
@@ -465,7 +476,7 @@ class WorkshopService {
 
         return normalizedDomains;
     }
-        // ==========================================
+    // ==========================================
     // HOSTING MANAGEMENT OPERATIONS
     // ==========================================
 
@@ -609,9 +620,9 @@ class WorkshopService {
         let uploadedFileUrl = fileUrl;
         let uploadedFileName = fileName;
 
-        const selectedCandidates = req.body['selectedCandidates[]'] 
-            ? (Array.isArray(req.body['selectedCandidates[]']) 
-                ? req.body['selectedCandidates[]'] 
+        const selectedCandidates = req.body['selectedCandidates[]']
+            ? (Array.isArray(req.body['selectedCandidates[]'])
+                ? req.body['selectedCandidates[]']
                 : [req.body['selectedCandidates[]']])
             : null;
 
@@ -635,7 +646,7 @@ class WorkshopService {
 
         let targetRegs;
         if (selectedCandidates && selectedCandidates.length > 0) {
-            targetRegs = await EventParticipation.find({ 
+            targetRegs = await EventParticipation.find({
                 _id: { $in: selectedCandidates },
                 eventID: workshopId
             });
@@ -649,8 +660,8 @@ class WorkshopService {
         if (targetRegs.length === 0) throw new Error("No registrations found to send file to");
 
         const emails = targetRegs.map((r) => r.email);
-        const notificationMessage = message 
-            ? `${message}\n\nFile: ${uploadedFileName}` 
+        const notificationMessage = message
+            ? `${message}\n\nFile: ${uploadedFileName}`
             : `A new file has been shared for ${workshop.title}. Download: ${uploadedFileName}`;
 
         const results = await sendBulkNotifications(emails, {
