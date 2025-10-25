@@ -1,5 +1,3 @@
-// OffCampusHiringForm.jsx
-
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { ChevronDown, X } from 'lucide-react';
@@ -10,7 +8,7 @@ export default function OffCampusHiringForm({ onBackClick }) {
   // --- Data for Dropdowns ---
   const locations = ['Online', 'Bangalore', 'Mumbai', 'Delhi', 'Hyderabad', 'Chennai', 'Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Other'];
 
-  // --- NEW: Mapping of degrees to their relevant student streams ---
+
   const degreeStreamMapping = {
     "Bachelor of Technology (B.Tech)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
     "Bachelor of Engineering (BE)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],

@@ -88,16 +88,22 @@ function EmployerSidebar({ activePath }) {
           active={activePath === '/job-management/pool-campus-listings/employer'} 
         />
         <SidebarNavItem 
-          to="/job-management/off-campus-listings" 
+          to="/job-management/Off-campus/employer" 
           icon={<FiLayers />} 
           label="Off-campus Listings" 
-          active={activePath === '/job-management/off-campus-listings'} 
+          active={activePath === '/job-management/Off-campus/employer'} 
         />
         <SidebarNavItem 
-          to="/job-management/job-listings" 
+          to="/job-management/job-listings/employer" 
           icon={<FiFileText />} 
           label="Job Listings" 
-          active={activePath === '/job-management/job-listings'} 
+          active={activePath === '/job-management/job-listings/employer'} 
+        />
+         <SidebarNavItem
+          to="/employer/job-management/Internship"
+          icon={<FiFileText />}
+          label="Internship Listings"
+          active={activePath === '/employer/job-management/Internship'}
         />
       </SidebarNavGroup>
 
@@ -155,6 +161,20 @@ function EmployerSidebar({ activePath }) {
           label="Pool Campus Listings" 
           active={activePath === '/shortlisted/pool-campus-listings'} 
         />
+         <SidebarNavItem
+          to="/employer/shortlisted/jobs-listings"
+          icon={<FiFileText />}
+          label="Job Listings"
+          active={activePath === '/employer/shortlisted/jobs-listings'}
+        />
+
+        <SidebarNavItem
+          to="/employer/shortlisted/internship-listings"
+          icon={<FiLayers />}
+          label="Internship"
+          active={activePath === '/employer/shortlisted/internship-listings'}
+        />
+
       </SidebarNavGroup>
 
       {/* Accepted Candidates/Colleges */}

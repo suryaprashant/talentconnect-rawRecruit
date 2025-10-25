@@ -1,6 +1,3 @@
-
-
-
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { ChevronDown, X } from 'lucide-react';

@@ -465,8 +465,8 @@ function AppRoutes() {
               <Route path="/employer-dashboard/On-campus" element={<EmployerListingPage />} />
               <Route path="/employer-dashboard/On-campus/:id" element={<EmployerDetailsPage />} />
 
-              <Route path="/employer-dashboard/pool-campus-requests" element={<EmployerPoolEmployeeListing />} />
-              <Route path="/employer-dashboard/pool-campus-requests/:id" element={<EmployerPoolCampus />} />
+              <Route path="/employer-dashboard/pool-campus" element={<EmployerPoolEmployeeListing />} />
+              <Route path="/employer-dashboard/pool-campus/:i" element={<EmployerPoolCampus />} />
 
               {/* service request  */}
               <Route path="/service-request/workforce-solution" element={<EmployerWorkforce />} />
@@ -476,8 +476,9 @@ function AppRoutes() {
               {/* Job Management   */}
               <Route path="/job-management/on-campus-listings/employer" element={<EmployerOnCampusJobManagement />} />
               <Route path="/job-management/pool-campus-listings/employer" element={<EmployerPoolCampusJobManagement />} />
-              <Route path="/job-management/Off-campus" element={<EmployerOffCampusJobManagement />} />
-              <Route path="/job-management/job-listings" element={<EmployerJobListingJobManagement />} />
+              <Route path="/job-management/Off-campus/employer" element={<EmployerOffCampusJobManagement />} />
+              <Route path="/job-management/job-listings/employer" element={<EmployerJobListingJobManagement />} />
+              <Route path="/employer/job-management/Internship" element={<EmployerJobListingJobManagement />} />
 
 
               {/* Accepted college / candidates  */}

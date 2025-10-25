@@ -65,3 +65,21 @@ export async function getCompanyEmail(companyId) {
         throw new Error("Failed to fetch");
     }
 }
+
+
+export const getEmployerService = async (user) => {
+    const { _id: authUserId, activeCompanyId } = user;
+    console.log("activeCompanyId aayi na", activeCompanyId) ;
+    
+    if (activeCompanyId) {
+        return { success: true, data: [{ _id: activeCompanyId }] };
+    }
+    console.log("isse hi kaam chalana padega"), authUserId ;
+    const ownProfileResult = await getCompanyService(authUserId);
+
+    if (!ownProfileResult || !ownProfileResult.success || ownProfileResult.data.length === 0) {
+        return { success: false, msg: 'You must have a company profile to apply, even as an independent.' };
+    }
+
+    return ownProfileResult;
+};

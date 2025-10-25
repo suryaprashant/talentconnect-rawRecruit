@@ -70,6 +70,11 @@ export function getPostedJobs(jobType) {
     .then(response => response)
     .catch(error => error);
 }
+export function getEmployerJobs(jobType) {
+  return axiosClient.get(`/company/jobmanagement/employer/${jobType}`)
+    .then(response => response)
+    .catch(error => error);
+}
 
 export function deleteJobById(jobId) {
   return axiosClient.delete(`/company/jobmanagement/${jobId}`)

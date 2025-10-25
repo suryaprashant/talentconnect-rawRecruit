@@ -113,6 +113,8 @@ export const createOnCampusPosting = async (req, res) => {
             ...req.body,
             companyPosted: companyId,
             jobType: "On-campus",
+            visibleTo: "College",
+            
         };
 
         const newPosting = await createPostingService(postingData);
@@ -140,6 +142,7 @@ export const createPoolCampusPosting = async (req, res) => {
             ...req.body,
             companyPosted: companyId,
             jobType: "Pool-campus",
+            visibleTo: "College",
         };
 
         const newPosting = await createPostingService(postingData);
