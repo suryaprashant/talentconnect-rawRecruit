@@ -3,8 +3,85 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { sendEmail } from '../utils/sendEmail.js';
+import axios from 'axios';
 
 const JWT_SECRET = process.env.JWT_SECRET;
+
+
+//admin fetching 
+
+// Total number of all users
+export const getUserCount = async () => {
+  return await Auth.countDocuments();
+};
+
+// Total number of companies
+export const getCompanyCount = async () => {
+  return await Auth.countDocuments({ userType: 'company' });
+};
+
+// Total number of colleges
+export const getCollegeCount = async () => {
+  return await Auth.countDocuments({ userType: 'college' });
+};
+
+// Total number of candidates (students / freshers / professionals etc.)
+export const getCandidateCount = async () => {
+  return await Auth.countDocuments({ 
+    userType: { 
+      $in: ['candidate', 'student', 'fresher', 'professional', 'employer'] 
+    } 
+  });
+};
+
+//Get user count by status and type
+export const getStatusCountByUserType = async (userType = null) => {
+  try {
+    const baseFilter = userType ? { userType } : {};
+
+    const [total, active, pending, blocked] = await Promise.all([
+      Auth.countDocuments(baseFilter),
+      Auth.countDocuments({ ...baseFilter, status: 'active' }),
+      Auth.countDocuments({ ...baseFilter, status: 'pending' }),
+      Auth.countDocuments({ ...baseFilter, status: 'blocked' }),
+    ]);
+
+    return { total, active, pending, blocked };
+  } catch (error) {
+    console.error(`Error getting status counts for ${userType || 'all'}:`, error.message);
+    throw new Error('Failed to get status counts');
+  }
+};
+
+// get all users data
+export const getAll = async () => {
+  try {
+    const users = await Auth.find()
+      .select(
+        "status _id name email profileImage isNewUser onboardingCompleted onboardingStep userType activeCompanyId lastActivity createdAt"
+      )
+      .sort({ createdAt: -1 })  // sort by newest first
+      .lean();                  // return plain objects (faster)
+
+    return users;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw new Error("Failed to fetch users");
+  }
+};
+
+// Example: Get recent users (instead of recent activity from other models)
+// export const getRecentActivity = async () => {
+//   return await Auth.find()
+//     .sort({ createdAt: -1 })
+//     .limit(5)
+//     .select("name email userType createdAt");
+// };
+
+
+
+
+
 
 export async function getAuthUser(attribute) {
     try {
@@ -188,3 +265,15 @@ export const performPasswordReset = async ({ token, newPassword }) => {
 
     delete resetTokens[token];
 };
+
+
+// get the cout of all users
+export const getTotalUsersCount = async (filter = {}) => {
+  try {
+    const count = await Auth.countDocuments(filter);
+    return { success: true, count };
+  } catch (error) {
+    console.error("Error in getTotalUsersCount:", error.message);
+    throw new Error("Failed to get total users count");
+  }
+}

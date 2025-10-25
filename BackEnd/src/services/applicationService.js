@@ -9,6 +9,34 @@ import Application from '../models/applicationModel.js';
 // import PoolCampusApplication from '../models/poolcampusApplicationModel.js';
 // import OnCampusApplication from '../models/oncampusApplicationModel.js';
 // import JobListingApplication from '../models/jobListingApplicationModel.js';
+export const getAll = async () => {
+  try {
+    const applications = await Application.find();
+    return applications;
+  } catch (error) {
+    console.error("❌ Error in getAllApplications service:", error.message);
+    throw new Error("Failed to fetch applications from the database");
+  }
+};
+
+// export const getTotalJobApplicationSubmited = async () => {
+//   try {
+//     const totalapplication = await Application.countDocuments({currentStatus:"Applied"});
+//     return totalapplication;
+//   } catch (error) {
+//     console.error("Error in getTotalJobApplicationSubmited:", error.message);
+//     throw new Error("Failed to get total Application");
+//   }
+// };
+
+export const getTotalJobApplicationSubmited = async (filter = {}) => {
+  try {
+    return await Application.countDocuments(filter);
+  } catch (error) {
+    console.error("Error in getTotalApplicationSubmited:", error);
+    throw error;
+  }
+};
 
 // check if similar application exists
 export async function getApplicationService(userId, userType, jobId, jobType) {

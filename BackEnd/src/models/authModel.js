@@ -23,32 +23,42 @@ const AuthSchema = new mongoose.Schema({
     unique: true,
     sparse: true
   },
-  isNewUser: { 
+  isNewUser: {
     type: Boolean,
     default: true
   },
-  onboardingCompleted:{
-    type: Boolean ,
-    default : false 
+  onboardingCompleted: {
+    type: Boolean,
+    default: false
   },
-  onboardingStep:{
-    type : Number ,
+  onboardingStep: {
+    type: Number,
     default: 1
   },
   userType: {
     type: String,
-    enum: ['candidate', 'college', 'company', 'student', 'fresher', 'professional', 'employer'],
-  
+    enum: ['candidate', 'college', 'company', 'student', 'fresher', 'professional', 'employer', 'admin'],
+    // default: 'candidate'
   },
   authProvider: {
     type: String,
     enum: ['manual', 'google', 'linkedin'],
     default: 'manual'
   },
+  // ->>>> should be added below entity to the scheema
+  status: {
+    type: String,
+    enum: ['active', 'pending', 'blocked'],
+    default: 'pending',
+  },
+  lastActivity: {
+    type: Date,
+    default: Date.now
+  },
 
   //  Added for password reset
   resetToken: String,
-  resetTokenExpires: Date, 
+  resetTokenExpires: Date,
 
   activeCompanyId: {
     type: mongoose.Schema.Types.ObjectId,

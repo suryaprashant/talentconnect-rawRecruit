@@ -35,6 +35,12 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 
 // Auth and Profile Routes
+import adminAuth from "./routes/admin/adminAuth.js";
+import adminDashboard from "./routes/admin/adminDashboardRoute.js";
+import userManagement from "./routes/admin/userManagementRoutes.js";
+import jobDriveManagement from "./routes/admin/jobDriveManagementRoute.js";
+import applicationManagement from "./routes/admin/applicationManagementRoute.js"
+import serviceRequestManagement from "./routes/admin/serviceRequestManagementRoutes.js"
 import authRoutes from "./routes/authRoute.js";
 import uploadRoutes from "./routes/uploadRoute.js";
 import studentProfileRoutes from "./routes/studentProfileRoutes.js";
@@ -109,6 +115,17 @@ import serviceRequests from "./routes/serviceRequestsRoute.js"
 
 
 app.use("/api/auth", authRoutes);
+
+// admin related auths
+app.use("/api/admin", adminAuth);
+app.use("/api/admin/dashboard", adminDashboard);
+app.use("/api/admin/users", userManagement);
+app.use("/api/admin/job-n-drive", jobDriveManagement);
+app.use("/api/admin/application", applicationManagement);
+app.use("/api/admin/servicerequest", serviceRequestManagement);
+
+// admin relatd auth ends
+
 app.use("/api", student_onboardingroutes);
 app.use("/api/hiring-channels", jobPosting);
 app.use("/api/upload", uploadRoutes);
@@ -188,10 +205,24 @@ app.use("/api/rawrecruit", [
 app.use("/api/rawrecruit/resume", uploadResumeRoute);
 app.use("/rawrecruit/link", basicdetails);
 app.use("/api/resumes", resumeRoutes);
+
 // app.use("/rawrecruit", jobinterest);
 
 // Start the server
-server.listen(PORT, async () => {
-  console.log(`Server is running on PORT: ${PORT}`);
-  await Connection();
-});
+const startServer = async () => {
+  try {
+    // Connect to database FIRST
+    await Connection();
+    console.log('Database connected successfully');
+    
+    // THEN start the server
+    server.listen(PORT, () => {
+      console.log(`Server is running on PORT: ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
