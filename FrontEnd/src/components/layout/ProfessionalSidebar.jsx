@@ -81,10 +81,10 @@ function ProfessionalSidebar({ activePath }) {
           active={activePath === '/application-status/off-campus-jobs'} 
         /> */}
         <SidebarNavItem 
-          to="/application-status/hackathon" 
+          to="/application-status/event-status" 
           icon={<FiAward />} 
           label="Hackathon" 
-          active={activePath === '/application-status/hackathon'} 
+          active={activePath === '/application-status/event-status'} 
         />
       </SidebarNavGroup>
 
