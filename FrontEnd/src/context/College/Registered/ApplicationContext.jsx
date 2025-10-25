@@ -37,45 +37,45 @@ export const ApplicationProvider = ({ children }) => {
   }, []);
 
   // Apply filters
-  useEffect(() => {
-    let result = [...applications];
+  // useEffect(() => {
+  //   let result = [...applications];
     
-    // Filter by status if not 'All Companies'
-    if (filters.status !== 'All Companies') {
-      result = result.filter(app => 
-        filters.status === 'Registered Companies' ? app.status === 'Registered' :
-        filters.status === 'Shortlisted Companies' ? app.status === 'Shortlisted' :
-        filters.status === 'Rejected Companies' ? app.status === 'Rejected' : true
-      );
-    }
+  //   // Filter by status if not 'All Companies'
+  //   if (filters.status !== 'All Companies') {
+  //     result = result.filter(app => 
+  //       filters.status === 'Registered Companies' ? app.status === 'Registered' :
+  //       filters.status === 'Shortlisted Companies' ? app.status === 'Shortlisted' :
+  //       filters.status === 'Rejected Companies' ? app.status === 'Rejected' : true
+  //     );
+  //   }
     
-    // Filter by role if not 'All Role'
-    if (filters.role !== 'All Role') {
-      result = result.filter(app => app.position === filters.role);
-    }
+  //   // Filter by role if not 'All Role'
+  //   if (filters.role !== 'All Role') {
+  //     result = result.filter(app => app.position === filters.role);
+  //   }
     
-    // Filter by search query
-    if (filters.searchQuery) {
-      const query = filters.searchQuery.toLowerCase();
-      result = result.filter(app => 
-        app.company.toLowerCase().includes(query) || 
-        app.position.toLowerCase().includes(query)
-      );
-    }
+  //   // Filter by search query
+  //   if (filters.searchQuery) {
+  //     const query = filters.searchQuery.toLowerCase();
+  //     result = result.filter(app => 
+  //       app.company.toLowerCase().includes(query) || 
+  //       app.position.toLowerCase().includes(query)
+  //     );
+  //   }
     
-    setFilteredApplications(result);
-    setCurrentPage(1); // Reset to first page when filters change
-  }, [filters, applications]);
+  //   setFilteredApplications(result);
+  //   setCurrentPage(1); // Reset to first page when filters change
+  // }, [filters, applications]);
 
   // Get current applications for pagination
   const getCurrentApplications = () => {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    return filteredApplications.slice(indexOfFirstItem, indexOfLastItem);
+    return filteredApplications?.slice(indexOfFirstItem, indexOfLastItem);
   };
 
   // Get total pages for pagination
-  const getTotalPages = () => Math.ceil(filteredApplications.length / itemsPerPage);
+  const getTotalPages = () => Math.ceil(filteredApplications?.length / itemsPerPage);
 
   // Get a single application by ID
   const getApplicationById = (id) => {
