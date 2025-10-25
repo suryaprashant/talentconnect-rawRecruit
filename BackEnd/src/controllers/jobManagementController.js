@@ -70,11 +70,10 @@ export const deleteJob = async (req, res) => {
 
 export const getEmployerJobs = async(req,res) => {
     const{jobType} = req.params ;
-    console.log("aaa gya hero", jobType) ;
+      const userType = req.user.userType;
     if(!jobType){
         return res.status(404).json({msg:"Job type not specified"}) ;
     }
-
     try {
         let profileId ;
         const employerProfile = await getEmployerService(req.user);
@@ -82,7 +81,7 @@ export const getEmployerJobs = async(req,res) => {
            return res.status(404).json({ error: employerProfile.msg || "Employer profile not found" });
         }
         profileId = employerProfile.data[0]._id ;
-        const jobs = await getJobPostedByCompanyService(profileId, jobType);
+        const jobs = await getJobPostedByCompanyService(profileId, jobType, userType);
 
         if (!jobs || !jobs.success) {
             return res.status(404).json({ msg: "Could not find jobs for this profile." });

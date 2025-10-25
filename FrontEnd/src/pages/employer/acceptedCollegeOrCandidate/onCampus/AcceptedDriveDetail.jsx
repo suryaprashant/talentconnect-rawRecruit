@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaCalendarAlt, FaMapMarkerAlt, FaArrowLeft } from 'react-icons/fa';
 
-const  EmployerAcceptedDriveDetail = () => {
+const AcceptedDriveDetail = () => {
   const { driveId } = useParams();
   const navigate = useNavigate();
   const [drive, setDrive] = useState(null);
@@ -218,4 +218,4 @@ const  EmployerAcceptedDriveDetail = () => {
   );
 };
 
-export default  EmployerAcceptedDriveDetail;
+export default AcceptedDriveDetail;

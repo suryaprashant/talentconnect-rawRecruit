@@ -274,7 +274,7 @@ export const getJobPostingsByCollegeService = async (jobType) => {
 export const getJobPostedByCompanyService = async (Id, jobType, userType) => {
     try {
         let response;
-        if (userType === 'company') response = await JobPostingTable.find({ companyPosted: Id, jobType: jobType }).lean();
+        if (userType === 'company' || userType === 'employer') response = await JobPostingTable.find({ companyPosted: Id, jobType: jobType }).lean();
         else if (userType === 'college') response = await JobPostingTable.find({ collegePosted: Id, jobType: jobType }).lean();
         //  console.log(response);
         return { success: true, response: response };

@@ -67,6 +67,7 @@ export async function getCompanyEmail(companyId) {
 }
 
 
+
 export const getEmployerService = async (user) => {
     const { _id: authUserId, activeCompanyId } = user;
     console.log("activeCompanyId aayi na", activeCompanyId) ;
@@ -74,7 +75,7 @@ export const getEmployerService = async (user) => {
     if (activeCompanyId) {
         return { success: true, data: [{ _id: activeCompanyId }] };
     }
-    console.log("isse hi kaam chalana padega"), authUserId ;
+    
     const ownProfileResult = await getCompanyService(authUserId);
 
     if (!ownProfileResult || !ownProfileResult.success || ownProfileResult.data.length === 0) {

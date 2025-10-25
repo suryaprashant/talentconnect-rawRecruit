@@ -1,26 +1,24 @@
 import { useEffect, useState } from 'react';
-import { acceptCandidate, getApplicationsForJob, rejectCandidate } from '@/lib/Company_AxiosInstance';
+import { useNavigate } from 'react-router-dom';
+import { acceptCandidate, getApplicationsForJob, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 import useConversation from '@/statemanage/useConversation';
-import { useNavigate } from 'react-router-dom';
-import { Send } from 'lucide-react';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
-import InterviewSchedulerPopup from '@/components/ui/ScheduleInterview';
+import { Send } from 'lucide-react';
 
-const EmployerInternshipDetails = ({ job, onClose }) => {
+
+const ApplicantDetails = ({ job, onClose }) => {
   const jobId = job._id;
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [toggleScheduleInterviewPopup, setToggleScheduleInterviewPopup] = useState(false);
   const [applications, setApplications] = useState();
-
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
 
   const getApplicants = async (jobId, jobType) => {
     setIsSubmitting(true);
     try {
-      const response = await getApplicationsForJob(jobId, jobType, "Shortlisted");
+      const response = await getApplicationsForJob(jobId, jobType, "Accepted");
       // console.log("ye wala response: ", response.data);
       setApplications(response.data);
     } catch (error) {
@@ -34,6 +32,17 @@ const EmployerInternshipDetails = ({ job, onClose }) => {
       const response = await acceptCandidate(applicantionId, job?.jobTitle);
       // console.log("shortlist: ", response)
       if (response?.data?.success === true) toast.success("Accpeted!");
+      else toast.error(response.response?.data?.msg);
+    } catch (error) {
+      console.log("Error: ", error);
+      toast.error('Something went wrong!')
+    }
+  }
+  const shortlistApplicant = async (applicantionId) => {
+    try {
+      const response = await shortlistCandidate(applicantionId, job?.jobTitle);
+      // console.log("shortlist: ", response)
+      if (response?.data?.success === true) toast.success("Shortlisted!");
       else toast.error(response.response?.data?.msg);
     } catch (error) {
       console.log("Error: ", error);
@@ -64,7 +73,7 @@ const EmployerInternshipDetails = ({ job, onClose }) => {
 
     const userId = applicant.applicant._id;
     try {
-      const response = await conversationWithCandidate(userId);
+      const response = await conversationWithCollege(userId);
       if (response.data) {
         const conversationUser = {
           _id: userId,
@@ -146,10 +155,10 @@ const EmployerInternshipDetails = ({ job, onClose }) => {
 
                   <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-6">
                     <div className="flex items-center">
-                      <p className="font-bold mr-2">Current Salary:</p> <span>{applicant?.applicant?.currentSalaryCurrency} {applicant?.applicant.currentSalaryAmount || "N/A"}</span>
+                      <p className="font-bold mr-2">Current Salary:</p> <span>{applicant?.applicant.currentSalaryCurrency} {applicant?.applicant.currentSalaryAmount}</span>
                     </div>
                     <div className="flex items-center">
-                      <p className="font-bold mr-2">Expected Salary:</p> <span>{applicant?.applicant.expectedSalaryCurrency} {applicant?.applicant.expectedSalaryAmount || "N/A"}</span>
+                      <p className="font-bold mr-2">Expected Salary:</p> <span>{applicant?.applicant.expectedSalaryCurrency} {applicant?.applicant.expectedSalaryAmount}</span>
                     </div>
                     <div className="flex items-center">
                       <p className="font-bold mr-2">Email:</p> <span className="underline">{applicant?.applicant.email}</span>
@@ -229,39 +238,14 @@ const EmployerInternshipDetails = ({ job, onClose }) => {
                   </button>
                   {/* <button className="px-6 py-2 shadow hover:shadow-md border rounded-md text-gray-700">View Details</button> */}
                   <button
-                    onClick={() => acceptApplicant(applicant._id)}
-                    disabled={isSubmitting}
-                    className="px-6 py-2 shadow hover:shadow-md text-green-500 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50"
-                  >
-                    Accept Application
-                  </button>
-                  <button
-                    onClick={() => setToggleScheduleInterviewPopup(true)}
-                    disabled={isSubmitting}
-                    className="px-6 py-2 shadow hover:shadow-md text-yellow-500 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50"
-                  >
-                    Schedule Interview
-                  </button>
-                  <button
                     onClick={() => rejectApplicant(applicant._id)}
                     disabled={isSubmitting}
-                    className="px-6 py-2 shadow hover:shadow-md rounded-md text-red-500 hover:bg-gray-50 disabled:opacity-50"
+                    className="px-6 py-2 shadow hover:shadow-md border rounded-md text-red-500 hover:bg-gray-50 disabled:opacity-50"
                   >
                     <svg className="inline-block w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     Reject Application
                   </button>
                 </div>
-
-                {toggleScheduleInterviewPopup && (
-                  <div>
-                    <InterviewSchedulerPopup
-                      setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
-                      applicantId={applicant.applicant._id}
-                      applicantType={applicant.applicant.profileType}
-                      jobRole={job?.jobTitle}
-                    />
-                  </div>
-                )}
               </div>
             ))
           }
@@ -271,4 +255,4 @@ const EmployerInternshipDetails = ({ job, onClose }) => {
   );
 };
 
-export default EmployerInternshipDetails;
+export default ApplicantDetails;

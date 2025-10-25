@@ -230,6 +230,8 @@ import AcceptedInternshipList from './pages/company/acceptedCollegeOrCandidate/i
 import EventList from './components/student/events/EventList';
 import EventDetail from './components/student/events/EventDetail';
 import EventRegistration from './pages/EventRegistration';
+import AcceptedIntership from './pages/employer/acceptedCollegeOrCandidate/internship/AcceptedInternshipList'
+import EmployerIntershipForShortlist from './pages/employer/shortlistedCollege/internship/InternshipListingPage'
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -482,26 +484,30 @@ function AppRoutes() {
 
 
               {/* Accepted college / candidates  */}
-              <Route path="/Employeeaccepted/on-campus-listings" element={<EmployerAcceptedShortlistDrive />} />
+              <Route path="/employer/accepted/on-campus-listings" element={<EmployerAcceptedShortlistDrive />} />
               <Route path="/accepted/on-campus-listings/:driveId" element={<EmployerAcceptedDriveDetail />} />
 
-              <Route path="/accepted/pool-campus-listings" element={<EmployerAcceptedPoolShortlist />} />
+              <Route path="/employer/accepted/pool-campus-listings" element={<EmployerAcceptedPoolShortlist />} />
               <Route path="/accepted/pool-campus-listings/:driveId" element={<EmployerAcceptedPoolDriveDetail />} />
 
-              <Route path="/Employee/acceptedJobList" element={<EmployerAcceptedJobList />} />
-              <Route path="/accepted/Off-campus" element={<EmployerAcceptedOffCampusList />} />
+              <Route path="/employee/acceptedJobList" element={<EmployerAcceptedJobList />} />
+              <Route path="/employer/accepted/off-campus-listings" element={<EmployerAcceptedOffCampusList />} />
+
+              <Route path="/employer/accepted/internship-listings" element={<AcceptedIntership/>} />
 
 
               {/* shortlisted candidate  */}
 
-              <Route path="/shortlisted/on-campus-listings" element={<EmployerShortlistedDrivesPage />} />
+              <Route path="/employer/shortlisted/on-campus-listings" element={<EmployerShortlistedDrivesPage />} />
               <Route path="/shortlisted/on-campus-listings/:driveId" element={<EmployerDriveDetailPage />} />
 
-              <Route path="/shortlisted/pool-campus-listings" element={<EmployerPoolCampusShortlistDrive />} />
+              <Route path="/employer/shortlisted/pool-campus-listings" element={<EmployerPoolCampusShortlistDrive />} />
               <Route path="/shortlisted/pool-campus-listings/:driveId" element={<EmployerPoolCampusDetailPage />} />
 
-              <Route path="/shortlisted/Off-campus" element={<EmployerOffCampusListingPage />} />
-              <Route path="/joblistingPage" element={<EmployerJobListingPage />} />
+              <Route path="/employer/shortlisted/Off-campus" element={<EmployerOffCampusListingPage />} />
+              <Route path="/employer/shortlisted/jobs-listings" element={<EmployerJobListingPage />} />
+
+              <Route path="/employer/shortlisted/internship-listings" element={<EmployerIntershipForShortlist />} />
 
               {/* Hiring Channel  */}
 

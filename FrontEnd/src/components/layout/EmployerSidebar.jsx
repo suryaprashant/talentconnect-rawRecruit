@@ -144,22 +144,22 @@ function EmployerSidebar({ activePath }) {
       {/* Shortlisted Candidates/Colleges */}
       <SidebarNavGroup label="Shortlisted Candidates" icon={<FiCheckCircle />} active={activePath.includes('/shortlisted')}>
         <SidebarNavItem 
-          to="/shortlisted/on-campus-listings" 
+          to="/employer/shortlisted/on-campus-listings" 
           icon={<FiMapPin />} 
           label="On-campus Listings" 
-          active={activePath === '/shortlisted/on-campus-listings'} 
+          active={activePath === '/employer/shortlisted/on-campus-listings'} 
         />
         <SidebarNavItem 
-          to="/shortlisted/Off-campus"
+          to="/employer/shortlisted/Off-campus"
           icon={<FiLayers />} 
           label="Off-campus Listings" 
-          active={activePath === '/shortlisted/Off-campus'} 
+          active={activePath === '/employer/shortlisted/Off-campus'} 
         />
         <SidebarNavItem 
-          to="/shortlisted/pool-campus-listings" 
+          to="/employer/shortlisted/pool-campus-listings" 
           icon={<FiUsers />} 
           label="Pool Campus Listings" 
-          active={activePath === '/shortlisted/pool-campus-listings'} 
+          active={activePath === '/employer/shortlisted/pool-campus-listings'} 
         />
          <SidebarNavItem
           to="/employer/shortlisted/jobs-listings"
@@ -180,28 +180,34 @@ function EmployerSidebar({ activePath }) {
       {/* Accepted Candidates/Colleges */}
       <SidebarNavGroup label="Accepted Candidates" icon={<FiThumbsUp />} active={activePath.includes('/accepted')}>
         <SidebarNavItem 
-          to="/accepted/on-campus-listings" 
+          to="/employer/accepted/on-campus-listings" 
           icon={<FiMapPin />} 
           label="On-campus Listings" 
-          active={activePath === '/accepted/on-campus-listings'} 
+          active={activePath === '/employer/accepted/on-campus-listings'} 
         />
         <SidebarNavItem 
-          to="/accepted/off-campus-listings" 
+          to="/employer/accepted/off-campus-listings" 
           icon={<FiLayers />} 
           label="Off-campus Listings" 
-          active={activePath === '/accepted/off-campus-listings'} 
+          active={activePath === '/employer/accepted/off-campus-listings'} 
         />
         <SidebarNavItem 
-          to="/accepted/pool-campus-listings" 
+          to="/employer/accepted/pool-campus-listings" 
           icon={<FiUsers />} 
           label="Pool Campus Listings" 
-          active={activePath === '/accepted/pool-campus-listings'} 
+          active={activePath === '/employer/accepted/pool-campus-listings'} 
         />
         <SidebarNavItem 
-          to="/Employee/acceptedJobList" 
+          to="/employee/acceptedJobList" 
           icon={<FiList />} 
-          label="Accepted Job List" 
-          active={activePath === '/Employee/acceptedJobList'} 
+          label="Accepted Job-Listing" 
+          active={activePath === '/employee/acceptedJobList'} 
+        />
+           <SidebarNavItem
+          to="/employer/accepted/internship-listings"
+          icon={<FiUsers />}
+          label="Intership"
+          active={activePath === '/employer/accepted/internship-listings'}
         />
       </SidebarNavGroup>
 
