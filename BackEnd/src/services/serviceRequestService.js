@@ -1,5 +1,25 @@
 import ServiceRequest from "../models/serviceRequestsModel.js";
 
+// get total service request count
+export const getTotalServiceRequestCount = async (filter = {}) => {
+  try {
+    return await ServiceRequest.countDocuments(filter);
+  } catch (error) {
+    console.error("Error in getTotalServiceRequestCount:", error);
+    throw error;
+  }
+};
+
+// get all service requests
+export const getAll = async () => {
+  try {
+    return await ServiceRequest.find();
+  } catch (error) {
+    console.error("Error in getAll:", error);
+    throw error;
+  }
+};
+
 // create a service for the request from the service request
 export const createServiceRequest = async (user , data , serviceRequestType) => {
     const {date, time , message , category,
@@ -65,22 +85,3 @@ export const createSeviceRegisterRequest = async (user , data , serviceRequestTy
     await newRequest.save();
     return newRequest;
 }
-import ServiceRequest from "../models/serviceRequestModel.js";
-
-export const getTotalServiceRequestCount = async (filter = {}) => {
-  try {
-    return await ServiceRequest.countDocuments(filter);
-  } catch (error) {
-    console.error("Error in getTotalServiceRequestCount:", error);
-    throw error;
-  }
-};
-
-export const getAll = async () => {
-  try {
-    return await ServiceRequest.find();
-  } catch (error) {
-    console.error("Error in getAll:", error);
-    throw error;
-  }
-};
