@@ -205,7 +205,20 @@ app.use("/api/resumes", resumeRoutes);
 // app.use("/rawrecruit", jobinterest);
 
 // Start the server
-server.listen(PORT, async () => {
-  console.log(`Server is running on PORT: ${PORT}`);
-  await Connection();
-});
+const startServer = async () => {
+  try {
+    // Connect to database FIRST
+    await Connection();
+    console.log('Database connected successfully');
+    
+    // THEN start the server
+    server.listen(PORT, () => {
+      console.log(`Server is running on PORT: ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();

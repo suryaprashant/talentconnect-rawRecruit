@@ -6,8 +6,8 @@ import Auth from "../../models/authModel.js";
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-console.log("find email and password from front end ",email," and ",password);
-
+    
+    // Validate input
     if (!email || !password) {
       return res.status(400).json({ 
         success: false,
@@ -52,7 +52,7 @@ console.log("find email and password from front end ",email," and ",password);
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 

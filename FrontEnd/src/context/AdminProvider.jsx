@@ -28,21 +28,28 @@ export const AdminProvider = ({ children }) => {
         const user = JSON.parse(userData);
         
         // Verify token with backend
-        const response = await axios.get(
-          `${import.meta.env.VITE_Backend_URL}/api/admin/verify`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true
-          }
-        );
+        try {
+          const response = await axios.get(
+            `${import.meta.env.VITE_Backend_URL}/api/admin/verify`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              withCredentials: true,
+              timeout: 5000
+            }
+          );
 
-        if (response.data.success) {
-          setAdminUser(user);
-          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        } else {
-          // Token is invalid, clear storage
+          if (response.data.success) {
+            setAdminUser(user);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          } else {
+            // Token is invalid, clear storage
+            clearAdminAuth();
+          }
+        } catch (verifyError) {
+          // If verification fails, clear auth and let user login again
+          console.warn('Token verification failed, clearing stored auth');
           clearAdminAuth();
         }
       }
@@ -65,11 +72,16 @@ export const AdminProvider = ({ children }) => {
             "Accept": "application/json"
           },
           withCredentials: true,
-          timeout: 10000 // 10 second timeout
+          timeout: 15000, // Increased timeout for first request
+          validateStatus: function (status) {
+            // Accept any status to handle errors properly
+            return true;
+          }
         }
       );
 
-      if (response.data.success) {
+      // Check if response indicates success
+      if (response.status === 200 && response.data.success) {
         const { token, user } = response.data;
         
         localStorage.setItem('adminToken', token);
@@ -80,12 +92,18 @@ export const AdminProvider = ({ children }) => {
         setAdminUser(user);
         
         return { success: true, user };
+      } else {
+        // Server responded with error status or data
+        let errorMessage = response.data?.message || 'Login failed. Please try again.';
+        return { success: false, message: errorMessage };
       }
     } catch (error) {
       console.error('Admin login failed:', error);
       let errorMessage = 'Login failed. Please try again.';
       
-      if (error.code === 'ERR_NETWORK') {
+      if (error.code === 'ECONNABORTED') {
+        errorMessage = 'Request timeout. Please check your connection and try again.';
+      } else if (error.code === 'ERR_NETWORK') {
         errorMessage = 'Unable to connect to server. Please check your connection.';
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
