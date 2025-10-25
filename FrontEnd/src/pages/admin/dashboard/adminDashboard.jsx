@@ -30,7 +30,14 @@ const AdminDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_Backend_URL}/api/admin/dashboard/overview`
+        `${import.meta.env.VITE_Backend_URL}/api/admin/dashboard/overview`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            "Content-Type": "application/json"
+          },
+          withCredentials: true
+        }
       );
       
       if (response.data.success) {
@@ -58,28 +65,28 @@ const AdminDashboard = () => {
   const stats = [
     {
       title: 'Total Users',
-      value: dashboardData.totalUsers,
+      value: dashboardData.totalUsers || 0,
       icon: Users,
       color: 'bg-blue-500',
       change: '+12%'
     },
     {
       title: 'Companies',
-      value: dashboardData.totalCompanies,
+      value: dashboardData.totalCompanies || 0,
       icon: Building2,
       color: 'bg-green-500',
       change: '+8%'
     },
     {
       title: 'Colleges',
-      value: dashboardData.totalColleges,
+      value: dashboardData.totalColleges || 0,
       icon: GraduationCap,
       color: 'bg-purple-500',
       change: '+5%'
     },
     {
       title: 'Applications',
-      value: dashboardData.totalApplications,
+      value: dashboardData.totalJobApplicationSubmission || dashboardData.totalApplications || 0,
       icon: FileText,
       color: 'bg-orange-500',
       change: '+15%'
@@ -156,7 +163,7 @@ const AdminDashboard = () => {
             <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
               Recent Activity
             </h3>
-            {dashboardData.recentActivity.length > 0 ? (
+            {dashboardData.recentActivity && dashboardData.recentActivity.length > 0 ? (
               <div className="space-y-3">
                 {dashboardData.recentActivity.map((activity, index) => (
                   <div key={index} className="flex items-center space-x-3">

@@ -1,6 +1,77 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { FileText, Search } from "lucide-react";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
-const ApplicationTracking = () => {
+const ApplicationManagement = () => {
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [statistics, setStatistics] = useState(null);
+  const [pagination, setPagination] = useState(null);
+
+  const ITEMS_PER_PAGE = 10;
+
+  // Fetch applications data
+  const fetchApplications = async (page = 1) => {
+    try {
+      setLoading(true);
+      const response = await axios.post(
+        `${import.meta.env.VITE_Backend_URL}/api/admin/application/applications-board`,
+        {
+          page,
+          limit: ITEMS_PER_PAGE,
+          search: searchTerm,
+          status: filterStatus
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            "Content-Type": "application/json"
+          },
+          withCredentials: true
+        }
+      );
+
+      if (response.data.success) {
+        setApplications(response.data.data.applications);
+        setPagination(response.data.data.pagination);
+        setStatistics(response.data.data.statistics);
+        setCurrentPage(page);
+      }
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      toast.error("Failed to fetch applications");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial fetch and refetch on filter change
+  useEffect(() => {
+    fetchApplications(1);
+  }, [searchTerm, filterStatus]);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Applied":
+      case "Application Sent":
+        return "bg-blue-100 text-blue-700";
+      case "Shortlisted":
+      case "Interview Scheduled":
+        return "bg-purple-100 text-purple-700";
+      case "Offer Extended":
+      case "Accepted":
+        return "bg-green-100 text-green-700";
+      case "Rejected":
+        return "bg-red-100 text-red-700";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
+
   return (
     <main className="min-h-screen">
       <div className="p-6 space-y-6 animate-fade-in">
@@ -8,61 +79,27 @@ const ApplicationTracking = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="responsive-title font-bold text-slate-900 mb-2">
-              Application Tracking
+              Application Management
             </h1>
             <p className="text-slate-600">
-              Monitor and track all candidate applications across positions
+              Track and manage all job applications from candidates
             </p>
           </div>
-
-          <div className="mt-4 md:mt-0 flex space-x-2">
-            <button
-              className="justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors 
-                         focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring 
-                         disabled:pointer-events-none disabled:opacity-50 
-                         border border-input shadow-sm hover:bg-accent hover:text-accent-foreground 
-                         h-9 px-4 py-2 flex items-center space-x-2"
-              data-testid="export-applications-btn"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-download w-4 h-4"
-                aria-hidden="true"
-              >
-                <path d="M12 15V3"></path>
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <path d="m7 10 5 5 5-5"></path>
-              </svg>
-              <span>Export</span>
-            </button>
-
-            <div
-              className="inline-flex items-center rounded-md border font-semibold transition-colors 
-                         focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 
-                         border-transparent bg-secondary text-secondary-foreground 
-                         hover:bg-secondary/80 text-lg px-3 py-1"
-            >
-              40 applications
+          <div className="mt-4 md:mt-0">
+            <div className="inline-flex items-center rounded-md border font-semibold transition-colors border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 text-lg px-3 py-1">
+              {statistics?.total || 0} applications
             </div>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {[
-            { label: "Total Applications", count: 40, color: "text-slate-700" },
-            { label: "Applied", count: 12, color: "text-blue-700" },
-            { label: "Shortlisted", count: 10, color: "text-yellow-700" },
-            { label: "Accepted", count: 11, color: "text-green-700" },
-            { label: "Rejected", count: 7, color: "text-red-700" },
+            { count: statistics?.total || 0, label: "Total", color: "text-blue-700" },
+            { count: statistics?.applied || 0, label: "Applied", color: "text-slate-700" },
+            { count: statistics?.shortlisted || 0, label: "Shortlisted", color: "text-purple-700" },
+            { count: statistics?.accepted || 0, label: "Accepted", color: "text-green-700" },
+            { count: statistics?.rejected || 0, label: "Rejected", color: "text-red-700" },
           ].map((item, i) => (
             <div
               key={i}
@@ -78,208 +115,124 @@ const ApplicationTracking = () => {
           ))}
         </div>
 
-        {/* Table Section */}
+        {/* Applications Table */}
         <div className="rounded-xl border bg-card text-card-foreground shadow">
           <div className="flex flex-col space-y-1.5 p-6">
             <div className="font-semibold leading-none tracking-tight flex items-center space-x-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-file-text w-5 h-5"
-                aria-hidden="true"
-              >
-                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
-                <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
-                <path d="M10 9H8"></path>
-                <path d="M16 13H8"></path>
-                <path d="M16 17H8"></path>
-              </svg>
+              <FileText className="w-5 h-5" />
               <span>All Applications</span>
             </div>
             <div className="text-sm text-muted-foreground">
-              Track and manage candidate applications across all positions
+              View and manage job applications
             </div>
           </div>
 
-          {/* Search & Filter */}
-          <div className="p-6 pt-0">
-            <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
-              <div className="flex-1 relative">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-search absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400"
-                  aria-hidden="true"
-                >
-                  <path d="m21 21-4.34-4.34"></path>
-                  <circle cx="11" cy="11" r="8"></circle>
-                </svg>
-                <input
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors 
-                             placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring 
-                             disabled:cursor-not-allowed disabled:opacity-50 md:text-sm pl-10"
-                  placeholder="Search by candidate, job title, company, or college..."
-                  data-testid="application-search-input"
-                />
-              </div>
-
-              <button
-                type="button"
-                className="flex h-9 items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent 
-                           px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed 
-                           disabled:opacity-50 w-48"
-              >
-                <span>All Status</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-chevron-down h-4 w-4 opacity-50"
-                  aria-hidden="true"
-                >
-                  <path d="m6 9 6 6 6-6"></path>
-                </svg>
-              </button>
+          {/* Search and Filter */}
+          <div className="p-6 pt-0 flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4 mb-6">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 pl-10 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                placeholder="Search by candidate name, email, job title..."
+              />
             </div>
+            
+            {/* Status Filter */}
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="flex h-9 items-center justify-between w-full md:w-48 border rounded-md px-3 py-2 text-sm shadow-sm bg-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              <option value="all">All Status</option>
+              <option value="Applied">Applied</option>
+              <option value="Shortlisted">Shortlisted</option>
+              <option value="Interview Scheduled">Interview Scheduled</option>
+              <option value="Offer Extended">Offer Extended</option>
+              <option value="Accepted">Accepted</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
 
-            {/* Applications Table */}
-            <div className="border rounded-lg overflow-hidden">
-              <div className="relative w-full overflow-auto">
-                <table className="w-full caption-bottom text-sm">
-                  <thead className="table-header">
-                    <tr className="border-b hover:bg-muted/50">
-                      <th className="h-10 px-2 text-left font-medium text-muted-foreground">
-                        Candidate
-                      </th>
-                      <th className="h-10 px-2 text-left font-medium text-muted-foreground">
-                        Position
-                      </th>
-                      <th className="h-10 px-2 text-left font-medium text-muted-foreground">
-                        Company
-                      </th>
-                      <th className="h-10 px-2 text-left font-medium text-muted-foreground">
-                        College
-                      </th>
-                      <th className="h-10 px-2 text-left font-medium text-muted-foreground">
-                        Status
-                      </th>
-                      <th className="h-10 px-2 text-left font-medium text-muted-foreground">
-                        Applied Date
-                      </th>
-                      <th className="h-10 px-2 text-left font-medium text-muted-foreground">
-                        Last Updated
-                      </th>
-                      <th className="h-10 px-2 text-right font-medium text-muted-foreground">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* Example row (repeat with map if dynamic) */}
-                    <tr className="border-b hover:bg-slate-50">
+          {/* Table */}
+          <div className="border rounded-lg overflow-hidden">
+            <table className="w-full caption-bottom text-sm">
+              <thead>
+                <tr className="border-b bg-muted/50">
+                  <th className="p-2 text-left font-medium">Candidate</th>
+                  <th className="p-2 text-left font-medium">Job Title</th>
+                  <th className="p-2 text-left font-medium">Company</th>
+                  <th className="p-2 text-left font-medium">Status</th>
+                  <th className="p-2 text-left font-medium">Applied Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="5" className="p-8 text-center text-slate-500">
+                      Loading applications...
+                    </td>
+                  </tr>
+                ) : applications.length > 0 ? (
+                  applications.map((app) => (
+                    <tr key={app._id} className="border-b hover:bg-slate-50">
                       <td className="p-2">
-                        <div className="flex items-center space-x-2">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-user w-4 h-4 text-slate-400"
-                          >
-                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                          </svg>
-                          <span className="font-medium">Rahul Sharma</span>
+                        <div className="font-medium">{app.candidateName || "N/A"}</div>
+                        <div className="text-xs text-slate-500">{app.candidateEmail || ""}</div>
+                      </td>
+                      <td className="p-2">{app.jobTitle || "N/A"}</td>
+                      <td className="p-2">{app.companyName || "N/A"}</td>
+                      <td className="p-2">
+                        <div className={`inline-flex items-center rounded-md ${getStatusColor(app.currentStatus)} px-2 py-0.5 text-xs font-semibold`}>
+                          {app.currentStatus || "Pending"}
                         </div>
                       </td>
-                      <td className="p-2">Software Engineer</td>
-                      <td className="p-2">TechCorp India</td>
-                      <td className="p-2">College 1</td>
                       <td className="p-2">
-                        <div className="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold 
-                                       bg-blue-100 text-blue-700">
-                          Applied
-                        </div>
-                      </td>
-                      <td className="p-2">9/22/2025</td>
-                      <td className="p-2">10/7/2025</td>
-                      <td className="p-2 text-right">
-                        <button className="inline-flex items-center justify-center gap-2 rounded-md border border-input shadow-sm 
-                                           hover:bg-accent hover:text-accent-foreground h-8 px-3 text-xs">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-eye w-4 h-4"
-                          >
-                            <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                          </svg>
-                        </button>
+                        {app.createdAt ? new Date(app.createdAt).toLocaleDateString() : "N/A"}
                       </td>
                     </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="p-8 text-center text-slate-500">
+                      No applications found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
 
-            {/* Pagination */}
-            <div className="flex items-center justify-between mt-4">
+          {/* Pagination */}
+          {pagination && pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between mt-6 px-6 pb-6">
               <div className="text-sm text-slate-600">
-                Showing 1 to 10 of 40 applications
+                Page {pagination.currentPage} of {pagination.totalPages} • Total Applications: {pagination.totalApplications}
               </div>
-              <div className="flex space-x-2">
+              <div className="flex gap-2">
                 <button
-                  className="inline-flex items-center justify-center gap-2 border border-input shadow-sm 
-                             hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"
-                  disabled
+                  onClick={() => fetchApplications(pagination.currentPage - 1)}
+                  disabled={pagination.currentPage === 1}
+                  className="px-4 py-2 border rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
                 <button
-                  className="inline-flex items-center justify-center gap-2 border border-input shadow-sm 
-                             hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"
+                  onClick={() => fetchApplications(pagination.currentPage + 1)}
+                  disabled={pagination.currentPage === pagination.totalPages}
+                  className="px-4 py-2 border rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                 </button>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </main>
   );
 };
 
-export default ApplicationTracking;
+export default ApplicationManagement;

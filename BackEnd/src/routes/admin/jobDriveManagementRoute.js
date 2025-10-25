@@ -2,18 +2,22 @@ import express from "express";
 import adminAuth from "../../middlewares/adminMiddleware.js";
 import {
     getJobDriveOverView,
-    getAllPositions
-    } from "../../controllers/admin/jobDriveManagementController.js"
+    getAllPositions,
+    getJobsBoardOverView
+} from "../../controllers/admin/jobDriveManagementController.js"
 
 const router = express.Router();
 
 // Apply admin authentication 
-// router.use(adminAuth); ---> commented for API testing purpose
+router.use(adminAuth);
 
-// get reports of user status(active,pending,blocked)
+// Get job drive overview (statistics)
 router.get('/overviewdata', getJobDriveOverView);
 
-// get all users data 
+// Get all jobs with pagination and filtering
+router.post('/jobs-board', getJobsBoardOverView);
+
+// Get all positions
 router.get('/getrelationdata', getAllPositions);
 
 export default router;
