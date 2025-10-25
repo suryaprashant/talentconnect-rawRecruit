@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { JobPostingTable } from '../models/jobPostingsModel.js';
 import Application from "../models/applicationModel.js";
+import OnboardingModel from '../models/studentonboardingModel.js';
 
 // get totel job posted and it is in active state 
 export const getTotalJobPostedCount = async (filters = {}) => {

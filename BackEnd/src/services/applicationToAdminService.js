@@ -1,5 +1,5 @@
 import express from "express";
-import serviceRequestModel from "../models/serviceRequestModel.js";
+import serviceRequestModel from "../models/serviceRequestsModel.js";
 import serviceRequestInterviewModel from "../models/servicerequestInterviewModel.js";
 
 export const createServiceRequest = async (req, res) => {

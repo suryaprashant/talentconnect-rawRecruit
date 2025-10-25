@@ -2,7 +2,7 @@ import {
   getAll,
   getTotalServiceRequestCount
 } from "../../services/serviceRequestService.js";
-import ServiceRequest from "../../models/serviceRequestModel.js";
+import ServiceRequest from "../../models/serviceRequestsModel.js";
 
 // Overview controller: Counts for various service request statuses
 export const getServiceRequestOverView = async (req, res) => {
