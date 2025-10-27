@@ -319,6 +319,9 @@ function AppRoutes() {
               <Route path="/application-status/Off-campus" element={<OffcampusStatus />} />
               <Route path="/application-status/Internship" element={<InternshipStatus />} />
               <Route path="/application-status/Referral" element={<RefferralJobStatus />} />
+              <Route path="/application-events/hackathon" element={<EventList event_name="hackathon" />} />
+              <Route path="/application-events/workshop" element={<EventList event_name="workshop" />} />
+              <Route path="/application-events/casestudy" element={<EventList event_name="casestudy" />} />
               <Route path="/application-status/event-status" element={<EventStatus />} />
               <Route path='/notifications' element={<NotificationSettings />} />
               <Route path='/Faq' element={<FAQPage />} />
