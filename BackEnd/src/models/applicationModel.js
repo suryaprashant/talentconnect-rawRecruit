@@ -44,6 +44,7 @@ const ApplicationSchema = new mongoose.Schema(
         currentStatus: {
             type: String,
             enum: [
+                "Saved",
                 "Applied",
                 "Application Sent",
                 "Awaiting Recruiter Action",
