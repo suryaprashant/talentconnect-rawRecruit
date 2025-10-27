@@ -114,6 +114,14 @@ const JobCard = ({ job }) => {
             </span>
           )}
         </div>
+        {/* tags */}
+        {job?.tags && job.tags.length > 0 && (
+          <div className='flex m-2 gap-2 flex-wrap text-center mb-4 text-sm'>
+            {job.tags.map((tag, i) => (
+              <span className='bg-gray-200 px-2 py-1 rounded-full text-gray-700' key={i}>{tag}</span>
+            ))}
+          </div>
+        )}
 
         {/* Register Button */}
         <Link to={`/college-dashboard/Pool-campus/${job.id}`} className="block w-full">

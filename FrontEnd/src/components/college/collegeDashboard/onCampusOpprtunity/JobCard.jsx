@@ -47,7 +47,12 @@ const JobCard = ({ job }) => {
             ))}
           </p>
         </div>
-        <Link 
+        <div className='flex m-2 gap-2 flex-wrap text-center mb-4 text-sm'>
+          {job?.tags?.map((tag, i) => (
+            <span className='bg-gray-300 p-1 rounded' key={i}>{tag}</span>
+          ))}
+        </div>
+        <Link
           to={`/college-dashboard/On-campus/${job._id}`}
           className="block w-full py-2 px-4 text-center text-gray-700 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
         >
