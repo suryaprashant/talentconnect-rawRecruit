@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Search, MapPin, Clock } from 'lucide-react';
 import { statusSteps, similarJobs } from '../../../constants/data.js';
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
+import { Link } from 'react-router-dom';
 
-export default function PoolCampusApplicationStatus () {
+export default function PoolCampusApplicationStatus() {
     const [poolcampusJobs, setPoolcampusJobs] = useState();
     const [selectedJob, setSelectedJob] = useState();
     const [searchTerm, setSearchTerm] = useState("");
@@ -163,11 +164,11 @@ export default function PoolCampusApplicationStatus () {
                                         <div className="mt-2 text-sm text-gray-500">
                                             <p>Job ID: {selectedJob._id}</p>
                                             <div className="flex items-center mt-1">
-                                                <Clock className="h-4 w-4 mr-1" />
-                                                <span>{selectedJob.experience}</span>
+                                                <Clock className="h-3 w-3 mr-1" />
+                                                <span>{selectedJob.jobDetails[0].employmentType}</span>
                                                 <span className="mx-2">•</span>
-                                                <MapPin className="h-4 w-4 mr-1" />
-                                                <span>{selectedJob.jobDetails[0].workLocations}</span>
+                                                <MapPin className="h-3 w-3 mr-1" />
+                                                {selectedJob.jobDetails[0].location?.map((l, i) => (<span key={i}>{l + ', '}</span>))}
                                             </div>
                                         </div>
                                     </div>
@@ -178,10 +179,10 @@ export default function PoolCampusApplicationStatus () {
                                 </div>
 
                                 <div className="mt-6">
-                                    <p className="text-gray-700">{selectedJob.jobDetails?.jobDescription}</p>
+                                    <p className="text-gray-700">{selectedJob.jobDetails[0]?.description}</p>
                                 </div>
 
-                                <div className="mt-6">
+                                {/* <div className="mt-6">
                                     <h3 className="font-medium mb-2">Activity on this role</h3>
                                     <div className="flex border-t border-gray-200">
                                         <div className="py-4 px-6 border-r border-gray-200">
@@ -193,10 +194,10 @@ export default function PoolCampusApplicationStatus () {
                                             <p className="text-sm text-gray-500">Applications viewed by recruiter</p>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <div className="mt-4">
-                                    <button className="text-blue-500 text-sm font-medium">View full description</button>
+                                    <Link to={`/college-dashboard/Pool-campus/${selectedJob.jobDetails[0]?._id}?isApplied=true`} className="text-blue-500 text-sm font-medium">View full description</Link>
                                 </div>
                             </div>
 
