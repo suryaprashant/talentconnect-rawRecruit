@@ -1,7 +1,7 @@
 import { ApplyForOnCampus, getCompanyPostingForOncampusDetail, SaveOppurtunity } from '@/lib/College_AxiosIntance';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 
 // Utility function to format date
 const formatDate = (dateString) => {
@@ -22,6 +22,8 @@ const formatDate = (dateString) => {
 
 const JobDetailPage = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
   const [job, setJob] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const [error, setError] = useState(null);
@@ -154,7 +156,7 @@ const JobDetailPage = () => {
               </div>
             </div>
 
-            <div className="flex space-x-2 mt-4">
+            {!isApplied && (<div className="flex space-x-2 mt-4">
               <button className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none" onClick={handleApply}>
                 Register Now
               </button>
@@ -176,7 +178,7 @@ const JobDetailPage = () => {
                 </svg>
                 Share
               </button>
-            </div>
+            </div>)}
           </div>
 
           {/* About Section */}

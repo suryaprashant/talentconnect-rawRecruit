@@ -14,7 +14,9 @@ import {
   FiPlusSquare,
   FiEdit,
   FiCheckCircle,
-  FiLayers
+  FiLayers,
+  FiCalendar,
+  FiTool
 } from 'react-icons/fi';
 
 function ProfessionalSidebar({ activePath }) {
@@ -38,14 +40,33 @@ function ProfessionalSidebar({ activePath }) {
           label="Referral Jobs" 
           active={activePath === '/professional-dashboard/Referral'} 
         />
-        <SidebarNavItem 
+        {/* <SidebarNavItem 
           to="/professional-dashboard/hackathon" 
           icon={<FiAward />} 
           label="Hackathon" 
           active={activePath === '/professional-dashboard/hackathon'} 
+        /> */}
+      </SidebarNavGroup>
+            <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>
+        <SidebarNavItem 
+          to="/professional-events/casestudy" 
+          icon={<FiBookmark />} 
+          label="Case Studies" 
+          active={activePath === '/professional-events/casestudy'} 
+        />
+        <SidebarNavItem 
+          to="/professional-events/hackathon" 
+          icon={<FiAward />} 
+          label="Hackathon" 
+          active={activePath === '/professional-events/hackathon'} 
+        />
+        <SidebarNavItem 
+          to="/professional-events/workshop" 
+          icon={<FiTool/>} 
+          label="Workshop" 
+          active={activePath === '/professional-events/workshop'} 
         />
       </SidebarNavGroup>
-
       <SidebarNavGroup label="Service Request" icon={<FiClipboard />} active={activePath.includes('/service-request')}>
         <SidebarNavItem 
           to="/professional/service-request" 
@@ -83,7 +104,7 @@ function ProfessionalSidebar({ activePath }) {
         <SidebarNavItem 
           to="/application-status/event-status" 
           icon={<FiAward />} 
-          label="Hackathon" 
+          label="Event Management" 
           active={activePath === '/application-status/event-status'} 
         />
       </SidebarNavGroup>
