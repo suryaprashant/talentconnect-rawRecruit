@@ -34,7 +34,7 @@ const EventDetail = () => {
       <div className="container mx-auto px-4 py-16 text-center">
         <h2 className="text-2xl font-bold mb-4">Event not found </h2>
         <button
-          onClick={() => navigate(`/student-events/${event_name}`)}
+          onClick={() => navigate(`/${localStorage.getItem('selectedRole')}-events/${event_name}`)}
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
         >
           Back to {event_name}
