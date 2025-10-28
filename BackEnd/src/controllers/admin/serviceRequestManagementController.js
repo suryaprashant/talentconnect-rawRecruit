@@ -3,6 +3,11 @@ import {
   getTotalServiceRequestCount
 } from "../../services/serviceRequestService.js";
 import ServiceRequest from "../../models/serviceRequestsModel.js";
+import Notification from "../../models/notificationModel.js";
+import Auth from "../../models/authModel.js";
+import OnboardingModel from "../../models/studentonboardingModel.js";
+import CompanyProfile from "../../models/companyDashboard/companyProfileModel.js";
+import CollegeOnboarding from "../../models/collegeDashboard/collegeOnboardingModel.js";
 
 // Overview controller: Counts for various service request statuses
 export const getServiceRequestOverView = async (req, res) => {
@@ -90,33 +95,119 @@ export const getServiceRequestBoardOverView = async (req, res) => {
     // Calculate pagination
     const skip = (page - 1) * limit;
 
-    // Fetch service requests with pagination and populate requester
-    const requests = await ServiceRequest.find(filter)
-      .populate({
-        path: 'requester.id',
-        select: 'name email companyName collegeName firstName lastName'
-      })
+    // Fetch service requests with pagination
+    const serviceRequests = await ServiceRequest.find(filter)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit))
       .lean();
 
-    // Format requests with proper field names
-    const formattedRequests = requests.map(req => ({
-      _id: req._id,
-      requesterName: req.requester?.id?.name || 
-                     req.requester?.id?.companyName || 
-                     req.requester?.id?.collegeName ||
-                     (req.requester?.id?.firstName ? `${req.requester.id.firstName} ${req.requester.id.lastName || ''}`.trim() : 'N/A'),
-      requesterEmail: req.requester?.id?.email || 'N/A',
-      organizationName: req.requester?.id?.companyName || req.requester?.id?.collegeName || 'N/A',
-      serviceRequestType: req.serviceRequestType || 'other',
-      status: req.status || 'pending',
-      createdAt: req.createdAt
-    }));
+    // Populate requester names from respective collections
+    const formattedRequests = await Promise.all(
+      serviceRequests.map(async (request) => {
+        let requesterName = 'N/A';
+        let requesterEmail = 'N/A';
+        let organizationName = 'N/A';
 
-    // Get total count for pagination
-    const totalRequests = await ServiceRequest.countDocuments(filter);
+        try {
+          if (request.requester?.id) {
+            const role = request.requester.role;
+            const requesterId = request.requester.id;
+            
+            // First, get email from Auth model
+            const authUser = await Auth.findById(requesterId).select('email name').lean();
+            if (authUser) {
+              requesterEmail = authUser.email || 'N/A';
+            }
+            
+            if (role === 'company' || role === 'employer') {
+              // Try to find by userId field first (CompanyProfile links via userId)
+              let companyProfile = await CompanyProfile.findOne({ userId: requesterId })
+                .select('employerDetails.name employerDetails.workEmail companyDetails.companyName')
+                .lean();
+              
+              // If not found, try direct ID lookup
+              if (!companyProfile) {
+                companyProfile = await CompanyProfile.findById(requesterId)
+                  .select('employerDetails.name employerDetails.workEmail companyDetails.companyName')
+                  .lean();
+              }
+              
+              if (companyProfile) {
+                requesterName = companyProfile.companyDetails?.companyName || 
+                               companyProfile.employerDetails?.name || 'N/A';
+                requesterEmail = companyProfile.employerDetails?.workEmail || requesterEmail;
+                organizationName = companyProfile.companyDetails?.companyName || 'N/A';
+              }
+            } else if (role === 'college') {
+              // Try to find by userId field first
+              let collegeProfile = await CollegeOnboarding.findOne({ userId: requesterId })
+                .select('collegeUniversityDetails.collegeName placementCoordinatorDetails.coordinatorName placementCoordinatorDetails.coordinatorEmail')
+                .lean();
+              
+              // If not found, try direct ID lookup
+              if (!collegeProfile) {
+                collegeProfile = await CollegeOnboarding.findById(requesterId)
+                  .select('collegeUniversityDetails.collegeName placementCoordinatorDetails.coordinatorName placementCoordinatorDetails.coordinatorEmail')
+                  .lean();
+              }
+              
+              if (collegeProfile) {
+                requesterName = collegeProfile.collegeUniversityDetails?.collegeName || 
+                               collegeProfile.placementCoordinatorDetails?.coordinatorName || 'N/A';
+                requesterEmail = collegeProfile.placementCoordinatorDetails?.coordinatorEmail || requesterEmail;
+                organizationName = collegeProfile.collegeUniversityDetails?.collegeName || 'N/A';
+              }
+            } else if (['student', 'fresher', 'professional', 'candidate'].includes(role)) {
+              // Try to find by userId field first
+              let candidateProfile = await OnboardingModel.findOne({ userId: requesterId })
+                .select('name email')
+                .lean();
+              
+              // If not found, try direct ID lookup
+              if (!candidateProfile) {
+                candidateProfile = await OnboardingModel.findById(requesterId)
+                  .select('name email')
+                  .lean();
+              }
+              
+              if (candidateProfile) {
+                requesterName = candidateProfile.name || 'N/A';
+                requesterEmail = candidateProfile.email || requesterEmail;
+                organizationName = 'Individual';
+              }
+            }
+          }
+        } catch (error) {
+          console.error(`Error fetching requester profile for ${request._id}:`, error);
+        }
+
+        return {
+          _id: request._id,
+          requesterName,
+          requesterEmail,
+          organizationName,
+          serviceRequestType: request.serviceRequestType || 'other',
+          status: request.status || 'pending',
+          createdAt: request.createdAt
+        };
+      })
+    );
+
+    // Apply search filter on formatted data
+    let filteredRequests = formattedRequests;
+    if (search && search.trim()) {
+      const searchLower = search.trim().toLowerCase();
+      filteredRequests = formattedRequests.filter(req => {
+        return (req.requesterName || '').toLowerCase().includes(searchLower) ||
+               (req.requesterEmail || '').toLowerCase().includes(searchLower) ||
+               (req.organizationName || '').toLowerCase().includes(searchLower) ||
+               (req.serviceRequestType || '').toLowerCase().includes(searchLower);
+      });
+    }
+
+    // Get total count for pagination (with search applied)
+    const totalRequests = search ? filteredRequests.length : await ServiceRequest.countDocuments(filter);
 
     // Get counts by status
     const [
@@ -137,7 +228,7 @@ export const getServiceRequestBoardOverView = async (req, res) => {
       success: true,
       message: "Service requests board overview fetched successfully",
       data: {
-        requests: formattedRequests,
+        requests: filteredRequests,
         pagination: {
           currentPage: parseInt(page),
           totalPages: Math.ceil(totalRequests / limit),
@@ -178,6 +269,83 @@ export const getAllServiceRequest = async (req, res) => {
       success: false,
       message: "Error while fetching service requests",
       error: error.message,
+    });
+  }
+};
+
+/**
+ * @desc    Update service request status
+ * @route   PATCH /api/admin/servicerequest/:requestId/status
+ * @access  Private (Admin)
+ */
+export const updateServiceRequestStatus = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const { status, meetingLink, notificationMessage } = req.body;
+
+    // Validate status
+    if (!["pending", "approved", "rejected", "completed"].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status. Must be pending, approved, rejected, or completed"
+      });
+    }
+
+    // Update the service request
+    const updatedRequest = await ServiceRequest.findByIdAndUpdate(
+      requestId,
+      { status },
+      { new: true }
+    ).lean();
+
+    if (!updatedRequest) {
+      return res.status(404).json({
+        success: false,
+        message: "Service request not found"
+      });
+    }
+
+    // Send notification to requester when approved
+    if (status === 'approved' && updatedRequest.requester?.id) {
+      try {
+        const adminUser = req.user; // Admin user from auth middleware
+        
+        // Create notification message
+        let message = notificationMessage || `Your service request for "${updatedRequest.serviceRequestType}" has been approved!`;
+        
+        if (meetingLink) {
+          message += ` A meeting has been scheduled. Join here: ${meetingLink}`;
+        }
+
+        // Create notification
+        const notification = new Notification({
+          recipientId: updatedRequest.requester.id,
+          senderId: adminUser._id,
+          type: 'SERVICE_REQUEST_UPDATE',
+          message: message,
+          referenceId: updatedRequest._id,
+          meetingLink: meetingLink || null,
+          read: false
+        });
+
+        await notification.save();
+        console.log(`Notification sent to user ${updatedRequest.requester.id} for request ${requestId}`);
+      } catch (notifError) {
+        console.error('Error sending notification:', notifError);
+        // Don't fail the request update if notification fails
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Service request ${status} successfully`,
+      data: updatedRequest
+    });
+  } catch (error) {
+    console.error("Error updating service request status:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
     });
   }
 };

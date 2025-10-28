@@ -296,18 +296,6 @@ const UserManagement = () => {
               <option value="college">Colleges</option>
               <option value="company">Companies</option>
             </select>
-
-            {/* Status Filter */}
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="flex h-9 items-center justify-between w-full md:w-48 border rounded-md px-3 py-2 text-sm shadow-sm bg-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="pending">Pending</option>
-              <option value="blocked">Blocked</option>
-            </select>
           </div>
 
           {/* Table */}
@@ -317,7 +305,6 @@ const UserManagement = () => {
                 <tr className="border-b bg-muted/50">
                   <th className="p-2 text-left font-medium">User</th>
                   <th className="p-2 text-left font-medium">Type</th>
-                  <th className="p-2 text-left font-medium">Status</th>
                   <th className="p-2 text-left font-medium">Registered</th>
                   <th className="p-2 text-left font-medium">Last Active</th>
                   <th className="p-2 text-right font-medium">Actions</th>
@@ -345,11 +332,7 @@ const UserManagement = () => {
                           <span>{getUserTypeDisplay(user.userType)}</span>
                         </div>
                       </td>
-                      <td className="p-2">
-                        <div className={`inline-flex items-center rounded-md ${getStatusColor(user.status)} px-2 py-0.5 text-xs font-semibold`}>
-                          {user.status}
-                        </div>
-                      </td>
+                      
                       <td className="p-2">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </td>
@@ -358,13 +341,7 @@ const UserManagement = () => {
                       </td>
                       <td className="p-2 text-right">
                         <div className="flex items-center justify-end space-x-2 relative">
-                          <button
-                            onClick={() => setShowStatusDropdown(showStatusDropdown === user._id ? null : user._id)}
-                            className="border rounded-md p-2 hover:bg-accent"
-                            title="Change Status"
-                          >
-                            <Check className="w-4 h-4" />
-                          </button>
+                          
                           
                           {/* Status Dropdown */}
                           {showStatusDropdown === user._id && (
