@@ -88,7 +88,7 @@ export const getUserBoardOverView = async (req, res) => {
     // Populate names from respective collections based on userType
     const usersWithNames = await Promise.all(
       users.map(async (user) => {
-        let displayName = user.name || user.email; // Fallback to email if name not set
+        let displayName = user.name || user.email || 'N/A'; // Ensure we always have a fallback
         
         try {
           if (user.userType === 'company' || user.userType === 'employer') {
@@ -116,15 +116,13 @@ export const getUserBoardOverView = async (req, res) => {
             }
           } else if (['student', 'fresher', 'professional', 'candidate'].includes(user.userType)) {
             const onboarding = await OnboardingModel.findOne({ userId: user._id })
-              .select('firstName lastName fullName name')
+              .select('name')
               .lean();
             
-            if (onboarding) {
-              displayName = onboarding.fullName || 
-                           (onboarding.firstName && onboarding.lastName 
-                             ? `${onboarding.firstName} ${onboarding.lastName}` 
-                             : onboarding.firstName || onboarding.name || displayName);
+            if (onboarding && onboarding.name) {
+              displayName = onboarding.name;
             }
+            // If no onboarding name, keep the existing displayName (user.name || user.email || 'N/A')
           }
         } catch (error) {
           console.error(`Error fetching profile for user ${user._id}:`, error);

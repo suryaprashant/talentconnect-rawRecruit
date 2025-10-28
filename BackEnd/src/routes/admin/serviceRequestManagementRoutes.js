@@ -3,7 +3,8 @@ import adminAuth from "../../middlewares/adminMiddleware.js";
 import {
   getServiceRequestOverView,
   getAllServiceRequest,
-  getServiceRequestBoardOverView
+  getServiceRequestBoardOverView,
+  updateServiceRequestStatus
 } from "../../controllers/admin/serviceRequestManagementController.js";
 
 const router = express.Router();
@@ -16,6 +17,9 @@ router.get('/overviewdata', getServiceRequestOverView);
 
 // Route: Get all service requests with pagination and filtering
 router.post('/requests-board', getServiceRequestBoardOverView);
+
+// Route: Update service request status
+router.patch('/:requestId/status', updateServiceRequestStatus);
 
 // Route: Get all service request applications
 router.get('/getrelationdata', getAllServiceRequest);

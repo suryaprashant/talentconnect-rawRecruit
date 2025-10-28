@@ -68,14 +68,38 @@ export const getJobsBoardOverView = async (req, res) => {
       filter.jobType = jobType;
     }
 
+    // Add search functionality
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), 'i');
+      
+      // Create a complex filter for searching across multiple fields
+      filter.$or = [
+        { jobTitle: searchRegex },
+        { jobRoles: { $in: [searchRegex] } },
+        { studentStreams: { $in: [searchRegex] } },
+        { skills: { $in: [searchRegex] } },
+        { jobType: searchRegex },
+        { location: searchRegex },
+        { venue: searchRegex }
+      ];
+    }
+
     // Calculate pagination
     const skip = (page - 1) * limit;
 
-    // Fetch jobs with pagination and populate company info
+    // Fetch jobs with pagination and populate company, college, and candidate info
     const jobs = await JobPostingTable.find(filter)
       .populate({
         path: 'companyPosted',
-        select: 'companyName'
+        select: 'companyDetails.companyName employerDetails.name'
+      })
+      .populate({
+        path: 'collegePosted',
+        select: 'collegeUniversityDetails.collegeName placementCoordinatorDetails.coordinatorName'
+      })
+      .populate({
+        path: 'candidatePosted',
+        select: 'name'
       })
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -83,32 +107,81 @@ export const getJobsBoardOverView = async (req, res) => {
       .lean();
 
     // Format jobs with proper field names
-    const formattedJobs = jobs.map(job => ({
-      _id: job._id,
-      jobTitle: job.jobTitle || 'N/A',
-      companyName: job.companyPosted?.companyName || 'N/A',
-      location: Array.isArray(job.location) ? job.location.join(', ') : job.location || 'N/A',
-      jobType: job.jobType || 'N/A',
-      jobStatus: job.jobStatus || 'Pending',
-      createdAt: job.createdAt
-    }));
+    const formattedJobs = jobs.map(job => {
+      // Get job title - try multiple sources
+      let jobTitle = 'N/A';
+      
+      if (job.jobTitle) {
+        jobTitle = job.jobTitle;
+      } else if (job.jobRoles && job.jobRoles.length > 0) {
+        jobTitle = job.jobRoles[0];
+      } else if (job.studentStreams && job.studentStreams.length > 0) {
+        // For college jobs, use student stream as fallback
+        jobTitle = job.studentStreams[0];
+      } else if (job.skills && job.skills.length > 0) {
+        // Use primary skill as fallback
+        jobTitle = `${job.skills[0]} Position`;
+      } else if (job.jobType) {
+        // Last resort: use job type
+        jobTitle = job.jobType;
+      }
+      
+      // Get poster name based on who posted (company, college, or candidate)
+      let posterName = 'N/A';
+      
+      if (job.companyPosted) {
+        posterName = job.companyPosted.companyDetails?.companyName || 
+                    job.companyPosted.employerDetails?.name || 
+                    'N/A';
+      } else if (job.collegePosted) {
+        posterName = job.collegePosted.collegeUniversityDetails?.collegeName || 
+                    job.collegePosted.placementCoordinatorDetails?.coordinatorName || 
+                    'N/A';
+      } else if (job.candidatePosted) {
+        posterName = job.candidatePosted.name || 'N/A';
+      }
+      
+      // Get location - join array or use venue or single value
+      let location = 'N/A';
+      if (Array.isArray(job.location) && job.location.length > 0) {
+        location = job.location.join(', ');
+      } else if (job.venue) {
+        location = job.venue;
+      } else if (job.location) {
+        location = job.location;
+      }
+
+      return {
+        _id: job._id,
+        jobTitle,
+        companyName: posterName, // Using generic name since it could be company/college/candidate
+        location,
+        jobType: job.jobType || 'N/A',
+        jobStatus: job.jobStatus || 'Pending',
+        createdAt: job.createdAt
+      };
+    });
 
     // Get total count for pagination
     const totalJobs = await JobPostingTable.countDocuments(filter);
 
-    // Get counts by type
+    // Get counts by type - show all jobs regardless of status for admin overview
     const [
       totalCount,
-      fullTimeCount,
       internshipCount,
       oncampusCount,
-      offcampusCount
+      offcampusCount,
+      poolCampusCount,
+      jobListingCount,
+      referralCount
     ] = await Promise.all([
-      getTotalJobPostedCount(),
-      getTotalJobPostedCount({ jobType: "Full-time" }),
-      getTotalJobPostedCount({ jobType: "Internship" }),
-      getTotalJobPostedCount({ jobType: "On-campus" }),
-      getTotalJobPostedCount({ jobType: "Off-campus" })
+      JobPostingTable.countDocuments({}), // Total jobs (all statuses)
+      JobPostingTable.countDocuments({ jobType: "Internship" }),
+      JobPostingTable.countDocuments({ jobType: "On-campus" }),
+      JobPostingTable.countDocuments({ jobType: "Off-campus" }),
+      JobPostingTable.countDocuments({ jobType: "Pool-campus" }),
+      JobPostingTable.countDocuments({ jobType: "Job-listing" }),
+      JobPostingTable.countDocuments({ jobType: "Referral" })
     ]);
 
     return res.status(200).json({
@@ -124,10 +197,12 @@ export const getJobsBoardOverView = async (req, res) => {
         },
         statistics: {
           total: totalCount,
-          fullTime: fullTimeCount,
           internship: internshipCount,
           oncampus: oncampusCount,
-          offcampus: offcampusCount
+          offcampus: offcampusCount,
+          poolCampus: poolCampusCount,
+          jobListing: jobListingCount,
+          referral: referralCount
         }
       }
     });

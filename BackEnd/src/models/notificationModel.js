@@ -16,7 +16,7 @@ const notificationSchema = new mongoose.Schema({
     // Type of notification to handle different actions on the frontend
     type: {
         type: String,
-        enum: ['TEAM_INVITATION', 'MESSAGE', 'SYSTEM_UPDATE', 'FILE_SHARED', 'EVENT_UPDATE'],
+        enum: ['TEAM_INVITATION', 'MESSAGE', 'SYSTEM_UPDATE', 'FILE_SHARED', 'EVENT_UPDATE', 'SERVICE_REQUEST_UPDATE'],
         required: true,
     },
     message: {
@@ -38,6 +38,11 @@ const notificationSchema = new mongoose.Schema({
         required: false,
     },
     eventTitle: {
+        type: String,
+        required: false,
+    },
+    // Meeting link for service request approvals
+    meetingLink: {
         type: String,
         required: false,
     },
