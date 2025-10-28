@@ -91,10 +91,10 @@ const JobDriveManagement = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {[
             { count: statistics?.total || 0, label: "Total Jobs", color: "text-blue-700" },
-            { count: statistics?.fullTime || 0, label: "Full-time", color: "text-green-700" },
             { count: statistics?.internship || 0, label: "Internships", color: "text-purple-700" },
             { count: statistics?.oncampus || 0, label: "On-campus", color: "text-orange-700" },
             { count: statistics?.offcampus || 0, label: "Off-campus", color: "text-teal-700" },
+            { count: (statistics?.total || 0) - (statistics?.internship || 0) - (statistics?.oncampus || 0) - (statistics?.offcampus || 0), label: "Other Jobs", color: "text-green-700" },
           ].map((item, i) => (
             <div
               key={i}
@@ -131,7 +131,7 @@ const JobDriveManagement = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 pl-10 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                placeholder="Search by title, company, or location..."
+                placeholder="Search by title..."
               />
             </div>
             
@@ -142,10 +142,12 @@ const JobDriveManagement = () => {
               className="flex h-9 items-center justify-between w-full md:w-48 border rounded-md px-3 py-2 text-sm shadow-sm bg-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             >
               <option value="all">All Types</option>
-              <option value="Full-time">Full-time</option>
               <option value="Internship">Internship</option>
               <option value="On-campus">On-campus</option>
               <option value="Off-campus">Off-campus</option>
+              <option value="Pool-campus">Pool-campus</option>
+              <option value="Job-listing">Job-listing</option>
+              <option value="Referral">Referral</option>
             </select>
           </div>
 
