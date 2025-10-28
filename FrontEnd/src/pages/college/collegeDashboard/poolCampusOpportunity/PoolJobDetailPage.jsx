@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { MapPin, Building, Calendar, Globe, Mail, Phone, Linkedin, CheckCircle, Info, Download } from 'lucide-react';
 import { ApplyForPoolCampus, SaveOppurtunity, getPoolCampusJobById } from '@/lib/College_AxiosIntance';
 import toast from 'react-hot-toast';
@@ -22,6 +22,8 @@ const formatDate = (dateString) => {
 
 const PoolJobDetailsPage = () => {
     const { id } = useParams();
+    const [searchParams] = useSearchParams();
+    const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
     const [jobDetails, setJobDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -179,7 +181,7 @@ const PoolJobDetailsPage = () => {
                                     </div>
 
 
-                                    <div className="flex space-x-2 mt-5">
+                                    {!isApplied && (<div className="flex space-x-2 mt-5">
                                         <button
                                             onClick={handleApply}
                                             className="bg-black text-white px-5 py-2 rounded-md hover:bg-gray-800 transition duration-200">
@@ -203,7 +205,7 @@ const PoolJobDetailsPage = () => {
                                             </svg>
                                             Share
                                         </button>
-                                    </div>
+                                    </div>)}
                                 </div>
 
 
@@ -300,7 +302,7 @@ const PoolJobDetailsPage = () => {
                         </div>
                     </div>
 
-                    <div className="px-6 py-6 border-t border-gray-200">
+                    {/* <div className="px-6 py-6 border-t border-gray-200">
                         <h2 className="text-xl font-bold text-gray-900 mb-4">Eligibility Criteria</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 mb-4">
                             <div>
@@ -326,7 +328,7 @@ const PoolJobDetailsPage = () => {
                                 <p className="mt-1 text-base text-gray-700">{jobDetails.eligibilityCriteria}</p>
                             </div>
                         )}
-                    </div>
+                    </div> */}
 
                     <div className="px-6 py-6 border-t border-gray-200">
                         <h2 className="text-xl font-bold text-gray-900 mb-4">Compensation & Benefits</h2>

@@ -59,6 +59,7 @@ const PoolJobListingPage = () => {
           employmentType: backendJob.employmentType,
           placementStartDate: backendJob.startDate,
           placementEndDate: backendJob.endDate,
+          tags:backendJob?.tags,
         };
       });
       setAllJobs(mappedJobs);
@@ -168,7 +169,7 @@ const PoolJobListingPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Companies Posting for Pool Campus Placements</h1>
+        <h1 className="text-2xl font-bold mb-6">Companies Posting for Pool Campus Opportunities</h1>
         <p className="text-gray-600 mb-8">
           Explore a wide range of pool campus opportunities from various companies. Apply filters to find the perfect match for your career aspirations.
         </p>
