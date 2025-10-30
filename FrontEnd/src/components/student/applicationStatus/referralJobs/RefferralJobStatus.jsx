@@ -3,6 +3,7 @@ import { Search, MapPin, Clock } from 'lucide-react';
 // import SimilarJobs from '../SimilarJobs';
 import { statusSteps, similarJobs } from '../../../../constants/data.js';
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
+import { Link } from 'react-router-dom';
 
 const ReferralStatus = () => {
   const [offcampusJobs, setOffcampusJobs] = useState();
@@ -36,7 +37,7 @@ const ReferralStatus = () => {
           ...item,
           id: item?._id,
           status: item?.currentStatus ?? item?.status ?? "",
-          date: new Date(firstHistory?.date).toUTCString().slice(0,16) ?? item?.createdAt ?? "",
+          date: new Date(firstHistory?.date).toUTCString().slice(0, 16) ?? item?.createdAt ?? "",
           jobDetails: safeJobDetails,
           companyDetails: safeCompanyDetails,
           experience: item?.experience ?? safeJobDetails?.[0]?.yearsOfExperience ?? "-"
@@ -182,6 +183,9 @@ const ReferralStatus = () => {
 
                 <div className="mt-6">
                   <p className="text-gray-700">{selectedJob.jobDetails?.jobDescription}</p>
+                </div>
+                <div className="mt-4">
+                  <Link to={`/professional-dashboard/Referral/${selectedJob?.jobDetails[0]?._id}?isApplied=true`} className="text-blue-500 text-sm font-medium">View full description</Link>
                 </div>
               </div>
 

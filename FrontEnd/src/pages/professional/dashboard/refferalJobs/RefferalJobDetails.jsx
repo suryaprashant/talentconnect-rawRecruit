@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 
 //  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
 // import JobCard from '@/components/student/studentDashboard/jobListing/JobCard';
-import { ApplyForJobListingOppurtunity, getReferalJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
+import { ApplyForJobListingOppurtunity, ApplyForReferral, getReferalJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 
 const JobDetails = () => {
   const [searchParams] = useSearchParams();
@@ -57,7 +57,7 @@ const JobDetails = () => {
 
   const handleApply = async () => {
     try {
-      const response = await ApplyForJobListingOppurtunity(jobId);
+      const response = await ApplyForReferral(jobId);
       // console.log("Applicaiton: ", response);
       if (response?.data?.success === true) toast.success('Application submitted!');
       else toast.error(response.response.data?.msg);
