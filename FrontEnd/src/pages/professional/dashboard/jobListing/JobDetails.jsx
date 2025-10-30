@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate,useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 //  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
@@ -7,6 +7,8 @@ import toast from 'react-hot-toast';
 import { ApplyForJobListingOppurtunity, getJobLisingJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 
 const JobDetails = () => {
+    const [searchParams] = useSearchParams();
+    const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
     const { jobId } = useParams();
     const navigate = useNavigate();
     const [jobDetails, setJobDetails] = useState(null);
@@ -134,7 +136,9 @@ const JobDetails = () => {
                                 </div>
                             </div>
                             <div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
-                                <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
+                                {!isSaved && (
+                                    <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
+                                )}
                                 <button onClick={handleApply} className="bg-blue-500 hover:bg-indigo-500 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">Apply</button>
                             </div>
                         </header>
