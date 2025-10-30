@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AlertCircle, Search } from "lucide-react";
+import { AlertCircle, Search, Check, X, Send, Eye, Link as LinkIcon } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 
@@ -12,6 +12,14 @@ const ServiceRequestManagement = () => {
   const [filterType, setFilterType] = useState("all");
   const [statistics, setStatistics] = useState(null);
   const [pagination, setPagination] = useState(null);
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [approvalData, setApprovalData] = useState({
+    message: "",
+    meetingLink: ""
+  });
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewRequest, setViewRequest] = useState(null);
 
   const ITEMS_PER_PAGE = 10;
 
@@ -65,6 +73,91 @@ const ServiceRequestManagement = () => {
   useEffect(() => {
     fetchRequests(1);
   }, [searchTerm, filterStatus, filterType]);
+
+  // Handle opening approval modal
+  const handleOpenApprovalModal = (request) => {
+    setSelectedRequest(request);
+    setApprovalData({
+      message: `Your service request for "${request.serviceRequestType}" has been approved!`,
+      meetingLink: ""
+    });
+    setShowApprovalModal(true);
+  };
+
+  // Handle opening view modal (read-only)
+  const handleOpenViewModal = (request) => {
+    setViewRequest(request);
+    setShowViewModal(true);
+  };
+
+  // Handle approve with message and link
+  const handleApproveWithMessage = async () => {
+    if (!selectedRequest) return;
+
+    try {
+      const response = await axios.patch(
+        `${import.meta.env.VITE_Backend_URL}/api/admin/servicerequest/${selectedRequest._id}/status`,
+        {
+          status: "approved",
+          notificationMessage: approvalData.message,
+          meetingLink: approvalData.meetingLink
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            "Content-Type": "application/json"
+          },
+          withCredentials: true
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Service request approved and notification sent!");
+        setShowApprovalModal(false);
+        setSelectedRequest(null);
+        setApprovalData({ message: "", meetingLink: "" });
+        // Refresh the list
+        fetchRequests(currentPage);
+      }
+    } catch (error) {
+      console.error("Error approving service request:", error);
+      toast.error("Failed to approve service request");
+    }
+  };
+
+  // Handle reject action
+  const handleReject = async (requestId) => {
+    try {
+      const response = await axios.patch(
+        `${import.meta.env.VITE_Backend_URL}/api/admin/servicerequest/${requestId}/status`,
+        {
+          status: "rejected",
+          notificationMessage: "Your service request has been rejected."
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            "Content-Type": "application/json"
+          },
+          withCredentials: true
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Service request rejected successfully");
+        // Refresh the list
+        fetchRequests(currentPage);
+      }
+    } catch (error) {
+      console.error("Error rejecting service request:", error);
+      toast.error("Failed to reject service request");
+    }
+  };
+
+  const handleCloseViewModal = () => {
+    setShowViewModal(false);
+    setViewRequest(null);
+  };
 
   const getStatusColor = (status) => {
     const statusLower = (status || '').toLowerCase();
@@ -201,12 +294,13 @@ const ServiceRequestManagement = () => {
                   <th className="p-2 text-left font-medium">Status</th>
                   <th className="p-2 text-left font-medium">Organization</th>
                   <th className="p-2 text-left font-medium">Date</th>
+                  <th className="p-2 text-center font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="5" className="p-8 text-center text-slate-500">
+                    <td colSpan="6" className="p-8 text-center text-slate-500">
                       Loading service requests...
                     </td>
                   </tr>
@@ -234,11 +328,48 @@ const ServiceRequestManagement = () => {
                       <td className="p-2">
                         {req.createdAt ? new Date(req.createdAt).toLocaleDateString() : "N/A"}
                       </td>
+                      <td className="p-2">
+                        <div className="flex items-center justify-center gap-2">
+                          {/* View button always available */}
+                          <button
+                            onClick={() => handleOpenViewModal(req)}
+                            className="inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700 h-8 px-3"
+                            title="View"
+                          >
+                            <Eye className="w-4 h-4" />
+                            View
+                          </button>
+
+                          {req.status?.toLowerCase() === 'pending' && (
+                            <>
+                              <button
+                                onClick={() => handleOpenApprovalModal(req)}
+                                className="inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium transition-colors bg-green-600 text-white hover:bg-green-700 h-8 px-3"
+                                title="Approve"
+                              >
+                                <Check className="w-4 h-4" />
+                                Approve
+                              </button>
+                              <button
+                                onClick={() => handleReject(req._id)}
+                                className="inline-flex items-center justify-center gap-1 rounded-md text-sm font-medium transition-colors bg-red-600 text-white hover:bg-red-700 h-8 px-3"
+                                title="Reject"
+                              >
+                                <X className="w-4 h-4" />
+                                Reject
+                              </button>
+                            </>
+                          )}
+                          {req.status?.toLowerCase() !== 'pending' && (
+                            <span className="text-xs text-slate-500"> </span>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="p-8 text-center text-slate-500">
+                    <td colSpan="6" className="p-8 text-center text-slate-500">
                       No service requests found
                     </td>
                   </tr>
@@ -272,6 +403,198 @@ const ServiceRequestManagement = () => {
             </div>
           )}
         </div>
+
+        {/* Approval Modal */}
+        {showApprovalModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <Send className="w-6 h-6" />
+                    Approve Service Request
+                  </h2>
+                  <button
+                    onClick={() => {
+                      setShowApprovalModal(false);
+                      setSelectedRequest(null);
+                      setApprovalData({ message: "", meetingLink: "" });
+                    }}
+                    className="text-slate-400 hover:text-slate-600"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-4">
+                {/* Request Details */}
+                <div className="bg-slate-50 p-4 rounded-lg space-y-2">
+                  <h3 className="font-semibold text-slate-700">Request Details</h3>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <span className="text-slate-500">Requester:</span>
+                      <p className="font-medium">{selectedRequest?.requesterName}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Email:</span>
+                      <p className="font-medium">{selectedRequest?.requesterEmail}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Type:</span>
+                      <p className="font-medium">{selectedRequest?.serviceRequestType}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Organization:</span>
+                      <p className="font-medium">{selectedRequest?.organizationName}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Message Input */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Message to Requester *
+                  </label>
+                  <textarea
+                    value={approvalData.message}
+                    onChange={(e) =>
+                      setApprovalData({ ...approvalData, message: e.target.value })
+                    }
+                    rows={4}
+                    maxLength={500}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    placeholder="Enter your message to the requester..."
+                    required
+                  />
+                  <div className="flex justify-between items-center mt-1">
+                    <p className="text-xs text-slate-500">
+                      This message will be sent to the requester's notification box
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      {approvalData.message.length}/500
+                    </p>
+                  </div>
+                </div>
+
+                {/* Meeting Link Input */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+                    <LinkIcon className="w-4 h-4" />
+                    Meeting/Resource Link (Optional)
+                  </label>
+                  <input
+                    type="url"
+                    value={approvalData.meetingLink}
+                    onChange={(e) =>
+                      setApprovalData({ ...approvalData, meetingLink: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="https://meet.google.com/xyz-abc-def or any relevant link"
+                  />
+                  <p className="text-xs text-slate-500 mt-1">
+                    Add a meeting link, document, or any relevant resource for the requester
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-6 border-t bg-slate-50 flex justify-end gap-3">
+                <button
+                  onClick={() => {
+                    setShowApprovalModal(false);
+                    setSelectedRequest(null);
+                    setApprovalData({ message: "", meetingLink: "" });
+                  }}
+                  className="px-4 py-2 border border-slate-300 rounded-md text-slate-700 hover:bg-slate-100 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleApproveWithMessage}
+                  disabled={!approvalData.message.trim()}
+                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  <Check className="w-4 h-4" />
+                  Approve & Send Notification
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* View Modal (read-only) */}
+        {showViewModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                  <Eye className="w-6 h-6" />
+                  View Service Request
+                </h2>
+                <button
+                  onClick={handleCloseViewModal}
+                  className="text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div className="bg-slate-50 p-4 rounded-lg space-y-2">
+                  <h3 className="font-semibold text-slate-700">Requester</h3>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <span className="text-slate-500">Name:</span>
+                      <p className="font-medium">{viewRequest?.requesterName || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Email:</span>
+                      <p className="font-medium">{viewRequest?.requesterEmail || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Organization:</span>
+                      <p className="font-medium">{viewRequest?.organizationName || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Submitted On:</span>
+                      <p className="font-medium">{viewRequest?.createdAt ? new Date(viewRequest.createdAt).toLocaleString() : 'N/A'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-lg border">
+                  <h3 className="font-semibold text-slate-700 mb-2">Requested Date & Time</h3>
+                  <div className="text-sm text-slate-600">
+                    <p>
+                      <strong>Date:</strong>{' '}
+                      {viewRequest?.requestedDate ? new Date(viewRequest.requestedDate).toLocaleDateString() : 'Not specified'}
+                    </p>
+                    <p>
+                      <strong>Time:</strong>{' '}
+                      {viewRequest?.requestedTime || 'Not specified'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-lg border">
+                  <h3 className="font-semibold text-slate-700 mb-2">Message from Requester</h3>
+                  <div className="text-sm text-slate-800 whitespace-pre-wrap">
+                    {viewRequest?.message || 'No message provided.'}
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 border-t bg-slate-50 flex justify-end">
+                <button
+                  onClick={handleCloseViewModal}
+                  className="px-4 py-2 border border-slate-300 rounded-md text-slate-700 hover:bg-slate-100 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
