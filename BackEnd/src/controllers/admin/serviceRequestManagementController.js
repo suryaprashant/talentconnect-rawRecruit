@@ -189,7 +189,11 @@ export const getServiceRequestBoardOverView = async (req, res) => {
           organizationName,
           serviceRequestType: request.serviceRequestType || 'other',
           status: request.status || 'pending',
-          createdAt: request.createdAt
+          createdAt: request.createdAt,
+          // Include original message and requested date/time so frontend can display them
+          message: request.message || '',
+          requestedDate: request.date || null,
+          requestedTime: request.time || ''
         };
       })
     );

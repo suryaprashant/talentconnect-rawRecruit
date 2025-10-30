@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiUserPlus, FiFile, FiDownload } from 'react-icons/fi';
+import { FiUserPlus, FiFile, FiDownload, FiCheckCircle, FiExternalLink } from 'react-icons/fi';
 import axios from 'axios';
 
 function NotificationsDropdown({ notifications, setNotifications, setUnreadCount }) {
@@ -71,6 +71,8 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
                 return <FiFile />;
             case 'TEAM_INVITATION':
                 return <FiUserPlus />;
+            case 'SERVICE_REQUEST_UPDATE':
+                return <FiCheckCircle />;
             default:
                 return <FiUserPlus />;
         }
@@ -111,6 +113,18 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
                                             <FiDownload className="mr-1" />
                                             Download {notification.fileName}
                                         </button>
+                                    )}
+                                    {notification.type === 'SERVICE_REQUEST_UPDATE' && notification.meetingLink && (
+                                        <a
+                                            href={notification.meetingLink}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="mt-2 inline-flex items-center px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors"
+                                        >
+                                            <FiExternalLink className="mr-1" />
+                                            Open Link
+                                        </a>
                                     )}
                                     <p className="text-xs text-gray-400 mt-1">
                                         {new Date(notification.createdAt).toLocaleString()}
