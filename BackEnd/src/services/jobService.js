@@ -30,6 +30,33 @@ export async function fetchOpportunityService(query) {
         throw new Error("Failed to fetch");
     }
 }
+export async function fetchReferalOpportunityService(query) {
+    try {
+        const response = await JobPostingTable.find(query)
+            .populate({
+                path: 'candidatePosted',
+                select: 'name jobRoles experiences'
+            })
+            .lean();
+
+        // cal status
+        const now = Date.now();
+        const newResponse = response.map(item => {
+            const start = new Date(item.hiringStartDate).getTime();
+            const end = new Date(item.hiringEndDate).getTime();
+
+            return {
+                ...item,
+                status: now >= start && now <= end ? 'Open' : 'Closed'
+            };
+        });
+
+        return { success: true, data: newResponse };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
 
 export async function checkOpportunityService(jobId) {
 
