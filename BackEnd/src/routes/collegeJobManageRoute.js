@@ -5,7 +5,7 @@ import secureRoute from '../middlewares/secureRouteMiddleware.js';
 const router = express.Router();
 
 
-router.get('/:jobType', secureRoute, getCollegePostedJobs);
+router.get('/:key/:jobType', secureRoute, getCollegePostedJobs);
 
 
 export default router; 
