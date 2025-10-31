@@ -28,6 +28,12 @@ export function getJobLisingJobDetails(jobId) {
     .catch(error => error);
 }
 
+export function getReferalJobDetails(jobId) {
+  return axiosClient.get(`/jobs/jobDetails/referral/${jobId}`)
+    .then(response => response)
+    .catch(error => error);
+}
+
 
 export function getRelaventOffcampusOpportunity() {
   return axiosClient.get(`/api/student-dashboard/off-campus`)
@@ -64,7 +70,7 @@ export function getInternshipById(internshipId) {
     .then(response => response)
     .catch(error => error);
 }
-export function getEventApplicationStatus(){
+export function getEventApplicationStatus() {
   return axiosClient.get(`/eventParticipation/byParticipent`)
     .then(response => response)
     .catch(error => error);
@@ -92,7 +98,7 @@ export function getHackathonDetail(hackathonId) {
     .then(response => response)
     .catch(error => error);
 }
-export function getEventDetail(eventId,event_name) {
+export function getEventDetail(eventId, event_name) {
   return axiosClient.get(`/${event_name}/${eventId}`)
     .then(response => response)
     .catch(error => error);

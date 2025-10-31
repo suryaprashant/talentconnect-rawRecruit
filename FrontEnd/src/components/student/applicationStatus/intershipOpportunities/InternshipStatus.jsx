@@ -3,6 +3,7 @@ import { Search, MapPin, Clock } from 'lucide-react';
 // import SimilarJobs from '../SimilarJobs';
 import { statusSteps, similarJobs } from '../../../../constants/data.js';
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
+import { Link } from 'react-router-dom';
 
 const InternshipStatus = () => {
   const [offcampusJobs, setOffcampusJobs] = useState();
@@ -200,7 +201,7 @@ const InternshipStatus = () => {
                 </div> */}
 
                 <div className="mt-4">
-                  <button className="text-blue-500 text-sm font-medium">View full description</button>
+                  <Link to={`/professional-dashboard/Job-listing/${selectedJob?.jobDetails[0]?._id}?isApplied=true`} className="text-blue-500 text-sm font-medium">View full description</Link>
                 </div>
               </div>
 

@@ -1,7 +1,8 @@
 import { fetchInternshipByIdService, 
     // fetchInternshipService, 
     // fetchJobListingOpportunityService, 
-    fetchOpportunityService } from "../services/jobService.js";
+    fetchOpportunityService, 
+    fetchReferalOpportunityService} from "../services/jobService.js";
 
     // import { getStudentService } from "../services/studentService.js";
 
@@ -72,6 +73,19 @@ export async function findJobListingOpportunityById(req, res) {
     query._id = jobId;
     try {
         const response = await fetchOpportunityService(query);
+        res.status(200).json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export async function findReferalOpportunityById(req, res) {
+    const jobId = req.params.jobId;
+
+    const query = {};
+    query._id = jobId;
+    try {
+        const response = await fetchReferalOpportunityService(query);
         res.status(200).json(response.data);
     } catch (error) {
         res.status(500).json({ error: "Internal server error" });
