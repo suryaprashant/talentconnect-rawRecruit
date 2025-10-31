@@ -85,8 +85,9 @@ export function getPoolCampusJobById(id) {
 }
 
 // job management 
-export function getCollegePostedJobs(jobType) {
-  return axiosClient.get(`/college/jobmanagement/${jobType}`)
+export function getCollegePostedJobs(jobType,key) {
+  console.log("job type: ",jobType," and key : ",key )
+  return axiosClient.get(`/college/jobmanagement/${key}/${jobType}`)
     .then(response => response)
     .catch(error => error);
 }

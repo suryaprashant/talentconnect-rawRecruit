@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useJobs } from '@/context/College/JobManagement/JobContext';
 import {
     Search, Eye, Trash,
@@ -9,6 +9,8 @@ import { getCollegePostedJobs } from '@/lib/College_AxiosIntance';
 
 function JobManagementApplication() {
     const navigate = useNavigate();
+    const pathParts = useLocation().pathname.split('/').filter(Boolean); // remove empty strings
+    const lastSegment = pathParts[pathParts.length - 1];
     
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -56,7 +58,7 @@ function JobManagementApplication() {
                 setError(null);
                 
                 // Fetching 'Pool-campus' jobs as requested
-                const response = await getCollegePostedJobs('Pool-campus');
+                const response = await getCollegePostedJobs('Pool-campus',lastSegment);
                 
                 if (response.data && response.data.response && Array.isArray(response.data.response)) {
                     // Process jobs to update their status based on dates
@@ -76,7 +78,7 @@ function JobManagementApplication() {
         };
 
         fetchJobs();
-    }, []);
+    }, [lastSegment]);
 
     // Set up interval to check and update job statuses periodically
     useEffect(() => {
