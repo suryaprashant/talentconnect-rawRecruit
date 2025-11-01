@@ -574,11 +574,12 @@ function AppRoutes() {
                   <ApplicationsPage />
                 </ApplicationProvider>
               } />
-              <Route path="/registered/on-campus-opportunities/:id" element={
+              <Route path="/registered/on-campus-opportunities/:jobId" element={<JobProvider><JobDetail /> </JobProvider>}/>
+              {/* <Route path="/registered/on-campus-opportunities/:id" element={
                 <ApplicationProvider>
                   <ApplicationDetailPage />
                 </ApplicationProvider>
-              } />
+              } /> */}
 
               <Route path="/registered/Internship" element={
                 <ApplicationProvider>
