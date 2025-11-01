@@ -55,12 +55,12 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
         >
           Request Info
         </button>
-        <button 
+        {/* <button 
             onClick={onRequestInfoClick}
           className="bg-gray-800 text-white px-8 py-3 rounded-lg hover:bg-gray-900 transition-colors"
         >
           Register Now
-        </button>
+        </button> */}
       </section>
     </div>
   );
