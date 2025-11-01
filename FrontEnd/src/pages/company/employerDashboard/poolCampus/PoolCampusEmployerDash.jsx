@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getPoolCampusJobByIdForCompany } from '../../../../lib/College_AxiosIntance'; // Assuming the API function is in this file
 import { format } from 'date-fns'; // A useful library for formatting dates
 import { ApplyForPoolcampusOppurtunity, SaveOppurtunity } from '@/lib/Company_AxiosInstance';
@@ -8,6 +8,8 @@ import toast from 'react-hot-toast';
 const PoolCampusEmployeeDash = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
     const [posting, setPosting] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -127,7 +129,7 @@ const PoolCampusEmployeeDash = () => {
                                 <svg className="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>
                             )}
                         </div>
-                        <div className="flex gap-2">
+                        {!isApplied && (<div className="flex gap-2">
                             <button
                                 className="border border-blue-500 text-blue-500 px-4 py-2 rounded text-sm"
                                 onClick={() => handleApply(id)}
@@ -140,7 +142,7 @@ const PoolCampusEmployeeDash = () => {
                             >
                                 Save
                             </button>
-                        </div>
+                        </div>)}
                     </div>
                 </div>
 
@@ -287,10 +289,10 @@ const PoolCampusEmployeeDash = () => {
                             <button className="flex items-center border border-gray-300 rounded px-4 py-2 text-sm text-gray-700">Message Officer</button>
                             <button className="flex items-center border border-gray-300 rounded px-4 py-2 text-sm text-gray-700">Suggest Alternate Date</button>
                         </div>
-                        <div className="flex gap-2">
+                        {!isApplied && (<div className="flex gap-2">
                             <button className="bg-blue-600 text-white px-6 py-2 rounded font-medium" onClick={() => handleApply(id)}>Accept Invitation</button>
                             {/* <button className="border border-red-500 text-red-500 px-6 py-2 rounded font-medium">Reject Invitation</button> */}
-                        </div>
+                        </div>)}
                     </div>
                 </div>
             </div>

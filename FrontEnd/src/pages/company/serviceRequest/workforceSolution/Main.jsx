@@ -4,7 +4,7 @@ import ServiceCard from "./ServiceCard";
 export default function MainPage({ onRegisterClick, numCards, addCard }) {
   // Show only the first numCards from serviceData
   const visibleCards = serviceData.slice(0, numCards);
-  
+
   // For demo purposes, add extra cards if needed
   while (visibleCards.length < numCards) {
     visibleCards.push({
@@ -19,33 +19,33 @@ export default function MainPage({ onRegisterClick, numCards, addCard }) {
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Header Section */}
       <header className="mb-12 lg:mb-20">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6 items-start">
-    {/* Left Column - Heading */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6 items-start">
+          {/* Left Column - Heading */}
           <div className="lg:pr-8">
             <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 leading-tight">
               Elevate Your Talent Acquisition: Premier Workforce Solutions
             </h1>
-    </div>
+          </div>
 
-    {/* Right Column - Description + CTA */}
-    <div className="flex flex-col justify-between h-full">
-      <p className="text-gray-600 text-base lg:text-lg mb-4 lg:mb-0 lg:leading-relaxed">
-        Discover top-tier workforce solutions designed to streamline your hiring process 
-        and connect you with exceptional talent.
-      </p>
-    </div>
-  </div>
-</header>
+          {/* Right Column - Description + CTA */}
+          <div className="flex flex-col justify-between h-full">
+            <p className="text-gray-600 text-base lg:text-lg mb-4 lg:mb-0 lg:leading-relaxed">
+              Discover top-tier workforce solutions designed to streamline your hiring process
+              and connect you with exceptional talent.
+            </p>
+          </div>
+        </div>
+      </header>
 
       {/* Services Section */}
       <section className="mb-16">
-   
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-6 lg:gap-8">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-6 lg:gap-8">
           {visibleCards.map((service) => (
-            <ServiceCard 
-              key={service.id} 
-              title={service.title} 
-              description={service.description} 
+            <ServiceCard
+              key={service.id}
+              title={service.title}
+              description={service.description}
               icon={service.icon}
             />
           ))}
@@ -55,17 +55,17 @@ export default function MainPage({ onRegisterClick, numCards, addCard }) {
       {/* CTA Section */}
       <section className="flex justify-center space-x-4 mb-12">
         <button
-           onClick={onRegisterClick}
-         className="border border-gray-300 bg-white px-6 py-2 rounded hover:bg-gray-100">
-      
+          onClick={onRegisterClick}
+          className="border border-gray-300 bg-white px-6 py-2 rounded hover:bg-gray-100">
+
           Request Info
         </button>
-        <button 
-       
+        {/* <button
+
           className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
         >
           Register Now
-        </button>
+        </button> */}
       </section>
     </div>
   );

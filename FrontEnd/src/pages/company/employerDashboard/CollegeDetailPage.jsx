@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApplyForOncampusOppurtunity, getCollegeDetail, SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 
@@ -14,6 +14,8 @@ const formatDate = (dateString) => {
 const CollegeDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
   // Renamed to jobPosting for clarity, since the ID is for a job posting
   const [jobPosting, setJobPosting] = useState(null);
   const [error, setError] = useState(null);
@@ -149,7 +151,7 @@ const CollegeDetailsPage = () => {
                 </svg>
               )}
             </div>
-            <div className="flex gap-2">
+            {!isApplied && (<div className="flex gap-2">
               <button
                 className="border border-blue-500 text-blue-500 px-4 py-2 rounded text-sm"
                 onClick={() => handleApply(id)}
@@ -166,7 +168,7 @@ const CollegeDetailsPage = () => {
                 </svg>
                 Share
               </button>
-            </div>
+            </div>)}
           </div>
         </div>
 
@@ -399,10 +401,10 @@ const CollegeDetailsPage = () => {
                   Message Placement Officer
                 </button>
               </div>
-              <div className="flex gap-2">
+              {!isApplied && (<div className="flex gap-2">
                 <button className="bg-blue-600 text-white px-6 py-2 rounded font-medium" onClick={() => handleApply(id)}>Accept Invitation</button>
                 <button className="border border-red-500 text-red-500 px-6 py-2 rounded font-medium">Reject Invitation</button>
-              </div>
+              </div>)}
             </div>
           </div>
         </div>
