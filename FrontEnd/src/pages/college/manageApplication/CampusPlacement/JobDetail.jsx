@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate,useLocation } from 'react-router-dom';
 import { getApplicationByJobOfManagement, conversationWithCollege, rejectCompanyApplicationForCollege, shortlistCompanyByCollege } from '@/lib/College_AxiosIntance.js';
 import useConversation from '@/statemanage/useConversation.js';
 import { ArrowLeft, Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, Building2 } from 'lucide-react';
@@ -14,7 +14,7 @@ const Spinner = () => (
 );
 
 const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
-  const navigate = useNavigate();
+  const navigate = useNavigate();  
   const { setSelectedConversation } = useConversation();
   const [currentStatus, setCurrentStatus] = useState(applicationData.currentStatus);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -209,6 +209,8 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
 function JobDetailPage() {
   const { jobId } = useParams();
   const navigate = useNavigate();
+  const pathParts = useLocation().pathname.split('/').filter(Boolean); 
+  const targetStatusKey = pathParts[pathParts.length - 2];
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -231,7 +233,7 @@ function JobDetailPage() {
 
     const fetchApplicants = async () => {
       try {
-        const response = await getApplicationByJobOfManagement(jobId, 'On-campus', "Applied");
+        const response = await getApplicationByJobOfManagement(jobId, 'On-campus', targetStatusKey);
         if (response.data && Array.isArray(response.data)) {
           setApplicants(response.data);
           if (response.data.length > 0 && response.data[0].job && response.data[0].job.jobTitle) {
@@ -249,7 +251,7 @@ function JobDetailPage() {
     };
 
     fetchApplicants();
-  }, [jobId]);
+  }, [jobId,targetStatusKey]);
 
   if (loading) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><Spinner /></div>;
