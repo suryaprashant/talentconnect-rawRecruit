@@ -259,8 +259,10 @@ export async function fetchApplicationsByJobService(jobId, jobType, targetStatus
 }
 
 // oncampus and poolcampus
-export async function fetchCollegeApplicationsByJobService(jobId, jobType, userType, targetStatus) {
+export async function fetchCollegeApplicationsByJobService(jobId, jobType, userType, targetStatusKey) {
+
     let applicantDB;
+    let targetStatus="Applied";
     if (userType === 'college') {
         applicantDB = "companyprofiles";
     }
@@ -269,6 +271,23 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
     }
     else if (userType === 'employer') {
         applicantDB = "collegeonboardings";
+    }
+    switch (targetStatusKey) {
+        case "campus-placement":
+            targetStatus="Applied"
+            break;
+        case "on-campus-opportunities":
+            targetStatus="Shortlisted"
+            break;
+        case "PoolCampus-placement":
+            targetStatus="Applied"
+            break;
+        case "pool-campus-opportunities":
+            targetStatus="Shortlisted"
+            break;
+        default:
+            targetStatus="";
+            break;
     }
     try {
         const response = await Application.aggregate([

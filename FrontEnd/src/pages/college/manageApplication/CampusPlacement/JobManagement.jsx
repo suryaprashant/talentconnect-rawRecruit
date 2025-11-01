@@ -9,8 +9,10 @@ import { getCollegePostedJobs } from '@/lib/College_AxiosIntance';
 
 function JobManagementApplication() {
     const navigate = useNavigate();
-    const pathParts = useLocation().pathname.split('/').filter(Boolean); // remove empty strings
+    const location = useLocation()
+    const pathParts = location.pathname.split('/').filter(Boolean); // remove empty strings
     const lastSegment = pathParts[pathParts.length - 1];
+    
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -155,7 +157,7 @@ function JobManagementApplication() {
     };
 
     const handleView = (jobId) => {
-        navigate(`/manage-application/campus-placement/${jobId}`);
+        navigate(`${location.pathname}/${jobId}`);
     };
 
     const handleEdit = (jobId, e) => {
