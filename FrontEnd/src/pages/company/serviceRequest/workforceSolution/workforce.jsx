@@ -1,13 +1,15 @@
 import { useState } from "react";
 import MainPage from "./Main";
-import RegistrationPage from "./RegistrationPage";
+import RegisterPage from "./RequestInfo";
+import RequestInfo from "./RegisterPage";
 import ServiceCard from "./ServiceCard";
 import "react-datepicker/dist/react-datepicker.css";
 import { createWorkforceRequest } from "@/lib/Company_AxiosInstance";
 
 export default function Workforce() {
   const [showRegistration, setShowRegistration] = useState(false);
-  
+    const [showRequestInfo, setShowRequestInfo] = useState(false);
+
   const initialFormData = {
     date: "",
     time: "",
@@ -18,8 +20,14 @@ export default function Workforce() {
   const [formData, setFormData] = useState(initialFormData);
   const [startDate, setStartDate] = useState(null);
 
-  const handleRegisterClick = () => setShowRegistration(true);
-  const handleBackClick = () => setShowRegistration(false);
+  const handleRegisterClick = () => {setShowRegistration(true);
+  }
+  const handleRequestInfoClick = () => setShowRequestInfo(true);
+
+  const handleBackClick = () => {
+    setShowRegistration(false);
+    setShowRequestInfo(false);
+  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -64,16 +72,21 @@ export default function Workforce() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      {!showRegistration ? (
-        <MainPage onRegisterClick={handleRegisterClick} />
-      ) : (
-        <RegistrationPage 
+      {showRequestInfo ? (
+        <RequestInfo onBackClick={handleBackClick} />
+      ) : showRegistration ? (
+        <RegisterPage
           onBackClick={handleBackClick}
           formData={formData}
           handleInputChange={handleInputChange}
           startDate={startDate}
           handleDateChange={handleDateChange}
           handleSubmit={handleSubmit}
+        />
+      ) : (
+        <MainPage
+          onRegisterClick={handleRegisterClick}
+          onRequestInfoClick={handleRequestInfoClick}
         />
       )}
     </div>
