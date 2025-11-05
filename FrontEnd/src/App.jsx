@@ -407,6 +407,9 @@ function AppRoutes() {
               <Route path="/company-dashboard/On-campus/:id" element={<CollegeDetailsPage />} />
               <Route path="/company-dashboard/pool-campus" element={<PoolEmployeeListing />} />
               <Route path="/company-dashboard/pool-campus/:id" element={<PoolCampusEmployeeDash />} />
+              <Route path="/company-dashboard/Off-campus/:jobId" element={<OffCampusJobDetail />} />
+              <Route path="/company-dashboard/Job-listing/:jobId" element={<JobDetails />} />
+              <Route path="/company-dashboard/Internship/:jobId" element={<InternJobDetails />} />
 
               {/* service request  */}
               <Route path="/service-request/workforce-solution" element={<Workforce />} />

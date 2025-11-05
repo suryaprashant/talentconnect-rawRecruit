@@ -92,7 +92,7 @@ const PoolCampusEmployeeDash = () => {
             <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex flex-col md:flex-row justify-between mb-6">
                     <div>
-                        <h1 className="text-2xl font-bold">Pool-Campus Drive Request from:</h1>
+                        <h1 className="text-2xl font-semibold">Pool-Campus Drive Request from:</h1>
                         <h2 className="text-3xl font-bold mb-2">{collegeName}</h2>
                         <div className="flex items-center mb-1">
                             <svg className="w-4 h-4 mr-1 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1z" /></svg>
@@ -123,8 +123,8 @@ const PoolCampusEmployeeDash = () => {
 
                     <div className="flex flex-col md:items-end mt-2">
                         <div className="w-32 h-32 bg-gray-200 flex items-center justify-center rounded mb-4 overflow-hidden">
-                            {collegeDetails.profileImage ? (
-                                <img src={collegeDetails.profileImage} alt={`${collegeName} Logo`} className="w-full h-full object-cover" />
+                            {collegeDetails?.profileImage ? (
+                                <img src={collegeDetails?.profileImage} alt={`${collegeName} Logo`} className="w-full h-full object-cover" />
                             ) : (
                                 <svg className="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>
                             )}
@@ -152,21 +152,25 @@ const PoolCampusEmployeeDash = () => {
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                         <div className="bg-white p-4 rounded border border-gray-200">
-                            <h4 className="font-bold text-3xl text-blue-600">{posting.minPackage?.amount ? `${posting.minPackage.amount} LPA` : 'N/A'}</h4>
+                            <h4 className="font-bold text-2xl text-blue-600">{posting.minPackage?.amount ? `${posting.minPackage.amount} LPA` : 'N/A'}</h4>
                             <p className="text-gray-600 text-sm">Minimum Package</p>
                         </div>
                         <div className="bg-white p-4 rounded border border-gray-200">
-                            <h4 className="font-bold text-3xl text-blue-600">{posting.numberOfOpenings || 'N/A'}</h4>
+                            <h4 className="font-bold text-2xl text-blue-600">{posting.noOfplacedStudents || 'N/A'}</h4>
                             <p className="text-gray-600 text-sm">Openings</p>
                         </div>
                         <div className="bg-white p-4 rounded border border-gray-200">
-                            <h4 className="font-bold text-3xl text-blue-600">{posting.employmentType || 'N/A'}</h4>
+                            <h4 className="font-bold text-2xl text-blue-600">{posting.employmentType || 'N/A'}</h4>
                             <p className="text-gray-600 text-sm">Employment</p>
                         </div>
-                        <div className="bg-white p-4 rounded border border-gray-200">
-                            <h4 className="font-bold text-3xl text-blue-600">{posting.workMode || 'N/A'}</h4>
+                        {posting.workMode?.length > 0 && (<div className="bg-white p-4 rounded border border-gray-200">
+                            <h4 className="font-bold text-2xl text-blue-600">{posting.workMode}</h4>
                             <p className="text-gray-600 text-sm">Work Mode</p>
-                        </div>
+                        </div>)}
+                        {posting.location?.length > 0 && (<div className="bg-white p-4 rounded border border-gray-200">
+                            <h4 className="font-bold text-2xl text-blue-600">{posting.location}</h4>
+                            <p className="text-gray-600 text-sm">Location</p>
+                        </div>)}
                     </div>
 
                     <div className="mb-8">
