@@ -9,7 +9,7 @@ export default function RegistrationPage({ onBackClick, formData, handleInputCha
        {/* Left Column - Heading */}
              <div className="lg:pr-8">
                <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 leading-tight">
-                 Elevate Your Talent Acquisition: Premier Workforce Solutions
+                 22222222222Elevate Your Talent Acquisition: Premier Workforce Solutions
                </h1>
        </div>
    

@@ -1,7 +1,7 @@
 import ServiceCard from "./ServiceCard";
 
 // Main Landing Page Component
-export default function MainPage({ onRegisterClick, numCards, addCard }) {
+export default function MainPage({ onRegisterClick, numCards, addCard, onRequestInfoClick }) {
   // Show only the first numCards from serviceData
   const visibleCards = serviceData.slice(0, numCards);
   
@@ -61,7 +61,7 @@ export default function MainPage({ onRegisterClick, numCards, addCard }) {
           Request Info
         </button>
         <button 
-       
+          onClick={alert('hi')}
           className="bg-black text-white px-6 py-2 rounded hover:bg-gray-800"
         >
           Register Now
