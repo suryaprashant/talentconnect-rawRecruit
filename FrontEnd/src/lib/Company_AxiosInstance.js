@@ -398,5 +398,12 @@ export function createBrandingRegistration(formData) {
     .catch(error => error);
 }
 
+// Get company service requests status
+export function getCompanyServiceRequestStatus() {
+  return axiosClient.get(`/api/servicerequests/company/status`)
+    .then(response => response)
+    .catch(error => error);
+}
+
 // ==================================================  End  ==================================================
 
