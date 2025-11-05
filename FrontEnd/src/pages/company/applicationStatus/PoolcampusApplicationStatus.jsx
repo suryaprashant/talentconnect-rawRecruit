@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Search, MapPin, Clock } from 'lucide-react';
 import { statusSteps, similarJobs } from '../../../constants/data.js';
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
+import { Link } from 'react-router-dom';
 
 export default function PoolcampusApplicationStatus() {
   const [oncampusJobs, setOncampusJobs] = useState([]);
@@ -182,7 +183,7 @@ export default function PoolcampusApplicationStatus() {
                   <p>{selectedJob.description}</p>
                 </div>
 
-                <div className="mt-6">
+                {/* <div className="mt-6">
                   <h3 className="font-medium mb-2">Activity on this role</h3>
                   <div className="flex border-t border-gray-200">
                     <div className="py-4 px-6 border-r border-gray-200">
@@ -194,10 +195,10 @@ export default function PoolcampusApplicationStatus() {
                       <p className="text-sm text-gray-500">Applications viewed by recruiter</p>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="mt-4">
-                  <button className="text-blue-500 text-sm font-medium">View full description</button>
+                  <Link to={`/company-dashboard/Pool-campus/${selectedJob?.jobDetails[0]?._id}?isApplied=true`} className="text-blue-500 text-sm font-medium">View full description</Link>
                 </div>
               </div>
             </>

@@ -121,8 +121,8 @@ const EmployerPoolCampus = () => {
 
                     <div className="flex flex-col md:items-end mt-2">
                         <div className="w-32 h-32 bg-gray-200 flex items-center justify-center rounded mb-4 overflow-hidden">
-                            {collegeDetails.profileImage ? (
-                                <img src={collegeDetails.profileImage} alt={`${collegeName} Logo`} className="w-full h-full object-cover" />
+                            {collegeDetails?.profileImage ? (
+                                <img src={collegeDetails?.profileImage} alt={`${collegeName} Logo`} className="w-full h-full object-cover" />
                             ) : (
                                 <svg className="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>
                             )}
