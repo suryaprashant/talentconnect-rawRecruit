@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { createOnCampusPlacementRequest, PoolCampusRequest, StudentTrainingRequest, CollegeSeminarRequest, createBrandingRequest,createWorkforceRequest, createEmployeeTrainingRequest, createStudentCounsellingRequest, createStudentMockInterviewRequest, createEmployeeTrainingRegistration, createBrandingRegistration } from '../controllers/serviceRequestController.js';
+import { createOnCampusPlacementRequest, PoolCampusRequest, StudentTrainingRequest, CollegeSeminarRequest, createBrandingRequest,createWorkforceRequest, createEmployeeTrainingRequest, createStudentCounsellingRequest, createStudentMockInterviewRequest, createEmployeeTrainingRegistration, createBrandingRegistration, getCompanyServiceRequestStatus } from '../controllers/serviceRequestController.js';
 import  secureRoute  from '../middlewares/secureRouteMiddleware.js';
 const router = express.Router();
 
@@ -22,6 +22,8 @@ router.post('/company/branding', secureRoute, createBrandingRequest);
 router.post('/company/employee-training-registration', secureRoute, createEmployeeTrainingRegistration);
 router.post('/company/branding-registration', secureRoute, createBrandingRegistration);
 
+// Get company service requests status
+router.get('/company/status', secureRoute, getCompanyServiceRequestStatus);
 
 //  =====>>>   Candidate Side  <<<<==========
 

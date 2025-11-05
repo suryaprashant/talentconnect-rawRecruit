@@ -1,53 +1,415 @@
+import { useState, useEffect } from 'react'
 import PageHeader from '@/components/dashboard/PageHeader'
 import Button from '@/components/ui/Button'
-import { FiPlus } from 'react-icons/fi'
+import { FiPlus, FiUsers, FiCheckCircle, FiClock, FiAlertCircle, FiTrendingUp, FiTrendingDown } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+import { getShorlistedCandidateByCompany, getAcceptedCandidateByCompany, getCompanyServiceRequestStatus } from '@/lib/Company_AxiosInstance'
 
 function Home() {
+  const navigate = useNavigate()
+  const [dashboardData, setDashboardData] = useState({
+    shortlisted: [],
+    accepted: [],
+    applied: [],
+    serviceRequests: {
+      total: 0,
+      pending: 0,
+      approved: 0,
+      rejected: 0
+    },
+    loading: true
+  })
+
+  useEffect(() => {
+    fetchDashboardData()
+  }, [])
+
+  const fetchDashboardData = async () => {
+    try {
+      const jobTypes = ['Off-campus', 'Job-listing', 'Internship']
+      const applicantTypes = ['user', 'college', 'company']
+
+      const promises = []
+      for (const jobType of jobTypes) {
+        for (const applicantType of applicantTypes) {
+          promises.push(
+            getShorlistedCandidateByCompany(applicantType, jobType).catch(() => ({ data: { response: [] } })),
+            getAcceptedCandidateByCompany(applicantType, jobType).catch(() => ({ data: { response: [] } }))
+          )
+        }
+      }
+
+      // Add service request API call
+      promises.push(getCompanyServiceRequestStatus().catch(() => ({ 
+        data: { 
+          success: false,
+          data: {
+            total: 0,
+            pending: 0,
+            approved: 0,
+            rejected: 0
+          }
+        } 
+      })))
+
+      const results = await Promise.all(promises)
+
+      let shortlisted = []
+      let accepted = []
+
+      // Process application results (first 18 items, leaving last for service requests)
+      for (let i = 0; i < results.length - 1; i += 2) {
+        shortlisted = shortlisted.concat(results[i].data?.response || [])
+        accepted = accepted.concat(results[i + 1].data?.response || [])
+      }
+
+      // Extract service requests data from the last promise
+      const serviceRequestRes = results[results.length - 1]
+      let serviceRequestsData = {
+        total: 0,
+        pending: 0,
+        approved: 0,
+        rejected: 0
+      }
+
+      if (serviceRequestRes.data?.success && serviceRequestRes.data?.data) {
+        serviceRequestsData = serviceRequestRes.data.data
+      } else if (serviceRequestRes.data?.data) {
+        // Fallback in case structure is different
+        serviceRequestsData = serviceRequestRes.data.data
+      }
+
+      setDashboardData({
+        shortlisted,
+        accepted,
+        applied: [...shortlisted, ...accepted],
+        serviceRequests: serviceRequestsData,
+        loading: false
+      })
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error)
+      setDashboardData(prev => ({ ...prev, loading: false }))
+    }
+  }
+
+  const totalApplications = dashboardData.shortlisted.length + dashboardData.accepted.length
+
+  if (dashboardData.loading) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    )
+  }
+
+  const getStatusColor = (status) => {
+    switch(status?.toLowerCase()) {
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'approved':
+        return 'bg-green-100 text-green-800'
+      case 'rejected':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const getStatusIcon = (status) => {
+    switch(status?.toLowerCase()) {
+      case 'pending':
+        return <FiClock className="w-4 h-4" />
+      case 'approved':
+        return <FiCheckCircle className="w-4 h-4" />
+      case 'rejected':
+        return <FiAlertCircle className="w-4 h-4" />
+      default:
+        return <FiUsers className="w-4 h-4" />
+    }
+  }
+
   return (
     <div>
       <PageHeader 
-        title="Header Title"
-        label="Label"
+        title="Company Dashboard"
+        label="Overview"
         status="Active"
-        assignee="Assignee"
-        createdAt="July 1, 2023"
+        assignee="Company Admin"
+        createdAt={new Date().toLocaleDateString()}
       />
       
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-          <h2 className="mb-4 text-lg font-medium text-gray-900">Main Content</h2>
-          <p className="text-gray-600">
-            This is where your main content would go. You can click and paste content here as needed.
-          </p>
-          <div className="flex justify-end mt-4">
-            <Button
-              variant="primary"
+      {/* Key Metrics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        {/* Total Applications */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Total Applications</h3>
+              <p className="text-3xl font-bold text-blue-600 mt-2">{totalApplications}</p>
+              <p className="text-xs text-gray-500 mt-2">All job types</p>
+            </div>
+            <div className="p-3 bg-blue-100 rounded-lg">
+              <FiUsers className="w-8 h-8 text-blue-600" />
+            </div>
+          </div>
+        </div>
+
+        {/* Shortlisted */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Shortlisted</h3>
+              <p className="text-3xl font-bold text-yellow-600 mt-2">{dashboardData.shortlisted.length}</p>
+              <p className="text-xs text-gray-500 mt-2 flex items-center">
+                <FiTrendingUp className="w-3 h-3 mr-1" />
+                {dashboardData.shortlisted.length > 0 ? 'In Progress' : 'No Candidates'}
+              </p>
+            </div>
+            <div className="p-3 bg-yellow-100 rounded-lg">
+              <FiClock className="w-8 h-8 text-yellow-600" />
+            </div>
+          </div>
+        </div>
+
+        {/* Accepted */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Accepted</h3>
+              <p className="text-3xl font-bold text-green-600 mt-2">{dashboardData.accepted.length}</p>
+              <p className="text-xs text-gray-500 mt-2 flex items-center">
+                <FiCheckCircle className="w-3 h-3 mr-1" />
+                Final Hires
+              </p>
+            </div>
+            <div className="p-3 bg-green-100 rounded-lg">
+              <FiCheckCircle className="w-8 h-8 text-green-600" />
+            </div>
+          </div>
+        </div>
+
+        {/* Service Requests */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Service Requests</h3>
+              <p className="text-3xl font-bold text-purple-600 mt-2">{dashboardData.serviceRequests.total}</p>
+              <p className="text-xs text-gray-500 mt-2">
+                <span className="inline-block bg-yellow-50 text-yellow-700 px-2 py-1 rounded text-xs mr-1">
+                  {dashboardData.serviceRequests.pending} Pending
+                </span>
+              </p>
+            </div>
+            <div className="p-3 bg-purple-100 rounded-lg">
+              <FiAlertCircle className="w-8 h-8 text-purple-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Service Requests Status */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">Service Requests Status</h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full mr-3"></div>
+                <span className="text-gray-700 font-medium">Pending Requests</span>
+              </div>
+              <span className="text-2xl font-bold text-yellow-600">{dashboardData.serviceRequests.pending}</span>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                <span className="text-gray-700 font-medium">Approved Requests</span>
+              </div>
+              <span className="text-2xl font-bold text-green-600">{dashboardData.serviceRequests.approved}</span>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+                <span className="text-gray-700 font-medium">Rejected Requests</span>
+              </div>
+              <span className="text-2xl font-bold text-red-600">{dashboardData.serviceRequests.rejected}</span>
+            </div>
+          </div>
+          <div className="mt-4">
+            <Button 
+              variant="outline" 
               size="md"
-              className="flex items-center"
+              onClick={() => navigate('/service-request/workforce-solution')}
+              className="w-full"
             >
-              <FiPlus className="w-4 h-4 mr-2" />
-              Add New
+              Manage Service Requests
             </Button>
           </div>
         </div>
-        
-        <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-          <h2 className="mb-4 text-lg font-medium text-gray-900">Additional Content</h2>
-          <p className="text-gray-600">
-            This is a secondary content area that can be used to display related information or additional features.
-          </p>
-          <div className="flex justify-end mt-4">
-            <Button
-              variant="outline"
+
+        {/* Applications Overview */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">Application Funnel</h2>
+          <div className="space-y-4">
+            <div className="relative">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">Total Received</span>
+                <span className="text-sm font-bold text-gray-900">{totalApplications}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div className="bg-blue-600 h-3 rounded-full" style={{ width: '100%' }}></div>
+              </div>
+            </div>
+            
+            <div className="relative">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">Shortlisted</span>
+                <span className="text-sm font-bold text-gray-900">
+                  {totalApplications > 0 ? Math.round((dashboardData.shortlisted.length / totalApplications) * 100) : 0}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className="bg-yellow-600 h-3 rounded-full" 
+                  style={{ width: totalApplications > 0 ? `${(dashboardData.shortlisted.length / totalApplications) * 100}%` : '0%' }}
+                ></div>
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">Accepted</span>
+                <span className="text-sm font-bold text-gray-900">
+                  {totalApplications > 0 ? Math.round((dashboardData.accepted.length / totalApplications) * 100) : 0}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className="bg-green-600 h-3 rounded-full" 
+                  style={{ width: totalApplications > 0 ? `${(dashboardData.accepted.length / totalApplications) * 100}%` : '0%' }}
+                ></div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4">
+            <Button 
+              variant="outline" 
               size="md"
+              onClick={() => navigate('/job-management/On-campus')}
+              className="w-full"
             >
-              View Details
+              View Job Management
             </Button>
           </div>
+        </div>
+      </div>
+
+      {/* Recent Applications */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Recent Shortlisted</h2>
+            <button 
+              onClick={() => navigate('/shortlisted/on-campus-listings')}
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            >
+              View All →
+            </button>
+          </div>
+          {dashboardData.shortlisted.length > 0 ? (
+            <div className="space-y-3">
+              {dashboardData.shortlisted.slice(0, 5).map((application, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-900">
+                      {application.applicant?.name || 'Unknown Candidate'}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      {application.jobTitle?.join(', ') || 'Job Title'}
+                    </p>
+                  </div>
+                  <span className="px-3 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">
+                    Shortlisted
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-center py-8">No shortlisted candidates yet</p>
+          )}
+        </div>
+        
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Recent Accepted</h2>
+            <button 
+              onClick={() => navigate('/accepted/on-campus-listings')}
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            >
+              View All →
+            </button>
+          </div>
+          {dashboardData.accepted.length > 0 ? (
+            <div className="space-y-3">
+              {dashboardData.accepted.slice(0, 5).map((application, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-900">
+                      {application.applicant?.name || 'Unknown Candidate'}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      {application.jobTitle?.join(', ') || 'Job Title'}
+                    </p>
+                  </div>
+                  <span className="px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">
+                    Accepted
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-center py-8">No accepted candidates yet</p>
+          )}
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+        <h2 className="mb-6 text-lg font-semibold text-gray-900">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Button 
+            variant="primary" 
+            size="md" 
+            className="flex items-center justify-center"
+            onClick={() => navigate('/hiring-channels/post-a-job')}
+          >
+            <FiPlus className="w-4 h-4 mr-2" />
+            Post New Job
+          </Button>
+          <Button 
+            variant="outline" 
+            size="md"
+            onClick={() => navigate('/job-management/On-campus')}
+          >
+            Manage Applications
+          </Button>
+          <Button 
+            variant="outline" 
+            size="md"
+            onClick={() => navigate('/interviews')}
+          >
+            Schedule Interviews
+          </Button>
+          <Button 
+            variant="outline" 
+            size="md"
+            onClick={() => navigate('/hosting-management')}
+          >
+            Hosting Events
+          </Button>
         </div>
       </div>
     </div>
   )
 }
 
-export default Home ;
+export default Home
