@@ -25,6 +25,7 @@ const CollegeDetailsPage = () => {
       // Assuming getCollegeDetail fetches a JobPostingTable document
       // that is populated with the associated CollegeOnboarding document.
       const response = await getCollegeDetail(id);
+      console.log(response.data)
       setJobPosting(response.data);
       setError(null);
     } catch (error) {
@@ -47,6 +48,21 @@ const CollegeDetailsPage = () => {
     } catch (error) {
       console.log("Error: ", error);
       toast.error(`Something went wrong`);
+    }
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `${jobPosting?.jobTitle || 'Job'} at ${jobPosting?.companyPosted?.companyDetails?.companyName}`,
+        text: `Check out this opportunity for a ${jobPosting?.jobTitle || 'job'} at ${jobPosting?.companyPosted?.companyDetails?.companyName}!`,
+        url: window.location.href,
+      })
+        .catch((error) => console.log('Error sharing', error));
+    } else {
+      navigator.clipboard.writeText(window.location.href)
+        .then(() => alert('Link copied to clipboard!'))
+        .catch(() => alert('Failed to copy link'));
     }
   };
 
@@ -96,7 +112,7 @@ const CollegeDetailsPage = () => {
         <div className="flex flex-col md:flex-row justify-between mb-6">
           <div>
             <div className="mb-2 flex items-center">
-              <h1 className="text-2xl font-bold">Registration for: {jobPosting?.lookingFor || 'N/A'}</h1>
+              <h1 className="text-2xl font-bold">OIIIIRegistration for: {jobPosting?.lookingFor || 'N/A'}</h1>
 
             </div>
             <h2 className="text-3xl font-bold mb-2"> College Name : {collegeDetails?.collegeUniversityDetails?.collegeName || 'N/A'}</h2>
@@ -160,11 +176,13 @@ const CollegeDetailsPage = () => {
                 onClick={() => handleSave(id)}
               >
                 Save</button>
-              <button className="border border-gray-300 text-gray-600 px-4 py-2 rounded text-sm flex items-center">
+              <button 
+              onClick={handleShare}
+              className="border border-gray-300 text-gray-600 px-4 py-2 rounded text-sm flex items-center">
                 <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
                 </svg>
-                Share
+                Share 
               </button>
             </div>
           </div>
