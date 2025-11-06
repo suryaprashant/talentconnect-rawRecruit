@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate,useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getApplicationByJobOfManagement, conversationWithCollege, rejectCompanyApplicationForCollege, shortlistCompanyByCollege } from '@/lib/College_AxiosIntance.js';
 import useConversation from '@/statemanage/useConversation.js';
 import { ArrowLeft, Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, Building2 } from 'lucide-react';
@@ -14,7 +14,7 @@ const Spinner = () => (
 );
 
 const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
   const [currentStatus, setCurrentStatus] = useState(applicationData.currentStatus);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -178,8 +178,8 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
           onClick={handleShortlist}
           disabled={isProcessing}
           className={`w-full text-white px-4 py-2 rounded-md font-semibold transition-colors text-center text-sm ${currentStatus === 'Shortlisted'
-              ? 'bg-green-600 hover:bg-green-700'
-              : 'bg-blue-600 hover:bg-blue-700'
+            ? 'bg-green-600 hover:bg-green-700'
+            : 'bg-blue-600 hover:bg-blue-700'
             } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {isProcessing && currentStatus !== 'Rejected' ? 'Shortlisting...' : (currentStatus === 'Shortlisted' ? 'Shortlisted' : 'Shortlist')}
@@ -188,8 +188,8 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
           onClick={handleReject}
           disabled={isProcessing}
           className={`w-full text-white px-4 py-2 rounded-md font-semibold transition-colors text-center text-sm ${currentStatus === 'Rejected'
-              ? 'bg-red-700 hover:bg-red-800'
-              : 'bg-red-500 hover:bg-red-600'
+            ? 'bg-red-700 hover:bg-red-800'
+            : 'bg-red-500 hover:bg-red-600'
             } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {isProcessing && currentStatus !== 'Shortlisted' ? 'Rejecting...' : (currentStatus === 'Rejected' ? 'Rejected' : 'Reject')}
@@ -206,10 +206,10 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
   );
 };
 
-function JobDetailPage() {
+function JobDetailPage(props) {
   const { jobId } = useParams();
   const navigate = useNavigate();
-  const pathParts = useLocation().pathname.split('/').filter(Boolean); 
+  const pathParts = useLocation().pathname.split('/').filter(Boolean);
   const targetStatusKey = pathParts[pathParts.length - 2];
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -233,7 +233,7 @@ function JobDetailPage() {
 
     const fetchApplicants = async () => {
       try {
-        const response = await getApplicationByJobOfManagement(jobId, 'On-campus', targetStatusKey);
+        const response = await getApplicationByJobOfManagement(jobId, 'On-campus', props?.status);
         if (response.data && Array.isArray(response.data)) {
           setApplicants(response.data);
           if (response.data.length > 0 && response.data[0].job && response.data[0].job.jobTitle) {
@@ -251,7 +251,7 @@ function JobDetailPage() {
     };
 
     fetchApplicants();
-  }, [jobId,targetStatusKey]);
+  }, [jobId, targetStatusKey]);
 
   if (loading) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><Spinner /></div>;

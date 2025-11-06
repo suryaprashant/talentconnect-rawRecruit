@@ -29,7 +29,7 @@ export default function OnCampusJobManagement() {
     setLoading(true);
     setError(null);
     try {
-      const response = await getPostedJobs("Pool-campus");
+      const response = await getPostedJobs("Pool-campus","Shortlisted");
       // console.log("response oncampus: ", response);
       setJobs(response?.data);
     } catch (err) {
@@ -224,7 +224,7 @@ export default function OnCampusJobManagement() {
                   <th className="px-4 py-3">Looking For</th>
                   <th className="px-4 py-3">Locations</th>
                   <th className="px-4 py-3">End Date</th>
-                  {/* <th className="px-4 py-3">Applications</th> */}
+                  <th className="px-4 py-3">Applications</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
               </thead>
@@ -259,7 +259,7 @@ export default function OnCampusJobManagement() {
                       <td className="px-4 py-4">
                         {new Date(job.endDate).toUTCString().slice(0, 16)}
                       </td>
-                      {/* <td className="px-4 py-4">{job?.applicationCount}</td> */}
+                      <td className="px-4 py-4">{job?.applicationCount}</td>
                       <td className="px-4 py-4">
                         <div className="flex gap-2">
                           <button

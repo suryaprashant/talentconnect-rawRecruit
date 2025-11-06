@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.delete('/:jobId',secureRoute,deleteJob);
 // get jobs
-router.get('/:jobType', secureRoute, getPostedJobs);
+router.get('/', secureRoute, getPostedJobs);
 
 
 router.get('/employer/:jobType', secureRoute, getEmployerJobs);

@@ -26,7 +26,7 @@ export default function OffCampusJobManagement() {
 
   const fetchJobs = async () => {
     try {
-      const response = await getPostedJobs("Job-listing");
+      const response = await getPostedJobs("Job-listing","Applied");
       console.log(response.data.response);
       setJobs(response?.data);
 

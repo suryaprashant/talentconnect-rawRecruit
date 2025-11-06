@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getPoolCampusJobByIdForCompany } from '../../../lib/College_AxiosIntance';
 import { format } from 'date-fns';
-import { ApplyForPoolcampusOppurtunity, SaveOppurtunity } from '@/lib/Company_AxiosInstance';
+import { ApplyForOncampusOppurtunity, SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 
 const CollegeDetailPage = () => {
@@ -50,7 +50,7 @@ const CollegeDetailPage = () => {
 
   const handleApply = async (jobId) => {
     try {
-      const response = await ApplyForPoolcampusOppurtunity(jobId);
+      const response = await ApplyForOncampusOppurtunity(jobId);
       if (response.data?.success === true) toast.success("Applied");
       // }
       else toast.error(response?.response.data.msg);
