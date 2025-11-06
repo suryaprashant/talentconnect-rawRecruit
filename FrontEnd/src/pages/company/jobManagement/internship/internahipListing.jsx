@@ -26,7 +26,7 @@ export default function InternshipListing() {
 
   const fetchJobs = async () => {
     try {
-      const response = await getPostedJobs("Internship");
+      const response = await getPostedJobs("Internship","Applied");
       // console.log(response.data.response);
       setJobs(response?.data);
 

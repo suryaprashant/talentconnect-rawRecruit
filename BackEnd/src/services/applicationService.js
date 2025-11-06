@@ -10,13 +10,13 @@ import Application from '../models/applicationModel.js';
 // import OnCampusApplication from '../models/oncampusApplicationModel.js';
 // import JobListingApplication from '../models/jobListingApplicationModel.js';
 export const getAll = async () => {
-  try {
-    const applications = await Application.find();
-    return applications;
-  } catch (error) {
-    console.error("❌ Error in getAllApplications service:", error.message);
-    throw new Error("Failed to fetch applications from the database");
-  }
+    try {
+        const applications = await Application.find();
+        return applications;
+    } catch (error) {
+        console.error("❌ Error in getAllApplications service:", error.message);
+        throw new Error("Failed to fetch applications from the database");
+    }
 };
 
 // export const getTotalJobApplicationSubmited = async () => {
@@ -30,12 +30,12 @@ export const getAll = async () => {
 // };
 
 export const getTotalJobApplicationSubmited = async (filter = {}) => {
-  try {
-    return await Application.countDocuments(filter);
-  } catch (error) {
-    console.error("Error in getTotalApplicationSubmited:", error);
-    throw error;
-  }
+    try {
+        return await Application.countDocuments(filter);
+    } catch (error) {
+        console.error("Error in getTotalApplicationSubmited:", error);
+        throw error;
+    }
 };
 
 // check if similar application exists
@@ -149,17 +149,17 @@ export async function createApplicationService(userId, userType, jobId, jobType)
 export async function fetchApplicationStatusService(userId, jobType, userType) {
     let fromCollection;
     let localField;
-    if(userType==='company'){
-        fromCollection="collegeonboardings";
-        localField="jobDetails.collegePosted";
+    if (userType === 'company') {
+        fromCollection = "collegeonboardings";
+        localField = "jobDetails.collegePosted";
     }
-    if(userType==='employer'){
-        fromCollection="collegeonboardings";
-        localField="jobDetails.collegePosted";
+    if (userType === 'employer') {
+        fromCollection = "collegeonboardings";
+        localField = "jobDetails.collegePosted";
     }
-    else{
-        fromCollection="companyprofiles";
-        localField="jobDetails.companyPosted";
+    else {
+        fromCollection = "companyprofiles";
+        localField = "jobDetails.companyPosted";
     }
 
     try {
@@ -260,6 +260,7 @@ export async function fetchApplicationsByJobService(jobId, jobType, targetStatus
 
 // oncampus and poolcampus
 export async function fetchCollegeApplicationsByJobService(jobId, jobType, userType, targetStatus) {
+    console.log("...........\n", jobId, jobType, userType, targetStatus);
 
     let applicantDB;
     // let targetStatus="Applied";
@@ -309,22 +310,22 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
             {
                 $unwind: { path: "$applicant", preserveNullAndEmptyArrays: true }
             },
-            {
-                $lookup: {
-                    from: "auths", // Join with Auth collection to get userId
-                    localField: "applicant.userId", // Assuming companyProfile has userId field linking to Auth
-                    foreignField: "_id",
-                    as: "authInfo"
-                }
-            },
-            {
-                $unwind: { path: "$authInfo", preserveNullAndEmptyArrays: true }
-            },
-            {
-                $addFields: {
-                    "applicant.userId": "$authInfo._id" // Add Auth ID to applicant object
-                }
-            },
+            // {
+            //     $lookup: {
+            //         from: "auths", // Join with Auth collection to get userId
+            //         localField: "applicant.userId", // Assuming companyProfile has userId field linking to Auth
+            //         foreignField: "_id",
+            //         as: "authInfo"
+            //     }
+            // },
+            // {
+            //     $unwind: { path: "$authInfo", preserveNullAndEmptyArrays: true }
+            // },
+            // {
+            //     $addFields: {
+            //         "applicant.userId": "$authInfo._id" // Add Auth ID to applicant object
+            //     }
+            // },
             {
                 $project: {
                     "applicant": 1,
@@ -335,6 +336,8 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
                 }
             }
         ]);
+
+        // console.log("res: ",response);
         return { success: true, data: response };
     } catch (error) {
         console.log("Error: ", error.message);
@@ -342,9 +345,9 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
     }
 }
 // count applications
-export async function countApplicationsService(jobId, jobType) {
+export async function countApplicationsService(jobId, jobType, targetStatus) {
     try {
-        const response = await Application.countDocuments({ job: jobId, jobType: jobType, currentStatus: "Applied" });
+        const response = await Application.countDocuments({ job: jobId, jobType: jobType, currentStatus: targetStatus });
         return { success: true, count: response };
     } catch (error) {
         console.log("Error: ", error.message);
@@ -591,7 +594,7 @@ export async function fetchCandidatesbyStatus(companyId, targetStatus, applicant
                 college: "$applicantDetails.collegeUniversityDetails"
             };
         }
-        else if (applicantType == "company" || applicantType == 'employer')  {
+        else if (applicantType == "company" || applicantType == 'employer') {
             fromCollection = "CompanyProfile";
             projectApplicant = {
                 company: "$applicantDetails.companyDetails"

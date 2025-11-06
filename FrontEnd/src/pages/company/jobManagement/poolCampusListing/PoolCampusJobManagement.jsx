@@ -30,7 +30,7 @@ export default function PoolCampusJobManagement() {
     setLoading(true);
     setError(null);
     try {
-      const response = await getPostedJobs("Pool-campus");
+      const response = await getPostedJobs("Pool-campus", "Applied");
       // console.log("response oncampus: ", response);
       setJobs(response?.data);
     } catch (err) {

@@ -7,8 +7,8 @@ import { deleteJobByIdService, getJobPostedByCompanyService } from "../services/
 export const getPostedJobs = async (req, res) => {
     const Id = req.user._id;
     const userType = req.user.userType;
-    const { jobType } = req.params;
-    if (!jobType) return res.status(404).json({ msg: "job not found!" });
+    const { jobType, status } = req.query;
+    if (!jobType || !status) return res.status(404).json({ msg: "parameters missing!" });
 
     try {
 
@@ -25,11 +25,11 @@ export const getPostedJobs = async (req, res) => {
             return res.status(404).json({ error: "Company profile not found" });
         }
 
-        const jobs = await getJobPostedByCompanyService(companyProfile.data[0]._id, jobType,userType);
- 
+        const jobs = await getJobPostedByCompanyService(companyProfile.data[0]._id, jobType, userType);
+
         const jobsWithApplicationCount = await Promise.all(
             jobs?.response?.map(async (job) => {
-                const count = await countApplicationsService(job._id, jobType);
+                const count = await countApplicationsService(job._id, jobType, status);
                 const applicationCount = count?.count;
                 return {
                     ...job,
@@ -68,25 +68,25 @@ export const deleteJob = async (req, res) => {
 
 // ============= Employer =====================
 
-export const getEmployerJobs = async(req,res) => {
-    const{jobType} = req.params ;
-      const userType = req.user.userType;
-    if(!jobType){
-        return res.status(404).json({msg:"Job type not specified"}) ;
+export const getEmployerJobs = async (req, res) => {
+    const { jobType } = req.params;
+    const userType = req.user.userType;
+    if (!jobType) {
+        return res.status(404).json({ msg: "Job type not specified" });
     }
     try {
-        let profileId ;
+        let profileId;
         const employerProfile = await getEmployerService(req.user);
-       if (!employerProfile || !employerProfile.success ||   employerProfile.data.length === 0 ) {
-           return res.status(404).json({ error: employerProfile.msg || "Employer profile not found" });
+        if (!employerProfile || !employerProfile.success || employerProfile.data.length === 0) {
+            return res.status(404).json({ error: employerProfile.msg || "Employer profile not found" });
         }
-        profileId = employerProfile.data[0]._id ;
+        profileId = employerProfile.data[0]._id;
         const jobs = await getJobPostedByCompanyService(profileId, jobType, userType);
 
         if (!jobs || !jobs.success) {
             return res.status(404).json({ msg: "Could not find jobs for this profile." });
         }
- 
+
         const jobsWithApplicationCount = await Promise.all(
             jobs?.response?.map(async (job) => {
                 const count = await countApplicationsService(job._id, jobType);

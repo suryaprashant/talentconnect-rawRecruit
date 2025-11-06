@@ -32,7 +32,7 @@ export default function OnCampusJobManagement() {
     setLoading(true);
     setError(null);
     try {
-      const response = await getPostedJobs("On-campus");
+      const response = await getPostedJobs("On-campus", "Applied");
       setJobs(response?.data);
     } catch (err) {
       console.error("Error fetching jobs:", err);

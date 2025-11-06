@@ -563,7 +563,7 @@ function AppRoutes() {
               {/* job management  */}
 
               <Route path="/manage-application/campus-placement" element={<JobProvider><JobManagementApplication /> </JobProvider>} />
-              <Route path="/manage-application/campus-placement/:jobId" element={<JobProvider><JobDetail /> </JobProvider>} />
+              <Route path="/manage-application/campus-placement/:jobId" element={<JobProvider><JobDetail status="Applied"/> </JobProvider>} />
 
               <Route path="/manage-application/PoolCampus-placement" element={<JobProvider><JobManagementApplicationForPool /></JobProvider>} />
               <Route path="/manage-application/PoolCampus-placement/:jobId" element={<JobProvider><JobDetailForPool /> </JobProvider>} />
@@ -577,7 +577,7 @@ function AppRoutes() {
                   <ApplicationsPage />
                 </ApplicationProvider>
               } />
-              <Route path="/registered/on-campus-opportunities/:jobId" element={<JobProvider><JobDetail /> </JobProvider>}/>
+              <Route path="/registered/on-campus-opportunities/:jobId" element={<JobProvider><JobDetail status="Shortlisted"/> </JobProvider>}/>
               {/* <Route path="/registered/on-campus-opportunities/:id" element={
                 <ApplicationProvider>
                   <ApplicationDetailPage />

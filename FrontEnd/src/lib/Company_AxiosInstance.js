@@ -65,8 +65,12 @@ export function postInternship(payload) {
 }
 
 // jobmanagement
-export function getPostedJobs(jobType) {
-  return axiosClient.get(`/company/jobmanagement/${jobType}`)
+export function getPostedJobs(jobType, status) {
+  return axiosClient.get(`/company/jobmanagement`,
+    {
+      params:
+        { jobType: jobType, status: status }
+    })
     .then(response => response)
     .catch(error => error);
 }
@@ -367,7 +371,7 @@ export function sendFileToWorkshopUsers(workshopId, formData) {
 
 // Service Requests APIs
 
-  // 1> request info
+// 1> request info
 export function createWorkforceRequest(formData) {
   return axiosClient.post(`/api/servicerequests/company/workforce-recruitment`, formData)
     .then(response => response)

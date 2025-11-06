@@ -25,7 +25,7 @@ export default function InternshipListing() {
 
     const fetchJobs = async () => {
         try {
-            const response = await getPostedJobs("Internship");
+            const response = await getPostedJobs("Internship","Shortlisted");
             // console.log(response.data.response);
             setJobs(response?.data);
 
@@ -201,7 +201,7 @@ export default function InternshipListing() {
                                     <th className="px-4 py-3 text-left">Status</th>
                                     <th className="px-4 py-3 text-left">Deadline</th>
                                     {/* <th className="px-4 py-3 text-left">Views</th> */}
-                                    {/* <th className="px-4 py-3 text-left">Shortlisted</th> */}
+                                    <th className="px-4 py-3 text-left">Shortlisted</th>
                                     <th className="px-4 py-3 text-left">Actions</th>
                                 </tr>
                             </thead>
@@ -242,7 +242,7 @@ export default function InternshipListing() {
                                             </td>
                                             <td className="px-4 py-3">{new Date(job?.endDate).toUTCString().slice(0, 16)}</td>
                                             {/* <td className="px-4 py-3">{job.views}</td> */}
-                                            {/* <td className="px-4 py-3">{job?.applicationCount}</td> */}
+                                            <td className="px-4 py-3">{job?.applicationCount}</td>
                                             <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                                                 <div className="flex gap-2">
                                                     <button onClick={() => handleView(job._id)} className="text-gray-500 hover:text-gray-700" title="View Job">

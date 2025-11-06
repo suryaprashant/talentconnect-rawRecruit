@@ -9,7 +9,8 @@ import { getCollegePostedJobs } from '@/lib/College_AxiosIntance';
 
 function PoolApplication() {
   const navigate = useNavigate();
-  const pathParts = useLocation().pathname.split('/').filter(Boolean); // remove empty strings
+  const location = useLocation();
+  const pathParts = location.pathname.split('/').filter(Boolean); // remove empty strings
   const lastSegment = pathParts[pathParts.length - 1];
 
   const [jobs, setJobs] = useState([]);
@@ -58,7 +59,7 @@ function PoolApplication() {
         setError(null);
 
         // Fetching 'Pool-campus' jobs as requested
-        const response = await getCollegePostedJobs('Pool-campus',lastSegment);
+        const response = await getCollegePostedJobs('On-campus',lastSegment);
 
         if (response.data && response.data.response && Array.isArray(response.data.response)) {
           // Process jobs to update their status based on dates
@@ -141,9 +142,9 @@ function PoolApplication() {
 
   // Action handlers
   const handleView = (jobId) => {
-    navigate(`/manage-application/PoolCampus-placement/${jobId}`);
+    navigate(`${location.pathname}/${jobId}`);
   };
-
+  
   const handleEdit = (jobId, e) => {
     e.stopPropagation();
     console.log(`Edit job with ID: ${jobId}`);
@@ -182,8 +183,8 @@ function PoolApplication() {
       <div className="max-w-7xl mx-auto p-4 bg-white">
         <div className="flex justify-between items-center mt-10 mb-4">
           <div>
-            <h1 className="text-3xl font-bold">Manage Pool-Campus Applications</h1>
-            <p className="text-gray-600 mt-2">Track Your Pool Campus Drives and Streamline Applications</p>
+            <h1 className="text-3xl font-bold">Manage On-Campus Applications</h1>
+            <p className="text-gray-600 mt-2">Track Your On Campus Drives and Streamline Applications</p>
           </div>
           <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors">
             Post a Job
@@ -300,8 +301,8 @@ function PoolApplication() {
                         </td>
                         <td className="px-4 py-3">
                           <span className={`px-2 py-1 text-xs rounded-full ${jobStatus === 'Open' ? 'bg-green-100 text-green-800' :
-                              jobStatus === 'Closed' ? 'bg-red-100 text-red-800' :
-                                'bg-gray-100 text-gray-800'
+                            jobStatus === 'Closed' ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
                             }`}>
                             {jobStatus}
                           </span>
