@@ -1,7 +1,7 @@
 import ServiceCard from "./ServiceCard";
 
 // Main Landing Page Component
-export default function MainPage({ onRegisterClick, numCards, addCard }) {
+export default function MainPage({ onRegisterClick, numCards, addCard, onRequestInfoClick }) {
   // Show only the first numCards from serviceData
   const visibleCards = serviceData.slice(0, numCards);
 
