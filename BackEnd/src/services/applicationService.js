@@ -260,7 +260,7 @@ export async function fetchApplicationsByJobService(jobId, jobType, targetStatus
 
 // oncampus and poolcampus
 export async function fetchCollegeApplicationsByJobService(jobId, jobType, userType, targetStatus) {
-    console.log("...........\n", jobId, jobType, userType, targetStatus);
+    // console.log("...........\n", jobId, jobType, userType, targetStatus);
 
     let applicantDB;
     // let targetStatus="Applied";
@@ -336,8 +336,6 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
                 }
             }
         ]);
-
-        // console.log("res: ",response);
         return { success: true, data: response };
     } catch (error) {
         console.log("Error: ", error.message);
