@@ -31,6 +31,7 @@ const JobDetailPage = () => {
   const loadJobDetail = async () => {
     try {
       const response = await getCompanyPostingForOncampusDetail(id);
+      console.log(response.data);      
       setJob(response.data);
       setError(null);
     } catch (error) {

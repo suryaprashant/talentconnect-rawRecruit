@@ -36,6 +36,21 @@ const CollegeDetailPage = () => {
     fetchPostingDetails();
   }, [id]);
 
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `${posting?.jobTitle || 'Job'} at ${posting?.companyPosted?.companyDetails?.companyName}`,
+        text: `Check out this opportunity for a ${posting?.jobTitle || 'job'} at ${posting?.companyPosted?.companyDetails?.companyName}!`,
+        url: window.location.href,
+      })
+        .catch((error) => console.log('Error sharing', error));
+    } else {
+      navigator.clipboard.writeText(window.location.href)
+        .then(() => alert('Link copied to clipboard!'))
+        .catch(() => alert('Failed to copy link'));
+    }
+  };
+
   const handleSave = async (jobId) => {
     try {
       const response = await SaveOppurtunity(jobId, posting?.jobType);
@@ -141,6 +156,15 @@ const CollegeDetailPage = () => {
                 onClick={() => handleSave(id)}
               >
                 Save
+              </button>
+              <button
+                onClick={handleShare}
+                className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                </svg>
+                Share
               </button>
             </div>)}
           </div>
