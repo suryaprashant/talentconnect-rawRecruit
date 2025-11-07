@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 
 // import JobCard from '@/components/student/studentDashboard/intershipOpportunity/JobCard';
 import { ApplyForReferral, getReferralJobById, SaveOppurtunity } from '@/lib/User_AxiosInstance';
@@ -8,6 +8,8 @@ import toast from 'react-hot-toast';
 const StudentRefferalJobDetails = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
   const [jobDetails, setJobDetails] = useState(null);
   // const [similarJobs, setSimilarJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -108,7 +110,7 @@ const StudentRefferalJobDetails = () => {
               </span>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+          {!isApplied && (<div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
             <button
               onClick={handleSave}
               className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded shadow"
@@ -121,7 +123,7 @@ const StudentRefferalJobDetails = () => {
             >
               Apply
             </button>
-          </div>
+          </div>)}
         </div>
 
         <div className="mb-6">
