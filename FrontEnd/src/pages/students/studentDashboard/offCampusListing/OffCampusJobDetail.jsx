@@ -180,7 +180,6 @@ function OffCampusJobDetail() {
           <div className="flex items-start"><MapPin className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" /><div><div className="font-medium">Work Location</div>{renderTags(jobDetail.location)}</div></div>
           <div className="flex items-start"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg><div><div className="font-medium">Work Mode</div>{renderTags(jobDetail.workMode)}</div></div>
           <div className="flex items-start"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><div className="font-medium">Employment Type</div>{renderTags(jobDetail.employmentType)}</div></div>
-          <div className="flex items-start"><svg className="w-5 h-5 mt-0.5 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><div className="font-medium">Compensation</div><div className="text-gray-700">{jobDetail.minPackage?.currency} {jobDetail.minPackage?.amount?.toLocaleString() || 'Not Disclosed'}</div></div></div>
           <div className="flex items-start"><Building2 className="w-5 h-5 mt-0.5 mr-3 text-gray-500 flex-shrink-0" /><div><div className="font-medium">Industry Type</div><div className="text-gray-700 capitalize">{jobDetail.companyPosted?.companyDetails?.industryType || 'N/A'}</div></div></div>
           <div className="flex items-start"><Users className="w-5 h-5 mt-0.5 mr-3 text-gray-500 flex-shrink-0" /><div><div className="font-medium">Department</div><div className="text-gray-700">{jobDetail.department || 'N/A'}</div></div></div>
           {/* ADDED: Drive Venue */}
@@ -195,9 +194,43 @@ function OffCampusJobDetail() {
           <div className="flex items-start"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"></path></svg><div><div className="font-medium">Degree</div>{renderTags(jobDetail.degree)}</div></div>
           <div className="flex items-start"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg><div><div className="font-medium">Eligible Streams</div>{renderTags(jobDetail.studentStreams)}</div></div>
           <div className="flex items-start col-span-1 sm:col-span-2"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg><div><div className="font-medium">Required Skills</div>{renderTags(jobDetail.skills)}</div></div>
-          <div className="flex items-start col-span-1 sm:col-span-2"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg><div><div className="font-medium">Benefits Offered</div>{renderTags(jobDetail.benefits)}</div></div>
         </div>
       </section>
+
+      {/* --- NEW/MODIFIED SECTION --- */}
+      <section className="mb-8">
+        <h3 className="text-lg font-semibold mb-3">Compensation & Benefits</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="text-sm font-medium text-gray-500">Total CTC</div>
+            <div className="text-lg font-bold text-gray-900">
+              {jobDetail.packageDetails?.totalCTC
+                ? `${jobDetail.packageDetails.currency || ''} ${jobDetail.packageDetails.totalCTC.toLocaleString()}`
+                : 'Not Specified'}
+            </div>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="text-sm font-medium text-gray-500">Fixed Pay</div>
+            <div className="text-lg font-bold text-gray-900">
+              {jobDetail.packageDetails?.fixedPay
+                ? `${jobDetail.packageDetails.currency || ''} ${jobDetail.packageDetails.fixedPay.toLocaleString()}`
+                : 'N/A'}
+            </div>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="text-sm font-medium text-gray-500">Joining Bonus</div>
+            <div className="text-lg font-bold text-gray-900">
+              {jobDetail.packageDetails?.joiningBonus
+                ? `${jobDetail.packageDetails.currency || ''} ${jobDetail.packageDetails.joiningBonus.toLocaleString()}`
+                : 'N/A'}
+            </div>
+          </div>
+        </div>
+        <h4 className="font-medium mb-2">Benefits Offered</h4>
+        {renderTags(jobDetail.benefits)}
+      </section>
+      {/* --- END NEW/MODIFIED SECTION --- */}
+
 
       {/* Hiring Process */}
       <section className="mb-8">

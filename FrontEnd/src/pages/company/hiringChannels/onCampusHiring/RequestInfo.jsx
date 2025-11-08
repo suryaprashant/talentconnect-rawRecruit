@@ -2,10 +2,9 @@ import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { ChevronDown, Mail, Phone, Link, X } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { City } from 'country-state-city'; // <-- Import City
+// import { City } from 'country-state-city'; // <-- Removed this import as it was causing a build error.
 
 export default function RequestInfo() {
-
 
   const degreeStreamMapping = {
     'Bachelor of Engineering (B.E.)': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'],
@@ -25,8 +24,12 @@ export default function RequestInfo() {
   };
 
   const degreeOptions = Object.keys(degreeStreamMapping).sort();
-
-  // REMOVED: Static streamOptions and locationOptions are no longer needed.
+  
+  // --- OPTIONS ---
+  // --- MODIFIED: Renamed variable ---
+  const collegeCategoryOptions = ['Tier 1', 'Tier 2', 'Tier 3', 'Autonomous', 'All Colleges'];
+  const preferredModeOptions = ['Online', 'Offline', 'Hybrid', 'Online Aptitude and Physical Interview'];
+  // --- END MODIFICATION ---
 
   const jobRoleOptions = ['Software Engineer', 'Data Analyst', 'DevOps Engineer', 'UX/UI Designer', 'Product Manager', 'QA Engineer', 'System Administrator', 'Network Engineer', 'Business Analyst', 'Machine Learning Engineer'];
   const skillsOptions = ['JavaScript', 'Python', 'Java', 'React', 'Node.js', 'HTML/CSS', 'SQL', 'MongoDB', 'AWS', 'Docker', 'Kubernetes', 'Machine Learning', 'Data Structures', 'Algorithms', 'Git', 'REST APIs'];
@@ -36,21 +39,41 @@ export default function RequestInfo() {
   const minStudentsOptions = ['1-5 students', '6-10 students', '11-20 students', '21-50 students', '51-100 students', '100+ students'];
   const amenitiesOptions = ['Projector', 'Auditorium', 'Interview Rooms', 'Wi-Fi Access', 'Refreshments', 'Parking'];
   const benefitsOptions = ['Health Insurance', 'Provident Fund (PF)', 'Paid Time Off (PTO)', 'Work from Home', 'Performance Bonus', 'Stock Options'];
-  const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
+  const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'InternSHIP-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
+
+  // --- NEW: Hardcoded list of cities as a fallback for the removed package ---
+  const majorIndianCities = [
+    'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Ahmedabad', 'Chennai', 'Kolkata', 'Surat', 'Pune', 'Jaipur',
+    'Lucknow', 'Kanpur', 'Nagpur', 'Indore', 'Thane', 'Bhopal', 'Visakhapatnam', 'Pimpri-Chinchwad', 'Patna',
+    'Vadodara', 'Ghaziabad', 'Ludhiana', 'Agra', 'Nashik', 'Faridabad', 'Meerut', 'Rajkot', 'Kalyan-Dombivli',
+    'Vasai-Virar', 'Varanasi', 'Srinagar', 'Aurangabad', 'Dhanbad', 'Amritsar', 'Navi Mumbai', 'Allahabad',
+    'Ranchi', 'Howrah', 'Coimbatore', 'Jabalpur', 'Gwalior', 'Vijayawada', 'Jodhpur', 'Madurai', 'Raipur',
+    'Kota', 'Guwahati', 'Chandigarh'
+  ].sort((a, b) => a.localeCompare(b));
+  // --- END NEW LIST ---
 
   // --- Component State and Logic ---
   const initialData = {
     degree: '',
     stream: [],
+    // --- MODIFIED: Renamed field ---
+    collegeCategories: [], 
     preferredLocations: [],
     lookingFor: '',
     employmentType: [],
+    workLocation: [],
     workMode: '',
+    companyHiringPreference: { preferredMode: '' }, // <-- NEW
     jobRoles: [],
     skills: [],
-    minimumSalary: '',
-    startDate: '',
-    endDate: '',
+    packageDetails: { currency: 'INR', totalCTC: '', fixedPay: '', joiningBonus: '' },
+    startDate: '', // Application Start Date
+    endDate: '',   // Application End Date
+    // --- NEW FIELDS ---
+    onlineTestDate: '',
+    interviewWindow: { start: '', end: '' },
+    offerRolloutDate: '',
+    // --- END NEW FIELDS ---
     rounds: '',
     selectionProcess: [],
     contactPersonName: '',
@@ -68,25 +91,30 @@ export default function RequestInfo() {
   };
 
   const [formData, setFormData] = useState(initialData);
-  const [currency, setCurrency] = useState('INR');
   const [descriptionError, setDescriptionError] = useState("");
 
-  // --- NEW: State for city data and search ---
-  const [indianCities, setIndianCities] = useState([]);
+  // --- State for city search ---
+  // const [indianCities, setIndianCities] = useState([]); // <-- Removed
   const [locationSearch, setLocationSearch] = useState('');
+  const [workLocationSearch, setWorkLocationSearch] = useState('');
 
   const [dropdownOpen, setDropdownOpen] = useState({
     stream: false,
+    // --- MODIFIED: Renamed field ---
+    collegeCategories: false, 
     preferredLocations: false,
     jobRoles: false,
     skills: false,
     selectionProcess: false,
+    workLocation: false,
     amenities: false,
     benefits: false,
     tags: false
   });
 
   const streamRef = useRef(null);
+  // --- MODIFIED: Renamed field ---
+  const collegeCategoriesRef = useRef(null); 
   const preferredLocationsRef = useRef(null);
   const jobRolesRef = useRef(null);
   const skillsRef = useRef(null);
@@ -94,18 +122,17 @@ export default function RequestInfo() {
   const amenitiesRef = useRef(null);
   const benefitsRef = useRef(null);
   const tagsRef = useRef(null);
+  const workLocationRef = useRef(null);
 
-  // --- NEW: useEffect to load city data on component mount ---
-  useEffect(() => {
-    const citiesOfIndia = City.getCitiesOfCountry('IN').sort((a, b) => a.name.localeCompare(b.name));
-    setIndianCities(citiesOfIndia);
-  }, []);
-
+  // --- Removed useEffect that loaded city data ---
+  
   // Effect to close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdownRefs = {
         stream: streamRef,
+        // --- MODIFIED: Renamed field ---
+        collegeCategories: collegeCategoriesRef, 
         preferredLocations: preferredLocationsRef,
         jobRoles: jobRolesRef,
         skills: skillsRef,
@@ -113,6 +140,7 @@ export default function RequestInfo() {
         amenities: amenitiesRef,
         benefits: benefitsRef,
         tags: tagsRef,
+        workLocation: workLocationRef,
       };
 
       for (const key in dropdownRefs) {
@@ -142,6 +170,34 @@ export default function RequestInfo() {
       }
     }
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handlePackageDetailsChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      packageDetails: { ...prev.packageDetails, [name]: value }
+    }));
+  };
+  
+  // --- NEW HANDLER ---
+  const handleInterviewWindowChange = (e) => {
+    const { name, value } = e.target; // name will be 'start' or 'end'
+    setFormData(prev => ({
+      ...prev,
+      interviewWindow: {
+        ...prev.interviewWindow,
+        [name]: value
+      }
+    }));
+  };
+  
+  // --- NEW HANDLER ---
+  const handleHiringPreferenceChange = (value) => {
+    setFormData(prev => ({
+      ...prev,
+      companyHiringPreference: { preferredMode: value }
+    }));
   };
 
   const handleMultiSelect = (field, value) => {
@@ -184,20 +240,31 @@ export default function RequestInfo() {
       const payload = {
         degree: formData.degree ? [formData.degree] : [],
         studentStreams: formData.stream,
+        // --- MODIFIED: Fixed payload field ---
+        collegeCategories: formData.collegeCategories, 
         location: formData.preferredLocations,
         lookingFor: formData.lookingFor,
         employmentType: formData.employmentType,
         workMode: formData.workMode,
+        companyHiringPreference: formData.companyHiringPreference, // <-- NEW
         jobRoles: formData.jobRoles,
+        workLocation: formData.workLocation,
         skills: formData.skills,
-        minPackage: {
-          currency: currency,
-          amount: parseFloat(formData.minimumSalary) || 0
+        packageDetails: {
+          currency: formData.packageDetails.currency,
+          totalCTC: parseFloat(formData.packageDetails.totalCTC) || 0,
+          fixedPay: parseFloat(formData.packageDetails.fixedPay) || 0,
+          joiningBonus: parseFloat(formData.packageDetails.joiningBonus) || 0
         },
         startDate: formData.startDate,
         endDate: formData.endDate,
+        // --- NEW PAYLOAD FIELDS ---
+        onlineTestDate: formData.onlineTestDate,
+        interviewWindow: formData.interviewWindow,
+        offerRolloutDate: formData.offerRolloutDate,
+        // --- END NEW PAYLOAD FIELDS ---
         rounds: formData.rounds ? [formData.rounds] : [],
-        selectionProcess: formData.selectionProcess.join(' + '),
+        selectionProcess: formData.selectionProcess.join(' + '), // Keep as is
         contactPerson: {
           name: formData.contactPersonName,
           designation: formData.contactDesignation,
@@ -233,7 +300,6 @@ export default function RequestInfo() {
           toast.success('This job will expire after 15 days');
         }, 2000);
         setFormData(initialData);
-        setCurrency('INR');
       }
     } catch (err) {
       console.error(err);
@@ -242,9 +308,16 @@ export default function RequestInfo() {
   };
 
   const availableStreams = degreeStreamMapping[formData.degree] || [];
-  const filteredCities = indianCities.filter(city =>
-    city.name.toLowerCase().includes(locationSearch.toLowerCase())
+
+  // --- MODIFIED: Use hardcoded city list ---
+  const filteredPreferredCities = majorIndianCities.filter(city =>
+    city.toLowerCase().includes(locationSearch.toLowerCase())
   );
+
+  const filteredWorkCities = majorIndianCities.filter(city =>
+    city.toLowerCase().includes(workLocationSearch.toLowerCase())
+  );
+  // --- END MODIFICATION ---
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white">
@@ -281,7 +354,7 @@ export default function RequestInfo() {
           </div>
         </div>
 
-        {/* Stream (MODIFIED) */}
+        {/* Stream */}
         <div ref={streamRef} className="relative">
           <label className="block font-medium mb-2">Stream</label>
           <div className="flex flex-wrap gap-2 mb-2">
@@ -312,8 +385,36 @@ export default function RequestInfo() {
             </div>
           )}
         </div>
+        
+        {/* --- MODIFIED: Renamed Field --- */}
+        <div ref={collegeCategoriesRef} className="relative">
+          <label className="block font-medium mb-2">College Categories</label>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {formData.collegeCategories.map(type => (
+              <div key={type} className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full">
+                <span>{type}</span>
+                <button type="button" onClick={() => removeSelectedItem('collegeCategories', type)} className="ml-2 text-gray-600 hover:text-black"><X size={14} /></button>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400" onClick={() => toggleDropdown('collegeCategories')}>
+            <span className="text-gray-500">Select college categories</span>
+            <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.collegeCategories ? "rotate-180" : ""}`} />
+          </div>
+          {dropdownOpen.collegeCategories && (
+            <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+              {collegeCategoryOptions.map(type => (
+                <div key={type} onClick={() => handleMultiSelect('collegeCategories', type)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.collegeCategories.includes(type) ? "bg-gray-100 font-medium" : ""}`}>
+                  {type}
+                  {formData.collegeCategories.includes(type) && <span className="float-right text-gray-500">✓</span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        {/* --- END MODIFICATION --- */}
 
-        {/* Preferred Hiring Locations (MODIFIED) */}
+        {/* Preferred Hiring Locations */}
         <div ref={preferredLocationsRef} className="relative">
           <label className="block font-medium mb-2">Preferred Hiring Locations</label>
           <div className="flex flex-wrap gap-2 mb-2">
@@ -343,19 +444,21 @@ export default function RequestInfo() {
                   className="w-full p-2 border rounded"
                 />
               </div>
+              {/* --- MODIFIED: Use hardcoded city list --- */}
               <div className="max-h-60 overflow-auto">
-                {filteredCities.map(city => (
-                  <div key={`${city.name}-${city.stateCode}`} onClick={() => handleMultiSelect('preferredLocations', city.name)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.preferredLocations.includes(city.name) ? "bg-gray-100 font-medium" : ""}`}>
-                    {city.name}
-                    {formData.preferredLocations.includes(city.name) && <span className="float-right text-gray-500">✓</span>}
+                {filteredPreferredCities.map(city => (
+                  <div key={city} onClick={() => handleMultiSelect('preferredLocations', city)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.preferredLocations.includes(city) ? "bg-gray-100 font-medium" : ""}`}>
+                    {city}
+                    {formData.preferredLocations.includes(city) && <span className="float-right text-gray-500">✓</span>}
                   </div>
                 ))}
               </div>
+              {/* --- END MODIFICATION --- */}
             </div>
           )}
         </div>
 
-        {/* Broadcast Type (NEW) */}
+        {/* Broadcast Type */}
         <div>
           <label className="block mb-2 font-medium">Broadcast Options <span className="text-red-500">*</span></label>
           <div className="flex items-center space-x-6">
@@ -418,6 +521,24 @@ export default function RequestInfo() {
             <button type="button" className={`px-4 py-1 border ${formData.workMode === 'Remote' ? 'bg-black text-white' : 'bg-white text-black'} rounded`} onClick={() => handleOptionSelect('workMode', 'Remote')}>Remote</button>
           </div>
         </div>
+        
+        {/* --- NEW: Preferred Hiring Mode --- */}
+        <div>
+          <label className="block mb-2 font-medium">Preferred Hiring Mode</label>
+          <div className="flex flex-wrap gap-2">
+            {preferredModeOptions.map(mode => (
+              <button 
+                key={mode} 
+                type="button" 
+                className={`px-4 py-1 border ${formData.companyHiringPreference.preferredMode === mode ? 'bg-black text-white' : 'bg-white text-black'} rounded`} 
+                onClick={() => handleHiringPreferenceChange(mode)}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
+        </div>
+        {/* --- END NEW FIELD --- */}
 
         {/* Job Roles */}
         <div ref={jobRolesRef} className="relative">
@@ -442,6 +563,51 @@ export default function RequestInfo() {
                   {formData.jobRoles.includes(role) && <span className="float-right text-gray-500">✓</span>}
                 </div>
               ))}
+            </div>
+          )}
+        </div>
+
+        {/* Work Location */}
+        <div ref={workLocationRef} className="relative">
+          <label className="block font-medium mb-2">Work Location <span className="text-red-500">*</span></label>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {formData.workLocation.map(loc => (
+              <div key={loc} className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full">
+                <span>{loc}</span>
+                <button type="button" onClick={() => removeSelectedItem('workLocation', loc)} className="ml-2 text-gray-600 hover:text-black"><X size={14} /></button>
+              </div>
+            ))}
+          </div>
+          <div onClick={() => toggleDropdown('workLocation')} className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400">
+            <span className="text-gray-500">Select work locations</span>
+            <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.workLocation ? "rotate-180" : ""}`} />
+          </div>
+          {dropdownOpen.workLocation && (
+            <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
+              <div className="p-2 border-b">
+                <input
+                  type="text"
+                  value={workLocationSearch}
+                  onChange={(e) => setWorkLocationSearch(e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
+                  placeholder="Search for a city..."
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              {/* --- MODIFIED: Use hardcoded city list --- */}
+              <div className="max-h-60 overflow-auto">
+                {filteredWorkCities.map(city => (
+                  <div
+                    key={city}
+                    onClick={() => handleMultiSelect('workLocation', city)}
+                    className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.workLocation.includes(city) ? "bg-gray-100 font-medium" : ""}`}
+                  >
+                    {city}
+                    {formData.workLocation.includes(city) && <span className="float-right text-gray-500">✓</span>}
+                  </div>
+                ))}
+              </div>
+              {/* --- END MODIFICATION --- */}
             </div>
           )}
         </div>
@@ -578,37 +744,97 @@ export default function RequestInfo() {
           )}
         </div>
 
-        {/* Minimum Salary Offered */}
+        {/* Package Details */}
         <div>
-          <label className="block mb-2 font-medium">Minimum Salary Offered</label>
-          <div className="flex">
+          <label className="block mb-2 font-medium">Package Details <span className="text-red-500">*</span></label>
+          <div className="flex mb-2">
             <div className="relative w-24">
-              <select id="currency" name="currency" className="w-full h-full p-2 border border-gray-300 rounded-l appearance-none bg-white pr-8 text-center" value={currency} onChange={(e) => setCurrency(e.target.value)}>
-                <option>INR</option>
-                <option>USD</option>
-                <option>EUR</option>
-                <option>GBP</option>
+              <select
+                name="currency"
+                className="w-full h-full p-2 border border-gray-300 rounded-l appearance-none bg-white pr-8 text-center"
+                value={formData.packageDetails.currency}
+                onChange={handlePackageDetailsChange}
+              >
+                <option value="INR">INR</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
               </select>
               <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
             </div>
-            <input type="number" name="minimumSalary" placeholder="e.g., 500000" className="flex-1 p-2 border border-l-0 border-gray-300 rounded-r" value={formData.minimumSalary} onChange={handleInputChange} />
+            <input
+              type="number"
+              name="totalCTC"
+              value={formData.packageDetails.totalCTC}
+              onChange={handlePackageDetailsChange}
+              placeholder="Total CTC (e.g. 1000000)"
+              className="flex-1 p-2 border border-l-0 border-gray-300 rounded-r"
+              required
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              type="number"
+              name="fixedPay"
+              value={formData.packageDetails.fixedPay}
+              onChange={handlePackageDetailsChange}
+              placeholder="Fixed Pay (e.g. 800000)"
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+            <input
+              type="number"
+              name="joiningBonus"
+              value={formData.packageDetails.joiningBonus}
+              onChange={handlePackageDetailsChange}
+              placeholder="Joining Bonus (e.g. 50000)"
+              className="w-full p-2 border border-gray-300 rounded"
+            />
           </div>
         </div>
 
-        {/* Tentative Date of Placement / Hiring */}
+
+        {/* Application Dates */}
         <div>
-          <label className="block mb-2 font-medium">Tentative Date of Placement / Hiring</label>
+          <label className="block mb-2 font-medium">Application Dates</label>
           <div className="flex space-x-4">
             <div className="w-1/2">
-              <label className="block mb-1 text-sm">Start Date</label>
+              <label className="block mb-1 text-sm">Application Start Date</label>
               <input type="date" name="startDate" className="w-full p-2 border border-gray-300 rounded" value={formData.startDate} onChange={handleInputChange} />
             </div>
             <div className="w-1/2">
-              <label className="block mb-1 text-sm">End Date</label>
+              <label className="block mb-1 text-sm">Application End Date</label>
               <input type="date" name="endDate" className="w-full p-2 border border-gray-300 rounded" value={formData.endDate} onChange={handleInputChange} />
             </div>
           </div>
         </div>
+        
+        {/* --- NEW: Hiring Timeline --- */}
+        <div>
+          <label className="block mb-2 font-medium">Hiring Timeline</label>
+          <div className="space-y-4">
+            <div>
+              <label className="block mb-1 text-sm">Online Test Date</label>
+              <input type="date" name="onlineTestDate" className="w-full p-2 border border-gray-300 rounded" value={formData.onlineTestDate} onChange={handleInputChange} />
+            </div>
+
+            <div className="flex space-x-4">
+              <div className="w-1/2">
+                <label className="block mb-1 text-sm">Interview Window (Start)</label>
+                <input type="date" name="start" className="w-full p-2 border border-gray-300 rounded" value={formData.interviewWindow.start} onChange={handleInterviewWindowChange} />
+              </div>
+              <div className="w-1/2">
+                <label className="block mb-1 text-sm">Interview Window (End)</label>
+                <input type="date" name="end" className="w-full p-2 border border-gray-300 rounded" value={formData.interviewWindow.end} onChange={handleInterviewWindowChange} />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block mb-1 text-sm">Offer Rollout Date</label>
+              <input type="date" name="offerRolloutDate" className="w-full p-2 border border-gray-300 rounded" value={formData.offerRolloutDate} onChange={handleInputChange} />
+            </div>
+          </div>
+        </div>
+        {/* --- END NEW FIELDS --- */}
 
         {/* Number of Rounds */}
         <div>
@@ -642,7 +868,6 @@ export default function RequestInfo() {
             </div>
           )}
         </div>
-
 
         {/* Contact Person */}
         <div>
@@ -703,6 +928,7 @@ export default function RequestInfo() {
 
         {/* Register Button */}
         <div className="flex justify-end pt-4">
+          {/* --- FIXED: Corrected button focus ring color --- */}
           <button type="button" onClick={handleSubmit} className="px-8 py-3 bg-black text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-opacity-50 transition-colors">
             Register
           </button>

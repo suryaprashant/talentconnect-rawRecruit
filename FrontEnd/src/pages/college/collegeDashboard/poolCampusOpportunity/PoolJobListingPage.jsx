@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import JobFilters from '@/components/college/collegeDashboard/poolCampusOpportunity/JobFilters';
 import JobCard from '@/components/college/collegeDashboard/poolCampusOpportunity/JobCard';
-// import { jobPostings } from '@/constants/collegedashboard/jobData'; // <--- REMOVE THIS LINE
+// import { jobPostings } from '@/constants/collegedashboard/jobData'; // <--- THIS LINE IS REMOVED
 import { MapPin } from 'lucide-react';
 import axios from 'axios'; // Import axios for API calls
 
@@ -34,12 +34,24 @@ const PoolJobListingPage = () => {
       // Map backend data to frontend JobCard expected format
       const mappedJobs = response.data.data.map(backendJob => {
         const companyName = backendJob.companyPosted?.companyDetails?.companyName || 'N/A';
-        const description = backendJob.description || backendJob.companyId?.companyDetails?.description || 'No description provided.';
+        
+        // --- FIXED DESCRIPTION FALLBACK ---
+        const description = backendJob.description || backendJob.companyPosted?.companyDetails?.description || 'No description provided.';
+        
         const logo = backendJob.companyPosted?.profileImageUrl || 'https://via.placeholder.com/48';
-        const location = backendJob.location && backendJob.location.length > 0
-          ? backendJob.location.join(', ')
+
+        // --- FIXED LOCATION FIELD ---
+        const location = backendJob.workLocation && backendJob.workLocation.length > 0
+          ? backendJob.workLocation.join(', ')
           : 'Not specified';
-        const minPackage = backendJob.minPackage?.amount ? `₹ ${backendJob.minPackage.amount} ${backendJob.minPackage.currency || 'LPA'}` : 'Not specified';
+
+        // --- FIXED PACKAGE FIELD ---
+        const packageDetails = backendJob.packageDetails;
+        let minPackage = 'Not specified';
+        if (packageDetails && packageDetails.totalCTC) {
+            minPackage = `₹ ${packageDetails.totalCTC.toLocaleString()} ${packageDetails.currency || 'INR'}`;
+        }
+        // --- END OF FIXES ---
 
         return {
           id: backendJob._id,
@@ -50,7 +62,7 @@ const PoolJobListingPage = () => {
           streams: backendJob.studentStreams && backendJob.studentStreams.length > 0 ? backendJob.studentStreams : ['Not specified'],
           position: backendJob.jobRoles && backendJob.jobRoles.length > 0 ? backendJob.jobRoles.join(', ') : 'Not specified',
           location: location,
-          package: minPackage,
+          package: minPackage, // This is the corrected package string
           description: description,
           hiringProcess: backendJob.selectionProcess && backendJob.selectionProcess.length > 0 ? backendJob.selectionProcess : ['Not specified'],
           // Add other fields needed for filtering if not directly displayed on card
@@ -99,6 +111,7 @@ const PoolJobListingPage = () => {
     if (filters.minPackage > 0) {
       result = result.filter(job => {
         // Parse the package string, extract the number part
+        // This logic correctly parses "₹ 1,000,000 INR" to 1000000
         const jobPackageAmount = parseFloat(job.package.replace(/[^0-9.]/g, ''));
         return !isNaN(jobPackageAmount) && jobPackageAmount >= filters.minPackage;
       });

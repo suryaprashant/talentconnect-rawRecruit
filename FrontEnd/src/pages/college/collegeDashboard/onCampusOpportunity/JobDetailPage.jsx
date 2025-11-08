@@ -9,6 +9,10 @@ const formatDate = (dateString) => {
 
   try {
     const date = new Date(dateString);
+    // Check for invalid date
+    if (isNaN(date.getTime())) {
+        return 'Not Specified';
+    }
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -31,7 +35,7 @@ const JobDetailPage = () => {
   const loadJobDetail = async () => {
     try {
       const response = await getCompanyPostingForOncampusDetail(id);
-      console.log(response.data);      
+      console.log(response.data);
       setJob(response.data);
       setError(null);
     } catch (error) {
@@ -75,8 +79,11 @@ const JobDetailPage = () => {
     if (!jobId || !jobType) return;
     try {
       const response = await SaveOppurtunity(jobId, jobType);
-      if (response.data?.success === true) toast.success("Saved!");
-      else toast.error(response.response?.data?.msg || "Could not apply.");
+        if (response.data?.success === true) {
+            toast.success("Saved!");
+            setIsSaved(true); // Update save state
+        }
+      else toast.error(response.response?.data?.msg || "Could not save.");
     } catch (error) {
       console.log("Error: ", error);
       toast.error('Something went wrong');
@@ -153,7 +160,8 @@ const JobDetailPage = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span>{job?.location?.join(', ') || 'Not Specified'}</span>
+                {/* --- CORRECTED FIELD --- */}
+                <span>{job?.workLocation?.join(', ') || 'Not Specified'}</span>
               </div>
             </div>
 
@@ -163,9 +171,10 @@ const JobDetailPage = () => {
               </button>
               <button
                 onClick={() => handleSave(job?._id, job?.jobType)}
-                className={`inline-flex items-center justify-center px-4 py-2 border ${isSaved ? 'border-gray-300 bg-gray-50' : 'border-gray-300 bg-white'} text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none`}
+                disabled={isSaved}
+                className={`inline-flex items-center justify-center px-4 py-2 border ${isSaved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-md focus:outline-none`}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-1 ${isSaved ? 'text-blue-600 fill-current' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-1 ${isSaved ? 'text-blue-600' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor">
                   <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
                 </svg>
                 {isSaved ? 'Saved' : 'Save'}
@@ -191,10 +200,6 @@ const JobDetailPage = () => {
                 <div className="text-2xl font-bold text-gray-900">{job?.companyPosted?.companyDetails?.numberOfEmployees || 'N/A'}</div>
                 <div className="text-sm text-gray-600">Employees</div>
               </div>
-              {/* <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="text-2xl font-bold text-gray-900">Not Specified</div>
-                <div className="text-sm text-gray-600">Revenue</div>
-              </div> */}
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="text-2xl font-bold text-gray-900">{job?.companyPosted?.companyDetails?.industryType || 'N/A'}</div>
                 <div className="text-sm text-gray-600">Industries</div>
@@ -224,7 +229,7 @@ const JobDetailPage = () => {
               </div>
               <div>
                 <div className="text-sm font-medium text-gray-500">Employment Type</div>
-                <div className="mt-1 text-base text-gray-900">{job?.employmentType || 'Not Specified'}</div>
+                <div className="mt-1 text-base text-gray-900">{job?.employmentType?.join(', ') || 'Not Specified'}</div>
               </div>
               <div>
                 <div className="text-sm font-medium text-gray-500">Job Roles</div>
@@ -232,7 +237,12 @@ const JobDetailPage = () => {
               </div>
               <div>
                 <div className="text-sm font-medium text-gray-500">Work Mode</div>
-                <div className="mt-1 text-base text-gray-900">{job?.workMode || 'Not Specified'}</div>
+                <div className="mt-1 text-base text-gray-900">{job?.workMode?.join(', ') || 'Not Specified'}</div>
+              </div>
+               {/* --- NEWLY ADDED FIELD --- */}
+              <div>
+                <div className="text-sm font-medium text-gray-500">Preferred Hiring Mode</div>
+                <div className="mt-1 text-base text-gray-900">{job?.companyHiringPreference?.preferredMode || 'Not Specified'}</div>
               </div>
               <div>
                 <div className="text-sm font-medium text-gray-500">Amenities Required</div>
@@ -240,7 +250,8 @@ const JobDetailPage = () => {
               </div>
               <div>
                 <div className="text-sm font-medium text-gray-500">Job Location</div>
-                <div className="mt-1 text-base text-gray-900">{job?.location?.join(', ') || 'Not Specified'}</div>
+                 {/* --- CORRECTED FIELD --- */}
+                <div className="mt-1 text-base text-gray-900">{job?.workLocation?.join(', ') || 'Not Specified'}</div>
               </div>
             </div>
           </div>
@@ -249,8 +260,8 @@ const JobDetailPage = () => {
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Required Skills</h2>
             <div className="flex flex-wrap gap-2">
-              {job?.skills.length > 0 ? (
-                job?.skills.map((skill, index) => (
+              {job?.skills && job?.skills.length > 0 ? (
+                job.skills.map((skill, index) => (
                   <span
                     key={index}
                     className="bg-gray-100 text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium"
@@ -276,7 +287,11 @@ const JobDetailPage = () => {
                 <div className="text-sm font-medium text-gray-500">Eligible Streams</div>
                 <div className="mt-1 text-base text-gray-900">{job?.studentStreams?.join(', ') || 'Not Specified'}</div>
               </div>
-
+              {/* --- NEWLY ADDED FIELD --- */}
+              <div>
+                <div className="text-sm font-medium text-gray-500">Eligible College Categories</div>
+                <div className="mt-1 text-base text-gray-900">{job?.collegeCategories?.join(', ') || 'Not Specified'}</div>
+              </div>
               <div>
                 <div className="text-sm font-medium text-gray-500">Minimum Students Required</div>
                 <div className="mt-1 text-base text-gray-900">{job?.minimumStudents || 'Not Specified'}</div>
@@ -290,36 +305,48 @@ const JobDetailPage = () => {
             )}
           </div>
 
-          {/* Compensation and Benefits */}
+          {/* --- CORRECTED SECTION --- */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Compensation & Benefits</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="text-sm font-medium text-gray-500">Total CTC</div>
-                <div className="text-xl font-bold text-gray-900">{job?.minPackage?.amount ? `${job.minPackage.currency} ${job.minPackage.amount}` : 'Not Specified'}</div>
+                <div className="text-xl font-bold text-gray-900">
+                  {job?.packageDetails?.totalCTC
+                    ? `${job.packageDetails.currency || ''} ${job.packageDetails.totalCTC.toLocaleString()}`
+                    : 'Not Specified'}
+                </div>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="text-sm font-medium text-gray-500">Fixed Pay</div>
-                <div className="text-xl font-bold text-gray-900">Not Specified</div>
+                <div className="text-xl font-bold text-gray-900">
+                  {job?.packageDetails?.fixedPay
+                    ? `${job.packageDetails.currency || ''} ${job.packageDetails.fixedPay.toLocaleString()}`
+                    : 'N/A'}
+                </div>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="text-sm font-medium text-gray-500">Joining Bonus</div>
-                <div className="text-xl font-bold text-gray-900">Not Specified</div>
+                <div className="text-xl font-bold text-gray-900">
+                  {job?.packageDetails?.joiningBonus
+                    ? `${job.packageDetails.currency || ''} ${job.packageDetails.joiningBonus.toLocaleString()}`
+                    : 'N/A'}
+                </div>
               </div>
             </div>
             <h3 className="font-medium text-gray-900 mt-6 mb-2">Benefits Offered</h3>
             <ul className="list-disc pl-5 space-y-1 text-gray-700">
-              {job?.benefits?.length > 0 ? job.benefits.map((benefit, index) => (
+              {job?.benefits && job?.benefits.length > 0 ? job.benefits.map((benefit, index) => (
                 <li key={index}>{benefit}</li>
               )) : <li>No benefits specified.</li>}
             </ul>
           </div>
-
+      
           {/* Selection Process */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-6">Selection Process</h2>
 
-            {job?.selectionProcess?.length > 0 ? (
+            {job?.selectionProcess && job?.selectionProcess?.length > 0 ? (
               <div className="relative">
                 {/* Timeline line */}
                 <div className="absolute left-4 top-0 h-full w-0.5 bg-blue-200"></div>
@@ -347,7 +374,7 @@ const JobDetailPage = () => {
             )}
           </div>
 
-          {/* Important Dates */}
+          {/* Important Dates -- CORRECTED */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Important Dates</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -357,15 +384,17 @@ const JobDetailPage = () => {
               </div>
               <div className="border border-gray-300 rounded p-4 text-center">
                 <div className="text-sm font-medium text-gray-500">Online Test Date</div>
-                <div className="mt-1 text-lg font-medium text-gray-900">Not Specified</div>
+                <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(job?.onlineTestDate)}</div>
               </div>
               <div className="border border-gray-300 rounded p-4 text-center">
                 <div className="text-sm font-medium text-gray-500">Interview Window</div>
-                <div className="mt-1 text-lg font-medium text-gray-900">Not Specified</div>
+                <div className="mt-1 text-lg font-medium text-gray-900">
+                    {formatDate(job?.interviewWindow?.start) === 'Not Specified' ? 'N/A' : `${formatDate(job?.interviewWindow?.start)} - ${formatDate(job?.interviewWindow?.end)}`}
+                </div>
               </div>
               <div className="border border-gray-300 rounded p-4 text-center">
                 <div className="text-sm font-medium text-gray-500">Offer Rollout</div>
-                <div className="mt-1 text-lg font-medium text-gray-900">Not Specified</div>
+                <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(job?.offerRolloutDate)}</div>
               </div>
             </div>
           </div>
@@ -433,7 +462,8 @@ const JobDetailPage = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
-                Watch Day in the Life at {job.company}
+                 {/* --- CORRECTED FIELD --- */}
+                Watch Day in the Life at {job?.companyPosted?.companyDetails?.companyName || 'Company'}
               </a>
               <a href="#" className="flex items-center text-blue-600 hover:text-blue-800">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

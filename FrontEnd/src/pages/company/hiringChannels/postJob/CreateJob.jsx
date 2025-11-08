@@ -11,10 +11,14 @@ export default function CreateJob() {
     employmentType: 'Full-time',
     workMode: 'On-site',
     location: [],
-    minPackage: {
-      currency: 'USD',
-      amount: ''
+    // --- MODIFIED ---
+    packageDetails: {
+      currency: 'USD', // Kept USD as default from your original minPackage
+      totalCTC: '',
+      fixedPay: '',
+      joiningBonus: ''
     },
+    // ---
     numberOfOpenings: '',
     minEducation: '',
     yearsOfExperience: '',
@@ -61,7 +65,6 @@ export default function CreateJob() {
   const fieldOfStudyOptions = ["Computer Science", "Engineering", "Business", "Arts", "Sciences", "Mathematics", "Medicine", "Law", "Other"];
   const experienceOptions = ["0-1 years", "1-3 years", "3-5 years", "5-10 years", "10+ years"];
   const allCertifications = ["AWS Certified", "Microsoft Certified", "Google Cloud Certified", "Cisco Certified", "PMP"];
-  // REMOVED: allLocations is no longer needed
   const allBenefits = ["Health Insurance", "401(k)", "Paid Time Off", "Flexible Schedule", "Dental Insurance"];
   const workAuthOptions = ["Citizens Only", "Permanent Residents", "Work Visa Holders", "Any"];
   const allSkills = ["JavaScript", "React", "Vue", "Angular", "Node.js", "Python", "Java", "C++", "SQL", "MongoDB"];
@@ -121,9 +124,13 @@ export default function CreateJob() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSalaryChange = (e) => {
+  // --- MODIFIED ---
+  const handlePackageDetailsChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, minPackage: { ...prev.minPackage, [name]: value } }));
+    setFormData(prev => ({
+      ...prev,
+      packageDetails: { ...prev.packageDetails, [name]: value }
+    }));
   };
 
   const addItem = (field, item) => {
@@ -186,12 +193,14 @@ export default function CreateJob() {
       jobTitle: "Job Title",
       description: "Job Description",
       location: "Location",
-      'minPackage.amount': "Salary Amount",
+      'packageDetails.totalCTC': "Salary Amount", // <-- MODIFIED
       numberOfOpenings: "No. of Openings",
     };
 
     for (const key in requiredFields) {
-      const value = key.includes('.') ? formData.minPackage.amount : formData[key];
+      // --- MODIFIED ---
+      const value = key.includes('.') ? formData.packageDetails.totalCTC : formData[key];
+      // ---
       if (!value || (Array.isArray(value) && value.length === 0)) {
         toast.error(`Please fill the required field: ${requiredFields[key]}`);
         setIsSubmitting(false);
@@ -202,12 +211,17 @@ export default function CreateJob() {
     try {
       const payload = {
         ...formData,
-        minPackage: {
-          currency: formData.minPackage.currency,
-          amount: parseFloat(formData.minPackage.amount)
+        // --- MODIFIED ---
+        packageDetails: {
+          currency: formData.packageDetails.currency,
+          totalCTC: parseFloat(formData.packageDetails.totalCTC) || 0,
+          fixedPay: parseFloat(formData.packageDetails.fixedPay) || 0,
+          joiningBonus: parseFloat(formData.packageDetails.joiningBonus) || 0
         },
+        minPackage: undefined, // Remove old field
+        // ---
         numberOfOpenings: parseInt(formData.numberOfOpenings, 10),
-          tags: formData.tags,
+        tags: formData.tags,
         jobType: "Job-listing",
         broadcastType: formData.broadcastType
       };
@@ -276,7 +290,7 @@ export default function CreateJob() {
             </div>
           </div>
 
-          {/* --- MODIFIED: Location Multi-Select with City Search --- */}
+          {/* --- Location Multi-Select with City Search --- */}
           <div ref={locationsDropdownRef} className="relative mb-4">
             <label className="block text-sm font-medium mb-2">Location <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">
@@ -354,21 +368,55 @@ export default function CreateJob() {
           </div>
 
 
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Salary (CTC) <span className="text-red-500">*</span></label>
-            <div className="flex">
+          {/* --- MODIFIED: Package Details --- */}
+          <div className="mb-4 mt-6">
+            <label className="block text-sm font-medium mb-2">Package Details (CTC) <span className="text-red-500">*</span></label>
+            <div className="flex mb-2">
               <div className="relative w-24">
-                <select name="currency" value={formData.minPackage.currency} onChange={handleSalaryChange} className="w-full h-full pl-3 pr-8 py-2 border border-gray-300 rounded-l-md appearance-none bg-white focus:ring-2 focus:ring-black">
+                <select
+                  name="currency"
+                  value={formData.packageDetails.currency}
+                  onChange={handlePackageDetailsChange}
+                  className="w-full h-full pl-3 pr-8 py-2 border border-gray-300 rounded-l-md appearance-none bg-white focus:ring-2 focus:ring-black"
+                >
                   <option value="USD">USD</option>
                   <option value="INR">INR</option>
                   <option value="EUR">EUR</option>
                 </select>
                 <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={12} />
               </div>
-              <input type="number" name="amount" placeholder="Enter amount" className="flex-1 p-2 border border-l-0 border-gray-300 rounded-r-md focus:ring-2 focus:ring-black" value={formData.minPackage.amount} onChange={handleSalaryChange} min="0" />
+              <input
+                type="number"
+                name="totalCTC"
+                placeholder="Enter Total CTC"
+                className="flex-1 p-2 border border-l-0 border-gray-300 rounded-r-md focus:ring-2 focus:ring-black"
+                value={formData.packageDetails.totalCTC}
+                onChange={handlePackageDetailsChange}
+                min="0"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="number"
+                name="fixedPay"
+                value={formData.packageDetails.fixedPay}
+                onChange={handlePackageDetailsChange}
+                placeholder="Fixed Pay (optional)"
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black"
+              />
+              <input
+                type="number"
+                name="joiningBonus"
+                value={formData.packageDetails.joiningBonus}
+                onChange={handlePackageDetailsChange}
+                placeholder="Joining Bonus (optional)"
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black"
+              />
             </div>
           </div>
+          {/* --- END MODIFICATION --- */}
+
 
           <div className="mb-4">
             <label htmlFor="numberOfOpenings" className="block text-sm font-medium mb-2">No. of Openings <span className="text-red-500">*</span></label>

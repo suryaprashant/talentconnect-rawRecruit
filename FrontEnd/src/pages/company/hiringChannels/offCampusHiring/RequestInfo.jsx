@@ -30,19 +30,19 @@ export default function OffCampusHiringForm({ onBackClick }) {
     "Associate Degree": ["All Streams", "Technical", "Business", "Healthcare"],
     "Other": ["Other"]
   };
-  
+
   const jobRoles = ['Software Developer', 'Data Scientist', 'DevOps Engineer', 'QA Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'Mobile App Developer', 'UI/UX Designer', 'Product Manager', 'Business Analyst', 'Data Analyst', 'Machine Learning Engineer', 'Cloud Architect', 'Network Engineer', 'Cyber Security Specialist', 'Technical Writer', 'Sales Engineer', 'Marketing Specialist', 'HR Recruiter', 'Finance Analyst', 'Other'];
   const skillsOptions = ['JavaScript', 'Python', 'Java', 'React', 'Node.js', 'HTML/CSS', 'SQL', 'MongoDB', 'AWS', 'Docker', 'Kubernetes', 'Machine Learning', 'Data Structures', 'Algorithms', 'Git', 'REST APIs'];
   const benefitsOptions = ['Health Insurance', 'Provident Fund (PF)', 'Paid Time Off (PTO)', 'Work from Home', 'Performance Bonus', 'Stock Options'];
   const numberOfRoundsOptions = ['1', '2', '3', '4', '5', '6+'];
-  const processOptions = [ 'Online Test',
+  const processOptions = ['Online Test',
     'Coding Test',
     'Aptitude Test',
     'Group Discussion',
     'Technical Interview',
     'HR Interview',
     'Case Study',
-    'Presentation'].map(option =>`${option}`).sort((a, b) => a.localeCompare(b));
+    'Presentation'].map(option => `${option}`).sort((a, b) => a.localeCompare(b));
   const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
   const minStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '201-500', '500+'];
   const degrees = Object.keys(degreeStreamMapping).sort();
@@ -56,7 +56,9 @@ export default function OffCampusHiringForm({ onBackClick }) {
     studentStreams: [],
     eligibilityCriteria: '',
     description: '',
-    minPackage: { currency: 'INR', amount: '' },
+    // --- MODIFIED ---
+    packageDetails: { currency: 'INR', totalCTC: '', fixedPay: '', joiningBonus: '' },
+    // ---
     workLocations: [],
     jobRoles: [],
     workMode: [],
@@ -96,7 +98,7 @@ export default function OffCampusHiringForm({ onBackClick }) {
   const workLocationsRef = useRef(null);
   const selectionProcessRef = useRef(null);
   const tagsRef = useRef(null);
-  
+
   useEffect(() => {
     const citiesOfIndia = City.getCitiesOfCountry('IN').sort((a, b) => a.name.localeCompare(b.name));
     setIndianCities(citiesOfIndia);
@@ -168,9 +170,13 @@ export default function OffCampusHiringForm({ onBackClick }) {
     });
   };
 
-  const handlePackageChange = (e) => {
+  // --- NEW HANDLER ---
+  const handlePackageDetailsChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, minPackage: { ...formData.minPackage, [name]: value } });
+    setFormData({
+      ...formData,
+      packageDetails: { ...formData.packageDetails, [name]: value }
+    });
   };
 
   const handleContactChange = (e) => {
@@ -221,11 +227,15 @@ export default function OffCampusHiringForm({ onBackClick }) {
         studentStreams: formData.studentStreams,
         eligibilityCriteria: formData.eligibilityCriteria,
         description: formData.description,
-        minPackage: {
-          currency: formData.minPackage.currency,
-          amount: parseFloat(formData.minPackage.amount)
+        // --- MODIFIED ---
+        packageDetails: {
+          currency: formData.packageDetails.currency,
+          totalCTC: parseFloat(formData.packageDetails.totalCTC) || 0,
+          fixedPay: parseFloat(formData.packageDetails.fixedPay) || 0,
+          joiningBonus: parseFloat(formData.packageDetails.joiningBonus) || 0
         },
-        location: formData.workLocations,
+        // ---
+        location: formData.workLocations, // This key is 'location' for the backend
         jobRoles: formData.jobRoles,
         workMode: formData.workMode,
         employmentType: formData.employmentType,
@@ -269,7 +279,7 @@ export default function OffCampusHiringForm({ onBackClick }) {
   const filteredCities = indianCities.filter(city =>
     city.name.toLowerCase().includes(workLocationSearch.toLowerCase())
   );
-  
+
   // Get available streams based on selected degree
   const availableStreams = degreeStreamMapping[formData.degree] || [];
 
@@ -282,7 +292,7 @@ export default function OffCampusHiringForm({ onBackClick }) {
         </div>
         <div className="md:w-1/2">
           <p className="text-sm">
-           Reach top talent across cities, domains, and institutions—without stepping on campus. OffCampus Access helps companies connect with graduates and job seekers outside the traditional college setting.
+            Reach top talent across cities, domains, and institutions—without stepping on campus. OffCampus Access helps companies connect with graduates and job seekers outside the traditional college setting.
           </p>
         </div>
       </div>
@@ -448,20 +458,53 @@ export default function OffCampusHiringForm({ onBackClick }) {
             )}
           </div>
 
+          {/* --- MODIFIED: Package Details --- */}
           <div>
-            <label className="block mb-1 font-medium">Minimum Package Offered <span className="text-red-500">*</span></label>
-            <div className="flex">
+            <label className="block mb-1 font-medium">Package Details <span className="text-red-500">*</span></label>
+            <div className="flex mb-2">
               <div className="relative">
-                <select name="currency" value={formData.minPackage.currency} onChange={handlePackageChange} className="py-2 px-3 border rounded-l bg-white">
+                <select
+                  name="currency"
+                  value={formData.packageDetails.currency}
+                  onChange={handlePackageDetailsChange}
+                  className="py-2 px-3 border rounded-l bg-white"
+                >
                   <option value="INR">INR</option>
                   <option value="USD">USD</option>
                   <option value="EUR">EUR</option>
                 </select>
               </div>
-              <input type="number" name="amount" value={formData.minPackage.amount} onChange={handlePackageChange} placeholder="Enter amount (e.g. 500000)" className="flex-grow p-2 border border-l-0 rounded-r" required />
+              <input
+                type="number"
+                name="totalCTC"
+                value={formData.packageDetails.totalCTC}
+                onChange={handlePackageDetailsChange}
+                placeholder="Total CTC (e.g. 1000000)"
+                className="flex-grow p-2 border border-l-0 rounded-r"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="number"
+                name="fixedPay"
+                value={formData.packageDetails.fixedPay}
+                onChange={handlePackageDetailsChange}
+                placeholder="Fixed Pay (e.g. 800000)"
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="number"
+                name="joiningBonus"
+                value={formData.packageDetails.joiningBonus}
+                onChange={handlePackageDetailsChange}
+                placeholder="Joining Bonus (e.g. 50000)"
+                className="w-full p-2 border rounded"
+              />
             </div>
           </div>
-          
+          {/* --- END MODIFICATION --- */}
+
           <div ref={workLocationsRef} className="relative">
             <label className="block font-medium mb-2">Work Location <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">

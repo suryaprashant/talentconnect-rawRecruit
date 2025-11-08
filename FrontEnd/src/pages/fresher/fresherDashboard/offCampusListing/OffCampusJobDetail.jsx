@@ -1,11 +1,9 @@
-
-
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-// import { jobListings, detailedJobData } from '@/constants/offCampusListing'
 import { ApplyForOppurtunity, getJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
+// ADDED ICONS FOR NEW SECTION
+import { MapPin, ArrowLeft, Building2, Users, Navigation, DollarSign } from 'lucide-react';
 
 
 function OffCampusJobDetail() {
@@ -30,7 +28,9 @@ function OffCampusJobDetail() {
   };
 
   useEffect(() => {
-    loadJobDetails();
+    if (jobId) {
+      loadJobDetails();
+    }
   }, [jobId]);
 
   const handleBackToList = () => {
@@ -43,7 +43,7 @@ function OffCampusJobDetail() {
       if (response?.data?.success === true) toast.success('Job saved!');
       else toast.error(response.response.data?.msg)
     } catch (err) {
-      console.error('Error applying for job:', err);
+      console.error('Error saving job:', err);
       toast.error('Something went wrong!');
     }
   };
@@ -55,7 +55,7 @@ function OffCampusJobDetail() {
       if (response?.data?.success === true) toast.success('Application submitted!');
       else toast.error(response.response.data?.msg)
     } catch (error) {
-      console.log("Error: ", error);
+      console.log("Error applying: ", error);
       toast.error('Something went wrong!');
     }
   };
@@ -99,6 +99,22 @@ function OffCampusJobDetail() {
       headerStatusClasses = 'text-gray-600';
   }
 
+  // Helper function to render array data as tags
+  const renderTags = (data, colorClass = "bg-gray-100 text-gray-800") => {
+    if (Array.isArray(data) && data.length > 0) {
+      return (
+        <div className="flex flex-wrap gap-2 mt-1">
+          {data.map((item, index) => (
+            <span key={index} className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${colorClass}`}>
+              {item}
+            </span>
+          ))}
+        </div>
+      );
+    }
+    return <span className="text-gray-700">N/A</span>;
+  };
+
   return (
     <div className="max-w-4xl mx-auto bg-white rounded shadow-md p-6">
       {/* Header */}
@@ -117,21 +133,17 @@ function OffCampusJobDetail() {
                 }}
               />
             ) : (
-              <svg className="w-8 h-8 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-              </svg>
+              <Building2 className="w-8 h-8 text-gray-500" />
             )}
           </div>
           <div>
-            <h2 className="text-xl font-bold">{jobDetail?.companyPosted?.companyDetails.companyName} - {jobDetail?.jobRoles.map((j, i) => (<span key={i}>{j}</span>))}</h2>
-            <p className="text-sm text-gray-600">Application {jobDetail.status}</p>
+            <h2 className="text-xl font-bold">{jobDetail?.companyPosted?.companyDetails.companyName} - {jobDetail?.jobRoles?.join(', ') || jobDetail.jobTitle}</h2>
+            <p className={`text-sm font-semibold ${headerStatusClasses}`}>Application {jobDetail.jobStatus}</p>
           </div>
         </div>
         <div className="flex space-x-2">
-          <button onClick={handleBackToList} className="p-2 border border-gray-300 rounded hover:bg-gray-100">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
+          <button onClick={handleBackToList} className="p-2 border border-gray-300 rounded hover:bg-gray-100" title="Back to list">
+            <ArrowLeft className="w-5 h-5" />
           </button>
           <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
           <button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800" onClick={() => handleApply()}>Apply</button>
@@ -143,27 +155,61 @@ function OffCampusJobDetail() {
         <h3 className="text-lg font-semibold mb-3">About {jobDetail?.companyPosted?.companyDetails?.companyName}</h3>
         <p className="text-gray-700 mb-4">{jobDetail?.companyPosted?.companyDetails.description}</p>
 
-        <div className="grid grid-cols-4 gap-4">
-          <div className="border border-gray-200 p-4">
-            <div className="font-bold text-lg">{jobDetail?.companyPosted?.companyDetails.numberOfEmployees}</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="border border-gray-200 p-4 rounded-md">
+            <div className="font-bold text-lg">{jobDetail?.companyPosted?.companyDetails.numberOfEmployees || 'N/A'}</div>
             <div className="text-sm text-gray-600">Employees</div>
           </div>
-          <div className="border border-gray-200 p-4 rounded-md">
+          {/* <div className="border border-gray-200 p-4 rounded-md">
             <div className="font-bold text-lg">N/A</div>
             <div className="text-sm text-gray-600">Revenue</div>
-          </div>
-          <div className="border border-gray-200 p-4">
-            <div className="font-bold text-lg capitalize">{jobDetail?.companyPosted?.companyDetails.industryType}</div>
+          </div> */}
+          <div className="border border-gray-200 p-4 rounded-md">
+            <div className="font-bold text-lg capitalize">{jobDetail?.companyPosted?.companyDetails.industryType || 'N/A'}</div>
             <div className="text-sm text-gray-600">Industries</div>
           </div>
-          <div className="border border-gray-200 p-4">
-            <div className="font-bold text-lg">{jobDetail?.companyPosted?.companyDetails.country}</div>
+          <div className="border border-gray-200 p-4 rounded-md">
+            <div className="font-bold text-lg">{jobDetail?.companyPosted?.companyDetails.country || 'N/A'}</div>
             <div className="text-sm text-gray-600">Countries</div>
           </div>
         </div>
       </section>
 
-      {/* Program Details */}
+      {/* --- NEW/MODIFIED SECTION --- */}
+      <section className="mb-8">
+        <h3 className="text-lg font-semibold mb-3">Compensation & Benefits</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="text-sm font-medium text-gray-500">Total CTC</div>
+            <div className="text-lg font-bold text-gray-900">
+              {jobDetail.packageDetails?.totalCTC
+                ? `${jobDetail.packageDetails.currency || ''} ${jobDetail.packageDetails.totalCTC.toLocaleString()}`
+                : 'Not Specified'}
+            </div>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="text-sm font-medium text-gray-500">Fixed Pay</div>
+            <div className="text-lg font-bold text-gray-900">
+              {jobDetail.packageDetails?.fixedPay
+                ? `${jobDetail.packageDetails.currency || ''} ${jobDetail.packageDetails.fixedPay.toLocaleString()}`
+                : 'N/A'}
+            </div>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="text-sm font-medium text-gray-500">Joining Bonus</div>
+            <div className="text-lg font-bold text-gray-900">
+              {jobDetail.packageDetails?.joiningBonus
+                ? `${jobDetail.packageDetails.currency || ''} ${jobDetail.packageDetails.joiningBonus.toLocaleString()}`
+                : 'N/A'}
+            </div>
+          </div>
+        </div>
+        <h4 className="font-medium mb-2">Benefits Offered</h4>
+        {renderTags(jobDetail.benefits, "bg-green-100 text-green-800")}
+      </section>
+      {/* --- END NEW/MODIFIED SECTION --- */}
+
+      {/* Program Details (Original Section - Kept as requested) */}
       <section className="mb-8">
         <h3 className="text-lg font-semibold mb-3">Program Details</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -190,16 +236,17 @@ function OffCampusJobDetail() {
             </div>
           </div>
 
-          <div className="flex items-start">
-            <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          {/* <div className="flex items-start"> */}
+            {/* <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-            <div>
+            </svg> */}
+            {/* <div>
               <div className="font-medium">Compensation</div>
-              <div className="text-gray-700">{jobDetail.minPackage?.currency || 'N/A'} {jobDetail.minPackage?.amount || 'Not Mentioned'}</div>
-              <div className="text-sm text-gray-600">Benefits: Not specified</div>
-            </div>
-          </div>
+          
+              <div className="text-gray-700">{jobDetail.packageDetails?.currency || 'N/A'} {jobDetail.packageDetails?.totalCTC || 'Not Mentioned'}</div>
+              <div className="text-sm text-gray-600">Benefits: {jobDetail.benefits?.join(', ') || 'N/A'}</div>
+            </div> */}
+          
           <div className="flex items-start">
             <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -232,13 +279,13 @@ function OffCampusJobDetail() {
             </svg>
             <div>
               <div className="font-medium">About the role</div>
-              <div className="text-gray-700">{jobDetail.description || 'No description available.'}</div>
+              <div className="text-gray-700 whitespace-pre-wrap">{jobDetail.description || 'No description available.'}</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Job Details */}
+      {/* Job Details (Original Section - Kept as requested) */}
       <section className="mb-8">
         <h3 className="text-lg font-semibold mb-3">Job Details</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4">
@@ -260,15 +307,16 @@ function OffCampusJobDetail() {
           </div>
           <div className="flex items-center">
             <div className="text-sm text-gray-600 mr-1">Role Category:</div>
-            <div>{jobDetail.jobRoles || 'N/A'}</div>
+            <div>{jobDetail.jobRoles?.join(', ') || 'N/A'}</div>
           </div>
           <div className="flex items-center">
             <div className="text-sm text-gray-600 mr-1">Salary Range:</div>
-            <div>{jobDetail.minPackage?.currency || 'N/A'} {jobDetail.minPackage?.amount || 'Not Mentioned'} /month</div>
+            {/* --- UPDATED this line --- */}
+            <div>{jobDetail.packageDetails?.currency || 'N/A'} {jobDetail.packageDetails?.totalCTC || 'Not Mentioned'} /month</div>
           </div>
           <div className="flex items-center">
             <div className="text-sm text-gray-600 mr-1">Work Mode</div>
-            <div>{jobDetail?.workMode}</div>
+            <div>{jobDetail?.workMode?.join(', ') || 'N/A'}</div>
           </div>
         </div>
       </section>
@@ -292,15 +340,7 @@ function OffCampusJobDetail() {
       <section className="mb-8">
         <h3 className="text-lg font-semibold mb-3">Required Skills</h3>
         <div className="mb-4">
-          <div className="flex flex-wrap gap-2">
-            {jobDetail.skills && jobDetail.skills.length > 0 ? (
-              jobDetail.skills.map((skill, index) => (
-                <span key={index} className="bg-gray-100 px-3 py-1 rounded text-sm">{skill}</span>
-              ))
-            ) : (
-              <span>No skills specified.</span>
-            )}
-          </div>
+          {renderTags(jobDetail.skills, "bg-blue-100 text-blue-800")}
         </div>
       </section>
 

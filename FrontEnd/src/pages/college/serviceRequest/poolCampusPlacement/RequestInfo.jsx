@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { ChevronDown, X } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -8,7 +8,7 @@ export default function OffCampusHiringForm() {
         venue: '',
         degree: [],
         collegeTypes: '',
-        criteria: '',
+        // criteria: '', // <-- Removed
         workMode: [],
         employmentType: [],
         salaryRange: 'INR',
@@ -25,7 +25,10 @@ export default function OffCampusHiringForm() {
         },
         minStudentsToBePlaced: '',
         amenities: [],
-        description: ''
+        description: '',
+        // --- NEW FIELDS ADDED ---
+        companyType: [],
+        proposedSchedule: { startDate: '', endDate: '', preferredMode: '' },
     };
 
     const [formData, setFormData] = useState(initialFormState);
@@ -34,7 +37,9 @@ export default function OffCampusHiringForm() {
 
     const amenitiesRef = useRef(null);
     const degreeRef = useRef(null);
-    const [dropdownOpen, setDropdownOpen] = useState({ amenities: false, degree: false });
+    const companyTypeRef = useRef(null); // --- NEW REF ---
+
+    const [dropdownOpen, setDropdownOpen] = useState({ amenities: false, degree: false, companyType: false });
     const [customAmenity, setCustomAmenity] = useState('');
 
     // --- Static Options ---
@@ -46,6 +51,10 @@ export default function OffCampusHiringForm() {
     const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
     const minStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '200+'];
     const amenitiesOptions = ['Auditorium', 'Seminar Hall', 'Interview Rooms', 'Computer Labs', 'Wi-Fi Access', 'Projector'];
+    
+    // --- NEW OPTIONS ADDED ---
+    const companyTypeOptions = ["MNC", "Startup", "SME", "Public Sector"];
+    const proposedModeOptions = ["Online", "Offline", "Hybrid"];
 
     // --- Handlers ---
     useEffect(() => {
@@ -56,6 +65,10 @@ export default function OffCampusHiringForm() {
             if (degreeRef.current && !degreeRef.current.contains(event.target)) {
                 setDropdownOpen(prev => ({ ...prev, degree: false }));
             }
+            // --- NEWLY ADDED ---
+            if (companyTypeRef.current && !companyTypeRef.current.contains(event.target)) {
+                setDropdownOpen(prev => ({ ...prev, companyType: false }));
+            }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -64,6 +77,18 @@ export default function OffCampusHiringForm() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    // --- NEW HANDLER ---
+    const handleProposedScheduleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            proposedSchedule: {
+                ...prev.proposedSchedule,
+                [name]: value
+            }
+        }));
     };
 
     const handleContactChange = (e) => {
@@ -131,10 +156,16 @@ export default function OffCampusHiringForm() {
         let studentStreams = [];
         let roundNames = [];
         let studentCounts = [];
+        let roundSkills = []; // NEW: Store skills per round
 
         const nonEmptyRounds = formData.rounds.filter(round => round.students || round.branch || round.skills);
         nonEmptyRounds.forEach(round => {
-            if (round.skills) aggregatedSkills.push(...round.skills.split(',').map(s => s.trim()).filter(Boolean));
+            if (round.skills) {
+                // Store skills exactly as entered for this round (no deduplication)
+                roundSkills.push(round.skills);
+                // For aggregated skills, push without making unique to preserve duplicates
+                aggregatedSkills.push(...round.skills.split(',').map(s => s.trim()).filter(Boolean));
+            }
             if (round.branch) studentStreams.push(round.branch);
             if (round.students) studentCounts.push(round.students);
             roundNames.push(`Round ${round.id}`);
@@ -145,23 +176,28 @@ export default function OffCampusHiringForm() {
             venue: formData.venue,
             degree: formData.degree,
             collegeTypes: formData.collegeTypes ? [formData.collegeTypes] : [],
-            eligibilityCriteria: formData.criteria,
+            // eligibilityCriteria: formData.criteria, // <-- Removed
             workMode: formData.workMode,
             employmentType: formData.employmentType,
-            minPackage: {
+            packageDetails: {
                 currency: formData.salaryRange,
-                amount: parseFloat(formData.salaryValue) || 0,
+                totalCTC: parseFloat(formData.salaryValue) || 0,
             },
             startDate: formData.tentativeStartDate,
             endDate: formData.tentativeEndDate,
             rounds: roundNames,
-            studentStreams: [...new Set(studentStreams)],
-            skills: [...new Set(aggregatedSkills)],
+            studentStreams: [...new Set(studentStreams)], // Keep streams unique
+            skills: aggregatedSkills, // CHANGED: Store all skills as entered (with duplicates)
             numberOfStudent: studentCounts,
             contactPerson: formData.contactPerson,
             noOfplacedStudents: formData.minStudentsToBePlaced,
             amenitiesRequired: formData.amenities,
             description: formData.description,
+            // --- NEW PAYLOAD FIELDS ---
+            companyType: formData.companyType,
+            proposedSchedule: formData.proposedSchedule,
+            roundDetails: nonEmptyRounds, // Sending the structured round data
+            roundSkills: roundSkills, // NEW: Send skills per round exactly as entered
         };
 
         try {
@@ -264,10 +300,34 @@ export default function OffCampusHiringForm() {
                         </div>
                     </div>
 
-                    <div>
-                        <label htmlFor="criteria" className="block text-sm font-medium text-gray-700 mb-1">Eligibility Criteria</label>
-                        <textarea id="criteria" name="criteria" className="block w-full border border-gray-300 rounded-md px-3 py-2" placeholder="e.g. Minimum 60% aggregate, No active backlogs..." value={formData.criteria} onChange={handleChange} rows="3"></textarea>
+                    {/* --- Eligibility Criteria Removed --- */}
+
+                    {/* --- NEW: Company Type --- */}
+                    <div ref={companyTypeRef}>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Company Type</label>
+                        <div className="relative">
+                            <div className="block w-full border border-gray-300 rounded-md px-3 py-2 min-h-[42px] cursor-pointer" onClick={() => setDropdownOpen(prev => ({ ...prev, companyType: !prev.companyType }))}>
+                                {formData.companyType.length > 0 ? (
+                                    <div className="flex flex-wrap gap-1">
+                                        {formData.companyType.map(item => (
+                                            <span key={item} className="flex items-center bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                                                {item}
+                                                <button type="button" onClick={(e) => { e.stopPropagation(); removeItem('companyType', item); }} className="ml-1.5"><X size={12} /></button>
+                                            </span>
+                                        ))}
+                                    </div>
+                                ) : <span className="text-gray-500">Select company types</span>}
+                            </div>
+                            {dropdownOpen.companyType && (
+                                <div className="absolute z-10 w-full bg-white border rounded-md mt-1 shadow-lg">
+                                    {companyTypeOptions.map(opt => (
+                                        <div key={opt} className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${formData.companyType.includes(opt) ? 'bg-gray-200' : ''}`} onClick={() => handleMultiToggle('companyType', opt)}>{opt}</div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
+                    {/* --- END NEW FIELD --- */}
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Work Mode</label>
@@ -288,12 +348,31 @@ export default function OffCampusHiringForm() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Tentative Date Range</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Application Start/End Date</label>
                         <div className="flex flex-col md:flex-row gap-4">
                             <input name="tentativeStartDate" type="date" className="block w-full border border-gray-300 rounded-md px-3 py-2" value={formData.tentativeStartDate} onChange={handleChange} />
                             <input name="tentativeEndDate" type="date" className="block w-full border border-gray-300 rounded-md px-3 py-2" value={formData.tentativeEndDate} onChange={handleChange} />
                         </div>
                     </div>
+
+                    {/* --- NEW: Proposed Schedule --- */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Proposed Schedule (Tentative Dates)</label>
+                        <div className="space-y-2">
+                            <div className="flex flex-col md:flex-row gap-4">
+                                <input type="date" name="startDate" placeholder="Proposed Start Date" className="block w-full border border-gray-300 rounded-md px-3 py-2" value={formData.proposedSchedule.startDate} onChange={handleProposedScheduleChange} />
+                                <input type="date" name="endDate" placeholder="Proposed End Date" className="block w-full border border-gray-300 rounded-md px-3 py-2" value={formData.proposedSchedule.endDate} onChange={handleProposedScheduleChange} />
+                            </div>
+                            <div className="relative">
+                                <select name="preferredMode" className="block w-full border border-gray-300 rounded-md px-3 py-2 appearance-none pr-10" value={formData.proposedSchedule.preferredMode} onChange={handleProposedScheduleChange}>
+                                    <option value="">Select Preferred Mode</option>
+                                    {proposedModeOptions.map(option => (<option key={option} value={option}>{option}</option>))}
+                                </select>
+                                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none"><ChevronDown size={16} className="text-gray-400" /></div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* --- END NEW FIELD --- */}
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Cut-off Salary</label>

@@ -9,6 +9,9 @@ const formatDate = (dateString) => {
     if (!dateString || dateString === 'Not Specified') return 'Not Specified';
     try {
         const date = new Date(dateString);
+        if (isNaN(date.getTime())) { // Check for invalid date
+            return 'Not Specified';
+        }
         return date.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
@@ -64,8 +67,11 @@ const PoolJobDetailsPage = () => {
         if (!jobId || !jobType) return;
         try {
             const response = await SaveOppurtunity(jobId, jobType);
-            if (response.data?.success === true) toast.success("Saved!");
-            else toast.error(response.response?.data?.msg || "Could not apply.");
+            if (response.data?.success === true) {
+                toast.success("Saved!");
+                setIsSaved(true); // Update save state on success
+            }
+            else toast.error(response.response?.data?.msg || "Could not save.");
         } catch (error) {
             console.log("Error: ", error);
             toast.error('Something went wrong');
@@ -174,12 +180,11 @@ const PoolJobDetailsPage = () => {
                                             {jobDetails.companyPosted?.companyDetails?.websiteUrl || 'Not specified'}
                                         </a>
                                     </div>
-                                    {/* Hiring Venus  */}
+                                    {/* Hiring Venue  */}
                                     <div className="flex items-center mt-1">
                                         <MapPin className="h-4 w-4 text-gray-500 mr-2" />
                                         <p className="text-sm text-gray-600">{jobDetails?.venue || 'Venue Not Specified'}</p>
                                     </div>
-
 
                                     {!isApplied && (<div className="flex space-x-2 mt-5">
                                         <button
@@ -189,9 +194,10 @@ const PoolJobDetailsPage = () => {
                                         </button>
                                         <button
                                             onClick={() => handleSave(jobDetails?._id, "Pool-campus")}
-                                            className={`inline-flex items-center justify-center px-4 py-2 border ${isSaved ? 'border-gray-400 bg-gray-100' : 'border-gray-300 bg-white'} text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none`}
+                                            disabled={isSaved}
+                                            className={`inline-flex items-center justify-center px-4 py-2 border ${isSaved ? 'border-gray-400 bg-gray-100 text-gray-500 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-md focus:outline-none`}
                                         >
-                                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isSaved ? 'text-blue-600 fill-current' : 'text-gray-500'}`} viewBox="0 0 20 20" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isSaved ? 'text-blue-600' : 'text-gray-500'}`} viewBox="0 0 20 20" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor">
                                                 <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
                                             </svg>
                                             {isSaved ? 'Saved' : 'Save'}
@@ -207,11 +213,7 @@ const PoolJobDetailsPage = () => {
                                         </button>
                                     </div>)}
                                 </div>
-
-
                             </div>
-
-
                         </div>
                     </div>
 
@@ -224,10 +226,6 @@ const PoolJobDetailsPage = () => {
                                 <div className="text-2xl font-bold text-gray-900">{jobDetails.companyPosted?.companyDetails?.numberOfEmployees || 'N/A'}</div>
                                 <div className="text-sm text-gray-600">Employees</div>
                             </div>
-                            {/* <div className="bg-gray-50 p-4 rounded-lg">
-                                <div className="text-2xl font-bold text-gray-900">N/A</div>
-                                <div className="text-sm text-gray-600">Revenue</div>
-                            </div> */}
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <div className="text-2xl font-bold text-gray-900">{jobDetails.companyPosted?.companyDetails?.industryType || 'N/A'}</div>
                                 <div className="text-sm text-gray-600">Industries</div>
@@ -251,7 +249,7 @@ const PoolJobDetailsPage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
                             <div>
                                 <div className="text-sm font-medium text-gray-500">Employment Type</div>
-                                <div className="mt-1 text-base text-gray-900">{jobDetails?.employmentType || 'Not Specified'}</div>
+                                <div className="mt-1 text-base text-gray-900">{jobDetails?.employmentType?.join(', ') || 'Not Specified'}</div>
                             </div>
                             <div>
                                 <div className="text-sm font-medium text-gray-500">Job Roles</div>
@@ -259,16 +257,22 @@ const PoolJobDetailsPage = () => {
                             </div>
                             <div>
                                 <div className="text-sm font-medium text-gray-500">Work Mode</div>
-                                <div className="mt-1 text-base text-gray-900">{jobDetails?.workMode || 'Not Specified'}</div>
+                                <div className="mt-1 text-base text-gray-900">{jobDetails?.workMode?.join(', ') || 'Not Specified'}</div>
                             </div>
                             <div>
-                                <div className="text-sm font-medium text-gray-500">Number of roundes to be held</div>
-                                <div className="mt-1 text-base text-gray-900">{jobDetails?.rounds || 'Not Specified'}</div>
+                                <div className="text-sm font-medium text-gray-500">Number of rounds to be held</div>
+                                <div className="mt-1 text-base text-gray-900">{jobDetails?.rounds?.join(', ') || 'Not Specified'}</div>
                             </div>
                             <div>
                                 <div className="text-sm font-medium text-gray-500">Job Location</div>
-                                <div className="mt-1 text-base text-gray-900">{jobDetails?.location?.join(', ') || 'Not Specified'}</div>
+                                <div className="mt-1 text-base text-gray-900">{jobDetails?.workLocation?.join(', ') || 'Not Specified'}</div>
                             </div>
+                            {/* --- NEWLY ADDED --- */}
+                            <div>
+                                <div className="text-sm font-medium text-gray-500">Preferred Hiring Mode</div>
+                                <div className="mt-1 text-base text-gray-900">{jobDetails?.companyHiringPreference?.preferredMode || 'Not Specified'}</div>
+                            </div>
+                            {/* --- END NEW --- */}
                         </div>
                     </div>
 
@@ -302,19 +306,20 @@ const PoolJobDetailsPage = () => {
                         </div>
                     </div>
 
-                    {/* <div className="px-6 py-6 border-t border-gray-200">
+                    {/* --- SECTION UNCOMMENTED AND POPULATED --- */}
+                    <div className="px-6 py-6 border-t border-gray-200">
                         <h2 className="text-xl font-bold text-gray-900 mb-4">Eligibility Criteria</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 mb-4">
                             <div>
-                                <div className="text-sm font-medium text-gray-500">Drive Open To</div>
+                                <div className="text-sm font-medium text-gray-500">Drive Open To (College Type)</div>
                                 <div className="mt-1 text-base text-gray-900">{jobDetails?.collegeTypes?.join(', ') || 'Not Specified'}</div>
                             </div>
                             <div>
-                                <div className="text-sm font-medium text-gray-500">Eligible Degrees</div>
-                                <div className="mt-1 text-base text-gray-900">{jobDetails?.studentStreams?.join(' / ') || 'Not Specified'}</div>
+                                <div className="text-sm font-medium text-gray-500">Eligible College Categories</div>
+                                <div className="mt-1 text-base text-gray-900">{jobDetails?.collegeCategories?.join(', ') || 'Not Specified'}</div>
                             </div>
                             <div>
-                                <div className="text-sm font-medium text-gray-500">Eligible Branches</div>
+                                <div className="text-sm font-medium text-gray-500">Eligible Degrees / Streams</div>
                                 <div className="mt-1 text-base text-gray-900">{jobDetails?.studentStreams?.join(', ') || 'Not Specified'}</div>
                             </div>
                             <div>
@@ -328,14 +333,35 @@ const PoolJobDetailsPage = () => {
                                 <p className="mt-1 text-base text-gray-700">{jobDetails.eligibilityCriteria}</p>
                             </div>
                         )}
-                    </div> */}
+                    </div>
+                    {/* --- END SECTION --- */}
 
                     <div className="px-6 py-6 border-t border-gray-200">
                         <h2 className="text-xl font-bold text-gray-900 mb-4">Compensation & Benefits</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <div className="text-sm font-medium text-gray-500">Total CTC</div>
-                                <div className="text-xl font-bold text-gray-900">{jobDetails?.minPackage?.amount ? `₹ ${jobDetails.minPackage.amount} ${jobDetails.minPackage.currency || 'LPA'}` : 'Not Specified'}</div>
+                                <div className="text-xl font-bold text-gray-900">
+                                    {jobDetails?.packageDetails?.totalCTC
+                                        ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.totalCTC.toLocaleString()}`
+                                        : 'Not Specified'}
+                                </div>
+                            </div>
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <div className="text-sm font-medium text-gray-500">Fixed Pay</div>
+                                <div className="text-xl font-bold text-gray-900">
+                                    {jobDetails?.packageDetails?.fixedPay
+                                        ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.fixedPay.toLocaleString()}`
+                                        : 'N/A'}
+                                </div>
+                            </div>
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <div className="text-sm font-medium text-gray-500">Joining Bonus</div>
+                                <div className="text-xl font-bold text-gray-900">
+                                    {jobDetails?.packageDetails?.joiningBonus
+                                        ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.joiningBonus.toLocaleString()}`
+                                        : 'N/A'}
+                                </div>
                             </div>
                         </div>
                         <h3 className="font-medium text-gray-900 mt-6 mb-2">Benefits Offered</h3>
@@ -371,27 +397,30 @@ const PoolJobDetailsPage = () => {
                         )}
                     </div>
 
+                    {/* --- SECTION UPDATED WITH DYNAMIC DATA --- */}
                     <div className="px-6 py-6 border-t border-gray-200">
                         <h2 className="text-xl font-bold text-gray-900 mb-4">Important Dates</h2>
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div className="border border-gray-200 p-4 rounded-md">
                                 <p className="text-sm text-gray-500 mb-1">Registration Deadline</p>
-                                <p className="font-medium">{formatDate(jobDetails.endDate) || "Not Specified"}</p>
+                                <p className="font-medium">{formatDate(jobDetails.endDate)}</p>
                             </div>
                             <div className="border border-gray-200 p-4 rounded-md">
                                 <p className="text-sm text-gray-500 mb-1">Online Test Date</p>
-                                <p className="font-medium">Not Specified</p>
+                                <p className="font-medium">{formatDate(jobDetails.onlineTestDate)}</p>
                             </div>
                             <div className="border border-gray-200 p-4 rounded-md">
                                 <p className="text-sm text-gray-500 mb-1">Interview Window</p>
-                                <p className="font-medium">Not Specified</p>
+                                <p className="font-medium">{formatDate(jobDetails.interviewWindow?.start)} - {formatDate(jobDetails.interviewWindow?.end)}</p>
                             </div>
                             <div className="border border-gray-200 p-4 rounded-md">
                                 <p className="text-sm text-gray-500 mb-1">Offer Rollout</p>
-                                <p className="font-medium">Not Specified</p>
+                                <p className="font-medium">{formatDate(jobDetails.offerRolloutDate)}</p>
                             </div>
                         </div>
                     </div>
+                    {/* --- END SECTION --- */}
+
 
                     <div className="px-6 py-6 border-t border-gray-200">
                         <h2 className="text-xl font-bold text-gray-900 mb-4">Company Placement Officer Contact:</h2>

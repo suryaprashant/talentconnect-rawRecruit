@@ -155,15 +155,41 @@ const FJobDetails = () => {
                             </div>
                         </Section>
 
-                        {jobDetails.benefits && jobDetails.benefits.length > 0 && (
-                            <Section title="Benefits">
-                                <div className="flex flex-wrap gap-2">
-                                    {jobDetails.benefits.map((benefit) => (
-                                        <span key={benefit} className="bg-green-100 text-green-800 px-3 py-1.5 rounded-full text-sm font-medium">{benefit}</span>
-                                    ))}
+                         <Section title="Compensation & Benefits">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                    <div className="text-sm font-medium text-slate-500">Total CTC</div>
+                                    <div className="text-xl font-bold text-slate-900">
+                                        {jobDetails?.packageDetails?.totalCTC
+                                            ? `${jobDetails.packageDetails.currency || ''}- ${jobDetails.packageDetails.totalCTC.toLocaleString()}`
+                                            : 'Not Specified'}
+                                    </div>
                                 </div>
-                            </Section>
-                        )}
+                                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                    <div className="text-sm font-medium text-slate-500">Fixed Pay</div>
+                                    <div className="text-xl font-bold text-slate-900">
+                                        {jobDetails?.packageDetails?.fixedPay
+                                            ? `${jobDetails.packageDetails.currency || ''}- ${jobDetails.packageDetails.fixedPay.toLocaleString()}`
+                                            : 'N/A'}
+                                    </div>
+                                </div>
+                                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                    <div className="text-sm font-medium text-slate-500">Joining Bonus</div>
+                                    <div className="text-xl font-bold text-slate-900">
+                                        {jobDetails?.packageDetails?.joiningBonus
+                                            ? `${jobDetails.packageDetails.currency || ''}- ${jobDetails.packageDetails.joiningBonus.toLocaleString()}`
+                                            : 'N/A'}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 className="text-lg font-semibold text-slate-800 mb-3">Benefits Offered</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {jobDetails.benefits?.length > 0 ? jobDetails.benefits.map((benefit) => (
+                                    <span key={benefit} className="bg-green-100 text-green-800 px-3 py-1.5 rounded-full text-sm font-medium">{benefit}</span>
+                                )) : <p className="text-slate-500">No benefits specified.</p>}
+                            </div>
+                        </Section>
 
                         <Section title="Education">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
