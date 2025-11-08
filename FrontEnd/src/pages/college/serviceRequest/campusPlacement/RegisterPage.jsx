@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { ChevronDown, X } from 'lucide-react';
 import axios from 'axios';
+import { ChevronDown, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CreatableSelect from 'react-select/creatable';
 // Import the 'City' utility from the new package
@@ -25,17 +25,21 @@ export default function RegisterPage({ onBackClick }) {
         linkedinProfile: '',
         minStudentsToBePlaced: '',
         amenities: [],
-        description: ''
+        description: '',
+        // --- NEW FIELDS ADDED ---
+        companyType: [],
+        proposedSchedule: { startDate: '', endDate: '', preferredMode: '' },
     };
 
     const [formData, setFormData] = useState(initialFormState);
     const [alert, setAlert] = useState({ show: false, message: '', type: '' });
 
     // --- Dropdown and Input State Management ---
-    const [dropdownOpen, setDropdownOpen] = useState({ amenities: false });
+    const [dropdownOpen, setDropdownOpen] = useState({ amenities: false, companyType: false });
     const [customAmenity, setCustomAmenity] = useState('');
 
     const amenitiesRef = useRef(null);
+    const companyTypeRef = useRef(null); // --- NEW REF ---
 
     // --- Options ---
     const degreeOptions = ['B.Tech', 'M.Tech', 'MBA', 'B.Sc', 'M.Sc', 'PhD'];
@@ -43,6 +47,10 @@ export default function RegisterPage({ onBackClick }) {
     const designationOptions = ['Professor', 'HOD', 'Placement Officer', 'Dean', 'Coordinator'];
     const amenitiesOptions = ['Auditorium', 'Seminar Hall', 'Interview Rooms', 'Computer Labs', 'Wi-Fi Access', 'Projector'];
     const minStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '200+'];
+    
+    // --- NEW OPTIONS ADDED ---
+    const companyTypeOptions = ["MNC", "Startup", "SME", "Public Sector"];
+    const proposedModeOptions = ["Online", "Offline", "Hybrid"];
 
     // --- City Options generated from the npm package ---
     // useMemo ensures this list is generated only once per component lifecycle
@@ -60,6 +68,10 @@ export default function RegisterPage({ onBackClick }) {
             if (amenitiesRef.current && !amenitiesRef.current.contains(event.target)) {
                 setDropdownOpen(prev => ({ ...prev, amenities: false }));
             }
+            // --- NEWLY ADDED ---
+            if (companyTypeRef.current && !companyTypeRef.current.contains(event.target)) {
+                setDropdownOpen(prev => ({ ...prev, companyType: false }));
+            }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => { document.removeEventListener('mousedown', handleClickOutside); };
@@ -67,6 +79,18 @@ export default function RegisterPage({ onBackClick }) {
 
     const handleChange = (field, value) => {
         setFormData({ ...formData, [field]: value });
+    };
+
+    // --- NEW HANDLER ---
+    const handleProposedScheduleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            proposedSchedule: {
+                ...prev.proposedSchedule,
+                [name]: value
+            }
+        }));
     };
 
     const handleMultiToggle = (field, value) => {
@@ -144,9 +168,9 @@ export default function RegisterPage({ onBackClick }) {
             numberOfStudent: studentCounts,
             lookingFor: backendLookingFor,
             employmentType: formData.employmentType,
-            minPackage: {
+            packageDetails: { // Note: Your schema calls this packageDetails, but this form sends minPackage. Adjust if needed.
                 currency: formData.salaryRange,
-                amount: parseFloat(formData.salaryValue) || 0,
+                totalCTC: parseFloat(formData.salaryValue) || 0,
             },
             startDate: formData.tentativeStartDate,
             endDate: formData.tentativeEndDate,
@@ -162,7 +186,10 @@ export default function RegisterPage({ onBackClick }) {
             skills: aggregatedSkills,
             rounds: roundNames,
             amenitiesRequired: formData.amenities,
-            description: formData.description
+            description: formData.description,
+            // --- NEW PAYLOAD FIELDS ---
+            companyType: formData.companyType,
+            proposedSchedule: formData.proposedSchedule,
         };
 
         try {
@@ -227,12 +254,31 @@ export default function RegisterPage({ onBackClick }) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Tentative Date Range</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Application Start/End Date</label>
                     <div className="flex flex-col md:flex-row gap-4">
                         <input type="date" placeholder="Start Date" className="block w-full border border-gray-300 rounded-md px-3 py-2" value={formData.tentativeStartDate} onChange={(e) => handleChange('tentativeStartDate', e.target.value)} />
                         <input type="date" placeholder="End Date" className="block w-full border border-gray-300 rounded-md px-3 py-2" value={formData.tentativeEndDate} onChange={(e) => handleChange('tentativeEndDate', e.target.value)} />
                     </div>
                 </div>
+
+                {/* --- NEWLY ADDED: Proposed Schedule --- */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Proposed Schedule (Tentative Dates)</label>
+                    <div className="space-y-2">
+                        <div className="flex flex-col md:flex-row gap-4">
+                            <input type="date" name="startDate" placeholder="Proposed Start Date" className="block w-full border border-gray-300 rounded-md px-3 py-2" value={formData.proposedSchedule.startDate} onChange={handleProposedScheduleChange} />
+                            <input type="date" name="endDate" placeholder="Proposed End Date" className="block w-full border border-gray-300 rounded-md px-3 py-2" value={formData.proposedSchedule.endDate} onChange={handleProposedScheduleChange} />
+                        </div>
+                        <div className="relative">
+                            <select name="preferredMode" className="block w-full border border-gray-300 rounded-md px-3 py-2 appearance-none pr-10" value={formData.proposedSchedule.preferredMode} onChange={handleProposedScheduleChange}>
+                                <option value="">Select Preferred Mode</option>
+                                {proposedModeOptions.map(option => (<option key={option} value={option}>{option}</option>))}
+                            </select>
+                            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none"><ChevronDown size={16} className="text-gray-400" /></div>
+                        </div>
+                    </div>
+                </div>
+                {/* --- END NEWLY ADDED --- */}
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Looking for</label>
@@ -251,6 +297,33 @@ export default function RegisterPage({ onBackClick }) {
                         ))}
                     </div>
                 </div>
+
+                {/* --- NEWLY ADDED: Company Type --- */}
+                <div ref={companyTypeRef}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Company Type</label>
+                    <div className="relative">
+                        <div className="block w-full border border-gray-300 rounded-md px-3 py-2 min-h-[42px] cursor-pointer" onClick={() => setDropdownOpen(prev => ({ ...prev, companyType: !prev.companyType }))}>
+                            {formData.companyType.length > 0 ? (
+                                <div className="flex flex-wrap gap-1">
+                                    {formData.companyType.map(item => (
+                                        <span key={item} className="flex items-center bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                                            {item}
+                                            <button type="button" onClick={(e) => { e.stopPropagation(); removeItem('companyType', item); }} className="ml-1.5"><X size={12} /></button>
+                                        </span>
+                                    ))}
+                                </div>
+                            ) : <span className="text-gray-500">Select company types</span>}
+                        </div>
+                        {dropdownOpen.companyType && (
+                            <div className="absolute z-10 w-full bg-white border rounded-md mt-1 shadow-lg">
+                                {companyTypeOptions.map(opt => (
+                                    <div key={opt} className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${formData.companyType.includes(opt) ? 'bg-gray-200' : ''}`} onClick={() => handleMultiToggle('companyType', opt)}>{opt}</div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+                {/* --- END NEWLY ADDED --- */}
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Cut-off Salary</label>

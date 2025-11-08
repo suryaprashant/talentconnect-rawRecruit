@@ -49,10 +49,45 @@ const jobPostingSchema = new mongoose.Schema({
     },
     description: { type: String, },
     jobRoles: [{ type: String }],
-    minPackage: {
-        currency: { type: String },
-        amount: { type: Number }
+    packageDetails: {
+        currency: { type: String, default: 'INR' },
+        totalCTC: { type: Number },
+        fixedPay: { type: Number },
+        joiningBonus: { type: Number }
     },
+    collegeCategories: [{ type: String }], // For "tier1", "tier2", etc.
+    companyType: [{ 
+        type: String 
+        // enum: ["MNC", "Startup", "SME", "Public Sector"]
+    }],
+    companyHiringPreference: {
+        preferredMode: {
+            type: String,
+            enum: ["Online", "Offline", "Hybrid", "Online Aptitude and Physical Interview"]
+        }
+    },
+    onlineTestDate: { 
+        type: Date 
+    },
+    interviewWindow: {
+        start: { type: Date },
+        end: { type: Date }
+    },
+    offerRolloutDate: { 
+        type: Date 
+    },
+    proposedSchedule: {
+        startDate: { type: Date },
+        endDate: { type: Date },
+        preferredMode: { 
+            type: String,
+            enum: ["Online", "Offline", "Hybrid"]
+        }
+    },
+    // collegeProctoredTest: {
+    //     type: Boolean,
+    //     default: false
+    // },
     studentStreams: [{ type: String }],
 
     startDate: { type: Date, },
@@ -100,7 +135,10 @@ const jobPostingSchema = new mongoose.Schema({
     expireAt: {
         type: Date,
         expires: 0
-    }
+    },
+    workLocation: [{
+        type: String,
+    }],
 
 }, { timestamps: true });
 

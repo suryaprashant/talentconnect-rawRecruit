@@ -31,14 +31,20 @@ export default function PoolCampusHiringForm() {
   const minimumStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '201-500', '500+'];
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
+  // --- MODIFIED OPTIONS ---
+  const collegeCategoryOptions = ['Tier 1', 'Tier 2', 'Tier 3', 'Autonomous', 'Other'];
+  // --- END MODIFIED OPTIONS ---
+  const preferredHiringModeOptions = ["Online", "Offline", "Hybrid", "Online Aptitude and Physical Interview"];
+
+
   const initialState = {
     venue: '',
     collegeTypes: '',
     studentStreams: [],
     criteria: '',
     description: '',
-    minPackage: { currency: 'INR', amount: '' },
-    workLocations: [],
+    packageDetails: { currency: 'INR', totalCTC: '', fixedPay: '', joiningBonus: '' },
+    workLocation: [],
     jobRoles: [],
     workMode: [],
     employmentType: [],
@@ -52,6 +58,13 @@ export default function PoolCampusHiringForm() {
     selectionProcess: [],
     contactPerson: { name: '', designation: '', email: '', mobile: '', linkedin: '' },
     minStudents: '',
+    // --- NEW FIELDS ---
+    collegeCategories: [],
+    onlineTestDate: '',
+    interviewWindow: { start: '', end: '' },
+    offerRolloutDate: '',
+    preferredHiringMode: '',
+    // --- END NEW FIELDS ---
   };
 
   const [formData, setFormData] = useState(initialState);
@@ -69,7 +82,7 @@ export default function PoolCampusHiringForm() {
     jobRoles: false,
     amenities: false,
     selectionProcess: false,
-    workLocations: false,
+    workLocation: false,
     tags: false
   });
 
@@ -79,7 +92,7 @@ export default function PoolCampusHiringForm() {
   const jobRolesRef = useRef(null);
   const amenitiesRef = useRef(null);
   const selectionProcessRef = useRef(null);
-  const workLocationsRef = useRef(null);
+  const workLocationRef = useRef(null);
   const tagsRef = useRef(null);
 
   useEffect(() => {
@@ -96,7 +109,7 @@ export default function PoolCampusHiringForm() {
         jobRoles: jobRolesRef,
         amenities: amenitiesRef,
         selectionProcess: selectionProcessRef,
-        workLocations: workLocationsRef,
+        workLocation: workLocationRef,
         tags: tagsRef,
       };
 
@@ -157,9 +170,20 @@ export default function PoolCampusHiringForm() {
     });
   };
 
-  const handlePackageChange = (e) => {
+  const handlePackageDetailsChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, minPackage: { ...formData.minPackage, [name]: value } });
+    setFormData({
+      ...formData,
+      packageDetails: { ...formData.packageDetails, [name]: value }
+    });
+  };
+
+  const handleInterviewWindowChange = (e) => {
+    const { name, value } = e.target; // name will be 'start' or 'end'
+    setFormData(prev => ({
+      ...prev,
+      interviewWindow: { ...prev.interviewWindow, [name]: value }
+    }));
   };
 
   const handleContactChange = (e) => {
@@ -184,7 +208,8 @@ export default function PoolCampusHiringForm() {
       { key: 'jobRoles', name: 'Job Role' },
       { key: 'amenities', name: 'Amenities/Facilities' },
       { key: 'selectionProcess', name: 'Process of Selection' },
-      { key: 'workLocations', name: 'Work Location' }, // ADDED: Validation
+      { key: 'workLocation', name: 'Work Location' },
+      { key: 'collegeCategories', name: 'College Categories' },
     ];
 
     for (const field of fieldsToValidate) {
@@ -194,6 +219,13 @@ export default function PoolCampusHiringForm() {
         toast.error(errorMsg);
         return;
       }
+    }
+
+    if (!formData.preferredHiringMode) {
+      const errorMsg = "Please make a selection for \"Preferred Hiring Mode\". This field is required.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      return;
     }
 
     setIsSubmitting(true);
@@ -207,11 +239,13 @@ export default function PoolCampusHiringForm() {
         studentStreams: formData.studentStreams,
         eligibilityCriteria: formData.criteria,
         description: formData.description,
-        minPackage: {
-          currency: formData.minPackage.currency,
-          amount: parseFloat(formData.minPackage.amount)
+        packageDetails: {
+          currency: formData.packageDetails.currency,
+          totalCTC: parseFloat(formData.packageDetails.totalCTC) || 0,
+          fixedPay: parseFloat(formData.packageDetails.fixedPay) || 0,
+          joiningBonus: parseFloat(formData.packageDetails.joiningBonus) || 0
         },
-        location: formData.workLocations,
+        workLocation: formData.workLocation,
         jobRoles: formData.jobRoles,
         workMode: formData.workMode,
         employmentType: formData.employmentType,
@@ -226,6 +260,17 @@ export default function PoolCampusHiringForm() {
         tags: formData.tags,
         minimumStudents: formData.minStudents,
         jobType: "Pool-campus",
+
+        // --- NEW SUBMISSION FIELDS ---
+        collegeCategories: formData.collegeCategories,
+        onlineTestDate: formData.onlineTestDate || undefined,
+        interviewWindow: {
+          start: formData.interviewWindow.start || undefined,
+          end: formData.interviewWindow.end || undefined
+        },
+        offerRolloutDate: formData.offerRolloutDate || undefined,
+        companyHiringPreference: { preferredMode: formData.preferredHiringMode },
+        // --- END NEW SUBMISSION FIELDS ---
       };
 
       const response = await axios.post(
@@ -298,6 +343,7 @@ export default function PoolCampusHiringForm() {
             </div>
           </div>
 
+          {/* This is the field for Engineering, Pharmacy, etc. */}
           <div>
             <label className="block mb-1 font-medium">Type of College <span className="text-red-500">*</span></label>
             <div className="relative">
@@ -467,43 +513,77 @@ export default function PoolCampusHiringForm() {
             )}
           </div>
 
+          {/* --- Package Details --- */}
           <div>
-            <label className="block mb-1 font-medium">Minimum Package Offered <span className="text-red-500">*</span></label>
-            <div className="flex">
+            <label className="block mb-1 font-medium">Package Details <span className="text-red-500">*</span></label>
+            <div className="flex mb-2">
               <div className="relative">
-                <select name="currency" value={formData.minPackage.currency} onChange={handlePackageChange} className="py-2 px-3 border rounded-l bg-white">
+                <select
+                  name="currency"
+                  value={formData.packageDetails.currency}
+                  onChange={handlePackageDetailsChange}
+                  className="py-2 px-3 border rounded-l bg-white"
+                >
                   <option value="INR">INR</option>
                   <option value="USD">USD</option>
                   <option value="EUR">EUR</option>
                 </select>
               </div>
-              <input type="number" name="amount" value={formData.minPackage.amount} onChange={handlePackageChange} placeholder="Enter amount (e.g. 500000)" className="flex-grow p-2 border border-l-0 rounded-r" required />
+              <input
+                type="number"
+                name="totalCTC"
+                value={formData.packageDetails.totalCTC}
+                onChange={handlePackageDetailsChange}
+                placeholder="Total CTC (e.g. 1000000)"
+                className="flex-grow p-2 border border-l-0 rounded-r"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="number"
+                name="fixedPay"
+                value={formData.packageDetails.fixedPay}
+                onChange={handlePackageDetailsChange}
+                placeholder="Fixed Pay (e.g. 800000)"
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="number"
+                name="joiningBonus"
+                value={formData.packageDetails.joiningBonus}
+                onChange={handlePackageDetailsChange}
+                placeholder="Joining Bonus (e.g. 50000)"
+                className="w-full p-2 border rounded"
+              />
             </div>
           </div>
+          {/* --- END Package Details --- */}
 
-          {/* --- MODIFIED: Work Location Dropdown --- */}
-          <div ref={workLocationsRef} className="relative">
+
+          {/* --- Work Location Dropdown --- */}
+          <div ref={workLocationRef} className="relative">
             <label className="block font-medium mb-2">Work Location <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">
-              {formData.workLocations.map(loc => (
+              {formData.workLocation.map(loc => (
                 <div key={loc} className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full">
                   <span>{loc}</span>
-                  <button type="button" onClick={() => removeSelectedItem('workLocations', loc)} className="ml-2 text-gray-600 hover:text-black"><X size={14} /></button>
+                  <button type="button" onClick={() => removeSelectedItem('workLocation', loc)} className="ml-2 text-gray-600 hover:text-black"><X size={14} /></button>
                 </div>
               ))}
             </div>
-            <div onClick={() => toggleDropdown('workLocations')} className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400">
+            <div onClick={() => toggleDropdown('workLocation')} className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400">
               <span className="text-gray-500">Select work locations</span>
-              <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.workLocations ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.workLocation ? "rotate-180" : ""}`} />
             </div>
-            {dropdownOpen.workLocations && (
+            {dropdownOpen.workLocation && (
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
                 <div className="p-2 border-b">
                   <input
                     type="text"
                     value={workLocationSearch}
                     onChange={(e) => setWorkLocationSearch(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
                     placeholder="Search for a city..."
                     className="w-full p-2 border rounded"
                   />
@@ -512,11 +592,11 @@ export default function PoolCampusHiringForm() {
                   {filteredCities.map(city => (
                     <div
                       key={`${city.name}-${city.stateCode}`}
-                      onClick={() => handleMultiSelect('workLocations', city.name)}
-                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.workLocations.includes(city.name) ? "bg-gray-100 font-medium" : ""}`}
+                      onClick={() => handleMultiSelect('workLocation', city.name)}
+                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.workLocation.includes(city.name) ? "bg-gray-100 font-medium" : ""}`}
                     >
                       {city.name}
-                      {formData.workLocations.includes(city.name) && <span className="float-right text-gray-500">✓</span>}
+                      {formData.workLocation.includes(city.name) && <span className="float-right text-gray-500">✓</span>}
                     </div>
                   ))}
                 </div>
@@ -573,13 +653,57 @@ export default function PoolCampusHiringForm() {
             </div>
           </div>
 
+          {/* This is the field for Tier 1, Tier 2, Autonomous, etc. */}
           <div>
+            <label className="block mb-1 font-medium">College Categories <span className="text-red-500">*</span></label>
+            <div className="flex flex-wrap gap-2">
+              {collegeCategoryOptions.map(category => (
+                <button key={category} type="button" onClick={() => handleMultiSelect('collegeCategories', category)} className={`px-4 py-2 text-sm border rounded-md cursor-pointer ${formData.collegeCategories.includes(category) ? 'bg-black text-white' : 'bg-white'}`}>
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
+           <div>
             <label className="block mb-1 font-medium">Tentative Date of Placement / Hiring <span className="text-red-500">*</span></label>
             <div className="flex space-x-2">
               <div className="w-1/2 mt-3"><label className="block text-xs mb-1 ml-2 font-medium">Start Date</label><div className="relative"><input type="date" name="placementStartDate" value={formData.placementStartDate} onChange={handleChange} className="w-full p-2 border rounded" required /></div></div>
               <div className="w-1/2 mt-3"><label className="block text-xs mb-1 ml-2 font-medium">End Date</label><div className="relative"><input type="date" name="placementEndDate" value={formData.placementEndDate} onChange={handleChange} className="w-full p-2 border rounded" required /></div></div>
             </div>
           </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Preferred Hiring Mode <span className="text-red-500">*</span></label>
+            <div className="relative">
+              <select name="preferredHiringMode" value={formData.preferredHiringMode} onChange={handleChange} className="w-full p-2 border rounded appearance-none pr-8 bg-white" required>
+                <option value="" disabled>Select preferred mode</option>
+                {preferredHiringModeOptions.map((mode) => (<option key={mode} value={mode}>{mode}</option>))}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none"><ChevronDown className="w-4 h-4 text-gray-400" /></div>
+            </div>
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Online Test Date</label>
+            <input type="date" name="onlineTestDate" value={formData.onlineTestDate} onChange={handleChange} className="w-full p-2 border rounded" />
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Interview Window</label>
+            <div className="flex space-x-2">
+              <div className="w-1/2 mt-3"><label className="block text-xs mb-1 ml-2 font-medium">Start Date</label><div className="relative"><input type="date" name="start" value={formData.interviewWindow.start} onChange={handleInterviewWindowChange} className="w-full p-2 border rounded" /></div></div>
+              <div className="w-1/2 mt-3"><label className="block text-xs mb-1 ml-2 font-medium">End Date</label><div className="relative"><input type="date" name="end" value={formData.interviewWindow.end} onChange={handleInterviewWindowChange} className="w-full p-2 border rounded" /></div></div>
+            </div>
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium">Offer Rollout Date</label>
+            <input type="date" name="offerRolloutDate" value={formData.offerRolloutDate} onChange={handleChange} className="w-full p-2 border rounded" />
+          </div>
+
+
+         
 
           <div>
             <label className="block mb-1 font-medium">Number of Rounds <span className="text-red-500">*</span></label>
@@ -603,7 +727,7 @@ export default function PoolCampusHiringForm() {
             {dropdownOpen.selectionProcess && (
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
                 {selectionProcessOptions.map(process => (
-                  <div key={process} onClick={() => handleMultiSelect('selectionProcess', process)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.selectionProcess.includes(process) ? "bg-gray-100 font-medium" : ""}`}>
+                  <div key={process} onClick={() => handleMultiSelect('selectionProcess', process)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.selectionProcess.includes(process) ? "bg-gray-1Example: Minimum 60% aggregate, No active backlogs...0 font-medium" : ""}`}>
                     {process}
                     {formData.selectionProcess.includes(process) && <span className="float-right text-gray-500">✓</span>}
                   </div>

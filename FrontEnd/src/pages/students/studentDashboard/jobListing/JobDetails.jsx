@@ -159,13 +159,44 @@ const JobDetails = () => {
                             </div>
                         </Section>
 
-                        <Section title="Benefits">
+                        {/* --- MODIFIED SECTION --- */}
+                        <Section title="Compensation & Benefits">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                    <div className="text-sm font-medium text-slate-500">Total CTC</div>
+                                    <div className="text-xl font-bold text-slate-900">
+                                        {jobDetails?.packageDetails?.totalCTC
+                                            ? `${jobDetails.packageDetails.currency || ''}- ${jobDetails.packageDetails.totalCTC.toLocaleString()}`
+                                            : 'Not Specified'}
+                                    </div>
+                                </div>
+                                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                    <div className="text-sm font-medium text-slate-500">Fixed Pay</div>
+                                    <div className="text-xl font-bold text-slate-900">
+                                        {jobDetails?.packageDetails?.fixedPay
+                                            ? `${jobDetails.packageDetails.currency || ''}- ${jobDetails.packageDetails.fixedPay.toLocaleString()}`
+                                            : 'N/A'}
+                                    </div>
+                                </div>
+                                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                    <div className="text-sm font-medium text-slate-500">Joining Bonus</div>
+                                    <div className="text-xl font-bold text-slate-900">
+                                        {jobDetails?.packageDetails?.joiningBonus
+                                            ? `${jobDetails.packageDetails.currency || ''}- ${jobDetails.packageDetails.joiningBonus.toLocaleString()}`
+                                            : 'N/A'}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 className="text-lg font-semibold text-slate-800 mb-3">Benefits Offered</h3>
                             <div className="flex flex-wrap gap-2">
-                                {jobDetails.benefits?.map((benefit) => (
+                                {jobDetails.benefits?.length > 0 ? jobDetails.benefits.map((benefit) => (
                                     <span key={benefit} className="bg-green-100 text-green-800 px-3 py-1.5 rounded-full text-sm font-medium">{benefit}</span>
-                                ))}
+                                )) : <p className="text-slate-500">No benefits specified.</p>}
                             </div>
                         </Section>
+                        {/* --- END MODIFIED SECTION --- */}
+
 
                         <Section title="Education">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -184,7 +215,7 @@ const JobDetails = () => {
                             <div className="flex flex-wrap gap-y-4 gap-x-8">
                                 <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>} label="Industry" value={jobDetails.companyPosted?.companyDetails?.industryType} />
                                 <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm14 1a1 1 0 11-2 0 1 1 0 012 0zM2 13a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2zm14 1a1 1 0 11-2 0 1 1 0 012 0z" clipRule="evenodd" /></svg>} label="Work Mode" value={jobDetails.workMode} />
-                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.5 2.5 0 00-1.162-.682zM11 12.849v-1.698c.22.071.412.164.567.267a2.5 2.5 0 001.162.682zM10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.5 4.5 0 00-1.876.762A4.5 4.5 0 007.5 7.75v5.5a4.5 4.5 0 003.376 4.408A4.5 4.5 0 0012.5 13.25v-5.5a4.5 4.5 0 00-1-2.908z" /></svg>} label="Salary (CTC)" value={`${jobDetails.minPackage?.amount} ${jobDetails.minPackage?.currency}`} />
+                                {/* --- REMOVED SALARY FROM HERE --- */}
                                 <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg>} label="Openings" value={jobDetails.numberOfOpenings} />
                                 <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" /></svg>} label="Department" value={jobDetails.department || "Not Specified"} />
                                 <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5a.997.997 0 01.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" /></svg>} label="Employment Type" value={jobDetails.employmentType} />
@@ -207,4 +238,3 @@ const JobDetails = () => {
 };
 
 export default JobDetails;
-

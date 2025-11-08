@@ -5,6 +5,22 @@ import { format } from 'date-fns';
 import { ApplyForOncampusOppurtunity, SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 
+// --- NEW HELPER ---
+// Formats dates but returns 'N/A' if the date is invalid
+const formatDateSafe = (dateString) => {
+  if (!dateString) return 'N/A';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return 'N/A';
+    }
+    return format(date, 'MMM d, yyyy');
+  } catch (err) {
+    return 'N/A';
+  }
+};
+// --- END NEW HELPER ---
+
 const CollegeDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -101,6 +117,10 @@ const CollegeDetailPage = () => {
   const collegeDetails = posting.collegePosted;
   const collegeName = collegeDetails?.collegeUniversityDetails?.collegeName || 'the College';
   const coordinator = collegeDetails?.placementCoordinatorDetails;
+  
+  // Use the safe formatter
+  const formattedStartDate = formatDateSafe(posting.startDate);
+  const formattedEndDate = formatDateSafe(posting.endDate);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -108,11 +128,11 @@ const CollegeDetailPage = () => {
         <div className="flex flex-col md:flex-row justify-between mb-6">
           <div>
             <h1 className="text-2xl font-semibold">On-Campus Drive Request from:</h1>
-            <h2 className="text-3xl font-bold mb-2">{collegeName}</h2>
+            <h2 className="text-2xl font-bold mb-2">{collegeName}</h2>
             <div className="flex items-center mb-1">
               <svg className="w-4 h-4 mr-1 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1z" /></svg>
               <span className="text-gray-600 text-sm">
-                {posting.startDate ? format(new Date(posting.startDate), 'MMM d') : 'N/A'} - {posting.endDate ? format(new Date(posting.endDate), 'MMM d, yyyy') : 'N/A'}
+                {formattedStartDate} - {formattedEndDate}
               </span>
 
               <a
@@ -129,11 +149,9 @@ const CollegeDetailPage = () => {
             </div>
             <div className="flex items-center mb-1 ">
               <svg className="w-4 h-4 mr-1 text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>
-              <span className="text-gray-600 text-sm">{posting.location || 'Location not specified'}</span>
+              {/* --- FIXED LOCATION --- */}
+              <span className="text-gray-600 text-sm">{posting.location?.join(', ') || 'Location not specified'}</span>
             </div>
-            {/* <div className="flex items-center mb-4">
-                            <span className="text-gray-600 text-sm">Job Title: <strong>{posting.jobTitle || 'Not specified'}</strong></span>
-                        </div> */}
           </div>
 
           <div className="flex flex-col md:items-end mt-2">
@@ -176,25 +194,22 @@ const CollegeDetailPage = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-white p-4 rounded border border-gray-200">
-              <h4 className="font-bold text-2xl text-blue-600">{posting.minPackage?.amount ? `${posting.minPackage.amount} LPA` : 'N/A'}</h4>
+              <h4 className="font-bold text-2xl text-blue-600">{posting.packageDetails?.totalCTC ? `${posting.packageDetails.currency} ${posting?.packageDetails?.totalCTC.toLocaleString()}` : 'N/A'}</h4>
               <p className="text-gray-600 text-sm">Minimum Package</p>
             </div>
             <div className="bg-white p-4 rounded border border-gray-200">
               <h4 className="font-bold text-2xl text-blue-600">{posting.noOfplacedStudents || 'N/A'}</h4>
-              <p className="text-gray-600 text-sm">Openings</p>
+              <p className="text-gray-600 text-sm">Min. Students to Place</p>
             </div>
             <div className="bg-white p-4 rounded border border-gray-200">
-              <h4 className="font-bold text-2xl text-blue-600">{posting.employmentType || 'N/A'}</h4>
-              <p className="text-gray-600 text-sm">Employment</p>
+              <h4 className="font-bold text-2xl text-blue-600">{posting.employmentType?.join(', ') || 'N/A'}</h4>
+              <p className="text-gray-600 text-sm">Employment Type</p>
             </div>
-            {posting?.workMode?.length > 0 && (<div className="bg-white p-4 rounded border border-gray-200">
-              <h4 className="font-bold text-2xl text-blue-600">{posting.workMode || 'N/A'}</h4>
-              <p className="text-gray-600 text-sm">Work Mode</p>
-            </div>)}
-            {posting.location?.length > 0 && (<div className="bg-white p-4 rounded border border-gray-200">
-              <h4 className="font-bold text-2xl text-blue-600">{posting.location || 'N/A'}</h4>
-              <p className="text-gray-600 text-sm">Location</p>
-            </div>)}
+             {/* --- NEWLY ADDED --- */}
+            <div className="bg-white p-4 rounded border border-gray-200">
+              <h4 className="font-bold text-2xl text-blue-600">{posting.lookingFor || 'N/A'}</h4>
+              <p className="text-gray-600 text-sm">Looking For</p>
+            </div>
           </div>
 
           <div className="mb-8">
@@ -228,40 +243,25 @@ const CollegeDetailPage = () => {
             </div>
           </div>
 
-          {/* --- Eligible Student Streams Section --- */}
+          {/* --- NEW SECTION: Proposed Schedule --- */}
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
-            <h2 className="text-lg font-semibold text-gray-800 mb-3">Eligible Student Streams</h2>
-            <div className="flex flex-wrap gap-2">
-              {posting.studentStreams?.length > 0 ? (
-                posting.studentStreams.map((stream, index) => (
-                  <span key={index} className="bg-gray-100 text-gray-700 text-sm font-medium px-3 py-1.5 rounded-full">{stream}</span>
-                ))
-              ) : <p className="text-sm text-gray-500">No specific streams listed.</p>}
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Proposed Schedule</h2>
+            <div className="grid md:grid-cols-3 gap-x-8 gap-y-4">
+              <div><p className="text-sm text-gray-500">Proposed Start Date</p><p className="font-medium text-gray-800">{formatDateSafe(posting.proposedSchedule?.startDate)}</p></div>
+              <div><p className="text-sm text-gray-500">Proposed End Date</p><p className="font-medium text-gray-800">{formatDateSafe(posting.proposedSchedule?.endDate)}</p></div>
+              <div><p className="text-sm text-gray-500">Preferred Mode</p><p className="font-medium text-gray-800">{posting.proposedSchedule?.preferredMode || 'N/A'}</p></div>
             </div>
           </div>
 
-          {/* --- Required Skills Section (UPDATED) --- */}
+          {/* --- NEW SECTION: Company Type --- */}
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
-            <h2 className="text-lg font-semibold text-gray-800 mb-3">Required Skills</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-3">Preferred Company Types</h2>
             <div className="flex flex-wrap gap-2">
-              {posting.skills?.length > 0 ? (
-                posting.skills.map((skill, index) => (
-                  <span key={index} className="bg-gray-100 text-gray-700 text-sm font-medium px-3 py-1.5 rounded-full">{skill}</span>
+              {posting.companyType?.length > 0 ? (
+                posting.companyType.map((type, index) => (
+                  <span key={index} className="bg-gray-100 text-gray-700 text-sm font-medium px-3 py-1.5 rounded-full">{type}</span>
                 ))
-              ) : (
-                <p className="text-sm text-gray-500">Not specified</p>
-              )}
-            </div>
-          </div>
-
-          {/* --- Job Details Section (Unchanged) --- */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Job Details</h2>
-            <div className="grid md:grid-cols-2 gap-x-8 gap-y-4">
-              <div><p className="text-sm text-gray-500">Job Role</p><p className="font-medium text-gray-800">{posting.jobRoles?.join(", ") || 'N/A'}</p></div>
-              <div><p className="text-sm text-gray-500">Job Category</p><p className="font-medium text-gray-800">{posting.jobCategory || 'N/A'}</p></div>
-              <div><p className="text-sm text-gray-500">Employment Type</p><p className="font-medium text-gray-800">{posting.employmentType || 'N/A'}</p></div>
-              <div><p className="text-sm text-gray-500">Job Location</p><p className="font-medium text-gray-800">{posting.location?.join(", ") || 'N/A'}</p></div>
+              ) : <p className="text-sm text-gray-500">No specific company types listed.</p>}
             </div>
           </div>
 
@@ -280,7 +280,7 @@ const CollegeDetailPage = () => {
                 </div>
               </div>
               <div>
-                <h3 className="text-base font-semibold text-gray-700 mb-2">Eligible Branches:</h3>
+                <h3 className="text-base font-semibold text-gray-700 mb-2">Eligible Branches (Aggregated):</h3>
                 <div className="flex flex-wrap gap-2">
                   {posting.studentStreams?.length > 0 ? (
                     posting.studentStreams.map((stream, index) => (
@@ -289,31 +289,86 @@ const CollegeDetailPage = () => {
                   ) : <p className="text-sm text-gray-500">N/A</p>}
                 </div>
               </div>
-              <div>
-                <h3 className="text-base font-semibold text-gray-700 mb-2">Minimum Academic Requirements:</h3>
-                <p className="text-gray-600">{posting.minEducation || 'Not specified'}</p>
-              </div>
             </div>
           </div>
 
-          {/* --- Selection Process Section (Unchanged) --- */}
+          {/* --- UPDATED: Hiring Round Details (Table Format) --- */}
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Proposed Selection Process</h2>
-            <div className="relative flex items-start justify-between my-4 px-4">
-              {posting.selectionProcess?.map((step, index) => (
-                <div key={index} className="flex flex-col items-center text-center z-10 w-1/5">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-600 text-white font-bold border-4 border-gray-50">{index + 1}</div>
-                  <p className="text-xs mt-2 text-gray-600 font-medium">{step}</p>
-                </div>
-              ))}
-              {posting.selectionProcess?.length > 1 && (
-                <div className="absolute top-5 left-0 w-full h-0.5 bg-gray-200" style={{ transform: 'translateY(-50%)' }}></div>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Hiring Round Details</h2>
+            <div className="overflow-x-auto">
+              {posting.roundDetails?.length > 0 ? (
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">S.No.</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Branch</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">No. of Students</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Skills</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {posting.roundDetails.map((round, index) => (
+                      <tr key={index}>
+                        <td className="px-4 py-2 text-sm font-medium text-gray-900">{index + 1}</td>
+                        <td className="px-4 py-2 text-sm text-gray-700">{round.branch || 'N/A'}</td>
+                        <td className="px-4 py-2 text-sm text-gray-700">{round.students || 'N/A'}</td>
+                        <td className="px-4 py-2 text-sm text-gray-700">{round.skills || 'N/A'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                // Fallback display if roundDetails doesn't exist but we have studentStreams and numberOfStudent
+                posting.studentStreams?.length > 0 && posting.numberOfStudent?.length > 0 ? (
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">S.No.</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Branch</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">No. of Students</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Skills</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {posting.studentStreams.map((stream, index) => (
+                        <tr key={index}>
+                          <td className="px-4 py-2 text-sm font-medium text-gray-900">{index + 1}</td>
+                          <td className="px-4 py-2 text-sm text-gray-700">{stream || 'N/A'}</td>
+                          <td className="px-4 py-2 text-sm text-gray-700">
+                            {posting.numberOfStudent?.[index] || 'N/A'}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-700">
+                            {/* Check for roundSkills array first, then check for skills array by index, then fallback to aggregated skills */}
+                            {posting.roundSkills?.[index] || 
+                             (Array.isArray(posting.skills) && posting.skills[index] ? posting.skills[index] : 'N/A')}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="text-sm text-gray-500">No round details provided.</p>
+                )
               )}
             </div>
           </div>
 
-          <div className="mt-8 flex justify-between">
-            <div className="flex gap-2">
+         
+
+          {/* --- NEW SECTION: Amenities Required --- */}
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
+            <h2 className="text-lg font-semibold text-gray-800 mb-3">Amenities Offered</h2>
+            <div className="flex flex-wrap gap-2">
+              {posting.amenitiesRequired?.length > 0 ? (
+                posting.amenitiesRequired.map((amenity, index) => (
+                  <span key={index} className="bg-gray-100 text-gray-700 text-sm font-medium px-3 py-1.5 rounded-full">{amenity}</span>
+                ))
+              ) : <p className="text-sm text-gray-500">No amenities listed.</p>}
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-col sm:flex-row justify-between">
+            <div className="flex gap-2 mb-4 sm:mb-0">
               <button className="flex items-center border border-gray-300 rounded px-4 py-2 text-sm text-gray-700">Message Officer</button>
               <button className="flex items-center border border-gray-300 rounded px-4 py-2 text-sm text-gray-700">Suggest Alternate Date</button>
             </div>
