@@ -10,10 +10,9 @@ const CollegeListingPage = () => {
     workMode: [],
     degree: [],
     courses: [],
+    employmentType: [],
     location: '',
     college: '',
-    internship: false,
-    fullTime: false
   });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +22,7 @@ const CollegeListingPage = () => {
       try {
         setIsLoading(true);
         const response = await getRegisteredColleges();
+        console.log(response.data?.data || []);
 
         // Ensure we're accessing the correct data structure from the response
         const fetchedColleges = response.data?.data || []; // Adjusted to match backend response
@@ -49,7 +49,7 @@ const CollegeListingPage = () => {
     }
 
     let result = [...colleges];
-
+    console.log(result);
     // Apply work mode filters
     if (filters.workMode.length > 0) {
       result = result.filter(college =>
@@ -58,39 +58,62 @@ const CollegeListingPage = () => {
     }
 
     // Apply degree filters
+
     if (filters.degree.length > 0) {
       result = result.filter(college =>
-        college.degree && filters.degree.some(deg => college.degree.includes(deg))
+        college.degreeType &&
+        filters.degree.some(deg =>
+          college.degreeType.some(colDeg => {
+            return colDeg.toLowerCase() === deg.toLowerCase();
+          })
+        )
       );
     }
 
     // Apply course filters
     if (filters.courses.length > 0) {
       result = result.filter(college =>
-        college.courses && filters.courses.some(course => college.courses.includes(course))
+        college.degree &&
+        filters.courses.some(course => {
+          const normalizedCourse = course?.toLowerCase().replace(/[\s.\-]/g, "").trim();
+
+          return college.degree.some(c => {
+            const normalizedC = c?.toLowerCase().replace(/[\s.\-]/g, "").trim();
+            return normalizedC === normalizedCourse;
+          });
+        })
       );
     }
 
-    // Apply internship filter
-    if (filters.internship) {
-      result = result.filter(college => college.hasInternship);
-    }
-
-    // Apply full-time filter
-    if (filters.fullTime) {
-      result = result.filter(college => college.hasFullTime);
+    // Apply employment type filter
+    if (filters.employmentType && filters.employmentType.length > 0) {
+      result = result.filter(college =>
+        college.employmentType && Array.isArray(college.employmentType) &&
+        filters.employmentType.some(filterValue =>
+          college.employmentType.some(empType =>
+            empType.toLowerCase() === filterValue.toLowerCase()
+          )
+        )
+      );
     }
 
     // Apply location filter
     if (filters.location && filters.location !== 'Multi - Select') {
-      result = result.filter(college => college.location === filters.location);
+      result = result.filter(college => {
+        return Array.isArray(college.location) &&
+          college.location.some(loc => loc.toLowerCase() === filters.location.toLowerCase());
+      });
     }
 
-    // Apply college filter
+
+    // Apply college name filter
     if (filters.college && filters.college !== 'Multi - Select') {
-      result = result.filter(college =>
-        college.name && college.name.toLowerCase().includes(filters.college.toLowerCase())
-      );
+      result = result.filter(college => {
+        const collegeName = college.collegePosted?.collegeUniversityDetails?.collegeName;
+        return collegeName
+          ? collegeName.toLowerCase().includes(filters.college.toLowerCase())
+          : false;
+      });
     }
 
     setFilteredColleges(result);
@@ -141,8 +164,7 @@ const CollegeListingPage = () => {
       courses: [],
       location: '',
       college: '',
-      internship: false,
-      fullTime: false
+      employmentType: [],
     });
   };
 
@@ -177,7 +199,7 @@ const CollegeListingPage = () => {
 
       <div className="flex flex-wrap items-center justify-between mb-4">
         <div className="flex flex-wrap items-center gap-2">
-          {filters.internship && (
+          {/* {filters.internship && (
             <span className="bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center">
               Internship
               <button onClick={() => handleToggleFilter('internship')} className="ml-2 text-gray-500">×</button>
@@ -191,7 +213,7 @@ const CollegeListingPage = () => {
           )}
           {(filters.internship || filters.fullTime) && (
             <button onClick={clearAllFilters} className="text-sm text-gray-600 ml-2">Clear all</button>
-          )}
+          )} */}
         </div>
 
         <div className="flex items-center">
@@ -218,6 +240,7 @@ const CollegeListingPage = () => {
             filters={filters}
             onFilterChange={handleFilterChange}
             onClearFilter={clearFilter}
+            college={colleges}
           />
         </div>
 
@@ -231,9 +254,15 @@ const CollegeListingPage = () => {
             ))}
           </div>
 
-          {filteredColleges.length > 0 && (
+          {filteredColleges.length > 0 ? (
             <div className="mt-6 flex justify-center">
-              <button className="border border-gray-300 rounded px-4 py-2 text-sm">View all</button>
+              <button className="border border-gray-300 rounded px-4 py-2 text-sm">
+                View all
+              </button>
+            </div>
+          ) : (
+            <div className="mt-6 text-center text-red-500 font-medium">
+              No colleges found for the selected filters.
             </div>
           )}
         </div>
