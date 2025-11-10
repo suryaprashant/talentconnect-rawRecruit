@@ -3,7 +3,7 @@ import PageHeader from '@/components/dashboard/PageHeader'
 import Button from '@/components/ui/Button'
 import { FiPlus, FiUsers, FiCheckCircle, FiClock, FiAlertCircle, FiTrendingUp, FiTrendingDown } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
-import { getShorlistedCandidateByCompany, getAcceptedCandidateByCompany, getCompanyServiceRequestStatus } from '@/lib/Company_AxiosInstance'
+import { getShorlistedCandidateByCompany, getAcceptedCandidateByCompany, getCompanyServiceRequestStatus, getPostedJobs } from '@/lib/Company_AxiosInstance'
 
 function Home() {
   const navigate = useNavigate()
@@ -14,11 +14,13 @@ function Home() {
     byJobType: {},
     onCampus: {
       shortlisted: [],
-      accepted: []
+      accepted: [],
+      newApplied: 0
     },
     poolCampus: {
       shortlisted: [],
-      accepted: []
+      accepted: [],
+      newApplied: 0
     },
     serviceRequests: {
       total: 0,
@@ -54,7 +56,13 @@ function Home() {
         }
       }
 
-      // Add service request API call
+      // Add posted jobs fetch for On-campus and Pool-campus to compute new (Applied) counts
+      promises.push(
+        getPostedJobs('On-campus').catch(() => ({ data: [] })),
+        getPostedJobs('Pool-campus').catch(() => ({ data: [] }))
+      )
+
+      // Add service request API call at the end
       promises.push(getCompanyServiceRequestStatus().catch(() => ({ 
         data: { 
           success: false,
@@ -104,8 +112,10 @@ function Home() {
         }
       }
 
-      // Extract service requests data from the last promise
-      const serviceRequestRes = results[results.length - 1]
+  // Extract posted jobs for campus types (last 3 include: onCampusJobs, poolCampusJobs, serviceRequests)
+  const onCampusJobsRes = results[results.length - 3]
+  const poolCampusJobsRes = results[results.length - 2]
+  const serviceRequestRes = results[results.length - 1]
       let serviceRequestsData = {
         total: 0,
         pending: 0,
@@ -120,6 +130,12 @@ function Home() {
         serviceRequestsData = serviceRequestRes.data.data
       }
 
+      // Compute new (Applied) counts using posted jobs' applicationCount
+      const onCampusJobs = Array.isArray(onCampusJobsRes?.data) ? onCampusJobsRes.data : []
+      const poolCampusJobs = Array.isArray(poolCampusJobsRes?.data) ? poolCampusJobsRes.data : []
+      const onCampusNewApplied = onCampusJobs.reduce((sum, j) => sum + (j?.applicationCount || 0), 0)
+      const poolCampusNewApplied = poolCampusJobs.reduce((sum, j) => sum + (j?.applicationCount || 0), 0)
+
       setDashboardData({
         shortlisted,
         accepted,
@@ -127,11 +143,13 @@ function Home() {
         byJobType: byJobTypeInit,
         onCampus: {
           shortlisted: onCampusShortlisted,
-          accepted: onCampusAccepted
+          accepted: onCampusAccepted,
+          newApplied: onCampusNewApplied
         },
         poolCampus: {
           shortlisted: poolCampusShortlisted,
-          accepted: poolCampusAccepted
+          accepted: poolCampusAccepted,
+          newApplied: poolCampusNewApplied
         },
         serviceRequests: serviceRequestsData,
         loading: false
@@ -199,9 +217,9 @@ function Home() {
             <div>
               <h3 className="text-sm font-medium text-gray-500">On-Campus</h3>
               <p className="text-3xl font-bold text-blue-600 mt-2">
-                {dashboardData.onCampus.shortlisted.length + dashboardData.onCampus.accepted.length}
+                {dashboardData.onCampus.shortlisted.length + dashboardData.onCampus.accepted.length + dashboardData.onCampus.newApplied}
               </p>
-              <p className="text-xs text-gray-500 mt-2">Campus placements</p>
+              <p className="text-xs text-gray-500 mt-2">New: {dashboardData.onCampus.newApplied}</p>
             </div>
             <div className="p-3 bg-blue-100 rounded-lg">
               <FiUsers className="w-8 h-8 text-blue-600" />
@@ -218,9 +236,9 @@ function Home() {
             <div>
               <h3 className="text-sm font-medium text-gray-500">Pool-Campus</h3>
               <p className="text-3xl font-bold text-teal-600 mt-2">
-                {dashboardData.poolCampus.shortlisted.length + dashboardData.poolCampus.accepted.length}
+                {dashboardData.poolCampus.shortlisted.length + dashboardData.poolCampus.accepted.length + dashboardData.poolCampus.newApplied}
               </p>
-              <p className="text-xs text-gray-500 mt-2">Hiring pool</p>
+              <p className="text-xs text-gray-500 mt-2">New: {dashboardData.poolCampus.newApplied}</p>
             </div>
             <div className="p-3 bg-teal-100 rounded-lg">
               <FiUsers className="w-8 h-8 text-teal-600" />

@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { createOnCampusPlacementRequest, PoolCampusRequest, StudentTrainingRequest, CollegeSeminarRequest, createBrandingRequest,createWorkforceRequest, createEmployeeTrainingRequest, createStudentCounsellingRequest, createStudentMockInterviewRequest, createEmployeeTrainingRegistration, createBrandingRegistration, getCompanyServiceRequestStatus } from '../controllers/serviceRequestController.js';
+import { createOnCampusPlacementRequest, PoolCampusRequest, StudentTrainingRequest, CollegeSeminarRequest, createBrandingRequest,createWorkforceRequest, createEmployeeTrainingRequest, createStudentCounsellingRequest, createStudentMockInterviewRequest, createEmployeeTrainingRegistration, createBrandingRegistration, getCompanyServiceRequestStatus, getCollegeServiceRequestStatus } from '../controllers/serviceRequestController.js';
 import  secureRoute  from '../middlewares/secureRouteMiddleware.js';
 const router = express.Router();
 
@@ -9,6 +9,9 @@ router.post('/college/On-campus-Placement',secureRoute , createOnCampusPlacement
 router.post('/college/pool-campus',secureRoute, PoolCampusRequest);
 router.post('/college/student-training',secureRoute, StudentTrainingRequest);
 router.post('/college-seminar',secureRoute , CollegeSeminarRequest);
+
+// Get college service requests status
+router.get('/college/status', secureRoute, getCollegeServiceRequestStatus);
 
 
 // =======>>   Company Side <<==============

@@ -571,7 +571,7 @@ export async function ChangeStatusService(applicationId, newStatus) {
 // }
 
 // getshorlisted candidate by company
-export async function fetchCandidatesbyStatus(companyId, targetStatus, applicantType, jobType) {
+export async function fetchCandidatesbyStatus(companyId, targetStatus, applicantType, jobType, posterField = "companyPosted") {
     // console.log("type: ", companyId, targetStatus, applicantType, jobType);
     try {
         // determine which collection to lookup based on applicantType
@@ -613,7 +613,9 @@ export async function fetchCandidatesbyStatus(companyId, targetStatus, applicant
             },
             {
                 $match: {
-                    "jobDetails.companyPosted": new mongoose.Types.ObjectId(companyId),
+                    [
+                        `jobDetails.${posterField}`
+                    ]: new mongoose.Types.ObjectId(companyId),
                     currentStatus: targetStatus,
                     // applicantType: applicantType,
                     jobType: jobType
