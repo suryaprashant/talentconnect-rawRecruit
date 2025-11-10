@@ -43,6 +43,48 @@ export const getCompanyServiceRequestStatus = async (req, res) => {
     }
 };
 
+// Get college service requests by status
+export const getCollegeServiceRequestStatus = async (req, res) => {
+    try {
+        const collegeId = req.user._id;
+        const roleType = req.user.userType || 'college';
+
+        // Get all service requests for this college grouped by status
+        const requests = await ServiceRequest.find({
+            'requester.id': collegeId,
+            'requester.role': roleType
+        });
+
+        // Count by status
+        const statusCounts = {
+            total: requests.length,
+            pending: requests.filter(r => r.status === 'pending').length,
+            approved: requests.filter(r => r.status === 'approved').length,
+            rejected: requests.filter(r => r.status === 'rejected').length,
+            completed: requests.filter(r => r.status === 'completed').length
+        };
+
+        res.status(200).json({
+            success: true,
+            data: statusCounts,
+            requests: requests
+        });
+    } catch (err) {
+        console.error('Error fetching college service requests:', err);
+        res.status(500).json({ 
+            success: false,
+            error: err.message,
+            data: {
+                total: 0,
+                pending: 0,
+                approved: 0,
+                rejected: 0,
+                completed: 0
+            }
+        });
+    }
+};
+
 // College Campus Placement
 export const createOnCampusPlacementRequest = async (req, res) => {
     console.log("Request Body:", req.body);
