@@ -241,6 +241,7 @@ import EventDetail from './components/student/events/EventDetail';
 import EventRegistration from './pages/EventRegistration';
 import AcceptedIntership from './pages/employer/acceptedCollegeOrCandidate/internship/AcceptedInternshipList'
 import EmployerIntershipForShortlist from './pages/employer/shortlistedCollege/internship/InternshipListingPage'
+import CampusBranding from "./pages/college/serviceRequest/campusBranding/CampusBranding";
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -559,6 +560,7 @@ function AppRoutes() {
               <Route path='service-request/poolcampus-placement' element={<PoolCampusPlacement />} />
               <Route path='service-request/student-training-programs' element={<StudentTraining />} />
               <Route path='service-request/seminars' element={<Seminar />} />
+               <Route path='/service-request/campus-branding' element={<CampusBranding />} />
 
               {/* job management  */}
 

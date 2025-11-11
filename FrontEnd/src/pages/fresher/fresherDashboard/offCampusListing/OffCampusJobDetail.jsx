@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate,useSearchParams } from 'react-router-dom';
 import { ApplyForOppurtunity, getJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
+// ADDED: Imported Navigation for Drive Venue
+import { MapPin, ArrowLeft, Building2, Users, Navigation } from 'lucide-react';
 import toast from 'react-hot-toast';
-// ADDED ICONS FOR NEW SECTION
-import { MapPin, ArrowLeft, Building2, Users, Navigation, DollarSign } from 'lucide-react';
-
 
 function OffCampusJobDetail() {
   const { jobId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [jobDetail, setJobDetail] = useState(null);
@@ -21,7 +22,7 @@ function OffCampusJobDetail() {
       setError(null);
     } catch (err) {
       setError('Failed to load job details. Please try again later.');
-      console.error('Error fetching job details:', err);
+      // console.error('Error fetching job details:', err);
     } finally {
       setIsLoading(false);
     }
@@ -34,28 +35,28 @@ function OffCampusJobDetail() {
   }, [jobId]);
 
   const handleBackToList = () => {
-    navigate('/fresher-dashboard/Off-campus');
+    navigate('/student-dashboard/Off-campus');
+  };
+
+  const handleApply = async () => {
+    try {
+      const response = await ApplyForOppurtunity(jobId);
+      if (response?.data?.success === true) toast.success('Application submitted!');
+      else toast.error(response.response.data?.msg);
+    } catch (err) {
+      // console.error('Error applying for job:', err);
+      toast.error('Something went wrong!');
+    }
   };
 
   const handleSave = async () => {
     try {
       const response = await SaveOppurtunity(jobId, jobDetail?.jobType);
+      // console.log("Applicaiton: ", response);
       if (response?.data?.success === true) toast.success('Job saved!');
-      else toast.error(response.response.data?.msg)
+      else toast.error(response.response.data?.msg);
     } catch (err) {
-      console.error('Error saving job:', err);
-      toast.error('Something went wrong!');
-    }
-  };
-
-  const handleApply = async () => {
-    try {
-      // if (jobDetail?.status === 'Open') {
-      const response = await ApplyForOppurtunity(jobId, jobDetail.jobType);
-      if (response?.data?.success === true) toast.success('Application submitted!');
-      else toast.error(response.response.data?.msg)
-    } catch (error) {
-      console.log("Error applying: ", error);
+      // console.error('Error applying for job:', err);
       toast.error('Something went wrong!');
     }
   };
@@ -100,12 +101,12 @@ function OffCampusJobDetail() {
   }
 
   // Helper function to render array data as tags
-  const renderTags = (data, colorClass = "bg-gray-100 text-gray-800") => {
+  const renderTags = (data) => {
     if (Array.isArray(data) && data.length > 0) {
       return (
         <div className="flex flex-wrap gap-2 mt-1">
           {data.map((item, index) => (
-            <span key={index} className={`text-xs font-medium px-2.5 py-1 rounded-full capitalize ${colorClass}`}>
+            <span key={index} className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full capitalize">
               {item}
             </span>
           ))}
@@ -116,11 +117,10 @@ function OffCampusJobDetail() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded shadow-md p-6">
+    <div className="max-w-4xl mx-auto bg-white rounded shadow-md p-6 my-8">
       {/* Header */}
       <div className="flex justify-between items-start mb-6">
         <div className="flex items-center">
-          {/* Company Logo/Profile Image */}
           <div className="w-12 h-12 bg-gray-200 mr-4 flex items-center justify-center rounded-full overflow-hidden">
             {jobDetail.companyPosted?.profileImage ? (
               <img
@@ -133,45 +133,71 @@ function OffCampusJobDetail() {
                 }}
               />
             ) : (
-              <Building2 className="w-8 h-8 text-gray-500" />
+              <svg className="w-8 h-8 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+              </svg>
             )}
           </div>
           <div>
-            <h2 className="text-xl font-bold">{jobDetail?.companyPosted?.companyDetails.companyName} - {jobDetail?.jobRoles?.join(', ') || jobDetail.jobTitle}</h2>
+            <h2 className="text-xl font-bold">
+              {jobDetail.companyPosted?.companyDetails?.companyName || "N/A"} - {jobDetail.jobTitle || 'N/A'}
+            </h2>
             <p className={`text-sm font-semibold ${headerStatusClasses}`}>Application {jobDetail.jobStatus}</p>
           </div>
         </div>
         <div className="flex space-x-2">
-          <button onClick={handleBackToList} className="p-2 border border-gray-300 rounded hover:bg-gray-100" title="Back to list">
+          <button onClick={handleBackToList} className="p-2 border border-gray-300 rounded hover:bg-gray-100">
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
-          <button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800" onClick={() => handleApply()}>Apply</button>
+          {!isApplied && (<>
+            <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
+            <button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800" onClick={handleApply}>Apply</button>
+          </>)}
         </div>
       </div>
 
       {/* About Company */}
       <section className="mb-8">
-        <h3 className="text-lg font-semibold mb-3">About {jobDetail?.companyPosted?.companyDetails?.companyName}</h3>
-        <p className="text-gray-700 mb-4">{jobDetail?.companyPosted?.companyDetails.description}</p>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <h3 className="text-lg font-semibold mb-3">About {jobDetail.companyPosted?.companyDetails?.companyName || "Company"}</h3>
+        <p className="text-gray-700 mb-4">{jobDetail.companyPosted?.companyDetails?.description || 'No company description available.'}</p>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div className="border border-gray-200 p-4 rounded-md">
-            <div className="font-bold text-lg">{jobDetail?.companyPosted?.companyDetails.numberOfEmployees || 'N/A'}</div>
+            <div className="font-bold text-lg">{jobDetail.companyPosted?.companyDetails?.numberOfEmployees || "N/A"}</div>
             <div className="text-sm text-gray-600">Employees</div>
           </div>
-          {/* <div className="border border-gray-200 p-4 rounded-md">
-            <div className="font-bold text-lg">N/A</div>
-            <div className="text-sm text-gray-600">Revenue</div>
-          </div> */}
           <div className="border border-gray-200 p-4 rounded-md">
-            <div className="font-bold text-lg capitalize">{jobDetail?.companyPosted?.companyDetails.industryType || 'N/A'}</div>
-            <div className="text-sm text-gray-600">Industries</div>
+            <div className="font-bold text-lg capitalize">{jobDetail.companyPosted?.companyDetails?.industryType || "N/A"}</div>
+            <div className="text-sm text-gray-600">Industry</div>
           </div>
           <div className="border border-gray-200 p-4 rounded-md">
-            <div className="font-bold text-lg">{jobDetail?.companyPosted?.companyDetails.country || 'N/A'}</div>
-            <div className="text-sm text-gray-600">Countries</div>
+            <div className="font-bold text-lg">{jobDetail.companyPosted?.companyDetails?.country || "N/A"}</div>
+            <div className="text-sm text-gray-600">Country</div>
           </div>
+        </div>
+      </section>
+
+      {/* Opportunity Details */}
+      <section className="mb-8">
+        <h3 className="text-lg font-semibold mb-3">Opportunity Details</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="flex items-start"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg><div><div className="font-medium">Job Roles</div>{renderTags(jobDetail.jobRoles)}</div></div>
+          <div className="flex items-start"><MapPin className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" /><div><div className="font-medium">Work Location</div>{renderTags(jobDetail.location)}</div></div>
+          <div className="flex items-start"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg><div><div className="font-medium">Work Mode</div>{renderTags(jobDetail.workMode)}</div></div>
+          <div className="flex items-start"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><div className="font-medium">Employment Type</div>{renderTags(jobDetail.employmentType)}</div></div>
+          <div className="flex items-start"><Building2 className="w-5 h-5 mt-0.5 mr-3 text-gray-500 flex-shrink-0" /><div><div className="font-medium">Industry Type</div><div className="text-gray-700 capitalize">{jobDetail.companyPosted?.companyDetails?.industryType || 'N/A'}</div></div></div>
+          <div className="flex items-start"><Users className="w-5 h-5 mt-0.5 mr-3 text-gray-500 flex-shrink-0" /><div><div className="font-medium">Department</div><div className="text-gray-700">{jobDetail.department || 'N/A'}</div></div></div>
+          {/* ADDED: Drive Venue */}
+          <div className="flex items-start"><Navigation className="w-5 h-5 mt-0.5 mr-3 text-gray-500 flex-shrink-0" /><div><div className="font-medium">Drive Venue</div><div className="text-gray-700">{jobDetail.venue || 'N/A'}</div></div></div>
+        </div>
+      </section>
+
+      {/* Candidate Requirements */}
+      <section className="mb-8">
+        <h3 className="text-lg font-semibold mb-3">Candidate Requirements</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="flex items-start"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"></path></svg><div><div className="font-medium">Degree</div>{renderTags(jobDetail.degree)}</div></div>
+          <div className="flex items-start"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg><div><div className="font-medium">Eligible Streams</div>{renderTags(jobDetail.studentStreams)}</div></div>
+          <div className="flex items-start col-span-1 sm:col-span-2"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg><div><div className="font-medium">Required Skills</div>{renderTags(jobDetail.skills)}</div></div>
         </div>
       </section>
 
@@ -205,170 +231,57 @@ function OffCampusJobDetail() {
           </div>
         </div>
         <h4 className="font-medium mb-2">Benefits Offered</h4>
-        {renderTags(jobDetail.benefits, "bg-green-100 text-green-800")}
+        {renderTags(jobDetail.benefits)}
       </section>
       {/* --- END NEW/MODIFIED SECTION --- */}
 
-      {/* Program Details (Original Section - Kept as requested) */}
+
+      {/* Hiring Process */}
       <section className="mb-8">
-        <h3 className="text-lg font-semibold mb-3">Program Details</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex items-start">
-            <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"></path>
-            </svg>
-            <div>
-              <div className="font-medium">{jobDetail.minEducation || 'N/A'}</div>
-              <div className="text-sm text-gray-600">Streams: {jobDetail.studentStreams?.join(', ') || 'N/A'}</div>
-            </div>
-          </div>
-
-          <div className="flex items-start">
-            <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            <div>
-              <div className="font-medium">Location</div>
-              <div className="text-gray-700"> {Array.isArray(jobDetail.location) ? jobDetail.location.join(', ') : jobDetail.location || 'N/A'}</div>
-            </div>
-          </div>
-
-          {/* <div className="flex items-start"> */}
-            {/* <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg> */}
-            {/* <div>
-              <div className="font-medium">Compensation</div>
-          
-              <div className="text-gray-700">{jobDetail.packageDetails?.currency || 'N/A'} {jobDetail.packageDetails?.totalCTC || 'Not Mentioned'}</div>
-              <div className="text-sm text-gray-600">Benefits: {jobDetail.benefits?.join(', ') || 'N/A'}</div>
-            </div> */}
-          
-          <div className="flex items-start">
-            <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-            </svg>
-            <div>
-              <div className="font-medium">Academics: Not specified</div>
-            </div>
-          </div>
-          <div className="flex items-start">
-            <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            <div>
-              <div className="font-medium">Venue: {jobDetail.venue || 'N/A'}</div>
-            </div>
-          </div>
-          <div className="flex items-start">
-            <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-            </svg>
-            <div>
-              <div className="font-medium">Number of rounds: <span className='text-gray-600'>{jobDetail.rounds || 'N/A'}</span></div>
-            </div>
-          </div>
-
-          <div className="flex items-start mt-5">
-            <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m-5 4h4a2 2 0 002-2V6a2 2 0 00-2-2H9a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-            <div>
-              <div className="font-medium">About the role</div>
-              <div className="text-gray-700 whitespace-pre-wrap">{jobDetail.description || 'No description available.'}</div>
-            </div>
-          </div>
+        <h3 className="text-lg font-semibold mb-3">Hiring Process</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="flex items-start"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg><div><div className="font-medium">Selection Process</div>{renderTags(jobDetail.selectionProcess)}</div></div>
+          <div className="flex items-start"><svg className="w-5 h-5 mt-1 mr-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg><div><div className="font-medium">Number of Rounds</div><div className="text-gray-700">{jobDetail.rounds?.join(', ') || 'N/A'}</div></div></div>
         </div>
       </section>
 
-      {/* Job Details (Original Section - Kept as requested) */}
+      {/* About the role */}
       <section className="mb-8">
-        <h3 className="text-lg font-semibold mb-3">Job Details</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4">
-          <div className="flex items-center">
-            <div className="text-sm text-gray-600 mr-1">Job Title:</div>
-            <div>{jobDetail.jobTitle || 'N/A'}</div>
-          </div>
-          <div className="flex items-center">
-            <div className="text-sm text-gray-600 mr-1">Industry Type:</div>
-            <div>{jobDetail.companyPosted?.companyDetails?.industryType || 'N/A'}</div>
-          </div>
-          <div className="flex items-center">
-            <div className="text-sm text-gray-600 mr-1">Department:</div>
-            <div>N/A</div>
-          </div>
-          <div className="flex items-center">
-            <div className="text-sm text-gray-600 mr-1">Employment Type:</div>
-            <div className="capitalize">{jobDetail.employmentType || 'N/A'}</div>
-          </div>
-          <div className="flex items-center">
-            <div className="text-sm text-gray-600 mr-1">Role Category:</div>
-            <div>{jobDetail.jobRoles?.join(', ') || 'N/A'}</div>
-          </div>
-          <div className="flex items-center">
-            <div className="text-sm text-gray-600 mr-1">Salary Range:</div>
-            {/* --- UPDATED this line --- */}
-            <div>{jobDetail.packageDetails?.currency || 'N/A'} {jobDetail.packageDetails?.totalCTC || 'Not Mentioned'} /month</div>
-          </div>
-          <div className="flex items-center">
-            <div className="text-sm text-gray-600 mr-1">Work Mode</div>
-            <div>{jobDetail?.workMode?.join(', ') || 'N/A'}</div>
-          </div>
-        </div>
+        <h3 className="text-lg font-semibold mb-3">About the Role</h3>
+        <p className="text-gray-700 whitespace-pre-wrap">{jobDetail.description || 'No description available.'}</p>
       </section>
 
+      {/* Eligibility Criteria */}
       <section className="mb-8">
-        <h3 className="text-lg font-semibold mb-3">Selection Process</h3>
-        <div className="relative flex items-center justify-between overflow-x-auto px-4">
-          {jobDetail.selectionProcess && jobDetail.selectionProcess.length > 0 ? (
-            jobDetail.selectionProcess.map((step, index) => (
-              <span key={index} className="bg-gray-100 px-3 py-1 rounded text-sm mx-1">
-                {step}
-              </span>
-            ))
-          ) : (
-            <span>Not specified</span>
-          )}
-        </div>
-      </section>
-
-      {/* Required Skills */}
-      <section className="mb-8">
-        <h3 className="text-lg font-semibold mb-3">Required Skills</h3>
-        <div className="mb-4">
-          {renderTags(jobDetail.skills, "bg-blue-100 text-blue-800")}
-        </div>
+        <h3 className="text-lg font-semibold mb-3">Eligibility Criteria</h3>
+        <p className="text-gray-700 whitespace-pre-wrap">{jobDetail.eligibilityCriteria || 'No criteria specified.'}</p>
       </section>
 
       {/* Important Dates */}
       <section>
         <h3 className="text-lg font-semibold mb-3">Important Dates</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="border border-gray-200 p-3 rounded-md">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="border border-gray-200 p-3 rounded-md bg-gray-50">
             <div className="text-sm text-gray-600">Registration Deadline</div>
-            <div className="font-medium">
-              {jobDetail.endDate ? new Date(jobDetail.endDate).toLocaleDateString() : 'N/A'}
+            <div className="font-medium text-red-600">
+              {jobDetail.endDate ? new Date(jobDetail.endDate).toLocaleDateString('en-GB') : 'N/A'}
             </div>
           </div>
           <div className="border border-gray-200 p-3 rounded-md">
             <div className="text-sm text-gray-600">Test Date</div>
-            <div className="font-medium">N/A</div>
+            <div className="font-medium">TBD</div>
           </div>
           <div className="border border-gray-200 p-3 rounded-md">
             <div className="text-sm text-gray-600">Interview Window</div>
-            <div className="font-medium">N/A</div>
+            <div className="font-medium">TBD</div>
           </div>
           <div className="border border-gray-200 p-3 rounded-md">
             <div className="text-sm text-gray-600">Results</div>
-            <div className="font-medium">N/A</div>
+            <div className="font-medium">TBD</div>
           </div>
         </div>
       </section>
-    </div>
+    </div >
   );
 }
 

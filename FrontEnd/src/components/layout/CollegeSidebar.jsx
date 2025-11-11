@@ -10,6 +10,7 @@ import {
   FiUsers,
   FiTrendingUp,
   FiMic,
+  FiAward,
   FiTool,
   FiCheckCircle,
   FiBook,
@@ -66,7 +67,16 @@ function CollegeSidebar({ activePath }) {
           label="Seminars"
           active={activePath === '/service-request/seminars'}
         />
+        <SidebarNavItem
+          to="/service-request/campus-branding"
+          icon={<FiAward />}
+          label="Campus Branding"
+          active={activePath === '/service-request/campus-branding'}
+        />
       </SidebarNavGroup>
+
+
+      
 
       <SidebarNavGroup label="Manage Application" icon={<FiTool />} active={activePath.includes('/manage-application')}>
         <SidebarNavItem
