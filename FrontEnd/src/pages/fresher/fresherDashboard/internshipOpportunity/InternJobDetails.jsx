@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 // import { fetchJobDetails, fetchSimilarJobs } from '../../../../constants/JobListing' // Keep commented if not used
 import JobCard from '@/components/student/studentDashboard/intershipOpportunity/JobCard'; // Ensure this path is correct
 import { ApplyForInternship, getInternshipDetail, SaveOppurtunity } from '@/lib/User_AxiosInstance';
@@ -12,6 +12,9 @@ const InternJobDetails = () => {
   const [similarJobs, setSimilarJobs] = useState([]); // Still unused if fetchSimilarJobs is commented
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchParams] = useSearchParams();
+  const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+  const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
 
   useEffect(() => {
     const loadJobDetails = async () => {
@@ -134,10 +137,10 @@ const InternJobDetails = () => {
                   <InfoPill icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" /></svg>} text={jobDetails.internshipDuration} />
                 </div>
               </div>
-              <div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
-                <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
+              {!isApplied && (<div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
+                {!isSaved && (<button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>)}
                 <button onClick={handleApply} className="bg-blue-600 hover:bg-indigo-600 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">Apply</button>
-              </div>
+              </div>)}
             </header>
 
             <Section title="Internship Description">

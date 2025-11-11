@@ -11,6 +11,7 @@ const JobDetails = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+    const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
     const [jobDetails, setJobDetails] = useState(null);
     //   const [similarJobs, setSimilarJobs] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -72,6 +73,10 @@ const JobDetails = () => {
                 <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
             </div>
         );
+
+    };
+    const handleGoBack = () => {
+        window.history.back();
     }
 
     if (error || !jobDetails) {
@@ -85,9 +90,9 @@ const JobDetails = () => {
                     <p className="mt-2 text-slate-600">We couldn't retrieve the details for this job posting.</p>
                     <button
                         className="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg"
-                        onClick={() => navigate('/student-dashboard/Job-listing')}
+                        onClick={() => handleGoBack()}
                     >
-                        Back to Job Listings
+                        Back
                     </button>
                 </div>
             </div>
@@ -136,7 +141,7 @@ const JobDetails = () => {
                                 </div>
                             </div>
                             {!isApplied && (<div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
-                                <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
+                                {!isSaved && (<button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>)}
                                 <button onClick={handleApply} className="bg-blue-500 hover:bg-indigo-500 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">Apply</button>
                             </div>)}
                         </header>
@@ -189,7 +194,7 @@ const JobDetails = () => {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <h3 className="text-lg font-semibold text-slate-800 mb-3">Benefits Offered</h3>
                             <div className="flex flex-wrap gap-2">
                                 {jobDetails.benefits?.length > 0 ? jobDetails.benefits.map((benefit) => (

@@ -11,7 +11,7 @@ const formatDate = (dateString) => {
     const date = new Date(dateString);
     // Check for invalid date
     if (isNaN(date.getTime())) {
-        return 'Not Specified';
+      return 'Not Specified';
     }
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -64,6 +64,10 @@ const JobDetailPage = () => {
     }
   };
 
+  const handleGoBack = () => {
+    window.history.back();
+  };
+
   const handleApply = async () => {
     try {
       const response = await ApplyForOnCampus(id);
@@ -79,10 +83,10 @@ const JobDetailPage = () => {
     if (!jobId || !jobType) return;
     try {
       const response = await SaveOppurtunity(jobId, jobType);
-        if (response.data?.success === true) {
-            toast.success("Saved!");
-            setIsSaved(true); // Update save state
-        }
+      if (response.data?.success === true) {
+        toast.success("Saved!");
+        setIsSaved(true); // Update save state
+      }
       else toast.error(response.response?.data?.msg || "Could not save.");
     } catch (error) {
       console.log("Error: ", error);
@@ -120,12 +124,12 @@ const JobDetailPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Link to="/college-dashboard/On-campus" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
+        <button onClick={() => handleGoBack()} className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
           </svg>
-          Back to opportunities
-        </Link>
+          Back
+        </button>
 
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           {/* Header Section */}
@@ -239,7 +243,7 @@ const JobDetailPage = () => {
                 <div className="text-sm font-medium text-gray-500">Work Mode</div>
                 <div className="mt-1 text-base text-gray-900">{job?.workMode?.join(', ') || 'Not Specified'}</div>
               </div>
-               {/* --- NEWLY ADDED FIELD --- */}
+              {/* --- NEWLY ADDED FIELD --- */}
               <div>
                 <div className="text-sm font-medium text-gray-500">Preferred Hiring Mode</div>
                 <div className="mt-1 text-base text-gray-900">{job?.companyHiringPreference?.preferredMode || 'Not Specified'}</div>
@@ -250,7 +254,7 @@ const JobDetailPage = () => {
               </div>
               <div>
                 <div className="text-sm font-medium text-gray-500">Job Location</div>
-                 {/* --- CORRECTED FIELD --- */}
+                {/* --- CORRECTED FIELD --- */}
                 <div className="mt-1 text-base text-gray-900">{job?.workLocation?.join(', ') || 'Not Specified'}</div>
               </div>
             </div>
@@ -341,7 +345,7 @@ const JobDetailPage = () => {
               )) : <li>No benefits specified.</li>}
             </ul>
           </div>
-      
+
           {/* Selection Process */}
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-6">Selection Process</h2>
@@ -389,7 +393,7 @@ const JobDetailPage = () => {
               <div className="border border-gray-300 rounded p-4 text-center">
                 <div className="text-sm font-medium text-gray-500">Interview Window</div>
                 <div className="mt-1 text-lg font-medium text-gray-900">
-                    {formatDate(job?.interviewWindow?.start) === 'Not Specified' ? 'N/A' : `${formatDate(job?.interviewWindow?.start)} - ${formatDate(job?.interviewWindow?.end)}`}
+                  {formatDate(job?.interviewWindow?.start) === 'Not Specified' ? 'N/A' : `${formatDate(job?.interviewWindow?.start)} - ${formatDate(job?.interviewWindow?.end)}`}
                 </div>
               </div>
               <div className="border border-gray-300 rounded p-4 text-center">
@@ -462,7 +466,7 @@ const JobDetailPage = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
-                 {/* --- CORRECTED FIELD --- */}
+                {/* --- CORRECTED FIELD --- */}
                 Watch Day in the Life at {job?.companyPosted?.companyDetails?.companyName || 'Company'}
               </a>
               <a href="#" className="flex items-center text-blue-600 hover:text-blue-800">

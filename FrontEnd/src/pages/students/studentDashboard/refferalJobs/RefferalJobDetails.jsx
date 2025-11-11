@@ -10,6 +10,7 @@ const StudentRefferalJobDetails = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+  const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
   const [jobDetails, setJobDetails] = useState(null);
   // const [similarJobs, setSimilarJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,7 +80,7 @@ const StudentRefferalJobDetails = () => {
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
             onClick={() => navigate('/fresher-dashboard/Referral')}
           >
-            Back to Referral Jobs
+            Back
           </button>
         </div>
       </div>
@@ -111,12 +112,12 @@ const StudentRefferalJobDetails = () => {
             </div>
           </div>
           {!isApplied && (<div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-            <button
+            {!isSaved && (<button
               onClick={handleSave}
               className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded shadow"
             >
               Save
-            </button>
+            </button>)}
             <button
               onClick={handleApply}
               className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded shadow"

@@ -10,6 +10,7 @@ const InternJobDetails = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+  const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
   const [jobDetails, setJobDetails] = useState(null);
   // const [similarJobs, setSimilarJobs] = useState([]); // Still unused if fetchSimilarJobs is commented
   const [isLoading, setIsLoading] = useState(true);
@@ -67,6 +68,9 @@ const InternJobDetails = () => {
       </div>
     );
   }
+  const handleGoBack = () => {
+    window.history.back();
+  };
 
   if (error || !jobDetails) {
     return (
@@ -79,9 +83,9 @@ const InternJobDetails = () => {
           <p className="mt-2 text-slate-600">We couldn't retrieve the details for this internship.</p>
           <button
             className="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg"
-            onClick={() => navigate('/student-dashboard/Internship')}
+            onClick={() => handleGoBack()}
           >
-            Back to Opportunities
+            Back
           </button>
         </div>
       </div>
@@ -130,7 +134,7 @@ const InternJobDetails = () => {
                 </div>
               </div>
               {!isApplied && (<div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
-                <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
+                {!isSaved && (<button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>)}
                 <button onClick={handleApply} className="bg-blue-600 hover:bg-indigo-700 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">Apply</button>
               </div>)}
             </header>

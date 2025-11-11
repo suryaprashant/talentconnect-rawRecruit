@@ -23,6 +23,10 @@ const formatDate = (dateString) => {
     }
 };
 
+const handleGoBack = () => {
+    window.history.back();
+  };
+
 const PoolJobDetailsPage = () => {
     const { id } = useParams();
     const [searchParams] = useSearchParams();
@@ -123,9 +127,9 @@ const PoolJobDetailsPage = () => {
                 <div>
                     <h2 className="text-2xl font-semibold mb-2">Job not found</h2>
                     <p className="text-gray-600 mb-4">The opportunity you're looking for doesn't exist or has been removed.</p>
-                    <Link to="/college-dashboard/Pool-campus" className="text-blue-600 hover:text-blue-800">
-                        Back to job listings
-                    </Link>
+                    <button onClick={()=>handleGoBack()} className="text-blue-600 hover:text-blue-800">
+                        Back
+                    </button>
                 </div>
             </div>
         );
@@ -134,12 +138,12 @@ const PoolJobDetailsPage = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <Link to="/college-dashboard/Pool-campus" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
+                <button onClick={()=>handleGoBack()} className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
                     </svg>
-                    Back to opportunities
-                </Link>
+                    Back
+                </button>
 
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
                     {/* Header Section */}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApplyForOppurtunity, getJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 // ADDED ICONS FOR NEW SECTION
@@ -12,6 +12,9 @@ function OffCampusJobDetail() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [jobDetail, setJobDetail] = useState(null);
+  const [searchParams] = useSearchParams();
+  const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+  const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
 
   const loadJobDetails = async () => {
     try {
@@ -34,7 +37,7 @@ function OffCampusJobDetail() {
   }, [jobId]);
 
   const handleBackToList = () => {
-    navigate('/fresher-dashboard/Off-campus');
+    window.history.back();
   };
 
   const handleSave = async () => {
@@ -145,8 +148,10 @@ function OffCampusJobDetail() {
           <button onClick={handleBackToList} className="p-2 border border-gray-300 rounded hover:bg-gray-100" title="Back to list">
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
-          <button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800" onClick={() => handleApply()}>Apply</button>
+          {!isApplied && (<div>
+            {!isSaved && (<button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>)}
+            <button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800" onClick={() => handleApply()}>Apply</button></div>
+          )}
         </div>
       </div>
 
@@ -237,16 +242,16 @@ function OffCampusJobDetail() {
           </div>
 
           {/* <div className="flex items-start"> */}
-            {/* <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          {/* <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
             </svg> */}
-            {/* <div>
+          {/* <div>
               <div className="font-medium">Compensation</div>
           
               <div className="text-gray-700">{jobDetail.packageDetails?.currency || 'N/A'} {jobDetail.packageDetails?.totalCTC || 'Not Mentioned'}</div>
               <div className="text-sm text-gray-600">Benefits: {jobDetail.benefits?.join(', ') || 'N/A'}</div>
             </div> */}
-          
+
           <div className="flex items-start">
             <svg className="w-5 h-5 mt-0.5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
