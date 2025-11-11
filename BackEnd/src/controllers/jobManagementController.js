@@ -2,6 +2,7 @@ import { countApplicationsService } from "../services/applicationService.js";
 import { getCollegeService } from "../services/collegeService.js";
 import { getCompanyService, getEmployerService } from "../services/companyService.js";
 import { deleteJobByIdService, getJobPostedByCompanyService } from "../services/jobPostingService.js";
+import { getStudentService } from "../services/studentService.js";
 
 // all jobs posted by company
 export const getPostedJobs = async (req, res) => {
@@ -18,6 +19,8 @@ export const getPostedJobs = async (req, res) => {
         }
         else if (userType === 'company') {
             companyProfile = await getCompanyService(Id);
+        }else if(userType === 'professional'){
+            companyProfile = await getStudentService(Id);
         }
 
         // console.log("company: ", companyProfile)

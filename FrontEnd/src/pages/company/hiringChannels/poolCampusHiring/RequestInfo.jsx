@@ -36,7 +36,6 @@ export default function PoolCampusHiringForm() {
   // --- END MODIFIED OPTIONS ---
   const preferredHiringModeOptions = ["Online", "Offline", "Hybrid", "Online Aptitude and Physical Interview"];
 
-
   const initialState = {
     venue: '',
     collegeTypes: '',
@@ -74,6 +73,13 @@ export default function PoolCampusHiringForm() {
 
   const [indianCities, setIndianCities] = useState([]);
   const [workLocationSearch, setWorkLocationSearch] = useState('');
+  const [venueSearch, setVenueSearch] = useState('');
+
+  // --- NEW: State for custom add inputs ---
+  const [customCollegeType, setCustomCollegeType] = useState('');
+  const [customStream, setCustomStream] = useState('');
+  const [customJobRole, setCustomJobRole] = useState('');
+  const [customSkill, setCustomSkill] = useState('');
 
   const [dropdownOpen, setDropdownOpen] = useState({
     studentStreams: false,
@@ -83,7 +89,9 @@ export default function PoolCampusHiringForm() {
     amenities: false,
     selectionProcess: false,
     workLocation: false,
-    tags: false
+    tags: false,
+    venue: false,
+    collegeTypes: false
   });
 
   const studentStreamsRef = useRef(null);
@@ -94,9 +102,13 @@ export default function PoolCampusHiringForm() {
   const selectionProcessRef = useRef(null);
   const workLocationRef = useRef(null);
   const tagsRef = useRef(null);
+  const venueRef = useRef(null);
+  const collegeTypesRef = useRef(null);
 
   useEffect(() => {
-    const citiesOfIndia = City.getCitiesOfCountry('IN').sort((a, b) => a.name.localeCompare(b.name));
+    const citiesOfIndia = City.getCitiesOfCountry('IN')
+      .map(city => city.name)
+      .sort((a, b) => a.localeCompare(b));
     setIndianCities(citiesOfIndia);
   }, []);
 
@@ -111,6 +123,8 @@ export default function PoolCampusHiringForm() {
         selectionProcess: selectionProcessRef,
         workLocation: workLocationRef,
         tags: tagsRef,
+        venue: venueRef,
+        collegeTypes: collegeTypesRef,
       };
 
       for (const key in refs) {
@@ -122,7 +136,6 @@ export default function PoolCampusHiringForm() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
 
   useEffect(() => {
     if (formData.collegeTypes) {
@@ -190,6 +203,76 @@ export default function PoolCampusHiringForm() {
     const { name, value } = e.target;
     setFormData({ ...formData, contactPerson: { ...formData.contactPerson, [name]: value } });
   };
+
+  // --- NEW: Handler for adding custom (manual) items ---
+  const handleCustomAdd = (field, value, setValue, predefinedOptions = []) => {
+    if (value.trim() === '') return;
+    setFormData(prev => {
+      const currentValues = prev[field] || [];
+      // Check for duplicates (case-insensitive)
+      if (currentValues.map(v => v.toLowerCase()).includes(value.trim().toLowerCase()) || 
+          predefinedOptions.map(v => v.toLowerCase()).includes(value.trim().toLowerCase())) {
+        setValue(''); // Clear input even if duplicate
+        toast.error("Item already exists.");
+        return prev;
+      }
+      const newValues = [...currentValues, value.trim()];
+      return { ...prev, [field]: newValues };
+    });
+    setValue(''); // Clear input after adding
+  };
+
+  // --- Handler for single select fields like collegeTypes ---
+  const handleCustomAddSingle = (field, value, setValue, predefinedOptions = []) => {
+    if (value.trim() === '') return;
+    // Check for duplicates (case-insensitive)
+    if (predefinedOptions.map(v => v.toLowerCase()).includes(value.trim().toLowerCase())) {
+      setValue(''); // Clear input even if duplicate
+      toast.error("Item already exists in the list.");
+      return;
+    }
+    setFormData(prev => ({ ...prev, [field]: value.trim() }));
+    setValue(''); // Clear input after adding
+    setDropdownOpen(prev => ({ ...prev, [field]: false })); // Close dropdown
+  };
+
+  // --- IMPROVED: Enhanced search functionality for cities ---
+  const getFilteredCities = (cities, searchTerm) => {
+    if (!searchTerm.trim()) {
+      return cities;
+    }
+    
+    const searchLower = searchTerm.toLowerCase();
+    const citiesWithPriority = cities.map(city => {
+      const cityLower = city.toLowerCase();
+      let priority = 0;
+      
+      // Highest priority: exact match
+      if (cityLower === searchLower) {
+        priority = 3;
+      }
+      // High priority: starts with search term
+      else if (cityLower.startsWith(searchLower)) {
+        priority = 2;
+      }
+      // Medium priority: contains search term
+      else if (cityLower.includes(searchLower)) {
+        priority = 1;
+      }
+      
+      return { city, priority };
+    });
+    
+    // Filter out cities that don't match and sort by priority
+    return citiesWithPriority
+      .filter(item => item.priority > 0)
+      .sort((a, b) => b.priority - a.priority || a.city.localeCompare(b.city))
+      .map(item => item.city);
+  };
+
+  // --- MODIFIED: Use enhanced search function ---
+  const filteredWorkCities = getFilteredCities(indianCities, workLocationSearch);
+  const filteredVenueCities = getFilteredCities(indianCities, venueSearch);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -302,9 +385,6 @@ export default function PoolCampusHiringForm() {
   };
 
   const availableStreams = collegeStreamMapping[formData.collegeTypes] || [];
-  const filteredCities = indianCities.filter(city =>
-    city.name.toLowerCase().includes(workLocationSearch.toLowerCase())
-  );
 
   return (
     <div className="max-w-4xl mx-auto p-4 font-sans">
@@ -331,30 +411,114 @@ export default function PoolCampusHiringForm() {
         <p className="text-center text-gray-500 mb-6">Fill in the details below to register for the hiring drive</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Form fields */}
-          <div>
+          {/* Pool Campus Hiring Venue with Indian Cities */}
+          <div ref={venueRef} className="relative">
             <label className="block mb-1 font-medium">Pool Campus Hiring Venue <span className="text-red-500">*</span></label>
-            <div className="relative">
-              <select name="venue" value={formData.venue} onChange={handleChange} className="w-full p-2 border rounded appearance-none pr-8 bg-white" required>
-                <option value="" disabled>Select location</option>
-                {locations.map((location) => (<option key={location} value={location}>{location}</option>))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none"><ChevronDown className="w-4 h-4 text-gray-400" /></div>
+            <div 
+              onClick={() => toggleDropdown('venue')}
+              className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400"
+            >
+              <span className={formData.venue ? "text-black" : "text-gray-500"}>
+                {formData.venue || 'Select venue location'}
+              </span>
+              <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.venue ? "rotate-180" : ""}`} />
             </div>
+            {dropdownOpen.venue && (
+              <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
+                <div className="p-2 border-b">
+                  <input
+                    type="text"
+                    value={venueSearch}
+                    onChange={(e) => setVenueSearch(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder="Search for a city..."
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="max-h-60 overflow-auto">
+                  {filteredVenueCities.length > 0 ? (
+                    filteredVenueCities.map(city => (
+                      <div
+                        key={city}
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, venue: city }));
+                          setDropdownOpen(prev => ({ ...prev, venue: false }));
+                        }}
+                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.venue === city ? "bg-gray-100 font-medium" : ""}`}
+                      >
+                        {city}
+                        {formData.venue === city && <span className="float-right text-gray-500">✓</span>}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-4 py-2 text-gray-500">No cities found matching "{venueSearch}"</div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* This is the field for Engineering, Pharmacy, etc. */}
-          <div>
-            <label className="block mb-1 font-medium">Type of College <span className="text-red-500">*</span></label>
-            <div className="relative">
-              <select name="collegeTypes" value={formData.collegeTypes} onChange={handleChange} className="w-full p-2 border rounded appearance-none pr-8 bg-white" required>
-                <option value="" disabled>Select college type</option>
-                {collegeTypes.map((type) => (<option key={type} value={type}>{type}</option>))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none"><ChevronDown className="w-4 h-4 text-gray-400" /></div>
+          {/* Type of College with Custom Add in Dropdown */}
+          <div ref={collegeTypesRef} className="relative">
+            <label className="block font-medium mb-2">Type of College <span className="text-red-500">*</span></label>
+            <div 
+              onClick={() => toggleDropdown('collegeTypes')}
+              className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400"
+            >
+              <span className={formData.collegeTypes ? "text-black" : "text-gray-500"}>
+                {formData.collegeTypes || 'Select college type'}
+              </span>
+              <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.collegeTypes ? "rotate-180" : ""}`} />
             </div>
+            {dropdownOpen.collegeTypes && (
+              <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                {/* Custom College Type Input */}
+                <div className="p-2 border-b flex">
+                  <input
+                    type="text"
+                    placeholder="Add custom college type..."
+                    value={customCollegeType}
+                    onChange={(e) => setCustomCollegeType(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleCustomAddSingle('collegeTypes', customCollegeType, setCustomCollegeType, collegeTypes);
+                      }
+                    }}
+                    className="w-full p-1 border rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCustomAddSingle('collegeTypes', customCollegeType, setCustomCollegeType, collegeTypes);
+                    }}
+                    className="ml-2 px-3 py-1 bg-black text-white rounded text-sm"
+                  >
+                    Add
+                  </button>
+                </div>
+                <div className="max-h-48 overflow-auto">
+                  {collegeTypes.map(type => (
+                    <div 
+                      key={type} 
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, collegeTypes: type }));
+                        setDropdownOpen(prev => ({ ...prev, collegeTypes: false }));
+                      }} 
+                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.collegeTypes === type ? "bg-gray-100 font-medium" : ""}`}
+                    >
+                      {type}
+                      {formData.collegeTypes === type && <span className="float-right text-gray-500">✓</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
+          {/* Student Stream with Custom Add */}
           <div ref={studentStreamsRef} className="relative">
             <label className="block font-medium mb-2">Student Stream / Degree <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">
@@ -376,12 +540,41 @@ export default function PoolCampusHiringForm() {
             </div>
             {dropdownOpen.studentStreams && formData.collegeTypes && (
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                {availableStreams.map(stream => (
-                  <div key={stream} onClick={() => handleMultiSelect('studentStreams', stream)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.studentStreams.includes(stream) ? "bg-gray-100 font-medium" : ""}`}>
-                    {stream}
-                    {formData.studentStreams.includes(stream) && <span className="float-right text-gray-500">✓</span>}
-                  </div>
-                ))}
+                {/* Custom Stream Input */}
+                <div className="p-2 border-b flex">
+                  <input
+                    type="text"
+                    placeholder="Add custom stream..."
+                    value={customStream}
+                    onChange={(e) => setCustomStream(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
+                      }
+                    }}
+                    className="w-full p-1 border rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
+                    }}
+                    className="ml-2 px-3 py-1 bg-black text-white rounded text-sm"
+                  >
+                    Add
+                  </button>
+                </div>
+                <div className="max-h-48 overflow-auto">
+                  {availableStreams.map(stream => (
+                    <div key={stream} onClick={() => handleMultiSelect('studentStreams', stream)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.studentStreams.includes(stream) ? "bg-gray-100 font-medium" : ""}`}>
+                      {stream}
+                      {formData.studentStreams.includes(stream) && <span className="float-right text-gray-500">✓</span>}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -408,6 +601,7 @@ export default function PoolCampusHiringForm() {
             </div>
           </div>
 
+          {/* Skills with Custom Add */}
           <div ref={skillsRef} className="relative">
             <label className="block font-medium mb-2">Skills <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">
@@ -424,12 +618,41 @@ export default function PoolCampusHiringForm() {
             </div>
             {dropdownOpen.skills && (
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                {skillsOptions.map(skill => (
-                  <div key={skill} onClick={() => handleMultiSelect('skills', skill)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.skills.includes(skill) ? "bg-gray-100 font-medium" : ""}`}>
-                    {skill}
-                    {formData.skills.includes(skill) && <span className="float-right text-gray-500">✓</span>}
-                  </div>
-                ))}
+                {/* Custom Skill Input */}
+                <div className="p-2 border-b flex">
+                  <input
+                    type="text"
+                    placeholder="Add custom skill..."
+                    value={customSkill}
+                    onChange={(e) => setCustomSkill(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
+                      }
+                    }}
+                    className="w-full p-1 border rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
+                    }}
+                    className="ml-2 px-3 py-1 bg-black text-white rounded text-sm"
+                  >
+                    Add
+                  </button>
+                </div>
+                <div className="max-h-48 overflow-auto">
+                  {skillsOptions.map(skill => (
+                    <div key={skill} onClick={() => handleMultiSelect('skills', skill)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.skills.includes(skill) ? "bg-gray-100 font-medium" : ""}`}>
+                      {skill}
+                      {formData.skills.includes(skill) && <span className="float-right text-gray-500">✓</span>}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -553,13 +776,12 @@ export default function PoolCampusHiringForm() {
                 name="joiningBonus"
                 value={formData.packageDetails.joiningBonus}
                 onChange={handlePackageDetailsChange}
-                placeholder="Joining Bonus (e.g. 50000)"
+                placeholder="Variable Pay (e.g. 50000)"
                 className="w-full p-2 border rounded"
               />
             </div>
           </div>
           {/* --- END Package Details --- */}
-
 
           {/* --- Work Location Dropdown --- */}
           <div ref={workLocationRef} className="relative">
@@ -583,28 +805,32 @@ export default function PoolCampusHiringForm() {
                     type="text"
                     value={workLocationSearch}
                     onChange={(e) => setWorkLocationSearch(e.target.value)}
-                    onClick={(e) => e.stopPropagation()} // Prevent dropdown from closing
+                    onClick={(e) => e.stopPropagation()}
                     placeholder="Search for a city..."
                     className="w-full p-2 border rounded"
                   />
                 </div>
                 <div className="max-h-60 overflow-auto">
-                  {filteredCities.map(city => (
-                    <div
-                      key={`${city.name}-${city.stateCode}`}
-                      onClick={() => handleMultiSelect('workLocation', city.name)}
-                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.workLocation.includes(city.name) ? "bg-gray-100 font-medium" : ""}`}
-                    >
-                      {city.name}
-                      {formData.workLocation.includes(city.name) && <span className="float-right text-gray-500">✓</span>}
-                    </div>
-                  ))}
+                  {filteredWorkCities.length > 0 ? (
+                    filteredWorkCities.map(city => (
+                      <div
+                        key={city}
+                        onClick={() => handleMultiSelect('workLocation', city)}
+                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.workLocation.includes(city) ? "bg-gray-100 font-medium" : ""}`}
+                      >
+                        {city}
+                        {formData.workLocation.includes(city) && <span className="float-right text-gray-500">✓</span>}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-4 py-2 text-gray-500">No cities found matching "{workLocationSearch}"</div>
+                  )}
                 </div>
               </div>
             )}
           </div>
 
-
+          {/* Job Roles with Custom Add */}
           <div ref={jobRolesRef} className="relative">
             <label className="block font-medium mb-2">Job Role <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">
@@ -621,12 +847,41 @@ export default function PoolCampusHiringForm() {
             </div>
             {dropdownOpen.jobRoles && (
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                {jobRoles.map(role => (
-                  <div key={role} onClick={() => handleMultiSelect('jobRoles', role)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.jobRoles.includes(role) ? "bg-gray-100 font-medium" : ""}`}>
-                    {role}
-                    {formData.jobRoles.includes(role) && <span className="float-right text-gray-500">✓</span>}
-                  </div>
-                ))}
+                {/* Custom Job Role Input */}
+                <div className="p-2 border-b flex">
+                  <input
+                    type="text"
+                    placeholder="Add custom job role..."
+                    value={customJobRole}
+                    onChange={(e) => setCustomJobRole(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
+                      }
+                    }}
+                    className="w-full p-1 border rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
+                    }}
+                    className="ml-2 px-3 py-1 bg-black text-white rounded text-sm"
+                  >
+                    Add
+                  </button>
+                </div>
+                <div className="max-h-48 overflow-auto">
+                  {jobRoles.map(role => (
+                    <div key={role} onClick={() => handleMultiSelect('jobRoles', role)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.jobRoles.includes(role) ? "bg-gray-100 font-medium" : ""}`}>
+                      {role}
+                      {formData.jobRoles.includes(role) && <span className="float-right text-gray-500">✓</span>}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -702,9 +957,6 @@ export default function PoolCampusHiringForm() {
             <input type="date" name="offerRolloutDate" value={formData.offerRolloutDate} onChange={handleChange} className="w-full p-2 border rounded" />
           </div>
 
-
-         
-
           <div>
             <label className="block mb-1 font-medium">Number of Rounds <span className="text-red-500">*</span></label>
             <div className="relative">
@@ -727,7 +979,7 @@ export default function PoolCampusHiringForm() {
             {dropdownOpen.selectionProcess && (
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
                 {selectionProcessOptions.map(process => (
-                  <div key={process} onClick={() => handleMultiSelect('selectionProcess', process)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.selectionProcess.includes(process) ? "bg-gray-1Example: Minimum 60% aggregate, No active backlogs...0 font-medium" : ""}`}>
+                  <div key={process} onClick={() => handleMultiSelect('selectionProcess', process)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.selectionProcess.includes(process) ? "bg-gray-100 font-medium" : ""}`}>
                     {process}
                     {formData.selectionProcess.includes(process) && <span className="float-right text-gray-500">✓</span>}
                   </div>
