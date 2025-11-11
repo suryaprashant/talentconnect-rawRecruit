@@ -275,10 +275,50 @@ export const getJobPostingsByCollegeService = async (jobType) => {
         const postings = await JobPostingTable.find({ jobType }).populate('collegePosted');
 
         const currentDate = new Date();
+
+        // Mapping of normalized degree → degreeType category
+        const degreeToDegreeTypeMap = {
+            // Polytechnic
+            "engineering": "Polytechnic",
+            "mechanical": "Polytechnic",
+            "civil": "Polytechnic",
+            "electrical": "Polytechnic",
+            "electronics": "Polytechnic",
+
+            // ITI
+            "fitter": "ITI",
+            "welding": "ITI",
+
+            // Diploma
+            "dpharma": "Diploma",
+
+            // Undergraduate
+            "puchumanities": "Undergraduate",
+            "puccommerce": "Undergraduate",
+            "btech": "Undergraduate",
+            "be": "Undergraduate",
+            "bsc": "Undergraduate",
+            "bca": "Undergraduate",
+            "bba": "Undergraduate",
+            "bbm": "Undergraduate",
+            "ba": "Undergraduate",
+            "bpharma": "Undergraduate",
+
+            // Postgraduate
+            "mtech": "Postgraduate",
+            "me": "Postgraduate",
+            "mba": "Postgraduate",
+            "ma": "Postgraduate",
+            "mca": "Postgraduate",
+            "msc": "Postgraduate",
+            "mcom": "Postgraduate",
+            "mpharma": "Postgraduate"
+        };
+
         const updatedPostings = postings.map(posting => {
             let status = posting.jobStatus;
 
-            // Check and update status based on dates
+            // --- Determine job status based on start/end dates ---
             if (posting.startDate && posting.endDate) {
                 const startDate = new Date(posting.startDate);
                 const endDate = new Date(posting.endDate);
@@ -292,55 +332,36 @@ export const getJobPostingsByCollegeService = async (jobType) => {
                 }
             }
 
+            // --- Derive degreeType category from degree field ---
+            const degreeValues = posting.degree || [];
+            const degreeTypeSet = new Set();
+
+            degreeValues.forEach(deg => {
+                // normalize: lowercase, remove dots, dashes, spaces, and trim
+                const normalized = deg
+                    ?.toLowerCase()
+                    .replace(/[\s.\-]/g, "")  // remove spaces, dots, and hyphens
+                    .trim();
+
+                const mappedDegreeType = degreeToDegreeTypeMap[normalized];
+                if (mappedDegreeType) degreeTypeSet.add(mappedDegreeType);
+            });
+
+            const degreeType = Array.from(degreeTypeSet); // stays [] if nothing matches
+
             return {
                 ...posting.toObject(),
-                jobStatus: status
+                jobStatus: status,
+                degreeType
             };
         });
-        // console.log("Updated Postings:", updatedPostings);
+
         return updatedPostings;
     } catch (error) {
-        console.error("Error in getJobPostingsByJobTypeService:", error.message);
+        console.error("Error in getJobPostingsByCollegeService:", error.message);
         throw error;
     }
 };
-
-
-
-// export const getJobPostingsByCollegeService = async (jobType) => {
-//     try {
-//         const postings = await JobPostingTable.find({ jobType }).populate('collegePosted');
-
-//         const currentDate = new Date();
-//         const updatedPostings = postings.map(posting => {
-//             let status = posting.jobStatus;
-
-//             // Check and update status based on dates
-//             if (posting.startDate && posting.endDate) {
-//                 const startDate = new Date(posting.startDate);
-//                 const endDate = new Date(posting.endDate);
-
-//                 if (currentDate < startDate) {
-//                     status = "Pending";
-//                 } else if (currentDate >= startDate && currentDate <= endDate) {
-//                     status = "Open";
-//                 } else if (currentDate > endDate) {
-//                     status = "Closed";
-//                 }
-//             }
-
-//             return {
-//                 ...posting.toObject(),
-//                 jobStatus: status
-//             };
-//         });
-//         console.log("Updated Postings:", updatedPostings);
-//         return updatedPostings;
-//     } catch (error) {
-//         console.error("Error in getJobPostingsByJobTypeService:", error.message);
-//         throw error;
-//     }
-// };
 
 export const getJobPostedByCompanyService = async (Id, jobType, userType) => {
     try {

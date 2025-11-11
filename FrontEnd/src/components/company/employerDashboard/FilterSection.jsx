@@ -1,13 +1,13 @@
 import React from 'react';
 
-const FilterSection = ({ filters, onFilterChange, onClearFilter }) => {
-  // Filter sections data for dynamic rendering
+const FilterSection = ({ filters, onFilterChange, onClearFilter, college }) => {
+  // Filter sections data
   const filterSections = [
     {
       title: 'Work mode',
       type: 'workMode',
       options: [
-        { id: 'work-office', value: 'office', label: 'Work from office', count: 28692 },
+        { id: 'work-office', value: 'on-site', label: 'Work from office', count: 28692 },
         { id: 'work-hybrid', value: 'hybrid', label: 'Hybrid', count: 756 },
         { id: 'work-remote', value: 'remote', label: 'Remote', count: 709 }
       ]
@@ -55,21 +55,21 @@ const FilterSection = ({ filters, onFilterChange, onClearFilter }) => {
         { id: 'course-mcom', value: 'mcom', label: 'MCom' },
         { id: 'course-m-pharma', value: 'm-pharma', label: 'M.Pharma' }
       ]
+    },
+    {
+      title: 'Employment Type',
+      type: 'employmentType',
+      options: [
+        { id: 'employment-full-time', value: 'Full-time', label: 'Full-time' },
+        { id: 'employment-part-time', value: 'Part-time', label: 'Part-time' },
+        { id: 'employment-contract', value: 'Contract', label: 'Contract' }
+      ]
     }
   ];
 
-  // Additional filter sections for Location and College
   const dropdownFilters = [
-    {
-      title: 'Location',
-      type: 'location',
-      placeholder: 'Multi - Select'
-    },
-    {
-      title: 'College',
-      type: 'college',
-      placeholder: 'Multi - Select'
-    }
+    { title: 'Location', type: 'location', placeholder: 'Multi - Select' },
+    { title: 'College', type: 'college', placeholder: 'Multi - Select' }
   ];
 
   return (
@@ -79,8 +79,8 @@ const FilterSection = ({ filters, onFilterChange, onClearFilter }) => {
         <div key={section.type} className="border-b border-gray-200 pb-6">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-medium">{section.title}</h3>
-            <button 
-              onClick={() => onClearFilter(section.type)} 
+            <button
+              onClick={() => onClearFilter(section.type)}
               className="text-xs text-gray-500"
             >
               Clear
@@ -92,7 +92,7 @@ const FilterSection = ({ filters, onFilterChange, onClearFilter }) => {
                 <input
                   type="checkbox"
                   id={option.id}
-                  checked={filters[section.type].includes(option.value)}
+                  checked={Array.isArray(filters[section.type]) && filters[section.type].includes(option.value)}
                   onChange={() => onFilterChange(section.type, option.value)}
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                 />
@@ -113,8 +113,8 @@ const FilterSection = ({ filters, onFilterChange, onClearFilter }) => {
         <div key={filter.type} className="border-b border-gray-200 pb-6">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-medium">{filter.title}</h3>
-            <button 
-              onClick={() => onClearFilter(filter.type)} 
+            <button
+              onClick={() => onClearFilter(filter.type)}
               className="text-xs text-gray-500"
             >
               Clear
@@ -122,15 +122,24 @@ const FilterSection = ({ filters, onFilterChange, onClearFilter }) => {
           </div>
           <div className="relative">
             <select
-              value={filters[filter.type]}
+              value={filters[filter.type] || ''}
               onChange={(e) => onFilterChange(filter.type, e.target.value)}
               className="block w-full p-2 border border-gray-300 rounded appearance-none"
             >
               <option value="">{filter.placeholder}</option>
-              <option value="bangalore">Bangalore</option>
-              <option value="mumbai">Mumbai</option>
-              <option value="delhi">Delhi</option>
-              <option value="chennai">Chennai</option>
+              {college && Array.isArray(college) &&
+                [...new Set(
+                  college.map(c =>
+                    filter.type === 'location'
+                      ? c.location
+                      : c.collegePosted?.collegeUniversityDetails?.collegeName
+                  )
+                )].filter(Boolean).map((value, idx) => (
+                  <option key={idx} value={value}>
+                    {value}
+                  </option>
+                ))
+              }
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
               <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
