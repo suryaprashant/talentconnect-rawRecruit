@@ -26,6 +26,7 @@ const CollegeDetailPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+  const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
   const [posting, setPosting] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -107,7 +108,7 @@ const CollegeDetailPage = () => {
           onClick={() => navigate('/company-dashboard/Pool-campus')}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
-          Back to Listings
+          Back
         </button>
       </div>
     );
@@ -117,7 +118,7 @@ const CollegeDetailPage = () => {
   const collegeDetails = posting.collegePosted;
   const collegeName = collegeDetails?.collegeUniversityDetails?.collegeName || 'the College';
   const coordinator = collegeDetails?.placementCoordinatorDetails;
-  
+
   // Use the safe formatter
   const formattedStartDate = formatDateSafe(posting.startDate);
   const formattedEndDate = formatDateSafe(posting.endDate);
@@ -169,12 +170,12 @@ const CollegeDetailPage = () => {
               >
                 Accept Invitation
               </button>
-              <button
+              {!isSaved && (<button
                 className="border border-gray-300 text-gray-600 px-4 py-2 rounded text-sm"
                 onClick={() => handleSave(id)}
               >
                 Save
-              </button>
+              </button>)}
               <button
                 onClick={handleShare}
                 className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none"
@@ -205,7 +206,7 @@ const CollegeDetailPage = () => {
               <h4 className="font-bold text-2xl text-blue-600">{posting.employmentType?.join(', ') || 'N/A'}</h4>
               <p className="text-gray-600 text-sm">Employment Type</p>
             </div>
-             {/* --- NEWLY ADDED --- */}
+            {/* --- NEWLY ADDED --- */}
             <div className="bg-white p-4 rounded border border-gray-200">
               <h4 className="font-bold text-2xl text-blue-600">{posting.lookingFor || 'N/A'}</h4>
               <p className="text-gray-600 text-sm">Looking For</p>
@@ -339,8 +340,8 @@ const CollegeDetailPage = () => {
                           </td>
                           <td className="px-4 py-2 text-sm text-gray-700">
                             {/* Check for roundSkills array first, then check for skills array by index, then fallback to aggregated skills */}
-                            {posting.roundSkills?.[index] || 
-                             (Array.isArray(posting.skills) && posting.skills[index] ? posting.skills[index] : 'N/A')}
+                            {posting.roundSkills?.[index] ||
+                              (Array.isArray(posting.skills) && posting.skills[index] ? posting.skills[index] : 'N/A')}
                           </td>
                         </tr>
                       ))}
@@ -353,7 +354,7 @@ const CollegeDetailPage = () => {
             </div>
           </div>
 
-         
+
 
           {/* --- NEW SECTION: Amenities Required --- */}
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 
 import JobCard from '@/components/student/studentDashboard/intershipOpportunity/JobCard';
 import { ApplyForReferral, getReferralJobById, SaveOppurtunity } from '@/lib/User_AxiosInstance';
@@ -12,6 +12,9 @@ const RefferalJobDetails = () => {
   const [similarJobs, setSimilarJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchParams] = useSearchParams();
+  const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+  const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
 
   useEffect(() => {
     const loadJobDetails = async () => {
@@ -64,6 +67,10 @@ const RefferalJobDetails = () => {
     );
   }
 
+  const handleGoBack = () => {
+    window.history.back();
+  };
+
   if (error || !jobDetails) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -71,9 +78,9 @@ const RefferalJobDetails = () => {
           <p className="text-xl font-semibold">{error || "Internship not found"}</p>
           <button
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={() => navigate('/fresher-dashboard/Referral')}
+            onClick={() => handleGoBack()}
           >
-            Back to Referral Jobs
+            Back
           </button>
         </div>
       </div>
@@ -104,20 +111,20 @@ const RefferalJobDetails = () => {
               </span>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-            <button
+          {!isApplied && (<div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            {!isSaved && (<button
               onClick={handleSave}
               className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded shadow"
             >
               Save
-            </button>
+            </button>)}
             <button
               onClick={handleApply}
               className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded shadow"
             >
               Apply
             </button>
-          </div>
+          </div>)}
         </div>
 
         <div className="mb-6">
