@@ -8,8 +8,6 @@ import toast from 'react-hot-toast';
 function OffCampusJobDetail() {
   const { jobId } = useParams();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [jobDetail, setJobDetail] = useState(null);
