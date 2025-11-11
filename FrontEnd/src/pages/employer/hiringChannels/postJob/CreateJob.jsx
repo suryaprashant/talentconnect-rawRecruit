@@ -11,7 +11,7 @@ export default function EmployerPostJob() {
     employmentType: 'Full-time',
     workMode: 'On-site',
     location: [],
-    // --- MODIFIED: Enhanced package details ---
+
     packageDetails: {
       currency: 'USD',
       totalCTC: '',

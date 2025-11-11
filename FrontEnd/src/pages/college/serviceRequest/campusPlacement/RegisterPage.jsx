@@ -9,7 +9,7 @@ import { City } from 'country-state-city';
 
 export default function RegisterPage({ onBackClick }) {
     const initialFormState = {
-        degree: '',
+        degree: [],
         lookingFor: ['job'],
         employmentType: [],
         salaryRange: 'USD',
@@ -35,11 +35,18 @@ export default function RegisterPage({ onBackClick }) {
     const [alert, setAlert] = useState({ show: false, message: '', type: '' });
 
     // --- Dropdown and Input State Management ---
-    const [dropdownOpen, setDropdownOpen] = useState({ amenities: false, companyType: false });
+    const [dropdownOpen, setDropdownOpen] = useState({ 
+        amenities: false, 
+        companyType: false,
+        degree: false 
+    });
     const [customAmenity, setCustomAmenity] = useState('');
+    const [customDegree, setCustomDegree] = useState('');
+    const [customCompanyType, setCustomCompanyType] = useState('');
 
     const amenitiesRef = useRef(null);
-    const companyTypeRef = useRef(null); // --- NEW REF ---
+    const companyTypeRef = useRef(null);
+    const degreeRef = useRef(null);
 
     // --- Options ---
     const degreeOptions = ['B.Tech', 'M.Tech', 'MBA', 'B.Sc', 'M.Sc', 'PhD'];
@@ -68,9 +75,11 @@ export default function RegisterPage({ onBackClick }) {
             if (amenitiesRef.current && !amenitiesRef.current.contains(event.target)) {
                 setDropdownOpen(prev => ({ ...prev, amenities: false }));
             }
-            // --- NEWLY ADDED ---
             if (companyTypeRef.current && !companyTypeRef.current.contains(event.target)) {
                 setDropdownOpen(prev => ({ ...prev, companyType: false }));
+            }
+            if (degreeRef.current && !degreeRef.current.contains(event.target)) {
+                setDropdownOpen(prev => ({ ...prev, degree: false }));
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -108,8 +117,9 @@ export default function RegisterPage({ onBackClick }) {
         setFormData({ ...formData, rounds: updatedRounds });
     };
 
-    const addItem = (field, item, setCustomInput) => {
-        if (item.trim() && !formData[field].includes(item.trim())) {
+    const addItem = (field, item, setCustomInput, predefinedOptions = []) => {
+        if (item.trim() && !formData[field].includes(item.trim()) && 
+            !predefinedOptions.map(opt => opt.toLowerCase()).includes(item.trim().toLowerCase())) {
             setFormData(prev => ({ ...prev, [field]: [...prev[field], item.trim()] }));
         }
         setCustomInput('');
@@ -134,7 +144,7 @@ export default function RegisterPage({ onBackClick }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!formData.degree || !formData.collegeLocation || !formData.email || !formData.mobile) {
+        if (!formData.degree.length || !formData.collegeLocation || !formData.email || !formData.mobile) {
             showAlert('Please fill all the required fields marked with *', 'error');
             return;
         }
@@ -163,12 +173,12 @@ export default function RegisterPage({ onBackClick }) {
 
         const payload = {
             jobType: 'On-campus',
-            degree: [formData.degree],
+            degree: formData.degree,
             studentStreams: studentStreams,
             numberOfStudent: studentCounts,
             lookingFor: backendLookingFor,
             employmentType: formData.employmentType,
-            packageDetails: { // Note: Your schema calls this packageDetails, but this form sends minPackage. Adjust if needed.
+            packageDetails: {
                 currency: formData.salaryRange,
                 totalCTC: parseFloat(formData.salaryValue) || 0,
             },
@@ -242,14 +252,80 @@ export default function RegisterPage({ onBackClick }) {
 
             <form onSubmit={handleSubmit} className="space-y-6">
 
-                <div>
-                    <label htmlFor="degree" className="block text-sm font-medium text-gray-700 mb-1">Degree <span className="text-red-500">*</span></label>
+                {/* Degree Multi-Select with Custom Add */}
+                <div ref={degreeRef}>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Degree <span className="text-red-500">*</span></label>
                     <div className="relative">
-                        <select id="degree" className="block w-full border border-gray-300 rounded-md px-3 py-2 appearance-none pr-10" value={formData.degree} onChange={(e) => handleChange('degree', e.target.value)} required>
-                            <option value="">Select Degree</option>
-                            {degreeOptions.map(option => (<option key={option} value={option}>{option}</option>))}
-                        </select>
-                        <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none"><ChevronDown size={16} className="text-gray-400" /></div>
+                        <div 
+                            className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400 min-h-[42px]"
+                            onClick={() => setDropdownOpen(prev => ({ ...prev, degree: !prev.degree }))}
+                        >
+                            <div className="flex flex-wrap gap-1 flex-1">
+                                {formData.degree.length > 0 ? (
+                                    formData.degree.map(degree => (
+                                        <span key={degree} className="flex items-center bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                                            {degree}
+                                            <button 
+                                                type="button" 
+                                                onClick={(e) => { 
+                                                    e.stopPropagation(); 
+                                                    removeItem('degree', degree); 
+                                                }} 
+                                                className="ml-1.5"
+                                            >
+                                                <X size={12} />
+                                            </button>
+                                        </span>
+                                    ))
+                                ) : (
+                                    <span className="text-gray-500">Select degree(s)</span>
+                                )}
+                            </div>
+                            <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.degree ? "rotate-180" : ""}`} />
+                        </div>
+                        {dropdownOpen.degree && (
+                            <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
+                                {/* Custom Degree Input */}
+                                <div className="p-2 border-b flex">
+                                    <input
+                                        type="text"
+                                        placeholder="Add custom degree..."
+                                        value={customDegree}
+                                        onChange={(e) => setCustomDegree(e.target.value)}
+                                        onClick={(e) => e.stopPropagation()}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                addItem('degree', customDegree, setCustomDegree, degreeOptions);
+                                            }
+                                        }}
+                                        className="w-full p-1 border rounded"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            addItem('degree', customDegree, setCustomDegree, degreeOptions);
+                                        }}
+                                        className="ml-2 px-3 py-1 bg-black text-white rounded text-sm"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+                                <div className="max-h-60 overflow-auto">
+                                    {degreeOptions.map(option => (
+                                        <div 
+                                            key={option} 
+                                            onClick={() => handleMultiToggle('degree', option)} 
+                                            className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.degree.includes(option) ? "bg-gray-100 font-medium" : ""}`}
+                                        >
+                                            {option}
+                                            {formData.degree.includes(option) && <span className="float-right text-gray-500">✓</span>}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -283,10 +359,22 @@ export default function RegisterPage({ onBackClick }) {
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Looking for</label>
                     <div className="flex space-x-2">
-                        {['job', 'internship', 'both'].map((type) => (
-                            <button key={type} type="button" className={`px-4 py-2 text-sm border rounded-md capitalize transition-colors ${formData.lookingFor.includes(type) ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'}`} onClick={() => handleMultiToggle('lookingFor', type)}>{type}</button>
+                        {['job', 'internship'].map((type) => (
+                            <button 
+                                key={type} 
+                                type="button" 
+                                className={`px-4 py-2 text-sm border rounded-md capitalize transition-colors ${formData.lookingFor.includes(type) ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'}`} 
+                                onClick={() => handleMultiToggle('lookingFor', type)}
+                            >
+                                {type}
+                            </button>
                         ))}
                     </div>
+                    {formData.lookingFor.includes('job') && formData.lookingFor.includes('internship') && (
+                        <div className="mt-2">
+                            <span className="text-sm text-blue-600 font-medium">✓ Both Job and Internship selected</span>
+                        </div>
+                    )}
                 </div>
 
                 <div>
@@ -298,17 +386,29 @@ export default function RegisterPage({ onBackClick }) {
                     </div>
                 </div>
 
-                {/* --- NEWLY ADDED: Company Type --- */}
+                {/* --- NEWLY ADDED: Company Type with Custom Add --- */}
                 <div ref={companyTypeRef}>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Company Type</label>
                     <div className="relative">
-                        <div className="block w-full border border-gray-300 rounded-md px-3 py-2 min-h-[42px] cursor-pointer" onClick={() => setDropdownOpen(prev => ({ ...prev, companyType: !prev.companyType }))}>
+                        <div 
+                            className="block w-full border border-gray-300 rounded-md px-3 py-2 min-h-[42px] cursor-pointer" 
+                            onClick={() => setDropdownOpen(prev => ({ ...prev, companyType: !prev.companyType }))}
+                        >
                             {formData.companyType.length > 0 ? (
                                 <div className="flex flex-wrap gap-1">
                                     {formData.companyType.map(item => (
                                         <span key={item} className="flex items-center bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
                                             {item}
-                                            <button type="button" onClick={(e) => { e.stopPropagation(); removeItem('companyType', item); }} className="ml-1.5"><X size={12} /></button>
+                                            <button 
+                                                type="button" 
+                                                onClick={(e) => { 
+                                                    e.stopPropagation(); 
+                                                    removeItem('companyType', item); 
+                                                }} 
+                                                className="ml-1.5"
+                                            >
+                                                <X size={12} />
+                                            </button>
                                         </span>
                                     ))}
                                 </div>
@@ -316,8 +416,42 @@ export default function RegisterPage({ onBackClick }) {
                         </div>
                         {dropdownOpen.companyType && (
                             <div className="absolute z-10 w-full bg-white border rounded-md mt-1 shadow-lg">
+                                {/* Custom Company Type Input */}
+                                <div className="p-2 border-b flex">
+                                    <input
+                                        type="text"
+                                        placeholder="Add custom company type..."
+                                        value={customCompanyType}
+                                        onChange={(e) => setCustomCompanyType(e.target.value)}
+                                        onClick={(e) => e.stopPropagation()}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                addItem('companyType', customCompanyType, setCustomCompanyType, companyTypeOptions);
+                                            }
+                                        }}
+                                        className="w-full p-1 border rounded"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            addItem('companyType', customCompanyType, setCustomCompanyType, companyTypeOptions);
+                                        }}
+                                        className="ml-2 px-3 py-1 bg-black text-white rounded text-sm"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
                                 {companyTypeOptions.map(opt => (
-                                    <div key={opt} className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${formData.companyType.includes(opt) ? 'bg-gray-200' : ''}`} onClick={() => handleMultiToggle('companyType', opt)}>{opt}</div>
+                                    <div 
+                                        key={opt} 
+                                        className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${formData.companyType.includes(opt) ? 'bg-gray-200' : ''}`} 
+                                        onClick={() => handleMultiToggle('companyType', opt)}
+                                    >
+                                        {opt}
+                                        {formData.companyType.includes(opt) && <span className="float-right text-gray-500">✓</span>}
+                                    </div>
                                 ))}
                             </div>
                         )}

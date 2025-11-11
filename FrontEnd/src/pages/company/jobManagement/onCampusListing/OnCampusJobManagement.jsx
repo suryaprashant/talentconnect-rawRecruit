@@ -181,6 +181,7 @@ export default function OnCampusJobManagement() {
                 <CollegeRequestDetail
                   key={college._id}
                   collegeApplication={college} // Pass the fully merged college object
+                  jobDetails={selectedJob}  
                   onAccept={() => handleUpdateApplicationStatus(college._id, 'Accepted')}
                   onShortlist={() => handleUpdateApplicationStatus(college._id, 'Shortlisted')}
                   onReject={() => handleUpdateApplicationStatus(college._id, 'Rejected')}

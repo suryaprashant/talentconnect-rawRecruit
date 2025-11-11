@@ -249,7 +249,7 @@ const JobDetailPage = () => {
                 <div className="mt-1 text-base text-gray-900">{job?.companyHiringPreference?.preferredMode || 'Not Specified'}</div>
               </div>
               <div>
-                <div className="text-sm font-medium text-gray-500">Amenities Required</div>
+                <div className="text-sm font-medium text-gray-500">Amenities/Facilities Required</div>
                 <div className="mt-1 text-base text-gray-900">{job?.amenitiesRequired?.join(', ') || 'None'}</div>
               </div>
               <div>
@@ -350,6 +350,14 @@ const JobDetailPage = () => {
           <div className="px-6 py-6 border-t border-gray-200">
             <h2 className="text-xl font-bold text-gray-900 mb-6">Selection Process</h2>
 
+            <div className="bg-gray-50 p-4 rounded-lg mb-5">
+                <div className="text-sm font-medium text-gray-500">Number of Round of Interview</div>
+                <div className="text-xl font-bold text-gray-900">
+                  {job?.rounds || 'Not Specified'}
+                </div>
+              </div>
+
+
             {job?.selectionProcess && job?.selectionProcess?.length > 0 ? (
               <div className="relative">
                 {/* Timeline line */}
@@ -404,13 +412,11 @@ const JobDetailPage = () => {
           </div>
 
           {/* How to Apply */}
-          <div className="px-6 py-6 border-t border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">How to Apply</h2>
-            <p className="text-gray-700 mb-4">
-              Students can apply through the <span className="text-blue-600">TalentConnect Portal</span>. Make sure to complete your profile and upload all necessary documents before the deadline.
-            </p>
-            <div className="mt-6">
-              <h3 className="font-medium text-gray-900 mb-2">Contact Person:</h3>
+          <div className="px-6 border-t border-gray-200">
+  
+          
+            <h2 className="text-xl font-bold text-gray-900 mb-4 pt-6">Contact Person</h2>
+             
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="flex items-start">
                   <div className="mr-3 flex-shrink-0">
@@ -449,53 +455,10 @@ const JobDetailPage = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            
           </div>
 
-          {/* Additional Resources */}
-          <div className="px-6 py-6 border-t border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Additional Resources</h2>
-            <div className="space-y-3">
-              <a href="#" className="flex items-center text-blue-600 hover:text-blue-800">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-                Download Job Brochure (PDF)
-              </a>
-              <a href="#" className="flex items-center text-blue-600 hover:text-blue-800">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                {/* --- CORRECTED FIELD --- */}
-                Watch Day in the Life at {job?.companyPosted?.companyDetails?.companyName || 'Company'}
-              </a>
-              <a href="#" className="flex items-center text-blue-600 hover:text-blue-800">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                </svg>
-                Glassdoor Reviews
-              </a>
-            </div>
-          </div>
-
-          {/* Note to Students */}
-          <div className="px-6 py-6 border-t border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Note to Students</h2>
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-blue-700">
-                    Please keep your TalentConnect profile updated and check your registered email for test links and interview schedules. No communication will be sent via SMS or WhatsApp.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+     
         </div>
       </main>
     </div>
