@@ -131,7 +131,7 @@ const CollegeDetailPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* ADDED: Back button at the top */}
-      <button 
+      <button
         onClick={handleBack}
         className="flex items-center text-blue-500 hover:text-blue-700 mb-4 transition-colors"
       >
@@ -140,7 +140,7 @@ const CollegeDetailPage = () => {
         </svg>
         Back to Colleges
       </button>
-      
+
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex flex-col md:flex-row justify-between mb-6">
           <div>
@@ -179,19 +179,21 @@ const CollegeDetailPage = () => {
                 <svg className="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>
               )}
             </div>
-            {!isApplied && (<div className="flex gap-2">
-              <button
-                className="border border-blue-500 text-blue-500 px-4 py-2 rounded text-sm"
-                onClick={() => handleApply(id)}
-              >
-                Accept Invitation
-              </button>
-              {!isSaved && (<button
-                className="border border-gray-300 text-gray-600 px-4 py-2 rounded text-sm"
-                onClick={() => handleSave(id)}
-              >
-                Save
-              </button>)}
+            <div className="flex gap-2">
+              {!isApplied && (<>
+                <button
+                  className="border border-blue-500 text-blue-500 px-4 py-2 rounded text-sm"
+                  onClick={() => handleApply(id)}
+                >
+                  Accept Invitation
+                </button>
+                {!isSaved && (<button
+                  className="border border-gray-300 text-gray-600 px-4 py-2 rounded text-sm"
+                  onClick={() => handleSave(id)}
+                >
+                  Save
+                </button>)}
+              </>)}
               <button
                 onClick={handleShare}
                 className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none"
@@ -201,7 +203,7 @@ const CollegeDetailPage = () => {
                 </svg>
                 Share
               </button>
-            </div>)}
+            </div>
           </div>
         </div>
 
@@ -309,7 +311,7 @@ const CollegeDetailPage = () => {
             </div>
           </div> */}
 
-         
+
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">College Student Details</h2>
             <div className="overflow-x-auto">
@@ -335,7 +337,7 @@ const CollegeDetailPage = () => {
                   </tbody>
                 </table>
               ) : (
-        
+
                 posting.studentStreams?.length > 0 && posting.numberOfStudent?.length > 0 ? (
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
