@@ -53,6 +53,11 @@ const CollegeDetailPage = () => {
     fetchPostingDetails();
   }, [id]);
 
+  // ADDED: Back button handler
+  const handleBack = () => {
+    navigate(-1); // Go back to previous page (listing page)
+  };
+
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
@@ -125,6 +130,17 @@ const CollegeDetailPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* ADDED: Back button at the top */}
+      <button 
+        onClick={handleBack}
+        className="flex items-center text-blue-500 hover:text-blue-700 mb-4 transition-colors"
+      >
+        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Colleges
+      </button>
+      
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex flex-col md:flex-row justify-between mb-6">
           <div>
