@@ -534,10 +534,6 @@ function AppRoutes() {
               <Route path='hiring-channels/pool-campus-hiring/employer' element={<EmployerPoolCampuses />} />
               <Route path='/hiring-channels/off-campus-hiring/employer' element={<EmployerOffCampus />} />
 
-
-
-
-
               {/* College  */}
               <Route path="college-profile" element={<CollegeProfile />} />
 
@@ -564,10 +560,11 @@ function AppRoutes() {
 
               <Route path="/manage-application/campus-placement" element={<JobProvider><JobManagementApplication /> </JobProvider>} />
               <Route path="/manage-application/campus-placement/:jobId" element={<JobProvider><JobDetail status="Applied" /> </JobProvider>} />
-              <Route path="/college-dashboard/preview/On-campus/:jobId" element={<CollegeDetailsPage />} />
+              <Route path="/college-dashboard/preview/On-campus/:id" element={<CollegeDetailsPage />} />
 
               <Route path="/manage-application/PoolCampus-placement" element={<JobProvider><JobManagementApplicationForPool /></JobProvider>} />
               <Route path="/manage-application/PoolCampus-placement/:jobId" element={<JobProvider><JobDetailForPool /> </JobProvider>} />
+              <Route path="/college-dashboard/preview/Pool-campus/:id" element={<PoolCampusEmployeeDash />} />
 
               <Route path="/application-status/oncampus" element={<CollegeOncampusApplicationStatus />} />
               <Route path="/application-status/poolcampus" element={<CollegePoolcampusApplicationStatus />} />

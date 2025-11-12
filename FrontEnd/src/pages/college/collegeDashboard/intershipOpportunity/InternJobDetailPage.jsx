@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { getInternshipById } from '@/lib/User_AxiosInstance';
 
 import { ApplyForCampusInternship, SaveOppurtunity } from '@/lib/College_AxiosIntance';
@@ -7,9 +7,13 @@ import { ApplyForCampusInternship, SaveOppurtunity } from '@/lib/College_AxiosIn
 const InternJobDetailPage = () => {
     const { id } = useParams();
     const [job, setJob] = useState(null);
-    const [isSaved, setIsSaved] = useState(false);
+    const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+    const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
 
     useEffect(() => {
         const fetchJobDetail = async () => {
@@ -168,7 +172,10 @@ const InternJobDetailPage = () => {
 
         try {
             const response = await SaveOppurtunity(jobId, jobType);
-            if (response.data?.success === true) toast.success("Saved!");
+            if (response.data?.success === true) {
+                toast.success("Saved!");
+                setSaved(true);
+            }
             else toast.error(response.response?.data?.msg || "Could not apply.");
         } catch (error) {
             console.log("Error: ", error);
@@ -179,12 +186,12 @@ const InternJobDetailPage = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <Link to="/college-dashboard/Internship" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
+                <button onClick={() => navigate(-1)} className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
                     </svg>
                     Back to jobs
-                </Link>
+                </button>
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
                     {/* Header Section */}
                     <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
@@ -220,27 +227,29 @@ const InternJobDetailPage = () => {
                         </div>
 
                         <div className="flex space-x-2 mt-4">
-                            <button
-                                className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none"
-                                onClick={() => handleApply()}
-                            >
-                                Register Now
-                            </button>
-                            <button
-                                onClick={() => handleSave(job._id, job.jobDetails.jobType)}
-                                className={`inline-flex items-center justify-center px-4 py-2 border ${isSaved ? 'border-gray-300 bg-gray-50' : 'border-gray-300 bg-white'} text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none`}
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className={`h-5 w-5 mr-1 ${isSaved ? 'text-blue-600 fill-current' : 'text-gray-400'}`}
-                                    viewBox="0 0 20 20"
-                                    fill={isSaved ? 'currentColor' : 'none'}
-                                    stroke="currentColor"
+                            {!isApplied && (<>
+                                <button
+                                    className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none"
+                                    onClick={() => handleApply()}
                                 >
-                                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-                                </svg>
-                                {isSaved ? 'Saved' : 'Save'}
-                            </button>
+                                    Register Now
+                                </button>
+                                {isSaved && (<button
+                                    onClick={() => handleSave(job._id, job.jobDetails.jobType)}
+                                    className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-300 bg-gray-50' : 'border-gray-300 bg-white'} text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none`}
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className={`h-5 w-5 mr-1 ${saved ? 'text-blue-600 fill-current' : 'text-gray-400'}`}
+                                        viewBox="0 0 20 20"
+                                        fill={saved ? 'currentColor' : 'none'}
+                                        stroke="currentColor"
+                                    >
+                                        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                                    </svg>
+                                    {saved ? 'Saved' : 'Save'}
+                                </button>)}
+                            </>)}
                             <button
                                 onClick={handleShare}
                                 className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none"
