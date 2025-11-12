@@ -1,7 +1,7 @@
 import { ApplyForOnCampus, getCompanyPostingForOncampusDetail, SaveOppurtunity } from '@/lib/College_AxiosIntance';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { useParams, Link, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 
 // Utility function to format date
 const formatDate = (dateString) => {
@@ -26,10 +26,12 @@ const formatDate = (dateString) => {
 
 const JobDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+  const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
   const [job, setJob] = useState(null);
-  const [isSaved, setIsSaved] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [error, setError] = useState(null);
 
   const loadJobDetail = async () => {
@@ -65,7 +67,7 @@ const JobDetailPage = () => {
   };
 
   const handleGoBack = () => {
-    window.history.back();
+    navigate(-1);
   };
 
   const handleApply = async () => {
@@ -85,7 +87,7 @@ const JobDetailPage = () => {
       const response = await SaveOppurtunity(jobId, jobType);
       if (response.data?.success === true) {
         toast.success("Saved!");
-        setIsSaved(true); // Update save state
+        setSaved(true); // Update save state
       }
       else toast.error(response.response?.data?.msg || "Could not save.");
     } catch (error) {
@@ -169,20 +171,22 @@ const JobDetailPage = () => {
               </div>
             </div>
 
-            {!isApplied && (<div className="flex space-x-2 mt-4">
-              <button className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none" onClick={handleApply}>
-                Register Now
-              </button>
-              <button
-                onClick={() => handleSave(job?._id, job?.jobType)}
-                disabled={isSaved}
-                className={`inline-flex items-center justify-center px-4 py-2 border ${isSaved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-md focus:outline-none`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-1 ${isSaved ? 'text-blue-600' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor">
-                  <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-                </svg>
-                {isSaved ? 'Saved' : 'Save'}
-              </button>
+            <div className="flex space-x-2 mt-4">
+              {!isApplied && (<>
+                <button className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none" onClick={handleApply}>
+                  Register Now
+                </button>
+                {!isSaved && (<button
+                  onClick={() => handleSave(job?._id, job?.jobType)}
+                  disabled={saved}
+                  className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-md focus:outline-none`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-1 ${saved ? 'text-blue-600' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={saved ? 'currentColor' : 'none'} stroke="currentColor">
+                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                  </svg>
+                  {saved ? 'Saved' : 'Save'}
+                </button>)}
+              </>)}
               <button
                 onClick={handleShare}
                 className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none"
@@ -192,7 +196,7 @@ const JobDetailPage = () => {
                 </svg>
                 Share
               </button>
-            </div>)}
+            </div>
           </div>
 
           {/* About Section */}
@@ -351,11 +355,11 @@ const JobDetailPage = () => {
             <h2 className="text-xl font-bold text-gray-900 mb-6">Selection Process</h2>
 
             <div className="bg-gray-50 p-4 rounded-lg mb-5">
-                <div className="text-sm font-medium text-gray-500">Number of Round of Interview</div>
-                <div className="text-xl font-bold text-gray-900">
-                  {job?.rounds || 'Not Specified'}
-                </div>
+              <div className="text-sm font-medium text-gray-500">Number of Round of Interview</div>
+              <div className="text-xl font-bold text-gray-900">
+                {job?.rounds || 'Not Specified'}
               </div>
+            </div>
 
 
             {job?.selectionProcess && job?.selectionProcess?.length > 0 ? (
@@ -413,52 +417,52 @@ const JobDetailPage = () => {
 
           {/* How to Apply */}
           <div className="px-6 border-t border-gray-200">
-  
-          
+
+
             <h2 className="text-xl font-bold text-gray-900 mb-4 pt-6">Contact Person</h2>
-             
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="flex items-start">
-                  <div className="mr-3 flex-shrink-0">
-                    <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-base font-medium text-gray-900">{job?.contactPerson?.name || 'Not Specified'} <span className='text-sm text-gray-500 '>({job?.contactPerson?.designation || 'N/A'})</span></div>
-                    {job?.contactPerson?.email && (
-                      <div className="flex items-center mt-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        <a href={`mailto:${job.contactPerson.email}`} className="text-blue-600 hover:text-blue-800 text-sm">{job.contactPerson.email}</a>
-                      </div>
-                    )}
-                    {job?.contactPerson?.mobile && (
-                      <div className="flex items-center mt-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                        <a href={`tel:${job.contactPerson.mobile}`} className="text-blue-600 hover:text-blue-800 text-sm">{job.contactPerson.mobile}</a>
-                      </div>
-                    )}
-                    {job?.contactPerson?.linkedin && (
-                      <a href={job.contactPerson.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center mt-1 text-blue-600 hover:text-blue-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 mr-1" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.783-1.75-1.75s.784-1.75 1.75-1.75 1.75.783 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-1.339-.025-3.059-1.868-3.059-1.87 0-2.158 1.46-2.158 2.965v5.698h-3v-11h2.889v1.336h.04c.401-.762 1.383-1.563 2.83-1.563 3.029 0 3.588 1.993 3.588 4.582v6.645z" />
-                        </svg>
-                        <span className="text-sm">LinkedIn</span>
-                      </a>
-                    )}
+
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="flex items-start">
+                <div className="mr-3 flex-shrink-0">
+                  <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
                   </div>
                 </div>
+                <div>
+                  <div className="text-base font-medium text-gray-900">{job?.contactPerson?.name || 'Not Specified'} <span className='text-sm text-gray-500 '>({job?.contactPerson?.designation || 'N/A'})</span></div>
+                  {job?.contactPerson?.email && (
+                    <div className="flex items-center mt-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <a href={`mailto:${job.contactPerson.email}`} className="text-blue-600 hover:text-blue-800 text-sm">{job.contactPerson.email}</a>
+                    </div>
+                  )}
+                  {job?.contactPerson?.mobile && (
+                    <div className="flex items-center mt-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      <a href={`tel:${job.contactPerson.mobile}`} className="text-blue-600 hover:text-blue-800 text-sm">{job.contactPerson.mobile}</a>
+                    </div>
+                  )}
+                  {job?.contactPerson?.linkedin && (
+                    <a href={job.contactPerson.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center mt-1 text-blue-600 hover:text-blue-800">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.783-1.75-1.75s.784-1.75 1.75-1.75 1.75.783 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-1.339-.025-3.059-1.868-3.059-1.87 0-2.158 1.46-2.158 2.965v5.698h-3v-11h2.889v1.336h.04c.401-.762 1.383-1.563 2.83-1.563 3.029 0 3.588 1.993 3.588 4.582v6.645z" />
+                      </svg>
+                      <span className="text-sm">LinkedIn</span>
+                    </a>
+                  )}
+                </div>
               </div>
-            
+            </div>
+
           </div>
 
-     
+
         </div>
       </main>
     </div>

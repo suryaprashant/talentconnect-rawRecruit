@@ -313,7 +313,7 @@ function JobManagementApplication() {
                                                     <div className="flex gap-2">
                                                         <button onClick={(e) => { e.stopPropagation(); handleView(jobId); }} className="text-gray-500 hover:text-gray-700 transition-colors" title="View Job"><Eye size={18} /></button>
                                                         <Link
-                                                            to={`/college-dashboard/Pool-campus/${job._id}?isApplied=true`}
+                                                            to={`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`}
                                                             disabled={job.applicationCount === 0}
                                                             className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                                             title="View Job Description"

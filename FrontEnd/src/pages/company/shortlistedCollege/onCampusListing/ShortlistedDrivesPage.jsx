@@ -281,7 +281,7 @@ export default function OnCampusJobManagement() {
                             <Eye size={18} />
                           </button>
                           <Link
-                            to={`/company-dashboard/On-campus/${job._id}?isApplied=true`}
+                            to={`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`}
                             className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-gray-200"
                             title="View Job Description"
                           >

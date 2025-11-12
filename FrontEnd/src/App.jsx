@@ -280,9 +280,9 @@ function AppRoutes() {
       <Route path="/college-edit/*" element={<EditOnboardingFlow />} />
 
       <Route path="OnboardingflowForm" element={<OnboardingFlowForm />} />
-      
-      
-      
+
+
+
 
 
       {/* Student */}
@@ -294,7 +294,7 @@ function AppRoutes() {
 
               {/* Universal Home Route - Renders based on user role */}
               <Route path="/home" element={<UnifiedDashboard />} />
-              
+
               {/* student */}
               <Route path="/profile" element={<Profile />} />
               <Route path="/student-dashboard/Job-listing" element={<JobListings />} />
@@ -494,7 +494,11 @@ function AppRoutes() {
 
               {/* Job Management   */}
               <Route path="/job-management/on-campus-listings/employer" element={<EmployerOnCampusJobManagement />} />
+              <Route path="/company-dashboard/preview/On-campus/:id" element={<JobDetailPage />} />
+
               <Route path="/job-management/pool-campus-listings/employer" element={<EmployerPoolCampusJobManagement />} />
+              <Route path="/company-dashboard/preview/Pool-campus/:id" element={<PoolJobDetailsPage />} />
+
               <Route path="/job-management/Off-campus/employer" element={<EmployerOffCampusJobManagement />} />
               <Route path="/job-management/job-listings/employer" element={<EmployerJobListingJobManagement />} />
               <Route path="/employer/job-management/Internship" element={<EmployerJobListingJobManagement />} />
@@ -510,7 +514,7 @@ function AppRoutes() {
               <Route path="/employee/acceptedJobList" element={<EmployerAcceptedJobList />} />
               <Route path="/employer/accepted/off-campus-listings" element={<EmployerAcceptedOffCampusList />} />
 
-              <Route path="/employer/accepted/internship-listings" element={<AcceptedIntership/>} />
+              <Route path="/employer/accepted/internship-listings" element={<AcceptedIntership />} />
 
 
               {/* shortlisted candidate  */}
@@ -534,10 +538,6 @@ function AppRoutes() {
               <Route path='hiring-channels/pool-campus-hiring/employer' element={<EmployerPoolCampuses />} />
               <Route path='/hiring-channels/off-campus-hiring/employer' element={<EmployerOffCampus />} />
 
-
-
-
-
               {/* College  */}
               <Route path="college-profile" element={<CollegeProfile />} />
 
@@ -558,16 +558,17 @@ function AppRoutes() {
               <Route path='service-request/poolcampus-placement' element={<PoolCampusPlacement />} />
               <Route path='service-request/student-training-programs' element={<StudentTraining />} />
               <Route path='service-request/seminars' element={<Seminar />} />
-               <Route path='/service-request/campus-branding' element={<CampusBranding />} />
+              <Route path='/service-request/campus-branding' element={<CampusBranding />} />
 
               {/* job management  */}
 
               <Route path="/manage-application/campus-placement" element={<JobProvider><JobManagementApplication /> </JobProvider>} />
-              <Route path="/manage-application/campus-placement/:jobId" element={<JobProvider><JobDetail status="Applied"/> </JobProvider>} />
+              <Route path="/manage-application/campus-placement/:jobId" element={<JobProvider><JobDetail status="Applied" /> </JobProvider>} />
+              <Route path="/college-dashboard/preview/On-campus/:id" element={<CollegeDetailsPage />} />
 
               <Route path="/manage-application/PoolCampus-placement" element={<JobProvider><JobManagementApplicationForPool /></JobProvider>} />
               <Route path="/manage-application/PoolCampus-placement/:jobId" element={<JobProvider><JobDetailForPool /> </JobProvider>} />
-
+              <Route path="/college-dashboard/preview/Pool-campus/:id" element={<PoolCampusEmployeeDash />} />
 
               <Route path="/application-status/oncampus" element={<CollegeOncampusApplicationStatus />} />
               <Route path="/application-status/poolcampus" element={<CollegePoolcampusApplicationStatus />} />
@@ -577,7 +578,7 @@ function AppRoutes() {
                   <ApplicationsPage />
                 </ApplicationProvider>
               } />
-              <Route path="/registered/on-campus-opportunities/:jobId" element={<JobProvider><JobDetail status="Shortlisted"/> </JobProvider>}/>
+              <Route path="/registered/on-campus-opportunities/:jobId" element={<JobProvider><JobDetail status="Shortlisted" /> </JobProvider>} />
               {/* <Route path="/registered/on-campus-opportunities/:id" element={
                 <ApplicationProvider>
                   <ApplicationDetailPage />
@@ -618,7 +619,7 @@ function AppRoutes() {
           </Layout>
         }
       />
-{/* ---------------------------> change from muhammad <--------------------------------------- */}
+      {/* ---------------------------> change from muhammad <--------------------------------------- */}
       {/* Admin Routes - Independent from main layout */}
       {/* <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin/signup" element={<AdminSignup />} /> */}
@@ -631,8 +632,8 @@ function AppRoutes() {
         } 
       />
 ---------------------------> change from muhammad <---------------------------------------  */}
-{/* Testing */}
-        {/* Admin routes */}
+      {/* Testing */}
+      {/* Admin routes */}
       <Route path="admin/*" element={<AdminRoutes />} />
 
 

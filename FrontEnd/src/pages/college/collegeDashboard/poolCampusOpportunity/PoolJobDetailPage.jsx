@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useSearchParams } from 'react-router-dom';
+import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { MapPin, Building, Calendar, Globe, Mail, Phone, Linkedin, CheckCircle, Info, Download } from 'lucide-react';
 import { ApplyForPoolCampus, SaveOppurtunity, getPoolCampusJobById } from '@/lib/College_AxiosIntance';
 import toast from 'react-hot-toast';
@@ -23,18 +23,19 @@ const formatDate = (dateString) => {
     }
 };
 
-const handleGoBack = () => {
-    window.history.back();
-  };
-
 const PoolJobDetailsPage = () => {
     const { id } = useParams();
     const [searchParams] = useSearchParams();
     const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+    const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
     const [jobDetails, setJobDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [isSaved, setIsSaved] = useState(false); // State for the save button
+    const [saved, setSaved] = useState(false);
+    const navigate = useNavigate();
+    const handleGoBack = () => {
+        navigate(-1);
+    };
 
     useEffect(() => {
         const fetchJobDetails = async () => {
@@ -73,7 +74,7 @@ const PoolJobDetailsPage = () => {
             const response = await SaveOppurtunity(jobId, jobType);
             if (response.data?.success === true) {
                 toast.success("Saved!");
-                setIsSaved(true); // Update save state on success
+                setSaved(true); // Update save state on success
             }
             else toast.error(response.response?.data?.msg || "Could not save.");
         } catch (error) {
@@ -127,7 +128,7 @@ const PoolJobDetailsPage = () => {
                 <div>
                     <h2 className="text-2xl font-semibold mb-2">Job not found</h2>
                     <p className="text-gray-600 mb-4">The opportunity you're looking for doesn't exist or has been removed.</p>
-                    <button onClick={()=>handleGoBack()} className="text-blue-600 hover:text-blue-800">
+                    <button onClick={() => handleGoBack()} className="text-blue-600 hover:text-blue-800">
                         Back
                     </button>
                 </div>
@@ -138,7 +139,7 @@ const PoolJobDetailsPage = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <button onClick={()=>handleGoBack()} className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
+                <button onClick={() => handleGoBack()} className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
                     </svg>
@@ -190,22 +191,24 @@ const PoolJobDetailsPage = () => {
                                         <p className="text-sm text-gray-600">{jobDetails?.venue || 'Venue Not Specified'}</p>
                                     </div>
 
-                                    {!isApplied && (<div className="flex space-x-2 mt-5">
-                                        <button
-                                            onClick={handleApply}
-                                            className="bg-black text-white px-5 py-2 rounded-md hover:bg-gray-800 transition duration-200">
-                                            Register Now
-                                        </button>
-                                        <button
-                                            onClick={() => handleSave(jobDetails?._id, "Pool-campus")}
-                                            disabled={isSaved}
-                                            className={`inline-flex items-center justify-center px-4 py-2 border ${isSaved ? 'border-gray-400 bg-gray-100 text-gray-500 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-md focus:outline-none`}
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${isSaved ? 'text-blue-600' : 'text-gray-500'}`} viewBox="0 0 20 20" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor">
-                                                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-                                            </svg>
-                                            {isSaved ? 'Saved' : 'Save'}
-                                        </button>
+                                    <div className="flex space-x-2 mt-5">
+                                        {!isApplied && (<>
+                                            <button
+                                                onClick={handleApply}
+                                                className="bg-black text-white px-5 py-2 rounded-md hover:bg-gray-800 transition duration-200">
+                                                Register Now
+                                            </button>
+                                            {!isSaved && (<button
+                                                onClick={() => handleSave(jobDetails?._id, "Pool-campus")}
+                                                disabled={saved}
+                                                className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-400 bg-gray-100 text-gray-500 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-md focus:outline-none`}
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${saved ? 'text-blue-600' : 'text-gray-500'}`} viewBox="0 0 20 20" fill={saved ? 'currentColor' : 'none'} stroke="currentColor">
+                                                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                                                </svg>
+                                                {saved ? 'Saved' : 'Save'}
+                                            </button>)}
+                                        </>)}
                                         <button
                                             onClick={handleShare}
                                             className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none"
@@ -215,7 +218,7 @@ const PoolJobDetailsPage = () => {
                                             </svg>
                                             Share
                                         </button>
-                                    </div>)}
+                                    </div>
                                 </div>
                             </div>
                         </div>
