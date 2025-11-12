@@ -7,11 +7,10 @@ const StudentRefferalJobDetails = () => {
     const { jobId } = useParams();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    
-    // Core logic from StudentRefferalJobDetails
     const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
-
+    const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
     const [jobDetails, setJobDetails] = useState(null);
+    // const [similarJobs, setSimilarJobs] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -143,7 +142,7 @@ const StudentRefferalJobDetails = () => {
                             {/* --- Conditional Button Rendering --- */}
                             {!isApplied ? (
                                 <div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
-                                    <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
+                                    {!isSaved && (<button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>)}
                                     <button onClick={handleApply} className="bg-blue-500 hover:bg-indigo-500 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">Apply</button>
                                 </div>
                             ) : (
@@ -208,7 +207,7 @@ const StudentRefferalJobDetails = () => {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <h3 className="text-lg font-semibold text-slate-800 mb-3">Benefits Offered</h3>
                             <div className="flex flex-wrap gap-2">
                                 {jobDetails.benefits?.length > 0 ? jobDetails.benefits.map((benefit) => (
@@ -243,7 +242,7 @@ const StudentRefferalJobDetails = () => {
                         <Section title="About The Company">
                             {/* Data from original StudentRefferalJobDetails logic */}
                             <p className="text-slate-700 mb-4">{jobDetails.candidatePosted?.experiences?.[0]?.description || 'No company description available.'}</p>
-Services
+                            Services
                             <p className="text-sm text-slate-500">
                                 <span className="font-semibold text-slate-600">Location:</span> {jobDetails.candidatePosted?.locations || 'N/A'}
                             </p>

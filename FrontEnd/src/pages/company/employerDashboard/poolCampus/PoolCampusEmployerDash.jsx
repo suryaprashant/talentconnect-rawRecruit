@@ -8,16 +8,16 @@ import toast from 'react-hot-toast';
 // --- NEW HELPER ---
 // Formats dates but returns 'N/A' if the date is invalid
 const formatDateSafe = (dateString) => {
-  if (!dateString) return 'N/A';
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      return 'N/A';
+    if (!dateString) return 'N/A';
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+            return 'N/A';
+        }
+        return format(date, 'MMM d, yyyy');
+    } catch (err) {
+        return 'N/A';
     }
-    return format(date, 'MMM d, yyyy');
-  } catch (err) {
-    return 'N/A';
-  }
 };
 // --- END NEW HELPER ---
 
@@ -26,6 +26,7 @@ const PoolCampusEmployeeDash = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+    const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
     const [posting, setPosting] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -90,7 +91,7 @@ const PoolCampusEmployeeDash = () => {
                     onClick={() => navigate('/company-dashboard/Pool-campus')}
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
-                    Back to Listings
+                    Back
                 </button>
             </div>
         );
@@ -147,12 +148,12 @@ const PoolCampusEmployeeDash = () => {
                             >
                                 Accept Invitation
                             </button>
-                            <button
+                            {!isSaved && (<button
                                 className="border border-gray-300 text-gray-600 px-4 py-2 rounded text-sm"
                                 onClick={() => handleSave(id)}
                             >
                                 Save
-                            </button>
+                            </button>)}
                         </div>)}
                     </div>
                 </div>
