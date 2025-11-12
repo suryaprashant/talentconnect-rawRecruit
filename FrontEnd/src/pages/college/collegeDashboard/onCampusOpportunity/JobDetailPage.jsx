@@ -171,20 +171,22 @@ const JobDetailPage = () => {
               </div>
             </div>
 
-            {!isApplied && (<div className="flex space-x-2 mt-4">
-              <button className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none" onClick={handleApply}>
-                Register Now
-              </button>
-              {!isSaved && (<button
-                onClick={() => handleSave(job?._id, job?.jobType)}
-                disabled={saved}
-                className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-md focus:outline-none`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-1 ${saved ? 'text-blue-600' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={saved ? 'currentColor' : 'none'} stroke="currentColor">
-                  <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-                </svg>
-                {saved ? 'Saved' : 'Save'}
-              </button>)}
+            <div className="flex space-x-2 mt-4">
+              {!isApplied && (<>
+                <button className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none" onClick={handleApply}>
+                  Register Now
+                </button>
+                {!isSaved && (<button
+                  onClick={() => handleSave(job?._id, job?.jobType)}
+                  disabled={saved}
+                  className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-md focus:outline-none`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-1 ${saved ? 'text-blue-600' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={saved ? 'currentColor' : 'none'} stroke="currentColor">
+                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                  </svg>
+                  {saved ? 'Saved' : 'Save'}
+                </button>)}
+              </>)}
               <button
                 onClick={handleShare}
                 className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none"
@@ -194,7 +196,7 @@ const JobDetailPage = () => {
                 </svg>
                 Share
               </button>
-            </div>)}
+            </div>
           </div>
 
           {/* About Section */}

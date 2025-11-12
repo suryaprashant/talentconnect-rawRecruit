@@ -23,10 +23,6 @@ const formatDate = (dateString) => {
     }
 };
 
-const handleGoBack = () => {
-    Navigate(-1);
-};
-
 const PoolJobDetailsPage = () => {
     const { id } = useParams();
     const [searchParams] = useSearchParams();
@@ -37,6 +33,9 @@ const PoolJobDetailsPage = () => {
     const [error, setError] = useState(null);
     const [saved, setSaved] = useState(false);
     const navigate = useNavigate();
+    const handleGoBack = () => {
+        navigate(-1);
+    };
 
     useEffect(() => {
         const fetchJobDetails = async () => {
