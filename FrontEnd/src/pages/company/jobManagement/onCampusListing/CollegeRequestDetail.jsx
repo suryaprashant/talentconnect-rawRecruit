@@ -117,12 +117,12 @@ const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShor
           <DetailRow icon={Target} label="Role(s)" value={jobRoles} />
           <DetailRow icon={Briefcase} label="Looking For" value={lookingFor} />
           <DetailRow icon={Briefcase} label="Employment Type" value={employmentType} />
-          <DetailRow icon={MapPin} label="Locations" value={preferredLocations} />
+          <DetailRow icon={MapPin} label="Work Locations" value={preferredLocations} />
           <DetailRow icon={DollarSign} label="Salary (LPA)" value={minimumSalary || 'Not Specified'} />
           <DetailRow icon={Users} label="Minimum Students" value={minimumStudents} />
           <DetailRow icon={Calendar} label="Drive Period" value={`${safeFormatDate(startDate)} to ${safeFormatDate(endDate)}`} />
-          <DetailRow icon={ClipboardList} label="Rounds" value={rounds} />
-          <DetailRow icon={ClipboardList} label="Selection Process" value={selectionProcess} />
+          {/* <DetailRow icon={ClipboardList} label="Rounds" value={rounds} />
+          <DetailRow icon={ClipboardList} label="Selection Process" value={selectionProcess} /> */}
         </div>
       </div>
 

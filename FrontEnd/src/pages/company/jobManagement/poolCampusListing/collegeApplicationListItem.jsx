@@ -47,10 +47,7 @@ const CollegeApplicationDetailView = ({ collegeApplication, onClose, onAccept, o
   const profileImage = collegeApplication.profileImage;
   const appliedAt = formatDate(collegeApplication.appliedAt);
 
-  // **** IMPORTANT: The following fields are NOT available in the current `fetchCollegesForJob` response.
-  // They will always show 'Not Specified' or empty lists based on your current backend structure.
-  // To populate these, your `/api/company/jobmanagement/pool-campus-drives/{jobId}/colleges` API
-  // would need to return this information for each applied college.
+
   const collegeRank = 'Not Specified'; // Placeholder as per backend data structure
   const placementRate = 'Not Specified'; // Placeholder as per backend data structure
   const highestPackage = 'Not Specified'; // Placeholder as per backend data structure

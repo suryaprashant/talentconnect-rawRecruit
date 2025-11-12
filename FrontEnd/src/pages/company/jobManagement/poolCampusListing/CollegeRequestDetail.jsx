@@ -4,24 +4,39 @@ import { format, isValid } from 'date-fns';
 
 const DetailRow = ({ icon: Icon, label, value }) => {
     if (!value || (Array.isArray(value) && value.length === 0)) return null;
+    
+    let displayValue = value;
+    if (Array.isArray(value)) {
+        displayValue = value.join(', ');
+    } else if (typeof value === 'object') {
+        displayValue = JSON.stringify(value);
+    }
+    
     return (
         <div className="flex items-start">
             <Icon className="w-5 h-5 mr-3 mt-1 text-gray-500 flex-shrink-0" />
             <div>
                 <p className="font-semibold text-gray-800">{label}</p>
-                <p className="text-gray-600">{Array.isArray(value) ? value.join(', ') : value}</p>
+                <p className="text-gray-600">{displayValue}</p>
             </div>
         </div>
     );
 };
 
-const CollegeRequestDetail = ({ collegeApplication, onAccept, onShortlist, onReject }) => {
+const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onShortlist, onReject }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+
+   
 
     const safeFormatDate = (dateString, formatStr = 'MMM d, yyyy') => {
         if (!dateString) return 'Not Specified';
-        const date = new Date(dateString);
-        return isValid(date) ? format(date, formatStr) : 'Invalid Date';
+        try {
+            const date = new Date(dateString);
+            return isValid(date) ? format(date, formatStr) : 'Invalid Date';
+        } catch (error) {
+            return 'Invalid Date';
+        }
     };
 
     const handleAction = async (actionCallback) => {
@@ -29,49 +44,68 @@ const CollegeRequestDetail = ({ collegeApplication, onAccept, onShortlist, onRej
         try {
             await actionCallback();
         } catch (error) {
-            console.log("error: ", error);
-        }
-        finally {
+            console.log("Action error: ", error);
+        } finally {
             setIsSubmitting(false);
         }
     };
 
-    const {
-        // College Application Data
-        applicationId,
-        appliedAt = collegeApplication.createdAt,
-        currentStatus = collegeApplication.currentStatus,
+    // Extract college data
+    const applicationId = collegeApplication?._id;
+    const appliedAt = collegeApplication?.createdAt || collegeApplication?.appliedAt;
+    const currentStatus = collegeApplication?.currentStatus || 'Applied';
 
-        collegeName = collegeApplication?.applicant.collegeUniversityDetails.collegeName,
-        city = collegeApplication?.applicant.collegeUniversityDetails.city,
-        state = collegeApplication?.applicant.collegeUniversityDetails.state,
-        country = collegeApplication?.applicant.collegeUniversityDetails.country,
-        pincode = collegeApplication?.applicant.collegeUniversityDetails.pincode,
-        profileImage = collegeApplication.applicant?.profileImage,
-        collegeProfilePdf = null,
-        collegeDescriptionPdf = null,
-        collegeWebsite = collegeApplication?.applicant?.profileAchievements.collegeWebsite,
-        linkedinProfile = collegeApplication?.applicant?.profileAchievements.linkedInProfile,
-        placementRate = 'Not Specified',
-        highestPackage = 'Not Specified',
-        averagePackage = 'Not Specified',
+    // College Details
+    const collegeDetails = collegeApplication?.applicant?.collegeUniversityDetails || {};
+    const collegeName = collegeDetails.collegeName || 'Not Specified';
+    const city = collegeDetails.city || 'Not Specified';
+    const state = collegeDetails.state || 'Not Specified';
+    const profileImage = collegeApplication?.applicant?.profileImage;
 
-        // Drive (CampusRegistration) Data - now merged in!
-        lookingFor = 'Not Specified',
-        employmentType = 'Not Specified',
-        preferredLocations = [],
-        minimumSalary = 'Not Specified',
-        startDate = '',
-        endDate = '',
-        rounds = [],
-        selectionProcess = [],
-        contactPerson = collegeApplication?.applicant?.placementCoordinatorDetails.coordinatorName,
-        contactDesignation = collegeApplication?.applicant?.placementCoordinatorDetails.designation,
-        email = collegeApplication?.applicant?.placementCoordinatorDetails.officialEmail,
-        mobile = collegeApplication?.applicant?.placementCoordinatorDetails.officialMobile,
-        linkedin = collegeApplication?.applicant?.placementCoordinatorDetails.linkedInUrl,
-        minimumStudents = 'Not Specified',
-    } = collegeApplication || {};
+    // Placement Coordinator Details
+    const coordinatorDetails = collegeApplication?.applicant?.placementCoordinatorDetails || {};
+    const contactPerson = coordinatorDetails.coordinatorName || 'Not Specified';
+    const contactDesignation = coordinatorDetails.designation || 'Not Specified';
+    const email = coordinatorDetails.officialEmail || 'Not Specified';
+    const mobile = coordinatorDetails.officialMobile || 'Not Specified';
+    const linkedin = coordinatorDetails.linkedInUrl;
+
+    // Profile Achievements
+    const achievements = collegeApplication?.applicant?.profileAchievements || {};
+    const collegeWebsite = achievements.collegeWebsite;
+    const linkedinProfile = achievements.linkedInProfile;
+
+    // DRIVE DETAILS - Now coming from the separate prop
+    const lookingFor = Array.isArray(driveDetails?.jobRoles) 
+        ? driveDetails.jobRoles.join(', ') 
+        : driveDetails?.jobRoles || driveDetails?.lookingFor || 'Not Specified';
+    
+    const employmentType = Array.isArray(driveDetails?.employmentType) 
+        ? driveDetails.employmentType.join(', ') 
+        : driveDetails?.employmentType || 'Not Specified';
+    
+    const workLocations = driveDetails?.workLocation || driveDetails?.location || [];
+    const startDate = driveDetails?.startDate;
+    const endDate = driveDetails?.endDate;
+    const rounds = driveDetails?.rounds || [];
+    const selectionProcess = Array.isArray(driveDetails?.selectionProcess) 
+        ? driveDetails.selectionProcess 
+        : (driveDetails?.selectionProcess ? [driveDetails.selectionProcess] : []);
+    
+    const minimumStudents = driveDetails?.minimumStudents || 'Not Specified';
+    const packageDetails = driveDetails?.packageDetails || {};
+    const skills = driveDetails?.skills || [];
+    const workMode = Array.isArray(driveDetails?.workMode) 
+        ? driveDetails.workMode.join(', ') 
+        : driveDetails?.workMode || 'Not Specified';
+    
+    const eligibilityCriteria = driveDetails?.eligibilityCriteria;
+    const description = driveDetails?.description;
+
+    // College statistics (you might want to get these from college data)
+    const placementRate = 'Not Specified';
+    const highestPackage = 'Not Specified';
+    const averagePackage = 'Not Specified';
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6 border border-gray-200">
@@ -92,9 +126,18 @@ const CollegeRequestDetail = ({ collegeApplication, onAccept, onShortlist, onRej
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-                    <div className="text-center"><div className="font-bold text-lg">{placementRate}{placementRate !== 'Not Specified' && '%'}</div><div className="text-sm text-gray-600">Placement Rate</div></div>
-                    <div className="text-center"><div className="font-bold text-lg">{highestPackage}{highestPackage !== 'Not Specified' && ' LPA'}</div><div className="text-sm text-gray-600">Highest Package</div></div>
-                    <div className="text-center"><div className="font-bold text-lg">{averagePackage}{averagePackage !== 'Not Specified' && ' LPA'}</div><div className="text-sm text-gray-600">Average Package</div></div>
+                    <div className="text-center">
+                        <div className="font-bold text-lg">{placementRate}{placementRate !== 'Not Specified' && '%'}</div>
+                        <div className="text-sm text-gray-600">Placement Rate</div>
+                    </div>
+                    <div className="text-center">
+                        <div className="font-bold text-lg">{highestPackage}{highestPackage !== 'Not Specified' && ' LPA'}</div>
+                        <div className="text-sm text-gray-600">Highest Package</div>
+                    </div>
+                    <div className="text-center">
+                        <div className="font-bold text-lg">{averagePackage}{averagePackage !== 'Not Specified' && ' LPA'}</div>
+                        <div className="text-sm text-gray-600">Average Package</div>
+                    </div>
                 </div>
             </div>
 
@@ -102,20 +145,46 @@ const CollegeRequestDetail = ({ collegeApplication, onAccept, onShortlist, onRej
             <div className="mb-6">
                 <h3 className="text-lg font-bold mb-4 text-gray-800">Drive Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                    <DetailRow icon={Target} label="Role" value={collegeApplication?.lookingFor} />
+                    <DetailRow icon={Target} label="Job Roles" value={lookingFor} />
                     <DetailRow icon={Briefcase} label="Employment Type" value={employmentType} />
-                    <DetailRow icon={MapPin} label="Locations" value={preferredLocations} />
-                    <DetailRow icon={DollarSign} label="Minimum Salary" value={minimumSalary} />
+                    <DetailRow icon={MapPin} label="Work Locations" value={workLocations} />
+                    <DetailRow icon={Users} label="Work Mode" value={workMode} />
                     <DetailRow icon={Users} label="Minimum Students" value={minimumStudents} />
                     <DetailRow icon={Calendar} label="Drive Period" value={`${safeFormatDate(startDate)} to ${safeFormatDate(endDate)}`} />
-                    <DetailRow icon={ClipboardList} label="Rounds" value={rounds} />
-                    <DetailRow icon={ClipboardList} label="Selection Process" value={selectionProcess} />
+                    
+                    
+                    
                 </div>
-            </div>
 
-            {/* Proposed date */}
-            <div>
+                {/* Package Details */}
+                {(packageDetails.totalCTC || packageDetails.fixedPay) && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                        <h4 className="font-semibold text-gray-800 mb-2">Package Details</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {packageDetails.totalCTC && (
+                                <div>
+                                    <span className="font-medium">Total CTC: </span>
+                                    <span>{packageDetails.currency} {packageDetails.totalCTC}</span>
+                                </div>
+                            )}
+                            {packageDetails.fixedPay && (
+                                <div>
+                                    <span className="font-medium">Fixed Pay: </span>
+                                    <span>{packageDetails.currency} {packageDetails.fixedPay}</span>
+                                </div>
+                            )}
+                            {packageDetails.joiningBonus && (
+                                <div>
+                                    <span className="font-medium">Variable Pay: </span>
+                                    <span>{packageDetails.currency} {packageDetails.joiningBonus}</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
 
+              
+              
             </div>
 
             {/* Coordinator and Application Status */}
@@ -123,17 +192,51 @@ const CollegeRequestDetail = ({ collegeApplication, onAccept, onShortlist, onRej
                 <div>
                     <h3 className="text-lg font-bold mb-4 text-gray-800">Drive Coordinator</h3>
                     <div className="space-y-3 text-sm">
-                        <div className="flex items-center"><User size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>{contactPerson} ({contactDesignation})</span></div>
-                        <div className="flex items-center"><Mail size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>{email}</span></div>
-                        <div className="flex items-center"><Phone size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>{mobile}</span></div>
-                        {linkedin && <a href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><Link size={16} className="mr-2 flex-shrink-0" /><span>Coordinator LinkedIn</span></a>}
+                        <div className="flex items-center">
+                            <User size={16} className="mr-2 text-gray-500 flex-shrink-0" />
+                            <span>{contactPerson} ({contactDesignation})</span>
+                        </div>
+                        <div className="flex items-center">
+                            <Mail size={16} className="mr-2 text-gray-500 flex-shrink-0" />
+                            <span>{email}</span>
+                        </div>
+                        <div className="flex items-center">
+                            <Phone size={16} className="mr-2 text-gray-500 flex-shrink-0" />
+                            <span>{mobile}</span>
+                        </div>
+                        {linkedin && (
+                            <a 
+                                href={linkedin.startsWith('http') ? linkedin : `https://${linkedin}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="flex items-center text-blue-600 hover:underline"
+                            >
+                                <Link size={16} className="mr-2 flex-shrink-0" />
+                                <span>Coordinator LinkedIn</span>
+                            </a>
+                        )}
                     </div>
                 </div>
                 <div>
-                    <h3 className="text-lg font-bold mb-4 text-gray-800">College Application Status</h3>
+                    <h3 className="text-lg font-bold mb-4 text-gray-800">Application Status</h3>
                     <div className="space-y-3 text-sm">
-                        <div className="flex items-center"><Calendar size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>Applied on: {safeFormatDate(appliedAt)}</span></div>
-                        <div className="flex items-center"><FileText size={16} className="mr-2 text-gray-500 flex-shrink-0" /><span>Current Status: <span className="font-semibold">{currentStatus}</span></span></div>
+                        <div className="flex items-center">
+                            <Calendar size={16} className="mr-2 text-gray-500 flex-shrink-0" />
+                            <span>Applied on: {safeFormatDate(appliedAt)}</span>
+                        </div>
+                        <div className="flex items-center">
+                            <FileText size={16} className="mr-2 text-gray-500 flex-shrink-0" />
+                            <span>
+                                Current Status: <span className={`font-semibold ${
+                                    currentStatus === 'Accepted' ? 'text-green-600' : 
+                                    currentStatus === 'Rejected' ? 'text-red-600' : 
+                                    currentStatus === 'Shortlisted' ? 'text-yellow-600' : 
+                                    'text-blue-600'
+                                }`}>
+                                    {currentStatus}
+                                </span>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -142,23 +245,67 @@ const CollegeRequestDetail = ({ collegeApplication, onAccept, onShortlist, onRej
             <div className="mb-6">
                 <h3 className="text-lg font-bold mb-4 text-gray-800">College Resources</h3>
                 <div className="flex flex-wrap gap-4 text-sm">
-                    {collegeWebsite && <a href={collegeWebsite.startsWith('http') ? collegeWebsite : `https://${collegeWebsite}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><Link size={16} className="mr-2" />College Website <ArrowUpRight size={16} className="ml-1" /></a>}
-                    {linkedinProfile && <a href={linkedinProfile.startsWith('http') ? linkedinProfile : `https://${linkedinProfile}`} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><Link size={16} className="mr-2" />College LinkedIn <ArrowUpRight size={16} className="ml-1" /></a>}
-                    {collegeProfilePdf && <a href={collegeProfilePdf} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><FileText size={16} className="mr-2" />Profile PDF <ArrowUpRight size={16} className="ml-1" /></a>}
-                    {collegeDescriptionPdf && <a href={collegeDescriptionPdf} target="_blank" rel="noopener noreferrer" className="flex items-center text-blue-600 hover:underline"><FileText size={16} className="mr-2" />Description PDF <ArrowUpRight size={16} className="ml-1" /></a>}
+                    {collegeWebsite && (
+                        <a 
+                            href={collegeWebsite.startsWith('http') ? collegeWebsite : `https://${collegeWebsite}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="flex items-center text-blue-600 hover:underline"
+                        >
+                            <Link size={16} className="mr-2" />
+                            College Website 
+                            <ArrowUpRight size={16} className="ml-1" />
+                        </a>
+                    )}
+                    {linkedinProfile && (
+                        <a 
+                            href={linkedinProfile.startsWith('http') ? linkedinProfile : `https://${linkedinProfile}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="flex items-center text-blue-600 hover:underline"
+                        >
+                            <Link size={16} className="mr-2" />
+                            College LinkedIn 
+                            <ArrowUpRight size={16} className="ml-1" />
+                        </a>
+                    )}
                 </div>
             </div>
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
-                <button onClick={() => handleAction(() => onAccept(applicationId))} disabled={isSubmitting} className="flex-1 justify-center bg-white text-green-500 py-2 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200">
-                    {isSubmitting ? 'Processing...' : 'Accept Application'}
+                <button 
+                    onClick={() => handleAction(() => onAccept(applicationId))} 
+                    disabled={isSubmitting || currentStatus === 'Accepted'}
+                    className={`flex-1 justify-center py-2 font-medium rounded-md transition-colors duration-200 ${
+                        currentStatus === 'Accepted' 
+                            ? 'bg-green-100 text-green-700 cursor-not-allowed' 
+                            : 'bg-white text-green-500 hover:bg-gray-100 border border-green-500'
+                    } disabled:opacity-50`}
+                >
+                    {currentStatus === 'Accepted' ? 'Already Accepted' : (isSubmitting ? 'Processing...' : 'Accept Application')}
                 </button>
-                <button onClick={() => handleAction(() => onShortlist(applicationId))} disabled={isSubmitting} className="flex-1 justify-center bg-white border border-gray-300 text-yellow-500 py-2 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200">
-                    {isSubmitting ? 'Processing...' : 'Shortlist Application'}
+                <button 
+                    onClick={() => handleAction(() => onShortlist(applicationId))} 
+                    disabled={isSubmitting || currentStatus === 'Shortlisted'}
+                    className={`flex-1 justify-center py-2 font-medium rounded-md transition-colors duration-200 ${
+                        currentStatus === 'Shortlisted'
+                            ? 'bg-yellow-100 text-yellow-700 cursor-not-allowed'
+                            : 'bg-white border border-gray-300 text-yellow-500 hover:bg-gray-100'
+                    } disabled:opacity-50`}
+                >
+                    {currentStatus === 'Shortlisted' ? 'Already Shortlisted' : (isSubmitting ? 'Processing...' : 'Shortlist Application')}
                 </button>
-                <button onClick={() => handleAction(() => onReject(applicationId))} disabled={isSubmitting} className="flex-1 justify-center bg-white border border-gray-300 text-red-500 py-2 font-medium rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200">
-                    {isSubmitting ? 'Processing...' : 'Reject Application'}
+                <button 
+                    onClick={() => handleAction(() => onReject(applicationId))} 
+                    disabled={isSubmitting || currentStatus === 'Rejected'}
+                    className={`flex-1 justify-center py-2 font-medium rounded-md transition-colors duration-200 ${
+                        currentStatus === 'Rejected'
+                            ? 'bg-red-100 text-red-700 cursor-not-allowed'
+                            : 'bg-white border border-gray-300 text-red-500 hover:bg-gray-100'
+                    } disabled:opacity-50`}
+                >
+                    {currentStatus === 'Rejected' ? 'Already Rejected' : (isSubmitting ? 'Processing...' : 'Reject Application')}
                 </button>
             </div>
         </div>
