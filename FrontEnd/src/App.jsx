@@ -494,7 +494,11 @@ function AppRoutes() {
 
               {/* Job Management   */}
               <Route path="/job-management/on-campus-listings/employer" element={<EmployerOnCampusJobManagement />} />
+              <Route path="/company-dashboard/preview/On-campus/:id" element={<JobDetailPage />} />
+
               <Route path="/job-management/pool-campus-listings/employer" element={<EmployerPoolCampusJobManagement />} />
+              <Route path="/company-dashboard/preview/Pool-campus/:id" element={<PoolJobDetailsPage />} />
+
               <Route path="/job-management/Off-campus/employer" element={<EmployerOffCampusJobManagement />} />
               <Route path="/job-management/job-listings/employer" element={<EmployerJobListingJobManagement />} />
               <Route path="/employer/job-management/Internship" element={<EmployerJobListingJobManagement />} />

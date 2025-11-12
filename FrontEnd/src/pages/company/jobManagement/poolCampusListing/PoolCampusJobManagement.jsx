@@ -285,7 +285,7 @@ export default function PoolCampusJobManagement() {
                             <Eye size={18} />
                           </button>
                           <Link
-                            to={`/company-dashboard/Pool-campus/${job._id}?isApplied=true`}
+                            to={`/company-dashboard/preview/Pool-campus/${job._id}?isApplied=true`}
                             className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-gray-200"
                             title="View Job Description"
                           >
