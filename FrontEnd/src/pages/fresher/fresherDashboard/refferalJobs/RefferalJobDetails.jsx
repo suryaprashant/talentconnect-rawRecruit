@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+
+import JobCard from '@/components/student/studentDashboard/intershipOpportunity/JobCard';
 import { ApplyForReferral, getReferralJobById, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 
@@ -7,9 +9,12 @@ const RefferalJobDetails = () => {
     const { jobId } = useParams();
     const navigate = useNavigate();
     const [jobDetails, setJobDetails] = useState(null);
-    // const [similarJobs, setSimilarJobs] = useState([]); // Kept from original, though unused
+    const [similarJobs, setSimilarJobs] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchParams] = useSearchParams();
+    const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+    const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
 
     const loadJobDetails = async () => {
         try {
@@ -54,16 +59,18 @@ const RefferalJobDetails = () => {
         }
     };
 
-    // --- Loading State (from FJobDetails) ---
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-slate-50">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
+            <div className="flex justify-center items-center h-screen">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
             </div>
         );
     }
 
-    // --- Error State (from FJobDetails, with navigation from original) ---
+    const handleGoBack = () => {
+        window.history.back();
+    };
+
     if (error || !jobDetails) {
         return (
             <div className="flex justify-center items-center min-h-screen bg-slate-50 p-4 text-center">
@@ -75,7 +82,7 @@ const RefferalJobDetails = () => {
                     <p className="mt-2 text-slate-600">We couldn't retrieve the details for this referral job posting.</p>
                     <button
                         className="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg"
-                        onClick={() => navigate('/fresher-dashboard/Referral')} // <-- Original navigation
+                        onClick={() => handleGoBack()}
                     >
                         Back to Referral Jobs
                     </button>
@@ -91,14 +98,21 @@ const RefferalJobDetails = () => {
             <div className="text-slate-700 leading-relaxed space-y-4">
                 {children}
             </div>
-        </section>
-    );
-
-    const InfoPill = ({ icon, text }) => (
-        <div className="flex items-center text-slate-500">
-            {icon}
-            <span className="ml-1.5">{text}</span>
-        </div>
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                <button
+                    onClick={handleSave}
+                    className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded shadow"
+                >
+                    Save
+                </button>
+                <button
+                    onClick={handleApply}
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded shadow"
+                >
+                    Apply
+                </button>
+            </div>
+        </section >
     );
 
     const SnapshotListItem = ({ icon, label, value }) => (
@@ -111,7 +125,6 @@ const RefferalJobDetails = () => {
         </div>
     );
 
-    // --- Merged JSX ---
     return (
         <div className="bg-slate-50 min-h-screen font-sans p-4 sm:p-6 lg:p-8">
             <div className="container mx-auto max-w-5xl">
@@ -195,7 +208,7 @@ const RefferalJobDetails = () => {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <h3 className="text-lg font-semibold text-slate-800 mb-3">Benefits Offered</h3>
                             <div className="flex flex-wrap gap-2">
                                 {jobDetails.benefits?.length > 0 ? jobDetails.benefits.map((benefit) => (

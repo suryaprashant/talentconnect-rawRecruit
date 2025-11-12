@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate,useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApplyForOppurtunity, getJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 // ADDED: Imported Navigation for Drive Venue
 import { MapPin, ArrowLeft, Building2, Users, Navigation } from 'lucide-react';
@@ -10,6 +10,7 @@ function OffCampusJobDetail() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+  const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [jobDetail, setJobDetail] = useState(null);
@@ -35,7 +36,7 @@ function OffCampusJobDetail() {
   }, [jobId]);
 
   const handleBackToList = () => {
-    navigate('/student-dashboard/Off-campus');
+    window.history.back();
   };
 
   const handleApply = async () => {
@@ -151,7 +152,7 @@ function OffCampusJobDetail() {
           </button>
           {!isApplied && (<>
             <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
-            <button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800" onClick={handleApply}>Apply</button>
+            {!isSaved && (<button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800" onClick={handleApply}>Apply</button>)}
           </>)}
         </div>
       </div>

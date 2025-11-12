@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 //  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
 // import JobCard from '@/components/student/studentDashboard/jobListing/JobCard';
 import { ApplyForJobListingOppurtunity, getJobLisingJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
@@ -11,6 +11,9 @@ const FJobDetails = () => {
     //   const [similarJobs, setSimilarJobs] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchParams] = useSearchParams();
+    const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+    const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
 
     const loadJobDetails = async () => {
         try {
@@ -127,10 +130,10 @@ const FJobDetails = () => {
                                     <InfoPill icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" /></svg>} text={`${jobDetails.yearsOfExperience} years experience`} />
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
-                                <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
+                            {!isApplied && (<div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
+                                {!isSaved && (<button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>)}
                                 <button onClick={handleApply} className="bg-blue-500 hover:bg-indigo-500 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">Apply</button>
-                            </div>
+                            </div>)}
                         </header>
 
                         <Section title="Job Description">
@@ -155,7 +158,7 @@ const FJobDetails = () => {
                             </div>
                         </Section>
 
-                         <Section title="Compensation & Benefits">
+                        <Section title="Compensation & Benefits">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
                                     <div className="text-sm font-medium text-slate-500">Total CTC</div>
@@ -182,7 +185,7 @@ const FJobDetails = () => {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <h3 className="text-lg font-semibold text-slate-800 mb-3">Benefits Offered</h3>
                             <div className="flex flex-wrap gap-2">
                                 {jobDetails.benefits?.length > 0 ? jobDetails.benefits.map((benefit) => (

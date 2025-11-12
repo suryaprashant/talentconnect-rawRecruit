@@ -8,11 +8,12 @@ import toast from 'react-hot-toast';
 function OffCampusJobDetail() {
   const { jobId } = useParams();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [jobDetail, setJobDetail] = useState(null);
+  const [searchParams] = useSearchParams();
+  const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+  const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
 
   const loadJobDetails = async () => {
     try {
@@ -35,18 +36,7 @@ function OffCampusJobDetail() {
   }, [jobId]);
 
   const handleBackToList = () => {
-    navigate('/student-dashboard/Off-campus');
-  };
-
-  const handleApply = async () => {
-    try {
-      const response = await ApplyForOppurtunity(jobId);
-      if (response?.data?.success === true) toast.success('Application submitted!');
-      else toast.error(response.response.data?.msg);
-    } catch (err) {
-      // console.error('Error applying for job:', err);
-      toast.error('Something went wrong!');
-    }
+    window.history.back();
   };
 
   const handleSave = async () => {
@@ -149,10 +139,10 @@ function OffCampusJobDetail() {
           <button onClick={handleBackToList} className="p-2 border border-gray-300 rounded hover:bg-gray-100">
             <ArrowLeft className="w-5 h-5" />
           </button>
-          {!isApplied && (<>
-            <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
-            <button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800" onClick={handleApply}>Apply</button>
-          </>)}
+          {!isApplied && (<div>
+            {!isSaved && (<button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>)}
+            <button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800" onClick={() => handleApply()}>Apply</button></div>
+          )}
         </div>
       </div>
 
