@@ -6,6 +6,7 @@ export default function CollegeDetails({ formData, updateFormData, nextStep, pre
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
+    const [indianCities, setIndianCities] = useState([]);
     const [isRegisteringNewCollege, setIsRegisteringNewCollege] = useState(false);
 
     const [existingColleges, setExistingColleges] = useState([]);
@@ -14,6 +15,12 @@ export default function CollegeDetails({ formData, updateFormData, nextStep, pre
 
     useEffect(() => {
         setCountries(Country.getAllCountries());
+        
+        // Load all Indian cities for college location
+        const citiesOfIndia = City.getCitiesOfCountry('IN')
+            ?.map(city => city.name)
+            ?.sort((a, b) => a.localeCompare(b)) || [];
+        setIndianCities(citiesOfIndia);
     }, []);
 
     useEffect(() => {
@@ -86,10 +93,6 @@ export default function CollegeDetails({ formData, updateFormData, nextStep, pre
 
     const safeFormData = formData || {};
 
-    const collegeLocations = [
-        "Urban", "Suburban", "Rural", "Metropolitan", "Small Town", "Campus"
-    ];
-
     return (
         <div className="fixed inset-0 bg-gray-50 overflow-y-auto">
             <div className="flex items-center justify-center min-h-full p-4">
@@ -152,6 +155,8 @@ export default function CollegeDetails({ formData, updateFormData, nextStep, pre
                                 </div>
                             )}
                         </div>
+                        
+                        {/* College Location with Indian Cities */}
                         <div>
                             <label className="block font-medium mb-1">College Location *</label>
                             <select
@@ -162,13 +167,14 @@ export default function CollegeDetails({ formData, updateFormData, nextStep, pre
                                 required
                             >
                                 <option value="">Select College Location</option>
-                                {collegeLocations.map((location, index) => (
-                                    <option key={index} value={location}>
-                                        {location}
+                                {indianCities.map((city, index) => (
+                                    <option key={index} value={city}>
+                                        {city}
                                     </option>
                                 ))}
                             </select>
                         </div>
+
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block font-medium mb-1">Country</label>

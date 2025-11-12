@@ -245,7 +245,7 @@ const CollegeDetailPage = () => {
 
           {/* --- NEW SECTION: Proposed Schedule --- */}
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Proposed Schedule</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Tentative Dates to held On-Campus</h2>
             <div className="grid md:grid-cols-3 gap-x-8 gap-y-4">
               <div><p className="text-sm text-gray-500">Proposed Start Date</p><p className="font-medium text-gray-800">{formatDateSafe(posting.proposedSchedule?.startDate)}</p></div>
               <div><p className="text-sm text-gray-500">Proposed End Date</p><p className="font-medium text-gray-800">{formatDateSafe(posting.proposedSchedule?.endDate)}</p></div>
@@ -266,7 +266,7 @@ const CollegeDetailPage = () => {
           </div>
 
           {/* --- Eligibility Criteria Section (UPDATED) --- */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
+          {/* <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Eligibility Criteria Proposed by College</h2>
             <div className="space-y-4">
               <div>
@@ -290,11 +290,11 @@ const CollegeDetailPage = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
-          {/* --- UPDATED: Hiring Round Details (Table Format) --- */}
+         
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Hiring Round Details</h2>
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">College Student Details</h2>
             <div className="overflow-x-auto">
               {posting.roundDetails?.length > 0 ? (
                 <table className="min-w-full divide-y divide-gray-200">
@@ -318,7 +318,7 @@ const CollegeDetailPage = () => {
                   </tbody>
                 </table>
               ) : (
-                // Fallback display if roundDetails doesn't exist but we have studentStreams and numberOfStudent
+        
                 posting.studentStreams?.length > 0 && posting.numberOfStudent?.length > 0 ? (
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">

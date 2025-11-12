@@ -356,7 +356,7 @@ const PoolJobDetailsPage = () => {
                                 </div>
                             </div>
                             <div className="bg-gray-50 p-4 rounded-lg">
-                                <div className="text-sm font-medium text-gray-500">Joining Bonus</div>
+                                <div className="text-sm font-medium text-gray-500">Variable Pay</div>
                                 <div className="text-xl font-bold text-gray-900">
                                     {jobDetails?.packageDetails?.joiningBonus
                                         ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.joiningBonus.toLocaleString()}`

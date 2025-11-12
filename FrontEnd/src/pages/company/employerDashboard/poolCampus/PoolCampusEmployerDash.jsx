@@ -213,7 +213,7 @@ const PoolCampusEmployeeDash = () => {
 
                     {/* --- NEW SECTION: Proposed Schedule --- */}
                     <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Proposed Schedule</h2>
+                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Tentative Date to held Pool-Campus</h2>
                         <div className="grid md:grid-cols-3 gap-x-8 gap-y-4">
                             <div><p className="text-sm text-gray-500">Proposed Start Date</p><p className="font-medium text-gray-800">{formatDateSafe(posting.proposedSchedule?.startDate)}</p></div>
                             <div><p className="text-sm text-gray-500">Proposed End Date</p><p className="font-medium text-gray-800">{formatDateSafe(posting.proposedSchedule?.endDate)}</p></div>
@@ -233,36 +233,11 @@ const PoolCampusEmployeeDash = () => {
                         </div>
                     </div>
 
-                    {/* --- Eligibility Criteria Section (UPDATED) --- */}
-                    <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Eligibility Criteria Proposed by College</h2>
-                        <div className="space-y-4">
-                            <div>
-                                <h3 className="text-base font-semibold text-gray-700 mb-2">Eligible Degrees:</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {posting.degree?.length > 0 ? (
-                                        posting.degree.map((degree, index) => (
-                                            <span key={index} className="bg-gray-100 text-gray-700 text-sm font-medium px-3 py-1.5 rounded-full">{degree}</span>
-                                        ))
-                                    ) : <p className="text-sm text-gray-500">N/A</p>}
-                                </div>
-                            </div>
-                            <div>
-                                <h3 className="text-base font-semibold text-gray-700 mb-2">Eligible Branches (Aggregated):</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {posting.studentStreams?.length > 0 ? (
-                                        posting.studentStreams.map((stream, index) => (
-                                            <span key={index} className="bg-gray-100 text-gray-700 text-sm font-medium px-3 py-1.5 rounded-full">{stream}</span>
-                                        ))
-                                    ) : <p className="text-sm text-gray-500">N/A</p>}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                  
 
                     {/* --- UPDATED: Hiring Round Details (Table Format) --- */}
                     <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4">Hiring Round Details</h2>
+                        <h2 className="text-lg font-semibold text-gray-800 mb-4">College Student Details</h2>
                         <div className="overflow-x-auto">
                             {posting.roundDetails?.length > 0 ? (
                                 <table className="min-w-full divide-y divide-gray-200">
@@ -320,19 +295,7 @@ const PoolCampusEmployeeDash = () => {
                         </div>
                     </div>
 
-                    {/* --- Required Skills Section (Aggregated) --- */}
-                    <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-3">Overall Required Skills (Aggregated)</h2>
-                        <div className="flex flex-wrap gap-2">
-                            {posting.skills?.length > 0 ? (
-                                posting.skills.map((skill, index) => (
-                                    <span key={index} className="bg-gray-100 text-gray-700 text-sm font-medium px-3 py-1.5 rounded-full">{skill}</span>
-                                ))
-                            ) : (
-                                <p className="text-sm text-gray-500">Not specified</p>
-                            )}
-                        </div>
-                    </div>
+                 
 
                     {/* --- NEW SECTION: Amenities Required --- */}
                     <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
