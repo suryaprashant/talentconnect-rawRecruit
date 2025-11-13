@@ -312,31 +312,46 @@ const JobsListingPage = () => {
 
     // Apply degree filters
 
-    if (filters.degree.length > 0) {
-      result = result.filter(deg =>
-        deg.degreeType &&
-        filters.degree.some(deg =>
-          deg.degreeType.some(colDeg => {
-            return colDeg.toLowerCase() === deg.toLowerCase();
-          })
-        )
-      );
-    }
+    if (filters.courses && filters.courses.length > 0) {
+      result = result.filter(college => {
+        const degreeList = Array.isArray(college.degree)
+          ? college.degree
+          : college.degree
+            ? [college.degree]
+            : [];
 
-    // Apply course filters
-    if (filters.courses.length > 0) {
-      result = result.filter(course =>
-        course.degree &&
-        filters.courses.some(course => {
+        return filters.courses.some(course => {
           const normalizedCourse = course?.toLowerCase().replace(/[\s.\-]/g, "").trim();
 
-          return course.degree.some(c => {
+          return degreeList.some(c => {
             const normalizedC = c?.toLowerCase().replace(/[\s.\-]/g, "").trim();
             return normalizedC === normalizedCourse;
           });
-        })
-      );
+        });
+      });
     }
+
+
+    // Apply course filters
+    if (filters.courses && filters.courses.length > 0) {
+      result = result.filter(college => {
+        const degreeList = Array.isArray(college.degree)
+          ? college.degree
+          : college.degree
+            ? [college.degree]
+            : []; // fallback to empty array if undefined
+
+        return filters.courses.some(course => {
+          const normalizedCourse = course?.toLowerCase().replace(/[\s.\-]/g, "").trim();
+
+          return degreeList.some(c => {
+            const normalizedC = c?.toLowerCase().replace(/[\s.\-]/g, "").trim();
+            return normalizedC === normalizedCourse;
+          });
+        });
+      });
+    }
+
 
     // Apply employment type filter
     if (filters.employmentType && filters.employmentType.length > 0) {
