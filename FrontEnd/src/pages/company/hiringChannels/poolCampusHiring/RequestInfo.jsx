@@ -31,9 +31,9 @@ export default function PoolCampusHiringForm() {
   const minimumStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '201-500', '500+'];
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
-  // --- MODIFIED OPTIONS ---
+  
   const collegeCategoryOptions = ['Tier 1', 'Tier 2', 'Tier 3', 'Autonomous', 'Other'];
-  // --- END MODIFIED OPTIONS ---
+ 
   const preferredHiringModeOptions = ["Online", "Offline", "Hybrid", "Online Aptitude and Physical Interview"];
 
   const initialState = {
@@ -63,7 +63,7 @@ export default function PoolCampusHiringForm() {
     interviewWindow: { start: '', end: '' },
     offerRolloutDate: '',
     preferredHiringMode: '',
-    // --- END NEW FIELDS ---
+   
   };
 
   const [formData, setFormData] = useState(initialState);
@@ -75,7 +75,7 @@ export default function PoolCampusHiringForm() {
   const [workLocationSearch, setWorkLocationSearch] = useState('');
   const [venueSearch, setVenueSearch] = useState('');
 
-  // --- NEW: State for custom add inputs ---
+  
   const [customCollegeType, setCustomCollegeType] = useState('');
   const [customStream, setCustomStream] = useState('');
   const [customJobRole, setCustomJobRole] = useState('');
@@ -192,7 +192,7 @@ export default function PoolCampusHiringForm() {
   };
 
   const handleInterviewWindowChange = (e) => {
-    const { name, value } = e.target; // name will be 'start' or 'end'
+    const { name, value } = e.target; 
     setFormData(prev => ({
       ...prev,
       interviewWindow: { ...prev.interviewWindow, [name]: value }
@@ -204,39 +204,39 @@ export default function PoolCampusHiringForm() {
     setFormData({ ...formData, contactPerson: { ...formData.contactPerson, [name]: value } });
   };
 
-  // --- NEW: Handler for adding custom (manual) items ---
+
   const handleCustomAdd = (field, value, setValue, predefinedOptions = []) => {
     if (value.trim() === '') return;
     setFormData(prev => {
       const currentValues = prev[field] || [];
-      // Check for duplicates (case-insensitive)
+    
       if (currentValues.map(v => v.toLowerCase()).includes(value.trim().toLowerCase()) || 
           predefinedOptions.map(v => v.toLowerCase()).includes(value.trim().toLowerCase())) {
-        setValue(''); // Clear input even if duplicate
+        setValue(''); 
         toast.error("Item already exists.");
         return prev;
       }
       const newValues = [...currentValues, value.trim()];
       return { ...prev, [field]: newValues };
     });
-    setValue(''); // Clear input after adding
+    setValue(''); 
   };
 
-  // --- Handler for single select fields like collegeTypes ---
+  
   const handleCustomAddSingle = (field, value, setValue, predefinedOptions = []) => {
     if (value.trim() === '') return;
-    // Check for duplicates (case-insensitive)
+
     if (predefinedOptions.map(v => v.toLowerCase()).includes(value.trim().toLowerCase())) {
-      setValue(''); // Clear input even if duplicate
+      setValue(''); 
       toast.error("Item already exists in the list.");
       return;
     }
     setFormData(prev => ({ ...prev, [field]: value.trim() }));
-    setValue(''); // Clear input after adding
-    setDropdownOpen(prev => ({ ...prev, [field]: false })); // Close dropdown
+    setValue(''); 
+    setDropdownOpen(prev => ({ ...prev, [field]: false })); 
   };
 
-  // --- IMPROVED: Enhanced search functionality for cities ---
+ 
   const getFilteredCities = (cities, searchTerm) => {
     if (!searchTerm.trim()) {
       return cities;
@@ -247,15 +247,15 @@ export default function PoolCampusHiringForm() {
       const cityLower = city.toLowerCase();
       let priority = 0;
       
-      // Highest priority: exact match
+    
       if (cityLower === searchLower) {
         priority = 3;
       }
-      // High priority: starts with search term
+
       else if (cityLower.startsWith(searchLower)) {
         priority = 2;
       }
-      // Medium priority: contains search term
+  
       else if (cityLower.includes(searchLower)) {
         priority = 1;
       }
@@ -263,14 +263,14 @@ export default function PoolCampusHiringForm() {
       return { city, priority };
     });
     
-    // Filter out cities that don't match and sort by priority
+    
     return citiesWithPriority
       .filter(item => item.priority > 0)
       .sort((a, b) => b.priority - a.priority || a.city.localeCompare(b.city))
       .map(item => item.city);
   };
 
-  // --- MODIFIED: Use enhanced search function ---
+ 
   const filteredWorkCities = getFilteredCities(indianCities, workLocationSearch);
   const filteredVenueCities = getFilteredCities(indianCities, venueSearch);
 
@@ -344,7 +344,6 @@ export default function PoolCampusHiringForm() {
         minimumStudents: formData.minStudents,
         jobType: "Pool-campus",
 
-        // --- NEW SUBMISSION FIELDS ---
         collegeCategories: formData.collegeCategories,
         onlineTestDate: formData.onlineTestDate || undefined,
         interviewWindow: {
@@ -353,7 +352,7 @@ export default function PoolCampusHiringForm() {
         },
         offerRolloutDate: formData.offerRolloutDate || undefined,
         companyHiringPreference: { preferredMode: formData.preferredHiringMode },
-        // --- END NEW SUBMISSION FIELDS ---
+      
       };
 
       const response = await axios.post(
@@ -458,7 +457,7 @@ export default function PoolCampusHiringForm() {
             )}
           </div>
 
-          {/* Type of College with Custom Add in Dropdown */}
+       
           <div ref={collegeTypesRef} className="relative">
             <label className="block font-medium mb-2">Type of College <span className="text-red-500">*</span></label>
             <div 
@@ -472,7 +471,7 @@ export default function PoolCampusHiringForm() {
             </div>
             {dropdownOpen.collegeTypes && (
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                {/* Custom College Type Input */}
+              
                 <div className="p-2 border-b flex">
                   <input
                     type="text"
@@ -736,7 +735,6 @@ export default function PoolCampusHiringForm() {
             )}
           </div>
 
-          {/* --- Package Details --- */}
           <div>
             <label className="block mb-1 font-medium">Package Details <span className="text-red-500">*</span></label>
             <div className="flex mb-2">
@@ -781,9 +779,7 @@ export default function PoolCampusHiringForm() {
               />
             </div>
           </div>
-          {/* --- END Package Details --- */}
-
-          {/* --- Work Location Dropdown --- */}
+       
           <div ref={workLocationRef} className="relative">
             <label className="block font-medium mb-2">Work Location <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">
@@ -830,7 +826,6 @@ export default function PoolCampusHiringForm() {
             )}
           </div>
 
-          {/* Job Roles with Custom Add */}
           <div ref={jobRolesRef} className="relative">
             <label className="block font-medium mb-2">Job Role <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">
@@ -847,7 +842,7 @@ export default function PoolCampusHiringForm() {
             </div>
             {dropdownOpen.jobRoles && (
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                {/* Custom Job Role Input */}
+              
                 <div className="p-2 border-b flex">
                   <input
                     type="text"
@@ -908,7 +903,7 @@ export default function PoolCampusHiringForm() {
             </div>
           </div>
 
-          {/* This is the field for Tier 1, Tier 2, Autonomous, etc. */}
+        
           <div>
             <label className="block mb-1 font-medium">College Categories <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2">
