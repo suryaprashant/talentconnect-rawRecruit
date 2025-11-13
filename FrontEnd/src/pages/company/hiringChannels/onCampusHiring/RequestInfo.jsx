@@ -6,21 +6,20 @@ import toast from 'react-hot-toast';
 import { City } from 'country-state-city';
 
 export default function RequestInfo() {
-
+// const degreeStreamMapping = { 'Bachelor of Engineering (B.E.)': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'], 'Bachelor of Technology (B.Tech)': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering', 'Data Science'], 'Master of Technology (M.Tech)': ['Computer Science', 'Data Science', 'AI & Machine Learning', 'Cyber Security', 'VLSI Design', 'Structural Engineering'], 'Bachelor of Science (B.Sc.)': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science', 'Statistics', 'Biology'], 'Master of Science (M.Sc.)': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science', 'Statistics', 'Biology', 'Data Science'], 'Bachelor of Commerce (B.Com)': ['Accounting', 'Finance', 'Taxation', 'Economics', 'Marketing'], 'Master of Commerce (M.Com)': ['Accounting', 'Finance', 'Taxation', 'International Business'], 'Bachelor of Business Administration (BBA)': ['Marketing', 'Finance', 'Human Resources', 'Operations Management'], 'Master of Business Administration (MBA)': ['Marketing', 'Finance', 'Human Resources', 'Operations Management', 'IT & Systems', 'International Business'], 'Bachelor of Arts (B.A.)': ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology'], 'Master of Arts (M.A.)': ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology'], 'Associate Degree': ['Technical', 'Business', 'Healthcare', 'General Studies'], 'Doctor of Philosophy (PhD)': ['All Specializations'], 'Postgraduate Diploma': ['Varies by Specialization'], };
   const degreeStreamMapping = {
-    'Bachelor of Engineering (B.E.)': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'],
-    'Bachelor of Technology (B.Tech)': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering', 'Data Science'],
-    'Master of Technology (M.Tech)': ['Computer Science', 'Data Science', 'AI & Machine Learning', 'Cyber Security', 'VLSI Design', 'Structural Engineering'],
-    'Bachelor of Science (B.Sc.)': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science', 'Statistics', 'Biology'],
-    'Master of Science (M.Sc.)': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science', 'Statistics', 'Biology', 'Data Science'],
-    'Bachelor of Commerce (B.Com)': ['Accounting', 'Finance', 'Taxation', 'Economics', 'Marketing'],
-    'Master of Commerce (M.Com)': ['Accounting', 'Finance', 'Taxation', 'International Business'],
-    'Bachelor of Business Administration (BBA)': ['Marketing', 'Finance', 'Human Resources', 'Operations Management'],
-    'Master of Business Administration (MBA)': ['Marketing', 'Finance', 'Human Resources', 'Operations Management', 'IT & Systems', 'International Business'],
-    'Bachelor of Arts (B.A.)': ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology'],
-    'Master of Arts (M.A.)': ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology'],
-    'Associate Degree': ['Technical', 'Business', 'Healthcare', 'General Studies'],
-    'Doctor of Philosophy (PhD)': ['All Specializations'],
+    'B.E': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'],
+    'B.Tech': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering', 'Data Science'],
+    'M.Tech': ['Computer Science', 'Data Science', 'AI & Machine Learning', 'Cyber Security', 'VLSI Design', 'Structural Engineering'],
+    'B.Sc': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science', 'Statistics', 'Biology'],
+    'M.Sc': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science', 'Statistics', 'Biology', 'Data Science'],
+    'B.Com': ['Accounting', 'Finance', 'Taxation', 'Economics', 'Marketing'],
+    'M.Com': ['Accounting', 'Finance', 'Taxation', 'International Business'],
+    'BBA': ['Marketing', 'Finance', 'Human Resources', 'Operations Management'],
+    'MBA': ['Marketing', 'Finance', 'Human Resources', 'Operations Management', 'IT & Systems', 'International Business'],
+    'B.A': ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology'],
+    'M.A': ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology'],
+    'PhD': ['All Specializations'],
     'Postgraduate Diploma': ['Varies by Specialization'],
   };
 
