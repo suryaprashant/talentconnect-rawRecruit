@@ -22,13 +22,20 @@ export const getPostedJobs = async (req, res) => {
         }else if(userType === 'professional'){
             companyProfile = await getStudentService(Id);
         }
+        else if(userType === 'employer'){
+            companyProfile = await getEmployerService(req.user);
+        }
 
         // console.log("company: ", companyProfile)
-        if (!companyProfile.data) {
+        if (!companyProfile || companyProfile.success === false || !companyProfile.data || companyProfile.data.length === 0) {
             return res.status(404).json({ error: "Company profile not found" });
         }
 
         const jobs = await getJobPostedByCompanyService(companyProfile.data[0]._id, jobType, userType);
+
+        if (!jobs || !jobs.success || !jobs.response) {
+            return res.status(404).json({ msg: "Could not find jobs for this profile." });
+        }
 
         const jobsWithApplicationCount = await Promise.all(
             jobs?.response?.map(async (job) => {

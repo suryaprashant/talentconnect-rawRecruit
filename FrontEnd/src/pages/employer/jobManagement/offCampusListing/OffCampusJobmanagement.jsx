@@ -4,7 +4,7 @@ import {
   ChevronLeft, ChevronRight, Filter, X
 } from 'lucide-react';
 import ApplicantDetails from './OffCampusDetail';
-import { deleteJobById, getEmployerJobs } from '@/lib/Company_AxiosInstance';
+import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
 
 export default function OffCampusJobManagement() {
   // State variables
@@ -25,7 +25,7 @@ export default function OffCampusJobManagement() {
 
   const fetchJobs = async () => {
     try {
-      const response = await getEmployerJobs("Off-campus");
+      const response = await getPostedJobs("Off-campus", "Applied");
       // console.log(response.data.response);
       setJobs(response?.data);
 

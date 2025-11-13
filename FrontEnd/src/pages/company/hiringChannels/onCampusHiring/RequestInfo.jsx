@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { ChevronDown, Mail, Phone, Link, X } from 'lucide-react';
 import toast from 'react-hot-toast';
-// --- NEW: Import from country-state-city ---
+
 import { City } from 'country-state-city';
 
 export default function RequestInfo() {
@@ -26,7 +26,7 @@ export default function RequestInfo() {
 
   const degreeOptions = Object.keys(degreeStreamMapping).sort();
   
-  // --- OPTIONS ---
+  
   const collegeCategoryOptions = ['Tier 1', 'Tier 2', 'Tier 3', 'Autonomous', 'All Colleges'];
   const preferredModeOptions = ['Online', 'Offline', 'Hybrid', 'Online Aptitude and Physical Interview'];
   const jobRoleOptions = ['Software Engineer', 'Data Analyst', 'DevOps Engineer', 'UX/UI Designer', 'Product Manager', 'QA Engineer', 'System Administrator', 'Network Engineer', 'Business Analyst', 'Machine Learning Engineer'];
@@ -39,9 +39,9 @@ export default function RequestInfo() {
   const benefitsOptions = ['Health Insurance', 'Provident Fund (PF)', 'Paid Time Off (PTO)', 'Work from Home', 'Performance Bonus', 'Stock Options'];
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'InternSHIP-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
-  // --- Component State and Logic ---
+ 
   const initialData = {
-    // --- MODIFIED: Degree is now an array for multi-select ---
+   
     degree: [],
     stream: [],
     collegeCategories: [], 
@@ -54,8 +54,8 @@ export default function RequestInfo() {
     jobRoles: [],
     skills: [],
     packageDetails: { currency: 'INR', totalCTC: '', fixedPay: '', joiningBonus: '' },
-    startDate: '', // Application Start Date
-    endDate: '',   // Application End Date
+    startDate: '', 
+    endDate: '',  
     onlineTestDate: '',
     interviewWindow: { start: '', end: '' },
     offerRolloutDate: '',
@@ -78,20 +78,19 @@ export default function RequestInfo() {
   const [formData, setFormData] = useState(initialData);
   const [descriptionError, setDescriptionError] = useState("");
 
-  // --- State for city search ---
-  // --- NEW: State for cities from package ---
+
   const [indianCities, setIndianCities] = useState([]);
   const [locationSearch, setLocationSearch] = useState('');
   const [workLocationSearch, setWorkLocationSearch] = useState('');
 
-  // --- NEW: State for custom add inputs ---
+
   const [customDegree, setCustomDegree] = useState('');
   const [customStream, setCustomStream] = useState('');
   const [customJobRole, setCustomJobRole] = useState('');
   const [customSkill, setCustomSkill] = useState('');
 
   const [dropdownOpen, setDropdownOpen] = useState({
-    // --- NEW: Degree dropdown ---
+   
     degree: false,
     stream: false,
     collegeCategories: false, 
@@ -105,7 +104,7 @@ export default function RequestInfo() {
     tags: false
   });
 
-  // --- NEW: Ref for Degree dropdown ---
+
   const degreeRef = useRef(null);
   const streamRef = useRef(null);
   const collegeCategoriesRef = useRef(null); 
@@ -118,7 +117,7 @@ export default function RequestInfo() {
   const tagsRef = useRef(null);
   const workLocationRef = useRef(null);
 
-  // --- NEW: useEffect to load cities from package ---
+
   useEffect(() => {
     const cities = City.getCitiesOfCountry('IN')
       .map(city => city.name)
@@ -126,11 +125,11 @@ export default function RequestInfo() {
     setIndianCities(cities);
   }, []);
   
-  // Effect to close dropdowns when clicking outside
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdownRefs = {
-        // --- NEW: Degree ref ---
+       
         degree: degreeRef,
         stream: streamRef,
         collegeCategories: collegeCategoriesRef, 

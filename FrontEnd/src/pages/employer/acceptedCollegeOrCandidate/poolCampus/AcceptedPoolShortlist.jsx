@@ -1,19 +1,11 @@
-
 import { useState, useEffect } from 'react';
 import { Search, Eye, ChevronLeft, ChevronRight, Trash } from 'lucide-react';
 import CollegeRequestDetail from './CollegeRequestDetail';
-import { acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getEmployerJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
+import { acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
-
-// Helper function to safely format dates
-// const safeFormatDate = (dateString, formatStr = 'MMM d, yyyy') => {
-//   if (!dateString) return 'Not Specified';
-//   const date = new Date(dateString);
-//   return isValid(date) ? format(date, formatStr) : 'Invalid Date';
-// };
-
-export default function OnCampusJobManagement() {
+export default function PoolCampusJobManagement() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,9 +21,9 @@ export default function OnCampusJobManagement() {
     setLoading(true);
     setError(null);
     try {
-      const response = await getEmployerJobs("Pool-campus");
-      // console.log("response oncampus: ", response);
-      setJobs(response?.data);
+      const response = await getPostedJobs("Pool-campus", "Accepted");
+      console.log("Fetched jobs:", response?.data);
+      setJobs(response?.data || []);
     } catch (err) {
       console.error("Error fetching jobs:", err);
       setError(err.response?.data?.message || err.message || "Failed to fetch drives.");
@@ -45,9 +37,9 @@ export default function OnCampusJobManagement() {
     setCollegesLoading(true);
     setError(null);
     try {
-      const response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted")
-      // console.log("College: ", response);
-      setColleges(response.data);
+      const response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted");
+      console.log("Fetched colleges for job:", response.data);
+      setColleges(response.data || []);
     } catch (err) {
       console.error("Error fetching colleges:", err);
       setError(err.response?.data?.message || err.message || "Failed to fetch colleges.");
@@ -62,39 +54,44 @@ export default function OnCampusJobManagement() {
       let response;
       switch (status) {
         case "Shortlisted":
-          response = await shortlistCandidate(applicationId, jobs?.jobRoles);
+          response = await shortlistCandidate(applicationId, selectedJob?.jobRoles);
           break;
         case "Rejected":
-          response = await rejectCandidate(applicationId, jobs?.jobRoles);
+          response = await rejectCandidate(applicationId, selectedJob?.jobRoles);
           break;
         case "Accepted":
-          response = await acceptCandidate(applicationId, jobs?.jobRoles);
+          response = await acceptCandidate(applicationId, selectedJob?.jobRoles);
           break;
         default:
           alert("Invalid Action!");
       }
-      if (response?.data?.success === true) toast.success(`Application status updated to: ${status}`);
-      else toast.error(response?.response?.data.msg);
+      if (response?.data?.success === true) {
+        toast.success(`Application status updated to: ${status}`);
+        // Refresh the colleges list after status update
+        if (selectedJob) {
+          fetchCollegesForJob(selectedJob._id, selectedJob.jobType);
+        }
+      } else {
+        toast.error(response?.response?.data?.msg || 'Failed to update status');
+      }
     } catch (err) {
       console.error("Error updating application status:", err);
       setError(err.response?.data?.message || err.message || "Failed to update status.");
-      toast.error('Something went wrong!')
+      toast.error('Something went wrong!');
     }
-    // finally{
-    //   fetchCollegesForJob(jobs._id, jobs.jobType);
-    // }
   };
 
   const handleDelete = async (jobId) => {
     try {
       const confirmed = window.confirm("This action can't be undone! Are you sure you want to delete the job?");
       if (confirmed) {
-        const response = await deleteJobById(jobId);
+        await deleteJobById(jobId);
         fetchJobs();
-        alert(`Job with Id: ${jobId} deleted`);
+        toast.success(`Job deleted successfully`);
       }
     } catch (error) {
       console.log("Error: ", error);
+      toast.error('Failed to delete job');
     }
   };
 
@@ -104,15 +101,23 @@ export default function OnCampusJobManagement() {
 
   const filteredJobs = jobs.filter(job => {
     const searchLower = searchQuery.toLowerCase();
-    const locationsMatch = Array.isArray(job.location)
-      ? job.location.some(location =>
-        location?.toLowerCase().includes(searchLower))
+
+    // Check job roles
+    const jobRolesMatch = Array.isArray(job.jobRoles)
+      ? job.jobRoles.some(role => role?.toLowerCase().includes(searchLower))
+      : false;
+
+    // Check work locations
+    const workLocations = job.workLocation || [];
+    const workLocationsMatch = Array.isArray(workLocations)
+      ? workLocations.some(location => location?.toLowerCase().includes(searchLower))
       : false;
 
     return (
-      (job.lookingFor?.toLowerCase().includes(searchLower)) ||
-      locationsMatch ||
-      (job._id?.toLowerCase().includes(searchLower))
+      jobRolesMatch ||
+      workLocationsMatch ||
+      (job._id?.toLowerCase().includes(searchLower)) ||
+      (job.lookingFor?.toLowerCase().includes(searchLower))
     );
   });
 
@@ -120,9 +125,12 @@ export default function OnCampusJobManagement() {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentJobs = filteredJobs.slice(startIndex, startIndex + itemsPerPage);
-  // console.log("currentJobs: ", currentJobs);
 
   const handleViewColleges = (job) => {
+    if (job.applicationCount === 0) {
+      alert("No colleges have applied for this drive yet.");
+      return;
+    }
     setSelectedJob(job);
     fetchCollegesForJob(job._id, job.jobType);
   };
@@ -132,15 +140,22 @@ export default function OnCampusJobManagement() {
     setColleges([]);
   };
 
-  const displayLocations = (locations) => {
-    if (!locations || locations.length === 0) return 'N/A';
-    return Array.isArray(locations) ? locations.join(', ') : String(locations);
+  const displayWorkLocations = (job) => {
+    const workLocations = job.workLocation || [];
+    if (!workLocations || workLocations.length === 0) return 'N/A';
+    return Array.isArray(workLocations) ? workLocations.join(', ') : String(workLocations);
+  };
+
+  const displayJobRoles = (job) => {
+    const jobRoles = job.jobRoles || [];
+    if (!jobRoles || jobRoles.length === 0) return 'N/A';
+    return Array.isArray(jobRoles) ? jobRoles.join(', ') : String(jobRoles);
   };
 
   if (selectedJob) {
     return (
       <div className="min-h-screen bg-gray-50 font-sans">
-        <div className="max-w-3xl mx-auto p-4">
+        <div className="max-w-4xl mx-auto p-4">
           <button
             onClick={handleBackToList}
             className="flex items-center text-gray-600 hover:text-black mb-6"
@@ -149,21 +164,15 @@ export default function OnCampusJobManagement() {
             Back to drives
           </button>
 
-          <div className="mb-4">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Applications for: {selectedJob.jobRoles || 'N/A'}
-            </h2>
-            <p className="text-gray-600 capitalize">
-              {displayLocations(selectedJob.location)} • {selectedJob.employmentType || 'N/A Type'}
-            </p>
-          </div>
+
+
           {collegesLoading ? (
             <div className="p-8 text-center bg-white rounded-lg shadow-sm">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-black border-r-transparent"></div>
               <p className="mt-4 text-gray-600">Loading college applications...</p>
             </div>
           ) : error ? (
-            <div className="p-4 text-red-700 bg-red-100 border border-red-200 rounded-md m-4">
+            <div className="p-4 text-red-700 bg-red-100 border border-red-200 rounded-md">
               Error: {error}
             </div>
           ) : colleges.length === 0 ? (
@@ -172,10 +181,11 @@ export default function OnCampusJobManagement() {
             </div>
           ) : (
             <div className="space-y-6">
-              {colleges?.map(college => (
+              {colleges.map(college => (
                 <CollegeRequestDetail
                   key={college._id}
-                  collegeApplication={college} // Pass the fully merged college object
+                  collegeApplication={college}
+                  driveDetails={selectedJob} // Pass drive details separately
                   onAccept={() => handleUpdateApplicationStatus(college._id, 'Accepted')}
                   onShortlist={() => handleUpdateApplicationStatus(college._id, 'Shortlisted')}
                   onReject={() => handleUpdateApplicationStatus(college._id, 'Rejected')}
@@ -207,7 +217,7 @@ export default function OnCampusJobManagement() {
               <input
                 type="text"
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Search by role or location"
+                placeholder="Search by job role or work location"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -224,10 +234,10 @@ export default function OnCampusJobManagement() {
             <table className="w-full text-left text-gray-700">
               <thead className="bg-gray-50 text-xs uppercase text-gray-700">
                 <tr className="border-b border-gray-200">
-                  <th className="px-4 py-3">Looking For</th>
-                  <th className="px-4 py-3">Locations</th>
+                  <th className="px-4 py-3">Job Roles</th>
+                  <th className="px-4 py-3">Work Locations</th>
                   <th className="px-4 py-3">End Date</th>
-                  {/* <th className="px-4 py-3">Applications</th> */}
+                  <th className="px-4 py-3">Applications</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
               </thead>
@@ -246,33 +256,50 @@ export default function OnCampusJobManagement() {
                     </td>
                   </tr>
                 ) : (
-                  currentJobs?.map(job => (
+                  currentJobs.map(job => (
                     <tr key={job._id} className="border-b border-gray-200 hover:bg-gray-50">
                       <td className="px-4 py-4">
                         <div className="font-medium text-gray-900">
-                          {job?.jobRoles || 'N/A'}
+                          {displayJobRoles(job)}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {job.employmentType || 'N/A Type'}
+                          {Array.isArray(job.employmentType) ? job.employmentType.join(', ') : job.employmentType || 'N/A Type'}
                         </div>
                       </td>
                       <td className="px-4 py-4 capitalize">
-                        {displayLocations(job.location)}
+                        {displayWorkLocations(job)}
                       </td>
                       <td className="px-4 py-4">
-                        {new Date(job.endDate).toUTCString().slice(0, 16)}
+                        {job.endDate ? new Date(job.endDate).toLocaleDateString() : 'N/A'}
                       </td>
-                      {/* <td className="px-4 py-4">{job?.applicationCount}</td> */}
+                      <td className="px-4 py-4">{job.applicationCount || 0}</td>
                       <td className="px-4 py-4">
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleViewColleges(job)}
+                            disabled={!job.applicationCount || job.applicationCount === 0}
                             className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             title="View College Applications"
                           >
                             <Eye size={18} />
                           </button>
-                          <button onClick={() => handleDelete(job._id)} className="text-gray-500 hover:text-gray-700" title="Delete Job">
+                          <Link
+                            to={`/company-dashboard/preview/Pool-campus/${job._id}?isApplied=true`}
+                            className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-gray-200"
+                            title="View Job Description"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-search-corner">
+                              <path d="M11.1 22H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.589 3.588A2.4 2.4 0 0 1 20 8v3.25" />
+                              <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                              <path d="m21 22-2.88-2.88" />
+                              <circle cx="16" cy="17" r="3" />
+                            </svg>
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(job._id)}
+                            className="text-gray-500 hover:text-red-600 p-1 rounded-md hover:bg-gray-200"
+                            title="Delete Job"
+                          >
                             <Trash size={18} />
                           </button>
                         </div>
@@ -295,7 +322,7 @@ export default function OnCampusJobManagement() {
             </button>
 
             <div className="flex gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1)?.map(page => (
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
@@ -312,7 +339,7 @@ export default function OnCampusJobManagement() {
               disabled={currentPage === totalPages || totalPages === 0}
               className="flex items-center gap-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 disabled:opacity-50"
             >
-              Next
+              
               <ChevronRight size={16} />
             </button>
           </div>
