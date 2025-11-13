@@ -182,6 +182,11 @@ export function createCollegeSeminarRequest(data) {
     .then(response => response)
     .catch(error => error);
 }
+export function createCollegeBrandingRequest(data) {
+  return axiosClient.post(`/api/servicerequests/college/branding`, data)
+    .then(response => response)
+    .catch(error => error);
+}
 
 // get college service requests status
 export function getCollegeServiceRequestStatus() {

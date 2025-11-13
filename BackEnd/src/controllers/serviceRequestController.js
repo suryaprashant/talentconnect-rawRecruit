@@ -137,6 +137,19 @@ export const CollegeSeminarRequest = async (req, res) => {
     }
 };
 
+export const CollegeBrandingRequest = async (req, res) => {
+    try {
+        const serviceType = "College-Branding";
+        const savedRequest = await createServiceRequest(req.user, req.body, serviceType);
+        res.status(201).json({ message: "College Branding request created successfully", request: savedRequest });
+    }
+    catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+
+
 
 
 //   =====>>> Company Side <<<<===== 
