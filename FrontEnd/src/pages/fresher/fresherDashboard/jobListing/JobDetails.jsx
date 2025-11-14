@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 //  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
 // import JobCard from '@/components/student/studentDashboard/jobListing/JobCard';
-import { ApplyForJobListingOppurtunity, getJobLisingJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
+import { ApplyForJobListingOppurtunity, getJobLisingJobDetails, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 
 const FJobDetails = () => {
@@ -23,6 +23,7 @@ const FJobDetails = () => {
             const details = await getJobLisingJobDetails(jobId);
             // console.log("..../", details.data[0]);
             setJobDetails(details.data[0]);
+            await viewed(details.data._id);
 
             // Fetch similar jobs
             // const similar = await fetchSimilarJobs(jobId);

@@ -14,9 +14,10 @@ import { Toaster } from 'react-hot-toast'; // Import Toaster for notifications
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  // <StrictMode>
+  <>
     {/* Wrap the entire application with GoogleOAuthProvider */}
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider GoogleOAuthProvider GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} >
       <BrowserRouter>
         <RoleProvider>
           <AuthProvider>
@@ -27,6 +28,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           </AuthProvider>
         </RoleProvider>
       </BrowserRouter>
-    </GoogleOAuthProvider>
-  </StrictMode>
+    </GoogleOAuthProvider >
+  </>
+  // </StrictMode>
 );

@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getPoolCampusJobByIdForCompany } from '../../../../lib/College_AxiosIntance';
 import { format } from 'date-fns';
 import { ApplyForPoolcampusOppurtunity, SaveOppurtunity } from '@/lib/Company_AxiosInstance';
+import { viewed } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 
 // --- NEW HELPER ---
@@ -39,6 +40,7 @@ const PoolCampusEmployeeDash = () => {
             const response = await getPoolCampusJobByIdForCompany(id);
             if (response && response.data) {
                 setPosting(response.data);
+                await viewed(details.data._id);
             } else {
                 throw new Error('Posting not found.');
             }

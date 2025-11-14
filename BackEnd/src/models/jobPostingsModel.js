@@ -56,8 +56,8 @@ const jobPostingSchema = new mongoose.Schema({
         joiningBonus: { type: Number }
     },
     collegeCategories: [{ type: String }], // For "tier1", "tier2", etc.
-    companyType: [{ 
-        type: String 
+    companyType: [{
+        type: String
         // enum: ["MNC", "Startup", "SME", "Public Sector"]
     }],
     companyHiringPreference: {
@@ -66,20 +66,20 @@ const jobPostingSchema = new mongoose.Schema({
             enum: ["Online", "Offline", "Hybrid", "Online Aptitude and Physical Interview"]
         }
     },
-    onlineTestDate: { 
-        type: Date 
+    onlineTestDate: {
+        type: Date
     },
     interviewWindow: {
         start: { type: Date },
         end: { type: Date }
     },
-    offerRolloutDate: { 
-        type: Date 
+    offerRolloutDate: {
+        type: Date
     },
     proposedSchedule: {
         startDate: { type: Date },
         endDate: { type: Date },
-        preferredMode: { 
+        preferredMode: {
             type: String,
             enum: ["Online", "Offline", "Hybrid"]
         }
@@ -130,6 +130,7 @@ const jobPostingSchema = new mongoose.Schema({
         type: String
     }],
     tags: [{ type: String }],
+    views: { type: Number, default: 0 },
 
     //expire at
     expireAt: {

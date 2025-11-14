@@ -237,6 +237,7 @@ export default function PoolCampusJobManagement() {
                   <th className="px-4 py-3">Job Roles</th>
                   <th className="px-4 py-3">Work Locations</th>
                   <th className="px-4 py-3">End Date</th>
+                  <th className="px-4 py-3">Views</th>
                   <th className="px-4 py-3">Applications</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
@@ -272,6 +273,7 @@ export default function PoolCampusJobManagement() {
                       <td className="px-4 py-4">
                         {job.endDate ? new Date(job.endDate).toLocaleDateString() : 'N/A'}
                       </td>
+                      <td className="px-4 py-4">{job.views || 0}</td>
                       <td className="px-4 py-4">{job.applicationCount || 0}</td>
                       <td className="px-4 py-4">
                         <div className="flex gap-2">
