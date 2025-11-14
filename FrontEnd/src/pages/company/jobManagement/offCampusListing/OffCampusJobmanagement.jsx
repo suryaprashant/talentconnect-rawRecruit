@@ -26,7 +26,7 @@ export default function OffCampusJobManagement() {
 
   const fetchJobs = async () => {
     try {
-      const response = await getPostedJobs("Off-campus","Applied");
+      const response = await getPostedJobs("Off-campus", "Applied");
       // console.log(response.data.response);
       setJobs(response?.data);
 
@@ -215,7 +215,7 @@ export default function OffCampusJobManagement() {
                   <th className="px-4 py-3 text-left">Job Title</th>
                   <th className="px-4 py-3 text-left">Status</th>
                   <th className="px-4 py-3 text-left">Deadline</th>
-                  {/* <th className="px-4 py-3 text-left">Views</th> */}
+                  <th className="px-4 py-3 text-left">Views</th>
                   <th className="px-4 py-3 text-left">Applications</th>
                   <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
@@ -242,7 +242,7 @@ export default function OffCampusJobManagement() {
                       onClick={() => handleView(job._id)}
                     >
                       <td className="px-4 py-3">
-                        {job?.jobRoles?.map((title,ind)=>(<div key={ind} className="font-medium">{title}</div>))}
+                        {job?.jobRoles?.map((title, ind) => (<div key={ind} className="font-medium">{title}</div>))}
                         <div className="text-sm text-gray-500">
                           {job?.workMode} • {job?.location[0]}
                         </div>
@@ -256,7 +256,7 @@ export default function OffCampusJobManagement() {
                         </span>
                       </td>
                       <td className="px-4 py-3">{new Date(job?.endDate).toUTCString().slice(0, 16)}</td>
-                      {/* <td className="px-4 py-3">{job.views}</td> */}
+                      <td className="px-4 py-3">{job.views}</td>
                       <td className="px-4 py-3">{job?.applicationCount}</td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <div className="flex gap-2">

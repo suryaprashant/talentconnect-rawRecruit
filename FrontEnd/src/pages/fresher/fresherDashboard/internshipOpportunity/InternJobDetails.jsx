@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 // import { fetchJobDetails, fetchSimilarJobs } from '../../../../constants/JobListing' // Keep commented if not used
 import JobCard from '@/components/student/studentDashboard/intershipOpportunity/JobCard'; // Ensure this path is correct
-import { ApplyForInternship, getInternshipDetail, SaveOppurtunity } from '@/lib/User_AxiosInstance';
+import { ApplyForInternship, getInternshipDetail, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 
 const InternJobDetails = () => {
@@ -25,6 +25,7 @@ const InternJobDetails = () => {
         const response = await getInternshipDetail(jobId);
 
         setJobDetails(response.data);
+        await viewed(details.data._id);
         // console.log("Internship Details:", response.data);
 
         // Fetch similar jobs (currently commented out, so no change needed here)

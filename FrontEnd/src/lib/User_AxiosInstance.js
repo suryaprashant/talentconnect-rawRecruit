@@ -16,6 +16,12 @@ axiosClient.defaults.withCredentials = true;
 
 
 // student dashboard
+export function viewed(jobId) {
+  return axiosClient.post(`/api/hiring-channels/view/${jobId}`)
+    .then(response => response)
+    .catch(error => error);
+}
+
 export function getJobDetails(jobId) {
   return axiosClient.get(`/jobs/jobDetails/${jobId}`)
     .then(response => response)

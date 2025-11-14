@@ -2,6 +2,7 @@ import express from 'express';
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
 
 import { createOffCampusJobPosting, createOnCampusPosting, createPoolCampusPosting, createJobPosting, createInternshipPosting, createOnCampusCollegeRequest, createPoolCampusCollegeRequest, createRefferralPosting } from '../controllers/jobPostingController.js';
+import { ViewController } from '../controllers/viewCountController.js';
 
 // api.. "/api/hiring-channels"
 
@@ -23,5 +24,8 @@ router.post("/on-campus/college-request", secureRoute, createOnCampusCollegeRequ
 router.post("/pool-campus/college-request", secureRoute, createPoolCampusCollegeRequest); // Add route for college request
 
 router.post("/referral-posting", secureRoute, createRefferralPosting);
+
+//view counter
+router.post('/view/:jobId',secureRoute,ViewController);
 
 export default router;

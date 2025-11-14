@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { ApplyForOppurtunity, getJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
+import { ApplyForOppurtunity, getJobDetails, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 // ADDED: Imported Navigation for Drive Venue
 import { MapPin, ArrowLeft, Building2, Users, Navigation } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -20,6 +20,8 @@ function OffCampusJobDetail() {
       setIsLoading(true);
       const details = await getJobDetails(jobId);
       setJobDetail(details.data[0]);
+      await viewed(details.data[0]._id);
+
       setError(null);
     } catch (err) {
       setError('Failed to load job details. Please try again later.');
