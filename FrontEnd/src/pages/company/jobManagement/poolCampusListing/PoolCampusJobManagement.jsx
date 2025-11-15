@@ -101,12 +101,12 @@ export default function PoolCampusJobManagement() {
 
   const filteredJobs = jobs.filter(job => {
     const searchLower = searchQuery.toLowerCase();
-    
+
     // Check job roles
-    const jobRolesMatch = Array.isArray(job.jobRoles) 
+    const jobRolesMatch = Array.isArray(job.jobRoles)
       ? job.jobRoles.some(role => role?.toLowerCase().includes(searchLower))
       : false;
-    
+
     // Check locations - handle both workLocation and location fields
     const locations = job.workLocation || job.location || [];
     const locationsMatch = Array.isArray(locations)
@@ -165,7 +165,7 @@ export default function PoolCampusJobManagement() {
             Back to drives
           </button>
 
-        
+
 
           {collegesLoading ? (
             <div className="p-8 text-center bg-white rounded-lg shadow-sm">
@@ -238,6 +238,7 @@ export default function PoolCampusJobManagement() {
                   <th className="px-4 py-3">Job Roles</th>
                   <th className="px-4 py-3">Work Locations</th>
                   <th className="px-4 py-3">End Date</th>
+                  <th className="px-4 py-3">Views</th>
                   <th className="px-4 py-3">Applications</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
@@ -273,6 +274,7 @@ export default function PoolCampusJobManagement() {
                       <td className="px-4 py-4">
                         {job.endDate ? new Date(job.endDate).toLocaleDateString() : 'N/A'}
                       </td>
+                      <td className="px-4 py-4">{job?.views}</td>
                       <td className="px-4 py-4">{job.applicationCount || 0}</td>
                       <td className="px-4 py-4">
                         <div className="flex gap-2">
@@ -296,9 +298,9 @@ export default function PoolCampusJobManagement() {
                               <circle cx="16" cy="17" r="3" />
                             </svg>
                           </Link>
-                          <button 
-                            onClick={() => handleDelete(job._id)} 
-                            className="text-gray-500 hover:text-red-600 p-1 rounded-md hover:bg-gray-200" 
+                          <button
+                            onClick={() => handleDelete(job._id)}
+                            className="text-gray-500 hover:text-red-600 p-1 rounded-md hover:bg-gray-200"
                             title="Delete Job"
                           >
                             <Trash size={18} />
@@ -327,9 +329,8 @@ export default function PoolCampusJobManagement() {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium ${
-                    currentPage === page ? 'bg-black text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium ${currentPage === page ? 'bg-black text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-100'
+                    }`}
                 >
                   {page}
                 </button>

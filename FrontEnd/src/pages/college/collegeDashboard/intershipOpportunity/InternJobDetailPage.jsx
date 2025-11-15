@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { getInternshipById } from '@/lib/User_AxiosInstance';
+import { getInternshipById, viewed } from '@/lib/User_AxiosInstance';
 
 import { ApplyForCampusInternship, SaveOppurtunity } from '@/lib/College_AxiosIntance';
 
@@ -99,6 +99,7 @@ const InternJobDetailPage = () => {
                         },
                     };
                     setJob(mappedJob);
+                    await viewed(mappedJob._id);
                     // console.log("mapeed job: ", mappedJob)
                     document.title = `${mappedJob.title} at ${mappedJob.company}`;
                 } else {

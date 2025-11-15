@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { ApplyForReferral, getReferralJobById, SaveOppurtunity } from '@/lib/User_AxiosInstance';
+import { ApplyForReferral, getReferralJobById, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 
 const StudentRefferalJobDetails = () => {
@@ -19,7 +19,8 @@ const StudentRefferalJobDetails = () => {
             setIsLoading(true);
             const response = await getReferralJobById(jobId);
             setJobDetails(response.data);
-            console.log("Details:", response.data);
+            await viewed(details.data._id);
+            // console.log("Details:", response.data);
             setError(null);
         } catch (err) {
             setError('Failed to load details. Please try again later.');

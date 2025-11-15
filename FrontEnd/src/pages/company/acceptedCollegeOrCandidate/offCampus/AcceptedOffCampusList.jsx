@@ -201,7 +201,7 @@ export default function OffCampusJobManagement() {
                                     <th className="px-4 py-3 text-left">Job Title</th>
                                     <th className="px-4 py-3 text-left">Status</th>
                                     <th className="px-4 py-3 text-left">Deadline</th>
-                                    {/* <th className="px-4 py-3 text-left">Views</th> */}
+                                    <th className="px-4 py-3 text-left">Views</th>
                                     <th className="px-4 py-3 text-left">Applications</th>
                                     <th className="px-4 py-3 text-left">Actions</th>
                                 </tr>
@@ -242,7 +242,7 @@ export default function OffCampusJobManagement() {
                                                 </span>
                                             </td>
                                             <td className="px-4 py-3">{new Date(job?.endDate).toUTCString().slice(0, 16)}</td>
-                                            {/* <td className="px-4 py-3">{job.views}</td> */}
+                                            <td className="px-4 py-3">{job?.views}</td>
                                             <td className="px-4 py-3">{job?.applicationCount}</td>
                                             <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                                                 <div className="flex gap-2">
