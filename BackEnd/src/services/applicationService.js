@@ -1,14 +1,20 @@
 import mongoose from 'mongoose';
 
 import Application from '../models/applicationModel.js';
-// import { JobPostingTable } from '../models/jobPostingsModel.js';
+ import { JobPostingTable } from '../models/jobPostingsModel.js';
+
+import { getCompanyService } from './companyService.js';
+import { getEmployerService } from './companyService.js';
 
 
-// import OffCampusApplication from '../models/offCampusApplicationModel.js';
-// import InternshipApplication from '../models/internshipApplicationModel.js';
-// import PoolCampusApplication from '../models/poolcampusApplicationModel.js';
-// import OnCampusApplication from '../models/oncampusApplicationModel.js';
-// import JobListingApplication from '../models/jobListingApplicationModel.js';
+class AppError extends Error {
+    constructor(message, statusCode) {
+        super(message);
+        this.statusCode = statusCode;
+    }
+}
+
+
 export const getAll = async () => {
     try {
         const applications = await Application.find();
@@ -375,6 +381,138 @@ export async function ChangeStatusService(applicationId, newStatus) {
         throw new Error("Failed");
     }
 }
+
+export async function fetchCompanyDashboardMetrics(user) {
+    try {
+        const companyId = user._id;
+        const userType = user?.userType;
+
+        let companyProfileId;
+
+        // --- COMPANY USER ---
+        if (userType === 'company') {
+            const company = await getCompanyService(companyId);
+
+            if (!company || !company.success || company.data.length === 0) {
+                throw new AppError("Company profile not found!", 404);
+            }
+
+            companyProfileId = company.data[0]._id;
+        }
+
+        // --- EMPLOYER USER ---
+        else if (userType === 'employer') {
+            const employer = await getEmployerService(companyId); // fixed parameter
+
+            if (!employer || !employer.success || employer.data.length === 0) {
+                throw new AppError(employer.msg || "Employer profile not found!", 404);
+            }
+
+            companyProfileId = employer.data[0]._id;
+        }
+
+        else {
+            throw new AppError("This user type cannot access this resource.", 403);
+        }
+
+        // Fetch all jobs posted by this company
+        const companyJobs = await JobPostingTable.find({
+            companyPosted: companyProfileId
+        }).select('_id jobType');
+
+        const allJobIds = companyJobs.map(job => job._id);
+
+        if (allJobIds.length === 0) {
+            return {
+                appliedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 },
+                statusTotals: { 'Shortlisted': 0, 'Accepted': 0, 'Rejected': 0 },
+                totalApplied: 0,
+                totalShortlisted: 0,
+                totalAccepted: 0,
+                totalRejected: 0
+            };
+        }
+
+        // Count by job type (Applied)
+        const appliedCounts = await Application.aggregate([
+            {
+                $match: {
+                    job: { $in: allJobIds },
+                    currentStatus: 'Applied'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'jobpostingtables', // Ensure correct collection name
+                    localField: 'job',
+                    foreignField: '_id',
+                    as: 'jobDetails'
+                }
+            },
+            { $unwind: '$jobDetails' },
+            {
+                $group: {
+                    _id: '$jobDetails.jobType',
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        // Count shortlisted / accepted / rejected
+        const statusCounts = await Application.aggregate([
+            {
+                $match: {
+                    job: { $in: allJobIds },
+                    currentStatus: { $in: ['Shortlisted', 'Accepted', 'Rejected'] }
+                }
+            },
+            {
+                $group: {
+                    _id: '$currentStatus',
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        const formattedAppliedCounts = {
+            'On-campus': 0,
+            'Pool-campus': 0,
+            'Off-campus': 0
+        };
+
+        appliedCounts.forEach(item => {
+            if (formattedAppliedCounts[item._id] !== undefined) {
+                formattedAppliedCounts[item._id] = item.count;
+            }
+        });
+
+        const formattedStatusCounts = {
+            'Shortlisted': 0,
+            'Accepted': 0,
+            'Rejected': 0
+        };
+
+        statusCounts.forEach(item => {
+            if (formattedStatusCounts[item._id] !== undefined) {
+                formattedStatusCounts[item._id] = item.count;
+            }
+        });
+
+        return {
+            appliedByCategory: formattedAppliedCounts,
+            statusTotals: formattedStatusCounts,
+            totalApplied: Object.values(formattedAppliedCounts).reduce((sum, count) => sum + count, 0),
+            totalShortlisted: formattedStatusCounts.Shortlisted,
+            totalAccepted: formattedStatusCounts.Accepted,
+            totalRejected: formattedStatusCounts.Rejected
+        };
+
+    } catch (error) {
+        throw new AppError(error.message || 'Failed to fetch dashboard metrics', 500);
+    }
+}
+
+
 
 // candidate
 // export async function fetchOffcampusApplicationService(userId) {
