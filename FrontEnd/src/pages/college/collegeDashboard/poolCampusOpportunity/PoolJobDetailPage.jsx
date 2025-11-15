@@ -3,6 +3,7 @@ import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { MapPin, Building, Calendar, Globe, Mail, Phone, Linkedin, CheckCircle, Info, Download } from 'lucide-react';
 import { ApplyForPoolCampus, SaveOppurtunity, getPoolCampusJobById } from '@/lib/College_AxiosIntance';
 import toast from 'react-hot-toast';
+import { viewed } from '@/lib/User_AxiosInstance';
 
 // Utility function to format date
 const formatDate = (dateString) => {
@@ -44,6 +45,7 @@ const PoolJobDetailsPage = () => {
             try {
                 const response = await getPoolCampusJobById(id);
                 setJobDetails(response.data);
+                await viewed(response.data._id);
             } catch (err) {
                 console.error("Error fetching job details:", err);
                 setError("Failed to fetch job details. Please try again later.");

@@ -306,7 +306,7 @@ function JobManagementApplication() {
                                             job.location || 'N/A';
                                         const jobStatus = job.jobStatus || 'Unknown';
                                         const deadline = job.endDate || job.deadline;
-                                        const views = job.views || 0;
+                                        const views = job?.views ?? 0;
                                         const applications = job.applicationCount || job.applications || 0;
 
                                         return (

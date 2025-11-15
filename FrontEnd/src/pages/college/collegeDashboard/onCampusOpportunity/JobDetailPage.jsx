@@ -1,4 +1,5 @@
 import { ApplyForOnCampus, getCompanyPostingForOncampusDetail, SaveOppurtunity } from '@/lib/College_AxiosIntance';
+import { viewed } from '@/lib/User_AxiosInstance';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -37,8 +38,9 @@ const JobDetailPage = () => {
   const loadJobDetail = async () => {
     try {
       const response = await getCompanyPostingForOncampusDetail(id);
-      console.log(response.data);
+      // console.log(response.data);
       setJob(response.data);
+      await viewed(response.data._id);
       setError(null);
     } catch (error) {
       console.error("Error loading job detail: ", error);

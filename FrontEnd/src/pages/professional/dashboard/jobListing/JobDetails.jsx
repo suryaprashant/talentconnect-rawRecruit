@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 
 //  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
 // import JobCard from '@/components/student/studentDashboard/jobListing/JobCard';
-import { ApplyForJobListingOppurtunity, getJobLisingJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
+import { ApplyForJobListingOppurtunity, getJobLisingJobDetails, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 
 const JobDetails = () => {
     const [searchParams] = useSearchParams();
@@ -26,6 +26,7 @@ const JobDetails = () => {
                 const details = await getJobLisingJobDetails(jobId);
                 // console.log("..../", details.data[0]);
                 setJobDetails(details.data[0]);
+                await viewed(details.data[0]._id);
 
                 // Fetch similar jobs
                 // const similar = await fetchSimilarJobs(jobId);

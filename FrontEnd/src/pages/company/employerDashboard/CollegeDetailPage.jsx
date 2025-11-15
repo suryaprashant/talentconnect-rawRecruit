@@ -4,6 +4,7 @@ import { getPoolCampusJobByIdForCompany } from '../../../lib/College_AxiosIntanc
 import { format } from 'date-fns';
 import { ApplyForOncampusOppurtunity, SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
+import { viewed } from '@/lib/User_AxiosInstance';
 
 // --- NEW HELPER ---
 // Formats dates but returns 'N/A' if the date is invalid
@@ -39,6 +40,7 @@ const CollegeDetailPage = () => {
       const response = await getPoolCampusJobByIdForCompany(id);
       if (response && response.data) {
         setPosting(response.data);
+        await viewed(response.data._id);
       } else {
         throw new Error('Posting not found.');
       }
