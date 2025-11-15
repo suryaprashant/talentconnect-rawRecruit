@@ -40,7 +40,7 @@ const PoolCampusEmployeeDash = () => {
             const response = await getPoolCampusJobByIdForCompany(id);
             if (response && response.data) {
                 setPosting(response.data);
-                await viewed(details.data._id);
+                await viewed(response.data._id);
             } else {
                 throw new Error('Posting not found.');
             }

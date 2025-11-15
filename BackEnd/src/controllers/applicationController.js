@@ -10,6 +10,7 @@ import {
     getApplicationService,
     getSavedJobsService,
     saveJobService,
+    fetchCompanyDashboardMetrics,
     // getApplicationService, 
     // getOffCampusApplicantsService, fetchShortlistedCandidates, fetchInternshipApplicationService, fetchApplicationStatusService
 } from "../services/applicationService.js";
@@ -20,6 +21,8 @@ import { getCandidatEmail, getStudentService } from "../services/studentService.
 import sendStatusChangeEmail from "../utils/sendStatusChangeEmail.js";
 import sendScheduledInterviewEmail from "../utils/sendScheduledInterviewEmail.js";
 // import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
+
+ 
 
 // save opportunity
 export async function saveJobByUser(req, res) {
@@ -654,3 +657,22 @@ export async function scheduleInterview(req, res) {
         res.status(500).json({ Error: "Internal server error" });
     }
 }
+export const getCompanyDashboardMetrics = async (req, res) => {
+    try {
+        const user = req.user;
+        const metricsData = await fetchCompanyDashboardMetrics(user);
+        console.log("Metrics Data: ", metricsData);
+        res.status(200).json({
+            success: true,
+            data: metricsData
+        });
+
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || 'Internal Server Error'
+        });
+    }
+};

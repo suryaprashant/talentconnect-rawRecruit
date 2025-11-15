@@ -409,5 +409,12 @@ export function getCompanyServiceRequestStatus() {
     .catch(error => error);
 }
 
-// ==================================================  End  ==================================================
+// ==================================================  End  
+
+export function getCompanyDashboardMetrics() {
+  return axiosClient.get(`/application/company/metrics`)
+    .then(response => response)
+    .catch(error => error);
+}
+
 

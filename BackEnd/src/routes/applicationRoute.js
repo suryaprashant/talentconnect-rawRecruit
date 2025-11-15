@@ -1,5 +1,8 @@
 import express from "express";
-import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication, getShortlistedCompaniesForCollege, shortlistApplicantForCompany, rejectCompanyApplicationByCollege, scheduleInterview } from "../controllers/applicationController.js";
+import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication, getShortlistedCompaniesForCollege, shortlistApplicantForCompany, rejectCompanyApplicationByCollege, scheduleInterview ,
+getCompanyDashboardMetrics
+    
+ } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
@@ -41,11 +44,18 @@ router.get('/manage/shortlist/', secureRoute, getShortlistedCandidatesByCompany)
 router.get('/manage/college/shortlist/', secureRoute, getShortlistedCompaniesForCollege);
 
 // reject
+// router.get('/manage/rejected/', secureRoute, getRejectedCandidatesByCompany);
+
 router.patch('/manage/reject/:applicationId', secureRoute, rejectApplicant);
 router.patch("/manage/college/reject/:applicationId", secureRoute, rejectCompanyApplicationByCollege)
 // accept
 router.patch('/manage/accept/:applicationId', secureRoute, acceptApplicant);
 router.get('/manage/accept/', secureRoute, getAcceptedCandidatesByCompany);
+
+
+router.get('/company/metrics', secureRoute, getCompanyDashboardMetrics);
+
+
 
 
 // get candidates by job
