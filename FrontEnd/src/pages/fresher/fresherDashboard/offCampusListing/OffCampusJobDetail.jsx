@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate,useSearchParams } from 'react-router-dom';
 import { ApplyForOppurtunity, getJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
-// ADDED: Imported Navigation for Drive Venue
+
 import { MapPin, ArrowLeft, Building2, Users, Navigation } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -44,6 +44,17 @@ function OffCampusJobDetail() {
       const response = await SaveOppurtunity(jobId, jobDetail?.jobType);
       // console.log("Applicaiton: ", response);
       if (response?.data?.success === true) toast.success('Job saved!');
+      else toast.error(response.response.data?.msg);
+    } catch (err) {
+      // console.error('Error applying for job:', err);
+      toast.error('Something went wrong!');
+    }
+  };
+
+   const handleApply = async () => {
+    try {
+      const response = await ApplyForOppurtunity(jobId);
+      if (response?.data?.success === true) toast.success('Application submitted!');
       else toast.error(response.response.data?.msg);
     } catch (err) {
       // console.error('Error applying for job:', err);
@@ -141,7 +152,7 @@ function OffCampusJobDetail() {
           </button>
           {!isApplied && (<div>
             {!isSaved && (<button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>)}
-            <button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800" onClick={() => handleApply()}>Apply</button></div>
+            <button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"onClick={handleApply}>Apply</button></div>
           )}
         </div>
       </div>
@@ -181,7 +192,7 @@ function OffCampusJobDetail() {
         </div>
       </section>
 
-      {/* Candidate Requirements */}
+   
       <section className="mb-8">
         <h3 className="text-lg font-semibold mb-3">Candidate Requirements</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -191,7 +202,7 @@ function OffCampusJobDetail() {
         </div>
       </section>
 
-      {/* --- NEW/MODIFIED SECTION --- */}
+  
       <section className="mb-8">
         <h3 className="text-lg font-semibold mb-3">Compensation & Benefits</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -212,7 +223,7 @@ function OffCampusJobDetail() {
             </div>
           </div>
           <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <div className="text-sm font-medium text-gray-500">Joining Bonus</div>
+            <div className="text-sm font-medium text-gray-500">Variable Pay</div>
             <div className="text-lg font-bold text-gray-900">
               {jobDetail.packageDetails?.joiningBonus
                 ? `${jobDetail.packageDetails.currency || ''} ${jobDetail.packageDetails.joiningBonus.toLocaleString()}`
@@ -223,7 +234,7 @@ function OffCampusJobDetail() {
         <h4 className="font-medium mb-2">Benefits Offered</h4>
         {renderTags(jobDetail.benefits)}
       </section>
-      {/* --- END NEW/MODIFIED SECTION --- */}
+      
 
 
       {/* Hiring Process */}

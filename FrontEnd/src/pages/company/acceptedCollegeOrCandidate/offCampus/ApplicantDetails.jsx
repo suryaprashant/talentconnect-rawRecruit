@@ -180,7 +180,7 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                       </div>
                     </div>
                     <div className="flex items-center">
-                      <p className="font-bold mr-2">Language:</p> <span className="mr-4"></span>
+                      <p className="font-bold mr-2">Language:</p> <span className="mr-4">{applicant?.applicant.languagesKnown}</span>
                     </div>
                     <div className="flex items-center">
                       <p className="font-bold mr-2">Designation:</p> <span>Backend Developer at TalentConnects</span>

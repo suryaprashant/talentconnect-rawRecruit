@@ -141,6 +141,21 @@ function EmployerSidebar({ activePath }) {
         />
       </SidebarNavGroup>
 
+      <SidebarNavGroup label="Application Status" icon={<FiUsers />} active={activePath.includes('/company/application-status')}>
+        <SidebarNavItem
+          to="/employer/application-status/oncampus"
+          icon={<FiMapPin />}
+          label="On Campus"
+          active={activePath === '/employer/application-status/oncampus'}
+        />
+        <SidebarNavItem
+          to="/employer/application-status/poolcampus"
+          icon={<FiMapPin />}
+          label="Pool Campus"
+          active={activePath === '/employer/application-status/poolcampus'}
+        />
+      </SidebarNavGroup>
+
       {/* Shortlisted Candidates/Colleges */}
       <SidebarNavGroup label="Shortlisted Candidates" icon={<FiCheckCircle />} active={activePath.includes('/shortlisted')}>
         <SidebarNavItem 

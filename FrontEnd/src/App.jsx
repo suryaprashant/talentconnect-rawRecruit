@@ -504,6 +504,10 @@ function AppRoutes() {
               <Route path="/employer/job-management/Internship" element={<EmployerJobListingJobManagement />} />
 
 
+              <Route path="/employer/application-status/oncampus" element={<OncampusApplicationStatus />} />
+              <Route path="/employer/application-status/poolcampus" element={<PoolcampusApplicationStatus />} />
+
+
               {/* Accepted college / candidates  */}
               <Route path="/employer/accepted/on-campus-listings" element={<EmployerAcceptedShortlistDrive />} />
               <Route path="/accepted/on-campus-listings/:driveId" element={<EmployerAcceptedDriveDetail />} />

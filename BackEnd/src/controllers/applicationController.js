@@ -289,6 +289,9 @@ export async function getUserApplicationStatus(req, res) {
             case 'college':
                 user = await getCollegeService(userId);
                 break;
+            case 'employer':
+                user = await getEmployerService(req.user);
+                break;    
             case 'company':
                 user = await getCompanyService(userId);
                 break;

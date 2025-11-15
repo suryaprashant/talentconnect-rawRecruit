@@ -59,7 +59,7 @@ function PoolApplication() {
         setError(null);
 
         // Fetching 'Pool-campus' jobs as requested
-        const response = await getCollegePostedJobs('On-campus', lastSegment);
+        const response = await getCollegePostedJobs('Pool-campus', lastSegment);
 
         if (response.data && response.data.response && Array.isArray(response.data.response)) {
           // Process jobs to update their status based on dates
@@ -183,8 +183,8 @@ function PoolApplication() {
       <div className="max-w-7xl mx-auto p-4 bg-white">
         <div className="flex justify-between items-center mt-10 mb-4">
           <div>
-            <h1 className="text-3xl font-bold">Manage On-Campus Applications</h1>
-            <p className="text-gray-600 mt-2">Track Your On Campus Drives and Streamline Applications</p>
+            <h1 className="text-3xl font-bold">Manage Pool-Campus Applications</h1>
+            <p className="text-gray-600 mt-2">Track Your Pool-Campus Drives and Streamline Applications</p>
           </div>
           <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors">
             Post a Job
