@@ -17,7 +17,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   // <StrictMode>
   <>
     {/* Wrap the entire application with GoogleOAuthProvider */}
-    <GoogleOAuthProvider GoogleOAuthProvider GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} >
+    <GoogleOAuthProvider  clientId={GOOGLE_CLIENT_ID} >
       <BrowserRouter>
         <RoleProvider>
           <AuthProvider>
