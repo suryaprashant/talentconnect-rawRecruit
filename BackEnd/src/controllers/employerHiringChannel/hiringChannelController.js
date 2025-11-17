@@ -60,7 +60,7 @@ export const createJobPosting = async (req, res) => {
             jobType: "Job-listing",
         };
 
-        const newPosting = await createPostingService(postingData);
+        const newPosting = await createPostingService(postingData, userId);
         if (!newPosting) {
             return sendError(res, 500, "Failed to create job posting");
         }
@@ -88,7 +88,7 @@ export const createOffCampusJobPosting = async (req, res) => {
             jobType: "Off-campus",
         };
 
-        const newPosting = await createPostingService(postingData);
+        const newPosting = await createPostingService(postingData , userId);
         if (!newPosting) {
             return sendError(res, 500, "Failed to create off-campus posting");
         }
@@ -117,7 +117,7 @@ export const createOnCampusPosting = async (req, res) => {
             
         };
 
-        const newPosting = await createPostingService(postingData);
+        const newPosting = await createPostingService(postingData, userId);
         if (!newPosting) {
             return sendError(res, 500, "Failed to create on-campus posting");
         }
@@ -145,7 +145,7 @@ export const createPoolCampusPosting = async (req, res) => {
             visibleTo: "College",
         };
 
-        const newPosting = await createPostingService(postingData);
+        const newPosting = await createPostingService(postingData, userId);
         if (!newPosting) {
             return sendError(res, 500, "Failed to create pool-campus posting");
         }

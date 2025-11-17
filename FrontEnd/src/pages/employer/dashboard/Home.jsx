@@ -55,37 +55,30 @@
 
 
 
-
 import { useState, useEffect } from 'react'
 import PageHeader from '@/components/dashboard/PageHeader'
 import Button from '@/components/ui/Button'
-import { FiPlus, FiUsers, FiCheckCircle, FiClock, FiAlertCircle, FiTrendingUp, FiTrendingDown, FiXCircle } from 'react-icons/fi'
+import { FiPlus, FiUsers, FiCheckCircle, FiClock, FiAlertCircle, FiTrendingUp, FiXCircle } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
-import { getShorlistedCandidateByCompany, getAcceptedCandidateByCompany, getCompanyServiceRequestStatus, getPostedJobs } from '@/lib/Company_AxiosInstance'
+import { getCompanyDashboardMetrics, getCompanyServiceRequestStatus } from '@/lib/Company_AxiosInstance'
 
 function Home() {
   const navigate = useNavigate()
   const [dashboardData, setDashboardData] = useState({
-    shortlisted: [],
-    accepted: [],
-    applied: [],
-    rejected: [],
-    byJobType: {},
-    onCampus: {
-      shortlisted: [],
-      accepted: [],
-      newApplied: 0
+    appliedByCategory: {
+      'On-campus': 0,
+      'Pool-campus': 0,
+      'Off-campus': 0
     },
-    poolCampus: {
-      shortlisted: [],
-      accepted: [],
-      newApplied: 0
+    statusTotals: {
+      'Shortlisted': 0,
+      'Accepted': 0,
+      'Rejected': 0
     },
-    offCampus: {
-      shortlisted: [],
-      accepted: [],
-      newApplied: 0
-    },
+    totalApplied: 0,
+    totalShortlisted: 0,
+    totalAccepted: 0,
+    totalRejected: 0,
     serviceRequests: {
       total: 0,
       pending: 0,
@@ -101,177 +94,59 @@ function Home() {
 
   const fetchDashboardData = async () => {
     try {
-      const jobTypes = ['Off-campus', 'Job-listing', 'Internship', 'On-campus', 'Pool-campus']
-      const applicantTypes = ['user', 'college', 'company']
-
-      // Initialize byJobType map for easy breakdown rendering
-      const byJobTypeInit = jobTypes.reduce((acc, jt) => {
-        acc[jt] = { shortlisted: [], accepted: [], applied: [], rejected: [] }
-        return acc
-      }, {})
-
-      const promises = []
-      for (const jobType of jobTypes) {
-        for (const applicantType of applicantTypes) {
-          promises.push(
-            getShorlistedCandidateByCompany(applicantType, jobType).catch(() => ({ data: { response: [] } })),
-            getAcceptedCandidateByCompany(applicantType, jobType).catch(() => ({ data: { response: [] } }))
-          )
+      setDashboardData(prev => ({ ...prev, loading: true }))
+      
+      // Fetch dashboard metrics and service requests in parallel
+      const [metricsResponse, serviceRequestsResponse] = await Promise.all([
+        getCompanyDashboardMetrics(),
+        getCompanyServiceRequestStatus().catch(() => ({ 
+          data: { 
+            success: false,
+            data: {
+              total: 0,
+              pending: 0,
+              approved: 0,
+              rejected: 0
+            }
+          } 
+        }))
+      ])
+      
+      if (metricsResponse.data?.success) {
+        const metricsData = metricsResponse.data.data
+        
+        // Get service requests data
+        let serviceRequestsData = {
+          total: 0,
+          pending: 0,
+          approved: 0,
+          rejected: 0
         }
-      }
 
-      // Add posted jobs fetch for On-campus, Pool-campus and Off-campus to compute new (Applied) counts
-      promises.push(
-        getPostedJobs('On-campus').catch(() => ({ data: [] })),
-        getPostedJobs('Pool-campus').catch(() => ({ data: [] })),
-        getPostedJobs('Off-campus').catch(() => ({ data: [] }))
-      )
-
-      // Add service request API call at the end
-      promises.push(getCompanyServiceRequestStatus().catch(() => ({ 
-        data: { 
-          success: false,
-          data: {
-            total: 0,
-            pending: 0,
-            approved: 0,
-            rejected: 0
-          }
-        } 
-      })))
-
-      const results = await Promise.all(promises)
-
-  let shortlisted = []
-  let accepted = []
-  let applied = []
-  let rejected = []
-      let onCampusShortlisted = []
-      let onCampusAccepted = []
-      let onCampusApplied = []
-      let onCampusRejected = []
-      let poolCampusShortlisted = []
-      let poolCampusAccepted = []
-      let poolCampusApplied = []
-      let poolCampusRejected = []
-      let offCampusShortlisted = []
-      let offCampusAccepted = []
-      let offCampusApplied = []
-      let offCampusRejected = []
-
-      // Process application results (now we have 30 items: 5 jobTypes × 3 applicantTypes × 2 calls)
-      let resultIndex = 0
-      for (const jobType of jobTypes) {
-        for (const applicantType of applicantTypes) {
-          const shortlistedRes = results[resultIndex]?.data?.response || []
-          const acceptedRes = results[resultIndex + 1]?.data?.response || []
-          
-          // Add to overall counts
-          shortlisted = shortlisted.concat(shortlistedRes)
-          accepted = accepted.concat(acceptedRes)
-          // For demo purposes, we'll calculate applied as shortlisted + accepted + some random rejected
-          // In real implementation, you would fetch applied and rejected candidates separately
-          const appliedRes = [...shortlistedRes, ...acceptedRes]
-          const rejectedRes = [] // This would come from your rejected candidates API
-
-          applied = applied.concat(appliedRes)
-          rejected = rejected.concat(rejectedRes)
-
-          // Populate job-type breakdown
-          byJobTypeInit[jobType].shortlisted = byJobTypeInit[jobType].shortlisted.concat(shortlistedRes)
-          byJobTypeInit[jobType].accepted = byJobTypeInit[jobType].accepted.concat(acceptedRes)
-          byJobTypeInit[jobType].applied = byJobTypeInit[jobType].applied.concat(appliedRes)
-          byJobTypeInit[jobType].rejected = byJobTypeInit[jobType].rejected.concat(rejectedRes)
-          
-          // Categorize by campus type
-          if (jobType === 'On-campus') {
-            onCampusShortlisted = onCampusShortlisted.concat(shortlistedRes)
-            onCampusAccepted = onCampusAccepted.concat(acceptedRes)
-            onCampusApplied = onCampusApplied.concat(appliedRes)
-            onCampusRejected = onCampusRejected.concat(rejectedRes)
-          } else if (jobType === 'Pool-campus') {
-            poolCampusShortlisted = poolCampusShortlisted.concat(shortlistedRes)
-            poolCampusAccepted = poolCampusAccepted.concat(acceptedRes)
-            poolCampusApplied = poolCampusApplied.concat(appliedRes)
-            poolCampusRejected = poolCampusRejected.concat(rejectedRes)
-          } else if (jobType === 'Off-campus') {
-            offCampusShortlisted = offCampusShortlisted.concat(shortlistedRes)
-            offCampusAccepted = offCampusAccepted.concat(acceptedRes)
-            offCampusApplied = offCampusApplied.concat(appliedRes)
-            offCampusRejected = offCampusRejected.concat(rejectedRes)
-          }
-          
-          resultIndex += 2
+        if (serviceRequestsResponse.data?.success && serviceRequestsResponse.data?.data) {
+          serviceRequestsData = serviceRequestsResponse.data.data
+        } else if (serviceRequestsResponse.data?.data) {
+          serviceRequestsData = serviceRequestsResponse.data.data
         }
+
+        setDashboardData({
+          appliedByCategory: metricsData.appliedByCategory,
+          statusTotals: metricsData.statusTotals,
+          totalApplied: metricsData.totalApplied,
+          totalShortlisted: metricsData.totalShortlisted,
+          totalAccepted: metricsData.totalAccepted,
+          totalRejected: metricsData.totalRejected,
+          serviceRequests: serviceRequestsData,
+          loading: false
+        })
+      } else {
+        throw new Error('Failed to fetch dashboard data')
       }
-
-  // Extract posted jobs for campus types (last 4 include: onCampusJobs, poolCampusJobs, offCampusJobs, serviceRequests)
-  const onCampusJobsRes = results[results.length - 4]
-  const poolCampusJobsRes = results[results.length - 3]
-  const offCampusJobsRes = results[results.length - 2]
-  const serviceRequestRes = results[results.length - 1]
-      let serviceRequestsData = {
-        total: 0,
-        pending: 0,
-        approved: 0,
-        rejected: 0
-      }
-
-      if (serviceRequestRes.data?.success && serviceRequestRes.data?.data) {
-        serviceRequestsData = serviceRequestRes.data.data
-      } else if (serviceRequestRes.data?.data) {
-        // Fallback in case structure is different
-        serviceRequestsData = serviceRequestRes.data.data
-      }
-
-      // Compute new (Applied) counts using posted jobs' applicationCount
-      const onCampusJobs = Array.isArray(onCampusJobsRes?.data) ? onCampusJobsRes.data : []
-      const poolCampusJobs = Array.isArray(poolCampusJobsRes?.data) ? poolCampusJobsRes.data : []
-      const offCampusJobs = Array.isArray(offCampusJobsRes?.data) ? offCampusJobsRes.data : []
-      const onCampusNewApplied = onCampusJobs.reduce((sum, j) => sum + (j?.applicationCount || 0), 0)
-      const poolCampusNewApplied = poolCampusJobs.reduce((sum, j) => sum + (j?.applicationCount || 0), 0)
-      const offCampusNewApplied = offCampusJobs.reduce((sum, j) => sum + (j?.applicationCount || 0), 0)
-
-      setDashboardData({
-        shortlisted,
-        accepted,
-        applied,
-        rejected,
-        byJobType: byJobTypeInit,
-        onCampus: {
-          shortlisted: onCampusShortlisted,
-          accepted: onCampusAccepted,
-          applied: onCampusApplied,
-          rejected: onCampusRejected,
-          newApplied: onCampusNewApplied
-        },
-        poolCampus: {
-          shortlisted: poolCampusShortlisted,
-          accepted: poolCampusAccepted,
-          applied: poolCampusApplied,
-          rejected: poolCampusRejected,
-          newApplied: poolCampusNewApplied
-        },
-        offCampus: {
-          shortlisted: offCampusShortlisted,
-          accepted: offCampusAccepted,
-          applied: offCampusApplied,
-          rejected: offCampusRejected,
-          newApplied: offCampusNewApplied
-        },
-        serviceRequests: serviceRequestsData,
-        loading: false
-      })
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
       setDashboardData(prev => ({ ...prev, loading: false }))
     }
   }
-
-  const totalApplications = dashboardData.applied.length
-  const totalShortlisted = dashboardData.shortlisted.length
-  const totalAccepted = dashboardData.accepted.length
-  const totalRejected = dashboardData.rejected.length
 
   if (dashboardData.loading) {
     return (
@@ -279,32 +154,6 @@ function Home() {
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
     )
-  }
-
-  const getStatusColor = (status) => {
-    switch(status?.toLowerCase()) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'approved':
-        return 'bg-green-100 text-green-800'
-      case 'rejected':
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  const getStatusIcon = (status) => {
-    switch(status?.toLowerCase()) {
-      case 'pending':
-        return <FiClock className="w-4 h-4" />
-      case 'approved':
-        return <FiCheckCircle className="w-4 h-4" />
-      case 'rejected':
-        return <FiAlertCircle className="w-4 h-4" />
-      default:
-        return <FiUsers className="w-4 h-4" />
-    }
   }
 
   return (
@@ -328,9 +177,9 @@ function Home() {
             <div>
               <h3 className="text-sm font-medium text-gray-500">On-Campus</h3>
               <p className="text-3xl font-bold text-blue-600 mt-2">
-                {dashboardData.onCampus.shortlisted.length + dashboardData.onCampus.accepted.length + dashboardData.onCampus.newApplied}
+                {dashboardData.appliedByCategory['On-campus']}
               </p>
-              <p className="text-xs text-gray-500 mt-2">New: {dashboardData.onCampus.newApplied}</p>
+              <p className="text-xs text-gray-500 mt-2">Applied Candidates</p>
             </div>
             <div className="p-3 bg-blue-100 rounded-lg">
               <FiUsers className="w-8 h-8 text-blue-600" />
@@ -347,9 +196,9 @@ function Home() {
             <div>
               <h3 className="text-sm font-medium text-gray-500">Pool-Campus</h3>
               <p className="text-3xl font-bold text-teal-600 mt-2">
-                {dashboardData.poolCampus.shortlisted.length + dashboardData.poolCampus.accepted.length + dashboardData.poolCampus.newApplied}
+                {dashboardData.appliedByCategory['Pool-campus']}
               </p>
-              <p className="text-xs text-gray-500 mt-2">New: {dashboardData.poolCampus.newApplied}</p>
+              <p className="text-xs text-gray-500 mt-2">Applied Candidates</p>
             </div>
             <div className="p-3 bg-teal-100 rounded-lg">
               <FiUsers className="w-8 h-8 text-teal-600" />
@@ -366,9 +215,9 @@ function Home() {
             <div>
               <h3 className="text-sm font-medium text-gray-500">Off-Campus</h3>
               <p className="text-3xl font-bold text-purple-600 mt-2">
-                {dashboardData.offCampus.shortlisted.length + dashboardData.offCampus.accepted.length + dashboardData.offCampus.newApplied}
+                {dashboardData.appliedByCategory['Off-campus']}
               </p>
-              <p className="text-xs text-gray-500 mt-2">New: {dashboardData.offCampus.newApplied}</p>
+              <p className="text-xs text-gray-500 mt-2">Applied Candidates</p>
             </div>
             <div className="p-3 bg-purple-100 rounded-lg">
               <FiUsers className="w-8 h-8 text-purple-600" />
@@ -384,12 +233,12 @@ function Home() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-500">Application Status</h3>
-              <p className="text-3xl font-bold text-indigo-600 mt-2">{totalApplications}</p>
+              <p className="text-3xl font-bold text-indigo-600 mt-2">{dashboardData.totalApplied}</p>
               <div className="flex flex-wrap gap-1 mt-2">
-                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Applied: {totalApplications}</span>
-                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Shortlisted: {totalShortlisted}</span>
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Accepted: {totalAccepted}</span>
-                <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Rejected: {totalRejected}</span>
+                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Applied: {dashboardData.totalApplied}</span>
+                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Shortlisted: {dashboardData.totalShortlisted}</span>
+                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Accepted: {dashboardData.totalAccepted}</span>
+                <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Rejected: {dashboardData.totalRejected}</span>
               </div>
             </div>
             <div className="p-3 bg-indigo-100 rounded-lg">
@@ -406,10 +255,10 @@ function Home() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-500">Shortlisted</h3>
-              <p className="text-3xl font-bold text-yellow-600 mt-2">{totalShortlisted}</p>
+              <p className="text-3xl font-bold text-yellow-600 mt-2">{dashboardData.totalShortlisted}</p>
               <p className="text-xs text-gray-500 mt-2 flex items-center">
                 <FiTrendingUp className="w-3 h-3 mr-1" />
-                {totalShortlisted > 0 ? 'In Progress' : 'No Candidates'}
+                {dashboardData.totalShortlisted > 0 ? 'In Progress' : 'No Candidates'}
               </p>
             </div>
             <div className="p-3 bg-yellow-100 rounded-lg">
@@ -426,7 +275,7 @@ function Home() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium text-gray-500">Accepted</h3>
-              <p className="text-3xl font-bold text-green-600 mt-2">{totalAccepted}</p>
+              <p className="text-3xl font-bold text-green-600 mt-2">{dashboardData.totalAccepted}</p>
               <p className="text-xs text-gray-500 mt-2 flex items-center">
                 <FiCheckCircle className="w-3 h-3 mr-1" />
                 Final Hires
@@ -484,8 +333,8 @@ function Home() {
           <div className="space-y-4">
             <div className="relative">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Total Received</span>
-                <span className="text-sm font-bold text-gray-900">{totalApplications}</span>
+                <span className="text-sm font-medium text-gray-700">Total Applied</span>
+                <span className="text-sm font-bold text-gray-900">{dashboardData.totalApplied}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
                 <div className="bg-blue-600 h-3 rounded-full" style={{ width: '100%' }}></div>
@@ -496,13 +345,18 @@ function Home() {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700">Shortlisted</span>
                 <span className="text-sm font-bold text-gray-900">
-                  {totalApplications > 0 ? Math.round((totalShortlisted / totalApplications) * 100) : 0}%
+                  {dashboardData.totalApplied > 0 ? 
+                    Math.round((dashboardData.totalShortlisted / dashboardData.totalApplied) * 100) : 0}%
+                  ({dashboardData.totalShortlisted})
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
                 <div 
                   className="bg-yellow-600 h-3 rounded-full" 
-                  style={{ width: totalApplications > 0 ? `${(totalShortlisted / totalApplications) * 100}%` : '0%' }}
+                  style={{ 
+                    width: dashboardData.totalApplied > 0 ? 
+                      `${Math.min(100, (dashboardData.totalShortlisted / dashboardData.totalApplied) * 100)}%` : '0%' 
+                  }}
                 ></div>
               </div>
             </div>
@@ -511,13 +365,18 @@ function Home() {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700">Accepted</span>
                 <span className="text-sm font-bold text-gray-900">
-                  {totalApplications > 0 ? Math.round((totalAccepted / totalApplications) * 100) : 0}%
+                  {dashboardData.totalApplied > 0 ? 
+                    Math.round((dashboardData.totalAccepted / dashboardData.totalApplied) * 100) : 0}%
+                  ({dashboardData.totalAccepted})
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
                 <div 
                   className="bg-green-600 h-3 rounded-full" 
-                  style={{ width: totalApplications > 0 ? `${(totalAccepted / totalApplications) * 100}%` : '0%' }}
+                  style={{ 
+                    width: dashboardData.totalApplied > 0 ? 
+                      `${Math.min(100, (dashboardData.totalAccepted / dashboardData.totalApplied) * 100)}%` : '0%' 
+                  }}
                 ></div>
               </div>
             </div>
@@ -526,13 +385,18 @@ function Home() {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700">Rejected</span>
                 <span className="text-sm font-bold text-gray-900">
-                  {totalApplications > 0 ? Math.round((totalRejected / totalApplications) * 100) : 0}%
+                  {dashboardData.totalApplied > 0 ? 
+                    Math.round((dashboardData.totalRejected / dashboardData.totalApplied) * 100) : 0}%
+                  ({dashboardData.totalRejected})
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
                 <div 
                   className="bg-red-600 h-3 rounded-full" 
-                  style={{ width: totalApplications > 0 ? `${(totalRejected / totalApplications) * 100}%` : '0%' }}
+                  style={{ 
+                    width: dashboardData.totalApplied > 0 ? 
+                      `${Math.min(100, (dashboardData.totalRejected / dashboardData.totalApplied) * 100)}%` : '0%' 
+                  }}
                 ></div>
               </div>
             </div>
@@ -558,7 +422,6 @@ function Home() {
             <thead>
               <tr className="bg-gray-50">
                 <th className="px-4 py-2 text-left font-medium text-gray-600">Job Type</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-600">Total</th>
                 <th className="px-4 py-2 text-left font-medium text-gray-600">Applied</th>
                 <th className="px-4 py-2 text-left font-medium text-gray-600">Shortlisted</th>
                 <th className="px-4 py-2 text-left font-medium text-gray-600">Accepted</th>
@@ -566,24 +429,43 @@ function Home() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {Object.entries(dashboardData.byJobType).map(([jt, data]) => {
-                const total = data.applied.length + data.shortlisted.length + data.accepted.length + data.rejected.length
-                return (
-                  <tr key={jt} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 font-medium text-gray-800">{jt}</td>
-                    <td className="px-4 py-2 text-gray-900">{total}</td>
-                    <td className="px-4 py-2 text-blue-700">{data.applied.length}</td>
-                    <td className="px-4 py-2 text-yellow-700">{data.shortlisted.length}</td>
-                    <td className="px-4 py-2 text-green-700">{data.accepted.length}</td>
-                    <td className="px-4 py-2 text-red-700">{data.rejected.length}</td>
-                  </tr>
-                )
-              })}
+              {/* On-Campus Row */}
+              <tr className="hover:bg-gray-50">
+                <td className="px-4 py-2 font-medium text-gray-800">On-Campus</td>
+                <td className="px-4 py-2 text-blue-700">{dashboardData.appliedByCategory['On-campus']}</td>
+                <td className="px-4 py-2 text-yellow-700">-</td>
+                <td className="px-4 py-2 text-green-700">-</td>
+                <td className="px-4 py-2 text-red-700">-</td>
+              </tr>
+              {/* Pool-Campus Row */}
+              <tr className="hover:bg-gray-50">
+                <td className="px-4 py-2 font-medium text-gray-800">Pool-Campus</td>
+                <td className="px-4 py-2 text-blue-700">{dashboardData.appliedByCategory['Pool-campus']}</td>
+                <td className="px-4 py-2 text-yellow-700">-</td>
+                <td className="px-4 py-2 text-green-700">-</td>
+                <td className="px-4 py-2 text-red-700">-</td>
+              </tr>
+              {/* Off-Campus Row */}
+              <tr className="hover:bg-gray-50">
+                <td className="px-4 py-2 font-medium text-gray-800">Off-Campus</td>
+                <td className="px-4 py-2 text-blue-700">{dashboardData.appliedByCategory['Off-campus']}</td>
+                <td className="px-4 py-2 text-yellow-700">-</td>
+                <td className="px-4 py-2 text-green-700">-</td>
+                <td className="px-4 py-2 text-red-700">-</td>
+              </tr>
+              {/* Totals Row */}
+              <tr className="hover:bg-gray-50 bg-gray-50 font-semibold">
+                <td className="px-4 py-2 font-medium text-gray-900">Total</td>
+                <td className="px-4 py-2 text-blue-900">{dashboardData.totalApplied}</td>
+                <td className="px-4 py-2 text-yellow-900">{dashboardData.totalShortlisted}</td>
+                <td className="px-4 py-2 text-green-900">{dashboardData.totalAccepted}</td>
+                <td className="px-4 py-2 text-red-900">{dashboardData.totalRejected}</td>
+              </tr>
             </tbody>
           </table>
         </div>
         <div className="mt-4 text-xs text-gray-500">
-          Data combines all applicant types per job type. Use cards above to drill into categories.
+          Applied counts are shown by category. Shortlisted, Accepted, and Rejected counts are totals across all categories.
         </div>
       </div>
 
@@ -599,27 +481,10 @@ function Home() {
               View All →
             </button>
           </div>
-          {dashboardData.shortlisted.length > 0 ? (
-            <div className="space-y-3">
-              {dashboardData.shortlisted.slice(0, 5).map((application, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">
-                      {application.applicant?.name || 'Unknown Candidate'}
-                    </p>
-                    <p className="text-xs text-gray-600 mt-1">
-                      {application.jobTitle?.join(', ') || 'Job Title'}
-                    </p>
-                  </div>
-                  <span className="px-3 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">
-                    Shortlisted
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500 text-center py-8">No shortlisted candidates yet</p>
-          )}
+          <div className="text-center py-8">
+            <p className="text-gray-500">No shortlisted candidates data available in dashboard metrics</p>
+            <p className="text-xs text-gray-400 mt-2">Detailed candidate information available in dedicated sections</p>
+          </div>
         </div>
         
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
@@ -632,27 +497,10 @@ function Home() {
               View All →
             </button>
           </div>
-          {dashboardData.accepted.length > 0 ? (
-            <div className="space-y-3">
-              {dashboardData.accepted.slice(0, 5).map((application, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">
-                      {application.applicant?.name || 'Unknown Candidate'}
-                    </p>
-                    <p className="text-xs text-gray-600 mt-1">
-                      {application.jobTitle?.join(', ') || 'Job Title'}
-                    </p>
-                  </div>
-                  <span className="px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">
-                    Accepted
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500 text-center py-8">No accepted candidates yet</p>
-          )}
+          <div className="text-center py-8">
+            <p className="text-gray-500">No accepted candidates data available in dashboard metrics</p>
+            <p className="text-xs text-gray-400 mt-2">Detailed candidate information available in dedicated sections</p>
+          </div>
         </div>
       </div>
 

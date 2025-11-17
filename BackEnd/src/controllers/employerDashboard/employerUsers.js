@@ -111,7 +111,7 @@ export const addTeamMember = async (req, res) => {
   }
 };
 
-// ✅ GET Team Member by Email
+//  GET Team Member by Email
 export const getTeamMemberByEmail = async (req, res) => {
   try {
     const { email } = req.params;
@@ -129,7 +129,7 @@ export const getTeamMemberByEmail = async (req, res) => {
   }
 };
 
-// 🔄 UPDATE Team Member by Email
+//  UPDATE Team Member by Email
 export const updateTeamMemberByEmail = async (req, res) => {
   try {
     const { email, updates } = req.body;
@@ -150,7 +150,7 @@ export const updateTeamMemberByEmail = async (req, res) => {
   }
 };
 
-// ❌ DELETE Team Member by Email
+//  DELETE Team Member by Email
 export const deleteTeamMemberByEmail = async (req, res) => {
   try {
     const { email } = req.body;

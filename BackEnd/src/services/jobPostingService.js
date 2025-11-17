@@ -74,12 +74,18 @@ export const getAll = async () => {
 
 
 
-export const createPostingService = async (postingData) => {
+export const createPostingService = async (postingData , authUserId) => {
     try {
-        const newPosting = new JobPostingTable(postingData);
-        console.log("New Posting Data:", newPosting);
+
+        const enhancedPostingData = {
+            ...postingData,
+            postedByUser: authUserId 
+        };
+
+        const newPosting = new JobPostingTable(enhancedPostingData);
+       
         const savedPosting = await newPosting.save();
-        // console.log("Saved Posting Data:", savedPosting);
+      
         return savedPosting;
     } catch (error) {
 
@@ -363,10 +369,27 @@ export const getJobPostingsByCollegeService = async (jobType) => {
     }
 };
 
-export const getJobPostedByCompanyService = async (Id, jobType, userType) => {
+export const getJobPostedByCompanyService = async (Id, jobType, userType , authUserId = null) => {
     try {
         let response;
-        if (userType === 'company' || userType === 'employer') response = await JobPostingTable.find({ companyPosted: Id, jobType: jobType }).lean();
+          if (userType === 'company') {
+            response = await JobPostingTable.find({ 
+                companyPosted: Id, 
+                jobType: jobType 
+            }).lean();
+          
+        }
+         else if (userType === 'employer') {
+           
+            const query = { 
+                companyPosted: Id,      
+                jobType: jobType,
+                postedByUser: authUserId 
+            };
+            
+            response = await JobPostingTable.find(query).lean();
+          
+        }
         else if (userType === 'college') response = await JobPostingTable.find({ collegePosted: Id, jobType: jobType }).lean();
         //  console.log(response);
         return { success: true, response: response };

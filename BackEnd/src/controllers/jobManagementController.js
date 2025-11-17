@@ -31,7 +31,7 @@ export const getPostedJobs = async (req, res) => {
             return res.status(404).json({ error: "Company profile not found" });
         }
 
-        const jobs = await getJobPostedByCompanyService(companyProfile.data[0]._id, jobType, userType);
+        const jobs = await getJobPostedByCompanyService(companyProfile.data[0]._id, jobType, userType, Id);
 
         if (!jobs || !jobs.success || !jobs.response) {
             return res.status(404).json({ msg: "Could not find jobs for this profile." });

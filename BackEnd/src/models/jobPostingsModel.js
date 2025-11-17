@@ -4,6 +4,14 @@ const jobPostingSchema = new mongoose.Schema({
     companyPosted: { type: mongoose.Schema.Types.ObjectId, ref: "CompanyProfile" },
     candidatePosted: { type: mongoose.Schema.Types.ObjectId, ref: "Onboarding" },
     collegePosted: { type: mongoose.Schema.Types.ObjectId, ref: "CollegeOnboarding" },
+    
+    postedByUser: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Auth",
+        // required: true // Make it required for new postings
+        index: true
+    },
+    
     jobType: {
         type: String,
         required: true,
