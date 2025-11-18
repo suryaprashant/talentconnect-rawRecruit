@@ -384,14 +384,15 @@ export async function ChangeStatusService(applicationId, newStatus) {
 
 export async function fetchCompanyDashboardMetrics(user) {
     try {
-        const companyId = user._id;
+        const userId = user._id;
         const userType = user?.userType;
 
         let companyProfileId;
+        let collegeProfileId;
 
         // --- COMPANY USER ---
         if (userType === 'company') {
-            const company = await getCompanyService(companyId);
+            const company = await getCompanyService(userId);
 
             if (!company || !company.success || company.data.length === 0) {
                 throw new AppError("Company profile not found!", 404);
@@ -402,7 +403,7 @@ export async function fetchCompanyDashboardMetrics(user) {
 
         // --- EMPLOYER USER ---
         else if (userType === 'employer') {
-            const employer = await getEmployerService(companyId); // fixed parameter
+            const employer = await getEmployerService(user); // Pass the full user object
 
             if (!employer || !employer.success || employer.data.length === 0) {
                 throw new AppError(employer.msg || "Employer profile not found!", 404);
@@ -410,23 +411,30 @@ export async function fetchCompanyDashboardMetrics(user) {
 
             companyProfileId = employer.data[0]._id;
         }
-        // college user
-        else if( userType === 'college'){
-            const college = await getCollegeService(companyId);
+        // --- COLLEGE USER ---
+        else if (userType === 'college') {
+            const college = await getCollegeService(userId);
+            
             if (!college || !college.success || college.data.length === 0) {
                 throw new AppError(college.msg || "College profile not found!", 404);
             }
-            companyProfileId = college.data[0]._id;
-        }
-
-        else {
+            
+            collegeProfileId = college.data[0]._id;
+        } else {
             throw new AppError("This user type cannot access this resource.", 403);
         }
 
-        // Fetch all jobs posted by this company
-        const companyJobs = await JobPostingTable.find({
-            companyPosted: companyProfileId
-        }).select('_id jobType');
+        // For college users, fetch jobs posted by college
+        // For company/employer users, fetch jobs posted by company
+        let query = {};
+        if (userType === 'college') {
+            query = { collegePosted: collegeProfileId };
+        } else {
+            query = { companyPosted: companyProfileId };
+        }
+
+        // Fetch all jobs posted by this company/college
+        const companyJobs = await JobPostingTable.find(query).select('_id jobType');
 
         const allJobIds = companyJobs.map(job => job._id);
 
@@ -519,8 +527,6 @@ export async function fetchCompanyDashboardMetrics(user) {
         throw new AppError(error.message || 'Failed to fetch dashboard metrics', 500);
     }
 }
-
-
 
 // candidate
 // export async function fetchOffcampusApplicationService(userId) {
