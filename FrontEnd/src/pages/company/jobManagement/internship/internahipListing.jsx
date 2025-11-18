@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import ApplicantDetails from './internDetails';
 import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function InternshipListing() {
   // State variables
@@ -17,6 +17,7 @@ export default function InternshipListing() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [showJobDetail, setShowJobDetail] = useState(false);
+  const navigate = useNavigate();
 
   const itemsPerPage = 5;
   const totalItems = jobs?.length;
@@ -26,7 +27,7 @@ export default function InternshipListing() {
 
   const fetchJobs = async () => {
     try {
-      const response = await getPostedJobs("Internship","Applied");
+      const response = await getPostedJobs("Internship", "Applied");
       // console.log(response.data.response);
       setJobs(response?.data);
 
@@ -235,11 +236,7 @@ export default function InternshipListing() {
                   </tr>
                 ) : (
                   currentJobs?.map(job => (
-                    <tr
-                      key={job._id}
-                      className="border-b hover:bg-gray-50 cursor-pointer"
-                      onClick={() => handleView(job._id)}
-                    >
+                    <tr key={job._id} className="border-b hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/company-dashboard/Internship/${job._id}?isApplied=true`)}>
                       <td className="px-4 py-3">
                         <div className="font-medium">{job?.jobTitle}</div>
                         <div className="text-sm text-gray-500">
