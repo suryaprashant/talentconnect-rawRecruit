@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 import Application from '../models/applicationModel.js';
  import { JobPostingTable } from '../models/jobPostingsModel.js';
-
+import {getCollegeService} from './collegeService.js';
 import { getCompanyService } from './companyService.js';
 import { getEmployerService } from './companyService.js';
 
@@ -409,6 +409,14 @@ export async function fetchCompanyDashboardMetrics(user) {
             }
 
             companyProfileId = employer.data[0]._id;
+        }
+        // college user
+        else if( userType === 'college'){
+            const college = await getCollegeService(companyId);
+            if (!college || !college.success || college.data.length === 0) {
+                throw new AppError(college.msg || "College profile not found!", 404);
+            }
+            companyProfileId = college.data[0]._id;
         }
 
         else {
