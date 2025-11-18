@@ -3,7 +3,7 @@ import { Search, Eye, ChevronLeft, ChevronRight, Trash } from 'lucide-react';
 import CollegeRequestDetail from './CollegeRequestDetail';
 import { acceptCandidate, deleteJobById, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function OnCampusJobManagement() {
   const [jobs, setJobs] = useState([]);
@@ -14,6 +14,7 @@ export default function OnCampusJobManagement() {
   const [colleges, setColleges] = useState([]);
   const [collegesLoading, setCollegesLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const itemsPerPage = 10;
 
@@ -98,12 +99,12 @@ export default function OnCampusJobManagement() {
 
   const filteredJobs = jobs.filter(job => {
     const searchLower = searchQuery.toLowerCase();
-    
+
     // Check job roles
-    const jobRolesMatch = Array.isArray(job.jobRoles) 
+    const jobRolesMatch = Array.isArray(job.jobRoles)
       ? job.jobRoles.some(role => role?.toLowerCase().includes(searchLower))
       : false;
-    
+
     // Check work locations
     const workLocations = job.workLocation || [];
     const workLocationsMatch = Array.isArray(workLocations)
@@ -161,7 +162,7 @@ export default function OnCampusJobManagement() {
             Back to drives
           </button>
 
-          
+
 
           {collegesLoading ? (
             <div className="p-8 text-center bg-white rounded-lg shadow-sm">
@@ -255,7 +256,7 @@ export default function OnCampusJobManagement() {
                   </tr>
                 ) : (
                   currentJobs.map(job => (
-                    <tr key={job._id} className="border-b border-gray-200 hover:bg-gray-50">
+                    <tr key={job._id} className="border-b border-gray-200 hover:bg-gray-50" onClick={() => navigate(`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`)}>
                       <td className="px-4 py-4">
                         <div className="font-medium text-gray-900">
                           {displayJobRoles(job)}
@@ -282,21 +283,9 @@ export default function OnCampusJobManagement() {
                           >
                             <Eye size={18} />
                           </button>
-                          <Link
-                            to={`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`}
-                            className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-gray-200"
-                            title="View Job Description"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-search-corner">
-                              <path d="M11.1 22H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.589 3.588A2.4 2.4 0 0 1 20 8v3.25" />
-                              <path d="M14 2v5a1 1 0 0 0 1 1h5" />
-                              <path d="m21 22-2.88-2.88" />
-                              <circle cx="16" cy="17" r="3" />
-                            </svg>
-                          </Link>
-                          <button 
-                            onClick={() => handleDelete(job._id)} 
-                            className="text-gray-500 hover:text-red-600 p-1 rounded-md hover:bg-gray-200" 
+                          <button
+                            onClick={() => handleDelete(job._id)}
+                            className="text-gray-500 hover:text-red-600 p-1 rounded-md hover:bg-gray-200"
                             title="Delete Job"
                           >
                             <Trash size={18} />
@@ -325,9 +314,8 @@ export default function OnCampusJobManagement() {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium ${
-                    currentPage === page ? 'bg-black text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-100'
-                  }`}
+                  className={`w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium ${currentPage === page ? 'bg-black text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-100'
+                    }`}
                 >
                   {page}
                 </button>
