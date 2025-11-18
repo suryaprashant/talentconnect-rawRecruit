@@ -243,6 +243,8 @@ import EventRegistration from './pages/EventRegistration';
 import AcceptedIntership from './pages/employer/acceptedCollegeOrCandidate/internship/AcceptedInternshipList'
 import EmployerIntershipForShortlist from './pages/employer/shortlistedCollege/internship/InternshipListingPage'
 import CampusBranding from "./pages/college/serviceRequest/campusBranding/CampusBranding";
+
+import HomapPage from "./pages/homePage/HomePage"
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -252,7 +254,8 @@ function AppRoutes() {
     <Routes>
       {/* Auth Routes */}
       <Route path="/mock" element={<PostIntership />} />
-      <Route path="/" element={<RoleSelection />} />
+      {/* <Route path="/" element={<RoleSelection />} /> */}
+      <Route path="/" element={<HomapPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} />

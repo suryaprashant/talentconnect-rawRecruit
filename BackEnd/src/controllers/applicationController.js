@@ -661,7 +661,7 @@ export const getCompanyDashboardMetrics = async (req, res) => {
     try {
         const user = req.user;
         const metricsData = await fetchCompanyDashboardMetrics(user);
-        console.log("Metrics Data: ", metricsData);
+       
         res.status(200).json({
             success: true,
             data: metricsData
