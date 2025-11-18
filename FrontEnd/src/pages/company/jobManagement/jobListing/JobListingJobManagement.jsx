@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import ApplicantDetails from './ApplicantDetails';
 import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function OffCampusJobManagement() {
   // State variables
@@ -17,6 +17,7 @@ export default function OffCampusJobManagement() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [showJobDetail, setShowJobDetail] = useState(false);
+  const navigate = useNavigate();
 
   const itemsPerPage = 5;
   const totalItems = jobs?.length;
@@ -26,7 +27,7 @@ export default function OffCampusJobManagement() {
 
   const fetchJobs = async () => {
     try {
-      const response = await getPostedJobs("Job-listing","Applied");
+      const response = await getPostedJobs("Job-listing", "Applied");
       console.log(response.data.response);
       setJobs(response?.data);
 
@@ -235,11 +236,7 @@ export default function OffCampusJobManagement() {
                   </tr>
                 ) : (
                   currentJobs?.map(job => (
-                    <tr
-                      key={job._id}
-                      className="border-b hover:bg-gray-50 cursor-pointer"
-                      onClick={() => handleView(job._id)}
-                    >
+                    <tr key={job._id} className="border-b hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/company-dashboard/Job-listing/${job._id}?isApplied=true`)}>
                       <td className="px-4 py-3">
                         <div className="font-medium">{job?.jobTitle}</div>
                         <div className="text-sm text-gray-500">
@@ -262,14 +259,6 @@ export default function OffCampusJobManagement() {
                           <button onClick={() => handleView(job._id)} className="text-gray-500 hover:text-gray-700" title="View Job">
                             <Eye size={18} />
                           </button>
-                          <Link
-                            to={`/company-dashboard/Job-listing/${job._id}?isApplied=true`}
-                            disabled={job.applicationCount === 0}
-                            className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="View Job Description"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-search-corner-icon lucide-file-search-corner"><path d="M11.1 22H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.589 3.588A2.4 2.4 0 0 1 20 8v3.25" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="m21 22-2.88-2.88" /><circle cx="16" cy="17" r="3" /></svg>
-                          </Link>
                           {/* <button onClick={() => handleEdit(job._id)} className="text-gray-500 hover:text-gray-700" title="Edit Job">
                             <Edit size={18} />
                           </button>
