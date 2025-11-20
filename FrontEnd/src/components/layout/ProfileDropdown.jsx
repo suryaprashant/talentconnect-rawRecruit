@@ -2,7 +2,8 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FiUser, FiSettings, FiBell, FiHelpCircle, FiLogOut } from 'react-icons/fi';
-import { useAuth } from '@/context/AuthProvider'
+import Cookies from "js-cookie";
+import { useAuth } from '@/context/AuthProvider';
 
 function StandardProfileDropdown() {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ function StandardProfileDropdown() {
     try {
       await axios.post(`${import.meta.env.VITE_Backend_URL}/api/auth/logout`, {}, { withCredentials: true });
       localStorage.clear();
+      Cookies.remove("jwt", { path: '/' });
       navigate('/', { replace: true });
     } catch (error) {
       console.error('Logout failed:', error);
