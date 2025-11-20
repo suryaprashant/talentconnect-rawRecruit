@@ -38,6 +38,7 @@ const RoleSelection = () => {
 
   const handleContinue = () => {
     if (selectedRole) {
+      sessionStorage.setItem('tempSelectedRole', selectedRole);
       localStorage.setItem('selectedRole', selectedRole);
       navigate('/signup');
     }
