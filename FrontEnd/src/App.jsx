@@ -254,7 +254,7 @@ function AppRoutes() {
     <Routes>
       {/* Auth Routes */}
       <Route path="/mock" element={<PostIntership />} />
-      {/* <Route path="/" element={<RoleSelection />} /> */}
+      <Route path="/userselection" element={<RoleSelection />} />
       <Route path="/" element={<HomapPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
@@ -283,6 +283,11 @@ function AppRoutes() {
       <Route path="/college-edit/*" element={<EditOnboardingFlow />} />
 
       <Route path="OnboardingflowForm" element={<OnboardingFlowForm />} />
+
+      {/* from home page to direct hiring channels  */}
+       {/* <Route path='hiring-channels/on-campus' element={<OnCampusHiring />} />
+       <Route path='hiring-channels/pool-campus' element={<PoolCampus />} />
+       <Route path='hiring-channels/off-campus' element={<OffCampus />} /> */}
 
 
 

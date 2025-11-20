@@ -1,8 +1,36 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Users, Building2, Briefcase, GraduationCap, Target, TrendingUp, Award, Calendar, Lightbulb, UserCheck, Menu, X } from 'lucide-react';
 
 const App = () => {
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+   const handleCardClick = (cardType) => {
+ 
+    const hiringRoutes = {
+      'On-Campus': '/hiring-channels/on-campus-hiring',
+      'Pool-Campus': '/hiring-channels/pool-campus-hiring', 
+      'Off-Campus': '/hiring-channels/off-campus-hiring'
+    };
+
+     const targetRoute = hiringRoutes[cardType];
+    if (targetRoute) {
+      localStorage.setItem('redirectAfterAuth', targetRoute);
+      navigate(targetRoute);
+    }
+  };
+
+  const handleRoleSelect = (role) => {
+    if (role) {
+      localStorage.setItem('selectedRole', role);
+      navigate('/signup');
+    }
+  };
+
+  const handleGetStarted = () => {
+    navigate('/userselection');
+  };
 
   const heroCards = [
     {
@@ -40,7 +68,6 @@ const App = () => {
       { icon: <TrendingUp className="w-8 h-8" />, title: 'Request Student Training', desc: 'Upskill your students' },
       { icon: <Calendar className="w-8 h-8" />, title: 'Seminar', desc: 'Industry expert sessions' },
       { icon: <Award className="w-8 h-8" />, title: 'Campus Branding', desc: 'Enhance college reputation' },
-    //   { icon: <Lightbulb className="w-8 h-8" />, title: 'Career Guidance', desc: 'Professional counseling' }
     ],
     employer: [
       { icon: <GraduationCap className="w-8 h-8" />, title: 'On-Campus', desc: 'Manage campus recruitment' },
@@ -97,12 +124,12 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-[#F5F5F5]">
-      {/* Header */}
+    
       <header className="bg-[#1A1A1A] text-white py-4 px-6 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="text-2xl font-bold">RawRecruit</div>
 
-          {/* Desktop Navigation */}
+
           <nav className="hidden md:flex gap-8 items-center">
             <a href="#services" className="hover:text-[#D4FF00] transition text-sm">Services</a>
             <a href="#about" className="hover:text-[#D4FF00] transition text-sm">About</a>
@@ -110,11 +137,14 @@ const App = () => {
             <a href="#features" className="hover:text-[#D4FF00] transition text-sm">Features</a>
           </nav>
 
-          <button className="hidden md:block bg-[#D4FF00] text-[#1A1A1A] px-6 py-2 rounded-full font-semibold hover:bg-[#C5F000] transition">
+          <button 
+            onClick={handleGetStarted}
+            className="hidden md:block bg-[#D4FF00] text-[#1A1A1A] px-6 py-2 rounded-full font-semibold hover:bg-[#C5F000] transition"
+          >
             Get Started
           </button>
 
-          {/* Mobile Menu Button */}
+      
           <button
             className="md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -123,13 +153,19 @@ const App = () => {
           </button>
         </div>
 
-        {/* Mobile Navigation */}
+      
         {mobileMenuOpen && (
           <nav className="md:hidden mt-4 pb-4 flex flex-col gap-4">
             <a href="#services" className="hover:text-[#D4FF00] transition">Services</a>
             <a href="#about" className="hover:text-[#D4FF00] transition">About</a>
             <a href="#how-it-works" className="hover:text-[#D4FF00] transition">How It Works</a>
             <a href="#features" className="hover:text-[#D4FF00] transition">Features</a>
+            <button 
+              onClick={handleGetStarted}
+              className="bg-[#D4FF00] text-[#1A1A1A] px-6 py-2 rounded-full font-semibold hover:bg-[#C5F000] transition text-left"
+            >
+              Get Started
+            </button>
           </nav>
         )}
       </header>
@@ -153,7 +189,8 @@ const App = () => {
             {heroCards.map((card, idx) => (
               <div
                 key={idx}
-                className={`${card.bgColor} p-8 rounded-3xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2`}
+                onClick={ ()=> handleCardClick(card.title)}
+                className={`${card.bgColor} p-8 rounded-3xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2 cursor-pointer`}
               >
                 <div className="mb-4">{card.icon}</div>
                 <h3 className="text-2xl font-bold mb-3">{card.title}</h3>
@@ -165,7 +202,10 @@ const App = () => {
           </div>
 
           <div className="text-center mt-12">
-            <button className="bg-[#D4FF00] text-[#1A1A1A] px-8 py-4 rounded-full font-bold text-lg hover:bg-[#C5F000] transition shadow-lg">
+            <button 
+              onClick={handleGetStarted}
+              className="bg-[#D4FF00] text-[#1A1A1A] px-8 py-4 rounded-full font-bold text-lg hover:bg-[#C5F000] transition shadow-lg"
+            >
               Get Started
             </button>
           </div>
@@ -224,7 +264,10 @@ const App = () => {
                   <p className="text-[#6B6B6B] mb-6">
                     We offer a variety of tools and resources to help you manage your recruitment more efficiently
                   </p>
-                  <button className="bg-[#D4FF00] text-[#1A1A1A] px-6 py-3 rounded-full font-bold hover:bg-[#C5F000] transition inline-flex items-center gap-3 shadow-md">
+                  <button 
+                    onClick={() => handleRoleSelect('company')}
+                    className="bg-[#D4FF00] text-[#1A1A1A] px-6 py-3 rounded-full font-bold hover:bg-[#C5F000] transition inline-flex items-center gap-3 shadow-md"
+                  >
                     Learn More
                     <span className="bg-[#1A1A1A] text-white w-8 h-8 rounded-full flex items-center justify-center">
                       →
@@ -264,7 +307,10 @@ const App = () => {
                   <p className="text-[#6B6B6B] mb-6">
                     We offer a variety of tools and resources to help you manage your recruitment more efficiently
                   </p>
-                  <button className="bg-[#D4FF00] text-[#1A1A1A] px-6 py-3 rounded-full font-bold hover:bg-[#C5F000] transition inline-flex items-center gap-3 shadow-md">
+                  <button 
+                    onClick={() => handleRoleSelect('college')}
+                    className="bg-[#D4FF00] text-[#1A1A1A] px-6 py-3 rounded-full font-bold hover:bg-[#C5F000] transition inline-flex items-center gap-3 shadow-md"
+                  >
                     Learn More
                     <span className="bg-[#1A1A1A] text-white w-8 h-8 rounded-full flex items-center justify-center">
                       →
@@ -304,7 +350,10 @@ const App = () => {
                   <p className="text-[#6B6B6B] mb-6">
                     We offer a variety of tools and resources to help you manage your recruitment more efficiently
                   </p>
-                  <button className="bg-[#D4FF00] text-[#1A1A1A] px-6 py-3 rounded-full font-bold hover:bg-[#C5F000] transition inline-flex items-center gap-3 shadow-md">
+                  <button 
+                    onClick={() => handleRoleSelect('employer')}
+                    className="bg-[#D4FF00] text-[#1A1A1A] px-6 py-3 rounded-full font-bold hover:bg-[#C5F000] transition inline-flex items-center gap-3 shadow-md"
+                  >
                     Learn More
                     <span className="bg-[#1A1A1A] text-white w-8 h-8 rounded-full flex items-center justify-center">
                       →
@@ -345,7 +394,10 @@ const App = () => {
             <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
               Join hundreds of colleges and companies already using RawRecruit
             </p>
-            <button className="bg-[#D4FF00] text-[#1A1A1A] px-10 py-4 rounded-full font-bold text-lg hover:bg-[#C5F000] transition shadow-lg">
+            <button 
+              onClick={handleGetStarted}
+              className="bg-[#D4FF00] text-[#1A1A1A] px-10 py-4 rounded-full font-bold text-lg hover:bg-[#C5F000] transition shadow-lg"
+            >
               Join Now
             </button>
           </div>

@@ -12,9 +12,11 @@ import EmployerSidebar from './EmployerSidebar'
 
 function Sidebar({ open, setOpen }) {
   const location = useLocation()
- // const userType = localStorage.getItem('userType')
+ 
   const selectedRole=localStorage.getItem('selectedRole')
   const isActive = (path) => location.pathname === path
+
+   const isAuthenticated = localStorage.getItem('token') && localStorage.getItem('ChatAppUser');
 
   return (
     <>
@@ -38,13 +40,26 @@ function Sidebar({ open, setOpen }) {
           <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
     
             {/* Role-specific Sidebars */}
-            {selectedRole === 'student' && <StudentSidebar activePath={location.pathname} />}
+            {/* {selectedRole === 'student' && <StudentSidebar activePath={location.pathname} />}
             {selectedRole === 'fresher' && <FresherSidebar activePath={location.pathname} />}
             {selectedRole === 'professional' && <ProfessionalSidebar activePath={location.pathname} />}
             {selectedRole === 'employer' && <EmployerSidebar activePath={location.pathname} />}
             {selectedRole === 'company' && <CompanySidebar activePath={location.pathname} />}
             {selectedRole === 'college' && <CollegeSidebar activePath={location.pathname} />}
-            
+             */}
+
+            {isAuthenticated && selectedRole === 'student' && <StudentSidebar activePath={location.pathname} />}
+            {isAuthenticated && selectedRole === 'fresher' && <FresherSidebar activePath={location.pathname} />}
+            {isAuthenticated && selectedRole === 'professional' && <ProfessionalSidebar activePath={location.pathname} />}
+            {isAuthenticated && selectedRole === 'employer' && <EmployerSidebar activePath={location.pathname} />}
+            {isAuthenticated && selectedRole === 'company' && <CompanySidebar activePath={location.pathname} />}
+            {isAuthenticated && selectedRole === 'college' && <CollegeSidebar activePath={location.pathname} />}
+
+            {!isAuthenticated && (
+              <div className="text-center text-gray-500 py-8">
+                Please login to access navigation
+              </div>
+            )}            
 
           </nav>
 

@@ -78,7 +78,7 @@ const HiringPreferencesStep = ({ formData, handleChange, nextStep, prevStep }) =
         }));
     }, []);
 
-    // **MODIFIED**: Enhanced filtering and sorting logic
+    
     const filteredLocations = useMemo(() => {
         if (!locationSearchTerm) {
             return locationOptions;

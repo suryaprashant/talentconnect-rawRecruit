@@ -27,9 +27,9 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
             
             try {
                 const response = await fetchAllCompaniesName();
-                console.log("API Response:", response);
+               
                 
-                // Handle different response structures
+   
                 let companyData = [];
                 if (Array.isArray(response?.data)) {
                     companyData = response.data;

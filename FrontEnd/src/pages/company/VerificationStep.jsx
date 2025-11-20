@@ -4,18 +4,18 @@ import Button from '@/components/company/Button'
 import FormField from '@/components/company/FormField'
 
 const VerificationStep = ({ formData, handleChange, prevStep, nextStep, updateFormData }) => {
-    // Local state for dropdown (document type) and file inputs (to manage UI feedback)
+   
     const [selectedDocumentType, setSelectedDocumentType] = useState(formData.documentType || '');
-    // Removed local states for backgroundFileName and profileFileName as they are no longer in this component
+   
     const [kycFileNames, setKycFileNames] = useState([]);
 
-    // Sync local file names with parent formData on initial render or formData change
+  
     useEffect(() => {
-        // Only check kycDocuments, as backgroundImage and profileImage are no longer handled here
+       
         if (formData.kycDocuments) {
             setKycFileNames(formData.kycDocuments.map(file => file.name));
         }
-    }, [formData.kycDocuments]); // Dependency array updated to only include relevant prop
+    }, [formData.kycDocuments]);
 
     const documentTypeOptions = [
         { value: '', label: 'Select document type' },
