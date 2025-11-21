@@ -237,8 +237,8 @@ export default function OffCampusJobManagement() {
                   </tr>
                 ) : (
                   currentJobs?.map(job => (
-                    <tr key={job._id} className="border-b hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}>
-                      <td className="px-4 py-3">
+                    <tr key={job._id} className="border-b hover:bg-gray-50 cursor-pointer">
+                      <td className="px-4 py-3" onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}>
                         {job?.jobRoles?.map((title, ind) => (<div key={ind} className="font-medium">{title}</div>))}
                         <div className="text-sm text-gray-500">
                           {job?.workMode} • {job?.location[0]}
