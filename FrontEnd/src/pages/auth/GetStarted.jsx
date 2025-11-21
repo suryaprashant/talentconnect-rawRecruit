@@ -2,13 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 const roles = [
-  {
-    key: 'candidate',
-    icon: '👨‍🎓',
-    title: 'Candidate',
-    description:
-      'Looking for job opportunities, internships, or placements? Register to explore careers and connect with top employers.',
-  },
+  // {
+  //   key: 'candidate',
+  //   icon: '👨‍🎓',
+  //   title: 'Candidate',
+  //   description:
+  //     'Looking for job opportunities, internships, or placements? Register to explore careers and connect with top employers.',
+  // },
   {
     key: 'college',
     icon: '🏛️',
@@ -56,7 +56,7 @@ const RoleSelection = () => {
         Get started by selecting the user type that best describes you. This helps us personalize your experience.
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 w-full max-w-5xl">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 ml-44 sm:gap-6 w-full max-w-5xl">
         {roles.map(({ key, icon, title, description }) => (
           <div
             key={key}
