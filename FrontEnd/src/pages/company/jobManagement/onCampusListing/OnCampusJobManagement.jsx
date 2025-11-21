@@ -255,9 +255,9 @@ export default function OnCampusJobManagement() {
                   </tr>
                 ) : (
                   currentJobs?.map(job => (
-                    <tr key={job._id} className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`)}>
+                    <tr key={job._id} className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
                       <td className="px-4 py-4">
-                        <div className="font-medium text-gray-900">
+                        <div className="font-medium text-gray-900" onClick={() => navigate(`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`)}>
                           {job.jobRoles || 'N/A'}
                         </div>
                         <div className="text-sm text-gray-500">
