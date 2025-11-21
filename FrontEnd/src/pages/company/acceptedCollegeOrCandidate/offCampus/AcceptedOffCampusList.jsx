@@ -16,7 +16,7 @@ export default function OffCampusJobManagement() {
     const [showFilters, setShowFilters] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
     const [showJobDetail, setShowJobDetail] = useState(false);
-    const navigate=useNavigate();
+    const navigate = useNavigate();
 
     const itemsPerPage = 5;
     const totalItems = jobs?.length;
@@ -226,9 +226,8 @@ export default function OffCampusJobManagement() {
                                         <tr
                                             key={job._id}
                                             className="border-b hover:bg-gray-50 cursor-pointer"
-                                            onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}
                                         >
-                                            <td className="px-4 py-3">
+                                            <td className="px-4 py-3" onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}>
                                                 <div className="font-medium">{job?.jobRoles[0]}</div>
                                                 <div className="text-sm text-gray-500">
                                                     {job?.workMode} • {job?.location[0]}

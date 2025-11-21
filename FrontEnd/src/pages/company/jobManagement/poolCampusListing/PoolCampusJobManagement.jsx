@@ -259,8 +259,8 @@ export default function PoolCampusJobManagement() {
                   </tr>
                 ) : (
                   currentJobs.map(job => (
-                    <tr key={job._id} className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/company-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}>
-                      <td className="px-4 py-4">
+                    <tr key={job._id} className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+                      <td className="px-4 py-4" onClick={() => navigate(`/company-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}>
                         <div className="font-medium text-gray-900">
                           {displayJobRoles(job)}
                         </div>
