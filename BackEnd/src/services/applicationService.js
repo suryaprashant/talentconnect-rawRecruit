@@ -424,8 +424,7 @@ export async function fetchCompanyDashboardMetrics(user) {
             throw new AppError("This user type cannot access this resource.", 403);
         }
 
-        // For college users, fetch jobs posted by college
-        // For company/employer users, fetch jobs posted by company
+       
         let query = {};
         if (userType === 'college') {
             query = { collegePosted: collegeProfileId };
