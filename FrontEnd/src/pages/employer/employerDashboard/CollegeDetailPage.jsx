@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ApplyForOncampusOppurtunity, getCollegeDetail, SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
+import { conversationWithCollege} from '@/lib/College_AxiosIntance';
+import useConversation from '@/statemanage/useConversation';
 
 // Utility function to format dates
 const formatDate = (dateString) => {
@@ -14,10 +16,12 @@ const formatDate = (dateString) => {
 const EmployerDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const {setSelectedConversation} = useConversation();
   // Renamed to jobPosting for clarity, since the ID is for a job posting
   const [jobPosting, setJobPosting] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const[isSubmitting,setIsSubmitting]=useState(false);
 
   const fetchJobPosting = async () => {
     setIsLoading(true);
@@ -59,6 +63,46 @@ const EmployerDetailsPage = () => {
     } catch (error) {
       console.log("Error: ", error);
       toast.error(`Something went wrong`);
+    }
+  };
+
+  
+  const handleMessageClick = async () => {
+    if (!jobPosting?.contactPerson?.email) {
+      toast.error("Contact person data is missing.");
+      return;
+    }
+
+    const contactPerson = jobPosting.contactPerson;
+    setIsSubmitting(true);
+    
+    try {
+      const response = await conversationWithCollege(contactPerson._id || contactPerson.email);
+      if (response.data) {
+        const conversationUser = {
+          _id: contactPerson._id || contactPerson.email,
+          name: contactPerson.name || 'Placement Officer',
+          email: contactPerson.email || '',
+          profileImage: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+          userType: 'college',
+          fullname: contactPerson.name || 'Placement Officer',
+          designation: contactPerson.designation || 'Placement Officer'
+        };
+
+        setSelectedConversation(conversationUser);
+
+        setTimeout(() => {
+          navigate('/chat-application');
+        }, 100);
+
+      } else {
+        toast.error('Failed to create conversation');
+      }
+    } catch (error) {
+      console.error('Error starting chat:', error);
+      toast.error('Error starting conversation');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -391,12 +435,13 @@ const EmployerDetailsPage = () => {
                   </svg>
                   Suggest Alternate Date
                 </button>
-                <button className="flex items-center border border-gray-300 rounded px-4 py-2 text-sm text-gray-700">
-                  <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
-                    <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
-                  </svg>
-                  Message Placement Officer
+               <button 
+                  onClick={handleMessageClick}
+                  disabled={isSubmitting}
+                  className="flex items-center border border-gray-300 rounded px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  <Send size={14} className="mr-2" />
+                  {isSubmitting ? 'Starting Chat...' : 'Message Placement Officer'}
                 </button>
               </div>
               <div className="flex gap-2">
