@@ -45,7 +45,6 @@ const AuthSchema = new mongoose.Schema({
     enum: ['manual', 'google', 'linkedin'],
     default: 'manual'
   },
-  // ->>>> should be added below entity to the scheema
   status: {
     type: String,
     enum: ['active', 'pending', 'blocked'],
