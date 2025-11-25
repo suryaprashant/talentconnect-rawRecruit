@@ -353,8 +353,7 @@ export const getJobPostingsByCollegeService = async (jobType) => {
                 if (mappedDegreeType) degreeTypeSet.add(mappedDegreeType);
             });
 
-            const degreeType = Array.from(degreeTypeSet); // stays [] if nothing matches
-
+            const degreeType = Array.from(degreeTypeSet); 
             return {
                 ...posting.toObject(),
                 jobStatus: status,

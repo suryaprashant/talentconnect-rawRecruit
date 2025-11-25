@@ -59,7 +59,7 @@ function PoolApplication() {
         setError(null);
 
         // Fetching 'Pool-campus' jobs as requested
-        const response = await getCollegePostedJobs('Pool-campus', lastSegment);
+        const response = await getCollegePostedJobs('Pool-campus', 'Shortlisted');
 
         if (response.data && response.data.response && Array.isArray(response.data.response)) {
           // Process jobs to update their status based on dates

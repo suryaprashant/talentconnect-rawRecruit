@@ -5,9 +5,10 @@ import { format } from 'date-fns';
 import { ApplyForOncampusOppurtunity, SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 import { viewed } from '@/lib/User_AxiosInstance';
+import useConversation from '@/statemanage/useConversation';
+import { conversationWithCollege } from '@/lib/College_AxiosIntance';
+import { Send } from 'lucide-react';
 
-// --- NEW HELPER ---
-// Formats dates but returns 'N/A' if the date is invalid
 const formatDateSafe = (dateString) => {
   if (!dateString) return 'N/A';
   try {
@@ -20,7 +21,7 @@ const formatDateSafe = (dateString) => {
     return 'N/A';
   }
 };
-// --- END NEW HELPER ---
+
 
 const CollegeDetailPage = () => {
   const { id } = useParams();
@@ -31,6 +32,9 @@ const CollegeDetailPage = () => {
   const [posting, setPosting] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { setSelectedConversation } = useConversation();  
 
   const fetchPostingDetails = async () => {
     if (!id) return;
@@ -96,6 +100,49 @@ const CollegeDetailPage = () => {
     } catch (error) {
       console.log("Error: ", error);
       toast.error(`Something went wrong`);
+    }
+  };
+
+  // UPDATED: Handle message officer click with better error handling and loading state
+  const handleMessageClick = async () => {
+    // Check if we have the collegePosted userId (Auth table ID)
+    if (!posting?.collegePosted?.userId) {
+      toast.error("Coordinator ID is missing. Cannot start chat.");
+      return;
+    }
+
+    const collegeUserId = posting.collegePosted.userId;
+    const collegeDetails = posting.collegePosted;
+    const collegeName = collegeDetails?.collegeUniversityDetails?.collegeName || 'College';
+
+    setIsSubmitting(true);
+    try {
+      const response = await conversationWithCollege(collegeUserId);
+      
+      if (response.data) {
+        const conversationUser = {
+          _id: collegeUserId,
+          name: collegeName,
+          email: collegeDetails?.placementCoordinatorDetails?.officialEmail || '',
+          profileImage: collegeDetails?.profileImage || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+          userType: 'college',
+          fullname: collegeName
+        };
+
+        setSelectedConversation(conversationUser);
+
+        setTimeout(() => {
+          navigate('/chat-application');
+        }, 100);
+
+      } else {
+        toast.error('Failed to create conversation');
+      }
+    } catch (error) {
+      console.error('Error starting chat:', error);
+      toast.error('Error starting conversation');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -264,7 +311,7 @@ const CollegeDetailPage = () => {
             </div>
           </div>
 
-          {/* --- NEW SECTION: Proposed Schedule --- */}
+      
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Tentative Dates to held On-Campus</h2>
             <div className="grid md:grid-cols-3 gap-x-8 gap-y-4">
@@ -274,7 +321,7 @@ const CollegeDetailPage = () => {
             </div>
           </div>
 
-          {/* --- NEW SECTION: Company Type --- */}
+       
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
             <h2 className="text-lg font-semibold text-gray-800 mb-3">Preferred Company Types</h2>
             <div className="flex flex-wrap gap-2">
@@ -376,7 +423,7 @@ const CollegeDetailPage = () => {
 
 
 
-          {/* --- NEW SECTION: Amenities Required --- */}
+     
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6 border">
             <h2 className="text-lg font-semibold text-gray-800 mb-3">Amenities Offered</h2>
             <div className="flex flex-wrap gap-2">
@@ -390,8 +437,19 @@ const CollegeDetailPage = () => {
 
           <div className="mt-8 flex flex-col sm:flex-row justify-between">
             <div className="flex gap-2 mb-4 sm:mb-0">
-              <button className="flex items-center border border-gray-300 rounded px-4 py-2 text-sm text-gray-700">Message Officer</button>
-              <button className="flex items-center border border-gray-300 rounded px-4 py-2 text-sm text-gray-700">Suggest Alternate Date</button>
+              {/* UPDATED: Message Officer button with loading state and proper validation */}
+              <button
+                onClick={handleMessageClick}
+                disabled={isSubmitting || !posting?.collegePosted?.userId}
+                className="flex items-center border border-gray-300 rounded px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Send size={14} className="mr-2" /> 
+                {isSubmitting ? 'Connecting...' : 'Message Officer'}
+              </button>
+
+              <button className="flex items-center border border-gray-300 rounded px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                Suggest Alternate Date
+              </button>
             </div>
             {!isApplied && (<div className="flex gap-2">
               <button className="bg-blue-600 text-white px-6 py-2 rounded font-medium" onClick={() => handleApply(id)}>Accept Invitation</button>
