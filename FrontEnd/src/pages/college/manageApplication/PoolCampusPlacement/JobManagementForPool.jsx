@@ -9,7 +9,8 @@ import { getCollegePostedJobs } from '@/lib/College_AxiosIntance';
 
 function JobManagementApplication() {
     const navigate = useNavigate();
-    const pathParts = useLocation().pathname.split('/').filter(Boolean); // remove empty strings
+    const location = useLocation(); // Keep location separate if needed for navigation
+    const pathParts = location.pathname.split('/').filter(Boolean); // remove empty strings
     const lastSegment = pathParts[pathParts.length - 1];
 
     const [jobs, setJobs] = useState([]);
@@ -57,7 +58,7 @@ function JobManagementApplication() {
                 setLoading(true);
                 setError(null);
 
-                // Fetching 'Pool-campus' jobs as requested
+                // Fetching 'Pool-campus' jobs
                 const response = await getCollegePostedJobs('Pool-campus', lastSegment);
 
                 if (response.data && response.data.response && Array.isArray(response.data.response)) {
@@ -140,6 +141,7 @@ function JobManagementApplication() {
     const handlePageClick = (pageNumber) => setCurrentPage(pageNumber);
 
     // Action handlers
+    // NOTE: This now navigates to the PoolCampus-placement route, matching the table logic
     const handleView = (jobId) => {
         navigate(`/manage-application/PoolCampus-placement/${jobId}`);
     };
@@ -279,14 +281,17 @@ function JobManagementApplication() {
                                 ) : (
                                     currentJobs.map(job => {
                                         const jobId = job._id || job.id;
-                                        // const jobTitle = job.jobTitle || 'Untitled Job';
                                         const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : '';
                                         const jobLocation = Array.isArray(job.location) ? job.location.join(', ') : job.location || 'N/A';
                                         const jobStatus = job.jobStatus || 'Unknown';
                                         const deadline = job.endDate || job.deadline;
                                         const views = job.views || 0;
                                         const applications = job.applicationCount || job.applications || 0;
-
+                                        
+                                        // LOGIC ADDED: Check if the eye icon (View) should be disabled
+                                        const isViewDisabled = applications === 0;
+                                        const viewButtonClass = `transition-colors ${isViewDisabled ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700'}`;
+                                        
                                         return (
                                             <tr
                                                 key={jobId}
@@ -294,7 +299,6 @@ function JobManagementApplication() {
                                             >
                                                 <td className="px-4 py-3" onClick={() => navigate(`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}>
                                                     <div className="font-medium">{jobDegree}</div>
-
                                                     <div className="text-sm text-gray-500">{jobLocation}</div>
                                                 </td>
                                                 <td className="px-4 py-3">
@@ -307,10 +311,21 @@ function JobManagementApplication() {
                                                 </td>
                                                 <td className="px-4 py-3">{formatDate(deadline)}</td>
                                                 <td className="px-4 py-3">{views}</td>
-                                                <td className="px-4 py-3" onClick={(e) => { e.stopPropagation(); handleView(jobId); }}>{applications}</td>
+                                                <td className="px-4 py-3" onClick={(e) => { e.stopPropagation(); if (!isViewDisabled) handleView(jobId); }}>{applications}</td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex gap-2">
-                                                        {/* <button onClick={(e) => { e.stopPropagation(); handleView(jobId); }} className="text-gray-500 hover:text-gray-700 transition-colors" title="View Job"><Eye size={18} /></button> */}
+                                                        <button 
+                                                            onClick={(e) => { 
+                                                                e.stopPropagation(); 
+                                                                // Only call handleView if applications > 0
+                                                                if (!isViewDisabled) handleView(jobId); 
+                                                            }} 
+                                                            className={viewButtonClass} 
+                                                            title={isViewDisabled ? "No applications to view" : "View Job"}
+                                                            disabled={isViewDisabled} // Add disabled attribute
+                                                        >
+                                                            <Eye size={18} />
+                                                        </button>
                                                         {/* <button onClick={(e) => handleEdit(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="Edit Job"><Edit size={18} /></button>
                                                         <button onClick={(e) => handleApplications(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="View Applications"><Users size={18} /></button>
                                                         <button onClick={(e) => handleExport(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="Export Job Data"><FileText size={18} /></button> */}

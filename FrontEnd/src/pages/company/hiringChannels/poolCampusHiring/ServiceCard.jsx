@@ -11,10 +11,6 @@ export default function ServiceCard({ title, description, icon }) {
         </div>
         <h3 className="text-xl font-semibold mb-3 text-gray-800">{title}</h3>
         <p className="text-gray-600 text-sm leading-relaxed mb-4">{description}</p>
-        <button className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center ">
-          Learn More
-          <span className="ml-2">→</span>
-        </button>
       </div>
     );
   }
