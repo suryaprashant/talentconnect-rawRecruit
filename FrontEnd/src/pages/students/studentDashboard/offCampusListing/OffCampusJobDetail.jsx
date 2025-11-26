@@ -145,7 +145,7 @@ function OffCampusJobDetail() {
             <h2 className="text-xl font-bold">
               {jobDetail.companyPosted?.companyDetails?.companyName || "N/A"} - {jobDetail.jobTitle || 'N/A'}
             </h2>
-            <p className={`text-sm font-semibold ${headerStatusClasses}`}>Application {jobDetail.jobStatus}</p>
+            {/* <p className={`text-sm font-semibold ${headerStatusClasses}`}>Application {jobDetail.jobStatus}</p> */}
           </div>
         </div>
         <div className="flex space-x-2">
