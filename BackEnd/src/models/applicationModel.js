@@ -5,20 +5,24 @@ const ApplicationSchema = new mongoose.Schema(
     {
         applicant: {
             type: mongoose.Schema.Types.ObjectId,
-            required: true
+            required: true,
         },
         applicantType: {
             type: String,
-            required: true
+            required: true,
         },
         job: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "JobPostingTable",
-            required: true
+            required: true,
         },
         jobType: {
             type: String,
-            required: true
+            required: true,
+        },
+        isVisited: {
+            type: Boolean,
+            default: false
         },
         statusHistory: [
             {
@@ -33,13 +37,13 @@ const ApplicationSchema = new mongoose.Schema(
                     //     "Interview Scheduled",
                     //     "Offer Extended",
                     // ],
-                    required: true
+                    required: true,
                 },
                 date: {
                     type: Date,
-                    default: Date.now
-                }
-            }
+                    default: Date.now,
+                },
+            },
         ],
         currentStatus: {
             type: String,
@@ -52,10 +56,10 @@ const ApplicationSchema = new mongoose.Schema(
                 "Interview Scheduled",
                 "Offer Extended",
                 "Accepted",
-                "Rejected"
+                "Rejected",
             ],
-            default: "Applied"
-        }
+            default: "Applied",
+        },
     },
     { timestamps: true }
 );
