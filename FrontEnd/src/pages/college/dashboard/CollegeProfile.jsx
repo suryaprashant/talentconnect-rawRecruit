@@ -85,26 +85,26 @@ export default function CollegeProfile() {
     backgroundInputRef.current.click();
   };
 
-  // This handler is for the main header images, not the coordinator's image within the form
+ 
   const handleImageChange = (e, setImageFileState, setImageUrlState) => {
     const file = e.target.files[0];
     if (file) {
-      setImageFileState(file); // Store the file object for potential upload
+      setImageFileState(file); 
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImageUrlState(reader.result); // Set URL for immediate preview
+        setImageUrlState(reader.result); 
       };
       reader.readAsDataURL(file);
     }
   };
 
-  // Callback to update state after ProfileForm submission
+  
   const handleProfileUpdate = (updatedData) => {
     setOnboardingData(updatedData);
-    // Update header images if new ones were uploaded/changed through the form
+    
     setProfileImageUrl(updatedData.placementCoordinatorDetails?.profilePictureUrl || null);
     setBackgroundImageUrl(updatedData.profileAchievements?.backgroundImageUrl || null);
-    setActiveTab('Overview'); // Optionally switch back to overview after update
+    setActiveTab('Overview'); 
   };
 
 
@@ -130,29 +130,29 @@ export default function CollegeProfile() {
 
     switch (activeTab) {
       case 'Overview':
-        // Ensure CollegeDescription can handle null or partial data gracefully
+       
         return <CollegeDescription onboardingData={onboardingData} />;
       case 'Profile':
         return (
           <ProfileForm
-            onboardingData={onboardingData} // Pass the fetched data
-            profileImageFile={profileImageFile} // Pass the file state
-            backgroundImageFile={backgroundImageFile} // Pass the file state
-            setProfileImageFile={setProfileImageFile} // Pass the setter for profile image file
-            setBackgroundImageFile={setBackgroundImageFile} // Pass the setter for background image file
-            setProfileImageUrl={setProfileImageUrl} // Pass setter to update header profile image URL
-            setBackgroundImageUrl={setBackgroundImageUrl} // Pass setter to update header background image URL
-            onProfileUpdate={handleProfileUpdate} // Pass the callback for successful updates
+            onboardingData={onboardingData} 
+            profileImageFile={profileImageFile} 
+            backgroundImageFile={backgroundImageFile} 
+            setProfileImageFile={setProfileImageFile}
+            setBackgroundImageFile={setBackgroundImageFile} 
+            setProfileImageUrl={setProfileImageUrl} 
+            setBackgroundImageUrl={setBackgroundImageUrl}
+            onProfileUpdate={handleProfileUpdate} 
           />
         );
-      case 'Users':
-        return <UserManagements />;
+      // case 'Users':
+      //   return <UserManagements />;
       default:
         return null;
     }
   };
 
-  // Use optional chaining with defaults for display in header
+ 
   const coordinatorName = onboardingData?.placementCoordinatorDetails?.coordinatorName || 'Not Set';
   const designation = onboardingData?.placementCoordinatorDetails?.designation || 'Not Set';
   const collegeName = onboardingData?.collegeUniversityDetails?.collegeName || 'Your College Name';
@@ -274,7 +274,7 @@ export default function CollegeProfile() {
 
         {/* Tabs */}
         <div className="flex border-b mt-4">
-          {['Overview', 'Profile', 'Users'].map((tab) => (
+          {['Overview', 'Profile'].map((tab) => (
             <button
               key={tab}
               className={`px-6 py-2 ${activeTab === tab ? 'border-b-2 border-black font-medium' : 'text-gray-500'}`}

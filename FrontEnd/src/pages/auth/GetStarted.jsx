@@ -2,13 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 const roles = [
-  // {
-  //   key: 'candidate',
-  //   icon: '👨‍🎓',
-  //   title: 'Candidate',
-  //   description:
-  //     'Looking for job opportunities, internships, or placements? Register to explore careers and connect with top employers.',
-  // },
+  {
+    key: 'candidate',
+    icon: '👨‍🎓',
+    title: 'Candidate',
+    description:
+      'Looking for job opportunities, internships, or placements? Register to explore careers and connect with top employers.',
+  },
   {
     key: 'college',
     icon: '🏛️',

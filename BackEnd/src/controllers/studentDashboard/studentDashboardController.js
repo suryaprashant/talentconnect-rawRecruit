@@ -6,6 +6,7 @@ import { getStudentService } from "../../services/studentService.js";
 import { getCompanyService } from "../../services/companyService.js";
 import Application from "../../models/applicationModel.js";
 import { getCollegeService } from "../../services/collegeService.js";
+import Auth from "../../models/authModel.js";
 
 
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
@@ -251,8 +252,20 @@ export const getPoolCampusJobByIdForCompany = async (req, res) => {
     const { id } = req.params;
     try {
         const response = await JobPostingTable.findById(id)
-            .populate({ path: 'collegePosted', select: 'collegeUniversityDetails profileImage profileAchievements' })
+            .populate({ 
+                path: 'collegePosted', 
+                select: 'collegeUniversityDetails profileImage profileAchievements placementCoordinatorDetails userId'
+            })
             .lean();
+            if (response && response.collegePosted && response.collegePosted.userId) {
+            const authUser = await Auth.findById(response.collegePosted.userId)
+                .select('name email profileImage userType')
+                .lean();
+            
+            if (authUser) {
+                response.collegePosted.authUser = authUser;
+            }
+        }
         res.status(200).json(response);
     }
     catch (err) {

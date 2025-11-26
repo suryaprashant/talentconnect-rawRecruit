@@ -72,7 +72,7 @@ const InternshipDetails = ({ job, onClose }) => {
 
     const userId = applicant.applicant._id;
     try {
-      const response = await conversationWithCandidate(userId);
+      const response = await conversationWithCollege(userId);
       if (response.data) {
         const conversationUser = {
           _id: userId,
