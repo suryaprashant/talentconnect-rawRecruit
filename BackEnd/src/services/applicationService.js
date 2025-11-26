@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
 import Application from '../models/applicationModel.js';
- import { JobPostingTable } from '../models/jobPostingsModel.js';
-import {getCollegeService} from './collegeService.js';
+import { JobPostingTable } from '../models/jobPostingsModel.js';
+import { getCollegeService } from './collegeService.js';
 import { getCompanyService } from './companyService.js';
 import { getEmployerService } from './companyService.js';
 
@@ -265,11 +265,10 @@ export async function fetchApplicationsByJobService(jobId, jobType, targetStatus
 }
 
 // oncampus and poolcampus
-export async function fetchCollegeApplicationsByJobService(jobId, jobType, userType, targetStatus) {
+export async function fetchCollegeApplicationsByJobService(jobId, jobType, userType, targetStatus, isVisited) {
     // console.log("...........\n", jobId, jobType, userType, targetStatus);
 
     let applicantDB;
-    // let targetStatus="Applied";
     if (userType === 'college') {
         applicantDB = "companyprofiles";
     }
@@ -279,31 +278,18 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
     else if (userType === 'employer') {
         applicantDB = "collegeonboardings";
     }
-    // switch (targetStatusKey) {
-    //     case "campus-placement":
-    //         targetStatus="Applied"
-    //         break;
-    //     case "on-campus-opportunities":
-    //         targetStatus="Shortlisted"
-    //         break;
-    //     case "PoolCampus-placement":
-    //         targetStatus="Applied"
-    //         break;
-    //     case "pool-campus-opportunities":
-    //         targetStatus="Shortlisted"
-    //         break;
-    //     default:
-    //         targetStatus="";
-    //         break;
-    // }
     try {
+        const matchConditions = {
+            job: new mongoose.Types.ObjectId(jobId),
+            jobType: jobType,
+            currentStatus: targetStatus
+        };
+        if (isVisited !== undefined) {
+            matchConditions.isVisited = isVisited === 'true' || isVisited === true ? true : false;
+        }
         const response = await Application.aggregate([
             {
-                $match: {
-                    job: new mongoose.Types.ObjectId(jobId),
-                    jobType: jobType,
-                    currentStatus: targetStatus
-                }
+                $match: matchConditions
             },
             {
                 $lookup: {
@@ -316,22 +302,6 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
             {
                 $unwind: { path: "$applicant", preserveNullAndEmptyArrays: true }
             },
-            // {
-            //     $lookup: {
-            //         from: "auths", // Join with Auth collection to get userId
-            //         localField: "applicant.userId", // Assuming companyProfile has userId field linking to Auth
-            //         foreignField: "_id",
-            //         as: "authInfo"
-            //     }
-            // },
-            // {
-            //     $unwind: { path: "$authInfo", preserveNullAndEmptyArrays: true }
-            // },
-            // {
-            //     $addFields: {
-            //         "applicant.userId": "$authInfo._id" // Add Auth ID to applicant object
-            //     }
-            // },
             {
                 $project: {
                     "applicant": 1,
@@ -342,6 +312,19 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
                 }
             }
         ]);
+
+        //mark isvisited true
+        const idsToMarkVisited = response
+            .filter((doc) => !doc.isVisited)
+            .map((doc) => doc._id);
+
+        if (idsToMarkVisited.length > 0) {
+            await Application.updateMany(
+                { _id: { $in: idsToMarkVisited } },
+                { $set: { isVisited: true } }
+            );
+        }
+
         return { success: true, data: response };
     } catch (error) {
         console.log("Error: ", error.message);
@@ -351,7 +334,7 @@ export async function fetchCollegeApplicationsByJobService(jobId, jobType, userT
 // count applications
 export async function countApplicationsService(jobId, jobType, targetStatus) {
     try {
-        const response = await Application.countDocuments({ job: jobId, jobType: jobType, currentStatus: targetStatus });
+        const response = await Application.countDocuments({ job: jobId, jobType: jobType, currentStatus: targetStatus, isVisited: false });
         return { success: true, count: response };
     } catch (error) {
         console.log("Error: ", error.message);
@@ -369,6 +352,7 @@ export async function ChangeStatusService(applicationId, newStatus) {
         }
         else if (existing?.currentStatus === "Applied" || existing?.currentStatus === "Shortlisted" || existing?.currentStatus === "Accepted") {
             existing.currentStatus = newStatus;
+            // existing?.isVisited = false;
             existing.statusHistory.push({ status: newStatus });
             await existing.save();
             return { success: true, msg: `status changed to: ${newStatus}`, data: existing };
@@ -414,17 +398,17 @@ export async function fetchCompanyDashboardMetrics(user) {
         // --- COLLEGE USER ---
         else if (userType === 'college') {
             const college = await getCollegeService(userId);
-            
+
             if (!college || !college.success || college.data.length === 0) {
                 throw new AppError(college.msg || "College profile not found!", 404);
             }
-            
+
             collegeProfileId = college.data[0]._id;
         } else {
             throw new AppError("This user type cannot access this resource.", 403);
         }
 
-       
+
         let query = {};
         if (userType === 'college') {
             query = { collegePosted: collegeProfileId };

@@ -44,11 +44,15 @@ export default function OnCampusJobManagement() {
     }
   };
 
-  const fetchCollegesForJob = async (jobId, jobType) => {
+  const fetchCollegesForJob = async (jobId, jobType, isVisited) => {
     setCollegesLoading(true);
     setError(null);
     try {
-      const response = await getCollegeApplicationsForJob(jobId, jobType, "Applied")
+      let response;
+      if (isVisited === false) response = await getCollegeApplicationsForJob(jobId, jobType, "Applied", isVisited);
+      else {
+        response = await getCollegeApplicationsForJob(jobId, jobType, "Applied");
+      }
       // console.log("College: ", response);
       setColleges(response.data);
     } catch (err) {
@@ -125,17 +129,27 @@ export default function OnCampusJobManagement() {
   // console.log("currentJobs: ", currentJobs);
 
   const handleViewColleges = (job) => {
-    if (job?.applicationCount === 0) {
-      alert("No colleges have applied for this drive yet.");
-      return;
-    }
+    // if (job?.applicationCount === 0) {
+    //   alert("No colleges have applied for this drive yet.");
+    //   return;
+    // }
     setSelectedJob(job);
     fetchCollegesForJob(job._id, job.jobType);
   };
 
+  const showNewApplication = async (job) => {
+    try {
+      setSelectedJob(job);
+      await fetchCollegesForJob(job._id, job.jobType, false);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const handleBackToList = () => {
     setSelectedJob(null);
     setColleges([]);
+    fetchJobs();
   };
 
   const displayLocations = (locations) => {
@@ -235,7 +249,7 @@ export default function OnCampusJobManagement() {
                   <th className="px-4 py-3">Locations</th>
                   <th className="px-4 py-3">End Date</th>
                   <th className="px-4 py-3">Views</th>
-                  <th className="px-4 py-3">Applications</th>
+                  <th className="px-4 py-3">New Applications</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
               </thead>
@@ -271,12 +285,12 @@ export default function OnCampusJobManagement() {
                         {new Date(job.endDate).toUTCString().slice(0, 16)}
                       </td>
                       <td className="px-4 py-4">{job?.views}</td>
-                      <td className="px-4 py-4">{job?.applicationCount}</td>
+                      <td className="px-4 py-4 hover:bg-gray-200" onClick={() => showNewApplication(job)}>{job?.applicationCount}</td>
                       <td className="px-4 py-4">
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleViewColleges(job)}
-                            disabled={job.applicationCount === 0}
+                            // disabled={job.applicationCount === 0}
                             className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             title="View College Applications"
                           >

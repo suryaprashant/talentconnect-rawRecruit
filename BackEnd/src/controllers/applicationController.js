@@ -1,4 +1,3 @@
-import { response } from "express";
 import {
     ChangeStatusService,
     createApplicationService,
@@ -21,8 +20,6 @@ import { getCandidatEmail, getStudentService } from "../services/studentService.
 import sendStatusChangeEmail from "../utils/sendStatusChangeEmail.js";
 import sendScheduledInterviewEmail from "../utils/sendScheduledInterviewEmail.js";
 // import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
-
- 
 
 // save opportunity
 export async function saveJobByUser(req, res) {
@@ -241,7 +238,7 @@ export async function createPoolcampusApplication(req, res) {
             case 'employer':
                 user = await getEmployerService(req.user);
                 break;
-                
+
             default:
                 break;
         }
@@ -294,7 +291,7 @@ export async function getUserApplicationStatus(req, res) {
                 break;
             case 'employer':
                 user = await getEmployerService(req.user);
-                break;    
+                break;
             case 'company':
                 user = await getCompanyService(userId);
                 break;
@@ -340,12 +337,12 @@ export async function getApplicationsByJob(req, res) {
 
 // oncampus and poolcampus
 export async function getCollegeApplicationsByJob(req, res) {
-    const { jobId, jobType, targetStatus } = req.query;
+    const { jobId, jobType, targetStatus, isVisited } = req.query;
     const userType = req.user.userType;
     if (!jobId || !jobType || !targetStatus) return res.status(404).json({ msg: "Job not found with given criteria!" });
 
     try {
-        const response = await fetchCollegeApplicationsByJobService(jobId, jobType, userType, targetStatus);
+        const response = await fetchCollegeApplicationsByJobService(jobId, jobType, userType, targetStatus, isVisited);
 
         // to be implement -- sorting feature like ATS
 
@@ -546,24 +543,24 @@ export async function acceptApplicant(req, res) {
 // getAllshortlistedcandidates
 export async function getShortlistedCandidatesByCompany(req, res) {
     const companyId = req.user._id;
-     const userType = req.user?.userType;
+    const userType = req.user?.userType;
 
     const { applicantType, jobType } = req.query;
 
     if (!applicantType || !jobType) return res.status(404).json({ msg: "Applicant not defined!" });
 
     try {
-        let profileId ;
-        switch(userType){
+        let profileId;
+        switch (userType) {
             case 'company':
                 const company = await getCompanyService(companyId);
                 if (!company || !company.success || company.data.length === 0) {
                     return res.status(404).json({ msg: "Company profile not found!" });
                 }
                 profileId = company.data[0]._id;
-            break;
+                break;
             case 'employer':
-                const employer = await getEmployerService(req.user) ;
+                const employer = await getEmployerService(req.user);
                 if (!employer || !employer.success || employer.data.length === 0) {
                     return res.status(404).json({ msg: employer.msg || "Employer profile not found!" });
                 }
@@ -571,11 +568,11 @@ export async function getShortlistedCandidatesByCompany(req, res) {
                 break;
             default:
                 return res.status(403).json({ msg: "This user type cannot access this resource." });
-            }    
+        }
 
-        
-      
-    const response = await fetchCandidatesbyStatus(profileId, "Shortlisted", applicantType, jobType, "companyPosted");
+
+
+        const response = await fetchCandidatesbyStatus(profileId, "Shortlisted", applicantType, jobType, "companyPosted");
         // console.log(response);
         res.status(200).json(response);
 
@@ -593,7 +590,7 @@ export async function getShortlistedCompaniesForCollege(req, res) {
     try {
         const college = await getCollegeService(collegeId);
         if (!college) return res.status(404).json({ msg: "college not found!" });
-    const response = await fetchCandidatesbyStatus(college.data[0]._id, "Shortlisted", applicantType, jobType, "collegePosted");
+        const response = await fetchCandidatesbyStatus(college.data[0]._id, "Shortlisted", applicantType, jobType, "collegePosted");
         res.status(200).json(response);
     } catch (error) {
         console.log("Error:", error);
@@ -610,7 +607,7 @@ export async function getAcceptedCandidatesByCompany(req, res) {
     try {
         const company = await getEmployerService(companyId);
         if (!company) return res.status(404).json({ msg: "company not found!" });
-    const response = await fetchCandidatesbyStatus(company.data[0]._id, "Accepted", applicantType, jobType, "companyPosted");
+        const response = await fetchCandidatesbyStatus(company.data[0]._id, "Accepted", applicantType, jobType, "companyPosted");
         // console.log(response);
         res.status(200).json(response);
     } catch (error) {
@@ -661,7 +658,7 @@ export const getCompanyDashboardMetrics = async (req, res) => {
     try {
         const user = req.user;
         const metricsData = await fetchCompanyDashboardMetrics(user);
-       
+
         res.status(200).json({
             success: true,
             data: metricsData
