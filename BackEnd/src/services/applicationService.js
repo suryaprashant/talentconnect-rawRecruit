@@ -352,7 +352,7 @@ export async function ChangeStatusService(applicationId, newStatus) {
         }
         else if (existing?.currentStatus === "Applied" || existing?.currentStatus === "Shortlisted" || existing?.currentStatus === "Accepted") {
             existing.currentStatus = newStatus;
-            // existing?.isVisited = false;
+            existing.isVisited = false;
             existing.statusHistory.push({ status: newStatus });
             await existing.save();
             return { success: true, msg: `status changed to: ${newStatus}`, data: existing };
