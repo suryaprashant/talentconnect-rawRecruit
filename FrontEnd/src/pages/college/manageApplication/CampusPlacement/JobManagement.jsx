@@ -308,7 +308,12 @@ function JobManagementApplication() {
                                         const deadline = job.endDate || job.deadline;
                                         const views = job?.views ?? 0;
                                         const applications = job.applicationCount || job.applications || 0;
-
+                                        
+                                        // Determine if the View button should be disabled
+                                        const isViewDisabled = applications === 0;
+                                        // Tailor the className for the View button based on disability
+                                        const viewButtonClass = `transition-colors ${isViewDisabled ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700'}`;
+                                        
                                         return (
                                             <tr
                                                 key={jobId}
@@ -335,9 +340,17 @@ function JobManagementApplication() {
                                                 <td className="px-4 py-3" onClick={(e) => { e.stopPropagation(); handleView(jobId); }}>{applications}</td>
                                                 <td className="px-4 py-3">
                                                     <div className="flex gap-2">
-                                                        {/* <button onClick={(e) => { e.stopPropagation(); handleView(jobId); }} className="text-gray-500 hover:text-gray-700 transition-colors" title="View Job">
+                                                        <button 
+                                                            onClick={(e) => { 
+                                                                e.stopPropagation(); 
+                                                                if (!isViewDisabled) handleView(jobId); 
+                                                            }} 
+                                                            className={viewButtonClass} 
+                                                            title={isViewDisabled ? "No applications to view" : "View Job"}
+                                                            disabled={isViewDisabled} // Optional: Add disabled attribute for semantic correctness
+                                                        >
                                                             <Eye size={18} />
-                                                        </button> */}
+                                                        </button>
                                                         {/* <button onClick={(e) => handleEdit(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="Edit Job">
                                                             <Edit size={18} />
                                                         </button>
