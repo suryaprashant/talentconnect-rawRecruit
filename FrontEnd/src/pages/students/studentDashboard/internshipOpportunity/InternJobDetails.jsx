@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 
 // import JobCard from '@/components/student/studentDashboard/intershipOpportunity/JobCard'; // Ensure this path is correct
-import { ApplyForInternship, getInternshipDetail, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
+import { ApplyForInternship, getInternshipById, getInternshipDetail, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 
 const InternJobDetails = () => {
@@ -20,9 +20,10 @@ const InternJobDetails = () => {
     const loadJobDetails = async () => {
       try {
         setIsLoading(true);
-        const response = await getInternshipDetail(jobId);
+        const response = await getInternshipById(jobId);
         setJobDetails(response.data);
-        await viewed(details.data._id);
+        await viewed(response.data._id);
+        setIsLoading(false);
         setError(null);
       } catch (err) {
         setError('Failed to load internship details. Please try again later.');

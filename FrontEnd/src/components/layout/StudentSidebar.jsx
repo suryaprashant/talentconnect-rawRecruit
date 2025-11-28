@@ -32,24 +32,24 @@ function StudentSidebar({ activePath }) {
       <SidebarNavItem to="/saved-jobs" icon={<FiBookmark />} label="Saved Jobs/Internships" active={activePath === '/saved-jobs'} />
 
       <SidebarNavGroup label="Student Dashboard" icon={<FiPieChart />} active={activePath.includes('/student-dashboard')}>
-        <SidebarNavItem 
+        {/* <SidebarNavItem 
           to="/student-dashboard/Job-listing" 
           icon={<FiBriefcase />} 
           label="Job Listing" 
           active={activePath === '/student-dashboard/Job-listing'} 
-        />
+        /> */}
         <SidebarNavItem 
           to="/student-dashboard/Off-campus" 
           icon={<FiLayers />} 
           label="Off-Campus Listings" 
           active={activePath === '/student-dashboard/Off-campus'} 
         />
-        <SidebarNavItem 
+        {/* <SidebarNavItem 
           to="/student-dashboard/Internship" 
           icon={<FiTrendingUp />} 
           label="Internship Opportunities" 
           active={activePath === '/student-dashboard/Internship'} 
-        />
+        /> */}
         <SidebarNavItem 
           to="/student-dashboard/Referral" 
           icon={<FiUsers />} 
@@ -100,24 +100,24 @@ function StudentSidebar({ activePath }) {
       </SidebarNavGroup>
 
       <SidebarNavGroup label="Application Status" icon={<FiFileText />} active={activePath.includes('/application-status')}>
-        <SidebarNavItem 
+        {/* <SidebarNavItem 
           to="/application-status/Job-listing" 
           icon={<FiBriefcase />} 
           label="Job Listing" 
           active={activePath === '/application-status/Job-listing'} 
-        />
+        /> */}
         <SidebarNavItem 
           to="/application-status/Off-campus" 
           icon={<FiLayers />} 
           label="Off-Campus Listing" 
           active={activePath === '/application-status/Off-campus'} 
         />
-        <SidebarNavItem 
+        {/* <SidebarNavItem 
           to="/application-status/Internship" 
           icon={<FiTrendingUp />} 
           label="Internship Opportunities" 
           active={activePath === '/application-status/Internship'} 
-        />
+        /> */}
         <SidebarNavItem 
           to="/application-status/Referral" 
           icon={<FiUsers />} 
