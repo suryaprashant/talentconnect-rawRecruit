@@ -100,14 +100,26 @@ export function getApplicationsForJob(jobId, jobType, targetStatus) {
     .catch(error => error);
 }
 
-export function getCollegeApplicationsForJob(jobId, jobType, targetStatus) {
+export function getCollegeApplicationsForJob(jobId, jobType, targetStatus, isVisited) {
+  let customParam;
+  if (isVisited === undefined) {
+    customParam = {
+      jobId: jobId,
+      jobType: jobType,
+      targetStatus: targetStatus
+    }
+  }
+  else {
+    customParam = {
+      jobId: jobId,
+      jobType: jobType,
+      targetStatus: targetStatus,
+      isVisited: isVisited
+    }
+  }
   return axiosClient.get(`application/manage/college`,
     {
-      params: {
-        jobId: jobId,
-        jobType: jobType,
-        targetStatus: targetStatus
-      }
+      params: customParam
     }
   )
     .then(response => response)
