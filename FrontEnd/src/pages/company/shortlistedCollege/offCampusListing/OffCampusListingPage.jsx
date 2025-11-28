@@ -28,7 +28,7 @@ export default function OffCampusJobManagement() {
 
     const fetchJobs = async () => {
         try {
-            const response = await getPostedJobs("Off-campus", "Applied");
+            const response = await getPostedJobs("Off-campus", "Shortlisted");
             // console.log(response.data.response);
             setJobs(response?.data);
 
@@ -145,6 +145,7 @@ export default function OffCampusJobManagement() {
     const onClose = () => {
         setShowJobDetail(false);
         setIsVisited('');
+        fetchJobs();
     }
 
     // If showing job detail, render the detail view

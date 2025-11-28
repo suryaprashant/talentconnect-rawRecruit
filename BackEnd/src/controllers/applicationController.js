@@ -379,9 +379,9 @@ export async function shortlistApplicant(req, res) {
                 default:
                     break;
             }
-            if (applicantMail.success) {
-                sendStatusChangeEmail(applicantMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
-            }
+            // if (applicantMail.success) {
+            //     sendStatusChangeEmail(applicantMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
+            // }
 
             return res.status(200).json(response);
         }
@@ -406,14 +406,14 @@ export async function shortlistApplicantForCompany(req, res) {
             const companyData = companyMail.data ? companyMail.data[0] : null;
             const workEmail = companyData?.employerDetails?.workEmail;
 
-            if (companyMail.success && workEmail) {
-                sendStatusChangeEmail(
-                    workEmail,
-                    response.data.currentStatus,
-                    response.data._id,
-                    jobRole
-                );
-            }
+            // if (companyMail.success && workEmail) {
+            //     sendStatusChangeEmail(
+            //         workEmail,
+            //         response.data.currentStatus,
+            //         response.data._id,
+            //         jobRole
+            //     );
+            // }
 
             return res.status(200).json(response);
         }
@@ -452,9 +452,9 @@ export async function rejectApplicant(req, res) {
                 default:
                     break;
             }
-            if (applicantMail.success) {
-                sendStatusChangeEmail(applicantMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
-            }
+            // if (applicantMail.success) {
+            //     sendStatusChangeEmail(applicantMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
+            // }
 
             return res.status(200).json(response);
         }
@@ -483,14 +483,14 @@ export async function rejectCompanyApplicationByCollege(req, res) {
 
             console.log("Company work email for rejection:", workEmail);
 
-            if (companyMail.success && workEmail) {
-                sendStatusChangeEmail(
-                    workEmail,
-                    response.data.currentStatus,
-                    response.data._id,
-                    jobRole
-                );
-            }
+            // if (companyMail.success && workEmail) {
+            //     sendStatusChangeEmail(
+            //         workEmail,
+            //         response.data.currentStatus,
+            //         response.data._id,
+            //         jobRole
+            //     );
+            // }
 
             return res.status(200).json(response);
         }
@@ -527,9 +527,9 @@ export async function acceptApplicant(req, res) {
                 default:
                     break;
             }
-            if (applicantMail.success) {
-                sendStatusChangeEmail(applicantMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
-            }
+            // if (applicantMail.success) {
+            //     sendStatusChangeEmail(applicantMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
+            // }
 
             return res.status(200).json(response);
         }
