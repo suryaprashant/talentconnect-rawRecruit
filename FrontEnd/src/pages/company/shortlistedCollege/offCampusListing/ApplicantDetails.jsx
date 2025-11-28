@@ -1,26 +1,30 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { acceptCandidate, getApplicationsForJob, rejectCandidate } from '@/lib/Company_AxiosInstance';
+import { acceptCandidate, getApplicationsForJob, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 import useConversation from '@/statemanage/useConversation';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
-import { Send } from 'lucide-react';
 import InterviewSchedulerPopup from '@/components/ui/ScheduleInterview';
+import { Send } from 'lucide-react';
 
-const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => {
-  const jobId = job._id;
+const ApplicantDetails = ({ job, isVisited, onClose, onAccept, onShortlist, onReject }) => {
+  const [jobId, setJobId] = useState(job._id);
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [toggleScheduleInterviewPopup, setToggleScheduleInterviewPopup] = useState(false);
   const [applications, setApplications] = useState();
+  const [toggleScheduleInterviewPopup, setToggleScheduleInterviewPopup] = useState(false);
 
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
 
-  const getApplicants = async (jobId, jobType) => {
+  const getApplicants = async (jobId, jobType, isVisited) => {
     setIsSubmitting(true);
     try {
-      const response = await getApplicationsForJob(jobId, jobType, "Shortlisted");
+      let response;
+      if (isVisited === false) response = await getApplicationsForJob(jobId, jobType, "Shortlisted", isVisited);
+      else {
+        response = await getApplicationsForJob(jobId, jobType, "Shortlisted");
+      }
       // console.log("ye wala response: ", response.data);
       setApplications(response.data);
     } catch (error) {
@@ -41,6 +45,18 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
     }
   }
 
+  const shortlistApplicant = async (applicantionId) => {
+    try {
+      const response = await shortlistCandidate(applicantionId, job?.jobRoles);
+      // console.log("shortlist: ", response)
+      if (response?.data?.success === true) toast.success("Shortlisted!");
+      else toast.error(response.response?.data?.msg);
+    } catch (error) {
+      console.log("Error: ", error);
+      toast.error('Something went wrong!')
+    }
+  }
+
   const rejectApplicant = async (applicantionId) => {
     try {
       const response = await rejectCandidate(applicantionId, job?.jobRoles);
@@ -53,7 +69,8 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
   }
 
   useEffect(() => {
-    getApplicants(jobId, jobType);
+    if (isVisited === false) getApplicants(jobId, jobType, false);
+    else getApplicants(jobId, jobType);
   }, [jobId]);
 
   const handleMessageClick = async (applicant) => {

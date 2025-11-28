@@ -7,7 +7,7 @@ import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 import { Send } from 'lucide-react';
 
 
-const ApplicantDetails = ({ job, onClose }) => {
+const ApplicantDetails = ({ job, onClose, isVisited }) => {
   const jobId = job._id;
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -15,10 +15,14 @@ const ApplicantDetails = ({ job, onClose }) => {
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
 
-  const getApplicants = async (jobId, jobType) => {
+  const getApplicants = async (jobId, jobType, isVisited) => {
     setIsSubmitting(true);
     try {
-      const response = await getApplicationsForJob(jobId, jobType, "Applied");
+      let response;
+      if (isVisited === false) response = await getApplicationsForJob(jobId, jobType, "Applied", isVisited);
+      else {
+        response = await getApplicationsForJob(jobId, jobType, "Applied");
+      }
       // console.log("ye wala response: ", response.data);
       setApplications(response.data);
     } catch (error) {
@@ -62,7 +66,8 @@ const ApplicantDetails = ({ job, onClose }) => {
   }
 
   useEffect(() => {
-    getApplicants(jobId, jobType);
+    if (isVisited === false) getApplicants(jobId, jobType, false);
+    else getApplicants(jobId, jobType);
   }, [jobId]);
 
   const handleMessageClick = async (applicant) => {
@@ -137,7 +142,7 @@ const ApplicantDetails = ({ job, onClose }) => {
 
         {/* Applicant Details */}
         <div className="flex-1 p-8">
-          <h1 className=''>{job?.jobRoles[0]}</h1>
+          <h1 className=''>{job.jobRoles ? job?.jobRoles[0] : 'NA'}</h1>
           {
             applications?.map((applicant) => (
               <div className="bg-white rounded-lg shadow-sm border border-gray-200" key={applicant._id}>

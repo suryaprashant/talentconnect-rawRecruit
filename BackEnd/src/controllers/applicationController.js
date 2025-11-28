@@ -320,11 +320,11 @@ export async function getUserApplicationStatus(req, res) {
 // action by company
 // offcampus and joblisting
 export async function getApplicationsByJob(req, res) {
-    const { jobId, jobType, targetStatus } = req.query;
+    const { jobId, jobType, targetStatus, isVisited } = req.query;
     if (!jobId || !jobType) return res.status(404).json({ msg: "Job not found!" });
 
     try {
-        const response = await fetchApplicationsByJobService(jobId, jobType, targetStatus);
+        const response = await fetchApplicationsByJobService(jobId, jobType, targetStatus, isVisited);
 
         // to be implement -- sorting feature like ATS
 

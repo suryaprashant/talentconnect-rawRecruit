@@ -17,6 +17,7 @@ export default function InternshipListing() {
     const [showFilters, setShowFilters] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
     const [showJobDetail, setShowJobDetail] = useState(false);
+    const [isVisited, setIsVisited] = useState();
     const navigate = useNavigate();
 
     const itemsPerPage = 5;
@@ -76,13 +77,23 @@ export default function InternshipListing() {
     };
 
     // Action handlers - these would connect to your backend API
-    const handleView = (jobId) => {
-        const job = jobs.find(j => j._id === jobId);
-        if (job) {
+    const handleView = (job) => {
+        // const job = jobs.find(j => j._id === jobId);
+        // if (job) {
+        setSelectedJob(job);
+        setShowJobDetail(true);
+        // }
+    };
+
+    const showNewApplication = async (job) => {
+        try {
             setSelectedJob(job);
             setShowJobDetail(true);
+            setIsVisited(false);
+        } catch (error) {
+            console.log(error);
         }
-    };
+    }
 
     const handleEdit = (jobId) => {
         console.log(`Edit job with ID: ${jobId}`);
@@ -130,12 +141,18 @@ export default function InternshipListing() {
         setShowJobDetail(false);
     };
 
+    const onClose = () => {
+        setShowJobDetail(false);
+        setIsVisited('');
+    }
+
     // If showing job detail, render the detail view
     if (showJobDetail && selectedJob) {
         return (
             <ApplicantDetails
                 job={selectedJob}
-                onClose={() => setShowJobDetail(false)}
+                isVisited={isVisited}
+                onClose={() => onClose()}
             // onAccept={() => handleAcceptDrive(selectedJob._id)}
             // onShortlist={() => handleShortlistDrive(selectedJob._id)}
             // onReject={() => handleRejectDrive(selectedJob._id)}
@@ -148,8 +165,8 @@ export default function InternshipListing() {
             <div className="max-w-7xl mx-auto p-4 bg-white">
                 <div className="flex justify-between items-center mt-10 mb-4">
                     <div>
-                        <h1 className="text-3xl font-bold">Internship Accepted Applications</h1>
-                        <p className="text-gray-600 mt-2">Track Your Internship and Streamline Accpeted Candidate Applications</p>
+                        <h1 className="text-3xl font-bold">Manage Internship Applications</h1>
+                        <p className="text-gray-600 mt-2">Track Your Job Listings and Streamline Candidate Applications</p>
                     </div>
                     {/* <button className="bg-black text-white px-4 py-2 rounded-md">
             Post a Job
@@ -160,9 +177,22 @@ export default function InternshipListing() {
                     {/* Tabs */}
                     <div className="flex border-b">
                         <button
-                            className={`px-4 py-2 border-b-2 border-black font-medium`}
+                            className={`px-4 py-2 ${activeTab === 'All Jobs' ? 'border-b-2 border-black font-medium' : ''}`}
+                            onClick={() => setActiveTab('All Jobs')}
                         >
                             All Jobs ({jobs?.length})
+                        </button>
+                        <button
+                            className={`px-4 py-2 ${activeTab === 'Published' ? 'border-b-2 border-black font-medium' : ''}`}
+                            onClick={() => setActiveTab('Published')}
+                        >
+                            Published
+                        </button>
+                        <button
+                            className={`px-4 py-2 ${activeTab === 'Drafts' ? 'border-b-2 border-black font-medium' : ''}`}
+                            onClick={() => setActiveTab('Drafts')}
+                        >
+                            Drafts
                         </button>
                     </div>
 
@@ -175,7 +205,7 @@ export default function InternshipListing() {
                             <input
                                 type="text"
                                 className="w-full pl-10 pr-4 py-2 border rounded-md"
-                                placeholder="Search by job name"
+                                placeholder="Search by name or email"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -203,7 +233,7 @@ export default function InternshipListing() {
                                     <th className="px-4 py-3 text-left">Status</th>
                                     <th className="px-4 py-3 text-left">Deadline</th>
                                     <th className="px-4 py-3 text-left">Views</th>
-                                    <th className="px-4 py-3 text-left">Shortlisted</th>
+                                    <th className="px-4 py-3 text-left">New Applications</th>
                                     <th className="px-4 py-3 text-left">Actions</th>
                                 </tr>
                             </thead>
@@ -223,11 +253,8 @@ export default function InternshipListing() {
                                     </tr>
                                 ) : (
                                     currentJobs?.map(job => (
-                                        <tr
-                                            key={job._id}
-                                            className="border-b hover:bg-gray-50 cursor-pointer"
-                                        >
-                                            <td className="px-4 py-3" onClick={() => navigate(`/company-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}>
+                                        <tr key={job._id} className="border-b hover:bg-gray-50 cursor-pointer">
+                                            <td className="px-4 py-3" onClick={() => navigate(`/company-dashboard/Internship/${job._id}?isApplied=true`)}>
                                                 <div className="font-medium">{job?.jobTitle}</div>
                                                 <div className="text-sm text-gray-500">
                                                     {job?.workMode} • {job?.location[0]}
@@ -242,21 +269,13 @@ export default function InternshipListing() {
                                                 </span>
                                             </td>
                                             <td className="px-4 py-3">{new Date(job?.endDate).toUTCString().slice(0, 16)}</td>
-                                            <td className="px-4 py-3">{job?.views}</td>
-                                            <td className="px-4 py-3">{job?.applicationCount}</td>
+                                            <td className="px-4 py-3">{job.views}</td>
+                                            <td className="px-4 py-3 hover:bg-gray-200" onClick={() => showNewApplication(job)}>{job?.applicationCount}</td>
                                             <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                                                 <div className="flex gap-2">
-                                                    <button onClick={() => handleView(job._id)} className="text-gray-500 hover:text-gray-700" title="View Job">
+                                                    <button onClick={() => handleView(job)} className="text-gray-500 hover:text-gray-700" title="View Job">
                                                         <Eye size={18} />
                                                     </button>
-                                                    <Link
-                                                        to={`/company-dashboard/Internship/${job._id}?isApplied=true`}
-                                                        disabled={job.applicationCount === 0}
-                                                        className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                        title="View Job Description"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-search-corner-icon lucide-file-search-corner"><path d="M11.1 22H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.589 3.588A2.4 2.4 0 0 1 20 8v3.25" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="m21 22-2.88-2.88" /><circle cx="16" cy="17" r="3" /></svg>
-                                                    </Link>
                                                     {/* <button onClick={() => handleEdit(job._id)} className="text-gray-500 hover:text-gray-700" title="Edit Job">
                             <Edit size={18} />
                           </button>

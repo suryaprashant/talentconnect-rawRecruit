@@ -17,6 +17,7 @@ export default function OffCampusJobManagement() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [showJobDetail, setShowJobDetail] = useState(false);
+  const [isVisited, setIsVisited] = useState();
   const navigate = useNavigate();
 
   const itemsPerPage = 5;
@@ -76,13 +77,23 @@ export default function OffCampusJobManagement() {
   };
 
   // Action handlers - these would connect to your backend API
-  const handleView = (jobId) => {
-    const job = jobs.find(j => j._id === jobId);
-    if (job) {
+  const handleView = (job) => {
+    // const job = jobs.find(j => j._id === jobId);
+    // if (job) {
+    setSelectedJob(job);
+    setShowJobDetail(true);
+    // }
+  };
+
+  const showNewApplication = async (job) => {
+    try {
       setSelectedJob(job);
       setShowJobDetail(true);
+      setIsVisited(false);
+    } catch (error) {
+      console.log(error);
     }
-  };
+  }
 
   const handleEdit = (jobId) => {
     console.log(`Edit job with ID: ${jobId}`);
@@ -131,12 +142,18 @@ export default function OffCampusJobManagement() {
     setShowJobDetail(false);
   };
 
+  const onClose = () => {
+    setShowJobDetail(false);
+    setIsVisited('');
+  }
+
   // If showing job detail, render the detail view
   if (showJobDetail && selectedJob) {
     return (
       <ApplicantDetails
         job={selectedJob}
-        onClose={() => setShowJobDetail(false)}
+        isVisited={isVisited}
+        onClose={() => onClose()}
         onAccept={() => handleAcceptDrive(selectedJob._id)}
         onShortlist={() => handleShortlistDrive(selectedJob._id)}
         onReject={() => handleRejectDrive(selectedJob._id)}
@@ -254,10 +271,10 @@ export default function OffCampusJobManagement() {
                       </td>
                       <td className="px-4 py-3">{new Date(job?.endDate).toUTCString().slice(0, 16)}</td>
                       <td className="px-4 py-3">{job.views}</td>
-                      <td className="px-4 py-3">{job?.applicationCount}</td>
+                      <td className="px-4 py-3 hover:bg-gray-200" onClick={() => showNewApplication(job)}>{job?.applicationCount}</td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <div className="flex gap-2">
-                          <button onClick={() => handleView(job._id)} className="text-gray-500 hover:text-gray-700" title="View Job">
+                          <button onClick={() => handleView(job)} className="text-gray-500 hover:text-gray-700" title="View Job">
                             <Eye size={18} />
                           </button>
                           {/* <button onClick={() => handleEdit(job._id)} className="text-gray-500 hover:text-gray-700" title="Edit Job">

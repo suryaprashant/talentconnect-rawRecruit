@@ -13,9 +13,11 @@ export default function OffCampusJobManagement() {
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState('');
+    const [activeTab, setActiveTab] = useState('All Jobs');
     const [showFilters, setShowFilters] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
     const [showJobDetail, setShowJobDetail] = useState(false);
+    const [isVisited, setIsVisited] = useState();
     const navigate = useNavigate();
 
     const itemsPerPage = 5;
@@ -26,7 +28,7 @@ export default function OffCampusJobManagement() {
 
     const fetchJobs = async () => {
         try {
-            const response = await getPostedJobs("Off-campus", "Shortlisted");
+            const response = await getPostedJobs("Off-campus", "Applied");
             // console.log(response.data.response);
             setJobs(response?.data);
 
@@ -47,13 +49,13 @@ export default function OffCampusJobManagement() {
             job.workMode.toLowerCase().includes(searchQuery.toLowerCase()) ||
             job.venue.toLowerCase().includes(searchQuery.toLowerCase());
 
-        // if (activeTab === 'All Jobs') {
-        //   return matchesSearch;
-        // } else if (activeTab === 'Published') {
-        //   return matchesSearch && job.status === 'Published';
-        // } else if (activeTab === 'Drafts') {
-        //   return matchesSearch && job.status === 'Draft';
-        // }
+        if (activeTab === 'All Jobs') {
+            return matchesSearch;
+        } else if (activeTab === 'Published') {
+            return matchesSearch && job.status === 'Published';
+        } else if (activeTab === 'Drafts') {
+            return matchesSearch && job.status === 'Draft';
+        }
 
         return matchesSearch;
     });
@@ -75,13 +77,23 @@ export default function OffCampusJobManagement() {
     };
 
     // Action handlers - these would connect to your backend API
-    const handleView = (jobId) => {
-        const job = jobs.find(j => j._id === jobId);
-        if (job) {
+    const handleView = (job) => {
+        // const job = jobs.find(j => j._id === jobId);
+        // if (job) {
+        setSelectedJob(job);
+        setShowJobDetail(true);
+        // }
+    };
+
+    const showNewApplication = async (job) => {
+        try {
             setSelectedJob(job);
             setShowJobDetail(true);
+            setIsVisited(false);
+        } catch (error) {
+            console.log(error);
         }
-    };
+    }
 
     const handleEdit = (jobId) => {
         console.log(`Edit job with ID: ${jobId}`);
@@ -130,12 +142,18 @@ export default function OffCampusJobManagement() {
         setShowJobDetail(false);
     };
 
+    const onClose = () => {
+        setShowJobDetail(false);
+        setIsVisited('');
+    }
+
     // If showing job detail, render the detail view
     if (showJobDetail && selectedJob) {
         return (
             <ApplicantDetails
                 job={selectedJob}
-                onClose={() => setShowJobDetail(false)}
+                isVisited={isVisited}
+                onClose={() => onClose()}
                 onAccept={() => handleAcceptDrive(selectedJob._id)}
                 onShortlist={() => handleShortlistDrive(selectedJob._id)}
                 onReject={() => handleRejectDrive(selectedJob._id)}
@@ -148,8 +166,8 @@ export default function OffCampusJobManagement() {
             <div className="max-w-7xl mx-auto p-4 bg-white">
                 <div className="flex justify-between items-center mt-10 mb-4">
                     <div>
-                        <h1 className="text-3xl font-bold">Shortlisted Off-Campus Applications</h1>
-                        <p className="text-gray-600 mt-2">Track Your Off-Campus and Streamline Shortlisted Candidate Applications</p>
+                        <h1 className="text-3xl font-bold">Manage Off-Campus Applications</h1>
+                        <p className="text-gray-600 mt-2">Track Your Job Listings and Streamline Candidate Applications</p>
                     </div>
                     {/* <button className="bg-black text-white px-4 py-2 rounded-md">
             Post a Job
@@ -160,9 +178,22 @@ export default function OffCampusJobManagement() {
                     {/* Tabs */}
                     <div className="flex border-b">
                         <button
-                            className={`px-4 py-2 border-b-2 border-black font-medium`}
+                            className={`px-4 py-2 ${activeTab === 'All Jobs' ? 'border-b-2 border-black font-medium' : ''}`}
+                            onClick={() => setActiveTab('All Jobs')}
                         >
                             All Jobs ({jobs?.length})
+                        </button>
+                        <button
+                            className={`px-4 py-2 ${activeTab === 'Published' ? 'border-b-2 border-black font-medium' : ''}`}
+                            onClick={() => setActiveTab('Published')}
+                        >
+                            Published
+                        </button>
+                        <button
+                            className={`px-4 py-2 ${activeTab === 'Drafts' ? 'border-b-2 border-black font-medium' : ''}`}
+                            onClick={() => setActiveTab('Drafts')}
+                        >
+                            Drafts
                         </button>
                     </div>
 
@@ -223,12 +254,9 @@ export default function OffCampusJobManagement() {
                                     </tr>
                                 ) : (
                                     currentJobs?.map(job => (
-                                        <tr
-                                            key={job._id}
-                                            className="border-b hover:bg-gray-50 cursor-pointer"
-                                        >
+                                        <tr key={job._id} className="border-b hover:bg-gray-50 cursor-pointer">
                                             <td className="px-4 py-3" onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}>
-                                                <div className="font-medium">{job?.jobRoles[0]}</div>
+                                                {job?.jobRoles?.map((title, ind) => (<div key={ind} className="font-medium">{title}</div>))}
                                                 <div className="text-sm text-gray-500">
                                                     {job?.workMode} • {job?.location[0]}
                                                 </div>
@@ -243,10 +271,10 @@ export default function OffCampusJobManagement() {
                                             </td>
                                             <td className="px-4 py-3">{new Date(job?.endDate).toUTCString().slice(0, 16)}</td>
                                             <td className="px-4 py-3">{job.views}</td>
-                                            <td className="px-4 py-3">{job?.applicationCount}</td>
+                                            <td className="px-4 py-3 hover:bg-gray-200" onClick={() => showNewApplication(job)}>{job?.applicationCount}</td>
                                             <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                                                 <div className="flex gap-2">
-                                                    <button onClick={() => handleView(job._id)} className="text-gray-500 hover:text-gray-700" title="View Job">
+                                                    <button onClick={() => handleView(job)} className="text-gray-500 hover:text-gray-700" title="View Job">
                                                         <Eye size={18} />
                                                     </button>
                                                     {/* <button onClick={() => handleEdit(job._id)} className="text-gray-500 hover:text-gray-700" title="Edit Job">

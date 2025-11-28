@@ -221,16 +221,20 @@ export async function fetchApplicationStatusService(userId, jobType, userType) {
 
 // job management
 // joblisting and offcampus
-export async function fetchApplicationsByJobService(jobId, jobType, targetStatus) {
+export async function fetchApplicationsByJobService(jobId, jobType, targetStatus, isVisited) {
+    // console.log("...........\n", jobId, jobType, targetStatus, isVisited);
     try {
+        const matchConditions = {
+            job: new mongoose.Types.ObjectId(jobId),
+            jobType: jobType,
+            currentStatus: targetStatus
+        };
+        if (isVisited !== undefined) {
+            matchConditions.isVisited = isVisited === 'true' || isVisited === true ? true : false;
+        }
         const response = await Application.aggregate([
             {
-                $match: {
-                    job: new mongoose.Types.ObjectId(jobId),
-                    jobType: jobType,
-                    // currentStatus not equal to "saved"
-                    currentStatus: targetStatus
-                }
+                $match: matchConditions
             },
             {
                 $lookup: {
@@ -257,6 +261,18 @@ export async function fetchApplicationsByJobService(jobId, jobType, targetStatus
                 }
             }
         ]);
+
+        const idsToMarkVisited = response
+            .filter((doc) => !doc.isVisited)
+            .map((doc) => doc._id);
+
+        if (idsToMarkVisited.length > 0) {
+            await Application.updateMany(
+                { _id: { $in: idsToMarkVisited } },
+                { $set: { isVisited: true } }
+            );
+        }
+
         return { success: true, data: response };
     } catch (error) {
         console.log("Error: ", error.message);
