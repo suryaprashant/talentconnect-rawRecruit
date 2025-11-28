@@ -243,6 +243,10 @@ import EventRegistration from './pages/EventRegistration';
 import AcceptedIntership from './pages/employer/acceptedCollegeOrCandidate/internship/AcceptedInternshipList'
 import EmployerIntershipForShortlist from './pages/employer/shortlistedCollege/internship/InternshipListingPage'
 import CampusBranding from "./pages/college/serviceRequest/campusBranding/CampusBranding";
+import OncampusAcceptedListing from "./pages/college/acceptedCompanies/oncampus/acceptedListing"
+import OncampusAcceptedDetailPage from "./pages/college/acceptedCompanies/oncampus/acceptedDetailPage"
+import PoolcampusAcceptedListing from "./pages/college/acceptedCompanies/poolcampus/AcceptedCompaniesListing"
+import PoolcampusAcceptedDetailPage from "./pages/college/acceptedCompanies/poolcampus/AcceptedDetailPage"
 
 import HomapPage from "./pages/homePage/HomePage"
 // Create query client
@@ -584,6 +588,11 @@ function AppRoutes() {
 
               <Route path="/application-status/oncampus" element={<CollegeOncampusApplicationStatus />} />
               <Route path="/application-status/poolcampus" element={<CollegePoolcampusApplicationStatus />} />
+
+              <Route path="/accepted/on-campus-request" element={<OncampusAcceptedListing />} />
+              <Route path="/accepted/on-campus-request/:driveId" element={<OncampusAcceptedDetailPage />} />
+              <Route path="/accepted/pool-campus-request" element={<PoolcampusAcceptedListing />} />
+              <Route path="/accepted/pool-campus-request/:driveId" element={<PoolcampusAcceptedDetailPage />} />
 
               <Route path="/registered/on-campus-opportunities" element={
                 <ApplicationProvider>

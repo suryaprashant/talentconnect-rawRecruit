@@ -60,7 +60,7 @@ const FilterSection = ({ filters, onFilterChange, onClearFilter, college }) => {
       title: 'Employment Type',
       type: 'employmentType',
       options: [
-        { id: 'employment-full-time', value: 'Full-time', label: 'Full-time' },
+        // { id: 'employment-full-time', value: 'Full-time', label: 'Full-time' },
         { id: 'employment-part-time', value: 'Part-time', label: 'Part-time' },
         { id: 'employment-contract', value: 'Contract', label: 'Contract' }
       ]

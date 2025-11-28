@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { ChevronDown, X } from 'lucide-react';
 import toast from 'react-hot-toast';
+import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
 
 export default function PoolCampusHiringForm() {
-  const locations = ['Online', 'Bangalore', 'Mumbai', 'Delhi', 'Hyderabad', 'Chennai', 'Pune', 'Kolkata', 'Ahmedabad', 'Jaipur', 'Other'];
   const collegeStreamMapping = {
     'Engineering': ['B.Tech', 'M.Tech', 'Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Information Technology', 'Biotechnology', 'Chemical', 'Aerospace', 'Automobile'],
     'Management': ['MBA', 'BBA'],
@@ -31,13 +31,19 @@ export default function PoolCampusHiringForm() {
   const minimumStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '201-500', '500+'];
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
-  
   const collegeCategoryOptions = ['Tier 1', 'Tier 2', 'Tier 3', 'Autonomous', 'Other'];
- 
   const preferredHiringModeOptions = ["Online", "Offline", "Hybrid", "Online Aptitude and Physical Interview"];
 
+  // Generate city options from the npm package
+  const cityOptions = useMemo(() =>
+    City.getCitiesOfCountry('IN').map(city => ({
+      value: city.name,
+      label: city.name,
+    })),
+  []);
+
   const initialState = {
-    venue: '',
+    venue: null,
     collegeTypes: '',
     studentStreams: [],
     criteria: '',
@@ -57,13 +63,11 @@ export default function PoolCampusHiringForm() {
     selectionProcess: [],
     contactPerson: { name: '', designation: '', email: '', mobile: '', linkedin: '' },
     minStudents: '',
-    // --- NEW FIELDS ---
     collegeCategories: [],
     onlineTestDate: '',
     interviewWindow: { start: '', end: '' },
     offerRolloutDate: '',
     preferredHiringMode: '',
-   
   };
 
   const [formData, setFormData] = useState(initialState);
@@ -71,11 +75,6 @@ export default function PoolCampusHiringForm() {
   const [error, setError] = useState(null);
   const [descriptionError, setDescriptionError] = useState("");
 
-  const [indianCities, setIndianCities] = useState([]);
-  const [workLocationSearch, setWorkLocationSearch] = useState('');
-  const [venueSearch, setVenueSearch] = useState('');
-
-  
   const [customCollegeType, setCustomCollegeType] = useState('');
   const [customStream, setCustomStream] = useState('');
   const [customJobRole, setCustomJobRole] = useState('');
@@ -88,9 +87,7 @@ export default function PoolCampusHiringForm() {
     jobRoles: false,
     amenities: false,
     selectionProcess: false,
-    workLocation: false,
     tags: false,
-    venue: false,
     collegeTypes: false
   });
 
@@ -100,17 +97,8 @@ export default function PoolCampusHiringForm() {
   const jobRolesRef = useRef(null);
   const amenitiesRef = useRef(null);
   const selectionProcessRef = useRef(null);
-  const workLocationRef = useRef(null);
   const tagsRef = useRef(null);
-  const venueRef = useRef(null);
   const collegeTypesRef = useRef(null);
-
-  useEffect(() => {
-    const citiesOfIndia = City.getCitiesOfCountry('IN')
-      .map(city => city.name)
-      .sort((a, b) => a.localeCompare(b));
-    setIndianCities(citiesOfIndia);
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -121,9 +109,7 @@ export default function PoolCampusHiringForm() {
         jobRoles: jobRolesRef,
         amenities: amenitiesRef,
         selectionProcess: selectionProcessRef,
-        workLocation: workLocationRef,
         tags: tagsRef,
-        venue: venueRef,
         collegeTypes: collegeTypesRef,
       };
 
@@ -204,6 +190,15 @@ export default function PoolCampusHiringForm() {
     setFormData({ ...formData, contactPerson: { ...formData.contactPerson, [name]: value } });
   };
 
+  // Handle venue selection (single select)
+  const handleVenueChange = (selectedOption) => {
+    setFormData(prev => ({ ...prev, venue: selectedOption }));
+  };
+
+  // Handle work location selection (multi select)
+  const handleWorkLocationChange = (selectedOptions) => {
+    setFormData(prev => ({ ...prev, workLocation: selectedOptions || [] }));
+  };
 
   const handleCustomAdd = (field, value, setValue, predefinedOptions = []) => {
     if (value.trim() === '') return;
@@ -222,7 +217,6 @@ export default function PoolCampusHiringForm() {
     setValue(''); 
   };
 
-  
   const handleCustomAddSingle = (field, value, setValue, predefinedOptions = []) => {
     if (value.trim() === '') return;
 
@@ -236,44 +230,6 @@ export default function PoolCampusHiringForm() {
     setDropdownOpen(prev => ({ ...prev, [field]: false })); 
   };
 
- 
-  const getFilteredCities = (cities, searchTerm) => {
-    if (!searchTerm.trim()) {
-      return cities;
-    }
-    
-    const searchLower = searchTerm.toLowerCase();
-    const citiesWithPriority = cities.map(city => {
-      const cityLower = city.toLowerCase();
-      let priority = 0;
-      
-    
-      if (cityLower === searchLower) {
-        priority = 3;
-      }
-
-      else if (cityLower.startsWith(searchLower)) {
-        priority = 2;
-      }
-  
-      else if (cityLower.includes(searchLower)) {
-        priority = 1;
-      }
-      
-      return { city, priority };
-    });
-    
-    
-    return citiesWithPriority
-      .filter(item => item.priority > 0)
-      .sort((a, b) => b.priority - a.priority || a.city.localeCompare(b.city))
-      .map(item => item.city);
-  };
-
- 
-  const filteredWorkCities = getFilteredCities(indianCities, workLocationSearch);
-  const filteredVenueCities = getFilteredCities(indianCities, venueSearch);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -282,6 +238,15 @@ export default function PoolCampusHiringForm() {
       toast.error("Job description cannot exceed 500 characters.");
       return;
     }
+
+    // Validate required fields
+    if (!formData.venue) {
+      const errorMsg = "Please select a Pool Campus Hiring Venue. This field is required.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      return;
+    }
+
     const fieldsToValidate = [
       { key: 'studentStreams', name: 'Student Stream / Degree' },
       { key: 'skills', name: 'Skills' },
@@ -317,7 +282,7 @@ export default function PoolCampusHiringForm() {
       const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1];
 
       const submissionData = {
-        venue: formData.venue,
+        venue: formData.venue ? formData.venue.value : '',
         collegeTypes: formData.collegeTypes ? [formData.collegeTypes] : [],
         studentStreams: formData.studentStreams,
         eligibilityCriteria: formData.criteria,
@@ -328,7 +293,7 @@ export default function PoolCampusHiringForm() {
           fixedPay: parseFloat(formData.packageDetails.fixedPay) || 0,
           joiningBonus: parseFloat(formData.packageDetails.joiningBonus) || 0
         },
-        workLocation: formData.workLocation,
+        workLocation: formData.workLocation.map(loc => loc.value),
         jobRoles: formData.jobRoles,
         workMode: formData.workMode,
         employmentType: formData.employmentType,
@@ -343,7 +308,6 @@ export default function PoolCampusHiringForm() {
         tags: formData.tags,
         minimumStudents: formData.minStudents,
         jobType: "Pool-campus",
-
         collegeCategories: formData.collegeCategories,
         onlineTestDate: formData.onlineTestDate || undefined,
         interviewWindow: {
@@ -352,7 +316,6 @@ export default function PoolCampusHiringForm() {
         },
         offerRolloutDate: formData.offerRolloutDate || undefined,
         companyHiringPreference: { preferredMode: formData.preferredHiringMode },
-      
       };
 
       const response = await axios.post(
@@ -410,54 +373,27 @@ export default function PoolCampusHiringForm() {
         <p className="text-center text-gray-500 mb-6">Fill in the details below to register for the hiring drive</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Pool Campus Hiring Venue with Indian Cities */}
-          <div ref={venueRef} className="relative">
+          {/* Pool Campus Hiring Venue with CreatableSelect */}
+          <div>
             <label className="block mb-1 font-medium">Pool Campus Hiring Venue <span className="text-red-500">*</span></label>
-            <div 
-              onClick={() => toggleDropdown('venue')}
-              className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400"
-            >
-              <span className={formData.venue ? "text-black" : "text-gray-500"}>
-                {formData.venue || 'Select venue location'}
-              </span>
-              <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.venue ? "rotate-180" : ""}`} />
-            </div>
-            {dropdownOpen.venue && (
-              <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-                <div className="p-2 border-b">
-                  <input
-                    type="text"
-                    value={venueSearch}
-                    onChange={(e) => setVenueSearch(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                    placeholder="Search for a city..."
-                    className="w-full p-2 border rounded"
-                  />
-                </div>
-                <div className="max-h-60 overflow-auto">
-                  {filteredVenueCities.length > 0 ? (
-                    filteredVenueCities.map(city => (
-                      <div
-                        key={city}
-                        onClick={() => {
-                          setFormData(prev => ({ ...prev, venue: city }));
-                          setDropdownOpen(prev => ({ ...prev, venue: false }));
-                        }}
-                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.venue === city ? "bg-gray-100 font-medium" : ""}`}
-                      >
-                        {city}
-                        {formData.venue === city && <span className="float-right text-gray-500">✓</span>}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="px-4 py-2 text-gray-500">No cities found matching "{venueSearch}"</div>
-                  )}
-                </div>
-              </div>
-            )}
+            <CreatableSelect
+              isClearable
+              options={cityOptions}
+              value={formData.venue}
+              onChange={handleVenueChange}
+              placeholder="Select or type to add a venue location..."
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderColor: '#d1d5db',
+                  minHeight: '42px',
+                }),
+              }}
+            />
           </div>
 
-       
+          
+
           <div ref={collegeTypesRef} className="relative">
             <label className="block font-medium mb-2">Type of College <span className="text-red-500">*</span></label>
             <div 
@@ -471,7 +407,6 @@ export default function PoolCampusHiringForm() {
             </div>
             {dropdownOpen.collegeTypes && (
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-              
                 <div className="p-2 border-b flex">
                   <input
                     type="text"
@@ -517,7 +452,6 @@ export default function PoolCampusHiringForm() {
             )}
           </div>
 
-          {/* Student Stream with Custom Add */}
           <div ref={studentStreamsRef} className="relative">
             <label className="block font-medium mb-2">Student Stream / Degree <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">
@@ -539,7 +473,6 @@ export default function PoolCampusHiringForm() {
             </div>
             {dropdownOpen.studentStreams && formData.collegeTypes && (
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                {/* Custom Stream Input */}
                 <div className="p-2 border-b flex">
                   <input
                     type="text"
@@ -600,7 +533,6 @@ export default function PoolCampusHiringForm() {
             </div>
           </div>
 
-          {/* Skills with Custom Add */}
           <div ref={skillsRef} className="relative">
             <label className="block font-medium mb-2">Skills <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">
@@ -617,7 +549,6 @@ export default function PoolCampusHiringForm() {
             </div>
             {dropdownOpen.skills && (
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                {/* Custom Skill Input */}
                 <div className="p-2 border-b flex">
                   <input
                     type="text"
@@ -682,7 +613,6 @@ export default function PoolCampusHiringForm() {
             )}
           </div>
 
-          {/* Tags multi-select */}
           <div ref={tagsRef} className="relative">
             <label className="block font-medium mb-2">Tags</label>
             <div className="flex flex-wrap gap-2 mb-2">
@@ -779,51 +709,24 @@ export default function PoolCampusHiringForm() {
               />
             </div>
           </div>
-       
-          <div ref={workLocationRef} className="relative">
+
+          {/* Work Location with CreatableSelect (multi-select) */}
+          <div>
             <label className="block font-medium mb-2">Work Location <span className="text-red-500">*</span></label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {formData.workLocation.map(loc => (
-                <div key={loc} className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full">
-                  <span>{loc}</span>
-                  <button type="button" onClick={() => removeSelectedItem('workLocation', loc)} className="ml-2 text-gray-600 hover:text-black"><X size={14} /></button>
-                </div>
-              ))}
-            </div>
-            <div onClick={() => toggleDropdown('workLocation')} className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400">
-              <span className="text-gray-500">Select work locations</span>
-              <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.workLocation ? "rotate-180" : ""}`} />
-            </div>
-            {dropdownOpen.workLocation && (
-              <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-                <div className="p-2 border-b">
-                  <input
-                    type="text"
-                    value={workLocationSearch}
-                    onChange={(e) => setWorkLocationSearch(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                    placeholder="Search for a city..."
-                    className="w-full p-2 border rounded"
-                  />
-                </div>
-                <div className="max-h-60 overflow-auto">
-                  {filteredWorkCities.length > 0 ? (
-                    filteredWorkCities.map(city => (
-                      <div
-                        key={city}
-                        onClick={() => handleMultiSelect('workLocation', city)}
-                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.workLocation.includes(city) ? "bg-gray-100 font-medium" : ""}`}
-                      >
-                        {city}
-                        {formData.workLocation.includes(city) && <span className="float-right text-gray-500">✓</span>}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="px-4 py-2 text-gray-500">No cities found matching "{workLocationSearch}"</div>
-                  )}
-                </div>
-              </div>
-            )}
+            <CreatableSelect
+              isMulti
+              options={cityOptions}
+              value={formData.workLocation}
+              onChange={handleWorkLocationChange}
+              placeholder="Select or type to add work locations..."
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderColor: '#d1d5db',
+                  minHeight: '42px',
+                }),
+              }}
+            />
           </div>
 
           <div ref={jobRolesRef} className="relative">
@@ -842,7 +745,6 @@ export default function PoolCampusHiringForm() {
             </div>
             {dropdownOpen.jobRoles && (
               <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-              
                 <div className="p-2 border-b flex">
                   <input
                     type="text"
@@ -903,7 +805,6 @@ export default function PoolCampusHiringForm() {
             </div>
           </div>
 
-        
           <div>
             <label className="block mb-1 font-medium">College Categories <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2">
@@ -915,7 +816,7 @@ export default function PoolCampusHiringForm() {
             </div>
           </div>
 
-           <div>
+          <div>
             <label className="block mb-1 font-medium">Tentative Date of Placement / Hiring <span className="text-red-500">*</span></label>
             <div className="flex space-x-2">
               <div className="w-1/2 mt-3"><label className="block text-xs mb-1 ml-2 font-medium">Start Date</label><div className="relative"><input type="date" name="placementStartDate" value={formData.placementStartDate} onChange={handleChange} className="w-full p-2 border rounded" required /></div></div>

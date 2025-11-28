@@ -140,6 +140,13 @@ export function getShorlistedCompaniesByCollege(applicantType, jobType) {
     .catch(error => error);
 }
 
+export function acceptCompanies(applicationId, jobRole) {
+  return axiosClient.patch(`/application/manage/accept/${applicationId}`, { jobRole })
+    .then(response => response)
+    .catch(error => error);
+}
+
+
 export function rejectCompanyApplication(applicationId, jobRole) {
   return axiosClient.patch(`/application/manage/reject/${applicationId}`, { jobRole })
     .then(response => response)
