@@ -311,7 +311,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
               <option value="" disabled>Select a profile type</option>
               <option value="student">Student</option>
               <option value="fresher">Fresher</option>
-              <option value="professional">Professional</option>
+              {/* <option value="professional">Professional</option> */}
             </select>
             <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
           </div>

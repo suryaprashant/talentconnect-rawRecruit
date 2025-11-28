@@ -39,9 +39,9 @@ export default function PoolCampusJobManagement() {
     setError(null);
     try {
       let response;
-      if (isVisited === false) response = await getCollegeApplicationsForJob(jobId, jobType, "Applied", isVisited);
+      if (isVisited === false) response = await getCollegeApplicationsForJob(jobId, jobType, "Shortlisted", isVisited);
       else {
-        response = await getCollegeApplicationsForJob(jobId, jobType, "Applied");
+        response = await getCollegeApplicationsForJob(jobId, jobType, "Shortlisted");
       }
       setColleges(response.data);
     } catch (err) {
