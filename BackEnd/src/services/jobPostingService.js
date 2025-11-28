@@ -6,10 +6,10 @@ import OnboardingModel from '../models/studentonboardingModel.js';
 // get totel job posted and it is in active state 
 export const getTotalJobPostedCount = async (filters = {}) => {
   try {
-    // ✅ Default filter (current implementation)
+    //  Default filter (current implementation)
     const query = { jobStatus: "Open" };
 
-    // ✅ Optional filter by jobType (string field)
+    //  Optional filter by jobType (string field)
     if (filters.jobType) {
       query.jobType = filters.jobType;
     }

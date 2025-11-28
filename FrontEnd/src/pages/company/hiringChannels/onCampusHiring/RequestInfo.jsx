@@ -1,12 +1,15 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { ChevronDown, Mail, Phone, Link, X } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import toast from 'react-hot-toast';
-
+import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
+import { Mail } from 'lucide-react';
+import { Phone } from 'lucide-react';
+import { Link } from 'lucide-react';
+
 
 export default function RequestInfo() {
-// const degreeStreamMapping = { 'Bachelor of Engineering (B.E.)': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'], 'Bachelor of Technology (B.Tech)': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering', 'Data Science'], 'Master of Technology (M.Tech)': ['Computer Science', 'Data Science', 'AI & Machine Learning', 'Cyber Security', 'VLSI Design', 'Structural Engineering'], 'Bachelor of Science (B.Sc.)': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science', 'Statistics', 'Biology'], 'Master of Science (M.Sc.)': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science', 'Statistics', 'Biology', 'Data Science'], 'Bachelor of Commerce (B.Com)': ['Accounting', 'Finance', 'Taxation', 'Economics', 'Marketing'], 'Master of Commerce (M.Com)': ['Accounting', 'Finance', 'Taxation', 'International Business'], 'Bachelor of Business Administration (BBA)': ['Marketing', 'Finance', 'Human Resources', 'Operations Management'], 'Master of Business Administration (MBA)': ['Marketing', 'Finance', 'Human Resources', 'Operations Management', 'IT & Systems', 'International Business'], 'Bachelor of Arts (B.A.)': ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology'], 'Master of Arts (M.A.)': ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology'], 'Associate Degree': ['Technical', 'Business', 'Healthcare', 'General Studies'], 'Doctor of Philosophy (PhD)': ['All Specializations'], 'Postgraduate Diploma': ['Varies by Specialization'], };
   const degreeStreamMapping = {
     'B.E': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'],
     'B.Tech': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering', 'Data Science'],
@@ -25,7 +28,6 @@ export default function RequestInfo() {
 
   const degreeOptions = Object.keys(degreeStreamMapping).sort();
   
-  
   const collegeCategoryOptions = ['Tier 1', 'Tier 2', 'Tier 3', 'Autonomous', 'All Colleges'];
   const preferredModeOptions = ['Online', 'Offline', 'Hybrid', 'Online Aptitude and Physical Interview'];
   const jobRoleOptions = ['Software Engineer', 'Data Analyst', 'DevOps Engineer', 'UX/UI Designer', 'Product Manager', 'QA Engineer', 'System Administrator', 'Network Engineer', 'Business Analyst', 'Machine Learning Engineer'];
@@ -38,9 +40,7 @@ export default function RequestInfo() {
   const benefitsOptions = ['Health Insurance', 'Provident Fund (PF)', 'Paid Time Off (PTO)', 'Work from Home', 'Performance Bonus', 'Stock Options'];
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'InternSHIP-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
- 
   const initialData = {
-   
     degree: [],
     stream: [],
     collegeCategories: [], 
@@ -77,11 +77,13 @@ export default function RequestInfo() {
   const [formData, setFormData] = useState(initialData);
   const [descriptionError, setDescriptionError] = useState("");
 
-
-  const [indianCities, setIndianCities] = useState([]);
-  const [locationSearch, setLocationSearch] = useState('');
-  const [workLocationSearch, setWorkLocationSearch] = useState('');
-
+  // City Options generated from the npm package
+  const cityOptions = useMemo(() =>
+    City.getCitiesOfCountry('IN').map(city => ({
+      value: city.name,
+      label: city.name,
+    })),
+  []);
 
   const [customDegree, setCustomDegree] = useState('');
   const [customStream, setCustomStream] = useState('');
@@ -89,7 +91,6 @@ export default function RequestInfo() {
   const [customSkill, setCustomSkill] = useState('');
 
   const [dropdownOpen, setDropdownOpen] = useState({
-   
     degree: false,
     stream: false,
     collegeCategories: false, 
@@ -103,7 +104,6 @@ export default function RequestInfo() {
     tags: false
   });
 
-
   const degreeRef = useRef(null);
   const streamRef = useRef(null);
   const collegeCategoriesRef = useRef(null); 
@@ -116,19 +116,9 @@ export default function RequestInfo() {
   const tagsRef = useRef(null);
   const workLocationRef = useRef(null);
 
-
-  useEffect(() => {
-    const cities = City.getCitiesOfCountry('IN')
-      .map(city => city.name)
-      .sort((a, b) => a.localeCompare(b));
-    setIndianCities(cities);
-  }, []);
-  
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdownRefs = {
-       
         degree: degreeRef,
         stream: streamRef,
         collegeCategories: collegeCategoriesRef, 
@@ -152,7 +142,6 @@ export default function RequestInfo() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // --- MODIFIED: useEffect to reset stream when degree (array) changes ---
   useEffect(() => {
     setFormData(prev => ({ ...prev, stream: [] }));
   }, [formData.degree]);
@@ -178,7 +167,7 @@ export default function RequestInfo() {
   };
   
   const handleInterviewWindowChange = (e) => {
-    const { name, value } = e.target; // name will be 'start' or 'end'
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       interviewWindow: {
@@ -205,21 +194,19 @@ export default function RequestInfo() {
     });
   };
 
-  // --- NEW: Handler for adding custom (manual) items ---
   const handleCustomAdd = (field, value, setValue) => {
     if (value.trim() === '') return;
     setFormData(prev => {
       const currentValues = prev[field] || [];
-      // Check for duplicates (case-insensitive)
       if (currentValues.map(v => v.toLowerCase()).includes(value.trim().toLowerCase())) {
-        setValue(''); // Clear input even if duplicate
+        setValue('');
         toast.error("Item already added.");
         return prev;
       }
       const newValues = [...currentValues, value.trim()];
       return { ...prev, [field]: newValues };
     });
-    setValue(''); // Clear input after adding
+    setValue('');
   };
 
   const handleOptionSelect = (field, value) => {
@@ -240,6 +227,14 @@ export default function RequestInfo() {
     }));
   };
 
+  // Handler for CreatableSelect components
+  const handleLocationChange = (field, selectedOptions) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: selectedOptions ? selectedOptions.map(option => option.value) : []
+    }));
+  };
+
   const handleSubmit = async () => {
     if (formData.description.length > 500) {
       setDescriptionError("Job description cannot exceed 500 characters.");
@@ -250,7 +245,6 @@ export default function RequestInfo() {
       const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1];
 
       const payload = {
-        // --- MODIFIED: Send degree array directly ---
         degree: formData.degree,
         studentStreams: formData.stream,
         collegeCategories: formData.collegeCategories, 
@@ -274,7 +268,7 @@ export default function RequestInfo() {
         interviewWindow: formData.interviewWindow,
         offerRolloutDate: formData.offerRolloutDate,
         rounds: formData.rounds ? [formData.rounds] : [],
-        selectionProcess: formData.selectionProcess.join(' + '), // Keep as is
+        selectionProcess: formData.selectionProcess.join(' + '),
         contactPerson: {
           name: formData.contactPersonName,
           designation: formData.contactDesignation,
@@ -317,59 +311,18 @@ export default function RequestInfo() {
     }
   };
 
-  // --- MODIFIED: Calculate available streams based on multi-select degree (Union) ---
   const availableStreams = (() => {
     if (formData.degree.length === 0) {
       return [];
     }
     const allStreams = new Set();
     formData.degree.forEach(degree => {
-      // Only check streams for degrees in our mapping
       if (degreeStreamMapping[degree]) {
         degreeStreamMapping[degree].forEach(stream => allStreams.add(stream));
       }
     });
     return [...allStreams].sort((a, b) => a.localeCompare(b));
   })();
-
-  // --- IMPROVED: Enhanced search functionality for cities ---
-  const getFilteredCities = (cities, searchTerm) => {
-    if (!searchTerm.trim()) {
-      return cities;
-    }
-    
-    const searchLower = searchTerm.toLowerCase();
-    const citiesWithPriority = cities.map(city => {
-      const cityLower = city.toLowerCase();
-      let priority = 0;
-      
-      // Highest priority: exact match
-      if (cityLower === searchLower) {
-        priority = 3;
-      }
-      // High priority: starts with search term
-      else if (cityLower.startsWith(searchLower)) {
-        priority = 2;
-      }
-      // Medium priority: contains search term
-      else if (cityLower.includes(searchLower)) {
-        priority = 1;
-      }
-      
-      return { city, priority };
-    });
-    
-    // Filter out cities that don't match and sort by priority
-    return citiesWithPriority
-      .filter(item => item.priority > 0)
-      .sort((a, b) => b.priority - a.priority || a.city.localeCompare(b.city))
-      .map(item => item.city);
-  };
-
-  // --- MODIFIED: Use enhanced search function ---
-  const filteredPreferredCities = getFilteredCities(indianCities, locationSearch);
-  const filteredWorkCities = getFilteredCities(indianCities, workLocationSearch);
-  // --- END MODIFICATION ---
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white">
@@ -394,7 +347,7 @@ export default function RequestInfo() {
 
       {/* Form */}
       <div className="space-y-6">
-        {/* --- MODIFIED: Degree (now multi-select) --- */}
+        {/* Degree */}
         <div ref={degreeRef} className="relative">
           <label className="block font-medium mb-2">Degree</label>
           <div className="flex flex-wrap gap-2 mb-2">
@@ -414,7 +367,6 @@ export default function RequestInfo() {
           </div>
           {dropdownOpen.degree && (
             <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-              {/* --- NEW: Custom Add Input --- */}
               <div className="p-2 border-b flex">
                 <input
                   type="text"
@@ -452,8 +404,6 @@ export default function RequestInfo() {
             </div>
           )}
         </div>
-        {/* --- END DEGREE MODIFICATION --- */}
-
 
         {/* Stream */}
         <div ref={streamRef} className="relative">
@@ -467,19 +417,16 @@ export default function RequestInfo() {
             ))}
           </div>
           <div
-            // --- MODIFIED: Check degree array length ---
             className={`flex items-center justify-between p-2 w-full border rounded-md ${!formData.degree.length ? 'bg-gray-100 cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'}`}
             onClick={() => formData.degree.length > 0 && toggleDropdown('stream')}
           >
             <span className="text-gray-500">
-              {/* --- MODIFIED: Check degree array length --- */}
               {formData.degree.length > 0 ? 'Select stream(s)' : 'Please select a degree first'}
             </span>
             <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.stream ? "rotate-180" : ""}`} />
           </div>
           {dropdownOpen.stream && formData.degree.length > 0 && (
             <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-              {/* --- NEW: Custom Add Input --- */}
               <div className="p-2 border-b flex">
                 <input
                   type="text"
@@ -549,51 +496,23 @@ export default function RequestInfo() {
           )}
         </div>
 
-        {/* Preferred Hiring Locations */}
-        <div ref={preferredLocationsRef} className="relative">
+        {/* Preferred Hiring Locations - UPDATED to use CreatableSelect */}
+        <div>
           <label className="block font-medium mb-2">Preferred Hiring Locations</label>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {formData.preferredLocations.map(location => (
-              <div key={location} className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full">
-                <span>{location}</span>
-                <button type="button" onClick={() => removeSelectedItem('preferredLocations', location)} className="ml-2 text-gray-600 hover:text-black"><X size={14} /></button>
-              </div>
-            ))}
-          </div>
-          <div
-            className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400"
-            onClick={() => toggleDropdown('preferredLocations')}
-          >
-            <span className="text-gray-500">Select location(s)</span>
-            <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.preferredLocations ? "rotate-180" : ""}`} />
-          </div>
-          {dropdownOpen.preferredLocations && (
-            <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-              <div className="p-2 border-b">
-                <input
-                  type="text"
-                  value={locationSearch}
-                  onChange={(e) => setLocationSearch(e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                  placeholder="Search for a city..."
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              {/* --- IMPROVED: Use enhanced filteredPreferredCities --- */}
-              <div className="max-h-60 overflow-auto">
-                {filteredPreferredCities.length > 0 ? (
-                  filteredPreferredCities.map(city => (
-                    <div key={city} onClick={() => handleMultiSelect('preferredLocations', city)} className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.preferredLocations.includes(city) ? "bg-gray-100 font-medium" : ""}`}>
-                      {city}
-                      {formData.preferredLocations.includes(city) && <span className="float-right text-gray-500">✓</span>}
-                    </div>
-                  ))
-                ) : (
-                  <div className="px-4 py-2 text-gray-500">No cities found matching "{locationSearch}"</div>
-                )}
-              </div>
-            </div>
-          )}
+          <CreatableSelect
+            isMulti
+            options={cityOptions}
+            value={formData.preferredLocations.map(location => ({ value: location, label: location }))}
+            onChange={(selectedOptions) => handleLocationChange('preferredLocations', selectedOptions)}
+            placeholder="Select or type to add locations..."
+            styles={{
+              control: (base) => ({
+                ...base,
+                borderColor: '#d1d5db',
+                minHeight: '42px',
+              }),
+            }}
+          />
         </div>
 
         {/* Broadcast Type */}
@@ -694,7 +613,6 @@ export default function RequestInfo() {
           </div>
           {dropdownOpen.jobRoles && (
             <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-              {/* --- NEW: Custom Add Input --- */}
               <div className="p-2 border-b flex">
                 <input
                   type="text"
@@ -733,52 +651,23 @@ export default function RequestInfo() {
           )}
         </div>
 
-        {/* Work Location */}
-        <div ref={workLocationRef} className="relative">
+        {/* Work Location - UPDATED to use CreatableSelect */}
+        <div>
           <label className="block font-medium mb-2">Work Location <span className="text-red-500">*</span></label>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {formData.workLocation.map(loc => (
-              <div key={loc} className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full">
-                <span>{loc}</span>
-                <button type="button" onClick={() => removeSelectedItem('workLocation', loc)} className="ml-2 text-gray-600 hover:text-black"><X size={14} /></button>
-              </div>
-            ))}
-          </div>
-          <div onClick={() => toggleDropdown('workLocation')} className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400">
-            <span className="text-gray-500">Select work locations</span>
-            <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.workLocation ? "rotate-180" : ""}`} />
-          </div>
-          {dropdownOpen.workLocation && (
-            <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-              <div className="p-2 border-b">
-                <input
-                  type="text"
-                  value={workLocationSearch}
-                  onChange={(e) => setWorkLocationSearch(e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                  placeholder="Search for a city..."
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              {/* --- IMPROVED: Use enhanced filteredWorkCities --- */}
-              <div className="max-h-60 overflow-auto">
-                {filteredWorkCities.length > 0 ? (
-                  filteredWorkCities.map(city => (
-                    <div
-                      key={city}
-                      onClick={() => handleMultiSelect('workLocation', city)}
-                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.workLocation.includes(city) ? "bg-gray-100 font-medium" : ""}`}
-                    >
-                      {city}
-                      {formData.workLocation.includes(city) && <span className="float-right text-gray-500">✓</span>}
-                    </div>
-                  ))
-                ) : (
-                  <div className="px-4 py-2 text-gray-500">No cities found matching "{workLocationSearch}"</div>
-                )}
-              </div>
-            </div>
-          )}
+          <CreatableSelect
+            isMulti
+            options={cityOptions}
+            value={formData.workLocation.map(location => ({ value: location, label: location }))}
+            onChange={(selectedOptions) => handleLocationChange('workLocation', selectedOptions)}
+            placeholder="Select or type to add work locations..."
+            styles={{
+              control: (base) => ({
+                ...base,
+                borderColor: '#d1d5db',
+                minHeight: '42px',
+              }),
+            }}
+          />
         </div>
 
         {/* Skills */}
@@ -798,7 +687,6 @@ export default function RequestInfo() {
           </div>
           {dropdownOpen.skills && (
             <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-              {/* --- NEW: Custom Add Input --- */}
               <div className="p-2 border-b flex">
                 <input
                   type="text"
@@ -989,7 +877,6 @@ export default function RequestInfo() {
             />
           </div>
         </div>
-
 
         {/* Application Dates */}
         <div>

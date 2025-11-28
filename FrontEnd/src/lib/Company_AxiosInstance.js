@@ -417,4 +417,10 @@ export function getCompanyDashboardMetrics() {
     .catch(error => error);
 }
 
+export function submitAlternateDates(jobId, dateData) {
+  return axiosClient.post(`/application/${jobId}/submit`, dateData)
+    .then(response => response)
+    .catch(error => error);
+}
+
 
