@@ -9,11 +9,16 @@ import {
   FiBriefcase,
   FiUsers,
   FiTrendingUp,
-  FiMic,
+  FiThumbsUp,
   FiAward,
   FiTool,
-  FiCheckCircle,
   FiBook,
+  FiLayers,
+  FiMic,
+
+  FiFileText,
+  FiCheckCircle,
+
   FiMapPin,
 } from 'react-icons/fi';
 
@@ -128,6 +133,23 @@ function CollegeSidebar({ activePath }) {
           label="Internship Opportunities" 
           active={activePath === '/registered/internship-opportunities'} 
         /> */}
+      </SidebarNavGroup>
+
+       <SidebarNavGroup label="Accepted Companies" icon={<FiThumbsUp />} active={activePath.includes('/accepted')}>
+        <SidebarNavItem
+          to="/accepted/on-campus-request"
+          icon={<FiMapPin />}
+          label="On-campus Request"
+          active={activePath === '/accepted/on-campus-request'}
+        />
+       
+        <SidebarNavItem
+          to="/accepted/pool-campus-request"
+          icon={<FiUsers />}
+          label="Pool Campus Request"
+          active={activePath === '/accepted/pool-campus-request'}
+        />
+       
       </SidebarNavGroup>
 
       <SidebarNavItem

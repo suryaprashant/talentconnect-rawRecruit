@@ -19,6 +19,7 @@ import { getCompanyEmail, getCompanyService, getEmployerService } from "../servi
 import { getCandidatEmail, getStudentService } from "../services/studentService.js";
 import sendStatusChangeEmail from "../utils/sendStatusChangeEmail.js";
 import sendScheduledInterviewEmail from "../utils/sendScheduledInterviewEmail.js";
+import { submitAlternateDatesService } from "../services/alternateDateService.js";
 // import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
 
 // save opportunity
@@ -673,3 +674,76 @@ export const getCompanyDashboardMetrics = async (req, res) => {
         });
     }
 };
+
+
+
+export async function submitAlternateDates(req, res) {
+  const { jobId } = req.params;
+  console.log("Job ID:", jobId);
+  const { startDate, endDate } = req.body;
+  
+  console.log("Received alternate dates:", startDate, endDate);
+  
+  // Debug: Check what's in req.user
+  console.log("req.user:", req.user);
+  
+  // Get company ID from the correct location
+  let companyId;
+  const userId = req.user._id;
+
+  // Try different possible locations for company ID
+  if (req.user.companyId) {
+    companyId = req.user.companyId;
+    console.log("Found companyId from req.user.companyId:", companyId);
+  } else if (req.user.activeCompanyId) {
+    companyId = req.user.activeCompanyId;
+    console.log("Found companyId from req.user.activeCompanyId:", companyId);
+  } else if (userId) {
+    // Use your existing service to find company by user ID
+    try {
+      const companyResponse = await getCompanyService(userId);
+      if (companyResponse.success && companyResponse.data && companyResponse.data.length > 0) {
+        companyId = companyResponse.data[0]._id; // Get the first company's ID
+        console.log("Found company using getCompanyService:", companyId);
+      }
+    } catch (error) {
+      console.log("Error finding company using getCompanyService:", error);
+    }
+  }
+
+  console.log("Final companyId:", companyId);
+
+  if (!jobId || !startDate || !endDate) {
+    return res.status(400).json({ 
+      success: false, 
+      msg: "Job ID, start date, and end date are required" 
+    });
+  }
+
+  if (!companyId) {
+    return res.status(400).json({ 
+      success: false, 
+      msg: "Company ID not found. Please ensure you have a company profile." 
+    });
+  }
+
+  try {
+    const response = await submitAlternateDatesService(
+      jobId, 
+      companyId, 
+      { startDate, endDate }
+    );
+
+    if (response.success === true) {
+      return res.status(200).json(response);
+    }
+    return res.status(404).json(response);
+  } catch (error) {
+    console.log("Error in submitAlternateDates: ", error);
+    res.status(500).json({ 
+      success: false, 
+      Error: "Internal server error",
+      msg: error.message 
+    });
+  }
+}

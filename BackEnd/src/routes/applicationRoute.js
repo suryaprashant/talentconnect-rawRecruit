@@ -1,6 +1,7 @@
 import express from "express";
 import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication, getShortlistedCompaniesForCollege, shortlistApplicantForCompany, rejectCompanyApplicationByCollege, scheduleInterview ,
-getCompanyDashboardMetrics
+getCompanyDashboardMetrics,
+submitAlternateDates
     
  } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
@@ -69,5 +70,7 @@ router.get('/manage/college', secureRoute, getCollegeApplicationsByJob);
 
 // schedule interview
 router.post('/manage/schedule', secureRoute, scheduleInterview);
+
+router.post('/:jobId/submit' , secureRoute , submitAlternateDates) ;
 
 export default router;

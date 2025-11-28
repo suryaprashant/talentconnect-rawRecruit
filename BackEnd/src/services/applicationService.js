@@ -191,7 +191,8 @@ export async function fetchApplicationStatusService(userId, jobType, userType) {
                     from: fromCollection,
                     localField: localField,
                     foreignField: '_id',
-                    as: 'companyDetails'
+                    // as: 'companyDetails'
+                    as: 'postedByDetails'
                 }
             },
             // { $unwind: '$companyDetails' },
