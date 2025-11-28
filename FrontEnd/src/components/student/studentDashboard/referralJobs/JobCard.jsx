@@ -1,81 +1,82 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { MapPinIcon, BriefcaseIcon } from "@heroicons/react/24/outline";
 
-
-
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-
-const JobCard = ({ job, userType }) => {
+const JobCard = ({ job }) => {
   const [isSaved, setIsSaved] = useState(job.isSaved || false);
 
-  const toggleSave = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsSaved(!isSaved);
-   
-  };
+  // Pastel colors
+  const pastelColors = [
+    "bg-pink-100 text-pink-700",
+    "bg-blue-100 text-blue-700",
+    "bg-green-100 text-green-700",
+    "bg-purple-100 text-purple-700",
+    "bg-yellow-100 text-yellow-700",
+    "bg-red-100 text-red-700",
+  ];
 
- 
+  const getColor = (i) => pastelColors[i % pastelColors.length];
+
+  const companyName =
+    job.companyPosted?.companyDetails?.companyName || "Company";
+
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden relative">
-     
-      <div className="absolute top-4 right-4 flex items-center space-x-2">
-       
-      
+    <div className="bg-white rounded-2xl border p-5 shadow-sm hover:shadow-md transition flex flex-col relative">
 
-        {/* <button
-          onClick={toggleSave}
-          className="text-gray-400 hover:text-blue-500 focus:outline-none"
-          aria-label={isSaved ? "Unsave job" : "Save job"}
-        >
-          {isSaved ? (
-            
-            <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-            </svg>
-          ) : (
-           
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-            </svg>
-          )}
-        </button> */}
-      </div>
+      {/* TITLE + COMPANY */}
+      <Link
+        to={`/${localStorage.getItem("selectedRole")}-dashboard/Referral/${job._id}`}
+        className="block"
+      >
+        <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors">
+          {job.jobTitle}
+        </h3>
+        <p className="text-sm text-gray-600 mt-1">{companyName}</p>
+      </Link>
 
-      <div className="p-5">
-        <div className="flex flex-col mb-2">
-        
-          <Link to={`/${localStorage.getItem('selectedRole')}-dashboard/Referral/${job._id}`} className="block ">
-            <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors mb-1">
-              {job.jobTitle} 
-            </h3>
-          
-            <p className="text-sm text-gray-600">{job.companyPosted?.companyDetails?.companyName}</p>
-          </Link>
+      {/* SKILLS / STREAMS */}
+      {job.skills?.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {job.skills.map((skill, i) => (
+            <span
+              key={i}
+              className={`px-2 py-1 text-xs rounded-full ${getColor(i)}`}
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* LOCATION + MODE ROW */}
+      <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-700">
+
+        {/* Location */}
+        <div className="flex items-center">
+          <MapPinIcon className="w-4 h-4 mr-1" />
+          {Array.isArray(job.location) ? job.location.join(", ") : job.location}
         </div>
 
-       
-        <div className="flex flex-wrap text-sm text-gray-600 mb-2">
-       
-          <span className="mr-3 capitalize">{Array.isArray(job.location) ? job.location.join(', ') : job.location}</span>
-          <span className="mr-3">•</span>
-          <span className="mr-3 capitalize">{job.employmentType}</span>
-          <span className="mr-3">•</span>
-          <span className='capitalize'>{job.workMode}</span>
+        {/* Work Mode */}
+        <div className="flex items-center">
+          <BriefcaseIcon className="w-4 h-4 mr-1" />
+          {job.workMode}
         </div>
-        
-        <p className="text-gray-700 mb-4 line-clamp-3">
-          
-          {job.description?.slice(0, 150)}{job.description && job.description.length > 150 ? '...' : ''}
-        </p>
-
-      
-        <Link
-          to={`/${localStorage.getItem('selectedRole')}-dashboard/Referral/${job._id}`}
-          className="block w-full py-2 text-center text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors"
-        >
-          Apply now
-        </Link>
       </div>
+
+      {/* DESCRIPTION */}
+      <p className="mt-4 text-sm text-gray-700 line-clamp-3">
+        {job.description?.slice(0, 150)}
+        {job.description && job.description.length > 150 ? "..." : ""}
+      </p>
+
+      {/* APPLY BUTTON (BLACK) */}
+      <Link
+        to={`/${localStorage.getItem("selectedRole")}-dashboard/Referral/${job._id}`}
+        className="block w-full mt-5 py-2 text-center text-white bg-black rounded-xl hover:bg-gray-800 transition"
+      >
+        Apply now
+      </Link>
     </div>
   );
 };

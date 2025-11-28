@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { MapPinIcon, BriefcaseIcon } from "@heroicons/react/24/outline";
 
 const JobCard = ({ job, userType }) => {
   const [isSaved, setIsSaved] = useState(job.isSaved || false);
@@ -8,88 +9,114 @@ const JobCard = ({ job, userType }) => {
     e.preventDefault();
     e.stopPropagation();
     setIsSaved(!isSaved);
-  
   };
 
-  // Determine job status styling based on its value
-  let statusClasses = '';
-  switch (job.jobStatus) {
-    case 'Open':
-      statusClasses = 'bg-green-100 text-green-800';
-      break;
-    case 'Closed':
-      statusClasses = 'bg-red-100 text-red-800';
-      break;
-    case 'Pending':
-      statusClasses = 'bg-yellow-100 text-yellow-800'; // Using yellow for pending status
-      break;
-    default:
-      statusClasses = 'bg-gray-100 text-gray-800'; // Default styling for unknown status
-  }
+  // Pastel Colors
+  const pastelColors = [
+    "bg-pink-100 text-pink-700",
+    "bg-blue-100 text-blue-700",
+    "bg-green-100 text-green-700",
+    "bg-purple-100 text-purple-700",
+    "bg-yellow-100 text-yellow-700",
+    "bg-red-100 text-red-700",
+  ];
+  const getColor = (i) => pastelColors[i % pastelColors.length];
+
+  // Job Status Styling
+  const statusMap = {
+    Open: "bg-green-100 text-green-800",
+    Closed: "bg-red-100 text-red-800",
+    Pending: "bg-yellow-100 text-yellow-800",
+  };
+  const statusClasses = statusMap[job.jobStatus] || "bg-gray-100 text-gray-800";
+
+  const companyName =
+    job.companyPosted?.companyDetails?.companyName || "Company";
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden relative">
-     
-      <div className="absolute top-4 right-4 flex items-center space-x-2">
-       
+    <div className="bg-white rounded-xl shadow p-5 border flex flex-col relative">
+
+      {/* STATUS BADGE */}
+      <div className="absolute top-4 right-4">
         <div className={`px-3 py-1 rounded-full text-xs font-semibold ${statusClasses}`}>
           {job.jobStatus}
         </div>
-
-        {/* <button
-          onClick={toggleSave}
-          className="text-gray-400 hover:text-blue-500 focus:outline-none"
-          aria-label={isSaved ? "Unsave job" : "Save job"}
-        >
-          {isSaved ? (
-            
-            <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-            </svg>
-          ) : (
-           
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-            </svg>
-          )}
-        </button> */}
       </div>
 
-      <div className="p-5">
-        <div className="flex flex-col mb-2">
-        
-          <Link to={`/${localStorage.getItem('selectedRole')}-dashboard/Internship/${job._id}`} className="block ">
-            <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors mb-1">
-              {job.jobTitle} 
-            </h3>
-          
-            <p className="text-sm text-gray-600">{job.companyPosted?.companyDetails?.companyName}</p>
-          </Link>
+      {/* TITLE + COMPANY */}
+      <Link
+        to={`/${localStorage.getItem("selectedRole")}-dashboard/Internship/${job._id}`}
+      >
+        <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600">
+          {job.jobTitle}
+        </h3>
+        <p className="text-sm text-gray-600">{companyName}</p>
+      </Link>
+
+      {/* COLORED TAGS for Streams / Skills */}
+      {/* STREAMS */}
+      {job.studentStreams?.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {job.studentStreams.map((stream, i) => (
+            <span
+              key={i}
+              className={`px-2 py-1 text-xs rounded-full ${getColor(i)}`}
+            >
+              {stream}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* SKILLS */}
+      {job.skills?.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {job.skills.map((skill, i) => (
+            <span
+              key={i}
+              className={`px-2 py-1 text-xs rounded-full ${getColor(i + 2)}`}
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* LOCATION + MODE (NO COLOR BG — ICON BASED) */}
+      <div className="mt-4 space-y-1 text-sm text-gray-700">
+
+        {/* Location */}
+        <div className="flex items-center gap-2">
+          <MapPinIcon className="w-4 h-4 text-gray-500" />
+          <span>
+            {Array.isArray(job.location)
+              ? job.location.join(", ")
+              : job.location}
+          </span>
         </div>
 
-       
-        <div className="flex flex-wrap text-sm text-gray-600 mb-2">
-       
-          <span className="mr-3 capitalize">{Array.isArray(job.location) ? job.location.join(', ') : job.location}</span>
-          <span className="mr-3">•</span>
-          {/* <span className="mr-3 capitalize">{job.employmentType}</span> */}
-          {/* <span className="mr-3">•</span> */}
-          <span className='capitalize'>{job.workMode}</span>
+        {/* Mode */}
+        <div className="flex items-center gap-2">
+          <BriefcaseIcon className="w-4 h-4 text-gray-500" />
+          <span className="capitalize">{job.workMode}</span>
         </div>
-        
-        <p className="text-gray-700 mb-4 line-clamp-3">
-          
-          {job.description?.slice(0, 150)}{job.description && job.description.length > 150 ? '...' : ''}
-        </p>
-
-      
-        <Link
-          to={`/${localStorage.getItem('selectedRole')}-dashboard/Internship/${job._id}`}
-          className="block w-full py-2 text-center text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors"
-        >
-          Apply now
-        </Link>
       </div>
+
+      {/* DESCRIPTION */}
+      <p className="mt-3 text-gray-700 text-sm line-clamp-3">
+        {job.description
+          ? job.description.slice(0, 150) +
+          (job.description.length > 150 ? "..." : "")
+          : "No description available."}
+      </p>
+
+      {/* APPLY BUTTON */}
+      <Link
+        to={`/${localStorage.getItem("selectedRole")}-dashboard/Internship/${job._id}`}
+        className="block w-full mt-5 py-2 text-center text-white bg-black rounded-md hover:bg-gray-800"
+      >
+        Apply now
+      </Link>
     </div>
   );
 };

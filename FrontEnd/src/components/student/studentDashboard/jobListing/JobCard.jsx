@@ -1,92 +1,117 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { MapPinIcon, UserIcon, BriefcaseIcon } from "@heroicons/react/24/outline";
 
 const JobCard = ({ job }) => {
   const [isSaved, setIsSaved] = useState(job.isSaved || false);
 
-  const toggleSave = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsSaved(!isSaved);
-   
-  };
-  let statusClasses = '';
+  const companyName =
+    job.companyPosted?.companyName ||
+    job.companyPosted?.companyDetails?.companyName ||
+    "Company";
+
+  const logo =
+    job.companyPosted?.profileImageUrl ||
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeRfV9n69zxuV4DQX7sYF7ql8ajx47wLioPeP-m4qFbHLkD9UNwfQSneRtkQEDnx-QxFs&usqp=CAU";
+
+  let statusColor = "";
   switch (job.jobStatus) {
-    case 'Open':
-      statusClasses = 'bg-green-100 text-green-800';
+    case "Open":
+      statusColor = "bg-green-500 text-white";
       break;
-    case 'Closed':
-      statusClasses = 'bg-red-100 text-red-800';
+    case "Closed":
+      statusColor = "bg-red-500 text-white";
       break;
-    case 'Pending':
-      statusClasses = 'bg-yellow-100 text-yellow-800'; // Using yellow for pending status
+    case "Pending":
+      statusColor = "bg-yellow-500 text-white";
       break;
     default:
-      statusClasses = 'bg-gray-100 text-gray-800'; // 
+      statusColor = "bg-gray-400 text-white";
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden relative">
-    
-      <div className="absolute top-4 right-4 flex items-center space-x-2">
-       
-        <div className={`px-3 py-1 rounded-full text-xs font-semibold ${statusClasses}`}>
+    <div className="bg-white rounded-2xl border p-4 shadow-sm hover:shadow-md transition flex flex-col">
+
+      <div className="flex justify-between items-start">
+        {/* Logo */}
+        <div className="w-16 h-16 bg-white rounded-xl shadow flex items-center justify-center overflow-hidden border">
+          <img src={logo} alt="company logo" className="w-14 h-14 object-cover" />
+        </div>
+
+        {/* Status Pill */}
+        <div className={`px-3 py-1 text-xs font-semibold rounded-full ${statusColor}`}>
           {job.jobStatus}
         </div>
-      
-        {/* <button
-          onClick={toggleSave}
-          className="text-gray-400 hover:text-blue-500 focus:outline-none"
-          aria-label={isSaved ? "Unsave job" : "Save job"}
-        >
-          {isSaved ? (
-           
-            <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-            </svg>
-          ) : (
-          
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-            </svg>
-          )}
-        </button> */}
       </div>
 
-      <div className="p-5">
-        <div className="flex flex-col mb-2">
-          {/* Link to job details page */}
-          <Link to={`/${localStorage.getItem('selectedRole')}-dashboard/Job-listing/${job._id}`} className="block ">
-            <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors mb-1">
-              {job.jobTitle}
-            </h3>
-           
-            <p className="text-sm text-gray-600">{job.companyPosted?.companyName}</p>
-          </Link>
+      {/* Company Name */}
+      <h3 className="mt-4 text-lg font-semibold text-gray-900">{companyName}</h3>
+
+      <div className="mt-2 space-y-2 text-sm text-gray-700">
+
+        {/* Location */}
+        <div className="flex items-center gap-2">
+          <MapPinIcon className="h-5 w-5 text-gray-500" />
+          <span>{Array.isArray(job.location) ? job.location.join(", ") : job.location}</span>
         </div>
 
-      
-        <div className="flex flex-wrap text-sm text-gray-600 mb-2">
-         
-          <span className="mr-3 capitalize">{Array.isArray(job.location) ? job.location.join(', ') : job.location}</span>
-          <span className="mr-3">•</span>
-          <span className="mr-3 capitalize">{job.employmentType}</span>
-          <span className="mr-3">•</span>
-          <span className='capitalize'>{job.workMode}</span>
+        {/* Employment Type */}
+        <div className="flex items-center gap-2">
+          <UserIcon className="h-5 w-5 text-gray-500" />
+          <span className="font-medium">{job.employmentType}</span>
         </div>
-       
-        <p className="text-gray-700 mb-4 line-clamp-3">
-          {job.description?.slice(0, 150)}{job.description && job.description.length > 150 ? '...' : ''}
-        </p>
 
-        {/* Apply now button */}
-        <Link
-          to={`/${localStorage.getItem('selectedRole')}-dashboard/job-listing/${job._id}`}
-          className="block w-full py-2 text-center text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 transition-colors"
-        >
-          Apply now
-        </Link>
+        {/* Work Mode */}
+        <div className="flex items-center gap-2">
+          <BriefcaseIcon className="h-5 w-5 text-gray-500" />
+          <span>{job.workMode}</span>
+        </div>
+
       </div>
+
+      <p className="text-gray-700 mt-3 text-sm line-clamp-3">
+        {job.description?.slice(0, 140)}
+        {job.description?.length > 140 ? "..." : ""}
+      </p>
+
+      {/* TAG COLORS */}
+      <div className="flex flex-wrap gap-2 mt-3">
+        {(job?.tags || []).map((tag, idx) => {
+          const pastelColors = [
+            "bg-pink-100 text-pink-800 border-pink-200",
+            "bg-blue-100 text-blue-800 border-blue-200",
+            "bg-green-100 text-green-800 border-green-200",
+            "bg-yellow-100 text-yellow-800 border-yellow-200",
+            "bg-purple-100 text-purple-800 border-purple-200",
+            "bg-indigo-100 text-indigo-800 border-indigo-200",
+            "bg-teal-100 text-teal-800 border-teal-200",
+            "bg-orange-100 text-orange-800 border-orange-200",
+            "bg-rose-100 text-rose-800 border-rose-200",
+            "bg-cyan-100 text-cyan-800 border-cyan-200",
+            "bg-lime-100 text-lime-800 border-lime-200",
+            "bg-amber-100 text-amber-800 border-amber-200",
+          ];
+          const randomColor =
+            pastelColors[Math.floor(Math.random() * pastelColors.length)];
+
+          return (
+            <span
+              key={idx}
+              className={`px-2 py-1 text-xs rounded-md border ${randomColor}`}
+            >
+              {tag}
+            </span>
+          );
+        })}
+      </div>
+
+      {/* BUTTON AT BOTTOM */}
+      <Link
+        to={`/${localStorage.getItem("selectedRole")}-dashboard/job-listing/${job._id}`}
+        className="mt-5 block w-full text-center py-2 rounded-xl bg-black text-white font-medium hover:bg-gray-800 transition"
+      >
+        View Details
+      </Link>
     </div>
   );
 };
