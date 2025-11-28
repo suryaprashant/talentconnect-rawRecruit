@@ -33,13 +33,16 @@ export default function PoolCampusJobManagement() {
     }
   };
 
-  const fetchCollegesForJob = async (jobId, jobType) => {
+  const fetchCollegesForJob = async (jobId, jobType, isVisited) => {
     setCollegesLoading(true);
     setError(null);
     try {
-      const response = await getCollegeApplicationsForJob(jobId, jobType, "Applied");
-      console.log("Fetched colleges for job:", response.data);
-      setColleges(response.data || []);
+      let response;
+      if (isVisited === false) response = await getCollegeApplicationsForJob(jobId, jobType, "Applied", isVisited);
+      else {
+        response = await getCollegeApplicationsForJob(jobId, jobType, "Applied");
+      }
+      setColleges(response.data);
     } catch (err) {
       console.error("Error fetching colleges:", err);
       setError(err.response?.data?.message || err.message || "Failed to fetch colleges.");
@@ -127,13 +130,22 @@ export default function PoolCampusJobManagement() {
   const currentJobs = filteredJobs.slice(startIndex, startIndex + itemsPerPage);
 
   const handleViewColleges = (job) => {
-    if (job.applicationCount === 0) {
-      alert("No colleges have applied for this drive yet.");
-      return;
-    }
+    // if (job.applicationCount === 0) {
+    //   alert("No colleges have applied for this drive yet.");
+    //   return;
+    // }
     setSelectedJob(job);
     fetchCollegesForJob(job._id, job.jobType);
   };
+
+  const showNewApplication = async (job) => {
+    try {
+      setSelectedJob(job);
+      await fetchCollegesForJob(job._id, job.jobType, false);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const handleBackToList = () => {
     setSelectedJob(null);
@@ -275,12 +287,12 @@ export default function PoolCampusJobManagement() {
                         {job.endDate ? new Date(job.endDate).toLocaleDateString() : 'N/A'}
                       </td>
                       <td className="px-4 py-4">{job?.views}</td>
-                      <td className="px-4 py-4">{job.applicationCount || 0}</td>
+                      <td className="px-4 py-4 hover:bg-gray-200" onClick={() => showNewApplication(job)}>{job.applicationCount || 0}</td>
                       <td className="px-4 py-4">
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleViewColleges(job)}
-                            disabled={!job.applicationCount || job.applicationCount === 0}
+                            // disabled={!job.applicationCount || job.applicationCount === 0}
                             className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             title="View College Applications"
                           >

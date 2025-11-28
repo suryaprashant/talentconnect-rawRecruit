@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { getApplicationsForJob, rejectCandidate } from '@/lib/Company_AxiosInstance';
+import { acceptCandidate, getApplicationsForJob, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 import useConversation from '@/statemanage/useConversation';
 import { useNavigate } from 'react-router-dom';
 import { Send } from 'lucide-react';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 
-const InternshipDetails = ({ job, onClose }) => {
+const InternshipDetails = ({ job, onClose, isVisited }) => {
   const jobId = job._id;
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -15,10 +15,14 @@ const InternshipDetails = ({ job, onClose }) => {
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
 
-  const getApplicants = async (jobId, jobType) => {
+  const getApplicants = async (jobId, jobType, isVisited) => {
     setIsSubmitting(true);
     try {
-      const response = await getApplicationsForJob(jobId, jobType, "Accepted");
+      let response;
+      if (isVisited === false) response = await getApplicationsForJob(jobId, jobType, "Accepted", isVisited);
+      else {
+        response = await getApplicationsForJob(jobId, jobType, "Accepted");
+      }
       // console.log("ye wala response: ", response.data);
       setApplications(response.data);
     } catch (error) {
@@ -39,7 +43,8 @@ const InternshipDetails = ({ job, onClose }) => {
   }
 
   useEffect(() => {
-    getApplicants(jobId, jobType);
+    if (isVisited === false) getApplicants(jobId, jobType, false);
+    else getApplicants(jobId, jobType);
   }, [jobId]);
 
   const handleMessageClick = async (applicant) => {
