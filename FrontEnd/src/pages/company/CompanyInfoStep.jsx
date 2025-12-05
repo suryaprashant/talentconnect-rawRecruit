@@ -10,33 +10,28 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
     const [countries, setCountries] = useState([]);
     const [states, setStates] = useState([]);
     const [cities, setCities] = useState([]);
-   
     const [existingCompanyOptions, setExistingCompanyOptions] = useState([
         { value: '', label: 'Select an existing company' }
     ]);
-
     const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
-    
-    // Fetch companies on component mount
+
     useEffect(() => {
         const loadCompanies = async () => {
             if (isLoadingCompanies) return;
-            
+
             setIsLoadingCompanies(true);
             setExistingCompanyOptions([{ value: '', label: 'Loading companies...' }]);
-            
+
             try {
                 const response = await fetchAllCompaniesName();
-               
-                
-   
+
                 let companyData = [];
                 if (Array.isArray(response?.data)) {
                     companyData = response.data;
                 } else if (Array.isArray(response)) {
                     companyData = response;
                 }
-                
+
                 setExistingCompanyOptions([
                     { value: '', label: 'Select an existing company' },
                     ...companyData
@@ -50,7 +45,7 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
         };
 
         loadCompanies();
-    }, []); // Empty dependency array = run once on mount
+    }, []);
 
     useEffect(() => {
         setCountries(Country.getAllCountries());
@@ -89,14 +84,13 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
             label: item[labelKey]
         }));
     };
-    
+
     const countryOptions = [{ value: '', label: 'Select country' }, ...formatOptions(countries, 'name', 'name')];
     const stateOptions = [{ value: '', label: 'Select state' }, ...formatOptions(states, 'name', 'name')];
     const cityOptions = [{ value: '', label: 'Select city' }, ...formatOptions(cities, 'name', 'name')];
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // This client-side logic for adding a new company is kept as is
         if (isRegisteringNewCompany && formData.companyName.trim() !== '') {
             const newCompanyName = formData.companyName.trim();
             const companyExists = existingCompanyOptions.some(option => option.value.toLowerCase() === newCompanyName.toLowerCase());
@@ -109,7 +103,6 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
         nextStep();
     };
 
-    // --- Dropdown Options ---
     const companyTypeOptions = [
         { value: '', label: 'Select company type' },
         { value: 'startup', label: 'Startup' },
@@ -156,211 +149,236 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
     })];
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white shadow-lg rounded-2xl p-10 w-full max-w-3xl"
-            >
-                <h1 className="text-2xl font-bold mb-1 text-center">Connect to Your Company!</h1>
-                <p className="text-gray-600 mb-6 text-center">Select the company you represent or register a new one.</p>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 p-4">
+            {/* Blur Background elements */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
+            </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {!isRegisteringNewCompany ? (
-                        <div>
+            <div className="relative w-full max-w-3xl">
+                {/* Blur background behind card */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-0"></div>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                    className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8"
+                >
+                    {/* Decorative top bar */}
+                    <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
+
+                    <h1 className="text-2xl font-bold mb-1 text-gray-800 text-center">Connect to Your Company!</h1>
+                    <p className="text-gray-600 mb-6 text-center">Select the company you represent or register a new one.</p>
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {!isRegisteringNewCompany ? (
+                            <div>
+                                <FormField
+                                    label="Company Name"
+                                    type="select"
+                                    name="companyName"
+                                    value={formData.companyName}
+                                    onChange={(e) => handleChange('companyName', e.target.value)}
+                                    options={existingCompanyOptions}
+                                    required
+                                    disabled={isLoadingCompanies}
+                                />
+                                {isLoadingCompanies && (
+                                    <p className="text-sm text-gray-500 text-center mt-1">Loading companies...</p>
+                                )}
+                                <p className="text-[#667eea] text-sm font-medium cursor-pointer hover:text-[#764ba2] hover:underline mt-2 text-center transition-colors"
+                                    onClick={() => {
+                                        setIsRegisteringNewCompany(true);
+                                        handleChange('companyName', '');
+                                    }}>
+                                    Register New Company
+                                </p>
+                            </div>
+                        ) : (
+                            <div>
+                                <FormField
+                                    label="Company Name"
+                                    type="text"
+                                    name="companyName"
+                                    value={formData.companyName}
+                                    onChange={(e) => handleChange('companyName', e.target.value)}
+                                    placeholder="Enter your company's full name"
+                                    required
+                                />
+                                <p className="text-[#667eea] text-sm font-medium cursor-pointer hover:text-[#764ba2] hover:underline mt-2 text-center transition-colors"
+                                    onClick={() => {
+                                        setIsRegisteringNewCompany(false);
+                                        handleChange('companyName', '');
+                                    }}>
+                                    Select Existing Company
+                                </p>
+                            </div>
+                        )}
+
+                        <FormField
+                            label="Description"
+                            type="textarea"
+                            name="description"
+                            value={formData.description}
+                            onChange={(e) => handleChange('description', e.target.value)}
+                            placeholder="Provide a brief description of your company..."
+                        />
+
+                        <FormField
+                            label="Company Type"
+                            type="select"
+                            name="companyType"
+                            value={formData.companyType}
+                            onChange={(e) => handleChange('companyType', e.target.value)}
+                            options={companyTypeOptions}
+                            required
+                        />
+
+                        <FormField
+                            label="Industry Type"
+                            type="select"
+                            name="industryType"
+                            value={formData.industryType}
+                            onChange={(e) => handleChange('industryType', e.target.value)}
+                            options={industryOptions}
+                            required
+                        />
+
+                        <FormField
+                            label="Number of Employees"
+                            type="select"
+                            name="numberOfEmployees"
+                            value={formData.numberOfEmployees}
+                            onChange={(e) => handleChange('numberOfEmployees', e.target.value)}
+                            options={employeeCountOptions}
+                            required
+                        />
+
+                        <FormField
+                            label="Established Year"
+                            type="select"
+                            name="establishedYear"
+                            value={formData.establishedYear}
+                            onChange={(e) => handleChange('establishedYear', e.target.value)}
+                            options={yearOptions}
+                            required
+                        />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <FormField
-                                label="Company Name"
-                                type="select"
-                                name="companyName"
-                                value={formData.companyName}
-                                onChange={(e) => handleChange('companyName', e.target.value)}
-                                options={existingCompanyOptions}
-                                required
-                                disabled={isLoadingCompanies}
-                            />
-                            {isLoadingCompanies && (
-                                <p className="text-sm text-gray-500 text-center mt-1">Loading companies...</p>
-                            )}
-                            <p className="text-accent text-sm font-medium text-blue-600 cursor-pointer hover:underline mt-2 text-center"
-                               onClick={() => {
-                                   setIsRegisteringNewCompany(true);
-                                   handleChange('companyName', '');
-                               }}>
-                                <span className='text-blue-600'>Register New Company</span>
-                            </p>
-                        </div>
-                    ) : (
-                        <div>
-                            <FormField
-                                label="Company Name"
+                                label="Contact Number"
                                 type="text"
-                                name="companyName"
-                                value={formData.companyName}
-                                onChange={(e) => handleChange('companyName', e.target.value)}
-                                placeholder="Enter your company's full name"
+                                name="phoneNumber"
+                                value={formData.phoneNumber}
+                                onChange={(e) => handleChange('phoneNumber', e.target.value)}
+                                placeholder="e.g., +91 98765 43210"
+                            />
+                            <FormField
+                                label="Alternate Number"
+                                type="text"
+                                name="alternatePhoneNumber"
+                                value={formData.alternatePhoneNumber}
+                                onChange={(e) => handleChange('alternatePhoneNumber', e.target.value)}
+                                placeholder="e.g., +91 91234 56789"
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                                label="Country"
+                                type="select"
+                                name="country"
+                                value={formData.country}
+                                onChange={(e) => {
+                                    handleChange('country', e.target.value);
+                                    handleChange('state', '');
+                                    handleChange('city', '');
+                                    handleChange('pincode', '');
+                                }}
+                                options={countryOptions}
                                 required
                             />
-                            <p className="text-accent text-sm font-medium text-blue-600 cursor-pointer hover:underline mt-2 text-center"
-                               onClick={() => {
-                                   setIsRegisteringNewCompany(false);
-                                   handleChange('companyName', '');
-                               }}>
-                                <span className='text-blue-600'>Select Existing Company</span>
-                            </p>
+                            <FormField
+                                label="State"
+                                type="select"
+                                name="state"
+                                value={formData.state}
+                                onChange={(e) => {
+                                    handleChange('state', e.target.value);
+                                    handleChange('city', '');
+                                    handleChange('pincode', '');
+                                }}
+                                options={stateOptions}
+                                required
+                                disabled={!formData.country || states.length === 0}
+                            />
                         </div>
-                    )}
-                    
-                    <FormField 
-                        label="Description" 
-                        type="textarea" 
-                        name="description" 
-                        value={formData.description} 
-                        onChange={(e) => handleChange('description', e.target.value)} 
-                        placeholder="Provide a brief description of your company..."
-                    />
-                    
-                    <FormField 
-                        label="Company Type" 
-                        type="select" 
-                        name="companyType" 
-                        value={formData.companyType} 
-                        onChange={(e) => handleChange('companyType', e.target.value)} 
-                        options={companyTypeOptions} 
-                        required
-                    />
-                    
-                    <FormField 
-                        label="Industry Type" 
-                        type="select" 
-                        name="industryType" 
-                        value={formData.industryType} 
-                        onChange={(e) => handleChange('industryType', e.target.value)} 
-                        options={industryOptions} 
-                        required
-                    />
-                    
-                    <FormField 
-                        label="Number of Employees" 
-                        type="select" 
-                        name="numberOfEmployees" 
-                        value={formData.numberOfEmployees} 
-                        onChange={(e) => handleChange('numberOfEmployees', e.target.value)} 
-                        options={employeeCountOptions} 
-                        required
-                    />
-                    
-                    <FormField 
-                        label="Established Year" 
-                        type="select" 
-                        name="establishedYear" 
-                        value={formData.establishedYear} 
-                        onChange={(e) => handleChange('establishedYear', e.target.value)} 
-                        options={yearOptions} 
-                        required
-                    />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField 
-                            label="Contact Number" 
-                            type="text" 
-                            name="phoneNumber" 
-                            value={formData.phoneNumber} 
-                            onChange={(e) => handleChange('phoneNumber', e.target.value)} 
-                            placeholder="e.g., +91 98765 43210"
-                        />
-                        <FormField 
-                            label="Alternate Number" 
-                            type="text" 
-                            name="alternatePhoneNumber" 
-                            value={formData.alternatePhoneNumber} 
-                            onChange={(e) => handleChange('alternatePhoneNumber', e.target.value)} 
-                            placeholder="e.g., +91 91234 56789"
-                        />
-                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                                label="City"
+                                type="select"
+                                name="city"
+                                value={formData.city}
+                                onChange={(e) => {
+                                    handleChange('city', e.target.value);
+                                    handleChange('pincode', '');
+                                }}
+                                options={cityOptions}
+                                required
+                                disabled={!formData.state || cities.length === 0}
+                            />
+                            <FormField
+                                label="Pincode / Zip Code"
+                                type="text"
+                                name="pincode"
+                                value={formData.pincode}
+                                onChange={(e) => handleChange('pincode', e.target.value)}
+                                placeholder="Enter pincode or zip code"
+                                required
+                                disabled={!formData.city}
+                            />
+                        </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
-                            label="Country"
-                            type="select"
-                            name="country"
-                            value={formData.country} 
-                            onChange={(e) => {
-                                handleChange('country', e.target.value);
-                                handleChange('state', '');
-                                handleChange('city', '');
-                                handleChange('pincode', '');
-                            }}
-                            options={countryOptions}
-                            required
+                            label="Company Website (Optional)"
+                            type="url"
+                            name="websiteUrl"
+                            value={formData.websiteUrl}
+                            onChange={(e) => handleChange('websiteUrl', e.target.value)}
+                            placeholder="e.g., https://www.yourcompany.com"
                         />
-                        <FormField
-                            label="State"
-                            type="select"
-                            name="state"
-                            value={formData.state} 
-                            onChange={(e) => {
-                                handleChange('state', e.target.value);
-                                handleChange('city', '');
-                                handleChange('pincode', '');
-                            }}
-                            options={stateOptions}
-                            required
-                            disabled={!formData.country || states.length === 0}
-                        />
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
-                            label="City"
-                            type="select"
-                            name="city"
-                            value={formData.city}
-                            onChange={(e) => {
-                                handleChange('city', e.target.value);
-                                handleChange('pincode', '');
-                            }}
-                            options={cityOptions}
-                            required
-                            disabled={!formData.state || cities.length === 0}
+                            label="LinkedIn URL (Optional)"
+                            type="url"
+                            name="companyLinkedin"
+                            value={formData.companyLinkedin}
+                            onChange={(e) => handleChange('companyLinkedin', e.target.value)}
+                            placeholder="e.g., https://linkedin.com/company/yourcompany"
                         />
-                        <FormField
-                            label="Pincode / Zip Code"
-                            type="text" 
-                            name="pincode"
-                            value={formData.pincode}
-                            onChange={(e) => handleChange('pincode', e.target.value)}
-                            placeholder="Enter pincode or zip code"
-                            required
-                            disabled={!formData.city}
-                        />
-                    </div>
-                    
-                    <FormField 
-                        label="Company Website (Optional)" 
-                        type="url" 
-                        name="websiteUrl" 
-                        value={formData.websiteUrl} 
-                        onChange={(e) => handleChange('websiteUrl', e.target.value)} 
-                        placeholder="e.g., https://www.yourcompany.com"
-                    />
-                    
-                    <FormField 
-                        label="LinkedIn URL (Optional)" 
-                        type="url" 
-                        name="companyLinkedin" 
-                        value={formData.companyLinkedin} 
-                        onChange={(e) => handleChange('companyLinkedin', e.target.value)} 
-                        placeholder="e.g., https://linkedin.com/company/yourcompany"
-                    />
 
-                    <div className="flex justify-end mt-8 space-x-4">
-                        <Button variant="secondary" onClick={prevStep}>Back</Button>
-                        <Button type="submit" variant="primary">Next</Button>
-                    </div>
-                </form>
-            </motion.div>
+                        <div className="flex justify-end mt-8 pt-6 border-t border-gray-100 space-x-4">
+                            <button
+                                type="button"
+                                onClick={prevStep}
+                                className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-all duration-300"
+                            >
+                                Back
+                            </button>
+                            <button
+                                type="submit"
+                                className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300 shadow-md"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </form>
+                </motion.div>
+            </div>
         </div>
     );
 };

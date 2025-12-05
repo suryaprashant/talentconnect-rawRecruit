@@ -1,103 +1,121 @@
-import React from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { MapPinIcon, HeartIcon } from "@heroicons/react/24/outline";
+
+const pastelColors = [
+  "bg-pink-100",
+  "bg-blue-100",
+  "bg-green-100",
+  "bg-yellow-100",
+  "bg-purple-100",
+  "bg-indigo-100",
+  "bg-teal-100",
+  "bg-rose-100",
+  "bg-cyan-100",
+  "bg-lime-100",
+];
+
+function getStableColor(id = "") {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash + id.charCodeAt(i) * 31) % pastelColors.length;
+  }
+  return pastelColors[hash];
+}
 
 const HackathonCard = ({ hackathon }) => {
+  const [isSaved, setIsSaved] = useState(hackathon.isSaved || false);
 
-  function getTimeDifference(createdAt) {
-    const now = new Date();
-    const createdDate = new Date(createdAt);
-    const diffInMs = now - createdDate;
-
-    const seconds = Math.floor(diffInMs / 1000);
-    const minutes = Math.floor(diffInMs / (1000 * 60));
-    const hours = Math.floor(diffInMs / (1000 * 60 * 60));
-    const days = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
-    if (seconds < 60) return `${seconds}s ago`;
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    return `${days}d ago`;
-  }
+  const title = hackathon.title || hackathon.jobTitle || "Hackathon";
+  const logo = hackathon.bannerImage || "https://cdn-icons-png.flaticon.com/512/25/25231.png";
+  const stableColor = getStableColor(hackathon._id || title);
 
   return (
-    <Link
-      to={`/${localStorage.getItem("selectedRole")}-dashboard/hackathon/${hackathon._id}`}
-      className="block border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all bg-white"
-    >
-      <div className="flex gap-4">
-        {/* Banner Image */}
-        <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
-          <img src={hackathon.bannerImage} className="w-full h-full object-cover" alt="" />
+    <div className="w-full max-w-[350px] min-h-[430px] mx-auto rounded-2xl 
+      border shadow-sm hover:shadow-lg transition overflow-hidden
+      flex flex-col">
+
+      {/* TOP SECTION */}
+      <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-grow`}>
+
+        {/* Date + Save */}
+        <div className="flex justify-between items-start">
+          <span className="text-xs bg-white px-3 py-1 rounded-full font-medium">
+            {new Date(hackathon.startDate || hackathon.createdAt).toLocaleDateString()}
+          </span>
+
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              setIsSaved(!isSaved);
+            }}
+            className="bg-white p-2 rounded-full shadow"
+          >
+            <HeartIcon
+              className={`h-5 w-5 ${isSaved ? "text-red-500" : "text-gray-600"}`}
+            />
+          </button>
         </div>
 
-        <div className="flex flex-col flex-grow">
-          {/* Top Row */}
-          <div className="flex justify-between items-start">
-            <div>
-              <div className="flex items-center text-xs text-gray-500 mb-1">
-                <span>{new Date(hackathon.startDate).toLocaleDateString()}</span>
-                <span className="mx-2">•</span>
-                <span>Cash & Swags</span>
-                <span className="mx-2">•</span>
-                <span>{hackathon.registeredUsers} Registered</span>
-              </div>
-
-              <h3 className="font-semibold text-lg">{hackathon.title}</h3>
-            </div>
-
-            {/* Time Ago */}
-            <div className="flex items-center text-xs text-gray-500">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {getTimeDifference(hackathon.createdAt)}
-            </div>
+        {/* Logo + Title */}
+        <div className="mt-3 flex justify-between items-start">
+          <div>
+            <h3 className="text-black font-semibold text-lg mt-1">{title}</h3>
+            <p className="text-gray-900 font-extrabold text-2xl leading-snug">
+              {hackathon.organizer || "Organizer"}
+            </p>
           </div>
 
-          {/* Description */}
-          <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-            {hackathon.description}
-          </p>
+          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border">
+            <img src={logo} alt="logo" className="w-12 h-12 object-cover" />
+          </div>
+        </div>
 
-          {/* Tech Stack Tags (PASTEL COLORS) */}
+        {/* Urgent / Featured Pill */}
+        {hackathon.urgent && (
+          <div className="mt-3">
+            <span className="px-3 py-1 bg-red-100 text-red-700 border border-red-300 rounded-full text-xs font-semibold">
+              Urgent / Featured
+            </span>
+          </div>
+        )}
+
+        {/* Technologies */}
+        {hackathon.technologies?.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
-            {hackathon.technologies?.map((tech, i) => (
+            {hackathon.technologies.map((tech) => (
               <span
-                key={i}
-                className="px-3 py-1 rounded-md text-xs font-medium"
-                style={{
-                  background: "#FCE7F3", // pastel pink (change for variety)
-                }}
+                key={tech}
+                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs"
+                style={{ backgroundColor: "transparent" }}
               >
                 {tech}
               </span>
             ))}
           </div>
-
-          {/* LOCATION + MODE (Black and white, icon style) */}
-          <div className="flex gap-6 mt-3 text-sm text-gray-700">
-            {/* Location */}
-            <div className="flex items-center gap-1">
-              <span className="text-black text-lg">📍</span>
-              <span>{hackathon.location || "Online"}</span>
-            </div>
-
-            {/* Mode */}
-            <div className="flex items-center gap-1">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
-              </svg>
-              <span>{hackathon.mode || "Virtual"}</span>
-            </div>
-          </div>
-
-          {/* Apply Now Button */}
-          <button className="mt-4 bg-black text-white px-4 py-2 rounded-md text-sm font-medium w-fit">
-            Apply Now
-          </button>
-        </div>
+        )}
       </div>
-    </Link>
+
+      {/* BOTTOM SECTION */}
+      <div className="p-4 bg-white flex justify-between items-center border-t">
+        <div>
+          <div className="flex items-center gap-1 text-gray-700 text-xs">
+            <MapPinIcon className="h-4 w-4 text-gray-500" />
+            <span>{hackathon.location || "Online"}</span>
+          </div>
+          <div className="text-gray-900 font-semibold text-sm mt-1">
+            {hackathon.mode || "Virtual"}
+          </div>
+        </div>
+
+        <Link
+          to={`/${localStorage.getItem("selectedRole")}-dashboard/hackathon/${hackathon._id}`}
+          className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
+        >
+          Apply Now
+        </Link>
+      </div>
+    </div>
   );
 };
 
