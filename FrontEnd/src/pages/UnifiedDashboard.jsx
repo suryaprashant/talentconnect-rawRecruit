@@ -14,11 +14,13 @@ function UnifiedDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get the selected role from localStorage
-    const role = localStorage.getItem('selectedRole')
-    setSelectedRole(role)
-    setLoading(false)
-  }, [])
+    const role = localStorage.getItem('selectedRole');
+    // Normalize: treat "candidate" as "student"
+    const normalizedRole = role === 'candidate' ? 'student' : role;
+    setSelectedRole(normalizedRole);
+    setLoading(false);
+  }, []);
+
 
   if (loading) {
     return (
