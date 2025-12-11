@@ -1,4 +1,16 @@
+import { useState } from "react";
+
 // pages/CoordinatorDetails.jsx
+const isValidLinkedIn = (url) => {
+  const pattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9-_]+\/?$/;
+  return pattern.test(url.trim());
+};
+
+const isValidPhone = (phone) => {
+  const pattern = /^\+?\d{1,3}?[ -]?\d{10,14}$/;
+  return pattern.test(phone.trim());
+};
+
 export default function CoordinatorDetails({
   formData,
   updateFormData,
@@ -9,6 +21,7 @@ export default function CoordinatorDetails({
     const { name, value } = e.target;
     updateFormData(name, value);
   };
+  const [errors, setErrors] = useState({});
 
   // Designation options
   const designations = [
@@ -99,6 +112,11 @@ export default function CoordinatorDetails({
                 className="w-full p-2 border border-gray-300 rounded-md"
                 required
               />
+              {errors.officialMobile && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.officialMobile}
+                </p>
+              )}
             </div>
 
             <div>
@@ -115,6 +133,11 @@ export default function CoordinatorDetails({
                   placeholder="www.linkedin.com/in/username"
                   className="flex-1 p-2 border-t border-b border-r border-gray-300 rounded-r-md"
                 />
+                {errors.linkedinProfile && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.linkedinProfile}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -127,7 +150,31 @@ export default function CoordinatorDetails({
               Cancel
             </button>
             <button
-              onClick={nextStep}
+              onClick={() => {
+                const newErrors = {};
+
+                // Validate LinkedIn (only if user entered something)
+                if (formData.linkedinProfile) {
+                  const fullUrl = "http://" + formData.linkedinProfile;
+                  if (!isValidLinkedIn(fullUrl)) {
+                    newErrors.linkedinProfile =
+                      "Enter a valid LinkedIn URL (linkedin.com/in/username)";
+                  }
+                }
+
+                // Validate Phone
+                if (!isValidPhone(formData.officialMobile || "")) {
+                  newErrors.officialMobile =
+                    "Enter a valid phone number (may include country code)";
+                }
+
+                if (Object.keys(newErrors).length > 0) {
+                  setErrors(newErrors);
+                  return;
+                }
+
+                nextStep();
+              }}
               className="px-6 py-2 bg-black text-white rounded-md"
             >
               Next
