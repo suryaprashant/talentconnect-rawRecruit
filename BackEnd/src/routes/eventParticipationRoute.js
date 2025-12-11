@@ -22,17 +22,12 @@ router.get('/byParticipent',secureRoute, getByParticipantId);
 // GET /eventParticipation/:eventID
 router.get('/:eventID', getParticipantsByEvent);
 
-// @desc    Register a new participant
-// @route   POST /eventParticipation/register
 router.post('/register',secureRoute, registerParticipant);
 router.post('/updateInputType',updateInputType)
 
-// @desc    Update participant by ID
-// @route   PUT /eventParticipation/update/:id
 router.put('/update/:id', updateParticipant);
 
-// @desc    Delete participant by ID
-// @route   DELETE /eventParticipation/delete/:id
+
 router.delete('/delete/:id', deleteParticipant);
 
 export default router;

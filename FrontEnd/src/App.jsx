@@ -232,7 +232,7 @@ import StudentReferralJobs from './pages/students/studentDashboard/refferalJobs/
 import StudentRefferalJobDetails from './pages/students/studentDashboard/refferalJobs/RefferalJobDetails'
 import OncampusApplicationStatus from "./pages/company/applicationStatus/OncampusApplicationStatus";
 import PoolcampusApplicationStatus from "./pages/company/applicationStatus/PoolcampusApplicationStatus";
-import JobManagementApplicationForPool from "./pages/college/manageApplication/PoolCampusPlacement/JobManagementForPool";
+import JobManagementForPool from "./pages/college/manageApplication/PoolCampusPlacement/JobManagementForPool";
 import JobDetailForPool from "./pages/college/manageApplication/PoolCampusPlacement/JobDetailForPool";
 import InternshipListing from "./pages/company/jobManagement/internship/internahipListing";
 import IntershipListingPage from "./pages/company/shortlistedCollege/internship/InternshipListingPage";
@@ -376,12 +376,7 @@ function AppRoutes() {
               <Route path='/fresher-dashboard/service-request/career-craft' element={<FresherCareerCraft />} />
               <Route path='/fresher-dashboard/service-request/mock-interview' element={<FresherMockInterview />} />
               <Route path='/fresher-dashboard/service-request/counselling' element={<FresherCounselling />} />
-              {/* Application status  */}
-              {/* <Route path="fresher/application-status/Job-listing" element={<JobTracker/>} />
-              <Route path="/application-status/Off-campus" element={<OffcampusStatus/>} />
-              <Route path="/application-status/Internship" element={<InternshipStatus/>} />
-              <Route path="/application-status/Referral" element={<RefferralJobStatus/>} />
-              <Route path="/application-status/hackathon" element={<HackthonStatus/>} /> */}
+            
 
 
 
@@ -582,8 +577,8 @@ function AppRoutes() {
               <Route path="/manage-application/campus-placement/:jobId" element={<JobProvider><JobDetail status="Applied" /> </JobProvider>} />
               <Route path="/college-dashboard/preview/On-campus/:id" element={<CollegeDetailsPage />} />
 
-              <Route path="/manage-application/PoolCampus-placement" element={<JobProvider><JobManagementApplicationForPool /></JobProvider>} />
-              <Route path="/manage-application/PoolCampus-placement/:jobId" element={<JobProvider><JobDetailForPool /> </JobProvider>} />
+              <Route path="/manage-application/PoolCampus-placement" element={<JobProvider><JobManagementForPool /></JobProvider>} />
+              <Route path="/manage-application/PoolCampus-placement/:jobId" element={<JobProvider><JobDetailForPool status="Applied" /> </JobProvider>} />
               <Route path="/college-dashboard/preview/Pool-campus/:id" element={<PoolCampusEmployeeDash />} />
 
               <Route path="/application-status/oncampus" element={<CollegeOncampusApplicationStatus />} />
@@ -599,12 +594,9 @@ function AppRoutes() {
                   <ApplicationsPage />
                 </ApplicationProvider>
               } />
-              <Route path="/registered/on-campus-opportunities/:jobId" element={<JobProvider><JobDetail status="Shortlisted" /> </JobProvider>} />
-              {/* <Route path="/registered/on-campus-opportunities/:id" element={
-                <ApplicationProvider>
-                  <ApplicationDetailPage />
-                </ApplicationProvider>
-              } /> */}
+              <Route path="/registered/on-campus-opportunities/:jobId"
+               element={<JobProvider><JobDetail status="Shortlisted" /> </JobProvider>} />
+            
 
               <Route path="/registered/Internship" element={
                 <ApplicationProvider>
@@ -621,10 +613,10 @@ function AppRoutes() {
                   <PoolApplicationsPage />
                 </ApplicationProvider>
               } />
-              <Route path="/registered/pool-campus-opportunities/:id" element={
-                <ApplicationProvider>
-                  <PoolApplicationDetailPage />
-                </ApplicationProvider>
+              <Route path="/registered/pool-campus-opportunities/:jobId" element={
+                  <JobProvider>
+                  <JobDetailForPool status="Shortlisted" />
+                  </JobProvider>
               } />
 
               {/* Professional  */}

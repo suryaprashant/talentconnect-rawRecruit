@@ -24,8 +24,8 @@ const CollegeListingPage = () => {
         const response = await getRegisteredColleges();
         console.log(response.data?.data || []);
 
-        // Ensure we're accessing the correct data structure from the response
-        const fetchedColleges = response.data?.data || []; // Adjusted to match backend response
+    
+        const fetchedColleges = response.data?.data || []; 
 
         setColleges(fetchedColleges);
         setFilteredColleges(fetchedColleges);

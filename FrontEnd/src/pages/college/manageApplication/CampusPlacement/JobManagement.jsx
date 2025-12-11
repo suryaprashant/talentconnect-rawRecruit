@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useJobs } from '@/context/College/JobManagement/JobContext';
@@ -5,7 +6,7 @@ import {
     Search, Eye, Trash,
     ChevronLeft, ChevronRight, Filter
 } from 'lucide-react';
-import { getCollegePostedJobs } from '@/lib/College_AxiosIntance';
+import { getCollegePostedJobs, deleteCollegeJob } from '@/lib/College_AxiosIntance';
 
 function JobManagementApplication() {
     const navigate = useNavigate();
@@ -16,6 +17,7 @@ function JobManagementApplication() {
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [deletingJobId, setDeletingJobId] = useState(null);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState('');
@@ -53,34 +55,34 @@ function JobManagementApplication() {
 
     // Fetch jobs from backend when the component mounts
     useEffect(() => {
-        const fetchJobs = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-
-                const response = await getCollegePostedJobs('On-campus', lastSegment);
-
-                console.log("API Response:", response);
-                if (response.data && response.data.response && Array.isArray(response.data.response)) {
-                    // Process jobs to update their status based on dates
-                    const processedJobs = processJobsWithStatus(response.data.response);
-                    setJobs(processedJobs);
-                } else {
-                    // Handle cases where the response is not as expected
-                    console.error('Unexpected API response format:', response);
-                    setJobs([]);
-                }
-            } catch (err) {
-                setError("Failed to fetch jobs. Please try again later.");
-                console.error("Error fetching jobs:", err);
-                setJobs([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchJobs();
     }, [lastSegment]);
+
+    const fetchJobs = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await getCollegePostedJobs('On-campus', lastSegment);
+
+            console.log("API Response:", response);
+            if (response.data && response.data.response && Array.isArray(response.data.response)) {
+                // Process jobs to update their status based on dates
+                const processedJobs = processJobsWithStatus(response.data.response);
+                setJobs(processedJobs);
+            } else {
+                // Handle cases where the response is not as expected
+                console.error('Unexpected API response format:', response);
+                setJobs([]);
+            }
+        } catch (err) {
+            setError("Failed to fetch jobs. Please try again later.");
+            console.error("Error fetching jobs:", err);
+            setJobs([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // Set up interval to check and update job statuses periodically
     useEffect(() => {
@@ -175,9 +177,46 @@ function JobManagementApplication() {
         console.log(`Export job with ID: ${jobId}`);
     };
 
-    const handleDelete = (jobId, e) => {
+    const handleDelete = async (jobId, e) => {
         e.stopPropagation();
-        console.log(`Delete job with ID: ${jobId}`);
+        
+        // Confirm before deleting
+        const isConfirmed = window.confirm('Are you sure you want to delete this job? This action cannot be undone.');
+        
+        if (!isConfirmed) {
+            return;
+        }
+
+        try {
+            setDeletingJobId(jobId);
+            
+            // Call the delete API
+            const response = await deleteCollegeJob(jobId);
+            
+            if (response.success) {
+                // Remove the deleted job from the state
+                setJobs(prevJobs => prevJobs.filter(job => job._id !== jobId));
+                
+                // Show success message
+                alert('Job deleted successfully!');
+                
+                // If we deleted the last item on the page, go back a page
+                if (currentJobs.length === 1 && currentPage > 1) {
+                    setCurrentPage(prev => prev - 1);
+                }
+                
+                // Refresh the job list
+                await fetchJobs();
+            } else {
+                // Show error message from server
+                alert(response.msg || 'Failed to delete job. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error deleting job:', error);
+            alert('An error occurred while deleting the job. Please try again.');
+        } finally {
+            setDeletingJobId(null);
+        }
     };
 
     const formatDate = (dateString) => {
@@ -347,21 +386,21 @@ function JobManagementApplication() {
                                                             }} 
                                                             className={viewButtonClass} 
                                                             title={isViewDisabled ? "No applications to view" : "View Job"}
-                                                            disabled={isViewDisabled} // Optional: Add disabled attribute for semantic correctness
+                                                            disabled={isViewDisabled}
                                                         >
                                                             <Eye size={18} />
                                                         </button>
-                                                        {/* <button onClick={(e) => handleEdit(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="Edit Job">
-                                                            <Edit size={18} />
-                                                        </button>
-                                                        <button onClick={(e) => handleApplications(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="View Applications">
-                                                            <Users size={18} />
-                                                        </button>
-                                                        <button onClick={(e) => handleExport(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="Export Job Data">
-                                                            <FileText size={18} />
-                                                        </button> */}
-                                                        <button onClick={(e) => handleDelete(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="Delete Job">
-                                                            <Trash size={18} />
+                                                        <button 
+                                                            onClick={(e) => handleDelete(jobId, e)} 
+                                                            className={`text-gray-500 hover:text-red-700 transition-colors ${deletingJobId === jobId ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                                                            title="Delete Job"
+                                                            disabled={deletingJobId === jobId}
+                                                        >
+                                                            {deletingJobId === jobId ? (
+                                                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-gray-500 border-r-transparent"></div>
+                                                            ) : (
+                                                                <Trash size={18} />
+                                                            )}
                                                         </button>
                                                     </div>
                                                 </td>

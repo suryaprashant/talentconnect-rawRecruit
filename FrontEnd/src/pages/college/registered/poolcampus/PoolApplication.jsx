@@ -2,27 +2,28 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useJobs } from '@/context/College/JobManagement/JobContext';
 import {
-  Search, Eye, Trash,
-  ChevronLeft, ChevronRight, Filter
+    Search, Eye, Trash,
+    ChevronLeft, ChevronRight, Filter
 } from 'lucide-react';
-import { getCollegePostedJobs } from '@/lib/College_AxiosIntance';
+import { getCollegePostedJobs, deleteCollegeJob } from '@/lib/College_AxiosIntance';
 
-function PoolApplication() {
+
+function PoolApplicationsPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const pathParts = location.pathname.split('/').filter(Boolean); // remove empty strings
+  const pathParts = location.pathname.split('/').filter(Boolean);
   const lastSegment = pathParts[pathParts.length - 1];
 
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deletingJobId, setDeletingJobId] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('All Jobs');
   const [showFilters, setShowFilters] = useState(false);
 
-  // Function to determine job status based on dates
   const getJobStatus = (job) => {
     const currentDate = new Date();
     const startDate = new Date(job.startDate);
@@ -37,10 +38,8 @@ function PoolApplication() {
     }
   };
 
-  // Process jobs to update their status based on dates
   const processJobsWithStatus = (jobsData) => {
     return jobsData.map(job => {
-      // Only update status if the job has both start and end dates
       if (job.startDate && job.endDate) {
         return {
           ...job,
@@ -51,48 +50,45 @@ function PoolApplication() {
     });
   };
 
-  // Fetch jobs from backend when the component mounts
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  // Fetch jobs function
+  const fetchJobs = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        // Fetching 'Pool-campus' jobs as requested
-        const response = await getCollegePostedJobs('Pool-campus', 'Shortlisted');
+      // This should fetch jobs where the college has been shortlisted
+      const response = await getCollegePostedJobs('Pool-campus', lastSegment);
 
-        if (response.data && response.data.response && Array.isArray(response.data.response)) {
-          // Process jobs to update their status based on dates
-          const processedJobs = processJobsWithStatus(response.data.response);
-          setJobs(processedJobs);
-        } else {
-          console.error('Unexpected API response format:', response);
-          setJobs([]);
-        }
-      } catch (err) {
-        setError("Failed to fetch jobs. Please try again later.");
-        console.error("Error fetching jobs:", err);
+      if (response.data && response.data.response && Array.isArray(response.data.response)) {
+        const processedJobs = processJobsWithStatus(response.data.response);
+        setJobs(processedJobs);
+      } else {
+        console.error('Unexpected API response format:', response);
         setJobs([]);
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (err) {
+      setError("Failed to fetch jobs. Please try again later.");
+      console.error("Error fetching jobs:", err);
+      setJobs([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchJobs();
   }, [lastSegment]);
 
-  // Set up interval to check and update job statuses periodically
   useEffect(() => {
     const intervalId = setInterval(() => {
       setJobs(prevJobs => processJobsWithStatus(prevJobs));
-    }, 60000); // Check every minute
+    }, 60000);
 
     return () => clearInterval(intervalId);
   }, []);
 
   const itemsPerPage = 5;
 
-  // Memoized filtering logic to avoid re-calculating on every render
   const filteredJobs = useMemo(() => {
     if (!jobs || !Array.isArray(jobs)) return [];
 
@@ -101,7 +97,6 @@ function PoolApplication() {
       const degree = Array.isArray(job.degree) ? job.degree.join(', ') : '';
       const location = Array.isArray(job.location) ? job.location.join(', ') : job.location || '';
 
-      // Comprehensive search across multiple fields
       const matchesSearch =
         jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
         degree.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -109,7 +104,6 @@ function PoolApplication() {
 
       const status = job.jobStatus || '';
 
-      // Filter based on the active tab
       if (activeTab === 'All Jobs') {
         return matchesSearch;
       } else if (activeTab === 'Open') {
@@ -123,49 +117,73 @@ function PoolApplication() {
     });
   }, [jobs, searchQuery, activeTab]);
 
-  // Memoized counts for each status tab
   const openJobsCount = useMemo(() => jobs.filter(job => job.jobStatus === 'Open').length, [jobs]);
   const pendingJobsCount = useMemo(() => jobs.filter(job => job.jobStatus === 'Pending').length, [jobs]);
   const closedJobsCount = useMemo(() => jobs.filter(job => job.jobStatus === 'Closed').length, [jobs]);
 
-  // Pagination calculations
   const totalItems = filteredJobs.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentJobs = filteredJobs.slice(startIndex, endIndex);
 
-  // Pagination handlers
   const handlePrevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
   const handleNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
   const handlePageClick = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Action handlers
   const handleView = (jobId) => {
-    navigate(`${location.pathname}/${jobId}`);
+    // For registered opportunities, show shortlisted applications
+    navigate(`/registered/pool-campus-opportunities/${jobId}`);
   };
 
-  const handleEdit = (jobId, e) => {
+  const handleDelete = async (jobId, e) => {
     e.stopPropagation();
-    console.log(`Edit job with ID: ${jobId}`);
+    
+    // Confirm before deleting
+    const isConfirmed = window.confirm('Are you sure you want to delete this job? This action cannot be undone.');
+    
+    if (!isConfirmed) {
+      return;
+    }
+
+    try {
+      setDeletingJobId(jobId);
+      
+      // Call the delete API
+      const response = await deleteCollegeJob(jobId);
+      
+      if (response.data && response.data.success) {
+        // Remove the deleted job from the state
+        setJobs(prevJobs => prevJobs.filter(job => job._id !== jobId));
+        
+        // Show success message
+        alert('Job deleted successfully!');
+        
+        // If we deleted the last item on the page, go back a page
+        if (currentJobs.length === 1 && currentPage > 1) {
+          setCurrentPage(prev => prev - 1);
+        }
+        
+        // Refresh the job list
+        await fetchJobs();
+      } else {
+        // Show error message from server
+        alert(response.data?.msg || response.msg || 'Failed to delete job. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error deleting job:', error);
+      if (error.response?.data?.msg) {
+        alert(error.response.data.msg);
+      } else if (error.message) {
+        alert(error.message);
+      } else {
+        alert('An error occurred while deleting the job. Please try again.');
+      }
+    } finally {
+      setDeletingJobId(null);
+    }
   };
 
-  const handleApplications = (jobId, e) => {
-    e.stopPropagation();
-    console.log(`View applications for job ID: ${jobId}`);
-  };
-
-  const handleExport = (jobId, e) => {
-    e.stopPropagation();
-    console.log(`Export job with ID: ${jobId}`);
-  };
-
-  const handleDelete = (jobId, e) => {
-    e.stopPropagation();
-    console.log(`Delete job with ID: ${jobId}`);
-  };
-
-  // Utility function to format dates
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
@@ -183,12 +201,9 @@ function PoolApplication() {
       <div className="max-w-7xl mx-auto p-4 bg-white">
         <div className="flex justify-between items-center mt-10 mb-4">
           <div>
-            <h1 className="text-3xl font-bold">Manage Pool-Campus Applications</h1>
-            <p className="text-gray-600 mt-2">Track Your Pool-Campus Drives and Streamline Applications</p>
+            <h1 className="text-3xl font-bold">Pool Campus Opportunities</h1>
+            <p className="text-gray-600 mt-2">View and manage your shortlisted pool campus applications</p>
           </div>
-          <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors">
-            Post a Job
-          </button>
         </div>
 
         <div className="border rounded-md mt-10">
@@ -280,7 +295,6 @@ function PoolApplication() {
                 ) : (
                   currentJobs.map(job => {
                     const jobId = job._id || job.id;
-                    // const jobTitle = job.jobTitle || 'Untitled Job';
                     const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : '';
                     const jobLocation = Array.isArray(job.location) ? job.location.join(', ') : job.location || 'N/A';
                     const jobStatus = job.jobStatus || 'Unknown';
@@ -288,15 +302,16 @@ function PoolApplication() {
                     const views = job.views || 0;
                     const applications = job.applicationCount || job.applications || 0;
 
+                    const isViewDisabled = applications === 0;
+                    const viewButtonClass = `transition-colors ${isViewDisabled ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700'}`;
+
                     return (
                       <tr
                         key={jobId}
                         className="border-b hover:bg-gray-50 cursor-pointer transition-colors"
-                        onClick={() => handleView(jobId)}
                       >
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-3" onClick={() => navigate(`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}>
                           <div className="font-medium">{jobDegree}</div>
-
                           <div className="text-sm text-gray-500">{jobLocation}</div>
                         </td>
                         <td className="px-4 py-3">
@@ -309,23 +324,45 @@ function PoolApplication() {
                         </td>
                         <td className="px-4 py-3">{formatDate(deadline)}</td>
                         <td className="px-4 py-3">{views}</td>
-                        <td className="px-4 py-3">{applications}</td>
+                        <td className="px-4 py-3" onClick={(e) => { e.stopPropagation(); if (!isViewDisabled) handleView(jobId); }}>{applications}</td>
                         <td className="px-4 py-3">
                           <div className="flex gap-2">
-                            <button onClick={(e) => { e.stopPropagation(); handleView(jobId); }} className="text-gray-500 hover:text-gray-700 transition-colors" title="View Job"><Eye size={18} /></button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (!isViewDisabled) handleView(jobId);
+                              }}
+                              className={viewButtonClass}
+                              title={isViewDisabled ? "No applications to view" : "View Shortlisted"}
+                              disabled={isViewDisabled}
+                            >
+                              <Eye size={18} />
+                            </button>
                             <Link
                               to={`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`}
-                              disabled={job.applicationCount === 0}
-                              className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="text-gray-500 hover:text-blue-600 p-1 rounded-md hover:bg-gray-200"
                               title="View Job Description"
                               onClick={e => e.stopPropagation()}
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-search-corner-icon lucide-file-search-corner"><path d="M11.1 22H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.589 3.588A2.4 2.4 0 0 1 20 8v3.25" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="m21 22-2.88-2.88" /><circle cx="16" cy="17" r="3" /></svg>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-search-corner-icon lucide-file-search-corner">
+                                <path d="M11.1 22H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.589 3.588A2.4 2.4 0 0 1 20 8v3.25" />
+                                <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                                <path d="m21 22-2.88-2.88" />
+                                <circle cx="16" cy="17" r="3" />
+                              </svg>
                             </Link>
-                            {/* <button onClick={(e) => handleEdit(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="Edit Job"><Edit size={18} /></button>
-                                                        <button onClick={(e) => handleApplications(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="View Applications"><Users size={18} /></button>
-                                                        <button onClick={(e) => handleExport(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="Export Job Data"><FileText size={18} /></button> */}
-                            <button onClick={(e) => handleDelete(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="Delete Job"><Trash size={18} /></button>
+                            <button 
+                              onClick={(e) => handleDelete(jobId, e)} 
+                              className={`text-gray-500 hover:text-red-700 transition-colors ${deletingJobId === jobId ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                              title="Delete Job"
+                              disabled={deletingJobId === jobId}
+                            >
+                              {deletingJobId === jobId ? (
+                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-gray-500 border-r-transparent"></div>
+                              ) : (
+                                <Trash size={18} />
+                              )}
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -374,5 +411,4 @@ function PoolApplication() {
     </div>
   );
 }
-
-export default PoolApplication;
+export default PoolApplicationsPage; 

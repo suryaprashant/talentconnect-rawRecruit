@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { ChevronDown, X } from 'lucide-react';
 import toast from 'react-hot-toast';
+import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
 
 export default function PoolCampusHiringForm() {
@@ -35,14 +36,12 @@ export default function PoolCampusHiringForm() {
     const [alert, setAlert] = useState({ show: false, message: '', type: '' });
 
     // --- Refs ---
-    const venueRef = useRef(null);
     const amenitiesRef = useRef(null);
     const degreeRef = useRef(null);
     const collegeTypesRef = useRef(null);
     const companyTypeRef = useRef(null);
 
     const [dropdownOpen, setDropdownOpen] = useState({
-        venue: false,
         amenities: false,
         degree: false,
         collegeTypes: false,
@@ -55,9 +54,22 @@ export default function PoolCampusHiringForm() {
     const [customCollegeType, setCustomCollegeType] = useState('');
     const [customCompanyType, setCustomCompanyType] = useState('');
 
-    // --- Search States ---
-    const [venueSearch, setVenueSearch] = useState('');
-    const [indianCities, setIndianCities] = useState([]);
+    // --- City Options generated from the npm package ---
+    const cityOptions = useMemo(() => {
+        const indianCities = City.getCitiesOfCountry('IN')
+            .map(city => ({
+                value: city.name,
+                label: city.name,
+            }))
+            .sort((a, b) => a.label.localeCompare(b.label));
+        
+        // Add 'Online' and 'Other' options
+        return [
+            { value: 'Online', label: 'Online' },
+            { value: 'Other', label: 'Other' },
+            ...indianCities
+        ];
+    }, []);
 
     // --- Static Options ---
     const degreeOptions = ['B.Tech', 'M.Tech', 'MBA', 'B.Sc', 'M.Sc', 'PhD'];
@@ -72,17 +84,8 @@ export default function PoolCampusHiringForm() {
 
     // --- Effects ---
     useEffect(() => {
-        // Load cities for venue
-        const cityNames = City.getCitiesOfCountry('IN')
-          .map(city => city.name)
-          .sort((a, b) => a.localeCompare(b));
-        setIndianCities(['Online', 'Other', ...cityNames]);
-    }, []);
-
-    useEffect(() => {
         const handleClickOutside = (event) => {
             const refs = {
-                venue: venueRef,
                 amenities: amenitiesRef,
                 degree: degreeRef,
                 collegeTypes: collegeTypesRef,
@@ -98,15 +101,14 @@ export default function PoolCampusHiringForm() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
     
-    // --- Filtered List ---
-    const filteredVenues = indianCities.filter(city =>
-        city.toLowerCase().includes(venueSearch.toLowerCase())
-    );
-
     // --- Handlers ---
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleVenueChange = (selectedOption) => {
+        setFormData(prev => ({ ...prev, venue: selectedOption ? selectedOption.value : '' }));
     };
 
     // Handler for single-select custom dropdowns
@@ -305,44 +307,32 @@ export default function PoolCampusHiringForm() {
                 <p className="text-center text-gray-500 mb-6">Fill in the details below to register for the hiring drive</p>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     
-                    {/* Pool Campus Hiring Venue (Searchable Dropdown) */}
-                    <div ref={venueRef} className="relative">
-                        <label className="block mb-1 font-medium">Pool Campus Hiring Venue <span className="text-red-500">*</span></label>
-                        <div
-                            onClick={() => setDropdownOpen(prev => ({ ...prev, venue: !prev.venue }))}
-                            className="flex items-center justify-between p-2 w-full border rounded-md cursor-pointer hover:border-gray-400 min-h-[42px] bg-white"
-                        >
-                            <span className={formData.venue ? "text-black" : "text-gray-500"}>
-                                {formData.venue || 'Select location'}
-                            </span>
-                            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${dropdownOpen.venue ? "rotate-180" : ""}`} />
-                        </div>
-                        {dropdownOpen.venue && (
-                            <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-                                <div className="p-2 border-b">
-                                    <input
-                                        type="text"
-                                        value={venueSearch}
-                                        onChange={(e) => setVenueSearch(e.target.value)}
-                                        onClick={(e) => e.stopPropagation()}
-                                        placeholder="Search for a location..."
-                                        className="w-full p-2 border rounded"
-                                    />
-                                </div>
-                                <div className="max-h-60 overflow-auto">
-                                    {filteredVenues.map(location => (
-                                        <div
-                                            key={location}
-                                            onClick={() => handleOptionSelect('venue', location)}
-                                            className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.venue === location ? "bg-gray-100 font-medium" : ""}`}
-                                        >
-                                            {location}
-                                            {formData.venue === location && <span className="float-right text-gray-500">✓</span>}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                    {/* Pool Campus Hiring Venue (Updated to CreatableSelect) */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Pool Campus Hiring Venue <span className="text-red-500">*</span>
+                        </label>
+                        <CreatableSelect
+                            isClearable
+                            options={cityOptions}
+                            value={formData.venue ? { value: formData.venue, label: formData.venue } : null}
+                            onChange={handleVenueChange}
+                            placeholder="Select or type to add a location..."
+                            styles={{
+                                control: (base) => ({
+                                    ...base,
+                                    borderColor: '#d1d5db',
+                                    minHeight: '42px',
+                                    '&:hover': {
+                                        borderColor: '#9ca3af',
+                                    },
+                                }),
+                                placeholder: (base) => ({
+                                    ...base,
+                                    color: '#6b7280',
+                                }),
+                            }}
+                        />
                     </div>
                     {/* END Venue */}
 
