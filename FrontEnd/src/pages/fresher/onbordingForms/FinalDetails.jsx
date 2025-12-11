@@ -1,48 +1,77 @@
-import { useState } from 'react';
-import { useForm } from './FormContext';
+import { useState } from "react";
+import { useForm } from "./FormContext";
 
-const allSkills = ['JavaScript', 'React', 'Node.js', 'Python', 'HTML', 'CSS', 'TypeScript'];
+const allSkills = [
+  "JavaScript",
+  "React",
+  "Node.js",
+  "Python",
+  "HTML",
+  "CSS",
+  "TypeScript",
+];
+
+const isValidLinkedIn = (url) => {
+  const pattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9-_]+\/?$/;
+  return pattern.test(url.trim());
+};
+
+const isValidGitHub = (url) => {
+  const pattern = /^https?:\/\/(www\.)?github\.com\/[A-Za-z0-9-_]+\/?$/;
+  return pattern.test(url.trim());
+};
+
+const isValidURL = (url) => {
+  try {
+    new URL(url);
+    return true;
+  } catch (_) {
+    return false;
+  }
+};
 
 const FinalDetails = () => {
   const { formData, updateFormData, goToNextStep, goToPrevStep } = useForm();
   const [finalDetails, setFinalDetails] = useState({
     skills: formData.finalDetails?.skills || [],
-    certifications: formData.finalDetails?.certifications || '',
-    linkedinProfile: formData.finalDetails?.linkedinProfile || '',
-    githubProfile: formData.finalDetails?.githubProfile || '',
-    portfolio: formData.finalDetails?.portfolio || '',
+    certifications: formData.finalDetails?.certifications || "",
+    linkedinProfile: formData.finalDetails?.linkedinProfile || "",
+    githubProfile: formData.finalDetails?.githubProfile || "",
+    portfolio: formData.finalDetails?.portfolio || "",
     project: formData.finalDetails?.project || null,
-    referralSource: formData.finalDetails?.referralSource || ''
+    referralSource: formData.finalDetails?.referralSource || "",
   });
 
-  const [inputValue, setInputValue] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const [inputValue, setInputValue] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFinalDetails(prev => ({ ...prev, [name]: value }));
+    setFinalDetails((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    setFinalDetails(prev => ({ ...prev, project: selectedFile }));
+    setFinalDetails((prev) => ({ ...prev, project: selectedFile }));
   };
 
   const addSkill = (skill) => {
     if (!finalDetails.skills.includes(skill)) {
-      setFinalDetails(prev => ({
+      setFinalDetails((prev) => ({
         ...prev,
         skills: [...prev.skills, skill],
       }));
     }
-    setInputValue('');
+    setInputValue("");
     setShowDropdown(false);
   };
 
   const removeSkill = (skillToRemove) => {
-    setFinalDetails(prev => ({
+    setFinalDetails((prev) => ({
       ...prev,
-      skills: prev.skills.filter(skill => skill !== skillToRemove),
+      skills: prev.skills.filter((skill) => skill !== skillToRemove),
     }));
   };
 
@@ -53,20 +82,53 @@ const FinalDetails = () => {
   );
 
   const handleSubmit = () => {
-    updateFormData('finalDetails', finalDetails);
+    const newErrors = {};
+
+    // LinkedIn validation
+    if (
+      finalDetails.linkedinProfile &&
+      !isValidLinkedIn(finalDetails.linkedinProfile)
+    ) {
+      newErrors.linkedinProfile =
+        "Enter a valid LinkedIn profile URL (linkedin.com/in/username)";
+    }
+
+    // GitHub validation
+    if (
+      finalDetails.githubProfile &&
+      !isValidGitHub(finalDetails.githubProfile)
+    ) {
+      newErrors.githubProfile =
+        "Enter a valid GitHub profile URL (github.com/username)";
+    }
+
+    // Portfolio general URL validation
+    if (finalDetails.portfolio && !isValidURL(finalDetails.portfolio)) {
+      newErrors.portfolio = "Enter a valid website/portfolio URL";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return; // Stop navigation
+    }
+
+    // Save final details
+    updateFormData("finalDetails", finalDetails);
     goToNextStep();
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8 overflow-auto">
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-3xl">
-        <h1 className="text-2xl font-bold mb-2">You're almost there! Let's add final details and submit!</h1>
+        <h1 className="text-2xl font-bold mb-2">
+          You're almost there! Let's add final details and submit!
+        </h1>
         <p className="text-gray-600 mb-6">
-          Highlight your skills and achievements. Upload certifications, list technical skills, and showcase what makes you stand out to employers.
+          Highlight your skills and achievements. Upload certifications, list
+          technical skills, and showcase what makes you stand out to employers.
         </p>
 
         <form className="space-y-4 mb-6">
-
           {/* Skills Section */}
           <div className="relative">
             <label className="block text-sm font-medium mb-1">Skills</label>
@@ -100,7 +162,7 @@ const FinalDetails = () => {
                   setShowDropdown(true);
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && inputValue.trim()) {
+                  if (e.key === "Enter" && inputValue.trim()) {
                     e.preventDefault();
                     addSkill(inputValue.trim());
                   }
@@ -122,7 +184,12 @@ const FinalDetails = () => {
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </button>
             </div>
@@ -145,7 +212,9 @@ const FinalDetails = () => {
 
           {/* Certifications */}
           <div>
-            <label className="block text-sm font-medium mb-1">Certifications</label>
+            <label className="block text-sm font-medium mb-1">
+              Certifications
+            </label>
             <input
               type="text"
               name="certifications"
@@ -158,53 +227,92 @@ const FinalDetails = () => {
 
           {/* LinkedIn Profile */}
           <div>
-            <label className="block text-sm font-medium mb-1">LinkedIn Profile</label>
+            <label className="block text-sm font-medium mb-1">
+              LinkedIn Profile
+            </label>
             <input
               type="url"
               name="linkedinProfile"
-              placeholder="http://www.linkedin.com/in/yourprofile"
+              placeholder="https://www.linkedin.com/in/yourprofile"
               value={finalDetails.linkedinProfile}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded p-2"
+              className={`w-full border rounded p-2 ${
+                errors.linkedinProfile ? "border-red-500" : "border-gray-300"
+              }`}
             />
+            {errors.linkedinProfile && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.linkedinProfile}
+              </p>
+            )}
           </div>
 
           {/* GitHub Profile */}
           <div>
-            <label className="block text-sm font-medium mb-1">GitHub Profile</label>
+            <label className="block text-sm font-medium mb-1">
+              GitHub Profile
+            </label>
             <input
               type="url"
               name="githubProfile"
-              placeholder="http://www.github.com/yourusername"
+              placeholder="https://github.com/yourusername"
               value={finalDetails.githubProfile}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded p-2"
+              className={`w-full border rounded p-2 ${
+                errors.githubProfile ? "border-red-500" : "border-gray-300"
+              }`}
             />
+            {errors.githubProfile && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.githubProfile}
+              </p>
+            )}
           </div>
 
           {/* Portfolio */}
           <div>
-            <label className="block text-sm font-medium mb-1">Portfolio/Website</label>
+            <label className="block text-sm font-medium mb-1">
+              Portfolio/Website
+            </label>
             <input
               type="url"
               name="portfolio"
-              placeholder="http://www.yourportfolio.com"
+              placeholder="https://www.yourportfolio.com"
               value={finalDetails.portfolio}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded p-2"
+              className={`w-full border rounded p-2 ${
+                errors.portfolio ? "border-red-500" : "border-gray-300"
+              }`}
             />
+            {errors.portfolio && (
+              <p className="text-red-500 text-sm mt-1">{errors.portfolio}</p>
+            )}
           </div>
 
           {/* Project Upload */}
           <div>
-            <label className="block text-sm font-medium mb-1">Project (if any)</label>
+            <label className="block text-sm font-medium mb-1">
+              Project (if any)
+            </label>
             <div className="flex items-center">
               <label className="cursor-pointer flex-1 border border-gray-300 rounded p-2 bg-white flex justify-between items-center">
                 <span className="text-gray-500">
-                  {finalDetails.project ? finalDetails.project.name : 'Upload PDF'}
+                  {finalDetails.project
+                    ? finalDetails.project.name
+                    : "Upload PDF"}
                 </span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                  />
                 </svg>
                 <input
                   type="file"
@@ -218,7 +326,9 @@ const FinalDetails = () => {
 
           {/* Referral Source */}
           <div>
-            <label className="block text-sm font-medium mb-1">How did you hear about us?</label>
+            <label className="block text-sm font-medium mb-1">
+              How did you hear about us?
+            </label>
             <select
               name="referralSource"
               value={finalDetails.referralSource}
