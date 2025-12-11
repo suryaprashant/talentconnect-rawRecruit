@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown, X, Briefcase, MapPin, DollarSign, Users, BookOpen, Target, Award, Clock, GraduationCap, Shield } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { City } from 'country-state-city'; // <-- Import City
+import { City } from 'country-state-city';
 
 export default function PostJob() {
   const initialState = {
@@ -29,8 +29,6 @@ export default function PostJob() {
 
   const [formData, setFormData] = useState(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // --- Dropdown State Management ---
   const [dropdownOpen, setDropdownOpen] = useState({
     skills: false,
     benefits: false,
@@ -41,8 +39,8 @@ export default function PostJob() {
 
   const [skillInput, setSkillInput] = useState('');
   const [benefitInput, setBenefitInput] = useState('');
-  const [locationSearch, setLocationSearch] = useState(''); // <-- State for location search
-  const [indianCities, setIndianCities] = useState([]); // <-- State for city data
+  const [locationSearch, setLocationSearch] = useState('');
+  const [indianCities, setIndianCities] = useState([]);
   const [descriptionError, setDescriptionError] = useState("");
 
   const skillsDropdownRef = useRef(null);
@@ -51,7 +49,6 @@ export default function PostJob() {
   const studentStreamsDropdownRef = useRef(null);
   const tagsDropdownRef = useRef(null);
 
-  // --- Dropdown Options ---
   const educationOptions = ["High School", "Bachelor's Degree", "Master's Degree", "PhD", "Diploma", "Other"];
   const fieldOfStudyOptions = ["Computer Science", "Engineering", "Business", "Arts", "Sciences", "Mathematics", "Medicine", "Law", "Other"];
   const durationOptions = ["1 Month", "2 Months", "3 Months", "6 Months", "1 Year", "Flexible"];
@@ -61,14 +58,11 @@ export default function PostJob() {
   const allBenefits = ["Health Insurance", "Paid Time Off", "Mentorship Program", "Certificate of Completion", "Letter of Recommendation", "Flexible Hours"];
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
-
   const filteredSkills = allSkills.filter(skill => skill.toLowerCase().includes(skillInput.toLowerCase()));
   const filteredBenefits = allBenefits.filter(benefit => benefit.toLowerCase().includes(benefitInput.toLowerCase()));
   const filteredCities = indianCities.filter(city => city.name.toLowerCase().includes(locationSearch.toLowerCase()));
 
-
   useEffect(() => {
-
     const cities = City.getCitiesOfCountry('IN').sort((a, b) => a.name.localeCompare(b.name));
     setIndianCities(cities);
   }, []);
@@ -79,9 +73,9 @@ export default function PostJob() {
         skills: skillsDropdownRef,
         benefits: benefitsDropdownRef,
         locations: locationsDropdownRef,
-        studentStreams: studentStreamsDropdownRef
+        studentStreams: studentStreamsDropdownRef,
+        tags: tagsDropdownRef
       };
-      dropdownRefs.tags = tagsDropdownRef;
 
       for (const key in dropdownRefs) {
         if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
@@ -113,7 +107,6 @@ export default function PostJob() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, minPackage: { ...prev.minPackage, [name]: value } }));
   };
-
 
   const addItem = (field, item) => {
     if (item && !formData[field].includes(item)) {
@@ -159,7 +152,6 @@ export default function PostJob() {
     if (setInput) setInput('');
     setDropdownOpen(prev => ({ ...prev, [dropdownKey]: false }));
   };
-
 
   const handlePostJob = async (e) => {
     e.preventDefault();
@@ -215,7 +207,7 @@ export default function PostJob() {
         }
       );
 
-      toast.success("Internship posted");
+      toast.success("Internship posted successfully!");
       setTimeout(() => {
         toast.success('This job will expire after 15 days');
       }, 2000);
@@ -234,326 +226,520 @@ export default function PostJob() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-3xl mx-auto p-4">
-        {/* Basic Details Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm mb-4">
-          <h2 className="text-lg font-bold mb-1">Basic Internship Details</h2>
-          <p className="text-sm text-gray-600 mb-4">Provide the core details about the internship opportunity.</p>
-
-          <div className="mb-4">
-            <label htmlFor="jobTitle" className="block text-sm font-medium mb-2">Job Title <span className="text-red-500">*</span></label>
-            <input type="text" id="jobTitle" name="jobTitle" placeholder="e.g., Frontend Developer Intern" className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black" value={formData.jobTitle} onChange={handleInputChange} />
+    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+      <div className="max-w-3xl mx-auto px-4 py-8">
+        {/* Header Section */}
+        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center mb-3">
+              <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
+                <Briefcase className="h-5 w-5 text-[#667eea]" />
+              </div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                Post Internship Opportunity
+              </h1>
+            </div>
+            <p className="text-md text-gray-600 max-w-2xl mx-auto">
+              Create a new internship listing to attract talented students and recent graduates. Fill in the details below to post your opportunity.
+            </p>
           </div>
+        </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Work Mode <span className="text-red-500">*</span></label>
-            <div className="flex gap-2 flex-wrap">
-              <button type="button" className={`px-4 py-1 border rounded-full text-sm transition-colors ${formData.workMode === 'On-site' ? 'bg-black text-white border-black' : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'}`} onClick={() => handleOptionSelect('workMode', 'On-site')}>On-site</button>
-              <button type="button" className={`px-4 py-1 border rounded-full text-sm transition-colors ${formData.workMode === 'Remote' ? 'bg-black text-white border-black' : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'}`} onClick={() => handleOptionSelect('workMode', 'Remote')}>Remote</button>
-              <button type="button" className={`px-4 py-1 border rounded-full text-sm transition-colors ${formData.workMode === 'Hybrid' ? 'bg-black text-white border-black' : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'}`} onClick={() => handleOptionSelect('workMode', 'Hybrid')}>Hybrid</button>
-            </div>
-          </div>
+        <form onSubmit={handlePostJob}>
+          {/* Basic Internship Details */}
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+              <Briefcase className="h-5 w-5 mr-2 text-[#667eea]" />
+              Basic Internship Details
+            </h2>
+            <p className="text-sm text-gray-600 mb-6">Provide the core details about the internship opportunity.</p>
 
-          {/* --- MODIFIED: Location Multi-Select with City Search --- */}
-          <div ref={locationsDropdownRef} className="relative mb-4">
-            <label className="block text-sm font-medium mb-2">Location <span className="text-red-500">*</span></label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {formData.location.map(loc => (
-                <div key={loc} className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full">
-                  <span>{loc}</span>
-                  <button type="button" onClick={() => removeItem('location', loc)} className="ml-2 text-gray-600 hover:text-black"><X size={14} /></button>
+            <div className="space-y-6">
+              {/* Job Title */}
+              <div>
+                <label htmlFor="jobTitle" className="block text-sm font-medium text-gray-700 mb-2">Internship Title <span className="text-red-500">*</span></label>
+                <input 
+                  type="text" 
+                  id="jobTitle" 
+                  name="jobTitle" 
+                  placeholder="e.g., Frontend Developer Intern" 
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                  value={formData.jobTitle} 
+                  onChange={handleInputChange} 
+                />
+              </div>
+
+              {/* Work Mode */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Work Mode <span className="text-red-500">*</span></label>
+                <div className="flex gap-2 flex-wrap">
+                  <button 
+                    type="button" 
+                    className={`px-4 py-2 border rounded-lg transition-all duration-200 ${formData.workMode === 'On-site' ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-md' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                    onClick={() => handleOptionSelect('workMode', 'On-site')}
+                  >
+                    On-site
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`px-4 py-2 border rounded-lg transition-all duration-200 ${formData.workMode === 'Remote' ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-md' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                    onClick={() => handleOptionSelect('workMode', 'Remote')}
+                  >
+                    Remote
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`px-4 py-2 border rounded-lg transition-all duration-200 ${formData.workMode === 'Hybrid' ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-md' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`} 
+                    onClick={() => handleOptionSelect('workMode', 'Hybrid')}
+                  >
+                    Hybrid
+                  </button>
                 </div>
-              ))}
-            </div>
-            <div
-              className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400"
-              onClick={() => toggleDropdown('locations')}
-            >
-              <span className="text-gray-500">Select locations</span>
-              <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.locations ? "rotate-180" : ""}`} />
-            </div>
-            {dropdownOpen.locations && (
-              <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-                <div className="p-2 border-b">
-                  <input
-                    type="text"
-                    value={locationSearch}
-                    onChange={(e) => setLocationSearch(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                    placeholder="Search for a city..."
-                    className="w-full p-2 border rounded"
-                  />
-                </div>
-                <div className="max-h-60 overflow-auto">
-                  {filteredCities.map(city => (
-                    <div
-                      key={`${city.name}-${city.stateCode}`}
-                      onClick={() => handleMultiSelect('location', city.name)}
-                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.location.includes(city.name) ? "bg-gray-100 font-medium" : ""}`}
-                    >
-                      {city.name}
-                      {formData.location.includes(city.name) && <span className="float-right text-gray-500">✓</span>}
+              </div>
+
+              {/* Location Multi-Select */}
+              <div ref={locationsDropdownRef} className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                  Location <span className="text-red-500">*</span>
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {formData.location.map(loc => (
+                    <div key={loc} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full">
+                      <span>{loc}</span>
+                      <button type="button" onClick={() => removeItem('location', loc)} className="ml-2 text-gray-500 hover:text-gray-700">
+                        <X size={14} />
+                      </button>
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-          </div>
-
-          <div>
-            <label className="block mb-2 font-medium">Broadcast Options <span className="text-red-500">*</span></label>
-            <div className="flex items-center space-x-6">
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="broadcastType"
-                  value="Everyone"
-                  checked={formData.broadcastType === 'Everyone'}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-black border-gray-300 focus:ring-black"
-                />
-                <span className="ml-2 text-gray-700">Broadcast to Everyone</span>
-              </label>
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="broadcastType"
-                  value="Location"
-                  checked={formData.broadcastType === 'Location'}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-black border-gray-300 focus:ring-black"
-                />
-                <span className="ml-2 text-gray-700">Broadcast Only choosen Location</span>
-              </label>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
-              Select 'Broadcast by Location' to show this job only to candidates/colleges in the specified Work Locations.
-            </p>
-          </div>
-
-          <div className="mb-4 mt-6">
-            <label className="block text-sm font-medium mb-2">Stipend/month <span className="text-red-500">*</span></label>
-            <div className="flex">
-              <div className="relative w-24">
-                <select name="currency" value={formData.minPackage.currency} onChange={handleSalaryChange} className="w-full h-full pl-3 pr-8 py-2 border border-gray-300 rounded-l-md appearance-none bg-white focus:ring-2 focus:ring-black">
-                  <option value="USD">USD</option>
-                  <option value="INR">INR</option>
-                  <option value="EUR">EUR</option>
-                </select>
-                <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={12} />
-              </div>
-              <input type="number" name="amount" placeholder="Enter amount" className="flex-1 p-2 border border-l-0 border-gray-300 rounded-r-md focus:ring-2 focus:ring-black" value={formData.minPackage.amount} onChange={handleSalaryChange} min="0" />
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="numberOfOpenings" className="block text-sm font-medium mb-2">No. of Openings <span className="text-red-500">*</span></label>
-            <input type="number" id="numberOfOpenings" name="numberOfOpenings" placeholder="e.g., 5" className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black" value={formData.numberOfOpenings} onChange={handleInputChange} min="1" />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="description" className="block text-sm font-medium mb-2">Job Description <span className="text-red-500">*</span></label>
-            <textarea
-              id="description"
-              name="description"
-              placeholder="Describe the job responsibilities, day-to-day tasks, and requirements..."
-              className="w-full p-2 border border-gray-300 rounded-md h-32 focus:ring-2 focus:ring-black"
-              value={formData.description}
-              onChange={handleInputChange}
-              maxLength={600}
-              required></textarea>
-            <div className="flex justify-between text-xs mt-1">
-              <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
-                {descriptionError ? descriptionError : `${formData.description.length}/500 characters`}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Selection Criteria Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm mb-4">
-          <h2 className="text-lg font-bold mb-1">Selection Criteria</h2>
-          <p className="text-sm text-gray-600 mb-4">Specify the qualifications and requirements for the ideal candidate.</p>
-
-          <div className="mb-4">
-            <label htmlFor="eligibilityCriteria" className="block text-sm font-medium mb-2">Eligibility Criteria <span className="text-red-500">*</span></label>
-            <textarea id="eligibilityCriteria" name="eligibilityCriteria" placeholder="e.g., Must be currently enrolled in a degree program, Minimum GPA of 3.0..." className="w-full p-2 border border-gray-300 rounded-md h-24 focus:ring-2 focus:ring-black" value={formData.eligibilityCriteria} onChange={handleInputChange}></textarea>
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="internshipDuration" className="block text-sm font-medium mb-2">Internship Duration <span className="text-red-500">*</span></label>
-            <div className="relative">
-              <select id="internshipDuration" name="internshipDuration" className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black" value={formData.internshipDuration} onChange={handleInputChange}>
-                <option value="">Select duration</option>
-                {durationOptions.map((option, index) => (<option key={index} value={option}>{option}</option>))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="minEducation" className="block text-sm font-medium mb-2">Minimum Education</label>
-            <div className="relative">
-              <select id="minEducation" name="minEducation" className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black" value={formData.minEducation} onChange={handleInputChange}>
-                <option value="">Select education level</option>
-                {educationOptions.map((option, index) => (
-                  <option key={index} value={option}>{option}</option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            </div>
-          </div>
-
-          {/* Preferred Field of Study Multi-Select - New Design */}
-          <div ref={studentStreamsDropdownRef} className="relative mb-4">
-            <label className="block text-sm font-medium mb-2">Preferred Field of Study</label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {formData.studentStreams.map(stream => (
-                <div key={stream} className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full">
-                  <span>{stream}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeItem('studentStreams', stream)}
-                    className="ml-2 text-gray-600 hover:text-black"
-                  ><X size={14} /></button>
+                <div
+                  className="flex items-center justify-between p-3 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white"
+                  onClick={() => toggleDropdown('locations')}
+                >
+                  <span className="text-gray-500">Select locations</span>
+                  <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.locations ? "rotate-180" : ""} text-gray-400`} />
                 </div>
-              ))}
+                {dropdownOpen.locations && (
+                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+                    <div className="p-2 border-b border-gray-100">
+                      <input
+                        type="text"
+                        value={locationSearch}
+                        onChange={(e) => setLocationSearch(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        placeholder="Search for a city..."
+                        className="w-full p-2 border border-gray-200 rounded-lg"
+                      />
+                    </div>
+                    <div className="max-h-60 overflow-auto">
+                      {filteredCities.map(city => (
+                        <div
+                          key={`${city.name}-${city.stateCode}`}
+                          onClick={() => handleMultiSelect('location', city.name)}
+                          className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.location.includes(city.name) ? "bg-blue-50" : ""}`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className={formData.location.includes(city.name) ? "text-[#667eea] font-medium" : "text-gray-700"}>{city.name}</span>
+                            {formData.location.includes(city.name) && <span className="text-[#667eea]">✓</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Broadcast Options */}
+              <div>
+                <label className="block mb-2 font-medium text-gray-700">Broadcast Options <span className="text-red-500">*</span></label>
+                <div className="flex items-center space-x-6">
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="broadcastType"
+                      value="Everyone"
+                      checked={formData.broadcastType === 'Everyone'}
+                      onChange={handleInputChange}
+                      className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]/50"
+                    />
+                    <span className="ml-2 text-gray-700">Broadcast to Everyone</span>
+                  </label>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="broadcastType"
+                      value="Location"
+                      checked={formData.broadcastType === 'Location'}
+                      onChange={handleInputChange}
+                      className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]/50"
+                    />
+                    <span className="ml-2 text-gray-700">Broadcast by Location</span>
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Select 'Broadcast by Location' to show this internship only to candidates in the specified locations.
+                </p>
+              </div>
+
+              {/* Stipend */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <DollarSign className="h-4 w-4 mr-2 text-gray-500" />
+                  Stipend/month <span className="text-red-500">*</span>
+                </label>
+                <div className="flex">
+                  <div className="relative w-24">
+                    <select 
+                      name="currency" 
+                      value={formData.minPackage.currency} 
+                      onChange={handleSalaryChange} 
+                      className="w-full h-full pl-3 pr-8 py-3 border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none"
+                    >
+                      <option value="USD">USD</option>
+                      <option value="INR">INR</option>
+                      <option value="EUR">EUR</option>
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={12} />
+                  </div>
+                  <input 
+                    type="number" 
+                    name="amount" 
+                    placeholder="Enter amount" 
+                    className="flex-1 p-3 border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                    value={formData.minPackage.amount} 
+                    onChange={handleSalaryChange} 
+                    min="0" 
+                  />
+                </div>
+              </div>
+
+              {/* Number of Openings */}
+              <div>
+                <label htmlFor="numberOfOpenings" className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <Users className="h-4 w-4 mr-2 text-gray-500" />
+                  No. of Openings <span className="text-red-500">*</span>
+                </label>
+                <input 
+                  type="number" 
+                  id="numberOfOpenings" 
+                  name="numberOfOpenings" 
+                  placeholder="e.g., 5" 
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                  value={formData.numberOfOpenings} 
+                  onChange={handleInputChange} 
+                  min="1" 
+                />
+              </div>
+
+              {/* Job Description */}
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">Job Description <span className="text-red-500">*</span></label>
+                <textarea
+                  id="description"
+                  name="description"
+                  placeholder="Describe the job responsibilities, day-to-day tasks, and requirements..."
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-32 ${descriptionError ? 'border-red-300' : 'border-gray-200'}`}
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  maxLength={500}
+                  required
+                />
+                <div className="flex justify-between text-xs mt-1">
+                  <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
+                    {descriptionError ? descriptionError : `${formData.description.length}/500 characters`}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div
-              className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400"
-              onClick={() => toggleDropdown('studentStreams')}
+          </div>
+
+          {/* Selection Criteria Section */}
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+              <Target className="h-5 w-5 mr-2 text-[#667eea]" />
+              Selection Criteria
+            </h2>
+            <p className="text-sm text-gray-600 mb-6">Specify the qualifications and requirements for the ideal candidate.</p>
+
+            <div className="space-y-6">
+              {/* Eligibility Criteria */}
+              <div>
+                <label htmlFor="eligibilityCriteria" className="block text-sm font-medium text-gray-700 mb-2">Eligibility Criteria <span className="text-red-500">*</span></label>
+                <textarea 
+                  id="eligibilityCriteria" 
+                  name="eligibilityCriteria" 
+                  placeholder="e.g., Must be currently enrolled in a degree program, Minimum GPA of 3.0..." 
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white h-24"
+                  value={formData.eligibilityCriteria} 
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Internship Duration */}
+                <div>
+                  <label htmlFor="internshipDuration" className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <Clock className="h-4 w-4 mr-2 text-gray-500" />
+                    Internship Duration <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <select 
+                      id="internshipDuration" 
+                      name="internshipDuration" 
+                      className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                      value={formData.internshipDuration} 
+                      onChange={handleInputChange}
+                    >
+                      <option value="">Select duration</option>
+                      {durationOptions.map((option, index) => (<option key={index} value={option}>{option}</option>))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                  </div>
+                </div>
+
+                {/* Minimum Education */}
+                <div>
+                  <label htmlFor="minEducation" className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <GraduationCap className="h-4 w-4 mr-2 text-gray-500" />
+                    Minimum Education
+                  </label>
+                  <div className="relative">
+                    <select 
+                      id="minEducation" 
+                      name="minEducation" 
+                      className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                      value={formData.minEducation} 
+                      onChange={handleInputChange}
+                    >
+                      <option value="">Select education level</option>
+                      {educationOptions.map((option, index) => (
+                        <option key={index} value={option}>{option}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Preferred Field of Study */}
+              <div ref={studentStreamsDropdownRef} className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <BookOpen className="h-4 w-4 mr-2 text-gray-500" />
+                  Preferred Field of Study
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {formData.studentStreams.map(stream => (
+                    <div key={stream} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full">
+                      <span>{stream}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeItem('studentStreams', stream)}
+                        className="ml-2 text-gray-500 hover:text-gray-700"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <div
+                  className="flex items-center justify-between p-3 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white"
+                  onClick={() => toggleDropdown('studentStreams')}
+                >
+                  <span className="text-gray-500">Select preferred fields of study</span>
+                  <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.studentStreams ? "rotate-180" : ""} text-gray-400`} />
+                </div>
+                {dropdownOpen.studentStreams && (
+                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                    {fieldOfStudyOptions.map(stream => (
+                      <div
+                        key={stream}
+                        onClick={() => handleMultiSelect('studentStreams', stream)}
+                        className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.studentStreams.includes(stream) ? "bg-blue-50" : ""}`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className={formData.studentStreams.includes(stream) ? "text-[#667eea] font-medium" : "text-gray-700"}>{stream}</span>
+                          {formData.studentStreams.includes(stream) && <span className="text-[#667eea]">✓</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Skills */}
+              <div ref={skillsDropdownRef}>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Skills</label>
+                <div className="relative">
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {formData.skills.map((skill, index) => (
+                      <div key={index} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full">
+                        <span>{skill}</span>
+                        <button type="button" className="ml-2 text-gray-500 hover:text-gray-700" onClick={(e) => { e.stopPropagation(); removeItem('skills', skill); }}>
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex">
+                    <input 
+                      type="text" 
+                      placeholder="Type a skill..." 
+                      className="flex-1 p-3 border border-gray-200 rounded-l-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      value={skillInput} 
+                      onChange={(e) => setSkillInput(e.target.value)} 
+                      onKeyDown={(e) => handleItemInputKeyDown(e, 'skills', skillInput, setSkillInput)}
+                      onClick={() => setDropdownOpen(prev => ({ ...prev, skills: true }))}
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => { if (skillInput.trim()) addItem('skills', skillInput.trim()); setSkillInput(''); }}
+                      className="px-4 bg-gradient-to-r from-gray-50 to-white border border-l-0 border-gray-200 rounded-r-lg text-gray-600 hover:text-gray-800"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Benefits */}
+              <div ref={benefitsDropdownRef}>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Benefits</label>
+                <div className="relative">
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {formData.benefits.map((benefit, index) => (
+                      <div key={index} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full">
+                        <span>{benefit}</span>
+                        <button type="button" className="ml-2 text-gray-500 hover:text-gray-700" onClick={(e) => { e.stopPropagation(); removeItem('benefits', benefit); }}>
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex">
+                    <input 
+                      type="text" 
+                      placeholder="Type a benefit..." 
+                      className="flex-1 p-3 border border-gray-200 rounded-l-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      value={benefitInput} 
+                      onChange={(e) => setBenefitInput(e.target.value)} 
+                      onKeyDown={(e) => handleItemInputKeyDown(e, 'benefits', benefitInput, setBenefitInput)}
+                      onClick={() => setDropdownOpen(prev => ({ ...prev, benefits: true }))}
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => { if (benefitInput.trim()) addItem('benefits', benefitInput.trim()); setBenefitInput(''); }}
+                      className="px-4 bg-gradient-to-r from-gray-50 to-white border border-l-0 border-gray-200 rounded-r-lg text-gray-600 hover:text-gray-800"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tags */}
+              <div ref={tagsDropdownRef} className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {formData.tags.map((tag, index) => (
+                    <div key={index} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full">
+                      <span>{tag}</span>
+                      <button type="button" className="ml-2 text-gray-500 hover:text-gray-700" onClick={(e) => { e.stopPropagation(); removeItem('tags', tag); }}>
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <div
+                  className="flex items-center justify-between p-3 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white"
+                  onClick={() => toggleDropdown('tags')}
+                >
+                  <span className="text-gray-500">Select tags</span>
+                  <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.tags ? "rotate-180" : ""} text-gray-400`} />
+                </div>
+                {dropdownOpen.tags && (
+                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                    {tagsOptions.map((tag, index) => (
+                      <div 
+                        key={index} 
+                        className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100" 
+                        onClick={() => handleSelectItem('tags', tag, null, 'tags')}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-700">{tag}</span>
+                          {formData.tags.includes(tag) && <span className="text-[#667eea]">✓</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Certifications */}
+                <div>
+                  <label htmlFor="certifications" className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <Award className="h-4 w-4 mr-2 text-gray-500" />
+                    Certifications (if any)
+                  </label>
+                  <div className="relative">
+                    <select 
+                      id="certifications" 
+                      name="certifications" 
+                      className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                      value={formData.certifications[0] || ''} 
+                      onChange={(e) => setFormData(prev => ({ ...prev, certifications: e.target.value ? [e.target.value] : [] }))}
+                    >
+                      <option value="">Select certification</option>
+                      {certificationOptions.map((option, index) => (<option key={index} value={option}>{option}</option>))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                  </div>
+                </div>
+
+                {/* Work Authorization */}
+                <div>
+                  <label htmlFor="workAuthorization" className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <Shield className="h-4 w-4 mr-2 text-gray-500" />
+                    Work Authorization Requirement
+                  </label>
+                  <div className="relative">
+                    <select 
+                      id="workAuthorization" 
+                      name="workAuthorization" 
+                      className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                      value={formData.workAuthorization} 
+                      onChange={handleInputChange}
+                    >
+                      <option value="">Select authorization type</option>
+                      {workAuthOptions.map((option, index) => (<option key={index} value={option}>{option}</option>))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-4 pb-6">
+            <button 
+              type="button" 
+              onClick={handleCancel} 
+              disabled={isSubmitting} 
+              className="px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-50 transition-all duration-200"
             >
-              <span className="text-gray-500">Select preferred fields of study</span>
-              <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.studentStreams ? "rotate-180" : ""}`} />
-            </div>
-            {dropdownOpen.studentStreams && (
-              <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                {fieldOfStudyOptions.map(stream => (
-                  <div
-                    key={stream}
-                    onClick={() => handleMultiSelect('studentStreams', stream)}
-                    className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${formData.studentStreams.includes(stream) ? "bg-gray-100 font-medium" : ""}`}
-                  >
-                    {stream}
-                    {formData.studentStreams.includes(stream) && <span className="float-right text-gray-500">✓</span>}
-                  </div>
-                ))}
-              </div>
-            )}
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              disabled={isSubmitting} 
+              className="px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg font-medium hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50"
+            >
+              {isSubmitting ? 'Posting...' : 'Post Internship'}
+            </button>
           </div>
-
-          {/* --- Multi-select Skills --- */}
-          <div className="mb-4" ref={skillsDropdownRef}>
-            <label className="block text-sm font-medium mb-2">Skills</label>
-            <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({ ...prev, skills: true }))}>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {formData.skills.map((skill, index) => (
-                  <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
-                    <span>{skill}</span>
-                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('skills', skill); }}>
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <input type="text" placeholder="Type a skill..." className="w-full outline-none" value={skillInput} onChange={(e) => setSkillInput(e.target.value)} onKeyDown={(e) => handleItemInputKeyDown(e, 'skills', skillInput, setSkillInput)} />
-            </div>
-            {dropdownOpen.skills && (
-              <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
-                {filteredSkills.map((skill, index) => (
-                  <div key={index} className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleSelectItem('skills', skill, setSkillInput, 'skills')}>
-                    {skill}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* --- Multi-select Benefits --- */}
-          <div className="mb-4" ref={benefitsDropdownRef}>
-            <label className="block text-sm font-medium mb-2">Benefits</label>
-            <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({ ...prev, benefits: true }))}>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {formData.benefits.map((benefit, index) => (
-                  <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
-                    <span>{benefit}</span>
-                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('benefits', benefit); }}>
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <input type="text" placeholder="Type a benefit..." className="w-full outline-none" value={benefitInput} onChange={(e) => setBenefitInput(e.target.value)} onKeyDown={(e) => handleItemInputKeyDown(e, 'benefits', benefitInput, setBenefitInput)} />
-            </div>
-            {dropdownOpen.benefits && (
-              <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
-                {filteredBenefits.map((benefit, index) => (
-                  <div key={index} className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleSelectItem('benefits', benefit, setBenefitInput, 'benefits')}>
-                    {benefit}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Tags multi-select */}
-          <div className="mb-4" ref={tagsDropdownRef}>
-            <label className="block text-sm font-medium mb-2">Tags</label>
-            <div className="relative p-2 border border-gray-300 rounded-md">
-              <div className="flex flex-wrap gap-2 mb-2">
-                {formData.tags.map((tag, index) => (
-                  <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
-                    <span>{tag}</span>
-                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('tags', tag); }}>
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <div className="w-full cursor-pointer" onClick={() => setDropdownOpen(prev => ({ ...prev, tags: true }))}>
-                <div className="flex items-center justify-between text-gray-500">Select tags</div>
-              </div>
-            </div>
-            {dropdownOpen.tags && (
-              <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
-                {tagsOptions.map((tag, index) => (
-                  <div key={index} className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleSelectItem('tags', tag, null, 'tags')}>
-                    {tag}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="certifications" className="block text-sm font-medium mb-2">Certifications (if any)</label>
-            <div className="relative">
-              <select id="certifications" name="certifications" className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black" value={formData.certifications[0] || ''} onChange={(e) => setFormData(prev => ({ ...prev, certifications: e.target.value ? [e.target.value] : [] }))}>
-                <option value="">Select certification</option>
-                {certificationOptions.map((option, index) => (<option key={index} value={option}>{option}</option>))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="workAuthorization" className="block text-sm font-medium mb-2">Work Authorization Requirement</label>
-            <div className="relative">
-              <select id="workAuthorization" name="workAuthorization" className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black" value={formData.workAuthorization} onChange={handleInputChange}>
-                <option value="">Select authorization type</option>
-                {workAuthOptions.map((option, index) => (<option key={index} value={option}>{option}</option>))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-            </div>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex justify-end gap-4 pb-6">
-          <button type="button" onClick={handleCancel} disabled={isSubmitting} className="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 disabled:opacity-50">Cancel</button>
-          <button type="button" onClick={handlePostJob} disabled={isSubmitting} className="px-6 py-2 bg-black text-white rounded-md text-sm font-medium hover:bg-gray-800 disabled:opacity-50">{isSubmitting ? 'Posting...' : 'Post Internship'}</button>
-        </div>
+        </form>
       </div>
     </div>
   );

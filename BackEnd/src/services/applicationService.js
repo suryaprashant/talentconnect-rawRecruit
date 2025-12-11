@@ -152,23 +152,79 @@ export async function createApplicationService(userId, userType, jobId, jobType)
 }
 
 // getStatus
-export async function fetchApplicationStatusService(userId, jobType, userType) {
-    let fromCollection;
-    let localField;
-    if (userType === 'company') {
-        fromCollection = "collegeonboardings";
-        localField = "jobDetails.collegePosted";
-    }
-    if (userType === 'employer') {
-        fromCollection = "collegeonboardings";
-        localField = "jobDetails.collegePosted";
-    }
-    else {
-        fromCollection = "companyprofiles";
-        localField = "jobDetails.companyPosted";
-    }
+// export async function fetchApplicationStatusService(userId, jobType, userType) {
+//     let fromCollection;
+//     let localField;
+//     if (userType === 'company') {
+//         fromCollection = "collegeonboardings";
+//         localField = "jobDetails.collegePosted";
+//     }
+//     if (userType === 'employer') {
+//         fromCollection = "collegeonboardings";
+//         localField = "jobDetails.collegePosted";
+//     }
+//     else {
+//         fromCollection = "companyprofiles";
+//         localField = "jobDetails.companyPosted";
+//     }
 
+//     try {
+//         const applicationData = await Application.aggregate([
+//             {
+//                 $match: {
+//                     applicant: new mongoose.Types.ObjectId(userId),
+//                     jobType: jobType,
+//                     currentStatus: { $ne: 'Saved' }
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'jobpostingtables',
+//                     localField: 'job',
+//                     foreignField: '_id',
+//                     as: 'jobDetails'
+//                 }
+//             },
+//             // { $unwind: '$jobDetails' },
+//             {
+//                 $lookup: {
+//                     from: fromCollection,
+//                     localField: localField,
+//                     foreignField: '_id',
+//                     // as: 'companyDetails'
+//                     as: 'postedByDetails'
+//                 }
+//             },
+//             // { $unwind: '$companyDetails' },
+//             // {
+//             //     $project: {
+//             //         job: 1,
+//             //         statusHistory: 1,
+//             //         currentStatus: 1,
+//             //         createdAt: 1,
+//             //         "jobDetails.jobTitle": 1,
+//             //         "jobDetails._id": 1,
+//             //         "jobDetails.jobDescription": 1,
+//             //         "jobDetails.preferredHiringLocation": 1,
+//             //         "jobDetails.yearsOfExperience": 1,
+//             //         "companyDetails.companyName": 1, // example field, adjust as needed
+//             //         "companyDetails.companyDetails": 1 // example field, adjust as needed
+//             //     }
+//             // }
+//         ]);
+
+//         return { success: true, data: applicationData };
+//     } catch (error) {
+//         console.log("Error: ", error.message);
+//         throw new Error("Failed to fetch");
+//     }
+// }
+
+export async function fetchApplicationStatusService(userId, jobType, userType) {
     try {
+        console.log("🔍 BACKEND DEBUG - Starting service");
+        console.log("🔍 Parameters:", { userId, jobType, userType });
+
         const applicationData = await Application.aggregate([
             {
                 $match: {
@@ -185,33 +241,92 @@ export async function fetchApplicationStatusService(userId, jobType, userType) {
                     as: 'jobDetails'
                 }
             },
-            // { $unwind: '$jobDetails' },
             {
                 $lookup: {
-                    from: fromCollection,
-                    localField: localField,
+                    from: 'collegeonboardings',
+                    localField: 'jobDetails.collegePosted',
                     foreignField: '_id',
-                    // as: 'companyDetails'
+                    as: 'collegeDetails'
+                }
+            },
+            {
+                $lookup: {
+                    from: userType === 'company' || userType === 'employer' 
+                        ? 'collegeonboardings' 
+                        : 'companyprofiles',
+                    localField: 'jobDetails.postedBy',
+                    foreignField: '_id',
                     as: 'postedByDetails'
                 }
             },
-            // { $unwind: '$companyDetails' },
-            // {
-            //     $project: {
-            //         job: 1,
-            //         statusHistory: 1,
-            //         currentStatus: 1,
-            //         createdAt: 1,
-            //         "jobDetails.jobTitle": 1,
-            //         "jobDetails._id": 1,
-            //         "jobDetails.jobDescription": 1,
-            //         "jobDetails.preferredHiringLocation": 1,
-            //         "jobDetails.yearsOfExperience": 1,
-            //         "companyDetails.companyName": 1, // example field, adjust as needed
-            //         "companyDetails.companyDetails": 1 // example field, adjust as needed
-            //     }
-            // }
+            // Add debug fields
+            {
+                $addFields: {
+                    debugCollegeDetailsCount: { $size: "$collegeDetails" },
+                    debugJobDetailsCount: { $size: "$jobDetails" },
+                    debugJobDetailsCollegePosted: { 
+                        $ifNull: [
+                            { $arrayElemAt: ["$jobDetails.collegePosted", 0] }, 
+                            "NOT_FOUND"
+                        ] 
+                    }
+                }
+            }
         ]);
+
+        // 🔍 COMPREHENSIVE DEBUGGING
+        console.log("🔍 Total applications found:", applicationData.length);
+        
+        if (applicationData.length > 0) {
+            const firstApp = applicationData[0];
+            console.log("🔍 FIRST APPLICATION DEBUG:");
+            console.log(JSON.stringify(firstApp, null, 2));
+            
+            console.log("🔍 KEY FIELDS:");
+            console.log("1. jobDetails count:", firstApp.debugJobDetailsCount);
+            console.log("2. collegeDetails count:", firstApp.debugCollegeDetailsCount);
+            console.log("3. jobDetails[0].collegePosted:", firstApp.debugJobDetailsCollegePosted);
+            
+            if (firstApp.collegeDetails && firstApp.collegeDetails.length > 0) {
+                const college = firstApp.collegeDetails[0];
+                console.log("4. collegeDetails[0] keys:", Object.keys(college));
+                
+                // Check EVERY field for possible college name
+                Object.keys(college).forEach(key => {
+                    const value = college[key];
+                    if (typeof value === 'string' && value.length < 100) {
+                        console.log(`   "${key}": "${value}"`);
+                    } else if (key === 'collegeUniversityDetails') {
+                        console.log(`   "${key}":`, value);
+                        if (value && typeof value === 'object') {
+                            console.log(`   "${key}" keys:`, Object.keys(value));
+                            Object.keys(value).forEach(subKey => {
+                                if (typeof value[subKey] === 'string') {
+                                    console.log(`     "${subKey}": "${value[subKey]}"`);
+                                }
+                            });
+                        }
+                    }
+                });
+                
+                // Try to find college name
+                console.log("5. Searching for college name...");
+                const possiblePaths = [
+                    () => college.collegeUniversityDetails?.collegeName,
+                    () => college.collegeUniversityDetails?.name,
+                    () => college.collegeName,
+                    () => college.name,
+                    () => college.institutionName,
+                    () => college.universityName,
+                    () => college.collegeDetails?.collegeName
+                ];
+                
+                possiblePaths.forEach((path, i) => {
+                    const result = path();
+                    console.log(`   Path ${i + 1}: ${path.toString().match(/college\.([^}]+)/)?.[1] || 'unknown'} = "${result}"`);
+                });
+            }
+        }
 
         return { success: true, data: applicationData };
     } catch (error) {
