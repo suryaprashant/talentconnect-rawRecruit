@@ -1,7 +1,5 @@
-
-
 import { useState, useEffect } from 'react';
-import { Globe, Users, Calendar } from 'lucide-react';
+import { Globe, Users, Calendar, Image, Upload, Building2, Briefcase, MapPin } from 'lucide-react';
 import CompanyOverview from './CompanyOverview';
 import CompanyProfileForm from './CompanyProfileForm';
 import UserManagement from './UserManagement';
@@ -50,7 +48,6 @@ const fetchProfileData = async () => {
     
     if (fromEditProfile === 'true') {
       setActiveTab('Profile');
-      // Clean up the URL
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     }
@@ -70,7 +67,7 @@ const fetchProfileData = async () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      setProfileData(response.data.profile); // Update profile data with new image URL
+      setProfileData(response.data.profile);
       alert(`${imageType === 'backgroundImage' ? 'Background' : 'Profile'} image updated successfully!`);
     } catch (err) {
       console.error(`Error uploading ${imageType} image:`, err);
@@ -79,9 +76,42 @@ const fetchProfileData = async () => {
   };
 
   const renderContent = () => {
-    if (loading) return <div className="text-center py-8">Loading...</div>;
-    if (error) return <div className="text-center py-8 text-red-600">{error}</div>;
-    if (!profileData) return <div className="text-center py-8">No company profile data available.</div>;
+    if (loading) return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-10 w-10 border-[3px] border-[#667eea] border-t-transparent"></div>
+          <p className="mt-3 text-gray-600">Loading company profile...</p>
+        </div>
+      </div>
+    );
+    
+    if (error) return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center max-w-md p-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 text-red-600 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-lg font-medium text-gray-900">{error}</p>
+          <button 
+            onClick={fetchProfileData}
+            className="mt-4 px-4 py-2 bg-[#667eea] text-white text-sm rounded-lg hover:bg-[#5a6fd8] transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+    
+    if (!profileData) return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center max-w-md p-8">
+          <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-600">No company profile data available.</p>
+        </div>
+      </div>
+    );
 
     switch (activeTab) {
       case 'Overview':
@@ -96,112 +126,168 @@ const fetchProfileData = async () => {
   };
 
   return (
-    <div className="flex flex-col w-full bg-gray-100 min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       {/* Header Banner */}
-      <div
-        className="w-full h-32 bg-gray-300 relative bg-cover bg-center"
-        style={{ backgroundImage: `url(${profileData?.backgroundImageUrl || ''})` }}
-      >
-        <label htmlFor="backgroundImageUpload" className="absolute inset-0 cursor-pointer flex items-center justify-center bg-black bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity">
-          <span className="text-white text-sm font-bold">Upload Background Image</span>
-        </label>
-        <input
-          id="backgroundImageUpload"
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => handleImageUpload(e, 'backgroundImage')}
-        />
-      </div>
+<div className="relative h-48">
+  {/* Background Gradient */}
+  <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/20 via-[#f093fb]/10 to-[#764ba2]/20"></div>
+  
+  {profileData?.backgroundImageUrl && (
+    <div className="absolute inset-0">
+      <img 
+        src={profileData.backgroundImageUrl} 
+        alt="Banner" 
+        className="w-full h-full object-cover opacity-15"
+      />
+    </div>
+  )}
+  
+  {/* Content Overlay */}
+  <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/15 via-[#f093fb]/8 to-[#764ba2]/15 backdrop-blur-sm"></div>
+  
+  {/* Banner Upload Overlay */}
+  <label 
+    htmlFor="backgroundImageUpload" 
+    className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 cursor-pointer hover:bg-white transition-colors shadow-sm"
+  >
+    <Upload className="h-4 w-4 text-gray-700" />
+  </label>
+  <input
+    id="backgroundImageUpload"
+    type="file"
+    accept="image/*"
+    className="hidden"
+    onChange={(e) => handleImageUpload(e, 'backgroundImage')}
+  />
+</div>
 
-      {/* Profile Section */}
-      <div className="bg-white pb-4">
-        <div className="relative px-4">
-          {/* Profile Image */}
-          <div className="absolute -top-16 left-4">
-            <label htmlFor="profileImageUpload" className="relative w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white cursor-pointer overflow-hidden">
-              {profileData?.profileImageUrl ? (
-                <img src={profileData.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <div className="text-gray-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              )}
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity">
-                <span className="text-white text-xs font-bold">Upload</span>
+      {/* Main Container */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
+        {/* Profile Card */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
+          {/* Profile Header */}
+          <div className="px-8 pt-8 pb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+              {/* Profile Image */}
+              <div className="relative">
+                <label htmlFor="profileImageUpload" className="relative group cursor-pointer">
+                  <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+                    {profileData?.profileImageUrl ? (
+                      <img 
+                        src={profileData.profileImageUrl} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Building2 className="h-16 w-16 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Upload className="h-6 w-6 text-white" />
+                  </div>
+                </label>
+                <input
+                  id="profileImageUpload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleImageUpload(e, 'profileImage')}
+                />
               </div>
-            </label>
-            <input
-              id="profileImageUpload"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => handleImageUpload(e, 'profileImage')}
-            />
+
+              {/* Company Info */}
+              <div className="flex-1">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                  {profileData?.companyDetails?.companyName || 'Company Name'}
+                </h1>
+                
+                <div className="flex flex-wrap items-center gap-4 mt-3">
+                  {profileData?.companyDetails?.industryType && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Briefcase className="h-4 w-4 text-[#667eea]" />
+                      <span className="text-sm">{profileData.companyDetails.industryType}</span>
+                    </div>
+                  )}
+                  
+                  {profileData?.companyDetails?.companyLocation && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <MapPin className="h-4 w-4 text-[#667eea]" />
+                      <span className="text-sm">{profileData.companyDetails.companyLocation}</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Users className="h-4 w-4 text-[#667eea]" />
+                    <span className="text-sm">{profileData?.companyDetails?.numberOfEmployees || 'N/A'} Employees</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Calendar className="h-4 w-4 text-[#667eea]" />
+                    <span className="text-sm">Est. {profileData?.companyDetails?.establishedYear || 'N/A'}</span>
+                  </div>
+                </div>
+
+                {/* Social Links */}
+                <div className="flex flex-wrap items-center gap-3 mt-4">
+                  {profileData?.companyDetails?.companyLinkedin && (
+                    <a 
+                      href={profileData.companyDetails.companyLinkedin} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-sm"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path>
+                      </svg>
+                      LinkedIn
+                    </a>
+                  )}
+                  {profileData?.companyDetails?.websiteUrl && (
+                    <a 
+                      href={profileData.companyDetails.websiteUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors text-sm"
+                    >
+                      <Globe className="h-4 w-4" />
+                      Website
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="border-t border-gray-100">
+            <nav className="flex">
+              {['Overview', 'Profile', 'Users'].map((tab) => (
+                <button
+                  key={tab}
+                  className={`flex-1 px-6 py-4 text-sm font-medium transition-colors relative ${
+                    activeTab === tab 
+                      ? 'text-[#667eea]' 
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                  {activeTab === tab && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#667eea]"></div>
+                  )}
+                </button>
+              ))}
+            </nav>
           </div>
         </div>
 
-        {/* Company Info */}
-        <div className="px-6 pt-10">
-          <h2 className="text-2xl font-bold">
-            {profileData?.companyDetails?.companyName || 'Company Name'}
-          </h2>
-
-          <div className="flex flex-wrap items-center gap-6 mt-2">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Users size={16} className="text-gray-500" />
-              <span>{profileData?.companyDetails?.numberOfEmployees || 'N/A'} Employees</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Calendar size={16} className="text-gray-500" />
-              <span>Established Year: {profileData?.companyDetails?.establishedYear || 'N/A'}</span>
-            </div>
-          </div>
-
-          {/* Social Links */}
-          <div className="flex justify-between mt-4">
-            <div></div>
-            <div className="flex gap-2">
-              {profileData?.companyDetails?.companyLinkedin && (
-                <a href={profileData.companyDetails.companyLinkedin} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-8 h-8 border border-gray-300 rounded">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path>
-                  </svg>
-                </a>
-              )}
-              {profileData?.companyDetails?.websiteUrl && (
-                <a href={profileData.companyDetails.websiteUrl} target="_blank" rel="noopener noreferrer" className="border border-gray-300 rounded px-4 py-1 text-sm flex items-center">
-                  <Globe size={14} className="mr-1 text-gray-600" />
-                  Website
-                </a>
-              )}
-            </div>
-          </div>
+        {/* Tab Content */}
+        <div className="pb-8">
+          {renderContent()}
         </div>
-
-        {/* Tabs */}
-        <div className="flex border-b mt-4">
-          {['Overview', 'Profile', 'Users'].map((tab) => (
-            <button
-              key={tab}
-              className={`px-6 py-2 ${activeTab === tab ? 'border-b-2 border-black font-medium' : 'text-gray-500'}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Tab Content */}
-      <div className="p-4">
-        {renderContent()}
       </div>
     </div>
   );
 }
-
-
