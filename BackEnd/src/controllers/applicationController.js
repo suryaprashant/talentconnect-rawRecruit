@@ -466,7 +466,7 @@ export async function rejectApplicant(req, res) {
     }
 }
 
-// New backend function for college rejecting company applications
+
 export async function rejectCompanyApplicationByCollege(req, res) {
     const { applicationId } = req.params;
     const { jobRole } = req.body;
@@ -679,39 +679,31 @@ export const getCompanyDashboardMetrics = async (req, res) => {
 
 export async function submitAlternateDates(req, res) {
   const { jobId } = req.params;
-  console.log("Job ID:", jobId);
+  
   const { startDate, endDate } = req.body;
   
-  console.log("Received alternate dates:", startDate, endDate);
-  
-  // Debug: Check what's in req.user
-  console.log("req.user:", req.user);
-  
-  // Get company ID from the correct location
   let companyId;
   const userId = req.user._id;
 
-  // Try different possible locations for company ID
+
   if (req.user.companyId) {
     companyId = req.user.companyId;
-    console.log("Found companyId from req.user.companyId:", companyId);
+   
   } else if (req.user.activeCompanyId) {
     companyId = req.user.activeCompanyId;
-    console.log("Found companyId from req.user.activeCompanyId:", companyId);
+   
   } else if (userId) {
-    // Use your existing service to find company by user ID
+   
     try {
       const companyResponse = await getCompanyService(userId);
       if (companyResponse.success && companyResponse.data && companyResponse.data.length > 0) {
-        companyId = companyResponse.data[0]._id; // Get the first company's ID
-        console.log("Found company using getCompanyService:", companyId);
+        companyId = companyResponse.data[0]._id; 
+     
       }
     } catch (error) {
       console.log("Error finding company using getCompanyService:", error);
     }
   }
-
-  console.log("Final companyId:", companyId);
 
   if (!jobId || !startDate || !endDate) {
     return res.status(400).json({ 

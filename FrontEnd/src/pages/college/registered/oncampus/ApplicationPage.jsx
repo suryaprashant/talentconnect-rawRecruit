@@ -5,9 +5,9 @@ import {
   Search, Eye, Trash,
   ChevronLeft, ChevronRight, Filter
 } from 'lucide-react';
-import { getCollegePostedJobs } from '@/lib/College_AxiosIntance';
+import { getCollegePostedJobs, deleteCollegeJob } from '@/lib/College_AxiosIntance';
 
-function PoolApplication() {
+function ApplicationPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const pathParts = location.pathname.split('/').filter(Boolean); // remove empty strings
@@ -16,6 +16,7 @@ function PoolApplication() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deletingJobId, setDeletingJobId] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,33 +52,34 @@ function PoolApplication() {
     });
   };
 
+  // Fetch jobs function
+  const fetchJobs = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Fetching 'Pool-campus' jobs as requested
+      const response = await getCollegePostedJobs('On-campus', lastSegment);
+
+      if (response.data && response.data.response && Array.isArray(response.data.response)) {
+        // Process jobs to update their status based on dates
+        const processedJobs = processJobsWithStatus(response.data.response);
+        setJobs(processedJobs);
+      } else {
+        console.error('Unexpected API response format:', response);
+        setJobs([]);
+      }
+    } catch (err) {
+      setError("Failed to fetch jobs. Please try again later.");
+      console.error("Error fetching jobs:", err);
+      setJobs([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Fetch jobs from backend when the component mounts
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        // Fetching 'Pool-campus' jobs as requested
-        const response = await getCollegePostedJobs('On-campus', lastSegment);
-
-        if (response.data && response.data.response && Array.isArray(response.data.response)) {
-          // Process jobs to update their status based on dates
-          const processedJobs = processJobsWithStatus(response.data.response);
-          setJobs(processedJobs);
-        } else {
-          console.error('Unexpected API response format:', response);
-          setJobs([]);
-        }
-      } catch (err) {
-        setError("Failed to fetch jobs. Please try again later.");
-        console.error("Error fetching jobs:", err);
-        setJobs([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchJobs();
   }, [lastSegment]);
 
@@ -160,9 +162,52 @@ function PoolApplication() {
     console.log(`Export job with ID: ${jobId}`);
   };
 
-  const handleDelete = (jobId, e) => {
+  const handleDelete = async (jobId, e) => {
     e.stopPropagation();
-    console.log(`Delete job with ID: ${jobId}`);
+    
+    // Confirm before deleting
+    const isConfirmed = window.confirm('Are you sure you want to delete this job? This action cannot be undone.');
+    
+    if (!isConfirmed) {
+      return;
+    }
+
+    try {
+      setDeletingJobId(jobId);
+      
+      // Call the delete API
+      const response = await deleteCollegeJob(jobId);
+      
+      if (response.data && response.data.success) {
+        // Remove the deleted job from the state
+        setJobs(prevJobs => prevJobs.filter(job => job._id !== jobId));
+        
+        // Show success message
+        alert('Job deleted successfully!');
+        
+        // If we deleted the last item on the page, go back a page
+        if (currentJobs.length === 1 && currentPage > 1) {
+          setCurrentPage(prev => prev - 1);
+        }
+        
+        // Refresh the job list
+        await fetchJobs();
+      } else {
+        // Show error message from server
+        alert(response.data?.msg || response.msg || 'Failed to delete job. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error deleting job:', error);
+      if (error.response?.data?.msg) {
+        alert(error.response.data.msg);
+      } else if (error.message) {
+        alert(error.message);
+      } else {
+        alert('An error occurred while deleting the job. Please try again.');
+      }
+    } finally {
+      setDeletingJobId(null);
+    }
   };
 
   // Utility function to format dates
@@ -280,7 +325,6 @@ function PoolApplication() {
                 ) : (
                   currentJobs.map(job => {
                     const jobId = job._id || job.id;
-                    // const jobTitle = job.jobTitle || 'Untitled Job';
                     const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : '';
                     const jobLocation = Array.isArray(job.location) ? job.location.join(', ') : job.location || 'N/A';
                     const jobStatus = job.jobStatus || 'Unknown';
@@ -296,7 +340,6 @@ function PoolApplication() {
                       >
                         <td className="px-4 py-3">
                           <div className="font-medium">{jobDegree}</div>
-
                           <div className="text-sm text-gray-500">{jobLocation}</div>
                         </td>
                         <td className="px-4 py-3">
@@ -312,7 +355,16 @@ function PoolApplication() {
                         <td className="px-4 py-3">{applications}</td>
                         <td className="px-4 py-3">
                           <div className="flex gap-2">
-                            <button onClick={(e) => { e.stopPropagation(); handleView(jobId); }} className="text-gray-500 hover:text-gray-700 transition-colors" title="View Job"><Eye size={18} /></button>
+                            <button 
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                handleView(jobId); 
+                              }} 
+                              className="text-gray-500 hover:text-gray-700 transition-colors" 
+                              title="View Job"
+                            >
+                              <Eye size={18} />
+                            </button>
                             <Link
                               to={`/college-dashboard/preview/On-campus/${job._id}?isApplied=true`}
                               disabled={job.applicationCount === 0}
@@ -320,12 +372,25 @@ function PoolApplication() {
                               title="View Job Description"
                               onClick={e => e.stopPropagation()}
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-search-corner-icon lucide-file-search-corner"><path d="M11.1 22H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.589 3.588A2.4 2.4 0 0 1 20 8v3.25" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="m21 22-2.88-2.88" /><circle cx="16" cy="17" r="3" /></svg>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-search-corner-icon lucide-file-search-corner">
+                                <path d="M11.1 22H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.589 3.588A2.4 2.4 0 0 1 20 8v3.25" />
+                                <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                                <path d="m21 22-2.88-2.88" />
+                                <circle cx="16" cy="17" r="3" />
+                              </svg>
                             </Link>
-                            {/* <button onClick={(e) => handleEdit(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="Edit Job"><Edit size={18} /></button>
-                                                        <button onClick={(e) => handleApplications(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="View Applications"><Users size={18} /></button>
-                                                        <button onClick={(e) => handleExport(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="Export Job Data"><FileText size={18} /></button> */}
-                            <button onClick={(e) => handleDelete(jobId, e)} className="text-gray-500 hover:text-gray-700 transition-colors" title="Delete Job"><Trash size={18} /></button>
+                            <button 
+                              onClick={(e) => handleDelete(jobId, e)} 
+                              className={`text-gray-500 hover:text-red-700 transition-colors ${deletingJobId === jobId ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                              title="Delete Job"
+                              disabled={deletingJobId === jobId}
+                            >
+                              {deletingJobId === jobId ? (
+                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-gray-500 border-r-transparent"></div>
+                              ) : (
+                                <Trash size={18} />
+                              )}
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -375,4 +440,4 @@ function PoolApplication() {
   );
 }
 
-export default PoolApplication;
+export default ApplicationPage;

@@ -65,6 +65,7 @@ export function getOncampusJobs() {
     .catch(error => error);
 }
 
+
 export function getPoolCampusForCompany() {
   return axiosClient.get(`/api/student-dashboard/pool-campus/company`)
     .then(response => response)
@@ -202,5 +203,10 @@ export function getCollegeServiceRequestStatus() {
     .catch(error => error);
 }
 
+export function deleteCollegeJob(jobId) {
+  return axiosClient.delete(`/college/jobmanagement/delete/${jobId}`)
+    .then(response => response)
+    .catch(error => error);
+}
 
 

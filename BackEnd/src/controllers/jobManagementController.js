@@ -58,16 +58,13 @@ export const getPostedJobs = async (req, res) => {
 export const deleteJob = async (req, res) => {
     const { jobId } = req.params;
     const companyId = req.user._id;
-    // if (!jobType) return res.status(404).json({ msg: "job not found!" });
-    // console.log("companyid: ", companyId);   
+  
     try {
         const companyProfile = await getCompanyService(companyId);
         if (!companyProfile) return res.status(404).json({ error: "Company profile not found" });
 
         const response = await deleteJobByIdService(jobId, companyProfile.data[0]._id);
         if (response.success === true) return res.status(200).json(response.msg);
-
-        // after this from application table clear all application for this job
 
         res.status(400).json("Bad request!")
     } catch (error) {
