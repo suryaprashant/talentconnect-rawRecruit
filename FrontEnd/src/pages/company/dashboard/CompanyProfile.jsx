@@ -4,7 +4,6 @@ import CompanyOverview from './CompanyOverview';
 import CompanyProfileForm from './CompanyProfileForm';
 import UserManagement from './UserManagement';
 import axios from 'axios';
-
 import { useAuth } from '@/context/AuthProvider';
 
 export default function CompanyProfile() {
@@ -12,40 +11,40 @@ export default function CompanyProfile() {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {auth} = useAuth() ;
+  const { auth } = useAuth();
+
+  const backendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
+
+  const fetchProfileData = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      console.log('Fetching profile data...');
+      const response = await axios.get(`${backendUrl}/api/companyDashboard/getInformation`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        withCredentials: true,
+      });
+      console.log('Profile data fetched:', response.data);
+      setProfileData(response.data.profile);
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      setError('Failed to load profile data.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchProfileData();
   }, []);
 
-  const backendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
-
-const fetchProfileData = async () => {
-  setLoading(true);
-  setError(null);
- 
-  try {
-    console.log('Fetching profile data...');
-    const response = await axios.get(`${backendUrl}/api/companyDashboard/getInformation`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      },
-      withCredentials:true ,
-    });
-    console.log('Profile data fetched:', response.data);
-    setProfileData(response.data.profile);
-  } catch (err) {
-    console.error('Error fetching profile:', err);
-    setError('Failed to load profile data.');
-  } finally {
-    setLoading(false);
-  }
-};
-
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const fromEditProfile = urlParams.get('editProfile');
-    
+
     if (fromEditProfile === 'true') {
       setActiveTab('Profile');
       const newUrl = window.location.pathname;
@@ -84,7 +83,7 @@ const fetchProfileData = async () => {
         </div>
       </div>
     );
-    
+
     if (error) return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center max-w-md p-8">
@@ -94,7 +93,7 @@ const fetchProfileData = async () => {
             </svg>
           </div>
           <p className="text-lg font-medium text-gray-900">{error}</p>
-          <button 
+          <button
             onClick={fetchProfileData}
             className="mt-4 px-4 py-2 bg-[#667eea] text-white text-sm rounded-lg hover:bg-[#5a6fd8] transition-colors"
           >
@@ -103,11 +102,13 @@ const fetchProfileData = async () => {
         </div>
       </div>
     );
-    
+
     if (!profileData) return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center max-w-md p-8">
-          <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 mb-4">
+            <Building2 className="h-6 w-6 text-gray-400" />
+          </div>
           <p className="text-gray-600">No company profile data available.</p>
         </div>
       </div>
@@ -128,38 +129,38 @@ const fetchProfileData = async () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Banner */}
-<div className="relative h-48">
-  {/* Background Gradient */}
-  <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/20 via-[#f093fb]/10 to-[#764ba2]/20"></div>
-  
-  {profileData?.backgroundImageUrl && (
-    <div className="absolute inset-0">
-      <img 
-        src={profileData.backgroundImageUrl} 
-        alt="Banner" 
-        className="w-full h-full object-cover opacity-15"
-      />
-    </div>
-  )}
-  
-  {/* Content Overlay */}
-  <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/15 via-[#f093fb]/8 to-[#764ba2]/15 backdrop-blur-sm"></div>
-  
-  {/* Banner Upload Overlay */}
-  <label 
-    htmlFor="backgroundImageUpload" 
-    className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 cursor-pointer hover:bg-white transition-colors shadow-sm"
-  >
-    <Upload className="h-4 w-4 text-gray-700" />
-  </label>
-  <input
-    id="backgroundImageUpload"
-    type="file"
-    accept="image/*"
-    className="hidden"
-    onChange={(e) => handleImageUpload(e, 'backgroundImage')}
-  />
-</div>
+      <div className="relative h-48">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/20 via-[#f093fb]/10 to-[#764ba2]/20"></div>
+
+        {profileData?.backgroundImageUrl && (
+          <div className="absolute inset-0">
+            <img
+              src={profileData.backgroundImageUrl}
+              alt="Banner"
+              className="w-full h-full object-cover opacity-15"
+            />
+          </div>
+        )}
+
+        {/* Content Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/15 via-[#f093fb]/8 to-[#764ba2]/15 backdrop-blur-sm"></div>
+
+        {/* Banner Upload Overlay */}
+        <label
+          htmlFor="backgroundImageUpload"
+          className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 cursor-pointer hover:bg-white transition-colors shadow-sm"
+        >
+          <Upload className="h-4 w-4 text-gray-700" />
+        </label>
+        <input
+          id="backgroundImageUpload"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => handleImageUpload(e, 'backgroundImage')}
+        />
+      </div>
 
       {/* Main Container */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
@@ -173,9 +174,9 @@ const fetchProfileData = async () => {
                 <label htmlFor="profileImageUpload" className="relative group cursor-pointer">
                   <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
                     {profileData?.profileImageUrl ? (
-                      <img 
-                        src={profileData.profileImageUrl} 
-                        alt="Profile" 
+                      <img
+                        src={profileData.profileImageUrl}
+                        alt="Profile"
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -202,7 +203,7 @@ const fetchProfileData = async () => {
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                   {profileData?.companyDetails?.companyName || 'Company Name'}
                 </h1>
-                
+
                 <div className="flex flex-wrap items-center gap-4 mt-3">
                   {profileData?.companyDetails?.industryType && (
                     <div className="flex items-center gap-2 text-gray-600">
@@ -210,14 +211,14 @@ const fetchProfileData = async () => {
                       <span className="text-sm">{profileData.companyDetails.industryType}</span>
                     </div>
                   )}
-                  
+
                   {profileData?.companyDetails?.companyLocation && (
                     <div className="flex items-center gap-2 text-gray-600">
                       <MapPin className="h-4 w-4 text-[#667eea]" />
                       <span className="text-sm">{profileData.companyDetails.companyLocation}</span>
                     </div>
                   )}
-                  
+
                   <div className="flex items-center gap-2 text-gray-600">
                     <Users className="h-4 w-4 text-[#667eea]" />
                     <span className="text-sm">{profileData?.companyDetails?.numberOfEmployees || 'N/A'} Employees</span>
@@ -232,10 +233,10 @@ const fetchProfileData = async () => {
                 {/* Social Links */}
                 <div className="flex flex-wrap items-center gap-3 mt-4">
                   {profileData?.companyDetails?.companyLinkedin && (
-                    <a 
-                      href={profileData.companyDetails.companyLinkedin} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href={profileData.companyDetails.companyLinkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-sm"
                     >
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -245,10 +246,10 @@ const fetchProfileData = async () => {
                     </a>
                   )}
                   {profileData?.companyDetails?.websiteUrl && (
-                    <a 
-                      href={profileData.companyDetails.websiteUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
+                    <a
+                      href={profileData.companyDetails.websiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors text-sm"
                     >
                       <Globe className="h-4 w-4" />
@@ -267,8 +268,8 @@ const fetchProfileData = async () => {
                 <button
                   key={tab}
                   className={`flex-1 px-6 py-4 text-sm font-medium transition-colors relative ${
-                    activeTab === tab 
-                      ? 'text-[#667eea]' 
+                    activeTab === tab
+                      ? 'text-[#667eea]'
                       : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                   }`}
                   onClick={() => setActiveTab(tab)}

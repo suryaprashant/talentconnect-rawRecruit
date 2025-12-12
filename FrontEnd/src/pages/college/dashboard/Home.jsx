@@ -12,7 +12,7 @@ function Home() {
     appliedByCategory: {
       'On-campus': 0,
       'Pool-campus': 0,
-      // 'Off-campus' is removed
+     
     },
     statusTotals: {
       'Shortlisted': 0,

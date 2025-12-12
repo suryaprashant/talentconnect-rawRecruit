@@ -23,7 +23,7 @@ export const createCompanyProfile = async (req, res) => {
 
   try {
 
-    const userId = req.user._id; // Assuming req.user._id is populated by secureRoute
+    const userId = req.user._id; 
     if (!userId) {
       return res.status(401).json({ message: 'User not authenticated or ID missing.' });
     }
@@ -80,7 +80,7 @@ export const createCompanyProfile = async (req, res) => {
     res.status(201).json({
       message: 'Company profile created successfully',
       profile: companyProfile,
-      user: updatedUser // Send the updated user with onboardingCompleted: true
+      user: updatedUser 
     });
 
 
@@ -100,16 +100,13 @@ export const createCompanyProfile = async (req, res) => {
   }
 };
 
-// Get company profile for logged-in user
+
 export const getCompanyProfile = async (req, res) => {
   try {
     const userId = req.user._id;
 
     const companyProfile = await getCompanyService(userId)
-    // .populate('userId', 'email')
-    // .select('-__v -createdAt -updatedAt')
-
-    // .lean();
+  
 
     if (!companyProfile) {
       return res.status(404).json({

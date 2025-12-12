@@ -28,7 +28,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
       hiringPara: '',
       jobRoles: [],
       hiringLocations: [],
-      lookingFor: '',
+      lookingFor: [],
       employmentType: []
     },
     kycDetails: {
@@ -53,26 +53,22 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
   const [customJobRole, setCustomJobRole] = useState('');
   const [customHiringLocation, setCustomHiringLocation] = useState('');
 
-  // State for location dropdowns
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
 
   const kycFileInputRef = useRef(null);
 
-  // Fetch all countries on component mount
   useEffect(() => {
     setCountries(Country.getAllCountries());
   }, []);
 
-  // Fetch states when country changes
   useEffect(() => {
     const selectedCountry = countries.find(c => c.name === formData.companyDetails.country);
     setStates(selectedCountry ? State.getStatesOfCountry(selectedCountry.isoCode) : []);
     setCities([]);
   }, [formData.companyDetails.country, countries]);
   
-  // Fetch cities when state changes
   useEffect(() => {
     const selectedCountry = countries.find(c => c.name === formData.companyDetails.country);
     const selectedState = states.find(s => s.name === formData.companyDetails.state);
@@ -94,6 +90,23 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
 
   const handleChange = (e, section, field) => {
     const { value, type, checked } = e.target;
+
+    if (field === 'lookingFor') {
+      let newValue = [];
+      if (value === 'both') {
+        newValue = ['job', 'internship'];
+      } else {
+        newValue = [value];
+      }
+      setFormData(prev => ({
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [field]: newValue
+        }
+      }));
+      return;
+    }
 
     if (type === 'checkbox') {
       setFormData(prev => ({
@@ -177,11 +190,11 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
 
       const kycDetailsWithoutDocs = { ...formData.kycDetails };
       delete kycDetailsWithoutDocs.kycDocuments;
-     if (Object.keys(kycDetailsWithoutDocs).length > 0) {
+      if (Object.keys(kycDetailsWithoutDocs).length > 0) {
             dataToSubmit.append('kycDetails', JSON.stringify(kycDetailsWithoutDocs));
         }
 
-        console.log("Submitting data", dataToSubmit)
+       
       const response = await axios.put(`${backendUrl}/api/companyDashboard/updateInformation`, dataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -189,7 +202,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
         },timeout: 30000
 
       });
-       console.log('Update successful:', response.data);
+      
       alert('Company profile updated successfully!');
       onProfileUpdate();
       setIsEditing(false);
@@ -213,6 +226,14 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
     if (!options || options.length === 0) return value;
     const option = options.find(opt => opt.value === value);
     return option ? option.label : value;
+  };
+
+  const getLookingForDisplayValue = (lookingForArray) => {
+    if (!lookingForArray || lookingForArray.length === 0) return 'Not provided';
+    if (lookingForArray.includes('job') && lookingForArray.includes('internship')) return 'Both';
+    if (lookingForArray.includes('job')) return 'Job';
+    if (lookingForArray.includes('internship')) return 'Internship';
+    return 'Not provided';
   };
 
   const renderInputField = (section, field, label, type = 'text', placeholder = '', options = [], isRequired = false) => {
@@ -277,12 +298,19 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
           </div>
         );
       } else if (type === 'radio-group') {
+      let activeValue = value;
+      if (field === 'lookingFor' && Array.isArray(value)) {
+        if (value.includes('job') && value.includes('internship')) activeValue = 'both';
+        else if (value.includes('job')) activeValue = 'job';
+        else if (value.includes('internship')) activeValue = 'internship';
+      }
+
       return (
         <div>
           <label className="block mb-1 text-sm font-medium text-gray-700">{label}</label>
           <div className="flex gap-2">
             {options.map((opt) => (
-              <button key={opt.value} type="button" className={`px-4 py-2 text-sm rounded-xl transition-all duration-200 ${value === opt.value ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} ${!isEditing ? 'opacity-60 cursor-not-allowed' : ''}`} onClick={() => isEditing && handleChange({ target: { value: opt.value } }, section, field)} disabled={!isEditing}>
+              <button key={opt.value} type="button" className={`px-4 py-2 text-sm rounded-xl transition-all duration-200 ${activeValue === opt.value ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} ${!isEditing ? 'opacity-60 cursor-not-allowed' : ''}`} onClick={() => isEditing && handleChange({ target: { value: opt.value } }, section, field)} disabled={!isEditing}>
                 {opt.label}
               </button>
             ))}
@@ -382,38 +410,38 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {isEditing ? (
                       <div>
-                         <label className="block mb-1 text-sm font-medium text-gray-700">Country</label>
-                         <select className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none" value={formData.companyDetails.country} onChange={(e) => {
+                          <label className="block mb-1 text-sm font-medium text-gray-700">Country</label>
+                          <select className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none" value={formData.companyDetails.country} onChange={(e) => {
                            handleChange(e, 'companyDetails', 'country');
                            handleChange({ target: { value: '' } }, 'companyDetails', 'state');
                            handleChange({ target: { value: '' } }, 'companyDetails', 'city');
-                         }}>
-                           <option value="">Select Country</option>
-                           {countryOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                         </select>
+                          }}>
+                            <option value="">Select Country</option>
+                            {countryOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                          </select>
                       </div>
                     ) : renderDisplayField('Country', formData.companyDetails.country)}
 
                     {isEditing ? (
                       <div>
-                         <label className="block mb-1 text-sm font-medium text-gray-700">State</label>
-                         <select className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none disabled:opacity-50" value={formData.companyDetails.state} disabled={!formData.companyDetails.country || states.length === 0} onChange={(e) => {
+                          <label className="block mb-1 text-sm font-medium text-gray-700">State</label>
+                          <select className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none disabled:opacity-50" value={formData.companyDetails.state} disabled={!formData.companyDetails.country || states.length === 0} onChange={(e) => {
                            handleChange(e, 'companyDetails', 'state');
                            handleChange({ target: { value: '' } }, 'companyDetails', 'city');
-                         }}>
-                           <option value="">Select State</option>
-                           {stateOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                         </select>
+                          }}>
+                            <option value="">Select State</option>
+                            {stateOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                          </select>
                       </div>
                     ) : renderDisplayField('State', formData.companyDetails.state)}
                     
                     {isEditing ? (
                       <div>
-                         <label className="block mb-1 text-sm font-medium text-gray-700">City</label>
-                         <select className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none disabled:opacity-50" value={formData.companyDetails.city} disabled={!formData.companyDetails.state || cities.length === 0} onChange={(e) => handleChange(e, 'companyDetails', 'city')}>
-                           <option value="">Select City</option>
-                           {cityOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                         </select>
+                          <label className="block mb-1 text-sm font-medium text-gray-700">City</label>
+                          <select className="w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none disabled:opacity-50" value={formData.companyDetails.city} disabled={!formData.companyDetails.state || cities.length === 0} onChange={(e) => handleChange(e, 'companyDetails', 'city')}>
+                            <option value="">Select City</option>
+                            {cityOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                          </select>
                       </div>
                     ) : renderDisplayField('City', formData.companyDetails.city)}
                     
@@ -480,7 +508,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                     )}
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {isEditing ? renderInputField('hiringPreferences', 'lookingFor', 'Looking for', 'radio-group', '', lookingForOptions) : renderDisplayField('Looking for', getDisplayValue(formData.hiringPreferences.lookingFor, lookingForOptions))}
+                    {isEditing ? renderInputField('hiringPreferences', 'lookingFor', 'Looking for', 'radio-group', '', lookingForOptions) : renderDisplayField('Looking for', getLookingForDisplayValue(formData.hiringPreferences.lookingFor))}
                     {isEditing ? renderInputField('hiringPreferences', 'employmentType', 'Employment type', 'checkbox-group', '', employmentTypeOptions) : renderDisplayField('Employment type', (formData.hiringPreferences.employmentType || []).map(type => getDisplayValue(type, employmentTypeOptions)).join(', ') || null)}
                   </div>
                 </div>

@@ -36,7 +36,7 @@ const useApplicationForm = () => {
             hiringPara: '',
             jobRoles: [],
             hiringLocations: [],
-            lookingFor: '',
+            lookingFor: [],
             employmentType: [],
         },
         kycDetails: {
