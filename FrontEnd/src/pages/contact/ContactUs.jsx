@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Mail, Phone, MapPin, Send } from 'lucide-react';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -42,13 +43,13 @@ const ContactUs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">Contact us</h1>
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-8">Contact us</h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Contact Form */}
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -58,8 +59,8 @@ const ContactUs = () => {
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                    errors.message ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                    errors.message ? 'border-red-500' : 'border-gray-200'
                   }`}
                   rows="4"
                   placeholder="Type your message..."
@@ -75,7 +76,7 @@ const ContactUs = () => {
                   name="acceptTerms"
                   checked={formData.acceptTerms}
                   onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-5 w-5 text-[#667eea] border-gray-300 rounded focus:ring-[#667eea]/50"
                 />
                 <label className="ml-2 block text-sm text-gray-900">
                   I accept the Terms
@@ -88,46 +89,71 @@ const ContactUs = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+                className="w-full bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white py-3 px-4 rounded-lg font-medium hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
-                {submitting ? 'Submitting...' : 'Submit'}
+                {submitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4 mr-2" />
+                    Submit
+                  </>
+                )}
               </button>
             </form>
           </div>
 
           {/* Contact Information */}
-          <div className="bg-white p-6 rounded-lg shadow-lg space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Email</h2>
-              <a
-                href="mailto:contact-us@talentconnectes.com"
-                className="text-blue-600 hover:text-blue-800"
-              >
-                contact-us@talentconnectes.com
-              </a>
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 space-y-6">
+            <div className="flex items-start">
+              <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-4">
+                <Mail className="h-5 w-5 text-[#667eea]" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-1">Email</h2>
+                <a
+                  href="mailto:contact-us@talentconnectes.com"
+                  className="text-[#667eea] hover:text-[#764ba2] transition-colors"
+                >
+                  contact-us@talentconnectes.com
+                </a>
+              </div>
             </div>
 
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Phone</h2>
-              <a
-                href="tel:+917979863193"
-                className="text-blue-600 hover:text-blue-800"
-              >
-                +91-7979863193
-              </a>
+            <div className="flex items-start">
+              <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-4">
+                <Phone className="h-5 w-5 text-[#667eea]" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-1">Phone</h2>
+                <a
+                  href="tel:+917979863193"
+                  className="text-[#667eea] hover:text-[#764ba2] transition-colors"
+                >
+                  +91-7979863193
+                </a>
+              </div>
             </div>
 
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Office</h2>
-              <p className="text-gray-600">Bengaluru, Karnataka, India</p>
-              <a
-                href="https://maps.google.com/?q=Bengaluru, Karnataka, India"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 mt-2 inline-block"
-              >
-                Get Directions
-              </a>
+            <div className="flex items-start">
+              <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-4">
+                <MapPin className="h-5 w-5 text-[#667eea]" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-1">Office</h2>
+                <p className="text-gray-600">Bengaluru, Karnataka, India</p>
+                <a
+                  href="https://maps.google.com/?q=Bengaluru, Karnataka, India"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#667eea] hover:text-[#764ba2] transition-colors mt-1 inline-block"
+                >
+                  Get Directions
+                </a>
+              </div>
             </div>
           </div>
         </div>
