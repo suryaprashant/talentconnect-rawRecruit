@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { TermsModal } from "@/components/onboarding/Terms&conditionModal";
 
 export default function TermsAndConditions({ formData = {}, updateFormData, onBack, onSubmit }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleAcceptTerms = (e) => {
     updateFormData({ acceptedTerms: e.target.checked });
   };
@@ -56,20 +59,33 @@ export default function TermsAndConditions({ formData = {}, updateFormData, onBa
             Terms & Conditions and Privacy Policy
           </h1>
 
-          
+          {/* Checkbox and Modal Trigger */}
+          <div className="flex flex-col items-center justify-center mb-8 p-4 bg-gray-50/80 rounded-lg border border-gray-100">
+            <div className="flex items-center mb-3">
+              <input
+                type="checkbox"
+                id="acceptTerms"
+                checked={formData.acceptedTerms || false}
+                onChange={handleAcceptTerms}
+                className="mr-3 h-5 w-5 cursor-pointer accent-[#667eea]"
+              />
+              <label htmlFor="acceptTerms" className="text-sm cursor-pointer select-none text-gray-700">
+                I have read and agree to the Terms & Conditions and Privacy Policy
+              </label>
+            </div>
 
-          {/* Checkbox and Buttons */}
-          <div className="flex items-center justify-center mb-8 p-4 bg-gray-50/80 rounded-lg">
-            <input
-              type="checkbox"
-              id="acceptTerms"
-              checked={formData.acceptedTerms || false}
-              onChange={handleAcceptTerms}
-              className="mr-3 h-5 w-5 cursor-pointer accent-[#667eea]"
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              className="text-sm text-[#667eea] hover:text-[#764ba2] hover:underline cursor-pointer font-medium transition-colors"
+            >
+              Read Terms & Services
+            </button>
+            
+            <TermsModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
             />
-            <label htmlFor="acceptTerms" className="text-sm cursor-pointer select-none text-gray-700">
-              I have read and agree to the Terms & Conditions and Privacy Policy
-            </label>
           </div>
 
           <div className="flex justify-between mt-8">

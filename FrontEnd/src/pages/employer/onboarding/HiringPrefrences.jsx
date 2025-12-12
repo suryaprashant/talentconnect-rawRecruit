@@ -10,7 +10,6 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
     const locationsRef = useRef(null);
     
     const [indianCities, setIndianCities] = useState([]);
-    const [locationSearch, setLocationSearch] = useState('');
 
     const validateForm = () => {
         const newErrors = {};
@@ -25,8 +24,19 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
 
     const handleNextClick = () => {
         if (validateForm()) {
+          
+            let lookingForData = formData.lookingFor;
+
+            if (lookingForData === 'both') {
+                lookingForData = ['job', 'internship'];
+            } else if (typeof lookingForData === 'string') {
+              
+                lookingForData = [lookingForData];
+            }
+
             const formattedData = {
                 ...formData,
+                lookingFor: lookingForData,
                 employmentType: Array.isArray(formData.employmentType) 
                     ? formData.employmentType 
                     : [formData.employmentType].filter(Boolean)
@@ -37,7 +47,25 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
     };
 
     const handleLookingForChange = (value) => {
+        // Store as simple string while interacting for better UX
         updateFormData({ lookingFor: value });
+    };
+
+    // Helper to check which button should be active (handles both string and array states)
+    const isLookingForActive = (option) => {
+        const val = formData.lookingFor;
+        // 1. If it's a simple string (just clicked)
+        if (val === option) return true;
+        
+        // 2. If it's an array (coming back from next step or saved state)
+        if (Array.isArray(val)) {
+            if (option === 'both') {
+                return val.includes('job') && val.includes('internship');
+            }
+            // For 'job' or 'internship', check if it's the ONLY item in array
+            return val.includes(option) && val.length === 1;
+        }
+        return false;
     };
 
     const handleEmploymentTypeChange = (value) => {
@@ -61,7 +89,6 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
     const toggleLocationsDropdown = () => {
         setShowLocationsDropdown(!showLocationsDropdown);
         setShowJobRolesDropdown(false);
-        setLocationSearch(''); 
     };
 
     const handleJobRoleSelect = (roleValue) => {
@@ -106,10 +133,6 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
         setIndianCities(cities);
     }, []);
     
-    const filteredLocationOptions = indianCities.filter(city =>
-        city.label.toLowerCase().includes(locationSearch.toLowerCase())
-    );
-
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (jobRolesRef.current && !jobRolesRef.current.contains(event.target)) {
@@ -239,7 +262,7 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                             </div>
                         </div>
 
-                        {/* Locations Dropdown - Multi Select with Search */}
+                        {/* Locations Dropdown - Multi Select without Search */}
                         <div ref={locationsRef}>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Preferred Hiring Locations
@@ -248,7 +271,7 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                             {/* Selected locations chips */}
                             <div className="flex flex-wrap gap-2 mb-2">
                                 {formData.hiringLocations?.map((location, index) => {
-                                    const locationLabel = filteredLocationOptions.find(opt => opt.value === location)?.label || location;
+                                    const locationLabel = indianCities.find(opt => opt.value === location)?.label || location;
                                     return (
                                         <span key={index} className="flex items-center bg-gray-200 text-sm text-black px-3 py-1 rounded-full">
                                             {locationLabel}
@@ -289,35 +312,18 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                                 {showLocationsDropdown && (
                                     <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
                                         
-                                        {/* Search Input */}
-                                        <div className="p-2 border-b">
-                                            <input
-                                                type="text"
-                                                value={locationSearch}
-                                                onClick={(e) => e.stopPropagation()} 
-                                                onMouseDown={(e) => e.stopPropagation()}
-                                                onChange={(e) => setLocationSearch(e.target.value)}
-                                                placeholder="Search for a city..."
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80"
-                                            />
-                                        </div>
-
-                                        {/* Options List */}
-                                        {filteredLocationOptions.length > 0 ? (
-                                            filteredLocationOptions.map((option) => (
-                                                <div
-                                                    key={option.value}
-                                                    onClick={() => handleLocationSelect(option.value)}
-                                                    className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
-                                                        formData.hiringLocations?.includes(option.value) ? "bg-gray-100 font-medium" : ""
-                                                    }`}
-                                                >
-                                                    {option.label}
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="px-4 py-2 text-gray-500">No cities found matching "{locationSearch}"</div>
-                                        )}
+                                        {/* Options List - Directly mapping indianCities */}
+                                        {indianCities.map((option) => (
+                                            <div
+                                                key={option.value}
+                                                onClick={() => handleLocationSelect(option.value)}
+                                                className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
+                                                    formData.hiringLocations?.includes(option.value) ? "bg-gray-100 font-medium" : ""
+                                                }`}
+                                            >
+                                                {option.label}
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
                                 {errors.hiringLocations && (
@@ -337,7 +343,7 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                                         type="button"
                                         onClick={() => handleLookingForChange(option)}
                                         className={`px-4 py-2 rounded-lg border transition-all duration-300 ${
-                                            formData.lookingFor === option
+                                            isLookingForActive(option)
                                                 ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent'
                                                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                                         }`}

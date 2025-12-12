@@ -76,13 +76,22 @@ export default function CollegeDescription({ onboardingData }) {
                 <div className="w-1/2 text-sm">{collegeUniversityDetails.alternatePhoneNumber || 'Not Set'}</div>
               </div>
 
-              <div className="flex">
-                <div className="w-1/2 text-right pr-2 text-sm font-semibold">College Location :</div>
-                <div className="w-1/2 text-sm">
-                  {[collegeUniversityDetails.collegeLocation, collegeUniversityDetails.city, collegeUniversityDetails.state, collegeUniversityDetails.country]
-                    .filter(Boolean).join(', ') || 'Not Set'}
-                </div>
-              </div>
+             <div className="flex">
+  <div className="w-1/2 text-right pr-2 text-sm font-semibold">College Location :</div>
+  <div className="w-1/2 text-sm">
+    {collegeUniversityDetails.collegeLocation || 'Not Set'}
+  </div>
+</div>
+
+
+<div className="flex">
+  <div className="w-1/2 text-right pr-2 text-sm font-semibold">Region :</div>
+  <div className="w-1/2 text-sm">
+    {[collegeUniversityDetails.city, collegeUniversityDetails.state, collegeUniversityDetails.country]
+      .filter(Boolean)
+      .join(', ') || 'Not Set'}
+  </div>
+</div>
 
               <div className="flex">
                 <div className="w-1/2 text-right pr-2 text-sm font-semibold">Pincode :</div>

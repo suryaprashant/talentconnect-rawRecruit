@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Mail, Phone, Globe, Linkedin, Save, Edit } from 'lucide-react';
@@ -29,7 +28,6 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
       workEmail: '',
       mobile: '',
       linkedIn: '',
-      
     },
     companyDetails: {
       companyName: '',
@@ -48,10 +46,10 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
     hiringPreferences: {
       jobRoles: [],
       hiringLocations: [],
-      lookingFor: '',
+      lookingFor: [], // Changed to empty array initialization
       employmentType: [],
     },
-    profileImageUrl: '', // Managed by separate upload now, but kept for consistency
+    profileImageUrl: '', 
     backgroundImageUrl: '',
   });
 
@@ -70,11 +68,16 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
       setFormData({
         employerDetails: employerData.employerDetails || {},
         companyDetails: employerData.companyDetails || {},
-        hiringPreferences: employerData.hiringPreferences || {},
+        hiringPreferences: {
+            ...employerData.hiringPreferences,
+            // Ensure lookingFor is always an array coming from DB
+            lookingFor: Array.isArray(employerData.hiringPreferences?.lookingFor) 
+                ? employerData.hiringPreferences.lookingFor 
+                : (employerData.hiringPreferences?.lookingFor ? [employerData.hiringPreferences.lookingFor] : [])
+        } || {},
       });
-      setIsEditing(false); // Ensure non-editable when data is loaded
+      setIsEditing(false);
     } else {
-      // If no employerData, assume creating a new profile, make it editable by default
       setIsEditing(true);
     }
   }, [employerData]);
@@ -101,9 +104,30 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
     }));
   };
 
+  // Specific handler for Looking For to manage Array conversion
+  const handleLookingForChange = (e) => {
+    const value = e.target.value;
+    let newArray = [];
+
+    if (value === 'both') {
+      newArray = ['job', 'internship'];
+    } else if (value) {
+      newArray = [value];
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      hiringPreferences: {
+        ...prev.hiringPreferences,
+        lookingFor: newArray,
+      },
+    }));
+  };
+
   const handleHiringPreferencesChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'jobRoles' || name === 'hiringLocations' || name === 'employmentTypes') {
+    // lookingFor is handled separately now
+    if (name === 'jobRoles' || name === 'hiringLocations' || name === 'employmentType') {
       setFormData((prev) => ({
         ...prev,
         hiringPreferences: {
@@ -111,7 +135,7 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
           [name]: value.split(',').map(item => item.trim()).filter(item => item !== ''),
         },
       }));
-    } else {
+    } else if (name !== 'lookingFor') {
       setFormData((prev) => ({
         ...prev,
         hiringPreferences: {
@@ -120,16 +144,6 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
         },
       }));
     }
-  };
-
-  // Files inputs here are only for fallback or if you still want to handle them here.
-  // The main image upload is now via EmployerProfile.jsx direct click.
-  const handleFileChange = (e) => {
-    const { name, files: selectedFiles } = e.target;
-    setFiles((prev) => ({
-      ...prev,
-      [name]: selectedFiles[0],
-    }));
   };
 
   const handleSubmit = async (e) => {
@@ -142,7 +156,6 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
       const dataToSend = buildFormData(formData, files);
       let response;
       if (employerData) {
-        // Update existing profile
         response = await axios.put(
           `${import.meta.env.VITE_Backend_URL}/api/dashboard/update-employer`,
           dataToSend,
@@ -152,7 +165,6 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
           }
         );
       } else {
-        // Create new profile
         response = await axios.post(
           `${import.meta.env.VITE_Backend_URL}/api/dashboard/employerOnboarding`,
           dataToSend,
@@ -165,7 +177,7 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
 
       setSuccess(true);
       setFiles({ profileImage: null, backgroundImage: null });
-      setIsEditing(false); // Exit edit mode after successful save
+      setIsEditing(false);
 
       if (onProfileUpdated) {
         onProfileUpdated(response.data.profile);
@@ -193,11 +205,10 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
         hiringPreferences: employerData.hiringPreferences || {},
       });
     } else {
-        // If creating new and canceling, reset to empty
         setFormData({
-            employerDetails: { name: '', designation: '', workEmail: '', mobile: '', linkedIn: '', profileImageUrl: '', backgroundImageUrl: '' },
+            employerDetails: { name: '', designation: '', workEmail: '', mobile: '', linkedIn: '' },
             companyDetails: { companyName: '', location: '', state: '', city: '', country: '', pincode: '', companyType: '', industryType: '', establishedYear: '', contactNumber: '', description: '', companyWebsite: '' },
-            hiringPreferences: { jobRoles: [], hiringLocations: [], lookingFor: '', employmentTypes: [] },
+            hiringPreferences: { jobRoles: [], hiringLocations: [], lookingFor: [], employmentType: [] },
         });
     }
     setFiles({ profileImage: null, backgroundImage: null });
@@ -205,15 +216,20 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
     setSuccess(false);
   };
 
-  // Updated styling to match the theme
+  // Helper to determine the string value for the Looking For Select dropdown
+  const getLookingForValue = () => {
+    const arr = formData.hiringPreferences.lookingFor || [];
+    if (arr.includes('job') && arr.includes('internship')) return 'both';
+    if (arr.includes('job')) return 'job';
+    if (arr.includes('internship')) return 'internship';
+    return '';
+  };
+
   const inputClass = `mt-1 block w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 ${
     isEditing ? 'bg-white' : 'bg-gradient-to-r from-gray-50 to-white text-gray-700'
   }`;
   const selectClass = `mt-1 block w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 ${
     isEditing ? 'bg-white' : 'bg-gradient-to-r from-gray-50 to-white text-gray-700'
-  }`;
-  const fileInputClass = `mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold ${
-    isEditing ? 'file:bg-gradient-to-r file:from-[#667eea]/10 file:to-[#764ba2]/10 file:text-[#667eea] hover:file:bg-gradient-to-r hover:file:from-[#667eea]/20 hover:file:to-[#764ba2]/20' : 'file:bg-gray-100 file:text-gray-500 cursor-not-allowed'
   }`;
 
   return (
@@ -576,8 +592,8 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
                       <select
                         id="lookingFor"
                         name="lookingFor"
-                        value={formData.hiringPreferences.lookingFor || ''}
-                        onChange={handleHiringPreferencesChange}
+                        value={getLookingForValue()}
+                        onChange={handleLookingForChange}
                         className={`${selectClass} pr-10 appearance-none`}
                         disabled={!isEditing}
                       >
@@ -594,11 +610,11 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="employmentTypes" className="block mb-1 text-sm font-medium text-gray-700">Employment Types (comma-separated)</label>
+                    <label htmlFor="employmentType" className="block mb-1 text-sm font-medium text-gray-700">Employment Types (comma-separated)</label>
                     <input
                       type="text"
-                      id="employmentTypes"
-                      name="employmentTypes"
+                      id="employmentType"
+                      name="employmentType"
                       value={formData.hiringPreferences.employmentType.join(', ') || ''}
                       onChange={handleHiringPreferencesChange}
                       className={inputClass}

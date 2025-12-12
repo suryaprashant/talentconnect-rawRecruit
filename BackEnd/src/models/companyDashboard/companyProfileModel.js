@@ -41,8 +41,9 @@ const companyProfileSchema = new mongoose.Schema({
     hiringPara: { type: String },
     jobRoles: [{ type: String }],
     hiringLocations: [{ type: String }],
-    lookingFor: { type: String, enum: ['job', 'internship', 'both'] },
-    employmentType: [{ type: String }], // e.g. part-time, full-time, contract
+    lookingFor: { type:[String],
+       enum: ['job', 'internship','both'] },
+    employmentType: [{ type: String }], 
   
   },
 
