@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Search, MapPin, Briefcase, DollarSign, Upload } from 'lucide-react';
 
 function ResumeSearch({ onSearch, onFileUpload }) {
   const [searchParams, setSearchParams] = useState({
-    query: [],
+    query: '',
     location: '',
     experience: '',
     salary: ''
@@ -20,110 +21,153 @@ function ResumeSearch({ onSearch, onFileUpload }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-8 pt-16">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold mb-2">Smart Resume Search for Faster Hiring</h1>
-        <p className="text-gray-600">Leverage AI-driven recommendations and powerful filters to find the right talent instantly.</p>
+    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center px-4">
+      <div className="w-full max-w-4xl">
+        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-8">
+          {/* Header Section */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 mb-4">
+              <Search className="h-8 w-8 text-[#667eea]" />
+            </div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-3">
+              Smart Resume Search for Faster Hiring
+            </h1>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Leverage AI-driven recommendations and powerful filters to find the right talent instantly.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Search Query Input */}
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                name="query"
+                value={searchParams.query}
+                onChange={handleChange}
+                placeholder="Search by job title, skills, or keywords"
+                className="w-full pl-12 pr-4 py-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+              />
+            </div>
+
+            {/* Filters Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Location Filter */}
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700 flex items-center">
+                  <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                  Location
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MapPin className="h-4 w-4 text-gray-400" />
+                  </div>
+                  <select
+                    name="location"
+                    value={searchParams.location}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none appearance-none transition-all duration-200"
+                  >
+                    <option value="">Select Location</option>
+                    <option value="Remote">Remote</option>
+                    <option value="Onsite">On-site</option>
+                    <option value="Hybrid">Hybrid</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Experience Filter */}
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700 flex items-center">
+                  <Briefcase className="h-4 w-4 mr-2 text-gray-500" />
+                  Experience
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Briefcase className="h-4 w-4 text-gray-400" />
+                  </div>
+                  <input
+                    type="number"
+                    name="experience"
+                    value={searchParams.experience}
+                    onChange={handleChange}
+                    placeholder="Minimum years of experience"
+                    className="w-full pl-10 pr-4 py-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Salary Filter */}
+            <div>
+              <label className="block mb-2 text-sm font-medium text-gray-700 flex items-center">
+                <DollarSign className="h-4 w-4 mr-2 text-gray-500" />
+                Expected Salary
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <DollarSign className="h-4 w-4 text-gray-400" />
+                </div>
+                <select
+                  name="salary"
+                  value={searchParams.salary}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none appearance-none transition-all duration-200"
+                >
+                  <option value="">Select Salary Range</option>
+                  <option value="0-50000">$0 - $50,000</option>
+                  <option value="50000-75000">$50,000 - $75,000</option>
+                  <option value="75000-100000">$75,000 - $100,000</option>
+                  <option value="100000+">$100,000+</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col items-center space-y-6 pt-4">
+              <button
+                type="submit"
+                className="px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300 font-medium text-lg"
+              >
+                Search Resumes
+              </button>
+
+              {/* Upload Section */}
+              {/* <div className="text-center">
+                <p className="mb-3 text-gray-500 text-sm">Or upload resumes to parse automatically</p>
+                <input
+                  type="file"
+                  id="resume-upload"
+                  multiple
+                  accept=".pdf,.doc,.docx"
+                  onChange={onFileUpload}
+                  className="hidden"
+                />
+                <label 
+                  htmlFor="resume-upload"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-200 cursor-pointer font-medium"
+                >
+                  <Upload className="h-4 w-4" />
+                  Upload Resumes
+                </label>
+              </div> */}
+            </div>
+          </form>
+        </div>
       </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="relative">
-          <input
-            type="text"
-            name="query"
-            value={searchParams.query}
-            onChange={handleChange}
-            placeholder="Search by job title, skills, or keywords"
-            className="w-full p-3 pl-10 border border-gray-300 rounded bg-black text-white"
-          />
-          <svg className="absolute left-3 top-3.5 text-gray-400 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Location</label>
-            <select
-              name="location"
-              value={searchParams.location}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded appearance-none bg-black text-white"
-            >
-              <option value="">Select</option>
-              <option value="Remote">Remote</option>
-              <option value="Onsite">On-site</option>
-              <option value="Hybrid">Hybrid</option>
-            </select>
-          </div>
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Experience</label>
-            {/* <select
-              name="experience"
-              value={searchParams.experience}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded appearance-none"
-            >
-              <option value="">Select</option>
-              <option value="0-1">0-1 years</option>
-              <option value="1-3">1-3 years</option>
-              <option value="3-5">3-5 years</option>
-              <option value="5+">5+ years</option>
-            </select> */}
-            <input
-              type="number"
-              name="experience"
-              value={searchParams.experience}
-              onChange={handleChange}
-              placeholder="Minimum years of experience"
-              className="w-full p-3 border border-gray-300 rounded  bg-black text-white"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Expected Salary</label>
-          <select
-            name="salary"
-            value={searchParams.salary}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded appearance-none  bg-black text-white"
-          >
-            <option value="">Select range</option>
-            <option value="0-50000">$0 - $50,000</option>
-            <option value="50000-75000">$50,000 - $75,000</option>
-            <option value="75000-100000">$75,000 - $100,000</option>
-            <option value="100000+">$100,000+</option>
-          </select>
-        </div>
-
-        <div className="flex flex-col items-center space-y-4">
-          <button
-            type="submit"
-            className="bg-black text-white py-2 px-12 rounded font-medium hover:bg-gray-800"
-          >
-            Search
-          </button>
-
-          {/* <div className="mt-4 text-center">
-            <p className="mb-2 text-gray-500">Or upload resumes to parse automatically</p>
-            <input
-              type="file"
-              id="resume-upload"
-              multiple
-              accept=".pdf,.doc,.docx"
-              onChange={onFileUpload}
-              className="hidden"
-            />
-            <label 
-              htmlFor="resume-upload"
-              className="cursor-pointer text-blue-600 hover:text-blue-800 font-medium"
-            >
-              Upload Resumes
-            </label>
-          </div> */}
-        </div>
-      </form>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { IoSend } from "react-icons/io5";
 import useSendMessage from "../../context/useSendMessage.js";
+import { Send } from 'lucide-react';
 
 function Typesend() {
   const [message, setMessage] = useState("");
@@ -14,24 +15,27 @@ function Typesend() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-white border-t border-gray-200"> {/* White background, top border, padding */}
-      <div className="flex space-x-3 items-center"> {/* Aligned items */}
+    <form 
+      onSubmit={handleSubmit} 
+      className="p-4 bg-white/90 backdrop-blur-sm border-t border-gray-100"
+    >
+      <div className="flex space-x-3 items-center">
         <input
           type="text"
-          placeholder="Type your message..." // More descriptive placeholder
+          placeholder="Type your message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="flex-1 py-3 px-4 rounded-full border border-blue-400 outline-none focus:border-blue-600 bg-blue-50 text-gray-800 placeholder-blue-300" // Light blue background, blue border, rounded-full
+          className="flex-1 py-3 px-4 rounded-full border border-[#667eea]/30 bg-gradient-to-r from-gray-50 to-white outline-none focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent text-gray-800 placeholder-gray-400 transition-all duration-200"
         />
         <button
           type="submit"
-          className="p-3 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 duration-200 disabled:opacity-50 disabled:cursor-not-allowed" // Blue button, rounded, hover effect
-          disabled={loading || !message.trim()} // Disable if sending or message is empty
+          className="p-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center hover:shadow-lg hover:shadow-[#667eea]/30 duration-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          disabled={loading || !message.trim()}
         >
           {loading ? (
-            <span className="loading loading-spinner"></span> // Assuming you have a loading spinner component/class
+            <span className="loading loading-spinner"></span>
           ) : (
-            <IoSend className="text-xl" />
+            <Send className="text-xl" />
           )}
         </button>
       </div>

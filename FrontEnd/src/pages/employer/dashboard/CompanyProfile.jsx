@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
-import { Globe, Users, Calendar, Camera } from 'lucide-react';
-import Overview from './CompanyOverview';
-import EmployerProfileForm from './CompanyProfileForm';
-import EmployerUserManagement from './UserManagement';
+import { Globe, Users, Calendar, Upload, Building2, Briefcase, MapPin } from 'lucide-react';
+import CompanyOverview from './CompanyOverview';
+import CompanyProfileForm from './CompanyProfileForm';
+import UserManagement from './UserManagement';
 
 export default function EmployerProfile() {
   const [activeTab, setActiveTab] = useState('Overview');
-  const [employerData, setEmployerData] = useState(null);
+  const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -16,18 +16,21 @@ export default function EmployerProfile() {
   const profileImageInputRef = useRef(null);
   const backgroundImageInputRef = useRef(null);
 
-  const fetchEmployerData = useCallback(async () => {
+  const fetchProfileData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/dashboard/employer-data`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
         withCredentials: true,
       });
-      setEmployerData(response.data.profile);
+      setProfileData(response.data.profile);
     } catch (err) {
-      console.error('Error fetching employer data:', err);
+      console.error('Error fetching profile data:', err);
       if (err.response?.status === 404) {
-        setEmployerData(null);
+        setProfileData(null);
         setError('No employer profile found. Please create one.');
       } else {
         setError(err.response?.data?.message || 'Failed to fetch employer data.');
@@ -38,11 +41,11 @@ export default function EmployerProfile() {
   }, []);
 
   useEffect(() => {
-    fetchEmployerData();
-  }, [fetchEmployerData]);
+    fetchProfileData();
+  }, [fetchProfileData]);
 
-  const handleProfileUpdated = (updatedProfile) => {
-    setEmployerData(updatedProfile);
+  const handleProfileUpdated = () => {
+    fetchProfileData();
     setActiveTab('Overview');
   };
 
@@ -59,38 +62,40 @@ export default function EmployerProfile() {
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/dashboard/upload-single-image`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
         withCredentials: true,
       });
 
       const newImageUrl = response.data.imageUrl;
 
-      
-      setEmployerData((prevData) => ({
+      setProfileData((prevData) => ({
         ...prevData,
-        // Conditionally add the correct image URL field to the root of the object
         ...(imageType === 'profile' && { profileImageUrl: newImageUrl }),
         ...(imageType === 'background' && { backgroundImageUrl: newImageUrl }),
-        // Initialize other objects if the profile was initially null
         employerDetails: prevData?.employerDetails || {},
         companyDetails: prevData?.companyDetails || {},
       }));
 
+      alert(`${imageType === 'profile' ? 'Profile' : 'Background'} image updated successfully!`);
     } catch (err) {
       console.error(`Error uploading ${imageType} image:`, err);
-      setUploadError(err.response?.data?.message || `Failed to upload ${imageType} image.`);
+      setUploadError(err.response?.data?.message || `Failed to upload ${imageType} image. Make sure it's a valid image file.`);
+      setTimeout(() => setUploadError(null), 3000);
     } finally {
       setUploadingImage(false);
       event.target.value = '';
     }
   };
-   useEffect(() => {
+
+  useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const fromEditProfile = urlParams.get('editProfile');
     
     if (fromEditProfile === 'true') {
       setActiveTab('Profile');
-      // Clean up the URL
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     }
@@ -98,159 +103,232 @@ export default function EmployerProfile() {
 
   const renderContent = () => {
     if (loading) {
-      return <div className="p-4 text-center text-gray-600">Loading profile...</div>;
+      return (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-10 w-10 border-[3px] border-[#667eea] border-t-transparent"></div>
+            <p className="mt-3 text-gray-600">Loading company profile...</p>
+          </div>
+        </div>
+      );
     }
 
-    if (!employerData && activeTab !== 'Profile') {
+    if (!profileData && activeTab !== 'Profile') {
       return (
-        <div className="p-4 text-center text-gray-700">
-          <p className="mb-4">{error || 'No employer profile found. Please create one to get started.'}</p>
-          <button
-            onClick={() => setActiveTab('Profile')}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            Create Your Profile
-          </button>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center max-w-md p-8">
+            <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-lg font-medium text-gray-900 mb-2">
+              {error || 'No employer profile found. Please create one.'}
+            </p>
+            <button
+              onClick={() => setActiveTab('Profile')}
+              className="mt-4 px-4 py-2 bg-[#667eea] text-white text-sm rounded-lg hover:bg-[#5a6fd8] transition-colors"
+            >
+              Create Your Profile
+            </button>
+          </div>
         </div>
       );
     }
 
     switch (activeTab) {
       case 'Overview':
-        return <Overview employerData={employerData} />;
+        return <CompanyOverview profileData={profileData} />;
       case 'Profile':
-        return <EmployerProfileForm employerData={employerData} onProfileUpdated={handleProfileUpdated} />;
+        return <CompanyProfileForm profileData={profileData} onProfileUpdate={handleProfileUpdated} />;
       case 'Users':
-        return <EmployerUserManagement />;
+        return <UserManagement />;
       default:
         return null;
     }
   };
 
   return (
-    <div className="flex flex-col w-full bg-gray-100 min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       {/* Header Banner */}
-      <div
-        className="w-full h-32 bg-gray-300 relative group cursor-pointer overflow-hidden"
-        onClick={() => backgroundImageInputRef.current.click()}
-      >
-        {/* FIX: Access backgroundImageUrl from the root of employerData */}
-        {employerData?.backgroundImageUrl ? (
-          <img
-            src={employerData.backgroundImageUrl}
-            alt="Company Background"
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-300 text-gray-500 text-sm group-hover:bg-gray-400 transition-colors">
-            <Camera size={24} className="mr-2" /> Upload Background Image
-          </div>
-        )}
-        <input
-          type="file"
-          ref={backgroundImageInputRef}
-          className="hidden"
-          accept="image/*"
-          onChange={(e) => handleImageUpload(e, 'background')}
-        />
-        {uploadingImage && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white">
-            Uploading...
-          </div>
-        )}
-        {uploadError && (
-          <div className="absolute inset-0 flex items-center justify-center bg-red-800 bg-opacity-75 text-white text-sm">
-            {uploadError}
-          </div>
-        )}
-      </div>
-
-      {/* Profile Section */}
-      <div className="bg-white pb-4">
-        <div className="relative px-4">
-          <div
-            className="absolute -top-16 left-4 w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white overflow-hidden group cursor-pointer"
-            onClick={() => profileImageInputRef.current.click()}
-          >
-            {/* FIX: Access profileImageUrl from the root of employerData */}
-            {employerData?.profileImageUrl ? (
-              <img
-                src={employerData.profileImageUrl}
-                alt="Profile"
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            ) : (
-              <div className="text-gray-400 flex flex-col items-center justify-center text-sm group-hover:bg-gray-300 w-full h-full transition-colors">
-                <Camera size={24} /> Upload
-              </div>
-            )}
-            <input
-              type="file"
-              ref={profileImageInputRef}
-              className="hidden"
-              accept="image/*"
-              onChange={(e) => handleImageUpload(e, 'profile')}
+      <div className="relative h-48">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/20 via-[#f093fb]/10 to-[#764ba2]/20"></div>
+        
+        {profileData?.backgroundImageUrl && (
+          <div className="absolute inset-0">
+            <img 
+              src={profileData.backgroundImageUrl} 
+              alt="Banner" 
+              className="w-full h-full object-cover opacity-15"
             />
           </div>
-
-          <div className="pt-16 pb-2 pl-2">
-            <h1 className="text-3xl font-bold">{employerData?.employerDetails?.name || 'Your Name'}</h1>
-            <p className="text-gray-500 text-sm">{employerData?.employerDetails?.designation || 'Your Designation'}</p>
-          </div>
-        </div>
-
-        {/* Company Info */}
-        <div className="px-6 pt-4">
-          <h2 className="text-xl font-bold">Company : {employerData?.companyDetails?.companyName || 'Company Name'}</h2>
-          <div className="flex flex-wrap items-center gap-6 mt-2">
-            {employerData?.companyDetails?.numberOfEmployees && (
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Users size={16} className="text-gray-500" />
-                <span>{employerData.companyDetails.numberOfEmployees} Employees</span>
-              </div>
-            )}
-            {employerData?.companyDetails?.establishedYear && (
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Calendar size={16} className="text-gray-500" />
-                <span>Established Year: {employerData.companyDetails.establishedYear}</span>
-              </div>
-            )}
-          </div>
-          <div className="flex justify-between mt-4">
-            <div></div>
-            <div className="flex gap-2">
-              {employerData?.employerDetails?.linkedIn && (
-                <a href={employerData.employerDetails.linkedIn} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-8 h-8 border border-gray-300 rounded">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path>
-                  </svg>
-                </a>
-              )}
-              {employerData?.companyDetails?.websiteUrl && (
-                <a href={employerData.companyDetails.websiteUrl} target="_blank" rel="noopener noreferrer" className="border border-gray-300 rounded px-4 py-1 text-sm flex items-center">
-                  <Globe size={14} className="mr-1 text-gray-600" />
-                  Website
-                </a>
-              )}
+        )}
+        
+        {/* Content Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/15 via-[#f093fb]/8 to-[#764ba2]/15 backdrop-blur-sm"></div>
+        
+        {/* Banner Upload Overlay */}
+        <label 
+          htmlFor="backgroundImageUpload" 
+          className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 cursor-pointer hover:bg-white transition-colors shadow-sm"
+        >
+          <Upload className="h-4 w-4 text-gray-700" />
+        </label>
+        <input
+          id="backgroundImageUpload"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          ref={backgroundImageInputRef}
+          onChange={(e) => handleImageUpload(e, 'background')}
+        />
+        
+        {uploadingImage && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="bg-white/90 p-6 rounded-xl shadow-lg">
+              <div className="animate-spin rounded-full h-8 w-8 border-[3px] border-[#667eea] border-t-transparent mx-auto mb-3"></div>
+              <p className="text-gray-700">Uploading...</p>
             </div>
           </div>
-        </div>
-
-        <div className="flex border-b mt-4">
-          {['Overview', 'Profile', 'Users'].map((tab) => (
-            <button
-              key={tab}
-              className={`px-6 py-2 ${activeTab === tab ? 'border-b-2 border-black font-medium' : 'text-gray-500'}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+        )}
       </div>
 
-      <div className="p-4">
-        {renderContent()}
+      {/* Main Container */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
+        {/* Profile Card */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
+          {/* Profile Header */}
+          <div className="px-8 pt-8 pb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+              {/* Profile Image */}
+              <div className="relative">
+                <label htmlFor="profileImageUpload" className="relative group cursor-pointer">
+                  <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+                    {profileData?.profileImageUrl ? (
+                      <img 
+                        src={profileData.profileImageUrl} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Building2 className="h-16 w-16 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Upload className="h-6 w-6 text-white" />
+                  </div>
+                </label>
+                <input
+                  id="profileImageUpload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  ref={profileImageInputRef}
+                  onChange={(e) => handleImageUpload(e, 'profile')}
+                />
+                {uploadError && (
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-700 text-xs px-2 py-1 rounded whitespace-nowrap">
+                    {uploadError}
+                  </div>
+                )}
+              </div>
+
+              {/* Company & Employer Info */}
+              <div className="flex-1">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
+                  {profileData?.companyDetails?.companyName || 'Company Name'}
+                </h1>
+                <p className="text-gray-600 text-sm mb-4">
+                  {profileData?.employerDetails?.designation || 'Your Designation'}
+                </p>
+                
+                <div className="flex flex-wrap items-center gap-4 mt-3">
+                  {profileData?.companyDetails?.industryType && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Briefcase className="h-4 w-4 text-[#667eea]" />
+                      <span className="text-sm">{profileData.companyDetails.industryType}</span>
+                    </div>
+                  )}
+                  
+                  {profileData?.companyDetails?.location && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <MapPin className="h-4 w-4 text-[#667eea]" />
+                      <span className="text-sm">{profileData.companyDetails.location}</span>
+                    </div>
+                  )}
+                  
+                  {profileData?.companyDetails?.numberOfEmployees && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Users className="h-4 w-4 text-[#667eea]" />
+                      <span className="text-sm">{profileData.companyDetails.numberOfEmployees} Employees</span>
+                    </div>
+                  )}
+
+                  {profileData?.companyDetails?.establishedYear && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Calendar className="h-4 w-4 text-[#667eea]" />
+                      <span className="text-sm">Est. {profileData.companyDetails.establishedYear}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Social Links */}
+                <div className="flex flex-wrap items-center gap-3 mt-4">
+                  {profileData?.employerDetails?.linkedIn && (
+                    <a 
+                      href={profileData.employerDetails.linkedIn} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-sm"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path>
+                      </svg>
+                      LinkedIn
+                    </a>
+                  )}
+                  {profileData?.companyDetails?.companyWebsite && (
+                    <a 
+                      href={profileData.companyDetails.companyWebsite} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors text-sm"
+                    >
+                      <Globe className="h-4 w-4" />
+                      Website
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="border-t border-gray-100">
+            <nav className="flex">
+              {['Overview', 'Profile', 'Users'].map((tab) => (
+                <button
+                  key={tab}
+                  className={`flex-1 px-6 py-4 text-sm font-medium transition-colors relative ${
+                    activeTab === tab 
+                      ? 'text-[#667eea]' 
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                  {activeTab === tab && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#667eea]"></div>
+                  )}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        <div className="pb-8">
+          {renderContent()}
+        </div>
       </div>
     </div>
   );

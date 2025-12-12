@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Calendar, MapPin, Users, Trophy, Clock, DollarSign, FileText, Globe, Target, Plus, X } from 'lucide-react';
+import { Calendar, MapPin, Users, Trophy, Clock, DollarSign, FileText, Globe, Target, Plus, X, Briefcase, BookOpen, Award, GraduationCap, Link, Mail } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { scrollToFirstError } from '../../../utils/scrollToError';
@@ -40,7 +40,7 @@ const HostCasestudies = () => {
         description: '',
         startDate: '',
         endDate: '',
-        inputType: '' 
+        inputType: ''
       }
     ],
     rewards: {
@@ -56,12 +56,14 @@ const HostCasestudies = () => {
     website: '',
     contactEmail: '',
     tags: '',
-    domains: ['']
+    domains: [''],
+    eligibility: ''
   });
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [step, setStep] = useState(1);
+  const [shouldScrollToError, setShouldScrollToError] = useState(false);
   const [faqs, setFaqs] = useState([{ question: '', answer: '' }]);
   const [panelMembers, setPanelMembers] = useState([]);
   const [panelInput, setPanelInput] = useState('');
@@ -76,12 +78,14 @@ const HostCasestudies = () => {
         setIsEditMode(true);
         setCasestudyId(eventId);
         setLoading(true);
-        
+
         try {
-          const response = await getCasestudyById(eventId);
-          if (response?.data?.success) {
-            const data = response.data.data;
-            
+          // First try to use the eventData passed from hosting management
+          if (eventData && Object.keys(eventData).length > 0) {
+            console.log('Using eventData from hosting management:', eventData);
+            const data = eventData;
+
+            // Transform the data to match form structure
             setFormData({
               logo: data.bannerImage || '',
               title: data.title || '',
@@ -101,7 +105,14 @@ const HostCasestudies = () => {
               minTeamMembers: data.minTeamMembers || '',
               maxTeamMembers: data.maxTeamMembers || '',
               numberOfRounds: data.numberOfRounds || 1,
-              rounds: data.rounds || [{ roundNumber: 1, roundName: 'Round 1', description: '', startDate: '', endDate: '', inputType: '' }],
+              rounds: data.rounds || [{ 
+                roundNumber: 1, 
+                roundName: 'Round 1', 
+                description: '', 
+                startDate: '', 
+                endDate: '',
+                inputType: ''
+              }],
               rewards: {
                 rewardType: data.rewardsAndBenefits?.[0]?.type === 'Cash' ? 'Amount' : 'Other',
                 firstPlace: data.rewardsAndBenefits?.find(r => r.rank === 'Winner')?.amount || '',
@@ -119,7 +130,65 @@ const HostCasestudies = () => {
               eligibility: data.eligibility || '',
               logoPreview: data.bannerImage || ''
             });
-            
+
+            setFaqs(data.faqs || [{ question: '', answer: '' }]);
+            setPanelMembers(data.panelMembers || []);
+            setLoading(false);
+            return;
+          }
+
+          // Fallback to API call if eventData is not available
+          console.log('Fetching case study data from API');
+          const response = await getCasestudyById(eventId);
+          if (response?.data?.success) {
+            const data = response.data.data;
+
+            // Transform the data to match form structure
+            setFormData({
+              logo: data.bannerImage || '',
+              title: data.title || '',
+              subTitle: data.subTitle || '',
+              mode: data.mode || '',
+              visibility: data.visibility || '',
+              participationType: data.participationType || '',
+              eventDate: data.eventDate || '',
+              eventTime: data.eventTime || '',
+              description: data.description || '',
+              problemStatements: data.problemStatements || [{ title: '', description: '', technology: [] }],
+              startDate: data.startDate ? new Date(data.startDate).toISOString().slice(0, 16) : '',
+              endDate: data.endDate ? new Date(data.endDate).toISOString().slice(0, 16) : '',
+              location: data.location || '',
+              maxParticipants: data.maxParticipants || '',
+              maxTeams: data.maxTeams || '',
+              minTeamMembers: data.minTeamMembers || '',
+              maxTeamMembers: data.maxTeamMembers || '',
+              numberOfRounds: data.numberOfRounds || 1,
+              rounds: data.rounds || [{ 
+                roundNumber: 1, 
+                roundName: 'Round 1', 
+                description: '', 
+                startDate: '', 
+                endDate: '',
+                inputType: ''
+              }],
+              rewards: {
+                rewardType: data.rewardsAndBenefits?.[0]?.type === 'Cash' ? 'Amount' : 'Other',
+                firstPlace: data.rewardsAndBenefits?.find(r => r.rank === 'Winner')?.amount || '',
+                secondPlace: data.rewardsAndBenefits?.find(r => r.rank === '1st RunnerUp')?.amount || '',
+                thirdPlace: data.rewardsAndBenefits?.find(r => r.rank === '2nd RunnerUp')?.amount || '',
+                specialAwards: data.rewardsAndBenefits?.filter(r => !['Winner', '1st RunnerUp', '2nd RunnerUp'].includes(r.rank)) || []
+              },
+              registrationDeadline: data.registrationDeadline ? new Date(data.registrationDeadline).toISOString().slice(0, 16) : '',
+              requirements: data.requirements || '',
+              rules: data.rules || '',
+              website: data.website || '',
+              contactEmail: data.contactEmail || '',
+              tags: data.tags?.join(', ') || '',
+              domains: data.domains || [''],
+              eligibility: data.eligibility || '',
+              logoPreview: data.bannerImage || ''
+            });
+
             setFaqs(data.faqs || [{ question: '', answer: '' }]);
             setPanelMembers(data.panelMembers || []);
           } else {
@@ -135,9 +204,9 @@ const HostCasestudies = () => {
         }
       }
     };
-    
+
     loadCasestudyData();
-  }, [editMode, eventId, navigate]);
+  }, [editMode, eventId, eventData, navigate]);
 
   // Decide which step an error belongs to
   const determineErrorStep = (errs = {}) => {
@@ -159,11 +228,9 @@ const HostCasestudies = () => {
     return 1; // default to step 1 for all other fields
   };
 
-  const [isUserNavigating, setIsUserNavigating] = useState(false);
-
-  // Scroll to the first error whenever validation errors are set
+  // Scroll to the first error only when shouldScrollToError is true
   useEffect(() => {
-    if (errors && Object.keys(errors).length > 0 && !isUserNavigating) {
+    if (errors && Object.keys(errors).length > 0 && shouldScrollToError) {
       const targetStep = determineErrorStep(errors);
       if (step !== targetStep) {
         setStep(targetStep);
@@ -171,17 +238,10 @@ const HostCasestudies = () => {
       }
       requestAnimationFrame(() => {
         scrollToFirstError({ container: formRef.current || document, block: 'center' });
+        setShouldScrollToError(false); // Reset after scrolling
       });
     }
-  }, [errors, step, isUserNavigating]);
-
-  // Handle Next button click
-  const handleNext = () => {
-    setIsUserNavigating(true); // Set flag to indicate user navigation
-    setStep(2);
-    // Reset the flag after a short delay to allow normal error handling
-    setTimeout(() => setIsUserNavigating(false), 0);
-  };
+  }, [errors, step, shouldScrollToError]);
 
   // Helper functions for rounds management
   const updateNumberOfRounds = (count) => {
@@ -193,7 +253,7 @@ const HostCasestudies = () => {
         description: formData.rounds[i - 1]?.description || '',
         startDate: formData.rounds[i - 1]?.startDate || '',
         endDate: formData.rounds[i - 1]?.endDate || '',
-        inputType: formData.rounds[i - 1]?.inputType || '' 
+        inputType: formData.rounds[i - 1]?.inputType || ''
       });
     }
     setFormData((prev) => ({
@@ -502,8 +562,6 @@ const HostCasestudies = () => {
         newErrors[`round${index}Description`] = `Round ${index + 1} description cannot exceed 1000 characters`;
       }
     });
-
-    
     
     // Domain Validation
     if (!formData.domains.length || (formData.domains.length === 1 && !formData.domains[0].trim())) {
@@ -558,6 +616,7 @@ const HostCasestudies = () => {
   
     if (!validateForm()) {
       console.log('Form validation failed, stopping submission');
+      setShouldScrollToError(true); // Enable scrolling for validation errors
       return;
     }
   
@@ -595,8 +654,6 @@ const HostCasestudies = () => {
       if (response.status === 201 || response.status === 200 || response?.data?.success) {
         toast.success(isEditMode ? "Case study updated successfully!" : "Case study created successfully!");
         console.log(isEditMode ? "Case study updated successfully:" : "Case study created successfully:", response.data);
-  
-        // Navigate back to hosting management
         navigate("/hosting-management");
       }
      } catch (err) {
@@ -685,7 +742,7 @@ const HostCasestudies = () => {
       }]
     }));
     
-    // Clear the general  error when adding a new one
+    // Clear the general error when adding a new one
     if (errors.problemStatements) {
       setErrors(prev => ({
         ...prev,
@@ -737,195 +794,128 @@ const HostCasestudies = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 py-8">
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <Trophy className="h-8 w-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">{isEditMode ? 'Edit Case Study' : 'Host a Case Study'}</h1>
+        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center mb-3">
+              <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
+                <Trophy className="h-5 w-5 text-[#667eea]" />
+              </div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                {isEditMode ? 'Edit Case Study Event' : 'Host a Case Study Event'}
+              </h1>
+            </div>
+            <p className="text-md text-gray-600 max-w-2xl mx-auto">
+              {isEditMode 
+                ? 'Update your case study event details to challenge participants with real-world business problems.'
+                : 'Create an engaging case study event to challenge participants with real-world business problems.'}
+            </p>
           </div>
-          <p className="text-gray-600">
-            {isEditMode ? 'Update your case study event details.' : 'Create an engaging case study event to challenge participants with real-world business problems.'}
-          </p>
         </div>
 
         {/* Form */}
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
           {step === 1 && (  
             <>
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
+              {/* Basic Information */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                  <Briefcase className="h-5 w-5 mr-2 text-[#667eea]" />
                   Basic Information
                 </h2>
+                <p className="text-sm text-gray-600 mb-6">Provide the essential details about your case study event.</p>
                 
-                {/*Grid*/}
+                {/* Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/*Title*/}
+                  {/* Title */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Case Study Title 
+                      Case Study Title <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="title"
                       value={formData.title}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500  ${
-                        errors.title ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                        errors.title ? 'border-red-300' : 'border-gray-200'
                       }`}
                       placeholder="Enter case study title"
                     />
                     {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
                   </div>
-                  {/*Subtitle*/}
+                  
+                  {/* Subtitle */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Case Study Sub-Title 
+                      Case Study Sub-Title <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="subTitle"
                       value={formData.subTitle}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.subTitle ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                        errors.subTitle ? 'border-red-300' : 'border-gray-200'
                       }`}
                       placeholder="Enter case study sub-title"
                     />
                     {errors.subTitle && <p className="text-red-500 text-sm mt-1">{errors.subTitle}</p>}
                   </div>
                 
-                {/*Problem Statements*/}
-                <div className="md:col-span-2">
-                  <div className="flex items-center justify-between mb-4">
-                    <label className="block text-sm font-medium text-gray-700">
-                      <Target className="inline h-4 w-4 mr-1" />
-                      Problem Statements 
-                    </label>
-                    <button
-                      type="button"
-                      onClick={addProblemStatement}
-                      className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add Problem Statement
-                    </button>
-                  </div>
-                  <div className="space-y-4">
-                    {formData.problemStatements.map((problem, index) => (
-                      <div key={index} className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="flex-1">
-                            <input
-                              type="text"
-                              value={problem.title}
-                              onChange={(e) => updateProblemStatement(index, 'title', e.target.value)}
-                              className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md ${
-                                errors[`problemTitle${index}`] ? 'border-red-500' : ''
-                              }`}
-                              placeholder="Problem Title"
-                            />
-                            {errors[`problemTitle${index}`] && (
-                              <p className="text-red-500 text-sm mt-1">{errors[`problemTitle${index}`]}</p>
-                            )}
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => removeProblemStatement(index)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-md ml-2"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        </div>
-                        
-                        <div className="space-y-4">
-                          <div>
-                            <textarea
-                              value={problem.description}
-                              onChange={(e) => updateProblemStatement(index, 'description', e.target.value)}
-                              className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md ${
-                                errors[`problemDescription${index}`] ? 'border-red-500' : ''
-                              }`}
-                              rows={3}
-                              placeholder="Problem Description"
-                            />
-                            {errors[`problemDescription${index}`] && (
-                              <p className="text-red-500 text-sm mt-1">{errors[`problemDescription${index}`]}</p>
-                            )}
-                          </div>
-                          
-                          <div>
-                            <input
-                              type="text"
-                              value={problem.technology.join(', ')}
-                              onChange={(e) => updateProblemStatement(index, 'technology', e.target.value.split(',').map(t => t.trim()))}
-                              className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md ${
-                                errors[`problemTechnology${index}`] ? 'border-red-500' : ''
-                              }`}
-                              placeholder="Required Technologies (comma-separated e.g. Python, React, Node.js)"
-                            />
-                            {errors[`problemTechnology${index}`] && (
-                              <p className="text-red-500 text-sm mt-1">{errors[`problemTechnology${index}`]}</p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                  {/*Contact Email*/}
+                  {/* Contact Email */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Contact Email 
+                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                      <Mail className="h-4 w-4 mr-2 text-gray-500" />
+                      Contact Email <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
                       name="contactEmail"
                       value={formData.contactEmail}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.contactEmail ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                        errors.contactEmail ? 'border-red-300' : 'border-gray-200'
                       }`}
                       placeholder="contact@company.com"
                     />
                     {errors.contactEmail && <p className="text-red-500 text-sm mt-1">{errors.contactEmail}</p>}
                   </div>
-                </div>
-                {/*discription*/}
-                <div className="mt-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description 
-                  </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    rows={4}
-                    className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      errors.description ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                    placeholder="Describe your case study, themes, and what participants can expect..."
-                  />
-                  {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
+                  
+                  {/* Description */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Description <span className="text-red-500">*</span></label>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      rows={4}
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                        errors.description ? 'border-red-300' : 'border-gray-200'
+                      }`}
+                      placeholder="Describe your case study, themes, and what participants can expect..."
+                    />
+                    {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
+                  </div>
                 </div>
               </div>
 
-              {/* Logo */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Logo
+              {/* Logo Upload */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                  <FileText className="h-5 w-5 mr-2 text-[#667eea]" />
+                  Event Logo
                 </h2>
+                <p className="text-sm text-gray-600 mb-6">Upload a logo for your case study event.</p>
 
-                <div className="flex flex-col items-start">
+                <div className="flex flex-col items-center">
                   {/* Circular upload area */}
-                  <div className="relative">
+                  <div className="relative mb-4">
                     <label
                       htmlFor="logo-upload"
-                      className="flex items-center justify-center h-32 w-32 rounded-full border-2 border-dashed border-gray-400 cursor-pointer overflow-hidden bg-gray-50 hover:bg-gray-100"
+                      className="flex items-center justify-center h-40 w-40 rounded-full border-2 border-dashed border-gray-300 cursor-pointer overflow-hidden bg-gradient-to-r from-gray-50 to-white hover:border-gray-400 transition-colors duration-200"
                     >
                       {formData.logoPreview ? (
                         <img
@@ -934,7 +924,12 @@ const HostCasestudies = () => {
                           className="h-full w-full object-cover rounded-full"
                         />
                       ) : (
-                        <span className="text-gray-500 text-sm">Upload Logo</span>
+                        <div className="text-center p-4">
+                          <div className="mx-auto w-12 h-12 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full flex items-center justify-center mb-2">
+                            <FileText className="h-6 w-6 text-gray-500" />
+                          </div>
+                          <span className="text-gray-500 text-sm">Click to upload logo</span>
+                        </div>
                       )}
                     </label>
 
@@ -953,7 +948,7 @@ const HostCasestudies = () => {
                             setFormData((prev) => ({
                               ...prev,
                               logo: file,
-                              logoPreview: reader.result, // save preview URL
+                              logoPreview: reader.result,
                             }));
                           };
                           reader.readAsDataURL(file);
@@ -961,42 +956,132 @@ const HostCasestudies = () => {
                       }}
                     />
                   </div>
-
+                  
+                  {formData.logoPreview && (
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, logo: '', logoPreview: '' }))}
+                      className="text-red-600 hover:text-red-800 text-sm font-medium"
+                    >
+                      Remove Logo
+                    </button>
+                  )}
+                  
                   {errors.logo && (
                     <p className="text-red-500 text-sm mt-2">{errors.logo}</p>
                   )}
                 </div>
               </div>
 
-              {/*Eligibility*/}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Eligibility
-                </h2>
-                <div className="w-full">
-                  <textarea
-                    name="eligibility"
-                    value={formData.eligibility}
-                    onChange={handleInputChange}
-                    rows={3}
-                    className="w-full px-3 py-2 bg-white text-black border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Specify who can participate in this case study..."
-                  />
+              {/* Problem Statements */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                    <Target className="h-5 w-5 mr-2 text-[#667eea]" />
+                    Problem Statements
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={addProblemStatement}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Problem
+                  </button>
+                </div>
+                <div className="space-y-6">
+                  {formData.problemStatements.map((problem, index) => (
+                    <div key={index} className="border border-gray-200 rounded-xl p-6 bg-gradient-to-r from-gray-50 to-white">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={problem.title}
+                            onChange={(e) => updateProblemStatement(index, 'title', e.target.value)}
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
+                              errors[`problemTitle${index}`] ? 'border-red-300' : 'border-gray-200'
+                            }`}
+                            placeholder="Problem Title"
+                          />
+                          {errors[`problemTitle${index}`] && (
+                            <p className="text-red-500 text-sm mt-1">{errors[`problemTitle${index}`]}</p>
+                          )}
+                        </div>
+                        {formData.problemStatements.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeProblemStatement(index)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg ml-2 transition-colors"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <textarea
+                            value={problem.description}
+                            onChange={(e) => updateProblemStatement(index, 'description', e.target.value)}
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
+                              errors[`problemDescription${index}`] ? 'border-red-300' : 'border-gray-200'
+                            }`}
+                            rows={3}
+                            placeholder="Problem Description"
+                          />
+                          {errors[`problemDescription${index}`] && (
+                            <p className="text-red-500 text-sm mt-1">{errors[`problemDescription${index}`]}</p>
+                          )}
+                        </div>
+                        
+                        <div>
+                          <input
+                            type="text"
+                            value={problem.technology.join(', ')}
+                            onChange={(e) => updateProblemStatement(index, 'technology', e.target.value.split(',').map(t => t.trim()))}
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
+                              errors[`problemTechnology${index}`] ? 'border-red-300' : 'border-gray-200'
+                            }`}
+                            placeholder="Required Technologies (comma-separated e.g. Python, React, Node.js)"
+                          />
+                          {errors[`problemTechnology${index}`] && (
+                            <p className="text-red-500 text-sm mt-1">{errors[`problemTechnology${index}`]}</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Domains Section */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                    <FileText className="h-5 w-5" />
+              {/* Eligibility */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                  <GraduationCap className="h-5 w-5 mr-2 text-[#667eea]" />
+                  Eligibility
+                </h2>
+                <p className="text-sm text-gray-600 mb-4">Specify who can participate in this case study.</p>
+                <textarea
+                  name="eligibility"
+                  value={formData.eligibility}
+                  onChange={handleInputChange}
+                  rows={3}
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                  placeholder="Specify who can participate in this case study..."
+                />
+              </div>
+
+              {/* Domains */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                    <BookOpen className="h-5 w-5 mr-2 text-[#667eea]" />
                     Domains
                   </h2>
                   <button
                     type="button"
                     onClick={addDomain}
-                    className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
                   >
                     <Plus className="h-4 w-4" />
                     Add Domain
@@ -1009,14 +1094,14 @@ const HostCasestudies = () => {
                         type="text"
                         value={domain}
                         onChange={(e) => updateDomain(index, e.target.value)}
-                        className="flex-1 px-3 py-2 bg-white text-black border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                         placeholder="Enter domain (e.g., AI/ML, Web Development)"
                       />
                       {formData.domains.length > 1 && (
                         <button
                           type="button"
                           onClick={() => removeDomain(index)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                          className="p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -1026,23 +1111,26 @@ const HostCasestudies = () => {
                 </div>
               </div>
 
-              {/*Visibility*/}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Visibility
+              {/* Visibility Settings */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                  <Globe className="h-5 w-5 mr-2 text-[#667eea]" />
+                  Visibility & Mode
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <p className="text-sm text-gray-600 mb-6">Configure how your case study will be accessed and conducted.</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Visibility */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Visibility 
+                      Visibility <span className="text-red-500">*</span>
                     </label>
                     <select
                       name="visibility"
                       value={formData.visibility}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.visibility ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                        errors.visibility ? 'border-red-300' : 'border-gray-200'
                       }`}
                     >
                       <option value="">Select visibility</option>
@@ -1054,17 +1142,18 @@ const HostCasestudies = () => {
                       <p className="text-red-500 text-sm mt-1">{errors.visibility}</p>
                     )}
                   </div>
-                  {/*mode*/}
+                  
+                  {/* Mode */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Mode 
+                      Mode <span className="text-red-500">*</span>
                     </label>
                     <select
                       name="mode"
                       value={formData.mode}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.mode ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                        errors.mode ? 'border-red-300' : 'border-gray-200'
                       }`}
                     >
                       <option value="">Select mode</option>
@@ -1077,20 +1166,20 @@ const HostCasestudies = () => {
                     )}
                   </div>
 
-                  {/*participation type*/}
+                  {/* Participation Type */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Participation Type 
+                      Participation Type <span className="text-red-500">*</span>
                     </label>
                     <select
                       name="participationType"
                       value={formData.participationType}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.participationType ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                        errors.participationType ? 'border-red-300' : 'border-gray-200'
                       }`}
                     >
-                      <option value="">Select participation type</option>
+                      <option value="">Select type</option>
                       <option value="Individual">Individual</option>
                       <option value="Team">Team</option>
                       <option value="Both">Both</option>
@@ -1100,77 +1189,81 @@ const HostCasestudies = () => {
                     )}
                   </div>
                 </div>
-                
               </div>
               
               {/* Event Details */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                  <Calendar className="h-5 w-5 mr-2 text-[#667eea]" />
                   Event Details
                 </h2>
+                <p className="text-sm text-gray-600 mb-6">Set the timeline and location for your case study.</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Start Date */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Start Date 
+                      Start Date <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="datetime-local"
                       name="startDate"
                       value={formData.startDate}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.startDate ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                        errors.startDate ? 'border-red-300' : 'border-gray-200'
                       }`}
                     />
                     {errors.startDate && <p className="text-red-500 text-sm mt-1">{errors.startDate}</p>}
                   </div>
 
+                  {/* End Date */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      End Date 
+                      End Date <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="datetime-local"
                       name="endDate"
                       value={formData.endDate}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.endDate ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                        errors.endDate ? 'border-red-300' : 'border-gray-200'
                       }`}
                     />
                     {errors.endDate && <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>}
                   </div>
 
+                  {/* Registration Deadline */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Registration Deadline 
+                      Registration Deadline <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="datetime-local"
                       name="registrationDeadline"
                       value={formData.registrationDeadline}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.registrationDeadline ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                        errors.registrationDeadline ? 'border-red-300' : 'border-gray-200'
                       }`}
                     />
                     {errors.registrationDeadline && <p className="text-red-500 text-sm mt-1">{errors.registrationDeadline}</p>}
                   </div>
 
+                  {/* Location */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <MapPin className="inline h-4 w-4 mr-1" />
-                      Location 
+                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                      <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                      Location <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="location"
                       value={formData.location}
                       onChange={handleInputChange}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.location ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                        errors.location ? 'border-red-300' : 'border-gray-200'
                       }`}
                       placeholder="City, State or Virtual"
                     />
@@ -1179,23 +1272,24 @@ const HostCasestudies = () => {
                 </div>
               </div>
 
-              {/* Rounds Management */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
+              {/* Case Study Rounds */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                  <Clock className="h-5 w-5 mr-2 text-[#667eea]" />
                   Case Study Rounds
                 </h2>
+                <p className="text-sm text-gray-600 mb-6">Configure the stages of your case study competition.</p>
                 
                 <div className="space-y-6">
                   {/* Number of Rounds */}
-                  <div>
+                  <div className="max-w-xs">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Number of Rounds 
+                      Number of Rounds <span className="text-red-500">*</span>
                     </label>
                     <select
                       value={formData.numberOfRounds}
                       onChange={(e) => updateNumberOfRounds(parseInt(e.target.value))}
-                      className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
                     >
                       {[1, 2, 3, 4, 5].map(num => (
                         <option key={num} value={num}>{num} Round{num > 1 ? 's' : ''}</option>
@@ -1205,11 +1299,11 @@ const HostCasestudies = () => {
 
                   {/* Individual Rounds */}
                   {formData.rounds.map((round, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                      <h3 className="text-lg font-medium text-gray-900 mb-4">
+                    <div key={index} className="border border-gray-200 rounded-xl p-6 bg-gradient-to-r from-gray-50 to-white">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
                         {round.roundName}
                       </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Round Name
@@ -1218,43 +1312,12 @@ const HostCasestudies = () => {
                             type="text"
                             value={round.roundName}
                             onChange={(e) => updateRoundData(index, 'roundName', e.target.value)}
-                            className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
                             placeholder={`Round ${index + 1}`}
                           />
                         </div>
+                        
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Start Date 
-                          </label>
-                          <input
-                            type="datetime-local"
-                            value={round.startDate}
-                            onChange={(e) => updateRoundData(index, 'startDate', e.target.value)}
-                            className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                              errors[`round${index}StartDate`] ? 'border-red-500' : ''
-                            }`}
-                          />
-                          {errors[`round${index}StartDate`] && (
-                            <p className="text-red-500 text-sm mt-1">{errors[`round${index}StartDate`]}</p>
-                          )}
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            End Date 
-                          </label>
-                          <input
-                            type="datetime-local"
-                            value={round.endDate}
-                            onChange={(e) => updateRoundData(index, 'endDate', e.target.value)}
-                            className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                              errors[`round${index}EndDate`] ? 'border-red-500' : ''
-                            }`}
-                          />
-                          {errors[`round${index}EndDate`] && (
-                            <p className="text-red-500 text-sm mt-1">{errors[`round${index}EndDate`]}</p>
-                          )}
-                        </div>
-                        <div className="md:col-span-1">
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Description
                           </label>
@@ -1262,26 +1325,61 @@ const HostCasestudies = () => {
                             type="text"
                             value={round.description}
                             onChange={(e) => updateRoundData(index, 'description', e.target.value)}
-                            className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
                             placeholder="Brief about this round"
                           />
                         </div>
                         
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Input Type
+                            Start Date <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="datetime-local"
+                            value={round.startDate}
+                            onChange={(e) => updateRoundData(index, 'startDate', e.target.value)}
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
+                              errors[`round${index}StartDate`] ? 'border-red-300' : 'border-gray-200'
+                            }`}
+                          />
+                          {errors[`round${index}StartDate`] && (
+                            <p className="text-red-500 text-sm mt-1">{errors[`round${index}StartDate`]}</p>
+                          )}
+                        </div>
+                        
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            End Date <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="datetime-local"
+                            value={round.endDate}
+                            onChange={(e) => updateRoundData(index, 'endDate', e.target.value)}
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
+                              errors[`round${index}EndDate`] ? 'border-red-300' : 'border-gray-200'
+                            }`}
+                          />
+                          {errors[`round${index}EndDate`] && (
+                            <p className="text-red-500 text-sm mt-1">{errors[`round${index}EndDate`]}</p>
+                          )}
+                        </div>
+                        
+                        {/* Input Type */}
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Input Type <span className="text-red-500">*</span>
                           </label>
                           <select
                             name="inputType"
                             value={round.inputType}
                             onChange={(e) => updateRoundData(index, 'inputType', e.target.value)}
-                            className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                              errors[`round${index}InputType`] ? 'border-red-500' : 'border-gray-300' 
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white ${
+                              errors[`round${index}InputType`] ? 'border-red-300' : 'border-gray-200' 
                             }`}
                           >
                             <option value="">Select input type</option>
                             <option value="link">Link</option>
-                            <option value="doc">Document</option>\
+                            <option value="doc">Document</option>
                             <option value="pdf">PDF</option>
                             <option value="ppt">PowerPoint</option>
                           </select>
@@ -1295,325 +1393,435 @@ const HostCasestudies = () => {
                 </div>
               </div>
 
-              {/* Action Buttons for Step 1 */}
-              <div className="bg-white rounded-lg shadow-sm p-6 flex justify-end">
+              {/* Next Button */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 flex justify-end">
                 <button
                   type="button"
-                  onClick={handleNext} // Use handleNext instead of setStep(2)
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  onClick={() => setStep(2)}
+                  className="px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg font-medium hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
                 >
                   Next
                 </button>
               </div>
-          </>
+            </>
           )}
+          
           {step === 2 && (
             <>
-          {/* Participation */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Participation
-            </h2>
-            
-            <div className="space-y-4">
-              {/* Individual Participation */}
-              {(formData.participationType === 'Individual' || formData.participationType === 'Both') && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Users className="inline h-4 w-4 mr-1" />
-                    Max Individual Participants 
-                </label>
-                <input
-                  type="number"
-                  name="maxParticipants"
-                  value={formData.maxParticipants}
-                  onChange={handleInputChange}
-                  className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.maxParticipants ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="e.g., 100"
-                  min="1"
-                />
-                {errors.maxParticipants && <p className="text-red-500 text-sm mt-1">{errors.maxParticipants}</p>}
-                </div>
-              )}
-
-              {/* Team Participation */}
-              {(formData.participationType === 'Team' || formData.participationType === 'Both') && (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <Users className="inline h-4 w-4 mr-1" />
-                      Max Teams 
-                    </label>
-                    <input
-                      type="number"
-                      name="maxTeams"
-                      value={formData.maxTeams}
-                      onChange={handleInputChange}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.maxTeams ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                      placeholder="e.g., 25"
-                      min="1"
-                    />
-                    {errors.maxTeams && <p className="text-red-500 text-sm mt-1">{errors.maxTeams}</p>}
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Participation */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                  <Users className="h-5 w-5 mr-2 text-[#667eea]" />
+                  Participation Limits
+                </h2>
+                <p className="text-sm text-gray-600 mb-6">Configure participation limits based on the selected type.</p>
+                
+                <div className="space-y-6">
+                  {/* Individual Participation */}
+                  {(formData.participationType === 'Individual' || formData.participationType === 'Both') && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Min Team Members 
+                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <Users className="h-4 w-4 mr-2 text-gray-500" />
+                        Max Individual Participants <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="number"
-                        name="minTeamMembers"
-                        value={formData.minTeamMembers}
+                        name="maxParticipants"
+                        value={formData.maxParticipants}
                         onChange={handleInputChange}
-                        className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.minTeamMembers ? 'border-red-500' : 'border-gray-300'
+                        className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                          errors.maxParticipants ? 'border-red-300' : 'border-gray-200'
                         }`}
-                        placeholder="e.g., 2"
+                        placeholder="e.g., 100"
                         min="1"
                       />
-                      {errors.minTeamMembers && <p className="text-red-500 text-sm mt-1">{errors.minTeamMembers}</p>}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Max Team Members 
-                </label>
-                <input
-                  type="number"
-                        name="maxTeamMembers"
-                        value={formData.maxTeamMembers}
-                  onChange={handleInputChange}
-                  className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.maxTeamMembers ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        placeholder="e.g., 5"
-                        min="1"
-                      />
-                      {errors.maxTeamMembers && <p className="text-red-500 text-sm mt-1">{errors.maxTeamMembers}</p>}
+                      {errors.maxParticipants && <p className="text-red-500 text-sm mt-1">{errors.maxParticipants}</p>}
                     </div>
-                  </div>
-                </>
-              )}
-
-              {/* Show message when no participation type is selected */}
-              {!formData.participationType && (
-                <div className="text-gray-500 text-sm bg-gray-50 p-4 rounded-lg">
-                  Please select a participation type in Step 1 to configure participation limits.
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Rewards & Prizes */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Trophy className="h-5 w-5" />
-              Rewards & Prizes
-            </h2>
-            
-            <div className="space-y-6">
-              {/* Reward Type Selector */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Reward Type</label>
-                <select
-                  value={formData.rewards.rewardType}
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    rewards: { ...prev.rewards, rewardType: e.target.value }
-                  }))}
-                  className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="Amount">Amount</option>
-                  <option value="Perks">Perks/Gifts</option>
-                </select>
-              </div>  
-              {/* Main Prizes */}
-              <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Main Prizes</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      🥇 1st Place 
-                    </label>
-                    {formData.rewards.rewardType === 'Amount' ? (
-                    <input
-                      type="number"
-                      value={formData.rewards.firstPlace}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        rewards: { ...prev.rewards, firstPlace: e.target.value }
-                      }))}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.firstPlace ? 'border-red-500' : ''
-                      }`}
-                      placeholder="e.g., 50000"
-                      min="0"
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      value={formData.rewards.firstPlace}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        rewards: { ...prev.rewards, firstPlace: e.target.value }
-                      }))}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.firstPlace ? 'border-red-500' : ''
-                     }`}
-                      placeholder="e.g., MacBook, Gift Hamper"
-                    />
-                  )}                 
-                    {errors.firstPlace && <p className="text-red-500 text-sm mt-1">{errors.firstPlace}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      🥈 2nd Place 
-                    </label>
-                    {formData.rewards.rewardType === 'Amount' ? (
-                    <input
-                      type="number"
-                      value={formData.rewards.secondPlace}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        rewards: { ...prev.rewards, secondPlace: e.target.value }
-                      }))}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.secondPlace ? 'border-red-500' : ''
-                      }`}
-                      placeholder="e.g., 30000"
-                      min="0"
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      value={formData.rewards.secondPlace}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        rewards: { ...prev.rewards, secondPlace: e.target.value }
-                      }))}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.secondPlace ? 'border-red-500' : ''
-                      }`}
-                      placeholder="e.g., Headphones, Swag Kit"
-                    />
                   )}
-                    {errors.secondPlace && <p className="text-red-500 text-sm mt-1">{errors.secondPlace}</p>}
-                  </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      🥉 3rd Place 
-                    </label>
-                    {formData.rewards.rewardType === 'Amount' ? (
-                    <input
-                      type="number"
-                      value={formData.rewards.thirdPlace}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        rewards: { ...prev.rewards, thirdPlace: e.target.value }
-                      }))}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.thirdPlace ? 'border-red-500' : ''
-                      }`}
-                      placeholder="e.g., 20000"
-                      min="0"
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      value={formData.rewards.thirdPlace}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        rewards: { ...prev.rewards, thirdPlace: e.target.value }
-                      }))}
-                      className={`w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        errors.thirdPlace ? 'border-red-500' : ''
-                      }`}
-                      placeholder="e.g., Gift Vouchers"
-                    />
+                  {/* Team Participation */}
+                  {(formData.participationType === 'Team' || formData.participationType === 'Both') && (
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                          <Users className="h-4 w-4 mr-2 text-gray-500" />
+                          Max Teams <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          name="maxTeams"
+                          value={formData.maxTeams}
+                          onChange={handleInputChange}
+                          className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                            errors.maxTeams ? 'border-red-300' : 'border-gray-200'
+                          }`}
+                          placeholder="e.g., 25"
+                          min="1"
+                        />
+                        {errors.maxTeams && <p className="text-red-500 text-sm mt-1">{errors.maxTeams}</p>}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Min Team Members <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="number"
+                            name="minTeamMembers"
+                            value={formData.minTeamMembers}
+                            onChange={handleInputChange}
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                              errors.minTeamMembers ? 'border-red-300' : 'border-gray-200'
+                            }`}
+                            placeholder="e.g., 2"
+                            min="1"
+                          />
+                          {errors.minTeamMembers && <p className="text-red-500 text-sm mt-1">{errors.minTeamMembers}</p>}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Max Team Members <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="number"
+                            name="maxTeamMembers"
+                            value={formData.maxTeamMembers}
+                            onChange={handleInputChange}
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                              errors.maxTeamMembers ? 'border-red-300' : 'border-gray-200'
+                            }`}
+                            placeholder="e.g., 5"
+                            min="1"
+                          />
+                          {errors.maxTeamMembers && <p className="text-red-500 text-sm mt-1">{errors.maxTeamMembers}</p>}
+                        </div>
+                      </div>
+                    </>
                   )}
-                    {errors.thirdPlace && <p className="text-red-500 text-sm mt-1">{errors.thirdPlace}</p>}
-                  </div>
+
+                  {/* Show message when no participation type is selected */}
+                  {!formData.participationType && (
+                    <div className="text-gray-500 text-sm bg-gray-50 p-4 rounded-lg">
+                      Please select a participation type in Step 1 to configure participation limits.
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Special Awards */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium text-gray-900">Special Awards</h3>
-                  <button
-                    type="button"
-                    onClick={addSpecialAward}
-                    className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add Award
-                  </button>
-                </div>
-
-                {formData.rewards.specialAwards.length === 0 ? (
-                  <p className="text-gray-500 text-sm">No special awards added yet.</p>
-                ) : (
-                  <div className="space-y-3">
-                    {formData.rewards.specialAwards.map((award, index) => (
-                      <div key={index} className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg bg-gray-50">
-                        <div className="flex-1">
+              {/* Rewards & Prizes */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                  <Trophy className="h-5 w-5 mr-2 text-[#667eea]" />
+                  Rewards & Prizes
+                </h2>
+                <p className="text-sm text-gray-600 mb-6">Set up rewards and prizes for the winners.</p>
+                
+                <div className="space-y-6">
+                  {/* Reward Type Selector */}
+                  <div className="max-w-xs">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Reward Type</label>
+                    <select
+                      value={formData.rewards.rewardType}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        rewards: { ...prev.rewards, rewardType: e.target.value }
+                      }))}
+                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    >
+                      <option value="Amount">Amount</option>
+                      <option value="Perks">Perks/Gifts</option>
+                    </select>
+                  </div>  
+                  
+                  {/* Main Prizes */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Main Prizes</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {/* 1st Place */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          🥇 1st Place <span className="text-red-500">*</span>
+                        </label>
+                        {formData.rewards.rewardType === 'Amount' ? (
+                          <input
+                            type="number"
+                            value={formData.rewards.firstPlace}
+                            onChange={(e) => setFormData(prev => ({
+                              ...prev,
+                              rewards: { ...prev.rewards, firstPlace: e.target.value }
+                            }))}
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                              errors.firstPlace ? 'border-red-300' : 'border-gray-200'
+                            }`}
+                            placeholder="e.g., 50000"
+                            min="0"
+                          />
+                        ) : (
                           <input
                             type="text"
-                            value={award.name}
-                            onChange={(e) => updateSpecialAward(index, 'name', e.target.value)}
-                            className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Award name (e.g., Best Innovation, Most Creative)"
+                            value={formData.rewards.firstPlace}
+                            onChange={(e) => setFormData(prev => ({
+                              ...prev,
+                              rewards: { ...prev.rewards, firstPlace: e.target.value }
+                            }))}
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                              errors.firstPlace ? 'border-red-300' : 'border-gray-200'
+                            }`}
+                            placeholder="e.g., MacBook, Gift Hamper"
                           />
-                        </div>
-                        {/* Reward Type Selector for this specific award */}
-                        <div className="w-40">
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                          <select
-                            value={award.rewardType || 'Perks'}
-                            onChange={(e) => updateSpecialAward(index, 'rewardType', e.target.value)}
-                            className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          >
-                            <option value="Amount">Amount</option>
-                            <option value="Perks">Perks/Gifts</option>
-                          </select>
-                        </div>
-                        
-                        {award.rewardType === 'Amount' ? (
-                          <div className="w-32">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-                            <input
-                              type="number"
-                              value={award.amount || ''}
-                              onChange={(e) => updateSpecialAward(index, 'amount', e.target.value)}
-                              className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="Amount"
-                              min="0"
-                            />
-                          </div>
+                        )}                 
+                        {errors.firstPlace && <p className="text-red-500 text-sm mt-1">{errors.firstPlace}</p>}
+                      </div>
+
+                      {/* 2nd Place */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          🥈 2nd Place <span className="text-red-500">*</span>
+                        </label>
+                        {formData.rewards.rewardType === 'Amount' ? (
+                          <input
+                            type="number"
+                            value={formData.rewards.secondPlace}
+                            onChange={(e) => setFormData(prev => ({
+                              ...prev,
+                              rewards: { ...prev.rewards, secondPlace: e.target.value }
+                            }))}
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                              errors.secondPlace ? 'border-red-300' : 'border-gray-200'
+                            }`}
+                            placeholder="e.g., 30000"
+                            min="0"
+                          />
                         ) : (
-                          <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                            <input
-                              type="text"
-                              value={award.perk || ''}
-                              onChange={(e) => updateSpecialAward(index, 'perk', e.target.value)}
-                              className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="Perk/Gift description"
-                            />
-                          </div>
+                          <input
+                            type="text"
+                            value={formData.rewards.secondPlace}
+                            onChange={(e) => setFormData(prev => ({
+                              ...prev,
+                              rewards: { ...prev.rewards, secondPlace: e.target.value }
+                            }))}
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                              errors.secondPlace ? 'border-red-300' : 'border-gray-200'
+                            }`}
+                            placeholder="e.g., Headphones, Swag Kit"
+                          />
                         )}
+                        {errors.secondPlace && <p className="text-red-500 text-sm mt-1">{errors.secondPlace}</p>}
+                      </div>
+
+                      {/* 3rd Place */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          🥉 3rd Place <span className="text-red-500">*</span>
+                        </label>
+                        {formData.rewards.rewardType === 'Amount' ? (
+                          <input
+                            type="number"
+                            value={formData.rewards.thirdPlace}
+                            onChange={(e) => setFormData(prev => ({
+                              ...prev,
+                              rewards: { ...prev.rewards, thirdPlace: e.target.value }
+                            }))}
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                              errors.thirdPlace ? 'border-red-300' : 'border-gray-200'
+                            }`}
+                            placeholder="e.g., 20000"
+                            min="0"
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            value={formData.rewards.thirdPlace}
+                            onChange={(e) => setFormData(prev => ({
+                              ...prev,
+                              rewards: { ...prev.rewards, thirdPlace: e.target.value }
+                            }))}
+                            className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white ${
+                              errors.thirdPlace ? 'border-red-300' : 'border-gray-200'
+                            }`}
+                            placeholder="e.g., Gift Vouchers"
+                          />
+                        )}
+                        {errors.thirdPlace && <p className="text-red-500 text-sm mt-1">{errors.thirdPlace}</p>}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Special Awards */}
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-lg font-semibold text-gray-900">Special Awards</h3>
+                      <button
+                        type="button"
+                        onClick={addSpecialAward}
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Add Award
+                      </button>
+                    </div>
+
+                    {formData.rewards.specialAwards.length === 0 ? (
+                      <p className="text-gray-500 text-sm bg-gray-50 p-4 rounded-lg">No special awards added yet.</p>
+                    ) : (
+                      <div className="space-y-4">
+                        {formData.rewards.specialAwards.map((award, index) => (
+                          <div key={index} className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl bg-gradient-to-r from-gray-50 to-white">
+                            <div className="flex-1">
+                              <input
+                                type="text"
+                                value={award.name}
+                                onChange={(e) => updateSpecialAward(index, 'name', e.target.value)}
+                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
+                                placeholder="Award name (e.g., Best Innovation, Most Creative)"
+                              />
+                            </div>
+                            
+                            {/* Reward Type Selector */}
+                            <div className="w-40">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                              <select
+                                value={award.rewardType || 'Perks'}
+                                onChange={(e) => updateSpecialAward(index, 'rewardType', e.target.value)}
+                                className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
+                              >
+                                <option value="Amount">Amount</option>
+                                <option value="Perks">Perks/Gifts</option>
+                              </select>
+                            </div>
+                            
+                            {award.rewardType === 'Amount' ? (
+                              <div className="w-32">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                                <input
+                                  type="number"
+                                  value={award.amount || ''}
+                                  onChange={(e) => updateSpecialAward(index, 'amount', e.target.value)}
+                                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
+                                  placeholder="Amount"
+                                  min="0"
+                                />
+                              </div>
+                            ) : (
+                              <div className="flex-1">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <input
+                                  type="text"
+                                  value={award.perk || ''}
+                                  onChange={(e) => updateSpecialAward(index, 'perk', e.target.value)}
+                                  className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-white"
+                                  placeholder="Perk/Gift description"
+                                />
+                              </div>
+                            )} 
+                          
+                            <button
+                              type="button"
+                              onClick={() => removeSpecialAward(index)}
+                              className="p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* FAQ Section */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                  <FileText className="h-5 w-5 mr-2 text-[#667eea]" />
+                  FAQs
+                </h2>
+                <p className="text-sm text-gray-600 mb-6">Add frequently asked questions for participants.</p>
+                
+                {faqs.map((faq, idx) => (
+                  <div key={idx} className="mb-4 flex gap-2 items-start">
+                    <div className="flex-1 space-y-3">
+                      <input
+                        type="text"
+                        placeholder="Question"
+                        value={faq.question}
+                        onChange={e => handleFaqChange(idx, 'question', e.target.value)}
+                        className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      />
+                      <textarea
+                        placeholder="Answer"
+                        value={faq.answer}
+                        onChange={e => handleFaqChange(idx, 'answer', e.target.value)}
+                        className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        rows={2}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeFaq(idx)}
+                      className="p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors mt-2"
+                      disabled={faqs.length === 1}
+                      title="Remove FAQ"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addFaq}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add FAQ
+                </button>
+              </div>
+
+              {/* Panel Members Section */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                  <Users className="h-5 w-5 mr-2 text-[#667eea]" />
+                  Panel Members
+                </h2>
+                <p className="text-sm text-gray-600 mb-6">Add links to panel members' profiles (LinkedIn, Portfolio, etc.)</p>
+                
+                <div className="flex gap-2 mb-4">
+                  <input
+                    type="url"
+                    placeholder="Enter Panel Member Link (LinkedIn, Portfolio, etc.)"
+                    value={panelInput}
+                    onChange={handlePanelInputChange}
+                    className="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      addPanelMember();
+                    }}
+                    className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
+                  >
+                    Add
+                  </button>
+                </div>
+                
+                {panelMembers.length > 0 && (
+                  <div className="space-y-2">
+                    {panelMembers.map((link, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg bg-gradient-to-r from-gray-50 to-white">
+                        <div className="flex items-center gap-2">
+                          <Link className="h-4 w-4 text-gray-500" />
+                          <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline truncate">
+                            {link}
+                          </a>
+                        </div>
                         <button
                           type="button"
-                          onClick={() => removeSpecialAward(index)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                          onClick={() => removePanelMember(link)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Remove"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -1622,183 +1830,92 @@ const HostCasestudies = () => {
                   </div>
                 )}
               </div>
-            </div>
-          </div>
 
-          {/* FAQ Section */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              FAQs
-            </h2>
-            {faqs.map((faq, idx) => (
-              <div key={idx} className="mb-4 flex gap-2 items-start">
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    placeholder="Question"
-                    value={faq.question}
-                    onChange={e => handleFaqChange(idx, 'question', e.target.value)}
-                    className="w-full px-3 py-2 mb-2 bg-white text-black border border-gray-700 rounded-md"
-                  />
-                  <textarea
-                    placeholder="Answer"
-                    value={faq.answer}
-                    onChange={e => handleFaqChange(idx, 'answer', e.target.value)}
-                    className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md"
-                    rows={2}
-                  />
+              {/* Additional Information */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+                  <Globe className="h-5 w-5 mr-2 text-[#667eea]" />
+                  Additional Information
+                </h2>
+                <p className="text-sm text-gray-600 mb-6">Provide additional details, requirements, and rules for participants.</p>
+                
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Requirements</label>
+                    <textarea
+                      name="requirements"
+                      value={formData.requirements}
+                      onChange={handleInputChange}
+                      rows={3}
+                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      placeholder="Technical requirements, skills needed, etc."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Rules & Guidelines</label>
+                    <textarea
+                      name="rules"
+                      value={formData.rules}
+                      onChange={handleInputChange}
+                      rows={3}
+                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      placeholder="Case study rules, submission guidelines, etc."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+                    <input
+                      type="text"
+                      name="tags"
+                      value={formData.tags}
+                      onChange={handleInputChange}
+                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      placeholder="AI, Web Development, Mobile App, etc. (comma separated)"
+                    />
+                  </div>
                 </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 flex justify-between">
                 <button
                   type="button"
-                  onClick={() => removeFaq(idx)}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-md mt-2"
-                  disabled={faqs.length === 1}
-                  title="Remove FAQ"
+                  onClick={() => setStep(1)}
+                  className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
                 >
-                  <X className="h-4 w-4" />
+                  Back to Basic Details
                 </button>
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg font-medium hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {loading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        {isEditMode ? 'Updating...' : 'Creating...'}
+                      </>
+                    ) : (
+                      <>
+                        <Trophy className="h-4 w-4" />
+                        {isEditMode ? 'Update Case Study' : 'Create Case Study'}
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
-            ))}
-            <button
-              type="button"
-              onClick={addFaq}
-              className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
-            >
-              <Plus className="h-4 w-4" />
-              Add FAQ
-            </button>
-          </div>
-
-          {/* Panel Members Section */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Panel Members
-            </h2>
-            <div className="flex gap-2 mb-4">
-              <input
-                type="url"
-                placeholder="Enter Panel Member Link (LinkedIn, Portfolio, etc.)"
-                value={panelInput}
-                onChange={handlePanelInputChange}
-                className="flex-1 px-3 py-2 bg-white text-black border border-gray-700 rounded-md"
-              />
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  addPanelMember();
-                }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Add
-              </button>
-            </div>
-            {panelMembers.length > 0 && (
-              <ul className="list-disc pl-6">
-                {panelMembers.map((link, idx) => (
-                  <li key={idx} className="flex items-center gap-2 mb-1">
-                    <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                      {link}
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => removePanelMember(link)}
-                      className="p-1 text-red-600 hover:bg-red-50 rounded-md"
-                      title="Remove"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          {/* Additional Information */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Globe className="h-5 w-5" />
-              Additional Information
-            </h2>
-            
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Requirements
-                </label>
-                <textarea
-                  name="requirements"
-                  value={formData.requirements}
-                  onChange={handleInputChange}
-                  rows={3}
-                  className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Technical requirements, skills needed, etc."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Rules & Guidelines
-                </label>
-                <textarea
-                  name="rules"
-                  value={formData.rules}
-                  onChange={handleInputChange}
-                  rows={3}
-                  className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Case study rules, submission guidelines, etc."
-                />
-              </div>
-
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tags
-                </label>
-                <input
-                  type="text"
-                  name="tags"
-                  value={formData.tags}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-white text-black border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="AI, Web Development, Mobile App, etc. (comma separated)"
-                />
-              </div>
-            </div>
-          </div>
-          {/* Action Buttons for Step 2 */}
-          <div className="bg-white rounded-lg shadow-sm p-6 flex justify-between">
-            <button
-              type="button"
-              onClick={() => setStep(1)}
-              className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-            >
-              Back
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  {isEditMode ? 'Updating...' : 'Creating...'}
-                </>
-              ) : (
-                <>
-                  <Trophy className="h-4 w-4" />
-                  {isEditMode ? 'Update Case Study' : 'Create Case Study'}
-                </>
-              )}
-            </button>
-          </div>
-          </>
+            </>
           )}
-
-          
         </form>
       </div>
     </div>

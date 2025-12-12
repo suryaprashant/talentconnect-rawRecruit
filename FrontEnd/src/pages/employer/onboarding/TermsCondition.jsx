@@ -1,82 +1,97 @@
-import React, { useState } from "react";
-// import { useNavigate } from 'react-router-dom'; // No longer needed directly here
-import { TermsModal } from "@/components/onboarding/Terms&conditionModal";
-export default function TermsAndConditions({
-  formData = {},
-  updateFormData,
-  onBack,
-  onSubmit,
-}) {
-  // const navigate = useNavigate(); // No longer needed
-  const [isModalOpen, setIsModalOpen] = useState(false);
+import React from 'react';
+import { motion } from 'framer-motion';
 
+export default function TermsAndConditions({ formData = {}, updateFormData, onBack, onSubmit }) {
   const handleAcceptTerms = (e) => {
     updateFormData({ acceptedTerms: e.target.checked });
   };
 
   const handleSubmit = () => {
     if (formData.acceptedTerms) {
-      onSubmit();
+      onSubmit(); 
     } else {
-      alert(
-        "Please accept the Terms & Conditions and Privacy Policy to proceed."
-      );
+      alert('Please accept the Terms & Conditions and Privacy Policy to proceed.');
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen p-4">
-        <div className="text-center p-6 bg-white rounded-lg shadow-lg w-full max-w-lg my-8">
-          <h1 className="text-2xl font-bold mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea]/15 via-[#f093fb]/10 to-[#764ba2]/15 p-4">
+      {/* Blur Background around card */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative w-full max-w-4xl">
+        {/* Blur background behind card */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-0"></div>
+        
+        <motion.div
+          className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {/* Decorative top bar */}
+          <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
+
+          {/* Progress indicator */}
+          <div className="flex items-center justify-start mb-8">
+            <div className="flex items-center space-x-4">
+              <div className="w-8 h-8 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center text-sm font-medium">
+                ✓
+              </div>
+              <div className="w-16 h-px bg-gradient-to-r from-[#667eea]/30 to-[#764ba2]/30"></div>
+              <div className="w-8 h-8 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center text-sm font-medium">
+                ✓
+              </div>
+              <div className="w-16 h-px bg-gradient-to-r from-[#667eea]/30 to-[#764ba2]/30"></div>
+              <div className="w-8 h-8 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center text-sm font-medium">
+                ✓
+              </div>
+            </div>
+          </div>
+
+          <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
             Terms & Conditions and Privacy Policy
           </h1>
 
-          <div className="flex items-center justify-center mb-8 flex-col">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="acceptTerms"
-                checked={formData.acceptedTerms || false}
-                onChange={handleAcceptTerms}
-                className="mr-2 h-5 w-5"
-              />
-              <label htmlFor="acceptTerms" className="text-sm sm:text-base">
-                I agree to the Terms & Conditions and Privacy Policy
-              </label>
-            </div>
-            <a
-              onClick={() => setIsModalOpen(true)}
-              className="text-blue-600 hover:text-blue-700 underline cursor-pointer mt-2"
-            >
-              Terms & Services
-            </a>
-            <TermsModal
-              isOpen={isModalOpen}
-              onClose={() => setIsModalOpen(false)}
+          
+
+          {/* Checkbox and Buttons */}
+          <div className="flex items-center justify-center mb-8 p-4 bg-gray-50/80 rounded-lg">
+            <input
+              type="checkbox"
+              id="acceptTerms"
+              checked={formData.acceptedTerms || false}
+              onChange={handleAcceptTerms}
+              className="mr-3 h-5 w-5 cursor-pointer accent-[#667eea]"
             />
+            <label htmlFor="acceptTerms" className="text-sm cursor-pointer select-none text-gray-700">
+              I have read and agree to the Terms & Conditions and Privacy Policy
+            </label>
           </div>
 
-          <div className="flex justify-center gap-4">
+          <div className="flex justify-between mt-8">
             <button
               onClick={onBack}
-              className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
+              className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-all duration-300"
             >
               Back
             </button>
             <button
               onClick={handleSubmit}
               disabled={!formData.acceptedTerms}
-              className={`px-6 py-2 rounded-md transition-colors ${
+              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md ${
                 formData.acceptedTerms
-                  ? "bg-black text-white hover:bg-gray-800"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:scale-[1.02]'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >
               Get Started
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
