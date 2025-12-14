@@ -24,7 +24,7 @@ export default function Overview() {
         </div>
 
         {/* Your Details Card */}
-        <div className="mb-6 bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
+        {/* <div className="mb-6 bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
           <div className="p-6 border-b border-gray-100">
             <div className="flex items-center mb-4">
               <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl mr-3">
@@ -87,7 +87,7 @@ export default function Overview() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Company Details Card */}
         <div className="mb-6 bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
