@@ -164,7 +164,6 @@
 
 // export default OnboardingFlowForm;
 
-
 import React, { useState, useEffect } from "react";
 import IntroduceYourself from "./Introduction";
 import ConnectToCompany from "./ConnecToCompany";
@@ -175,13 +174,50 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "@/context/AuthProvider";
 
+const STORAGE_KEYS = {
+  FORM_DATA: 'employerOnboardingFormData',
+  CURRENT_STEP: 'employerOnboardingCurrentStep'
+};
+
 const OnboardingFlowForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
-  const[authUser , setAuthUser] = useAuth() ;
+  const [authUser, setAuthUser] = useAuth();
 
-   useEffect(() => {
+  // Load data from sessionStorage on component mount (isolated per tab)
+  useEffect(() => {
+    const savedFormData = sessionStorage.getItem(STORAGE_KEYS.FORM_DATA);
+    const savedStep = sessionStorage.getItem(STORAGE_KEYS.CURRENT_STEP);
+
+    if (savedFormData) {
+      try {
+        const parsedData = JSON.parse(savedFormData);
+        setFormData(parsedData);
+      } catch (error) {
+        console.error('Error parsing saved form data:', error);
+      }
+    }
+
+    if (savedStep) {
+      setCurrentStep(parseInt(savedStep, 10));
+    }
+  }, []);
+
+  // Save formData to sessionStorage whenever it changes
+  useEffect(() => {
+    if (Object.keys(formData).length > 0) {
+      sessionStorage.setItem(STORAGE_KEYS.FORM_DATA, JSON.stringify(formData));
+    }
+  }, [formData]);
+
+  // Save current step to sessionStorage whenever it changes
+  useEffect(() => {
+    sessionStorage.setItem(STORAGE_KEYS.CURRENT_STEP, currentStep.toString());
+  }, [currentStep]);
+
+  // Set email from authUser if available
+  useEffect(() => {
     if (authUser?.user?.email && !formData.email) {
       setFormData(prev => ({
         ...prev,
@@ -189,6 +225,12 @@ const OnboardingFlowForm = () => {
       }));
     }
   }, [authUser, formData.email]);
+
+  // Clear sessionStorage after successful submission
+  const clearFormStorage = () => {
+    sessionStorage.removeItem(STORAGE_KEYS.FORM_DATA);
+    sessionStorage.removeItem(STORAGE_KEYS.CURRENT_STEP);
+  };
 
   const updateFormData = (newData) => {
     setFormData((prev) => ({ ...prev, ...newData }));
@@ -202,7 +244,7 @@ const OnboardingFlowForm = () => {
     setCurrentStep((prev) => prev - 1);
   };
 
-  // NEW: Function to determine redirect destination based on hiring channel type
+  // Function to determine redirect destination based on hiring channel type
   const getRedirectDestination = () => {
     const redirectAfterAuth = localStorage.getItem('redirectAfterAuth');
     
@@ -264,24 +306,27 @@ const OnboardingFlowForm = () => {
         { withCredentials: true }
       );
 
-      if(response.data && response.data.user){
+      if (response.data && response.data.user) {
         const updatedUserFromServer = response.data.user;
         const finalUser = {
           ...authUser.user,
           ...updatedUserFromServer,
         };
-        setAuthUser({user : finalUser});
+        setAuthUser({ user: finalUser });
       }
 
       if (response.status === 201) {
         console.log("Onboarding created successfully:", response.data.profile);
         alert("Registration completed successfully!");
         
-        // NEW: Get the appropriate redirect destination
+        // Clear form data from sessionStorage after successful submission
+        clearFormStorage();
+        
+        // Get the appropriate redirect destination
         const redirectTo = getRedirectDestination();
         console.log('Redirecting to:', redirectTo);
         
-        // Clean up and navigate
+        // Clean up redirect info and navigate
         localStorage.removeItem('redirectAfterAuth');
         navigate(redirectTo);
       } else {
