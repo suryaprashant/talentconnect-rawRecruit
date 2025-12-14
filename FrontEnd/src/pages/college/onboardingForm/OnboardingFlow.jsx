@@ -215,8 +215,7 @@
 
 // export default OnboardingFlow;
 
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios'; 
 import {useAuth} from '../../../context/AuthProvider'
@@ -231,6 +230,11 @@ import ProfileAchievements from './ProfileAchievements';
 import TermsAndConditions from './TermsAndConditions';
 
 import ProgressStepper from './ProgressStepper';
+
+const STORAGE_KEYS = {
+  FORM_DATA: 'collegeOnboardingFormData',
+  CURRENT_PATH: 'collegeOnboardingCurrentPath'
+};
 
 // Define step configuration with proper route paths
 const steps = [
@@ -249,7 +253,7 @@ const totalVisibleStepperSteps = stepperSteps.length;
 function OnboardingFlow() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [authUser , setAuthUser] = useAuth() ;
+  const [authUser, setAuthUser] = useAuth();
 
   const [formData, setFormData] = useState({
     collegeName: '',
@@ -260,7 +264,7 @@ function OnboardingFlow() {
     pincode: '',
     coordinatorName: '',
     designation: '',
-    officialEmail: authUser?.user?.email || '' ,
+    officialEmail: authUser?.user?.email || '',
     officialMobile: '',
     linkedinProfile: '', 
     programsOffered: [],
@@ -275,6 +279,58 @@ function OnboardingFlow() {
     awards: [],
     acceptedTerms: false,
   });
+
+  // Load data from sessionStorage on component mount (isolated per tab)
+  useEffect(() => {
+    const savedFormData = sessionStorage.getItem(STORAGE_KEYS.FORM_DATA);
+    const savedPath = sessionStorage.getItem(STORAGE_KEYS.CURRENT_PATH);
+
+    if (savedFormData) {
+      try {
+        const parsedData = JSON.parse(savedFormData);
+        // Note: File objects (collegeBrochure) can't be stored in sessionStorage
+        // Only text field values will be preserved
+        setFormData(parsedData);
+      } catch (error) {
+        console.error('Error parsing saved form data:', error);
+      }
+    }
+
+    // Navigate to saved path if it exists and is different from current
+    if (savedPath && savedPath !== location.pathname && location.pathname === '/college-onboarding') {
+      navigate(savedPath, { replace: true });
+    }
+  }, []);
+
+  // Save formData to sessionStorage whenever it changes
+  useEffect(() => {
+    if (Object.keys(formData).length > 0) {
+      sessionStorage.setItem(STORAGE_KEYS.FORM_DATA, JSON.stringify(formData));
+    }
+  }, [formData]);
+
+  // Save current path to sessionStorage whenever location changes
+  useEffect(() => {
+    if (location.pathname.startsWith('/college-onboarding')) {
+      sessionStorage.setItem(STORAGE_KEYS.CURRENT_PATH, location.pathname);
+    }
+  }, [location.pathname]);
+
+  // Set email from authUser if available
+  useEffect(() => {
+    if (authUser?.user?.email && !formData.officialEmail) {
+      setFormData(prev => ({
+        ...prev,
+        officialEmail: authUser.user.email,
+      }));
+    }
+  }, [authUser, formData.officialEmail]);
+
+  // Clear sessionStorage after successful submission
+  const clearFormStorage = () => {
+    sessionStorage.removeItem(STORAGE_KEYS.FORM_DATA);
+    sessionStorage.removeItem(STORAGE_KEYS.CURRENT_PATH);
+  };
 
   const updateFormData = (name, value) => {
     setFormData(prev => ({
@@ -380,7 +436,10 @@ function OnboardingFlow() {
 
       toast.success('College onboarding form submitted successfully!');
       
-      // NEW: Check if user came from hiring channel
+      // Clear form data from sessionStorage after successful submission
+      clearFormStorage();
+      
+      // Check if user came from hiring channel (uses localStorage intentionally)
       const redirectAfterAuth = localStorage.getItem('redirectAfterAuth');
       
       if (redirectAfterAuth) {
