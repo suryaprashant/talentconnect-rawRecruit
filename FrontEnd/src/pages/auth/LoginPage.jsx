@@ -46,13 +46,13 @@ const HIRING_CHANNEL_ROUTES = {
 const handleAuthRedirect = (user, navigate) => {
   if (!user) return;
   const { userType, onboardingCompleted } = user;
-
+  
   const redirectAfterAuth = localStorage.getItem('redirectAfterAuth');
-
+   
   if (redirectAfterAuth) {
     const hiringChannelType = getHiringChannelType(redirectAfterAuth);
     const userSpecificRoute = HIRING_CHANNEL_ROUTES[userType]?.[hiringChannelType];
-
+    
     if (userSpecificRoute && onboardingCompleted) {
       localStorage.removeItem('redirectAfterAuth');
       navigate(userSpecificRoute);
@@ -124,7 +124,7 @@ function LoginPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
+    
     try {
       const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/auth/login`, {
         email: formData.email,
@@ -261,12 +261,12 @@ function LoginPage() {
         <div className="relative w-full max-w-md">
           {/* Blur Background behind card */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-4"></div>
-
+          
           {/* Main Login Card */}
           <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-100 p-8">
             {/* Decorative top bar */}
             <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
-
+            
             {/* Header */}
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] px-4 py-2 rounded-full text-sm font-semibold mb-4 shadow-sm">
@@ -275,11 +275,11 @@ function LoginPage() {
                 </svg>
                 Welcome Back
               </div>
-
+              
               <h1 className="text-2xl font-bold text-gray-800 mb-2">
                 Log In to Your Account
               </h1>
-
+              
               <p className="text-gray-600">
                 Access your dashboard and continue your journey
               </p>
@@ -313,8 +313,8 @@ function LoginPage() {
 
               {/* Forgot Password Link */}
               <div className="flex justify-end">
-                <Link
-                  to="/forgot-password"
+                <Link 
+                  to="/forgot-password" 
                   className="text-sm text-[#667eea] hover:text-[#764ba2] hover:underline transition-colors"
                 >
                   Forgot your password?
@@ -405,8 +405,8 @@ function LoginPage() {
             {/* Signup Link */}
             <p className="text-center mt-6 text-gray-600">
               Don't have an account?{' '}
-              <Link
-                to="/signup"
+              <Link 
+                to="/signup" 
                 className="text-[#667eea] font-semibold hover:text-[#764ba2] hover:underline transition-colors"
               >
                 Sign Up
