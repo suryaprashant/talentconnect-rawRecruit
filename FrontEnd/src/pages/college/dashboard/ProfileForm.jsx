@@ -805,6 +805,7 @@ export default function ProfileForm({
                             </div>
                         </div>
                     </div>
+                    </div>
 
                     {/* Placement & Recruitment Details */}
                     <div className="border border-gray-300 rounded-md p-6 mb-8 shadow-sm">
