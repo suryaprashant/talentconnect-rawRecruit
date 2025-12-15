@@ -111,7 +111,7 @@
 
 
 "use client"
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import StepIndicator from './StepIndicator';
@@ -123,12 +123,53 @@ import TermsAndConditions from '@/pages/company/TermsAndConditions';
 import useApplicationForm from '../../pages/company/ApplicationForm';
 import PersonalInfoStep from '../../pages/company/PersonalPreferencesStep';
 
+/*------------14-12-25------------ */
+const STORAGE_KEYS = {
+    FORM_DATA: 'companySignupFormData',
+    CURRENT_STEP: 'companySignupCurrentStep'
+};
+
 const FormContainer = () => {
-    const { formData, updateFormData, handleSubmit } = useApplicationForm();
+    const { formData, updateFormData, setFormData, handleSubmit } = useApplicationForm();
     const [currentStep, setCurrentStep] = useState(0);
     const navigate = useNavigate();
-
+ 
     const totalSteps = 6;
+
+    // Load data from localStorage on component mount
+    useEffect(() => {
+        const savedFormData = sessionStorage.getItem(STORAGE_KEYS.FORM_DATA);
+        const savedStep = sessionStorage.getItem(STORAGE_KEYS.CURRENT_STEP);
+
+        if (savedFormData) {
+            try {
+                const parsedData = JSON.parse(savedFormData);
+                // Restore File objects for kycDocuments if they exist
+                // Note: File objects can't be stored in localStorage, so they'll be lost on refresh
+                // Only the form field values will be preserved
+                setFormData(parsedData);
+            } catch (error) {
+                console.error('Error parsing saved form data:', error);
+            }
+        }
+
+        if (savedStep) {
+            setCurrentStep(parseInt(savedStep, 10));
+        }
+    }, [setFormData]);
+
+     // Save formData to sessionStorage whenever it changes
+    useEffect(() => {
+        if (formData) {
+            sessionStorage.setItem(STORAGE_KEYS.FORM_DATA, JSON.stringify(formData));
+        }
+    }, [formData]);
+
+    // Save current step to sessionStorage whenever it changes
+    useEffect(() => {
+        sessionStorage.setItem(STORAGE_KEYS.CURRENT_STEP, currentStep.toString());
+    }, [currentStep]);
+    
     
     const nextStep = () => {
         setCurrentStep(prev => Math.min(prev + 1, totalSteps - 1));
@@ -138,10 +179,20 @@ const FormContainer = () => {
         setCurrentStep(prev => Math.max(prev - 1, 0));
     };
 
+     // Clear sessionStorage after successful submission
+    const clearFormStorage = () => {
+        sessionStorage.removeItem(STORAGE_KEYS.FORM_DATA);
+        sessionStorage.removeItem(STORAGE_KEYS.CURRENT_STEP);
+    };
+
     // NEW: Smart redirect function after successful onboarding
     const handleSuccessfulSubmit = async () => {
         const success = await handleSubmit();
         if (success) {
+
+            // Clear form data from localStorage after successful submission
+            clearFormStorage();
+
             // Check if user came from hiring channel
             const redirectAfterAuth = localStorage.getItem('redirectAfterAuth');
             
