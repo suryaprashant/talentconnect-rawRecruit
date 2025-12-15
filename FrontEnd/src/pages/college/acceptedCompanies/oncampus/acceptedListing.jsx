@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Eye, ChevronLeft, ChevronRight, Trash, Filter, Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, Building2, Calendar, FileText, User } from 'lucide-react';
+import { 
+  Search, Eye, ChevronLeft, ChevronRight, Trash, Filter, 
+  Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, 
+  Building2, Calendar, FileText, User, AlertCircle, Users 
+} from 'lucide-react';
 import { acceptCandidate, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
-import {deleteCollegeJob} from '@/lib/College_AxiosIntance';
+import { deleteCollegeJob } from '@/lib/College_AxiosIntance';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -216,7 +220,7 @@ export default function OnCampusJobManagement() {
 
   const handleViewCompanies = (job) => {
     if (job.applicationCount === 0) {
-      alert("No companies have applied for this drive yet.");
+      toast.error("No companies have applied for this drive yet.");
       return;
     }
     setSelectedJob(job);
@@ -266,116 +270,166 @@ export default function OnCampusJobManagement() {
     const getStatusColor = (status) => {
       switch (status) {
         case 'Shortlisted':
-          return 'bg-green-100 text-green-800';
+          return 'bg-gradient-to-r from-[#a7f3d0]/20 to-[#34d399]/20 text-[#059669] border border-[#a7f3d0]/30';
         case 'Rejected':
-          return 'bg-red-100 text-red-800';
+          return 'bg-gradient-to-r from-[#fecaca]/20 to-[#f87171]/20 text-[#dc2626] border border-[#fecaca]/30';
         case 'Accepted':
-          return 'bg-purple-100 text-purple-800';
+          return 'bg-gradient-to-r from-[#c7d2fe]/20 to-[#818cf8]/20 text-[#4f46e5] border border-[#c7d2fe]/30';
         default:
-          return 'bg-blue-100 text-blue-800';
+          return 'bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#1d4ed8] border border-[#93c5fd]/30';
       }
     };
 
     return (
-      <div className="bg-white p-5 rounded-lg border border-gray-200 transition-shadow hover:shadow-md">
-        <div className="flex items-start space-x-4">
-          <img
-            src={profileImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}
-            alt={`${companyDetails?.companyName} Logo`}
-            className="w-20 h-20 rounded-md object-cover border"
-          />
+      <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-white/50 shadow-sm hover:shadow-lg transition-all duration-300">
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex-shrink-0">
+            <img
+              src={profileImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}
+              alt={`${companyDetails?.companyName} Logo`}
+              className="w-24 h-24 rounded-xl object-cover border-2 border-white/50 shadow-sm"
+            />
+          </div>
           <div className="flex-grow">
-            <div className="flex justify-between items-start">
-              <h3 className="text-xl font-bold text-gray-800">{companyDetails?.companyName}</h3>
-              <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(currentStatus)}`}>
-                {currentStatus}
-              </span>
-            </div>
-            <div className="mt-2 space-y-1.5 text-sm text-gray-600">
-              <div className="flex items-center">
-                <Briefcase size={14} className="mr-2.5 text-gray-400" />
-                <span>{companyDetails?.industryType || 'N/A'}</span>
-              </div>
-              <div className="flex items-center">
-                <Building2 size={14} className="mr-2.5 text-gray-400" />
-                <span>{companyDetails?.companyType || 'N/A'}</span>
-              </div>
-              <div className="flex items-center">
-                <MapPin size={14} className="mr-2.5 text-gray-400" />
-                <span>{companyDetails?.city || 'N/A'}, {companyDetails?.state || 'N/A'}</span>
-              </div>
-              <div className="flex items-center">
-                <Globe size={14} className="mr-2.5 text-gray-400" />
-                <a href={companyDetails?.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                  {companyDetails?.websiteUrl ? 'Website' : 'No website provided'}
-                </a>
-              </div>
-              <div className="flex items-center">
-                <Mail size={14} className="mr-2.5 text-gray-400" />
-                <a href={`mailto:${employerDetails?.workEmail}`} className="text-blue-600 hover:underline">
-                  {employerDetails?.workEmail || 'No email provided'}
-                </a>
-              </div>
-              <div className="flex items-center">
-                <Phone size={14} className="mr-2.5 text-gray-400" />
-                <span>{companyDetails?.phoneNumber || 'No phone provided'}</span>
-              </div>
-              <div className="flex items-center">
-                <Linkedin size={14} className="mr-2.5 text-gray-400" />
-                <a href={companyDetails?.companyLinkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                  {companyDetails?.companyLinkedin ? 'LinkedIn Profile' : 'No LinkedIn provided'}
-                </a>
+            <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+              <div>
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
+                  {companyDetails?.companyName}
+                </h3>
+                <div className="flex items-center gap-3 mt-2">
+                  <span className={`px-3 py-1.5 text-sm font-medium rounded-full ${getStatusColor(currentStatus)}`}>
+                    {currentStatus}
+                  </span>
+                  <span className="text-sm text-gray-500 flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    Applied: {new Date(createdAt).toLocaleDateString()}
+                  </span>
+                </div>
               </div>
             </div>
-            <p className="text-xs text-gray-400 mt-2">
-              Applied on: {new Date(createdAt).toLocaleDateString()}
-              <span className="mx-1"> | Established: {companyDetails?.establishedYear || 'N/A'}</span>
-            </p>
-          </div>
-        </div>
-        
-        {/* Contact Person Details */}
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-semibold text-gray-800 mb-2">Contact Person</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div className="flex items-center">
-              <User size={16} className="mr-2 text-gray-500" />
-              <span>{employerDetails?.name || 'N/A'}</span>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+              <div className="space-y-3">
+                <div className="flex items-center text-gray-700">
+                  <Briefcase className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <span className="font-medium">Industry:</span>
+                  <span className="ml-2">{companyDetails?.industryType || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Building2 className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <span className="font-medium">Company Type:</span>
+                  <span className="ml-2">{companyDetails?.companyType || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <MapPin className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <span className="font-medium">Location:</span>
+                  <span className="ml-2">{companyDetails?.city || 'N/A'}, {companyDetails?.state || 'N/A'}</span>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex items-center text-gray-700">
+                  <Globe className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <span className="font-medium">Website:</span>
+                  <a href={companyDetails?.websiteUrl} target="_blank" rel="noopener noreferrer" 
+                     className="ml-2 text-[#3b82f6] hover:underline truncate">
+                    {companyDetails?.websiteUrl || 'Not provided'}
+                  </a>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Phone className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <span className="font-medium">Phone:</span>
+                  <span className="ml-2">{companyDetails?.phoneNumber || 'Not provided'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Linkedin className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <span className="font-medium">LinkedIn:</span>
+                  <a href={companyDetails?.companyLinkedin} target="_blank" rel="noopener noreferrer" 
+                     className="ml-2 text-[#3b82f6] hover:underline truncate">
+                    {companyDetails?.companyLinkedin ? 'View Profile' : 'Not provided'}
+                  </a>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center">
-              <Briefcase size={16} className="mr-2 text-gray-500" />
-              <span>{employerDetails?.designation || 'N/A'}</span>
-            </div>
-            <div className="flex items-center">
-              <Mail size={16} className="mr-2 text-gray-500" />
-              <span>{employerDetails?.workEmail || 'N/A'}</span>
-            </div>
-            <div className="flex items-center">
-              <Phone size={16} className="mr-2 text-gray-500" />
-              <span>{employerDetails?.mobile || 'N/A'}</span>
-            </div>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 border-t pt-4">
-          <button
-            onClick={handleReject}
-            disabled={isProcessing}
-            className={`w-full text-white px-4 py-2 rounded-md font-semibold transition-colors text-center text-sm ${
-              currentStatus === 'Rejected' 
-                ? 'bg-red-700 hover:bg-red-800' 
-                : 'bg-red-500 hover:bg-red-600'
-            } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            {isProcessing ? 'Rejecting...' : (currentStatus === 'Rejected' ? 'Rejected' : 'Reject')}
-          </button>
-          <button
-            onClick={() => {/* Add message functionality here */}}
-            disabled={isProcessing}
-            className={`w-full bg-gray-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center text-center text-sm ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            <Send size={14} className="mr-2" /> Message
-          </button>
+            {/* Contact Person Details */}
+            <div className="mt-6 p-5 bg-gradient-to-r from-[#f0f9ff]/30 to-[#e0f2fe]/30 rounded-xl border border-blue-50">
+              <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <User className="w-5 h-5 text-[#3b82f6]" />
+                Contact Person Details
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center text-gray-700">
+                  <User className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <div>
+                    <span className="font-medium">Name:</span>
+                    <span className="ml-2">{employerDetails?.name || 'N/A'}</span>
+                  </div>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Briefcase className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <div>
+                    <span className="font-medium">Designation:</span>
+                    <span className="ml-2">{employerDetails?.designation || 'N/A'}</span>
+                  </div>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Mail className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <div>
+                    <span className="font-medium">Email:</span>
+                    <a href={`mailto:${employerDetails?.workEmail}`} 
+                       className="ml-2 text-[#3b82f6] hover:underline">
+                      {employerDetails?.workEmail || 'N/A'}
+                    </a>
+                  </div>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Phone className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                  <div>
+                    <span className="font-medium">Mobile:</span>
+                    <span className="ml-2">{employerDetails?.mobile || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 pt-6 border-t border-white/50">
+              <button
+                onClick={handleReject}
+                disabled={isProcessing || currentStatus === 'Rejected'}
+                className={`group flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-sm ${
+                  currentStatus === 'Rejected'
+                    ? 'bg-gradient-to-r from-red-700 to-red-800 text-white cursor-not-allowed'
+                    : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-0.5'
+                } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {isProcessing ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent"></div>
+                    Rejecting...
+                  </>
+                ) : currentStatus === 'Rejected' ? (
+                  'Already Rejected'
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Reject Application
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => {/* Add message functionality here */}}
+                disabled={isProcessing}
+                className={`group flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-gray-500/30 hover:-translate-y-0.5 transition-all duration-300 text-sm ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <Send className="w-4 h-4" />
+                Send Message
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -383,31 +437,50 @@ export default function OnCampusJobManagement() {
 
   if (selectedJob) {
     return (
-      <div className="min-h-screen bg-gray-50 font-sans">
-        <div className="max-w-6xl mx-auto p-4">
+      <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
+        {/* Pastel blur background elements */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto p-6">
           <button
             onClick={handleBackToList}
-            className="flex items-center text-gray-600 hover:text-black mb-6"
+            className="group flex items-center gap-2 text-gray-600 hover:text-[#3b82f6] mb-8 transition-all duration-200 font-medium"
           >
-            <ChevronLeft size={20} className="mr-1" />
+            <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform duration-200" />
             Back to drives
           </button>
 
           {companiesLoading ? (
-            <div className="p-8 text-center bg-white rounded-lg shadow-sm">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-black border-r-transparent"></div>
-              <p className="mt-4 text-gray-600">Loading company applications...</p>
+            <div className="p-12 text-center bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg">
+              <div className="inline-block h-12 w-12 animate-spin rounded-full border-3 border-solid border-[#3b82f6] border-r-transparent"></div>
+              <p className="mt-6 text-gray-600 text-lg font-medium">Loading company applications...</p>
             </div>
           ) : error ? (
-            <div className="p-4 text-red-700 bg-red-100 border border-red-200 rounded-md">
-              Error: {error}
+            <div className="p-6 text-red-700 bg-gradient-to-r from-red-50/80 to-red-100/80 backdrop-blur-sm border border-red-200 rounded-2xl">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="w-6 h-6" />
+                <div>
+                  <p className="font-semibold">Error loading applications</p>
+                  <p className="text-sm mt-1">{error}</p>
+                </div>
+              </div>
             </div>
           ) : companies.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 bg-white rounded-lg shadow-sm">
-              No companies have applied for this drive yet.
+            <div className="p-12 text-center bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg">
+              <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-gray-700 mb-2">No Applications Yet</h3>
+              <p className="text-gray-500">No companies have applied for this drive yet.</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Company Applications</h2>
+                <p className="text-gray-600">Total applications: <span className="font-semibold text-[#3b82f6]">{companies.length}</span></p>
+              </div>
               {companies.map(company => (
                 <CompanyCard
                   key={company._id}
@@ -424,212 +497,267 @@ export default function OnCampusJobManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-white font-sans">
-      <div className="max-w-7xl mx-auto p-4 bg-white">
-        <div className="flex justify-between items-center mt-10 mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Accepted On-Campus Drives</h1>
-            <p className="text-gray-600 mt-2">Track Your Accepted On-Campus Drives</p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
+      {/* Pastel blur background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/4 right-1/4 w-48 h-48 bg-[#c7d2fe]/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/3 left-1/4 w-56 h-56 bg-[#fde68a]/10 rounded-full blur-3xl"></div>
+      </div>
 
-        <div className="border rounded-md mt-10">
-          {/* Tabs */}
-          <div className="flex border-b">
-            <button
-              className={`px-4 py-2 ${activeTab === 'All Drives' ? 'border-b-2 border-black font-medium' : ''}`}
-              onClick={() => setActiveTab('All Drives')}
-            >
-              All Drives ({jobs.length || 0})
-            </button>
-            <button
-              className={`px-4 py-2 ${activeTab === 'Open' ? 'border-b-2 border-black font-medium' : ''}`}
-              onClick={() => setActiveTab('Open')}
-            >
-              Open ({openJobsCount})
-            </button>
-            <button
-              className={`px-4 py-2 ${activeTab === 'Pending' ? 'border-b-2 border-black font-medium' : ''}`}
-              onClick={() => setActiveTab('Pending')}
-            >
-              Pending ({pendingJobsCount})
-            </button>
-            <button
-              className={`px-4 py-2 ${activeTab === 'Closed' ? 'border-b-2 border-black font-medium' : ''}`}
-              onClick={() => setActiveTab('Closed')}
-            >
-              Closed ({closedJobsCount})
-            </button>
+      <div className="relative z-10 max-w-7xl mx-auto p-6">
+        {/* Header Section */}
+        <div className="mb-12">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
+            <div className="text-center md:text-left">
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-2">
+                Accepted On-Campus Drives
+              </h1>
+              <p className="text-gray-600 text-lg md:text-xl max-w-2xl">
+                Track Your Accepted On-Campus Drives
+              </p>
+            </div>
           </div>
 
-          {/* Search and filters */}
-          <div className="p-4 border-b flex flex-wrap items-center gap-2">
-            <div className="relative flex-grow max-w-sm">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <Search className="w-4 h-4 text-gray-500" />
+          {/* Main Content Card */}
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden">
+            {/* Tabs */}
+            <div className="flex border-b border-white/50">
+              <button
+                className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === 'All Drives' 
+                  ? 'border-b-2 border-[#3b82f6] text-[#3b82f6]' 
+                  : 'text-gray-600 hover:text-[#3b82f6] hover:bg-white/30'}`}
+                onClick={() => setActiveTab('All Drives')}
+              >
+                All Drives ({jobs.length || 0})
+              </button>
+              <button
+                className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === 'Open' 
+                  ? 'border-b-2 border-[#3b82f6] text-[#3b82f6]' 
+                  : 'text-gray-600 hover:text-[#3b82f6] hover:bg-white/30'}`}
+                onClick={() => setActiveTab('Open')}
+              >
+                Open ({openJobsCount})
+              </button>
+              <button
+                className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === 'Pending' 
+                  ? 'border-b-2 border-[#3b82f6] text-[#3b82f6]' 
+                  : 'text-gray-600 hover:text-[#3b82f6] hover:bg-white/30'}`}
+                onClick={() => setActiveTab('Pending')}
+              >
+                Pending ({pendingJobsCount})
+              </button>
+              <button
+                className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === 'Closed' 
+                  ? 'border-b-2 border-[#3b82f6] text-[#3b82f6]' 
+                  : 'text-gray-600 hover:text-[#3b82f6] hover:bg-white/30'}`}
+                onClick={() => setActiveTab('Closed')}
+              >
+                Closed ({closedJobsCount})
+              </button>
+            </div>
+
+            {/* Search and Filters */}
+            <div className="p-6 border-b border-white/50">
+              <div className="flex flex-col md:flex-row gap-4 items-center">
+                <div className="relative flex-grow">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <Search className="w-4 h-4 text-[#3b82f6]" />
+                  </div>
+                  <input
+                    type="text"
+                    className="w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                    placeholder="Search by degree or job title..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+
+                <button
+                  className="flex items-center gap-2 px-6 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl hover:bg-white/70 transition-all duration-200 text-gray-700 font-medium"
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  <Filter className="w-4 h-4 text-[#3b82f6]" />
+                  Filters
+                </button>
+
+                <div className="text-sm text-gray-500 font-medium">
+                  {totalItems > 0 ? `Showing ${startIndex + 1}-${endIndex} of ${totalItems}` : 'Showing 0-0 of 0'}
+                </div>
               </div>
-              <input
-                type="text"
-                className="w-full pl-10 pr-4 py-2 border rounded-md"
-                placeholder="Search by degree or job title..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
             </div>
-            <button
-              className="flex items-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-50 transition-colors"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter className="w-4 h-4" />
-              Filters
-            </button>
-            <div className="ml-auto text-sm text-gray-500">
-              {totalItems > 0 ? `Showing ${startIndex + 1}-${endIndex} of ${totalItems}` : 'Showing 0-0 of 0'}
-            </div>
-          </div>
 
-          {error && (
-            <div className="p-4 text-red-700 bg-red-100 border border-red-200 rounded-md m-4">
-              Error: {error}
-            </div>
-          )}
+            {/* Error Alert */}
+            {error && (
+              <div className="m-6 p-4 text-red-700 bg-gradient-to-r from-red-50/80 to-red-100/80 backdrop-blur-sm border border-red-200 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <AlertCircle className="w-5 h-5" />
+                  <span>{error}</span>
+                </div>
+              </div>
+            )}
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-white">
-                <tr className="border-b">
-                  <th className="px-4 py-3 text-left">Degree</th>
-                  <th className="px-4 py-3 text-left">Status</th>
-                  <th className="px-4 py-3 text-left">Deadline</th>
-                  <th className="px-4 py-3 text-left">Views</th>
-                  <th className="px-4 py-3 text-left">Applications</th>
-                  <th className="px-4 py-3 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-white/50">
                   <tr>
-                    <td colSpan={6} className="text-center py-4">
-                      <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-black border-r-transparent"></div>
-                      <p className="mt-2">Loading drives...</p>
-                    </td>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Degree</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Deadline</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Views</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Applications</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
                   </tr>
-                ) : error ? (
-                  <tr>
-                    <td colSpan={6} className="text-center py-4 text-red-500">{error}</td>
-                  </tr>
-                ) : currentJobs.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="text-center py-4 text-gray-500">
-                      No drives found matching your criteria.
-                    </td>
-                  </tr>
-                ) : (
-                  currentJobs.map(job => {
-                    const jobId = job._id;
-                    const degree = displayDegree(job);
-                    const jobStatus = job.jobStatus || 'Unknown';
-                    const deadline = job.endDate;
-                    const views = job.views || 0;
-                    const applications = job.applicationCount || 0;
-                    
-                    // Check if the eye icon (View) should be disabled
-                    const isViewDisabled = applications === 0;
-                    const viewButtonClass = `transition-colors ${isViewDisabled ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-gray-700'}`;
-                    
-                    return (
-                      <tr
-                        key={jobId}
-                        className="border-b hover:bg-gray-50 cursor-pointer transition-colors"
-                      >
-                        <td className="px-4 py-3" onClick={() => navigate(`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`)}>
-                          <div className="font-medium text-gray-900">{degree}</div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`px-2 py-1 text-xs rounded-full ${jobStatus === 'Open' ? 'bg-green-100 text-green-800' :
-                            jobStatus === 'Closed' ? 'bg-red-100 text-red-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                            {jobStatus}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">{formatDate(deadline)}</td>
-                        <td className="px-4 py-3">{views}</td>
-                        <td 
-                          className="px-4 py-3" 
-                          onClick={(e) => { 
-                            e.stopPropagation(); 
-                            if (!isViewDisabled) handleViewCompanies(job); 
-                          }}
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={6} className="text-center py-8">
+                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-solid border-[#3b82f6] border-r-transparent"></div>
+                        <p className="mt-2 text-gray-600">Loading drives...</p>
+                      </td>
+                    </tr>
+                  ) : currentJobs.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="text-center py-8">
+                        <div className="flex flex-col items-center">
+                          <Search className="w-12 h-12 text-gray-400 mb-2" />
+                          <p className="text-gray-500 text-lg">No drives found matching your criteria.</p>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    currentJobs.map(job => {
+                      const jobId = job._id;
+                      const degree = displayDegree(job);
+                      const jobStatus = job.jobStatus || 'Unknown';
+                      const deadline = job.endDate;
+                      const views = job.views || 0;
+                      const applications = job.applicationCount || 0;
+                      
+                      // Check if the eye icon (View) should be disabled
+                      const isViewDisabled = applications === 0;
+                      const viewButtonClass = `transition-all duration-200 ${isViewDisabled ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-[#3b82f6]'}`;
+                      
+                      return (
+                        <tr
+                          key={jobId}
+                          className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200"
                         >
-                          {applications}
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex gap-2">
-                            <button 
-                              onClick={(e) => { 
-                                e.stopPropagation(); 
-                                if (!isViewDisabled) handleViewCompanies(job); 
-                              }} 
-                              className={viewButtonClass} 
-                              title={isViewDisabled ? "No applications to view" : "View Company Applications"}
-                              disabled={isViewDisabled}
-                            >
-                              <Eye size={18} />
-                            </button>
-                            <button 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(job._id);
-                              }} 
-                              className="text-gray-500 hover:text-red-600 transition-colors" 
-                              title="Delete Drive"
-                            >
-                              <Trash size={18} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          {!loading && totalPages > 1 && (
-            <div className="flex items-center justify-between p-4">
-              <button
-                onClick={handlePrevPage}
-                disabled={currentPage === 1}
-                className="flex items-center gap-1 px-4 py-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition-colors"
-              >
-                <ChevronLeft size={16} />
-                Prev
-              </button>
-              <div className="flex gap-2">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                  <button
-                    key={page}
-                    onClick={() => handlePageClick(page)}
-                    className={`w-8 h-8 flex items-center justify-center rounded-md transition-colors ${currentPage === page ? 'bg-black text-white' : 'border hover:bg-gray-50'
-                      }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-                className="flex items-center gap-1 px-4 py-2 border rounded-md disabled:opacity-50 hover:bg-gray-50 transition-colors"
-              >
-                Next
-                <ChevronRight size={16} />
-              </button>
+                          <td 
+                            className="px-6 py-4 cursor-pointer" 
+                            onClick={() => navigate(`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`)}
+                          >
+                            <div className="font-medium text-gray-900">{degree}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`px-3 py-1 text-xs font-medium rounded-full ${jobStatus === 'Open'
+                              ? 'bg-gradient-to-r from-[#a7f3d0]/20 to-[#34d399]/20 text-[#059669] border border-[#a7f3d0]/30'
+                              : jobStatus === 'Closed'
+                                ? 'bg-gradient-to-r from-[#fecaca]/20 to-[#f87171]/20 text-[#dc2626] border border-[#fecaca]/30'
+                                : 'bg-gradient-to-r from-[#fde68a]/20 to-[#f59e0b]/20 text-[#d97706] border border-[#fde68a]/30'
+                              }`}>
+                              {jobStatus}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-1 text-gray-700">
+                              <Calendar className="w-4 h-4 text-[#3b82f6]" />
+                              {formatDate(deadline)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-1 text-gray-700">
+                              <Eye className="w-4 h-4 text-[#3b82f6]" />
+                              {views}
+                            </div>
+                          </td>
+                          <td 
+                            className="px-6 py-4 cursor-pointer"
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              if (!isViewDisabled) handleViewCompanies(job); 
+                            }}
+                          >
+                            <div className="flex items-center gap-1 text-gray-700">
+                              <Users className="w-4 h-4 text-[#3b82f6]" />
+                              {applications}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex gap-3">
+                              <button 
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  if (!isViewDisabled) handleViewCompanies(job); 
+                                }} 
+                                className={viewButtonClass} 
+                                title={isViewDisabled ? "No applications to view" : "View Company Applications"}
+                                disabled={isViewDisabled}
+                              >
+                                <Eye size={18} />
+                              </button>
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(job._id);
+                                }} 
+                                className="text-gray-500 hover:text-red-500 transition-all duration-200" 
+                                title="Delete Drive"
+                              >
+                                <Trash size={18} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
             </div>
-          )}
+
+            {/* Pagination */}
+            {!loading && totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between p-6 border-t border-white/50">
+                <button
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-2 px-6 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl disabled:opacity-50 hover:bg-white/70 transition-all duration-200 text-gray-700 font-medium mb-4 sm:mb-0"
+                >
+                  <ChevronLeft size={16} />
+                  Prev
+                </button>
+
+                <div className="flex gap-2 mb-4 sm:mb-0">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageClick(page)}
+                      className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-200 font-medium ${currentPage === page
+                        ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white shadow-md shadow-[#93c5fd]/30'
+                        : 'bg-white/50 backdrop-blur-sm border border-white/50 text-gray-700 hover:bg-white/70'
+                        }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-2 px-6 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl disabled:opacity-50 hover:bg-white/70 transition-all duration-200 text-gray-700 font-medium"
+                >
+                  Next
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
