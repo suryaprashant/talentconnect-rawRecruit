@@ -145,6 +145,7 @@ const useApplicationForm = () => {
 
     return {
         formData,
+        setFormData,
         updateFormData,
         handleSubmit
     };
