@@ -1,16 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { motion } from 'framer-motion';
 import { City } from 'country-state-city';
+import CreatableSelect from 'react-select/creatable';
 
 const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) => {
     const [errors, setErrors] = useState({});
     const [showJobRolesDropdown, setShowJobRolesDropdown] = useState(false);
-    const [showLocationsDropdown, setShowLocationsDropdown] = useState(false);
     const jobRolesRef = useRef(null);
-    const locationsRef = useRef(null);
     
-    const [indianCities, setIndianCities] = useState([]);
-
     const validateForm = () => {
         const newErrors = {};
         if (!formData.jobRoles?.length) newErrors.jobRoles = 'Job roles are required';
@@ -24,13 +21,11 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
 
     const handleNextClick = () => {
         if (validateForm()) {
-          
             let lookingForData = formData.lookingFor;
 
             if (lookingForData === 'both') {
                 lookingForData = ['job', 'internship'];
             } else if (typeof lookingForData === 'string') {
-              
                 lookingForData = [lookingForData];
             }
 
@@ -47,22 +42,18 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
     };
 
     const handleLookingForChange = (value) => {
-        // Store as simple string while interacting for better UX
         updateFormData({ lookingFor: value });
     };
 
-    // Helper to check which button should be active (handles both string and array states)
     const isLookingForActive = (option) => {
         const val = formData.lookingFor;
-        // 1. If it's a simple string (just clicked)
-        if (val === option) return true;
         
-        // 2. If it's an array (coming back from next step or saved state)
+        if (val === option) return true;
+
         if (Array.isArray(val)) {
             if (option === 'both') {
                 return val.includes('job') && val.includes('internship');
             }
-            // For 'job' or 'internship', check if it's the ONLY item in array
             return val.includes(option) && val.length === 1;
         }
         return false;
@@ -83,12 +74,6 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
 
     const toggleJobRolesDropdown = () => {
         setShowJobRolesDropdown(!showJobRolesDropdown);
-        setShowLocationsDropdown(false);
-    };
-
-    const toggleLocationsDropdown = () => {
-        setShowLocationsDropdown(!showLocationsDropdown);
-        setShowJobRolesDropdown(false);
     };
 
     const handleJobRoleSelect = (roleValue) => {
@@ -99,23 +84,29 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
         updateFormData({ jobRoles: newRoles });
     };
 
-    const handleLocationSelect = (locationName) => {
-        const currentLocations = formData.hiringLocations || [];
-        const newLocations = currentLocations.includes(locationName)
-            ? currentLocations.filter(l => l !== locationName)
-            : [...currentLocations, locationName];
-        updateFormData({ hiringLocations: newLocations });
-    };
-
     const removeJobRole = (roleToRemove) => {
         const newJobRoles = formData.jobRoles?.filter(role => role !== roleToRemove) || [];
         updateFormData({ jobRoles: newJobRoles });
     };
 
-    const removeLocation = (locationToRemove) => {
-        const newLocations = formData.hiringLocations?.filter(location => location !== locationToRemove) || [];
-        updateFormData({ hiringLocations: newLocations });
+    const locationOptions = useMemo(() => {
+        return City.getCitiesOfCountry('IN')
+            ?.map(city => ({
+                value: city.name,
+                label: city.name,
+            }))
+            ?.sort((a, b) => a.label.localeCompare(b.label));
+    }, []);
+
+    const handleLocationChange = (selectedOptions) => {
+        const locations = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
+        updateFormData({ hiringLocations: locations });
     };
+
+    const selectedLocationsValue = (formData.hiringLocations || []).map(loc => ({
+        label: loc,
+        value: loc
+    }));
 
     const jobRoleOptions = [
         { value: "software_engineer", label: "Software Engineer" },
@@ -126,20 +117,9 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
     ];
 
     useEffect(() => {
-        const cities = City.getCitiesOfCountry('IN').map(city => ({
-            value: city.name, 
-            label: city.name 
-        })).sort((a, b) => a.label.localeCompare(b.label));
-        setIndianCities(cities);
-    }, []);
-    
-    useEffect(() => {
         const handleClickOutside = (event) => {
             if (jobRolesRef.current && !jobRolesRef.current.contains(event.target)) {
                 setShowJobRolesDropdown(false);
-            }
-            if (locationsRef.current && !locationsRef.current.contains(event.target)) {
-                setShowLocationsDropdown(false);
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
@@ -150,14 +130,12 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea]/15 via-[#f093fb]/10 to-[#764ba2]/15 p-4">
-            {/* Blur Background around card */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-full blur-3xl"></div>
                 <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 rounded-full blur-3xl"></div>
             </div>
 
             <div className="relative w-full max-w-2xl">
-                {/* Blur background behind card */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 backdrop-blur-sm rounded-2xl -inset-x-4 bottom-0"></div>
                 
                 <motion.div
@@ -166,10 +144,8 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                 >
-                    {/* Decorative top bar */}
                     <div className="h-1 bg-gradient-to-r from-[#667eea] via-[#f093fb] to-[#43e97b] rounded-t-2xl absolute top-0 left-0 right-0"></div>
 
-                    {/* Progress indicator */}
                     <div className="flex items-center justify-start mb-8">
                         <div className="flex items-center space-x-4">
                             <div className="w-8 h-8 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center text-sm font-medium">
@@ -194,13 +170,11 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                     </p>
 
                     <form className="space-y-5">
-                        {/* Job Roles Dropdown - Multi Select */}
                         <div ref={jobRolesRef}>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Job Roles You Hire For
                             </label>
                             
-                            {/* Selected job roles chips */}
                             <div className="flex flex-wrap gap-2 mb-2">
                                 {formData.jobRoles?.map((role, index) => {
                                     const roleLabel = jobRoleOptions.find(opt => opt.value === role)?.label || role;
@@ -262,74 +236,67 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                             </div>
                         </div>
 
-                        {/* Locations Dropdown - Multi Select without Search */}
-                        <div ref={locationsRef}>
+                        <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Preferred Hiring Locations
                             </label>
-                            
-                            {/* Selected locations chips */}
-                            <div className="flex flex-wrap gap-2 mb-2">
-                                {formData.hiringLocations?.map((location, index) => {
-                                    const locationLabel = indianCities.find(opt => opt.value === location)?.label || location;
-                                    return (
-                                        <span key={index} className="flex items-center bg-gray-200 text-sm text-black px-3 py-1 rounded-full">
-                                            {locationLabel}
-                                            <button 
-                                                type="button" 
-                                                onClick={() => removeLocation(location)} 
-                                                className="ml-2 text-gray-600 hover:text-black"
-                                            >
-                                                ×
-                                            </button>
-                                        </span>
-                                    );
-                                })}
-                            </div>
-                            
-                            <div className="relative">
-                                <div
-                                    onClick={toggleLocationsDropdown}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] cursor-pointer flex justify-between items-center transition-all duration-300 bg-white/80 ${
-                                        errors.hiringLocations ? 'border-red-500' : 'border-gray-300'
-                                    }`}
-                                >
-                                    <span className="text-gray-700">
-                                        Select Locations (Indian Cities)
-                                    </span>
-                                    <svg
-                                        className={`w-5 h-5 text-gray-500 transition-transform ${
-                                            showLocationsDropdown ? "transform rotate-180" : ""
-                                        }`}
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </div>
-                                {showLocationsDropdown && (
-                                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto">
-                                        
-                                        {/* Options List - Directly mapping indianCities */}
-                                        {indianCities.map((option) => (
-                                            <div
-                                                key={option.value}
-                                                onClick={() => handleLocationSelect(option.value)}
-                                                className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
-                                                    formData.hiringLocations?.includes(option.value) ? "bg-gray-100 font-medium" : ""
-                                                }`}
-                                            >
-                                                {option.label}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                                {errors.hiringLocations && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.hiringLocations}</p>
-                                )}
-                            </div>
+                            <CreatableSelect
+                                isMulti
+                                options={locationOptions}
+                                value={selectedLocationsValue}
+                                onChange={handleLocationChange}
+                                placeholder="Select or type to add locations..."
+                                styles={{
+                                    control: (base) => ({
+                                        ...base,
+                                        borderColor: errors.hiringLocations ? '#ef4444' : '#d1d5db',
+                                        minHeight: '42px',
+                                        borderRadius: '0.5rem',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                        padding: '2px',
+                                        boxShadow: 'none',
+                                        '&:hover': {
+                                            borderColor: '#9ca3af'
+                                        },
+                                        '&:focus-within': {
+                                            borderColor: '#667eea',
+                                            boxShadow: '0 0 0 2px rgba(102, 126, 234, 0.3)'
+                                        }
+                                    }),
+                                    menu: (base) => ({
+                                        ...base,
+                                        borderRadius: '0.5rem',
+                                        border: '1px solid #e5e7eb',
+                                        zIndex: 50
+                                    }),
+                                    option: (base, state) => ({
+                                        ...base,
+                                        backgroundColor: state.isSelected ? '#e5e7eb' : state.isFocused ? '#f3f4f6' : 'white',
+                                        color: '#374151',
+                                        cursor: 'pointer',
+                                        '&:active': {
+                                            backgroundColor: '#e5e7eb'
+                                        }
+                                    }),
+                                    multiValue: (base) => ({
+                                        ...base,
+                                        backgroundColor: '#e5e7eb',
+                                        borderRadius: '9999px',
+                                    }),
+                                    multiValueRemove: (base) => ({
+                                        ...base,
+                                        borderRadius: '0 9999px 9999px 0',
+                                        color: '#374151',
+                                        ':hover': {
+                                            backgroundColor: '#d1d5db',
+                                            color: 'black',
+                                        },
+                                    }),
+                                }}
+                            />
+                            {errors.hiringLocations && (
+                                <p className="mt-1 text-sm text-red-600">{errors.hiringLocations}</p>
+                            )}
                         </div>
 
                         <div>
