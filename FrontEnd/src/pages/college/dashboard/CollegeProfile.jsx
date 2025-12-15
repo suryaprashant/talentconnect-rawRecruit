@@ -1,25 +1,23 @@
-
 import { useState, useRef, useEffect } from 'react';
-import { Globe, Users, Calendar } from 'lucide-react';
-import CollegeDescription from './CollegeDescription'; // Assuming this exists
-import ProfileForm from './ProfileForm'; // Your ProfileForm component
-import UserManagements from './UserManagements'; // Assuming this exists
+import { Globe, Users, Calendar, Upload, Edit2, Building2, MapPin, ExternalLink, Briefcase } from 'lucide-react';
+import CollegeDescription from './CollegeDescription';
+import ProfileForm from './ProfileForm';
 import axios from 'axios';
-import {useAuth} from '@/context/AuthProvider'
+import { useAuth } from '@/context/AuthProvider';
 
 // Configure axios to send cookies with requests
 axios.defaults.withCredentials = true;
 
 export default function CollegeProfile() {
   const [activeTab, setActiveTab] = useState('Overview');
-  const [profileImageFile, setProfileImageFile] = useState(null); // File object for upload
-  const [backgroundImageFile, setBackgroundImageFile] = useState(null); // File object for upload
-  const [profileImageUrl, setProfileImageUrl] = useState(null); // URL for display
-  const [backgroundImageUrl, setBackgroundImageUrl] = useState(null); // URL for display
-  const [onboardingData, setOnboardingData] = useState(null); // This will hold the fetched profile data
+  const [profileImageFile, setProfileImageFile] = useState(null);
+  const [backgroundImageFile, setBackgroundImageFile] = useState(null);
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState(null);
+  const [onboardingData, setOnboardingData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {auth} = useAuth() ;
+  const { auth } = useAuth();
 
   const profileInputRef = useRef(null);
   const backgroundInputRef = useRef(null);
@@ -29,7 +27,7 @@ export default function CollegeProfile() {
       setLoading(true);
       setError(null);
       try {
-        const backendUrl = import.meta.env.VITE_Backend_URL; // Ensure your backend URL is configured
+        const backendUrl = import.meta.env.VITE_Backend_URL;
         const response = await axios.get(`${backendUrl}/api/college-onboarding/profile-data`, {
           withCredentials: true,
         });
@@ -37,11 +35,10 @@ export default function CollegeProfile() {
 
         if (data) {
           setOnboardingData(data);
-          // Set image URLs from fetched data for display in header
           setProfileImageUrl(data.placementCoordinatorDetails?.profilePictureUrl || null);
           setBackgroundImageUrl(data.profileAchievements?.backgroundImageUrl || null);
         } else {
-          setOnboardingData(null); // No data found for this user
+          setOnboardingData(null);
         }
       } catch (err) {
         console.error('Error fetching college onboarding data:', err);
@@ -50,7 +47,6 @@ export default function CollegeProfile() {
             setError('No college profile data found for your account. Please complete the "Profile" tab to create one.');
           } else if (err.response.status === 401) {
             setError('Authentication required. Please log in.');
-            // Optionally, redirect to login page if unauthorized
           } else {
             setError(err.response.data.message || 'Failed to load profile data.');
           }
@@ -65,13 +61,12 @@ export default function CollegeProfile() {
     fetchData();
   }, []);
 
-   useEffect(() => {
+  useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const fromEditProfile = urlParams.get('editProfile');
     
     if (fromEditProfile === 'true') {
       setActiveTab('Profile');
-      // Clean up the URL
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     }
@@ -85,97 +80,129 @@ export default function CollegeProfile() {
     backgroundInputRef.current.click();
   };
 
- 
   const handleImageChange = (e, setImageFileState, setImageUrlState) => {
     const file = e.target.files[0];
     if (file) {
-      setImageFileState(file); 
+      setImageFileState(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImageUrlState(reader.result); 
+        setImageUrlState(reader.result);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  
   const handleProfileUpdate = (updatedData) => {
     setOnboardingData(updatedData);
-    
     setProfileImageUrl(updatedData.placementCoordinatorDetails?.profilePictureUrl || null);
     setBackgroundImageUrl(updatedData.profileAchievements?.backgroundImageUrl || null);
-    setActiveTab('Overview'); 
+    setActiveTab('Overview');
   };
 
-
   const renderContent = () => {
-    if (loading) {
-      return <div className="text-center py-8 text-gray-700">Loading profile data...</div>;
-    }
+    if (loading) return (
+      <div className="flex items-center justify-center min-h-[400px] bg-white rounded-xl">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-10 w-10 border-[3px] border-[#3b82f6] border-t-transparent"></div>
+          <p className="mt-3 text-gray-600">Loading college profile...</p>
+        </div>
+      </div>
+    );
 
-    if (error && !onboardingData && activeTab !== 'Profile') { // Only show global error if no data loaded at all AND not on profile tab
+    if (error && !onboardingData && activeTab !== 'Profile') {
       return (
-        <div className="text-center py-8">
-          <p className="text-lg text-red-600">{error}</p>
-          <p className="text-md text-gray-500 mt-2 mb-4">You can create your profile in the "Profile" tab.</p>
-          <button
-            className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200"
-            onClick={() => setActiveTab('Profile')}
-          >
-            Go to Profile Form
-          </button>
+        <div className="flex items-center justify-center min-h-[400px] bg-white rounded-xl">
+          <div className="text-center max-w-md p-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 text-red-600 mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="text-lg font-medium text-gray-900">{error}</p>
+            <p className="text-sm text-gray-600 mt-2">You can create your profile in the "Profile" tab.</p>
+            <button
+              onClick={() => setActiveTab('Profile')}
+              className="mt-4 px-6 py-3 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200"
+            >
+              Go to Profile Form
+            </button>
+          </div>
         </div>
       );
     }
 
+    if (!onboardingData && activeTab === 'Overview') return (
+      <div className="flex items-center justify-center min-h-[400px] bg-white rounded-xl">
+        <div className="text-center max-w-md p-8">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 mb-4">
+            <Building2 className="h-6 w-6 text-gray-400" />
+          </div>
+          <p className="text-gray-600">No college profile data available.</p>
+        </div>
+      </div>
+    );
+
     switch (activeTab) {
       case 'Overview':
-       
         return <CollegeDescription onboardingData={onboardingData} />;
       case 'Profile':
         return (
           <ProfileForm
-            onboardingData={onboardingData} 
-            profileImageFile={profileImageFile} 
-            backgroundImageFile={backgroundImageFile} 
+            onboardingData={onboardingData}
+            profileImageFile={profileImageFile}
+            backgroundImageFile={backgroundImageFile}
             setProfileImageFile={setProfileImageFile}
-            setBackgroundImageFile={setBackgroundImageFile} 
-            setProfileImageUrl={setProfileImageUrl} 
+            setBackgroundImageFile={setBackgroundImageFile}
+            setProfileImageUrl={setProfileImageUrl}
             setBackgroundImageUrl={setBackgroundImageUrl}
-            onProfileUpdate={handleProfileUpdate} 
+            onProfileUpdate={handleProfileUpdate}
           />
         );
-      // case 'Users':
-      //   return <UserManagements />;
       default:
         return null;
     }
   };
 
- 
   const coordinatorName = onboardingData?.placementCoordinatorDetails?.coordinatorName || 'Not Set';
   const designation = onboardingData?.placementCoordinatorDetails?.designation || 'Not Set';
-  const collegeName = onboardingData?.collegeUniversityDetails?.collegeName || 'Your College Name';
+  const collegeName = onboardingData?.collegeUniversityDetails?.collegeName || 'College Name';
   const linkedinUrl = onboardingData?.placementCoordinatorDetails?.linkedinUrl || '#';
   const collegeWebsite = onboardingData?.profileAchievements?.collegeWebsite || '#';
   const establishedYear = onboardingData?.collegeUniversityDetails?.establishedYear ?
-    new Date(onboardingData.collegeUniversityDetails.establishedYear).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Not Set';
-
+    new Date(onboardingData.collegeUniversityDetails.establishedYear).getFullYear() : 'N/A';
+  
+  const city = onboardingData?.collegeUniversityDetails?.city || '';
+  const state = onboardingData?.collegeUniversityDetails?.state || '';
+  const country = onboardingData?.collegeUniversityDetails?.country || '';
+  const collegeLocation = onboardingData?.collegeUniversityDetails?.collegeLocation || '';
 
   return (
-    <div className="flex flex-col w-full bg-gray-100 min-h-screen">
-      {/* Header Banner with upload functionality */}
-      <div
-        className="w-full h-32 bg-gray-300 relative cursor-pointer"
-        onClick={handleBackgroundImageClick}
-      >
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Banner */}
+      <div className="relative h-48">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#93c5fd]/20 via-[#3b82f6]/10 to-[#8b5cf6]/20"></div>
+
         {backgroundImageUrl && (
-          <img
-            src={backgroundImageUrl}
-            alt="Background"
-            className="w-full h-full object-cover"
-          />
+          <div className="absolute inset-0">
+            <img
+              src={backgroundImageUrl}
+              alt="Banner"
+              className="w-full h-full object-cover opacity-15"
+            />
+          </div>
         )}
+
+        {/* Content Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#93c5fd]/15 via-[#3b82f6]/8 to-[#8b5cf6]/15 backdrop-blur-sm"></div>
+
+        {/* Banner Upload Overlay */}
+        <label
+          className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 cursor-pointer hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md"
+          onClick={handleBackgroundImageClick}
+        >
+          <Upload className="h-4 w-4 text-gray-700" />
+        </label>
         <input
           type="file"
           ref={backgroundInputRef}
@@ -183,112 +210,160 @@ export default function CollegeProfile() {
           accept="image/*"
           className="hidden"
         />
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 text-white opacity-0 hover:opacity-100"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-        </div>
       </div>
 
-      {/* Profile Section */}
-      <div className="bg-white pb-4">
-        <div className="relative px-4">
-          {/* Profile Image */}
-          <div className="absolute -top-16 left-4">
-            <div
-              className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white cursor-pointer overflow-hidden"
-              onClick={handleProfileImageClick}
-            >
-              {profileImageUrl ? (
-                <img
-                  src={profileImageUrl}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="text-gray-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
+      {/* Main Container */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
+        {/* Profile Card */}
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
+          {/* Profile Header */}
+          <div className="px-8 pt-8 pb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+              {/* Profile Image */}
+              <div className="relative">
+                <div className="relative group cursor-pointer" onClick={handleProfileImageClick}>
+                  <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gradient-to-br from-[#93c5fd]/20 to-[#3b82f6]/10">
+                    {profileImageUrl ? (
+                      <img
+                        src={profileImageUrl}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div className="w-20 h-20 bg-gradient-to-br from-[#93c5fd]/30 to-[#3b82f6]/20 rounded-full flex items-center justify-center">
+                          <Building2 className="h-12 w-12 text-white" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Upload className="h-6 w-6 text-white" />
+                  </div>
                 </div>
-              )}
+                <input
+                  type="file"
+                  ref={profileInputRef}
+                  onChange={(e) => handleImageChange(e, setProfileImageFile, setProfileImageUrl)}
+                  accept="image/*"
+                  className="hidden"
+                />
+              </div>
+
+              {/* College Info */}
+              <div className="flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                      {collegeName}
+                    </h1>
+                    
+                    {/* Coordinator Info */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-8 h-8 bg-gradient-to-br from-[#f9a8d4]/20 to-[#ec4899]/10 rounded-lg flex items-center justify-center">
+                        <Users className="w-4 h-4 text-[#ec4899]" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{coordinatorName}</p>
+                        <p className="text-xs text-gray-500">{designation}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {activeTab !== 'Profile' && onboardingData && (
+                    <button
+                      onClick={() => setActiveTab('Profile')}
+                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 text-[#3b82f6] rounded-lg hover:from-[#93c5fd]/20 hover:to-[#3b82f6]/20 transition-all duration-200"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      Edit Profile
+                    </button>
+                  )}
+                </div>
+
+                {/* College Details */}
+                <div className="flex flex-wrap items-center gap-4 mt-4">
+                  {collegeLocation && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <MapPin className="h-4 w-4 text-[#3b82f6]" />
+                      <span className="text-sm">{collegeLocation}</span>
+                    </div>
+                  )}
+
+                  {(city || state || country) && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <MapPin className="h-4 w-4 text-[#3b82f6]" />
+                      <span className="text-sm">
+                        {[city, state, country].filter(Boolean).join(', ') || 'Location not specified'}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Calendar className="h-4 w-4 text-[#3b82f6]" />
+                    <span className="text-sm">Est. {establishedYear}</span>
+                  </div>
+                </div>
+
+                {/* Social Links */}
+                <div className="flex flex-wrap items-center gap-3 mt-4">
+                  {linkedinUrl && linkedinUrl !== '#' && (
+                    <a
+                      href={linkedinUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-all duration-200 text-sm"
+                    >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path>
+                      </svg>
+                      LinkedIn
+                    </a>
+                  )}
+                  
+                  {collegeWebsite && collegeWebsite !== '#' && (
+                    <a
+                      href={collegeWebsite}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-all duration-200 text-sm"
+                    >
+                      <Globe className="h-4 w-4" />
+                      Website
+                    </a>
+                  )}
+                </div>
+              </div>
             </div>
-            <input
-              type="file"
-              ref={profileInputRef}
-              onChange={(e) => handleImageChange(e, setProfileImageFile, setProfileImageUrl)}
-              accept="image/*"
-              className="hidden"
-            />
           </div>
 
-          {/* Profile Info */}
-          <div className="pt-16 pb-2 pl-2">
-            <h1 className="text-xl font-bold">{coordinatorName}</h1>
-            <p className="text-gray-500 text-sm">{designation}</p>
+          {/* Tabs */}
+          <div className="border-t border-gray-100">
+            <nav className="flex">
+              {['Overview', 'Profile'].map((tab) => (
+                <button
+                  key={tab}
+                  className={`flex-1 px-6 py-4 text-sm font-medium transition-colors relative ${
+                    activeTab === tab
+                      ? 'text-[#3b82f6]'
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                  {activeTab === tab && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#3b82f6]"></div>
+                  )}
+                </button>
+              ))}
+            </nav>
           </div>
         </div>
 
-        {/* College Info */}
-        <div className="px-6 pt-4">
-          <h2 className="text-2xl font-bold">{collegeName}</h2>
-
-          <div className="flex flex-wrap items-center gap-6 mt-2">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Users size={16} className="text-gray-500" />
-              <span>11-50 Employees</span> {/* Placeholder, as this isn't in your schema */}
-            </div>
-
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Calendar size={16} className="text-gray-500" />
-              <span>Established Year: {establishedYear}</span>
-            </div>
-          </div>
-
-          {/* Social Links */}
-          <div className="flex justify-between mt-4">
-            <div></div>
-            <div className="flex gap-2">
-              {linkedinUrl && linkedinUrl !== '#' && (
-                <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-8 h-8 border border-gray-300 rounded hover:bg-gray-50">
-                  <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path>
-                  </svg>
-                </a>
-              )}
-              {collegeWebsite && collegeWebsite !== '#' && (
-                <a href={collegeWebsite} target="_blank" rel="noopener noreferrer" className="border border-gray-300 rounded px-4 py-1 text-sm flex items-center hover:bg-gray-50">
-                  <Globe size={14} className="mr-1 text-gray-600" />
-                  Website
-                </a>
-              )}
-            </div>
-          </div>
+        {/* Tab Content */}
+        <div className="pb-8">
+          {renderContent()}
         </div>
-
-        {/* Tabs */}
-        <div className="flex border-b mt-4">
-          {['Overview', 'Profile'].map((tab) => (
-            <button
-              key={tab}
-              className={`px-6 py-2 ${activeTab === tab ? 'border-b-2 border-black font-medium' : 'text-gray-500'}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Tab Content */}
-      <div className="p-4">
-        {renderContent()}
       </div>
     </div>
   );
