@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Country, State, City } from 'country-state-city';
-import { ChevronDown, X, Check } from 'lucide-react';
+import { ChevronDown, X, Check, Upload, Calendar, Globe, Link, Award, Users, Briefcase, Home, Mail, Phone, MapPin, ExternalLink, Edit2, Save, Trash2, Plus, User } from 'lucide-react';
 import CreatableSelect from 'react-select/creatable';
 
 export default function ProfileForm({
@@ -18,6 +18,7 @@ export default function ProfileForm({
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
 
+
     const [collegeUniversityDetails, setCollegeUniversityDetails] = useState({
         collegeName: '',
         establishedYear: '',
@@ -30,6 +31,7 @@ export default function ProfileForm({
         pincode: '',
     });
 
+
     const [selectedCountryISO, setSelectedCountryISO] = useState('');
     const [selectedStateISO, setSelectedStateISO] = useState('');
 
@@ -41,6 +43,7 @@ export default function ProfileForm({
         linkedinUrl: '',
         profilePictureUrl: '',
     });
+
 
     const [placementRecruitmentDetails, setPlacementRecruitmentDetails] = useState({
         programsOffered: [],
@@ -56,13 +59,15 @@ export default function ProfileForm({
         companies: false,
         designation: false
     });
-
+    
+    // Custom input state
     const [customInput, setCustomInput] = useState({
         programs: '',
         courses: '',
         companies: '',
         designation: ''
     });
+
 
     const [profileAchievements, setProfileAchievements] = useState({
         collegeWebsite: '',
@@ -73,6 +78,7 @@ export default function ProfileForm({
     const [workshops, setWorkshops] = useState([]);
     const [volunteering, setVolunteering] = useState([]);
     const [awards, setAwards] = useState([]);
+
 
     const coordinatorProfileImageRef = useRef(null);
     const collegeBrochureRef = useRef(null);
@@ -86,6 +92,7 @@ export default function ProfileForm({
     const [collegeBrochureFile, setCollegeBrochureFile] = useState(null);
 
     const years = Array.from({ length: 150 }, (_, i) => new Date().getFullYear() - i);
+    
 
     const programOptions = ["Engineering", "Business", "Arts", "Science"];
     const courseOptions = ["Computer Science", "Mechanical Engineering", "MBA", "Electrical Engineering"];
@@ -256,6 +263,7 @@ export default function ProfileForm({
         }));
     };
 
+
     const handleCoordinatorProfileImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -274,27 +282,29 @@ export default function ProfileForm({
         }
     };
 
+
     const handleArrayItemChange = (setState, index, field, value) => {
         setState(prev => prev.map((item, i) => i === index ? { ...item, [field]: value } : item));
     };
     const addArrayItem = (setState, defaultItem) => setState(prev => [...prev, defaultItem]);
     const removeArrayItem = (setState, index) => setState(prev => prev.filter((_, i) => i !== index));
 
+
     const renderSingleCustomDropdown = (dropdownType, section, field, label, options, placeholder) => {
         const currentValue = section === 'placementCoordinatorDetails' ? placementCoordinatorDetails[field] : '';
 
         return (
             <div ref={designationRef} className="relative">
-                <label className="block text-sm font-medium mb-1">{label} *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{label} *</label>
                 <div
-                    className={`flex items-center justify-between p-2 w-full border border-gray-300 rounded-md bg-white ${isEditing ? 'cursor-pointer hover:border-gray-400' : 'bg-gray-50'}`}
+                    className={`flex items-center justify-between p-3 w-full border border-white/50 bg-white/90 backdrop-blur-sm rounded-xl ${isEditing ? 'cursor-pointer hover:border-[#93c5fd]/50 transition-all duration-200' : 'bg-gray-50/50'}`}
                     onClick={() => toggleDropdown(dropdownType)}
                 >
                     <span className={`${!currentValue ? 'text-gray-400' : 'text-gray-900'}`}>
                         {currentValue || placeholder}
                     </span>
                     {isEditing && (
-                        <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen[dropdownType] ? "rotate-180" : ""}`} />
+                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${dropdownOpen[dropdownType] ? "rotate-180" : ""}`} />
                     )}
                 </div>
 
@@ -308,7 +318,7 @@ export default function ProfileForm({
                                     onChange={(e) => setCustomInput(prev => ({ ...prev, [dropdownType]: e.target.value }))}
                                     onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCustomSingleItem(section, field, dropdownType))}
                                     placeholder="Add custom..."
-                                    className="flex-1 px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="flex-1 px-3 py-2 border border-gray-300/50 rounded-lg bg-white/90 text-sm focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent"
                                     autoFocus
                                     onClick={(e) => e.stopPropagation()}
                                 />
@@ -316,21 +326,22 @@ export default function ProfileForm({
                                     type="button"
                                     onClick={(e) => { e.stopPropagation(); handleAddCustomSingleItem(section, field, dropdownType); }}
                                     disabled={!customInput[dropdownType].trim()}
-                                    className="bg-blue-600 text-white px-3 py-1 rounded-md text-sm disabled:bg-gray-300"
+                                    className="bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 transition-all duration-200 hover:shadow-md"
                                 >
                                     Add
                                 </button>
                             </div>
                         </div>
+                        {/* Options */}
                         <div className="p-1">
                             {options.map(option => (
                                 <div
                                     key={option}
                                     onClick={() => handleSingleSelect(section, field, option)}
-                                    className={`px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between rounded-md ${currentValue === option ? 'bg-blue-50 text-blue-700' : ''}`}
+                                    className={`px-4 py-3 hover:bg-gradient-to-r hover:from-[#93c5fd]/10 hover:to-transparent cursor-pointer flex items-center justify-between rounded-lg mx-1 my-1 transition-all duration-200 ${currentValue === option ? 'bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/10 text-[#3b82f6]' : ''}`}
                                 >
                                     {option}
-                                    {currentValue === option && <Check className="w-4 h-4" />}
+                                    {currentValue === option && <Check className="w-4 h-4 text-[#3b82f6]" />}
                                 </div>
                             ))}
                         </div>
@@ -345,87 +356,88 @@ export default function ProfileForm({
         const ref = dropdownType === 'programs' ? programsRef : dropdownType === 'courses' ? coursesRef : companiesRef;
 
         return (
-            <div ref={ref} className="relative">
-                <label className="block text-sm font-medium mb-1">{label}</label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                    {currentValues.map((item, index) => (
-                        <span key={index} className="flex items-center bg-gray-200 text-sm text-black px-3 py-1.5 rounded-full">
-                            {item}
-                            {isEditing && (
-                                <button type="button" onClick={() => removeSelectedItem(field, item)} className="ml-2 text-gray-600 hover:text-black">
-                                    <X className="w-4 h-4" />
-                                </button>
-                            )}
-                        </span>
-                    ))}
-                </div>
-
-                {isEditing && (
-                    <>
-                        <div
-                            className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400 bg-white"
-                            onClick={() => toggleDropdown(dropdownType)}
-                        >
-                            <span className="text-gray-500">{currentValues.length > 0 ? 'Add more...' : placeholder}</span>
-                            <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen[dropdownType] ? "rotate-180" : ""}`} />
-                        </div>
-
-                        {dropdownOpen[dropdownType] && (
-                            <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-72 overflow-auto">
-                                <div className="sticky top-0 bg-white border-b border-gray-200 p-3">
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            value={customInput[dropdownType]}
-                                            onChange={(e) => setCustomInput(prev => ({ ...prev, [dropdownType]: e.target.value }))}
-                                            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCustomMultiItem(field, dropdownType))}
-                                            placeholder="Add custom..."
-                                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            autoFocus
-                                            onClick={(e) => e.stopPropagation()}
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={(e) => { e.stopPropagation(); handleAddCustomMultiItem(field, dropdownType); }}
-                                            disabled={!customInput[dropdownType].trim()}
-                                            className="bg-blue-500 text-white px-4 py-2 rounded-md font-medium disabled:bg-gray-200"
-                                        >
-                                            Add
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="p-1">
-                                    {options.map(option => (
-                                        <div
-                                            key={option}
-                                            onClick={() => handleMultiSelect(field, option)}
-                                            className={`px-4 py-2.5 hover:bg-gray-50 cursor-pointer flex items-center justify-between rounded-md mx-1 my-1 ${currentValues.includes(option) ? "bg-blue-50 text-blue-700" : ""}`}
-                                        >
-                                            <span>{option}</span>
-                                            {currentValues.includes(option) && <span className="text-blue-500 font-bold">✓</span>}
-                                        </div>
-                                    ))}
-                                </div>
-                                {currentValues.filter(item => !options.includes(item)).length > 0 && <div className="border-t border-gray-200 mx-3 my-2"></div>}
-                                {currentValues.filter(item => !options.includes(item)).map(customItem => (
-                                    <div
-                                        key={customItem}
-                                        onClick={() => handleMultiSelect(field, customItem)}
-                                        className={`px-4 py-2.5 hover:bg-gray-50 cursor-pointer flex items-center justify-between rounded-md mx-1 my-1 ${currentValues.includes(customItem) ? "bg-blue-50 text-blue-700" : ""}`}
+          <div ref={ref} className="relative">
+            <label className="block text-sm font-medium mb-1">{label}</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {currentValues.map((item, index) => (
+                <span key={index} className="flex items-center bg-gray-200 text-sm text-black px-3 py-1.5 rounded-full">
+                  {item}
+                  {isEditing && (
+                      <button type="button" onClick={() => removeSelectedItem(field, item)} className="ml-2 text-gray-600 hover:text-black">
+                        <X className="w-4 h-4" />
+                      </button>
+                  )}
+                </span>
+              ))}
+            </div>
+            
+            {isEditing && (
+                <>
+                    <div
+                        className="flex items-center justify-between p-2 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400 bg-white"
+                        onClick={() => toggleDropdown(dropdownType)}
+                    >
+                        <span className="text-gray-500">{currentValues.length > 0 ? 'Add more...' : placeholder}</span>
+                        <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen[dropdownType] ? "rotate-180" : ""}`} />
+                    </div>
+                    
+                    {dropdownOpen[dropdownType] && (
+                        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-72 overflow-auto">
+                            <div className="sticky top-0 bg-white border-b border-gray-200 p-3">
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={customInput[dropdownType]}
+                                        onChange={(e) => setCustomInput(prev => ({ ...prev, [dropdownType]: e.target.value }))}
+                                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddCustomMultiItem(field, dropdownType))}
+                                        placeholder="Add custom..."
+                                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        autoFocus
+                                        onClick={(e) => e.stopPropagation()}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={(e) => { e.stopPropagation(); handleAddCustomMultiItem(field, dropdownType); }}
+                                        disabled={!customInput[dropdownType].trim()}
+                                        className="bg-blue-500 text-white px-4 py-2 rounded-md font-medium disabled:bg-gray-200"
                                     >
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-black">•</span>
-                                            <span>{customItem}</span>
-                                            <span className="text-xs text-gray-500 italic">(custom)</span>
-                                        </div>
-                                        {currentValues.includes(customItem) && <span className="text-blue-500 font-bold">✓</span>}
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="p-1">
+                                {options.map(option => (
+                                    <div
+                                        key={option}
+                                        onClick={() => handleMultiSelect(field, option)}
+                                        className={`px-4 py-2.5 hover:bg-gray-50 cursor-pointer flex items-center justify-between rounded-md mx-1 my-1 ${currentValues.includes(option) ? "bg-blue-50 text-blue-700" : ""}`}
+                                    >
+                                        <span>{option}</span>
+                                        {currentValues.includes(option) && <span className="text-blue-500 font-bold">✓</span>}
                                     </div>
                                 ))}
                             </div>
-                        )}
-                    </>
-                )}
-            </div>
+                            {/* Custom Values Section */}
+                            {currentValues.filter(item => !options.includes(item)).length > 0 && <div className="border-t border-gray-200 mx-3 my-2"></div>}
+                            {currentValues.filter(item => !options.includes(item)).map(customItem => (
+                                <div
+                                    key={customItem}
+                                    onClick={() => handleMultiSelect(field, customItem)}
+                                    className={`px-4 py-2.5 hover:bg-gray-50 cursor-pointer flex items-center justify-between rounded-md mx-1 my-1 ${currentValues.includes(customItem) ? "bg-blue-50 text-blue-700" : ""}`}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-black">•</span>
+                                        <span>{customItem}</span>
+                                        <span className="text-xs text-gray-500 italic">(custom)</span>
+                                    </div>
+                                    {currentValues.includes(customItem) && <span className="text-blue-500 font-bold">✓</span>}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </>
+            )}
+          </div>
         );
     };
 
@@ -485,6 +497,7 @@ export default function ProfileForm({
                 </div>
 
                 <form onSubmit={handleSubmit}>
+                    {/* College/University Details */}
                     <div className="border border-gray-300 rounded-md p-6 mb-8 shadow-sm">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-medium">College/University Details</h2>
@@ -493,59 +506,73 @@ export default function ProfileForm({
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium mb-1">College Name *</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">College Name *</label>
                                 <input
                                     type="text"
                                     value={collegeUniversityDetails.collegeName || ''}
                                     onChange={(e) => handleDetailChange('collegeUniversityDetails', 'collegeName', e.target.value)}
                                     placeholder="e.g., Indian Institute of Technology Bombay"
-                                    className="w-full border border-gray-300 rounded p-2"
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
 
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium mb-1">Established Year *</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Established Year *</label>
                                 {isEditing ? (
                                     <select
                                         value={collegeUniversityDetails.establishedYear || ''}
                                         onChange={(e) => handleDetailChange('collegeUniversityDetails', 'establishedYear', e.target.value)}
-                                        className="w-full border border-gray-300 rounded p-2 bg-white"
+                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200"
                                     >
                                         <option value="">Select Year</option>
                                         {years.map((year) => (<option key={year} value={year}>{year}</option>))}
                                     </select>
                                 ) : (
-                                    <input type="text" value={collegeUniversityDetails.establishedYear || ''} readOnly className="w-full border border-gray-300 rounded p-2" />
+                                    <input 
+                                        type="text" 
+                                        value={collegeUniversityDetails.establishedYear || ''} 
+                                        readOnly 
+                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl text-gray-900" 
+                                    />
                                 )}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-1">Phone Number</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <Phone className="inline w-4 h-4 mr-2 text-gray-400" />
+                                    Phone Number
+                                </label>
                                 <input
                                     type="text"
                                     value={collegeUniversityDetails.phoneNumber || ''}
                                     onChange={(e) => handleDetailChange('collegeUniversityDetails', 'phoneNumber', e.target.value)}
                                     placeholder="+91 XXXXXXXXXX"
-                                    className="w-full border border-gray-300 rounded p-2"
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-1">Alternate Phone Number</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <Phone className="inline w-4 h-4 mr-2 text-gray-400" />
+                                    Alternate Phone Number
+                                </label>
                                 <input
                                     type="text"
                                     value={collegeUniversityDetails.alternatePhoneNumber || ''}
                                     onChange={(e) => handleDetailChange('collegeUniversityDetails', 'alternatePhoneNumber', e.target.value)}
                                     placeholder="+91 XXXXXXXXXX"
-                                    className="w-full border border-gray-300 rounded p-2"
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
 
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium mb-1">College Location (City - India)</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <MapPin className="inline w-4 h-4 mr-2 text-gray-400" />
+                                    College Location (City - India)
+                                </label>
                                 {isEditing ? (
                                     <CreatableSelect
                                         isClearable
@@ -588,67 +615,82 @@ export default function ProfileForm({
                                         type="text"
                                         value={collegeUniversityDetails.collegeLocation || ''}
                                         readOnly
-                                        className="w-full border border-gray-300 rounded p-2"
+                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl text-gray-900"
                                     />
                                 )}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-1">Country</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
                                 {isEditing ? (
-                                    <select value={selectedCountryISO} onChange={handleCountryChange} className="w-full border border-gray-300 rounded p-2 bg-white">
+                                    <select 
+                                        value={selectedCountryISO} 
+                                        onChange={handleCountryChange} 
+                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200"
+                                    >
                                         <option value="">Select Country</option>
                                         {Country.getAllCountries().map((item) => (
                                             <option key={item.isoCode} value={item.isoCode}>{item.name}</option>
                                         ))}
                                     </select>
                                 ) : (
-                                    <input type="text" value={collegeUniversityDetails.country || ''} readOnly className="w-full border border-gray-300 rounded p-2" />
+                                    <input type="text" value={collegeUniversityDetails.country || ''} readOnly className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl text-gray-900" />
                                 )}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-1">State</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
                                 {isEditing ? (
-                                    <select value={selectedStateISO} onChange={handleStateChange} disabled={!selectedCountryISO} className="w-full border border-gray-300 rounded p-2 bg-white disabled:bg-gray-100">
+                                    <select 
+                                        value={selectedStateISO} 
+                                        onChange={handleStateChange} 
+                                        disabled={!selectedCountryISO} 
+                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 disabled:opacity-50"
+                                    >
                                         <option value="">Select State</option>
                                         {selectedCountryISO && State.getStatesOfCountry(selectedCountryISO).map((item) => (
                                             <option key={item.isoCode} value={item.isoCode}>{item.name}</option>
                                         ))}
                                     </select>
                                 ) : (
-                                    <input type="text" value={collegeUniversityDetails.state || ''} readOnly className="w-full border border-gray-300 rounded p-2" />
+                                    <input type="text" value={collegeUniversityDetails.state || ''} readOnly className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl text-gray-900" />
                                 )}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-1">City</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
                                 {isEditing ? (
-                                    <select value={collegeUniversityDetails.city || ''} onChange={handleCityChange} disabled={!selectedStateISO} className="w-full border border-gray-300 rounded p-2 bg-white disabled:bg-gray-100">
+                                    <select 
+                                        value={collegeUniversityDetails.city || ''} 
+                                        onChange={handleCityChange} 
+                                        disabled={!selectedStateISO} 
+                                        className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 disabled:opacity-50"
+                                    >
                                         <option value="">Select City</option>
                                         {selectedStateISO && City.getCitiesOfState(selectedCountryISO, selectedStateISO).map((item) => (
                                             <option key={item.name} value={item.name}>{item.name}</option>
                                         ))}
                                     </select>
                                 ) : (
-                                    <input type="text" value={collegeUniversityDetails.city || ''} readOnly className="w-full border border-gray-300 rounded p-2" />
+                                    <input type="text" value={collegeUniversityDetails.city || ''} readOnly className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl text-gray-900" />
                                 )}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-1">Pincode</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Pincode</label>
                                 <input
                                     type="text"
                                     value={collegeUniversityDetails.pincode || ''}
                                     onChange={(e) => handleDetailChange('collegeUniversityDetails', 'pincode', e.target.value)}
                                     placeholder="e.g., 400076"
-                                    className="w-full border border-gray-300 rounded p-2"
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
                         </div>
                     </div>
 
+                    {/* Placement Coordinator Details */}
                     <div className="border border-gray-300 rounded-md p-6 mb-8 shadow-sm">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-medium">Placement Coordinator Details</h2>
@@ -668,10 +710,11 @@ export default function ProfileForm({
                                 />
                             </div>
 
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="md:col-span-2 flex justify-center">
-                                <div className="mb-4 text-center">
+                                <div className="mb-6 text-center">
                                     <div
-                                        className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2 overflow-hidden cursor-pointer"
+                                        className="relative w-32 h-32 bg-gradient-to-br from-[#f9a8d4]/20 to-[#ec4899]/10 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden cursor-pointer border-4 border-white/50 backdrop-blur-sm hover:border-[#ec4899]/30 transition-all duration-200"
                                         onClick={() => isEditing && coordinatorProfileImageRef.current.click()}
                                     >
                                         {placementCoordinatorDetails.profilePictureUrl ? (
@@ -681,15 +724,21 @@ export default function ProfileForm({
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
-                                            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            </svg>
+                                            <User className="w-12 h-12 text-[#ec4899]" />
+                                        )}
+                                        {isEditing && (
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                                                <Upload className="w-8 h-8 text-white" />
+                                            </div>
                                         )}
                                     </div>
                                     {isEditing && (
                                         <>
-                                            <button type="button" onClick={() => coordinatorProfileImageRef.current.click()} className="bg-white border border-gray-300 text-sm px-4 py-1 rounded">
+                                            <button 
+                                                type="button" 
+                                                onClick={() => coordinatorProfileImageRef.current.click()} 
+                                                className="bg-gradient-to-r from-[#f9a8d4] to-[#ec4899] text-white text-sm px-4 py-2 rounded-lg hover:shadow-lg hover:shadow-[#f9a8d4]/40 transition-all duration-200"
+                                            >
                                                 Upload new photo
                                             </button>
                                             <input type="file" ref={coordinatorProfileImageRef} onChange={handleCoordinatorProfileImageChange} accept="image/*" className="hidden" />
@@ -698,6 +747,7 @@ export default function ProfileForm({
                                 </div>
                             </div>
 
+                            {/* Designation - Custom Single Dropdown */}
                             <div className="md:col-span-2">
                                 {renderSingleCustomDropdown(
                                     'designation',
@@ -710,43 +760,53 @@ export default function ProfileForm({
                             </div>
 
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium mb-1">Official email ID *</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <Mail className="inline w-4 h-4 mr-2 text-gray-400" />
+                                    Official email ID *
+                                </label>
                                 <input
                                     type="email"
                                     value={placementCoordinatorDetails.officialEmail || ''}
                                     onChange={(e) => handleDetailChange('placementCoordinatorDetails', 'officialEmail', e.target.value)}
                                     placeholder="hello@xyz.com"
-                                    className="w-full border border-gray-300 rounded p-2"
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
 
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium mb-1">Official Mobile No. *</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <Phone className="inline w-4 h-4 mr-2 text-gray-400" />
+                                    Official Mobile No. *
+                                </label>
                                 <input
                                     type="tel"
                                     value={placementCoordinatorDetails.officialMobile || ''}
                                     onChange={(e) => handleDetailChange('placementCoordinatorDetails', 'officialMobile', e.target.value)}
                                     placeholder="1234567890"
-                                    className="w-full border border-gray-300 rounded p-2"
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
 
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium mb-1">LinkedIn Profile</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <Link className="inline w-4 h-4 mr-2 text-gray-400" />
+                                    LinkedIn Profile
+                                </label>
                                 <input
                                     type="text"
                                     value={placementCoordinatorDetails.linkedinUrl || ''}
                                     onChange={(e) => handleDetailChange('placementCoordinatorDetails', 'linkedinUrl', e.target.value)}
                                     placeholder="www.linkedin.com/in/yourprofile"
-                                    className="w-full border border-gray-300 rounded p-2"
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
                         </div>
                     </div>
 
+                    {/* Placement & Recruitment Details */}
                     <div className="border border-gray-300 rounded-md p-6 mb-8 shadow-sm">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-medium">Placement & Recruitment Details</h2>
@@ -758,8 +818,8 @@ export default function ProfileForm({
                             {renderCustomDropdown('courses', 'popularCoursesForRecruitment', 'Popular Courses for Recruitment', courseOptions, 'Select or add courses')}
                             {renderCustomDropdown('companies', 'preferredHiringCompanies', 'Preferred Hiring Companies', companyOptions, 'Select or add companies')}
 
-                            <div className="border-t border-gray-200 pt-6">
-                                <h3 className="font-medium mb-4 text-sm">Recruitment Services Required?</h3>
+                            <div className="border-t border-gray-200/50 pt-8">
+                                <h3 className="font-medium mb-4 text-gray-900">Recruitment Services Required?</h3>
                                 <div className="flex flex-wrap gap-4">
                                     {['Job Fairs', 'Internship Support', 'Company Tie-ups'].map((service) => (
                                         <button
@@ -767,7 +827,7 @@ export default function ProfileForm({
                                             type="button"
                                             disabled={!isEditing}
                                             onClick={() => handleServiceToggle(service)}
-                                            className={`px-6 py-2.5 rounded-md border transition-all duration-300 ${placementRecruitmentDetails.recruitmentServicesRequired?.includes(service) ? 'bg-black text-white border-black shadow-md' : 'border-gray-300 text-gray-700 hover:bg-gray-50'} ${!isEditing ? 'cursor-default opacity-80' : ''}`}
+                                            className={`px-6 py-3 rounded-xl border transition-all duration-300 ${placementRecruitmentDetails.recruitmentServicesRequired?.includes(service) ? 'bg-gradient-to-r from-[#a7f3d0] to-[#10b981] text-white border-transparent shadow-md shadow-emerald-200/50' : 'border-white/50 text-gray-700 hover:bg-gradient-to-r hover:from-[#a7f3d0]/10 hover:to-transparent'} ${!isEditing ? 'cursor-default opacity-80' : 'hover:shadow-lg'}`}
                                         >
                                             {service}
                                         </button>
@@ -775,21 +835,26 @@ export default function ProfileForm({
                                 </div>
                             </div>
 
-                            <div className="border-t border-gray-200 pt-6">
-                                <label className="block text-sm font-medium mb-1">College Brochure</label>
+                            <div className="border-t border-gray-200/50 pt-8">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">College Brochure</label>
                                 <div className="mt-1 flex flex-col">
                                     {isEditing ? (
                                         <>
                                             <input type="file" id="college-brochure-upload" ref={collegeBrochureRef} onChange={handleCollegeBrochureChange} className="hidden" accept=".pdf,.doc,.docx" />
-                                            <label htmlFor="college-brochure-upload" className="cursor-pointer border border-gray-300 rounded p-2 bg-white flex justify-between items-center hover:bg-gray-50">
-                                                <span className="text-gray-500">{collegeBrochureFile?.name || (typeof placementRecruitmentDetails.collegeBrochureUrl === 'string' && placementRecruitmentDetails.collegeBrochureUrl.split('/').pop()) || 'Upload PDF/DOCX'}</span>
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                            <label htmlFor="college-brochure-upload" className="cursor-pointer p-4 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl flex justify-between items-center hover:bg-white/80 transition-all duration-200 hover:shadow-md">
+                                                <span className="text-gray-500">
+                                                    {collegeBrochureFile?.name || (typeof placementRecruitmentDetails.collegeBrochureUrl === 'string' && placementRecruitmentDetails.collegeBrochureUrl.split('/').pop()) || 'Upload PDF/DOCX'}
+                                                </span>
+                                                <Upload className="w-5 h-5 text-gray-400" />
                                             </label>
                                         </>
                                     ) : (
-                                        <div className="border border-gray-300 rounded p-2 bg-white flex justify-between items-center text-gray-700">
+                                        <div className="p-4 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl flex justify-between items-center text-gray-700">
                                             {placementRecruitmentDetails.collegeBrochureUrl ? (
-                                                <a href={placementRecruitmentDetails.collegeBrochureUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">View Current Brochure</a>
+                                                <a href={placementRecruitmentDetails.collegeBrochureUrl} target="_blank" rel="noopener noreferrer" className="text-[#3b82f6] hover:underline flex items-center gap-2">
+                                                    <ExternalLink className="w-4 h-4" />
+                                                    View Current Brochure
+                                                </a>
                                             ) : (<span>No Brochure Uploaded</span>)}
                                         </div>
                                     )}
@@ -798,93 +863,294 @@ export default function ProfileForm({
                         </div>
                     </div>
 
-                    <div className="border border-gray-300 rounded-md p-6 mb-8 shadow-sm">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-medium">College Profile & Achievements</h2>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-6">Showcase your institution's key highlights, achievements, and online presence!</p>
-
-                        <div className="grid grid-cols-1 gap-6">
+                    <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-amber-50/50 p-6 mb-8">
+                        <div className="flex items-center mb-6">
+                            <div className="w-10 h-10 bg-gradient-to-br from-[#fde68a]/30 to-[#f59e0b]/20 rounded-xl flex items-center justify-center mr-3">
+                                <Award className="w-5 h-5 text-[#f59e0b]" />
+                            </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1">College Website *</label>
+                                <h2 className="text-lg font-semibold text-gray-900">College Profile & Achievements</h2>
+                                <p className="text-sm text-gray-600">Showcase your institution's key highlights, achievements, and online presence!</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-6 mb-8">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <Globe className="inline w-4 h-4 mr-2 text-gray-400" />
+                                    College Website *
+                                </label>
                                 <input
                                     type="text"
                                     value={profileAchievements.collegeWebsite || ''}
                                     onChange={(e) => handleDetailChange('profileAchievements', 'collegeWebsite', e.target.value)}
                                     placeholder="www.institute.io"
-                                    className="w-full border border-gray-300 rounded p-2"
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1">LinkedIn Profile</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <Link className="inline w-4 h-4 mr-2 text-gray-400" />
+                                    LinkedIn Profile
+                                </label>
                                 <input
                                     type="text"
                                     value={profileAchievements.linkedinProfile || ''}
                                     onChange={(e) => handleDetailChange('profileAchievements', 'linkedinProfile', e.target.value)}
                                     placeholder="www.linkedin.com/company/yourcollege"
-                                    className="w-full border border-gray-300 rounded p-2"
+                                    className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`}
                                     readOnly={!isEditing}
                                 />
                             </div>
                         </div>
 
+                        {/* Arrays: Workshops, Volunteering, Awards */}
                         <div className="mt-8">
                             <h3 className="text-md font-medium mb-4">Workshop & Training Programs</h3>
                             {workshops.map((workshop, index) => (
-                                <div key={index} className="grid grid-cols-1 gap-4 border p-4 rounded-md mb-4 relative">
-                                    {isEditing && <button type="button" onClick={() => removeArrayItem(setWorkshops, index)} className="absolute top-2 right-2 text-red-500 hover:text-red-700">&times;</button>}
+                                <div key={index} className="grid grid-cols-1 gap-4 bg-white/50 backdrop-blur-sm border border-white/50 p-4 rounded-xl mb-4 relative hover:bg-white/70 transition-all duration-200">
+                                    {isEditing && (
+                                        <button 
+                                            type="button" 
+                                            onClick={() => removeArrayItem(setWorkshops, index)} 
+                                            className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    )}
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">Workshop Name *</label>
-                                        <input type="text" value={workshop.workshopName || ''} onChange={(e) => handleArrayItemChange(setWorkshops, index, 'workshopName', e.target.value)} placeholder="e.g., Python for Data Science" className="w-full border border-gray-300 rounded p-2" readOnly={!isEditing} />
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Workshop Name *</label>
+                                        <input 
+                                            type="text" 
+                                            value={workshop.workshopName || ''} 
+                                            onChange={(e) => handleArrayItemChange(setWorkshops, index, 'workshopName', e.target.value)} 
+                                            placeholder="e.g., Python for Data Science" 
+                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                            readOnly={!isEditing} 
+                                        />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div><label className="block text-sm font-medium mb-1">Start Date</label><input type="date" value={workshop.startDate ? new Date(workshop.startDate).toISOString().split('T')[0] : ''} onChange={(e) => handleArrayItemChange(setWorkshops, index, 'startDate', e.target.value)} className="w-full border border-gray-300 rounded p-2 bg-white" readOnly={!isEditing} /></div>
-                                        <div><label className="block text-sm font-medium mb-1">End Date</label><input type="date" value={workshop.endDate ? new Date(workshop.endDate).toISOString().split('T')[0] : ''} onChange={(e) => handleArrayItemChange(setWorkshops, index, 'endDate', e.target.value)} className="w-full border border-gray-300 rounded p-2 bg-white" readOnly={!isEditing} /></div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                <Calendar className="inline w-4 h-4 mr-2 text-gray-400" />
+                                                Start Date
+                                            </label>
+                                            <input 
+                                                type="date" 
+                                                value={workshop.startDate ? new Date(workshop.startDate).toISOString().split('T')[0] : ''} 
+                                                onChange={(e) => handleArrayItemChange(setWorkshops, index, 'startDate', e.target.value)} 
+                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                                readOnly={!isEditing} 
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                <Calendar className="inline w-4 h-4 mr-2 text-gray-400" />
+                                                End Date
+                                            </label>
+                                            <input 
+                                                type="date" 
+                                                value={workshop.endDate ? new Date(workshop.endDate).toISOString().split('T')[0] : ''} 
+                                                onChange={(e) => handleArrayItemChange(setWorkshops, index, 'endDate', e.target.value)} 
+                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                                readOnly={!isEditing} 
+                                            />
+                                        </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium mb-1">Description</label>
-                                        <input type="text" value={workshop.description || ''} onChange={(e) => handleArrayItemChange(setWorkshops, index, 'description', e.target.value)} placeholder="Brief description of the workshop" className="w-full border border-gray-300 rounded p-2" readOnly={!isEditing} />
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                        <input 
+                                            type="text" 
+                                            value={workshop.description || ''} 
+                                            onChange={(e) => handleArrayItemChange(setWorkshops, index, 'description', e.target.value)} 
+                                            placeholder="Brief description of the workshop" 
+                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                            readOnly={!isEditing} 
+                                        />
                                     </div>
                                 </div>
                             ))}
-                            {isEditing && <div className="flex justify-end mt-2"><button type="button" onClick={() => addArrayItem(setWorkshops, { workshopName: '', startDate: '', endDate: '', description: '' })} className="text-blue-600 text-sm hover:underline">+ Add workshop</button></div>}
+                            {isEditing && (
+                                <button 
+                                    type="button" 
+                                    onClick={() => addArrayItem(setWorkshops, { workshopName: '', startDate: '', endDate: '', description: '' })} 
+                                    className="flex items-center gap-2 text-[#3b82f6] hover:text-[#1d4ed8] transition-colors duration-200"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    Add workshop
+                                </button>
+                            )}
                         </div>
 
-                        <div className="mt-8">
-                            <h3 className="text-md font-medium mb-4">Volunteering & Community Engagement</h3>
+                        {/* Volunteering & Community Engagement */}
+                        <div className="mb-8">
+                            <div className="flex items-center mb-4">
+                                <div className="w-8 h-8 bg-gradient-to-br from-[#fbcfe8]/30 to-[#ec4899]/20 rounded-lg flex items-center justify-center mr-3">
+                                    <Users className="w-4 h-4 text-[#ec4899]" />
+                                </div>
+                                <h3 className="text-md font-medium text-gray-900">Volunteering & Community Engagement</h3>
+                            </div>
                             {volunteering.map((event, index) => (
-                                <div key={index} className="grid grid-cols-1 gap-4 border p-4 rounded-md mb-4 relative">
-                                    {isEditing && <button type="button" onClick={() => removeArrayItem(setVolunteering, index)} className="absolute top-2 right-2 text-red-500 hover:text-red-700">&times;</button>}
-                                    <div><label className="block text-sm font-medium mb-1">Event Name *</label><input type="text" value={event.eventName || ''} onChange={(e) => handleArrayItemChange(setVolunteering, index, 'eventName', e.target.value)} placeholder="e.g., Clean-up Drive" className="w-full border border-gray-300 rounded p-2" readOnly={!isEditing} /></div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div><label className="block text-sm font-medium mb-1">Start Date</label><input type="date" value={event.startDate ? new Date(event.startDate).toISOString().split('T')[0] : ''} onChange={(e) => handleArrayItemChange(setVolunteering, index, 'startDate', e.target.value)} className="w-full border border-gray-300 rounded p-2 bg-white" readOnly={!isEditing} /></div>
-                                        <div><label className="block text-sm font-medium mb-1">End Date</label><input type="date" value={event.endDate ? new Date(event.endDate).toISOString().split('T')[0] : ''} onChange={(e) => handleArrayItemChange(setVolunteering, index, 'endDate', e.target.value)} className="w-full border border-gray-300 rounded p-2 bg-white" readOnly={!isEditing} /></div>
+                                <div key={index} className="grid grid-cols-1 gap-4 bg-white/50 backdrop-blur-sm border border-white/50 p-4 rounded-xl mb-4 relative hover:bg-white/70 transition-all duration-200">
+                                    {isEditing && (
+                                        <button 
+                                            type="button" 
+                                            onClick={() => removeArrayItem(setVolunteering, index)} 
+                                            className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    )}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Event Name *</label>
+                                        <input 
+                                            type="text" 
+                                            value={event.eventName || ''} 
+                                            onChange={(e) => handleArrayItemChange(setVolunteering, index, 'eventName', e.target.value)} 
+                                            placeholder="e.g., Clean-up Drive" 
+                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                            readOnly={!isEditing} 
+                                        />
                                     </div>
-                                    <div><label className="block text-sm font-medium mb-1">Description</label><input type="text" value={event.description || ''} onChange={(e) => handleArrayItemChange(setVolunteering, index, 'description', e.target.value)} placeholder="Brief description of the event" className="w-full border border-gray-300 rounded p-2" readOnly={!isEditing} /></div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                <Calendar className="inline w-4 h-4 mr-2 text-gray-400" />
+                                                Start Date
+                                            </label>
+                                            <input 
+                                                type="date" 
+                                                value={event.startDate ? new Date(event.startDate).toISOString().split('T')[0] : ''} 
+                                                onChange={(e) => handleArrayItemChange(setVolunteering, index, 'startDate', e.target.value)} 
+                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                                readOnly={!isEditing} 
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                <Calendar className="inline w-4 h-4 mr-2 text-gray-400" />
+                                                End Date
+                                            </label>
+                                            <input 
+                                                type="date" 
+                                                value={event.endDate ? new Date(event.endDate).toISOString().split('T')[0] : ''} 
+                                                onChange={(e) => handleArrayItemChange(setVolunteering, index, 'endDate', e.target.value)} 
+                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                                readOnly={!isEditing} 
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                        <input 
+                                            type="text" 
+                                            value={event.description || ''} 
+                                            onChange={(e) => handleArrayItemChange(setVolunteering, index, 'description', e.target.value)} 
+                                            placeholder="Brief description of the event" 
+                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                            readOnly={!isEditing} 
+                                        />
+                                    </div>
                                 </div>
                             ))}
-                            {isEditing && <div className="flex justify-end mt-2"><button type="button" onClick={() => addArrayItem(setVolunteering, { eventName: '', startDate: '', endDate: '', description: '' })} className="text-blue-600 text-sm hover:underline">+ Add volunteering experience</button></div>}
+                            {isEditing && (
+                                <button 
+                                    type="button" 
+                                    onClick={() => addArrayItem(setVolunteering, { eventName: '', startDate: '', endDate: '', description: '' })} 
+                                    className="flex items-center gap-2 text-[#3b82f6] hover:text-[#1d4ed8] transition-colors duration-200"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    Add volunteering experience
+                                </button>
+                            )}
                         </div>
 
-                        <div className="mt-8">
-                            <h3 className="text-md font-medium mb-4">Awards & Recognitions</h3>
+                        {/* Awards & Recognitions */}
+                        <div className="mb-8">
+                            <div className="flex items-center mb-4">
+                                <div className="w-8 h-8 bg-gradient-to-br from-[#fde68a]/30 to-[#f59e0b]/20 rounded-lg flex items-center justify-center mr-3">
+                                    <Award className="w-4 h-4 text-[#f59e0b]" />
+                                </div>
+                                <h3 className="text-md font-medium text-gray-900">Awards & Recognitions</h3>
+                            </div>
                             {awards.map((award, index) => (
-                                <div key={index} className="grid grid-cols-1 gap-4 border p-4 rounded-md mb-4 relative">
-                                    {isEditing && <button type="button" onClick={() => removeArrayItem(setAwards, index)} className="absolute top-2 right-2 text-red-500 hover:text-red-700">&times;</button>}
-                                    <div><label className="block text-sm font-medium mb-1">Award Title *</label><input type="text" value={award.awardTitle || ''} onChange={(e) => handleArrayItemChange(setAwards, index, 'awardTitle', e.target.value)} placeholder="e.g., Best Engineering College" className="w-full border border-gray-300 rounded p-2" readOnly={!isEditing} /></div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div><label className="block text-sm font-medium mb-1">Start Date</label><input type="date" value={award.startDate ? new Date(award.startDate).toISOString().split('T')[0] : ''} onChange={(e) => handleArrayItemChange(setAwards, index, 'startDate', e.target.value)} className="w-full border border-gray-300 rounded p-2 bg-white" readOnly={!isEditing} /></div>
-                                        <div><label className="block text-sm font-medium mb-1">End Date</label><input type="date" value={award.endDate ? new Date(award.endDate).toISOString().split('T')[0] : ''} onChange={(e) => handleArrayItemChange(setAwards, index, 'endDate', e.target.value)} className="w-full border border-gray-300 rounded p-2 bg-white" readOnly={!isEditing} /></div>
+                                <div key={index} className="grid grid-cols-1 gap-4 bg-white/50 backdrop-blur-sm border border-white/50 p-4 rounded-xl mb-4 relative hover:bg-white/70 transition-all duration-200">
+                                    {isEditing && (
+                                        <button 
+                                            type="button" 
+                                            onClick={() => removeArrayItem(setAwards, index)} 
+                                            className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    )}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Award Title *</label>
+                                        <input 
+                                            type="text" 
+                                            value={award.awardTitle || ''} 
+                                            onChange={(e) => handleArrayItemChange(setAwards, index, 'awardTitle', e.target.value)} 
+                                            placeholder="e.g., Best Engineering College" 
+                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                            readOnly={!isEditing} 
+                                        />
                                     </div>
-                                    <div><label className="block text-sm font-medium mb-1">Awarding Organization *</label><input type="text" value={award.awardingOrganization || ''} onChange={(e) => handleArrayItemChange(setAwards, index, 'awardingOrganization', e.target.value)} placeholder="e.g., Ministry of Education" className="w-full border border-gray-300 rounded p-2 bg-white" readOnly={!isEditing} /></div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                <Calendar className="inline w-4 h-4 mr-2 text-gray-400" />
+                                                Start Date
+                                            </label>
+                                            <input 
+                                                type="date" 
+                                                value={award.startDate ? new Date(award.startDate).toISOString().split('T')[0] : ''} 
+                                                onChange={(e) => handleArrayItemChange(setAwards, index, 'startDate', e.target.value)} 
+                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                                readOnly={!isEditing} 
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                <Calendar className="inline w-4 h-4 mr-2 text-gray-400" />
+                                                End Date
+                                            </label>
+                                            <input 
+                                                type="date" 
+                                                value={award.endDate ? new Date(award.endDate).toISOString().split('T')[0] : ''} 
+                                                onChange={(e) => handleArrayItemChange(setAwards, index, 'endDate', e.target.value)} 
+                                                className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                                readOnly={!isEditing} 
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Awarding Organization *</label>
+                                        <input 
+                                            type="text" 
+                                            value={award.awardingOrganization || ''} 
+                                            onChange={(e) => handleArrayItemChange(setAwards, index, 'awardingOrganization', e.target.value)} 
+                                            placeholder="e.g., Ministry of Education" 
+                                            className={`w-full p-3 bg-white backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${!isEditing ? 'text-gray-900' : ''}`} 
+                                            readOnly={!isEditing} 
+                                        />
+                                    </div>
                                 </div>
                             ))}
-                            {isEditing && <div className="flex justify-end mt-2"><button type="button" onClick={() => addArrayItem(setAwards, { awardTitle: '', startDate: '', endDate: '', awardingOrganization: '' })} className="text-blue-600 text-sm hover:underline">+ Add award</button></div>}
+                            {isEditing && (
+                                <button 
+                                    type="button" 
+                                    onClick={() => addArrayItem(setAwards, { awardTitle: '', startDate: '', endDate: '', awardingOrganization: '' })} 
+                                    className="flex items-center gap-2 text-[#3b82f6] hover:text-[#1d4ed8] transition-colors duration-200"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    Add award
+                                </button>
+                            )}
                         </div>
 
                         {isEditing && (
-                            <div className="flex justify-end mt-8 gap-4">
+                            <div className="flex justify-end gap-4 pt-6 border-t border-gray-200/50">
                                 <button
                                     type="button"
                                     onClick={() => {
@@ -912,13 +1178,27 @@ export default function ProfileForm({
                                             setCollegeBrochureFile(null);
                                         }
                                     }}
-                                    className="bg-gray-300 text-gray-800 px-5 py-2 rounded-lg shadow hover:bg-gray-400 transition-colors duration-200"
+                                    className="px-6 py-3 bg-white/50 backdrop-blur-sm border border-white/50 text-gray-700 rounded-xl hover:bg-white/80 transition-all duration-200 hover:shadow-md"
                                     disabled={loading}
                                 >
                                     Cancel
                                 </button>
-                                <button type="submit" className="bg-green-600 text-white px-5 py-2 rounded-lg shadow hover:bg-green-700 transition-colors duration-200" disabled={loading}>
-                                    {loading ? 'Saving...' : 'Save Changes'}
+                                <button 
+                                    type="submit" 
+                                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#10b981] to-[#34d399] text-white rounded-xl hover:shadow-lg hover:shadow-emerald-200/50 transition-all duration-200" 
+                                    disabled={loading}
+                                >
+                                    {loading ? (
+                                        <>
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                            Saving...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Save className="w-4 h-4" />
+                                            Save Changes
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         )}
