@@ -470,9 +470,14 @@ export async function shortlistApplicant(req, res) {
         default:
           break;
       }
-      // if (applicantMail.success) {
-      //     sendStatusChangeEmail(applicantMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
-      // }
+      if (applicantMail.success) {
+        sendStatusChangeEmail(
+          applicantMail.email,
+          response.data.currentStatus,
+          response.data._id,
+          jobRole /*companyName*/
+        ); // should make this function async but nonblocking
+      }
 
       return res.status(200).json(response);
     }
@@ -545,9 +550,14 @@ export async function rejectApplicant(req, res) {
         default:
           break;
       }
-      // if (applicantMail.success) {
-      //     sendStatusChangeEmail(applicantMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
-      // }
+      if (applicantMail.success) {
+        sendStatusChangeEmail(
+          applicantMail.email,
+          response.data.currentStatus,
+          response.data._id,
+          jobRole /*companyName*/
+        ); // should make this function async but nonblocking
+      }
 
       return res.status(200).json(response);
     }
@@ -557,7 +567,6 @@ export async function rejectApplicant(req, res) {
     res.status(500).json({ Error: "Internal server error" });
   }
 }
-
 
 export async function rejectCompanyApplicationByCollege(req, res) {
   const { applicationId } = req.params;
@@ -622,9 +631,14 @@ export async function acceptApplicant(req, res) {
         default:
           break;
       }
-      // if (applicantMail.success) {
-      //     sendStatusChangeEmail(applicantMail.email, response.data.currentStatus, response.data._id, jobRole, /*companyName*/);  // should make this function async but nonblocking
-      // }
+      if (applicantMail.success) {
+        sendStatusChangeEmail(
+          applicantMail.email,
+          response.data.currentStatus,
+          response.data._id,
+          jobRole /*companyName*/
+        ); // should make this function async but nonblocking
+      }
 
       return res.status(200).json(response);
     }
@@ -801,26 +815,25 @@ export const getCompanyDashboardMetrics = async (req, res) => {
 
 export async function submitAlternateDates(req, res) {
   const { jobId } = req.params;
-  
+
   const { startDate, endDate } = req.body;
-  
+
   let companyId;
   const userId = req.user._id;
 
-
   if (req.user.companyId) {
     companyId = req.user.companyId;
-   
   } else if (req.user.activeCompanyId) {
     companyId = req.user.activeCompanyId;
-   
   } else if (userId) {
-   
     try {
       const companyResponse = await getCompanyService(userId);
-      if (companyResponse.success && companyResponse.data && companyResponse.data.length > 0) {
-        companyId = companyResponse.data[0]._id; 
-     
+      if (
+        companyResponse.success &&
+        companyResponse.data &&
+        companyResponse.data.length > 0
+      ) {
+        companyId = companyResponse.data[0]._id;
       }
     } catch (error) {
       console.log("Error finding company using getCompanyService:", error);
