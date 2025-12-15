@@ -1204,6 +1204,7 @@ export default function ProfileForm({
                             </div>
                         )}
                     </div>
+                    </div>
                 </form>
             </div>
         </div>
