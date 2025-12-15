@@ -7,7 +7,7 @@ import Profile from "@/pages/students/Profile";
 export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChange }) => {
   const [hasAutoSeparated, setHasAutoSeparated] = React.useState(false);
 
-  // Enhanced function to automatically separate concatenated name, phone, and email
+   
   const separateContactInfo = (text) => {
     if (!text) return { name: '', phone: '', email: '' };
 
@@ -16,10 +16,10 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     let email = '';
     let remainingText = text;
 
-    // Email regex pattern
+   
     const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
     
-    // Phone regex patterns for various formats
+   
     const phonePatterns = [
       /(\+91[\s-]?[6-9]\d{9})/g,         
       /(\+91[\s-]?\d{10})/g,              

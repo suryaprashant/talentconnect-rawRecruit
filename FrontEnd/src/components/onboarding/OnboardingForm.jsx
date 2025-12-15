@@ -32,7 +32,7 @@ export const OnboardingForm = () => {
 
   const handleCancel = () => {
     if (confirm("Are you sure you want to cancel? All progress will be lost.")) {
-      clearData(); // This will clear the role and formData.
+      clearData();
       setCurrentStep(0);
     }
   };
@@ -56,10 +56,6 @@ export const OnboardingForm = () => {
       case 0: return <Welcome onNext={handleNext} onCancel={handleCancel} />;
       case 1: return <StepOne onNext={handleNext} onCancel={handleCancel} formData={formData} onChange={handleFormDataChange} />;
       case 2: return <StepTwo  onNext={handleNext} onBack={handleBack} onProfileTypeSelect={handleProfileTypeSelection} formData={formData} onChange={handleFormDataChange} />;
-      // case 3:
-      //   return role === "fresher" 
-      //     ? <FresherStepThree onNext={handleNext} onBack={handleBack} formData={formData} onChange={handleFormDataChange} />
-      //     : <StepThree onNext={handleNext} onBack={handleBack} formData={formData} onChange={handleFormDataChange} />;
       case 3: return <StepThree onNext={handleNext} onBack={handleBack} formData={formData} onChange={handleFormDataChange} />;
       case 4:
         if (role === "professional") {

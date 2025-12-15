@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-//  import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
+// import { fetchJobDetails, fetchSimilarJobs} from '../../../../constants/JobListing'
 // import JobCard from '@/components/student/studentDashboard/jobListing/JobCard';
 import { ApplyForJobListingOppurtunity, getJobLisingJobDetails, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 
@@ -13,7 +13,7 @@ const JobDetails = () => {
     const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
     const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
     const [jobDetails, setJobDetails] = useState(null);
-    //   const [similarJobs, setSimilarJobs] = useState([]);
+    // const [similarJobs, setSimilarJobs] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -69,6 +69,10 @@ const JobDetails = () => {
         }
     };
 
+    const handleGoBack = () => {
+        navigate(-1);
+    };
+
     if (isLoading) {
         return (
             <div className="flex justify-center items-center min-h-screen bg-slate-50">
@@ -77,9 +81,6 @@ const JobDetails = () => {
         );
 
     };
-    const handleGoBack = () => {
-        window.history.back();
-    }
 
     if (error || !jobDetails) {
         return (
@@ -92,7 +93,7 @@ const JobDetails = () => {
                     <p className="mt-2 text-slate-600">We couldn't retrieve the details for this job posting.</p>
                     <button
                         className="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg"
-                        onClick={() => handleGoBack()}
+                        onClick={handleGoBack}
                     >
                         Back
                     </button>
@@ -129,6 +130,19 @@ const JobDetails = () => {
 
     return (
         <div className="bg-slate-50 min-h-screen font-sans p-4 sm:p-6 lg:p-8">
+            {/* Back Button */}
+            <div className="container mx-auto max-w-5xl mb-6">
+                <button
+                    onClick={handleGoBack}
+                    className="flex items-center text-slate-600 hover:text-indigo-600 transition-colors duration-200 font-medium"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                    </svg>
+                    Back to Jobs
+                </button>
+            </div>
+
             <div className="container mx-auto max-w-5xl">
                 <main>
                     <div className="bg-white p-8 rounded-xl shadow-md space-y-8">

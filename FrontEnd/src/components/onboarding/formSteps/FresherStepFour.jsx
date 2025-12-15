@@ -1,53 +1,53 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
 import { ChevronDownIcon, X } from "lucide-react";
 import { useRole } from "@/context/RoleContext/RoleContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { City } from 'country-state-city'; // Import City for locations
+import { City } from 'country-state-city';
+import CreatableSelect from 'react-select/creatable';
 
 // --- STATIC OPTIONS ---
 const industryOptions = [
-  "Technology",
-  "Finance",
-  "Healthcare",
-  "Education",
-  "Manufacturing",
-  "E-commerce",
+    "Technology",
+    "Finance",
+    "Healthcare",
+    "Education",
+    "Manufacturing",
+    "E-commerce",
 ];
 const jobRoleOptions = [
-  "Software Developer",
-  "UI/UX Designer",
-  "Project Manager",
-  "Data Analyst",
-  "Marketing Specialist",
-  "DevOps Engineer",
+    "Software Developer",
+    "UI/UX Designer",
+    "Project Manager",
+    "Data Analyst",
+    "Marketing Specialist",
+    "DevOps Engineer",
 ];
 const employmentTypeOptions = ["part time", "full time", "contract"];
 const companyOptions = [
-    "Google", 
-    "Microsoft", 
-    "Amazon", 
-    "TCS", 
-    "Infosys", 
+    "Google",
+    "Microsoft",
+    "Amazon",
+    "TCS",
+    "Infosys",
     "Wipro"
 ];
 const roleOptions = [
-    "Software Developer", 
-    "UI/UX Designer", 
-    "Project Manager", 
-    "Data Analyst", 
+    "Software Developer",
+    "UI/UX Designer",
+    "Project Manager",
+    "Data Analyst",
     "Marketing Specialist"
 ];
 
 
-// --- Helper Components for Multi-Select UI ---
 const SelectedTag = ({ item, onRemove }) => (
     <div className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full text-black">
         <span>{item}</span>
-        <button 
-            type="button" 
-            onClick={onRemove} 
+        <button
+            type="button"
+            onClick={onRemove}
             className="ml-2 text-gray-600 hover:text-black"
         >
             <X size={14} />
@@ -58,50 +58,45 @@ const SelectedTag = ({ item, onRemove }) => (
 
 export const FresherStepFour = ({ onNext, onBack }) => {
     const { formData, updateFormData } = useRole();
-    
-    // --- State for Locations and Dropdown Management ---
-    const [indianCities, setIndianCities] = useState([]);
-    const [locationSearch, setLocationSearch] = useState('');
+
+    // --- Location Options (React-Select) ---
+    const locationOptions = useMemo(() => {
+        return City.getCitiesOfCountry("IN")
+            ?.map((city) => ({
+                value: city.name,
+                label: city.name,
+            }))
+            ?.sort((a, b) => a.label.localeCompare(b.label));
+    }, []);
 
     const [dropdownOpen, setDropdownOpen] = useState({
         industry: false,
         jobRoles: false,
-        locations: false,
     });
 
     const industryRef = useRef(null);
     const jobRolesRef = useRef(null);
-    const locationsRef = useRef(null);
-
-    // Load Indian cities on mount
-    useEffect(() => {
-        const citiesOfIndia = City.getCitiesOfCountry('IN')
-            .map(city => city.name)
-            .sort((a, b) => a.localeCompare(b));
-        setIndianCities(citiesOfIndia);
-    }, []);
 
     // Close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
-            const refs = { industry: industryRef, jobRoles: jobRolesRef, locations: locationsRef };
+            const refs = { industry: industryRef, jobRoles: jobRolesRef };
             for (const field in refs) {
                 if (dropdownOpen[field] && refs[field].current && !refs[field].current.contains(event.target)) {
                     setDropdownOpen(prev => ({ ...prev, [field]: false }));
-                    if (field === 'locations') setLocationSearch('');
                 }
             }
         };
-        document.addEventListener("mousedown", handleClickOutside); 
+        document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [dropdownOpen]);
 
     // --- HANDLERS ---
 
     const toggleDropdown = (field) => {
-        setDropdownOpen((prev) => ({ 
+        setDropdownOpen((prev) => ({
             ...Object.keys(prev).reduce((acc, key) => ({ ...acc, [key]: false }), {}),
-            [field]: !prev[field] 
+            [field]: !prev[field]
         }));
     };
 
@@ -125,19 +120,46 @@ export const FresherStepFour = ({ onNext, onBack }) => {
         updateFormData({ [name]: value });
     };
 
-    const handleRadioChange = (field, value) => {
-        // Multi-select logic for employmentType toggle buttons
-        handleMultiSelect(field, value);
+    // Handler for Locations (React-Select)
+    const handleLocationChange = (selectedOptions) => {
+        const locations = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
+        updateFormData({ locations });
+    };
+
+    const selectedLocationsValue = (formData.locations || []).map(loc => ({
+        label: loc,
+        value: loc
+    }));
+
+    // Handler for Looking For
+    const handleLookingForChange = (option) => {
+        let newVal;
+        if (option === 'Both') {
+            newVal = ['Internship', 'Job'];
+        } else {
+            newVal = option;
+        }
+        updateFormData({ lookingFor: newVal });
+    };
+
+    const isLookingForActive = (option) => {
+        const val = formData.lookingFor;
+        if (option === 'Both') {
+            return Array.isArray(val) && val.includes('Job') && val.includes('Internship');
+        }
+        if (val === option) return true;
+        if (Array.isArray(val) && val.includes(option) && val.length === 1) return true;
+        return false;
     };
 
     const handleAddExperience = () => {
         const currentExperiences = formData.experiences || [];
-        const newExperiences = [...currentExperiences, { 
-            company: "", 
-            role: "", 
-            startDate: null, 
-            endDate: null, 
-            description: "" 
+        const newExperiences = [...currentExperiences, {
+            company: "",
+            role: "",
+            startDate: null,
+            endDate: null,
+            description: ""
         }];
         updateFormData({ experiences: newExperiences });
     };
@@ -154,7 +176,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
         newExperiences[index] = { ...newExperiences[index], [field]: date };
         updateFormData({ experiences: newExperiences });
     };
-    
+
     const handleRemoveExperience = (index) => {
         const newExperiences = [...(formData.experiences || [])];
         newExperiences.splice(index, 1);
@@ -164,39 +186,30 @@ export const FresherStepFour = ({ onNext, onBack }) => {
     const handleClick = () => {
         onNext();
     }
-    
+
     const currentEmploymentType = Array.isArray(formData.employmentType) ? formData.employmentType : [];
-    
-    const filteredCities = indianCities.filter(city =>
-        city.toLowerCase().includes(locationSearch.toLowerCase())
-    );
 
-    // Handle location search input change
-    const handleLocationSearchChange = (e) => {
-        setLocationSearch(e.target.value);
-    };
-
-    // Custom reusable MultiSelect Dropdown component
-    const MultiSelectDropdown = ({ field, options, label, ref, searchState, setSearchState, showSearch = false }) => {
+    // Custom reusable MultiSelect Dropdown component (for Industry and Job Roles)
+    const MultiSelectDropdown = ({ field, options, label, ref }) => {
         const displayLabel = `Select   ${label.toLowerCase()}`;
-        
+
         return (
             <div ref={ref} className="w-full mt-6 max-md:max-w-full relative">
                 <label className="block text-black max-md:max-w-full">{label}</label>
-                
+
                 <div className="flex flex-wrap gap-2 mt-2 mb-2">
                     {(formData[field] || []).map(item => (
-                        <SelectedTag 
-                            key={item} 
-                            item={item} 
-                            onRemove={() => removeSelectedItem(field, item)} 
+                        <SelectedTag
+                            key={item}
+                            item={item}
+                            onRemove={() => removeSelectedItem(field, item)}
                         />
                     ))}
                 </div>
-                
-                <div 
+
+                <div
                     className="flex justify-between items-center min-h-12 w-full p-3 border border-gray-300 rounded cursor-pointer text-[#666] hover:border-gray-400"
-                    onClick={(e) => {e.stopPropagation(); toggleDropdown(field);}}
+                    onClick={(e) => { e.stopPropagation(); toggleDropdown(field); }}
                 >
                     <span className={(formData[field] || []).length > 0 ? "text-black" : "text-[#666]"}>
                         {displayLabel}
@@ -205,42 +218,23 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                 </div>
 
                 {dropdownOpen[field] && (
-                    <div 
+                    <div
                         className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg"
-                        onMouseDown={(e) => e.stopPropagation()} 
+                        onMouseDown={(e) => e.stopPropagation()}
                     >
-                        {showSearch && (
-                            <div className="p-2 border-b">
-                                <input
-                                    type="text"
-                                    value={searchState}
-                                    onChange={handleLocationSearchChange}
-                                    onClick={(e) => e.stopPropagation()} 
-                                    onMouseDown={(e) => e.stopPropagation()} 
-                                    onKeyDown={(e) => e.stopPropagation()}
-                                    placeholder="Search locations..."
-                                    className="w-full p-2 border border-gray-300 rounded"
-                                    autoFocus
-                                />
-                            </div>
-                        )}
                         <ul className="max-h-60 overflow-y-auto">
-                            {options.length > 0 ? (
-                                options.map((option) => (
-                                    <li
-                                        key={option}
-                                        onClick={(e) => { e.stopPropagation(); handleMultiSelect(field, option); }}
-                                        className={`p-2 hover:bg-gray-100 cursor-pointer text-black ${
-                                            (formData[field] || []).includes(option) ? "bg-gray-100 font-medium" : ""
+                            {options.map((option) => (
+                                <li
+                                    key={option}
+                                    onClick={(e) => { e.stopPropagation(); handleMultiSelect(field, option); }}
+                                    className={`p-2 hover:bg-gray-100 cursor-pointer text-black ${
+                                        (formData[field] || []).includes(option) ? "bg-gray-100 font-medium" : ""
                                         }`}
-                                    >
-                                        {option}
-                                        {(formData[field] || []).includes(option) && <span className="float-right text-gray-500">✓</span>}
-                                    </li>
-                                ))
-                            ) : (
-                                 <li className="p-2 text-gray-500">No locations found.</li>
-                            )}
+                                >
+                                    {option}
+                                    {(formData[field] || []).includes(option) && <span className="float-right text-gray-500">✓</span>}
+                                </li>
+                            ))}
                         </ul>
                     </div>
                 )}
@@ -264,33 +258,81 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                 </div>
 
                 <form className="w-full text-base font-normal mt-8 max-md:max-w-full">
-                    
+
                     {/* Interested Industry Type (Multi-Select Dropdown) */}
-                    <MultiSelectDropdown 
-                        field="industry" 
-                        options={industryOptions} 
-                        label="Interested Industry Type" 
+                    <MultiSelectDropdown
+                        field="industry"
+                        options={industryOptions}
+                        label="Interested Industry Type"
                         ref={industryRef}
                     />
 
                     {/* Interested Job Roles (Multi-Select Dropdown) */}
-                    <MultiSelectDropdown 
-                        field="jobRoles" 
-                        options={jobRoleOptions} 
-                        label="Interested Job Roles" 
+                    <MultiSelectDropdown
+                        field="jobRoles"
+                        options={jobRoleOptions}
+                        label="Interested Job Roles"
                         ref={jobRolesRef}
                     />
 
-                    {/* Preferred Job Locations (Multi-Select Dropdown with Search) */}
-                    <MultiSelectDropdown 
-                        field="locations" 
-                        options={filteredCities} 
-                        label="Preferred Job Locations" 
-                        ref={locationsRef}
-                        showSearch={true}
-                        searchState={locationSearch}
-                        setSearchState={setLocationSearch}
-                    />
+                    {/* Preferred Job Locations (CreatableSelect) */}
+                    <div className="w-full mt-6 max-md:max-w-full">
+                        <label className="block text-black mb-2">Preferred Job Locations</label>
+                        <CreatableSelect
+                            isMulti
+                            options={locationOptions}
+                            value={selectedLocationsValue}
+                            onChange={handleLocationChange}
+                            placeholder="Select or type to add locations..."
+                            styles={{
+                                control: (base) => ({
+                                    ...base,
+                                    borderColor: '#d1d5db',
+                                    minHeight: '48px',
+                                    borderRadius: '0.25rem', // rounded
+                                    backgroundColor: 'white',
+                                    padding: '2px',
+                                    boxShadow: 'none',
+                                    '&:hover': {
+                                        borderColor: '#9ca3af'
+                                    },
+                                    '&:focus-within': {
+                                        borderColor: '#000',
+                                        boxShadow: '0 0 0 1px #000'
+                                    }
+                                }),
+                                menu: (base) => ({
+                                    ...base,
+                                    borderRadius: '0.375rem',
+                                    border: '1px solid #e5e7eb',
+                                    zIndex: 50
+                                }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: state.isSelected ? '#e5e7eb' : state.isFocused ? '#f3f4f6' : 'white',
+                                    color: '#374151',
+                                    cursor: 'pointer',
+                                    '&:active': {
+                                        backgroundColor: '#e5e7eb'
+                                    }
+                                }),
+                                multiValue: (base) => ({
+                                    ...base,
+                                    backgroundColor: '#e5e7eb',
+                                    borderRadius: '9999px',
+                                }),
+                                multiValueRemove: (base) => ({
+                                    ...base,
+                                    borderRadius: '0 9999px 9999px 0',
+                                    color: '#4b5563',
+                                    ':hover': {
+                                        backgroundColor: '#d1d5db',
+                                        color: 'black',
+                                    },
+                                }),
+                            }}
+                        />
+                    </div>
 
 
                     {/* Expected Salary */}
@@ -327,7 +369,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                         </div>
                     </div>
 
-                    {/* Looking For (Single Select Toggle - Kept the original logic) */}
+                    {/* Looking For (Updated logic) */}
                     <div className="w-full mt-6 max-md:max-w-full">
                         <label className="block text-black">Looking for</label>
                         <div className="flex w-full gap-4 text-black whitespace-nowrap flex-wrap mt-2">
@@ -335,8 +377,8 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                 <button
                                     key={option}
                                     type="button"
-                                    className={`self-stretch gap-2 px-4 py-2 border rounded-md ${formData.lookingFor === option ? "bg-black text-white" : ""}`}
-                                    onClick={() => updateFormData({ lookingFor: option })}
+                                    className={`self-stretch gap-2 px-4 py-2 border rounded-md ${isLookingForActive(option) ? "bg-black text-white" : ""}`}
+                                    onClick={() => handleLookingForChange(option)}
                                 >
                                     {option}
                                 </button>
@@ -366,14 +408,14 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                         <label className="block text-black">Internships/Trainings</label>
                         {(formData.experiences || []).map((exp, index) => (
                             <div key={index} className="p-4 border rounded-md mt-4 relative">
-                                <button 
-                                    type="button" 
-                                    onClick={() => handleRemoveExperience(index)} 
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveExperience(index)}
                                     className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
                                 >
                                     <X size={18} />
                                 </button>
-                                {/* Company Dropdown (Now with real names) */}
+                                {/* Company Dropdown */}
                                 <div className="relative mt-2">
                                     <select
                                         name="company"
@@ -388,7 +430,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                     </select>
                                     <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
                                 </div>
-                                {/* Role Dropdown (Now with real names) */}
+                                {/* Role Dropdown */}
                                 <div className="relative mt-4">
                                     <select
                                         name="role"

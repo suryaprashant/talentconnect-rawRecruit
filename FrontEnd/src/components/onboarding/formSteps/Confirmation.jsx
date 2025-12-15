@@ -30,7 +30,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
     const dataToSend = new FormData();
     const tempFormData = { ...formData };
 
-    // This ensures profileType isn't added twice if it exists in formData
+    
     delete tempFormData.profileType;
 
    
@@ -62,7 +62,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
       }
     }
 
-    // Append the definitive profileType from context
+
     dataToSend.append('profileType', selectedRole);
     
     console.log("Submitting FormData to backend...");
@@ -72,7 +72,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
         withCredentials: true,
       });
 
-      //console.log("Response from backend:", response.data);
+    
       alert('Candidate profile created successfully!');
       
       if(response.data && response.data.user){
@@ -99,7 +99,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
             navigate('/home', { replace: true });
             break;
           default:
-             // Fallback navigation
+           
              navigate('/home', { replace: true });
         }
       } else {

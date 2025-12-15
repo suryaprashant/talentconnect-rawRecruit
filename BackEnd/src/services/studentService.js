@@ -23,9 +23,9 @@ export async function getOnboardingFormService(userId) {
   }
 }
 
-// Submit onboarding form (create or update)
+
 export async function submitOnboardingFormService(userId, body, files) {
-  // Prepare updateData as in controller
+
   const updateData = {
     userId,
     name: body.name,
@@ -42,7 +42,7 @@ export async function submitOnboardingFormService(userId, body, files) {
     expectedSalaryAmount: body.expectedSalaryAmount,
     currentSalaryCurrency: body.currentSalaryCurrency,
     currentSalaryAmount: body.currentSalaryAmount,
-    lookingFor: body.lookingFor,
+    lookingFor: body.lookingFor ? body.lookingFor.split(",") : [],
     employmentType: body.employmentType ? body.employmentType.split(",") : [],
     certifications: body.certifications,
     linkedin: body.linkedin,
@@ -73,7 +73,7 @@ export async function submitOnboardingFormService(userId, body, files) {
   return await handleOnboardingUpdate(updateData, files);
 }
 
-// Update onboarding form for a user
+
 export async function updateOnboardingFormService(userId, body, files) {
   // Prepare updates as in controller
   const updates = { ...body };

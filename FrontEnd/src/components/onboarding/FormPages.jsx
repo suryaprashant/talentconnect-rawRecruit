@@ -5,7 +5,7 @@ import CareerGoals from './steps/CareerGoals'
 import FinalDetails from './steps/FinalDetails'
 
 function FormPages({ currentStep, formData, isEditable, handleInputChange, toggleEdit }) {
-  // Render the appropriate form based on current step
+  
   const renderForm = () => {
     switch (currentStep) {
       case 1:

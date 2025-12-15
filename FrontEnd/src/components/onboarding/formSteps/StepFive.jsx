@@ -21,7 +21,7 @@ const isValidPortfolio = (url) => {
   }
 };
 
-// A sample list of skills for the dropdown.
+
 const skillOptions = [
   "JavaScript",
   "MERN Stack",

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-// Complete Terms & Services Modal Component
+
 export const TermsModal = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (isOpen) {

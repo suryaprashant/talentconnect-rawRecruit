@@ -20,7 +20,7 @@ export const StepThree = ({
   formData,
   onChange,
 }) => {
-  // --- MODIFIED: Added yearOfGraduation to state ---
+ 
   const [localFormData, setLocalFormData] = useState({
     college: formData.education[0]?.college || "",
     degree: formData.education[0]?.degree || "",

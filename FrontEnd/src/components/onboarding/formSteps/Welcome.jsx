@@ -4,15 +4,15 @@ import { useRole } from "@/context/RoleContext/RoleContext";
 export const Welcome = ({ onNext, onCancel }) => {
   const { selectedRole, updateRole } = useRole();
   
-  // Verify role persistence when Welcome component mounts
+ 
   useEffect(() => {
     const storedRole = localStorage.getItem('selectedRole');
     
-    // If there's a role in localStorage but not in context, update context
+    
     if (storedRole && !selectedRole) {
       updateRole(storedRole);
     }
-    // If there's a role in context but not in localStorage, update localStorage
+    
     else if (selectedRole && !storedRole) {
       localStorage.setItem('selectedRole', selectedRole);
     }

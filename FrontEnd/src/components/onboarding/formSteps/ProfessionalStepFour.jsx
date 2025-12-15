@@ -30,7 +30,7 @@ const jobRoleOptions = [
 
 const employmentTypeOptions = ["part time", "full time", "contract"];
 
-// --- Helper Components for Multi-Select UI ---
+
 const SelectedTag = ({ item, onRemove }) => (
     <div className="flex items-center bg-gray-200 text-sm h-8 px-3 py-1 rounded-full text-black">
         <span>{item}</span>
@@ -45,7 +45,7 @@ const SelectedTag = ({ item, onRemove }) => (
     </div>
 );
 
-// --- Custom Date Input component (to keep the Calendar icon) ---
+
 const CustomDateInput = React.forwardRef(({ value, onClick, placeholder, disabled }, ref) => (
   <div className="relative flex items-center">
     <input
@@ -73,18 +73,18 @@ export const ProfessionalStepFour = ({ onNext, onBack, formData, onChange }) => 
         industry: false,
         jobRoles: false,
         locations: false,
-        currentCompany: false, // For professional experience dropdown
-        currentRole: false,     // For professional experience dropdown
+        currentCompany: false, 
+        currentRole: false,     
     });
 
     const industryRef = useRef(null);
     const jobRolesRef = useRef(null);
     const locationsRef = useRef(null);
     
-    // Map field names to their refs for easier handling
+
     const dropdownRefs = { industry: industryRef, jobRoles: jobRolesRef, locations: locationsRef };
 
-    // Load Indian cities on mount
+  
     useEffect(() => {
         const citiesOfIndia = City.getCitiesOfCountry('IN')
             .map(city => city.name)
@@ -92,7 +92,7 @@ export const ProfessionalStepFour = ({ onNext, onBack, formData, onChange }) => 
         setIndianCities(citiesOfIndia);
     }, []);
 
-    // Close dropdowns when clicking outside
+    
     useEffect(() => {
         const handleClickOutside = (event) => {
             for (const field in dropdownRefs) {
@@ -107,7 +107,7 @@ export const ProfessionalStepFour = ({ onNext, onBack, formData, onChange }) => 
     }, [dropdownOpen]);
 
 
-    // --- HANDLERS ---
+   
     
     const handleFieldChange = (name, value) => {
         onChange({ ...formData, [name]: value });
