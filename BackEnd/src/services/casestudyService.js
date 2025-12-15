@@ -57,17 +57,17 @@ class CasestudyService {
             domains
         } = casestudyData;
 
-        // Handle logo upload if provided (optional for now)
+       
         let logoUrl = '';
         if (file) {
             console.log('File upload detected but not processed yet:', file);
-            // TODO: Implement file upload when Cloudinary is properly configured
+           
         }
 
-        // Transform rewards data to match model structure
+        
         const rewardsAndBenefits = this._transformRewardsData(rewards);
 
-        // Determine case study type based on mode
+    
         const casestudyType = this._determineCasestudyType(mode);
 
         // Determine max team size based on participation type

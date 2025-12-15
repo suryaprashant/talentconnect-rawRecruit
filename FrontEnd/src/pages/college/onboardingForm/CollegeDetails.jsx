@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Country, State, City } from "country-state-city";
 import { fetchAllCollegesName } from "../../../lib/College_AxiosIntance";
+import CreatableSelect from "react-select/creatable";
 
 export default function CollegeDetails({
   formData,
@@ -11,7 +12,6 @@ export default function CollegeDetails({
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-  const [indianCities, setIndianCities] = useState([]);
   const [isRegisteringNewCollege, setIsRegisteringNewCollege] = useState(false);
 
   const [existingColleges, setExistingColleges] = useState([]);
@@ -19,16 +19,26 @@ export default function CollegeDetails({
   const [collegeDropdownMessage, setCollegeDropdownMessage] = useState(
     "Select an existing college"
   );
+  
+  // Track if colleges have been loaded
+  const [collegesLoaded, setCollegesLoaded] = useState(false);
+  // Track if dropdown is focused for the first time
+  const [isFirstFocus, setIsFirstFocus] = useState(true);
+  // Ref for the select element
+  const selectRef = useRef(null);
+
+  // Generate options for the CreatableSelect
+  const locationOptions = useMemo(() => {
+    return City.getCitiesOfCountry("IN")
+      ?.map((city) => ({
+        value: city.name,
+        label: city.name,
+      }))
+      ?.sort((a, b) => a.label.localeCompare(b.label));
+  }, []);
 
   useEffect(() => {
     setCountries(Country.getAllCountries());
-
-    // Load all Indian cities for college location
-    const citiesOfIndia =
-      City.getCitiesOfCountry("IN")
-        ?.map((city) => city.name)
-        ?.sort((a, b) => a.localeCompare(b)) || [];
-    setIndianCities(citiesOfIndia);
   }, []);
 
   useEffect(() => {
@@ -53,6 +63,8 @@ export default function CollegeDetails({
     }
   }, [formData?.countryCode, formData?.stateCode]);
 
+  const safeFormData = formData || {};
+
   const handleNext = () => {
     if (!safeFormData.collegeName) {
       alert("College/University Name is required.");
@@ -68,7 +80,7 @@ export default function CollegeDetails({
   };
 
   const loadColleges = async () => {
-    if (isLoadingColleges || existingColleges.length > 0) {
+    if (isLoadingColleges || collegesLoaded) {
       return;
     }
 
@@ -81,6 +93,7 @@ export default function CollegeDetails({
 
       if (collegeData.length > 0) {
         setExistingColleges(collegeData);
+        setCollegesLoaded(true);
       } else {
         setCollegeDropdownMessage("No colleges found");
       }
@@ -89,6 +102,14 @@ export default function CollegeDetails({
       setCollegeDropdownMessage("Error loading colleges. Please try again.");
     } finally {
       setIsLoadingColleges(false);
+    }
+  };
+
+  // Handle focus on the dropdown
+  const handleDropdownFocus = () => {
+    if (isFirstFocus) {
+      loadColleges();
+      setIsFirstFocus(false);
     }
   };
 
@@ -115,7 +136,15 @@ export default function CollegeDetails({
     }
   };
 
-  const safeFormData = formData || {};
+  // Handler specifically for the React-Select component
+  const handleLocationChange = (selectedOption) => {
+    updateFormData("collegeLocation", selectedOption ? selectedOption.value : "");
+  };
+
+  // Prepare the value object for React-Select
+  const selectedLocationValue = safeFormData.collegeLocation
+    ? { label: safeFormData.collegeLocation, value: safeFormData.collegeLocation }
+    : null;
 
   return (
     <div className="fixed inset-0 bg-gray-50 overflow-y-auto">
@@ -135,18 +164,23 @@ export default function CollegeDetails({
               {!isRegisteringNewCollege ? (
                 <div>
                   <select
+                    ref={selectRef}
                     name="collegeName"
                     value={safeFormData.collegeName || ""}
                     onChange={handleChange}
-                    onClick={loadColleges}
+                    onFocus={handleDropdownFocus}
+                    onClick={handleDropdownFocus}
                     disabled={isLoadingColleges}
                     className="w-full p-2 border border-gray-300 rounded-md"
                     required
                   >
                     <option value="">
-                      {existingColleges.length === 0
-                        ? collegeDropdownMessage
-                        : "Select an existing college"}
+                      {isLoadingColleges 
+                        ? "Loading colleges..." 
+                        : existingColleges.length === 0
+                          ? collegeDropdownMessage
+                          : "Select an existing college"
+                      }
                     </option>
                     {existingColleges.map((college) => (
                       <option key={college.value} value={college.value}>
@@ -190,25 +224,47 @@ export default function CollegeDetails({
               )}
             </div>
 
-            {/* College Location with Indian Cities */}
+            {/* College Location with CreatableSelect */}
             <div>
               <label className="block font-medium mb-1">
                 College Location *
               </label>
-              <select
-                name="collegeLocation"
-                value={safeFormData.collegeLocation || ""}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md"
-                required
-              >
-                <option value="">Select College Location</option>
-                {indianCities.map((city, index) => (
-                  <option key={index} value={city}>
-                    {city}
-                  </option>
-                ))}
-              </select>
+              <CreatableSelect
+                isClearable
+                options={locationOptions}
+                value={selectedLocationValue}
+                onChange={handleLocationChange}
+                placeholder="Select or type to add location..."
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    borderColor: '#d1d5db', // border-gray-300
+                    minHeight: '42px',
+                    borderRadius: '0.375rem', // rounded-md
+                    backgroundColor: 'white',
+                    padding: '2px',
+                    boxShadow: 'none',
+                    '&:hover': {
+                      borderColor: '#9ca3af' // border-gray-400
+                    }
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    borderRadius: '0.375rem',
+                    border: '1px solid #e5e7eb',
+                    zIndex: 50
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    backgroundColor: state.isSelected ? '#e5e7eb' : state.isFocused ? '#f3f4f6' : 'white',
+                    color: '#374151',
+                    cursor: 'pointer',
+                    '&:active': {
+                        backgroundColor: '#e5e7eb'
+                    }
+                  })
+                }}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
