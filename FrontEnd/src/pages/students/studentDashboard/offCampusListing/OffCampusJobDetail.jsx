@@ -152,7 +152,7 @@ function OffCampusJobDetail() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           {!isApplied && (<>
-            <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>
+            <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Apply</button>
             {!isSaved && (<button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800" onClick={handleApply}>Apply</button>)}
           </>)}
         </div>

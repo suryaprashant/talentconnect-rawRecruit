@@ -66,19 +66,33 @@ const JobCard = ({ job }) => {
           </button>
         </div>
 
-        {/* Company + Job */}
-        <div className="mt-3 flex justify-between items-start">
-          <div>
+        {/* Company + Job Roles (Updated) */}
+        <div className="mt-3 flex justify-between items-start gap-2">
+          <div className="flex flex-col gap-1">
             <h3 className="text-black font-semibold text-lg">
               {companyName}
             </h3>
 
-            <p className="text-gray-900 font-extrabold text-2xl leading-tight">
-              {job.jobTitle}
-            </p>
+            {/* Display ALL Job Roles in small font */}
+            <div className="flex flex-wrap gap-1 mt-1">
+              {job.jobRoles && job.jobRoles.length > 0 ? (
+                job.jobRoles.map((role, index) => (
+                  <span 
+                    key={index} 
+                    className="text-sm font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded border border-black/5"
+                  >
+                    {role}
+                  </span>
+                ))
+              ) : (
+                <span className="text-sm font-bold text-gray-900">
+                   {job.jobTitle || "Job Role"}
+                </span>
+              )}
+            </div>
           </div>
 
-          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border">
+          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
             <img src={logo} alt="logo" className="w-12 h-12 object-cover" />
           </div>
         </div>
@@ -95,15 +109,17 @@ const JobCard = ({ job }) => {
         {/* Skills */}
         {job.skills?.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
-            {job.skills.map((skill) => (
+            {job.skills.slice(0, 3).map((skill, index) => (
               <span
-                key={skill}
-                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs"
-                style={{ backgroundColor: "transparent" }}
+                key={index}
+                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
               >
                 {skill}
               </span>
             ))}
+            {job.skills.length > 3 && (
+               <span className="px-2 py-1 text-xs text-gray-600">+{job.skills.length - 3}</span>
+            )}
           </div>
         )}
 
@@ -114,15 +130,15 @@ const JobCard = ({ job }) => {
 
         <div>
           <p className="font-semibold text-gray-900 text-sm">
-            {job.packageDetails?.totalCTC || "₹ ---"}
+            {job.packageDetails?.totalCTC ? `₹${job.packageDetails.totalCTC}` : "Not Disclosed"}
           </p>
 
           <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
             <MapPinIcon className="h-4 w-4 text-gray-500" />
-            <span>
+            <span className="line-clamp-1 max-w-[120px]">
               {Array.isArray(job.location)
                 ? job.location.join(", ")
-                : job.location}
+                : job.location || "Remote"}
             </span>
           </div>
         </div>
