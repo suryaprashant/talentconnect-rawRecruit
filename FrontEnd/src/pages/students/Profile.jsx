@@ -1,10 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import Badge from '@/components/ui/Badge';
-import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown,FiTrash2 } from 'react-icons/fi';
+import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown, FiTrash2 } from 'react-icons/fi';
 import axios from 'axios';
+import { Country, State, City } from 'country-state-city';
+import CreatableSelect from 'react-select/creatable';
 
 function Profile() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -72,10 +74,9 @@ function Profile() {
   const [error, setError] = useState(null);
 
   const [isJobRolesDropdownOpen, setIsJobRolesDropdownOpen] = useState(false);
-  const [isLocationsDropdownOpen, setIsLocationsDropdownOpen] = useState(false);
+  // Locations dropdown state removed as we use React-Select
 
   const jobRolesDropdownRef = useRef(null);
-  const locationsDropdownRef = useRef(null);
   
   // Predefined options for new fields
   const predefinedMaritalStatuses = ['Single', 'Married', 'Divorced', 'Widowed', 'Prefer not to say'];
@@ -85,10 +86,20 @@ function Profile() {
   const predefinedShifts = ['Day', 'Night', 'Rotational', 'Any'];
 
   const predefinedJobRoles = ['Software Engineer', 'Data Analyst', 'Product Manager', 'UX Designer', 'DevOps Engineer', 'Full Stack Developer'];
-  const predefinedLocations = ['Noida', 'Delhi', 'Gurgaon', 'Bangalore', 'Pune', 'Mumbai', 'Hyderabad', 'Chennai', 'Kolkata', 'Remote'];
+  // predefinedLocations removed as we use City data
   const predefinedEmploymentTypes = ['part time', 'full time', 'contract'];
   const predefinedLookingFor = ['Job', 'Internship', 'Both'];
   const predefinedIndustries = ['IT Industry', 'Finance', 'Healthcare', 'Education', 'Marketing', 'Retail', 'Manufacturing', 'Automotive'];
+
+  // --- Location Options (React-Select) ---
+  const locationOptions = useMemo(() => {
+    return City.getCitiesOfCountry("IN")
+      ?.map((city) => ({
+        value: city.name,
+        label: city.name,
+      }))
+      ?.sort((a, b) => a.label.localeCompare(b.label));
+  }, []);
 
   useEffect(() => {
     const fetchUserProfileData = async () => {
@@ -137,7 +148,7 @@ function Profile() {
             languagesKnown: Array.isArray(fetchedData.languagesKnown) ? fetchedData.languagesKnown : (typeof fetchedData.languagesKnown === 'string' && fetchedData.languagesKnown ? fetchedData.languagesKnown.split(',').map(s => s.trim()) : []),
             toolsAndPlatforms: Array.isArray(fetchedData.toolsAndPlatforms) ? fetchedData.toolsAndPlatforms : (typeof fetchedData.toolsAndPlatforms === 'string' && fetchedData.toolsAndPlatforms ? fetchedData.toolsAndPlatforms.split(',').map(s => s.trim()) : []),
             openToShift: fetchedData.openToShift || '',
-           
+            
           }));
         }
       } catch (err) {
@@ -155,7 +166,6 @@ function Profile() {
   useEffect(() => {
     function handleClickOutside(event) {
       if (jobRolesDropdownRef.current && !jobRolesDropdownRef.current.contains(event.target)) setIsJobRolesDropdownOpen(false);
-      if (locationsDropdownRef.current && !locationsDropdownRef.current.contains(event.target)) setIsLocationsDropdownOpen(false);
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -305,8 +315,11 @@ function Profile() {
                 const { experienceCertificateUrl, experienceCertificateFile, ...rest } = item;
                 return rest;
             })));
-        } else if (Array.isArray(profileData[key]) && !['certifications'].includes(key)) {
+        } else if (Array.isArray(profileData[key]) && !['certifications', 'lookingFor'].includes(key)) {
           formData.append(key, profileData[key].join(','));
+        } else if (key === 'lookingFor' && Array.isArray(profileData[key])) {
+            // Handle lookingFor as array specifically if needed, or join
+            formData.append(key, profileData[key].join(','));
         } else if (key === 'certifications') {
           formData.append(key, Array.isArray(profileData.certifications) ? profileData.certifications.map(cert => cert.name).join('; ') : '');
         } else if (profileData[key] !== null) {
@@ -420,6 +433,40 @@ function Profile() {
       const current = prev[field] || [];
       return { ...prev, [field]: current.includes(item) ? current.filter(i => i !== item) : [...current, item] };
     });
+  };
+
+  // --- Handler for Locations (React-Select) ---
+  const handleLocationChange = (selectedOptions) => {
+    const locations = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
+    handleProfileDataChange('locations', locations);
+  };
+
+  const selectedLocationsValue = (profileData.locations || []).map(loc => ({
+    label: loc,
+    value: loc
+  }));
+
+  // --- Handlers for Looking For ---
+  const handleLookingForChange = (option) => {
+    let newVal;
+    if (option === 'Both') {
+        newVal = ['Job', 'Internship'];
+    } else {
+        newVal = option;
+    }
+    handleProfileDataChange('lookingFor', newVal);
+  };
+
+  const isLookingForActive = (option) => {
+    const val = profileData.lookingFor;
+    if (option === 'Both') {
+        return Array.isArray(val) && val.includes('Job') && val.includes('Internship');
+    }
+    // If val is string
+    if (val === option) return true;
+    // If val is array but not both (edge case)
+    if (Array.isArray(val) && val.includes(option) && val.length === 1) return true;
+    return false;
   };
 
   const renderContent = () => {
@@ -879,7 +926,15 @@ function Profile() {
                     <h5 className="text-lg font-bold text-gray-800 mb-4">
                       Looking for
                     </h5>
-                    <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.lookingFor || 'N/A'}</Badge>
+                    <div className="flex flex-wrap gap-2">
+                        {Array.isArray(profileData.lookingFor) && profileData.lookingFor.length > 0 ? (
+                            profileData.lookingFor.map((item) => (
+                                <Badge key={item} variant="primary" size="md" className="bg-gray-100 text-gray-800">{item}</Badge>
+                            ))
+                        ) : (
+                            <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.lookingFor || 'N/A'}</Badge>
+                        )}
+                    </div>
                   </div>
 
                    <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
@@ -924,7 +979,7 @@ function Profile() {
                     )}
                   </div>
 
-                 {/* New Awards & Recognition Section */}
+                  {/* New Awards & Recognition Section */}
 <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
   <h5 className="text-lg font-bold text-gray-800 mb-4">
     Awards & Recognition
@@ -1421,46 +1476,60 @@ function Profile() {
                     Preferred Job Locations
                   </label>
                   {isProfileEditing ? (
-                    <div className="relative" ref={locationsDropdownRef}>
-                      <div
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white flex items-center justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        onClick={() => setIsLocationsDropdownOpen(!isLocationsDropdownOpen)}
-                      >
-                        <div className="flex flex-wrap gap-2 pr-6">
-                          {profileData.locations.length > 0 ? (
-                            profileData.locations.map(location => (
-                              <Badge key={location} variant="primary" size="sm" className="bg-gray-200 text-gray-800">
-                                {location}
-                                <span
-                                  className="ml-1 cursor-pointer text-gray-600 hover:text-gray-900"
-                                  onClick={(e) => {
-                                    e.stopPropagation(); // Prevent dropdown from closing
-                                    handleCustomMultiSelectToggle('locations', location);
-                                  }}
-                                >x</span>
-                              </Badge>
-                            ))
-                          ) : (
-                            <span className="text-gray-500">Multiple-select</span>
-                          )}
-                        </div>
-                        <FiChevronDown className="w-5 h-5 text-gray-400 absolute right-3" />
-                      </div>
-                      {isLocationsDropdownOpen && (
-                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                          {predefinedLocations.map((location) => (
-                            <div
-                              key={location}
-                              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${profileData.locations.includes(location) ? 'bg-blue-50 text-blue-800' : ''
-                                }`}
-                              onClick={() => handleCustomMultiSelectToggle('locations', location)}
-                            >
-                              {location}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    <CreatableSelect
+                        isMulti
+                        options={locationOptions}
+                        value={profileData.locations.map(loc => ({ label: loc, value: loc }))}
+                        onChange={(selectedOptions) => handleLocationChange(selectedOptions)}
+                        placeholder="Select or type to add locations..."
+                        styles={{
+                            control: (base) => ({
+                                ...base,
+                                borderColor: '#d1d5db',
+                                minHeight: '42px',
+                                borderRadius: '0.375rem',
+                                backgroundColor: 'white',
+                                padding: '2px',
+                                boxShadow: 'none',
+                                '&:hover': {
+                                    borderColor: '#9ca3af'
+                                },
+                                '&:focus-within': {
+                                    borderColor: '#000',
+                                    boxShadow: '0 0 0 1px #000'
+                                }
+                            }),
+                            menu: (base) => ({
+                                ...base,
+                                borderRadius: '0.375rem',
+                                border: '1px solid #e5e7eb',
+                                zIndex: 50
+                            }),
+                            option: (base, state) => ({
+                                ...base,
+                                backgroundColor: state.isSelected ? '#e5e7eb' : state.isFocused ? '#f3f4f6' : 'white',
+                                color: '#374151',
+                                cursor: 'pointer',
+                                '&:active': {
+                                    backgroundColor: '#e5e7eb'
+                                }
+                            }),
+                            multiValue: (base) => ({
+                                ...base,
+                                backgroundColor: '#e5e7eb',
+                                borderRadius: '9999px',
+                            }),
+                            multiValueRemove: (base) => ({
+                                ...base,
+                                borderRadius: '0 9999px 9999px 0',
+                                color: '#4b5563',
+                                ':hover': {
+                                    backgroundColor: '#d1d5db',
+                                    color: 'black',
+                                },
+                            }),
+                        }}
+                    />
                   ) : (
                     <div className={displayFieldStyle}>
                       {profileData.locations && profileData.locations.length > 0 ? (
@@ -1485,9 +1554,9 @@ function Profile() {
                       {predefinedLookingFor.map((option) => (
                         <Button
                           key={option}
-                          variant={profileData.lookingFor === option ? 'primary' : 'outline'}
-                          className={profileData.lookingFor === option ? 'bg-black text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}
-                          onClick={() => handleProfileDataChange('lookingFor', option)}
+                          variant={isLookingForActive(option) ? 'primary' : 'outline'}
+                          className={isLookingForActive(option) ? 'bg-black text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}
+                          onClick={() => handleLookingForChange(option)}
                         >
                           {option}
                         </Button>
@@ -1495,7 +1564,10 @@ function Profile() {
                     </div>
                   ) : (
                     <div className={displayFieldStyle}>
-                      {profileData.lookingFor || "N/A"}
+                        {Array.isArray(profileData.lookingFor) && profileData.lookingFor.length > 0 
+                            ? profileData.lookingFor.join(', ') 
+                            : (profileData.lookingFor || "N/A")
+                        }
                     </div>
                   )}
                 </div>
@@ -1873,7 +1945,7 @@ function Profile() {
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description / Notes</label>
                 {isProfileEditing ? (
-                    <textarea
+                    <textarea 
                         rows="3"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md" 
                         value={award.description} 
@@ -1927,7 +1999,7 @@ function Profile() {
                 </div>
                 {profileData.achievements.map((ach, index) => (
                     <div key={index} className="relative mb-4 p-4 border border-gray-200 rounded-lg space-y-4">
-                         {isProfileEditing && (<Button variant="ghost" size="sm" onClick={() => removeAchievement(index)} className="absolute top-2 right-2 text-red-600 hover:bg-red-50">Remove</Button>)}
+                          {isProfileEditing && (<Button variant="ghost" size="sm" onClick={() => removeAchievement(index)} className="absolute top-2 right-2 text-red-600 hover:bg-red-50">Remove</Button>)}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                              <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>

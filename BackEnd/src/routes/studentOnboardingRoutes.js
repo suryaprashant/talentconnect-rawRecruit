@@ -5,27 +5,27 @@ import {
   getOnboardingForm,
   updateOnboardingForm,
 } from "../controllers/studentOnboardingController.js";
-import secureRoute from "../middlewares/secureRouteMiddleware.js"; // Import your secureRoute middleware
-import multer from "multer"; // Assuming you are using multer for file uploads
+import secureRoute from "../middlewares/secureRouteMiddleware.js"; 
+import multer from "multer"; 
 
 const router = express.Router();
 
-// Configure Multer for file uploads (still needed to parse incoming files as buffers)
-const storage = multer.memoryStorage(); // Store files in memory temporarily
+
+const storage = multer.memoryStorage(); 
 const upload = multer({ storage: storage });
 
-// Apply secureRoute to routes that require authentication
+
 router.get("/onboarding", secureRoute, getAllOnboardingForms);
 
 router.post(
   "/onboarding",
-  secureRoute, // Apply secureRoute here
+  secureRoute, 
   upload.fields([
     { name: "resume", maxCount: 1 },
     { name: "degreeCertificate", maxCount: 1 },
     { name: "project", maxCount: 1 },
-    // { name: "experienceCertificate", maxCount: 5 }, // Allow multiple experience certificates
-    { name: "profileImage", maxCount: 1 }, // Added for profile image upload
+  
+    { name: "profileImage", maxCount: 1 }, 
     { name: "backgroundImage", maxCount: 1 },
     { name: "experienceCertificate", maxCount: 10 },
     { name: "leadershipCertificate", maxCount: 10 },

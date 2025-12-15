@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { ProgressIndicator } from "../ProgressIndicator"; // Assuming this component exists
-import { UploadIcon } from "lucide-react"; // Assuming you have lucide-react installed
+import { ProgressIndicator } from "../ProgressIndicator"; 
+import { UploadIcon } from "lucide-react"; 
 
 export const StepOne = ({ onNext, onCancel, onChange }) => {
-  // State from both files combined
+ 
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // The complete handleFileChange function with API logic
+ 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
@@ -18,11 +18,11 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
     setMessage("Parsing your resume... Please wait.");
 
     const data = new FormData();
-    // 'resume' must match the key your backend expects
+   
     data.append('resume', selectedFile); 
 
     try {
-      // Fetch call to your backend endpoint
+      
       const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/upload/resume`, {
         method: 'POST',
         body: data,
@@ -34,13 +34,13 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
 
       const parsedData = await response.json();
       
-      // Update the parent component's state with the parsed data
+     
       onChange(parsedData);
       
       setMessage(`Success! Data has been extracted.`);
       setIsLoading(false);
       
-      // Automatically move to the next step after a short delay
+      
       setTimeout(() => {
         onNext();
       }, 1000);

@@ -1,9 +1,8 @@
-
-
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { ChevronDownIcon, X } from "lucide-react";
 import { ProgressIndicator } from "../ProgressIndicator";
 import { City } from "country-state-city";
+import CreatableSelect from 'react-select/creatable';
 
 const jobRoleOptions = [
   "Software Developer",
@@ -35,12 +34,15 @@ const SelectedTag = ({ item, onRemove }) => (
 );
 
 export const StepFour = ({ onNext, onBack, formData, onChange }) => {
-  const [indianCities, setIndianCities] = useState([]);
-  useEffect(() => {
-    const citiesOfIndia = City.getCitiesOfCountry("IN")
-      .map((city) => city.name)
-      .sort((a, b) => a.localeCompare(b));
-    setIndianCities(citiesOfIndia);
+  
+ 
+  const locationOptions = useMemo(() => {
+    return City.getCitiesOfCountry("IN")
+      ?.map((city) => ({
+        value: city.name,
+        label: city.name,
+      }))
+      ?.sort((a, b) => a.label.localeCompare(b.label));
   }, []);
 
   const [localFormData, setLocalFormData] = useState({
@@ -68,18 +70,12 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
     locations: false,
   });
 
-  const [locationSearch, setLocationSearch] = useState("");
   const jobRolesRef = useRef(null);
-  const locationsRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (jobRolesRef.current && !jobRolesRef.current.contains(event.target)) {
         setDropdownOpen((prev) => ({ ...prev, jobRoles: false }));
-      }
-      if (locationsRef.current && !locationsRef.current.contains(event.target)) {
-        setDropdownOpen((prev) => ({ ...prev, locations: false }));
-        setLocationSearch("");
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -98,6 +94,7 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
     }));
   };
 
+  // --- Handlers for Job Roles (Legacy Custom Dropdown) ---
   const handleMultiSelect = (field, value) => {
     setLocalFormData((prev) => {
       const currentValues = prev[field] || [];
@@ -115,20 +112,54 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
     }));
   };
 
+  // --- Handler for Locations (React-Select) ---
+  const handleLocationChange = (selectedOptions) => {
+    const locations = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
+    setLocalFormData(prev => ({ ...prev, locations }));
+  };
+
+  const selectedLocationsValue = (localFormData.locations || []).map(loc => ({
+    label: loc,
+    value: loc
+  }));
+
+  // --- Handlers for Looking For ---
+  const handleLookingForClick = (option) => {
+    let newValue;
+    if (option === 'Both') {
+      newValue = ['Internship', 'Job'];
+    } else {
+      newValue = option; // 'Job' or 'Internship'
+    }
+    setLocalFormData(prev => ({ ...prev, lookingFor: newValue }));
+  };
+
+  const isLookingForActive = (option) => {
+    const val = localFormData.lookingFor;
+    
+    if (val === option) return true;
+
+    if (Array.isArray(val)) {
+        if (option === 'Both') {
+            return val.includes('Job') && val.includes('Internship');
+        }
+        // If state is array but checking single option (rare edge case with this UI logic, but safe to have)
+        return val.includes(option) && val.length === 1;
+    }
+    return false;
+  };
+
   const handleNextClick = () => {
     const dataToSave = {
       ...localFormData,
       jobRoles: localFormData.jobRoles,
       locations: localFormData.locations,
       employmentType: localFormData.employmentType,
+      lookingFor: localFormData.lookingFor
     };
     onChange({ ...formData, ...dataToSave });
     onNext();
   };
-
-  const filteredCities = indianCities.filter((city) =>
-    city.toLowerCase().includes(locationSearch.toLowerCase())
-  );
 
   return (
     <div className="justify-center items-stretch bg-white z-0 flex min-w-60 flex-col w-[560px] my-auto p-12 max-md:max-w-full max-md:px-5">
@@ -236,87 +267,64 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
             )}
           </div>
 
-          <div
-            ref={locationsRef}
-            className="w-full mt-6 max-md:max-w-full relative"
-          >
-            <label htmlFor="locations" className="block text-black">
+          <div className="w-full mt-6 max-md:max-w-full">
+            <label htmlFor="locations" className="block text-black mb-2">
               Preferred Job Locations
             </label>
-
-            <div className="flex flex-wrap gap-2 mt-2 mb-2">
-              {localFormData.locations.map((location) => (
-                <SelectedTag
-                  key={location}
-                  item={location}
-                  onRemove={() => removeSelectedItem("locations", location)}
-                />
-              ))}
-            </div>
-
-            <div
-              className="flex items-center justify-between p-3 w-full border border-gray-300 rounded-md cursor-pointer hover:border-gray-400 min-h-12"
-              onClick={() => toggleDropdown("locations")}
-            >
-              <span
-                className={
-                  localFormData.locations.length > 0
-                    ? "text-black"
-                    : "text-[#666]"
-                }
-              >
-                {localFormData.locations.length > 0
-                  ? `Selected ${localFormData.locations.length} location(s)`
-                  : "Select one or more locations (All Indian Cities)"}
-              </span>
-              <ChevronDownIcon
-                className={`w-6 h-6 transition-transform ${
-                  dropdownOpen.locations ? "rotate-180" : ""
-                }`}
-              />
-            </div>
-
-            {dropdownOpen.locations && (
-              <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
-                <div className="p-2 border-b">
-                  <input
-                    type="text"
-                    value={locationSearch}
-                    onChange={(e) => setLocationSearch(e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                    placeholder="Search for an Indian city..."
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-                <div className="max-h-60 overflow-auto">
-                  {filteredCities.length > 0 ? (
-                    filteredCities.map((city) => (
-                      <div
-                        key={city}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleMultiSelect("locations", city);
-                        }}
-                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
-                          localFormData.locations.includes(city)
-                            ? "bg-gray-100 font-medium"
-                            : ""
-                        }`}
-                      >
-                        {city}
-                        {localFormData.locations.includes(city) && (
-                          <span className="float-right text-gray-500">✓</span>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="px-4 py-2 text-gray-500">
-                      No cities found.
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+            <CreatableSelect
+                isMulti
+                options={locationOptions}
+                value={selectedLocationsValue}
+                onChange={handleLocationChange}
+                placeholder="Select or type to add locations..."
+                styles={{
+                    control: (base) => ({
+                        ...base,
+                        borderColor: '#d1d5db', // gray-300
+                        minHeight: '48px', // Matches the min-h-12 (48px) of other inputs
+                        borderRadius: '0.375rem', // rounded-md
+                        backgroundColor: 'white',
+                        padding: '2px',
+                        boxShadow: 'none',
+                        '&:hover': {
+                            borderColor: '#9ca3af' // gray-400
+                        },
+                        '&:focus-within': {
+                            borderColor: '#000', // black focus
+                            boxShadow: '0 0 0 1px #000'
+                        }
+                    }),
+                    menu: (base) => ({
+                        ...base,
+                        borderRadius: '0.375rem',
+                        border: '1px solid #e5e7eb',
+                        zIndex: 50
+                    }),
+                    option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isSelected ? '#e5e7eb' : state.isFocused ? '#f3f4f6' : 'white',
+                        color: '#374151',
+                        cursor: 'pointer',
+                        '&:active': {
+                            backgroundColor: '#e5e7eb'
+                        }
+                    }),
+                    multiValue: (base) => ({
+                        ...base,
+                        backgroundColor: '#e5e7eb', // gray-200
+                        borderRadius: '9999px', // rounded-full
+                    }),
+                    multiValueRemove: (base) => ({
+                        ...base,
+                        borderRadius: '0 9999px 9999px 0',
+                        color: '#4b5563', // gray-600
+                        ':hover': {
+                            backgroundColor: '#d1d5db',
+                            color: 'black',
+                        },
+                    }),
+                }}
+            />
           </div>
 
           <div className="w-full mt-6 max-md:max-w-full">
@@ -326,11 +334,9 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
                 <button
                   key={option}
                   type="button"
-                  onClick={() =>
-                    setLocalFormData((prev) => ({ ...prev, lookingFor: option }))
-                  }
+                  onClick={() => handleLookingForClick(option)}
                   className={`px-4 py-2 border rounded-md ${
-                    localFormData.lookingFor === option
+                    isLookingForActive(option)
                       ? "bg-black text-white"
                       : "text-black hover:bg-gray-50"
                   }`}

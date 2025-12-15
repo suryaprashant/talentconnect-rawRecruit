@@ -11,7 +11,7 @@ export const StepSix = ({ onNext, onCancel, onBack = onCancel, formData, onChang
     languagesKnown: formData.languagesKnown || [],
   });
 
-  // Options for dropdowns and checkboxes
+  
   const genderOptions = ["Male", "Female", "Non-binary", "Prefer not to say"];
   
   const toolsAndPlatforms = [
