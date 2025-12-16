@@ -94,7 +94,7 @@ function ApplicationPage() {
 
   const itemsPerPage = 5;
 
-  // Memoized filtering logic to avoid re-calculating on every render
+  // Memoized filtering logic
   const filteredJobs = useMemo(() => {
     if (!jobs || !Array.isArray(jobs)) return [];
 
@@ -103,7 +103,7 @@ function ApplicationPage() {
       const degree = Array.isArray(job.degree) ? job.degree.join(', ') : '';
       const location = Array.isArray(job.location) ? job.location.join(', ') : job.location || '';
 
-      // Comprehensive search across multiple fields
+      // Comprehensive search
       const matchesSearch =
         jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
         degree.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -288,7 +288,7 @@ function ApplicationPage() {
                   <input
                     type="text"
                     className="w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
-                    placeholder="Search by title, degree, location..."
+                    placeholder="Search by degree, location..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -313,7 +313,8 @@ function ApplicationPage() {
               <table className="w-full">
                 <thead className="bg-white/50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Job Title</th>
+                    {/* UPDATED HEADER: Degree instead of Job Title */}
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Degree</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Deadline</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Views</th>
@@ -350,8 +351,7 @@ function ApplicationPage() {
                   ) : (
                     currentJobs.map(job => {
                       const jobId = job._id || job.id;
-                      const jobTitle = job.jobTitle || 'N/A';
-                      const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : '';
+                      const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : job.degree || 'N/A';
                       const jobLocation = Array.isArray(job.location) ? job.location.join(', ') : job.location || 'N/A';
                       const jobStatus = job.jobStatus || 'Unknown';
                       const deadline = job.endDate || job.deadline;
@@ -364,23 +364,15 @@ function ApplicationPage() {
                           className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200 cursor-pointer"
                           onClick={() => handleView(jobId)}
                         >
+                          {/* UPDATED COLUMN: Degree and Location */}
                           <td className="px-6 py-4">
-                            <div className="font-medium text-gray-900">{jobTitle}</div>
-                            <div className="flex flex-col gap-1 text-sm text-gray-500 mt-1">
-                              {jobDegree && (
-                                <div className="flex items-center gap-1">
-                                  <Briefcase className="w-3 h-3" />
-                                  {jobDegree}
-                                </div>
-                              )}
-                              {jobLocation && (
-                                <div className="flex items-center gap-1">
-                                  <MapPin className="w-3 h-3" />
-                                  {jobLocation}
-                                </div>
-                              )}
+                            <div className="font-medium text-gray-900">{jobDegree}</div>
+                            <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                              <MapPin className="w-3 h-3" />
+                              {jobLocation}
                             </div>
                           </td>
+
                           <td className="px-6 py-4">
                             <span className={`px-3 py-1 text-xs font-medium rounded-full ${jobStatus === 'Open'
                               ? 'bg-gradient-to-r from-[#a7f3d0]/20 to-[#34d399]/20 text-[#059669] border border-[#a7f3d0]/30'

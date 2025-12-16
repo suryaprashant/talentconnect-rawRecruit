@@ -3,16 +3,31 @@ import { useNavigate } from "react-router-dom";
 import { useRole } from "@/context/RoleContext/RoleContext";
 import axios from 'axios';
 import { useAuth } from "@/context/AuthProvider";
+import { TermsModal } from '../Terms&conditionModal'; // Changed import
 
 export const Confirmation = ({ onSubmit, onCancel }) => {
   const [agreed, setAgreed] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const navigate = useNavigate();
   
-  
   const { selectedRole, formData, clearFormData } = useRole();
-  const[, setAuthUser] = useAuth() ;
+  const [, setAuthUser] = useAuth();
+
   const handleCheckboxChange = () => {
     setAgreed(!agreed);
+  };
+
+  const handleTermsClick = () => {
+    setShowTermsModal(true);
+  };
+
+  const handleCloseTermsModal = () => {
+    setShowTermsModal(false);
+  };
+
+  const handleAgree = () => {
+    setAgreed(true);
+    setShowTermsModal(false);
   };
 
   const handleSubmit = async (e) => {
@@ -23,32 +38,29 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
     }
 
     if (!selectedRole) {
-        alert("Profile type not selected. Please go back and select a profile type.");
-        return;
+      alert("Profile type not selected. Please go back and select a profile type.");
+      return;
     }
    
     const dataToSend = new FormData();
     const tempFormData = { ...formData };
 
-    
     delete tempFormData.profileType;
 
-   
     if (tempFormData.experiences && Array.isArray(tempFormData.experiences)) {
-        const experiencesData = [];
-        tempFormData.experiences.forEach((exp) => {
-            const expCopy = { ...exp };
-            if (exp.experienceCertificate instanceof File) {
-                dataToSend.append('experienceCertificate', exp.experienceCertificate, exp.experienceCertificate.name);
-                delete expCopy.experienceCertificate;
-            }
-            experiencesData.push(expCopy);
-        });
-        dataToSend.append('experiences', JSON.stringify(experiencesData));
+      const experiencesData = [];
+      tempFormData.experiences.forEach((exp) => {
+        const expCopy = { ...exp };
+        if (exp.experienceCertificate instanceof File) {
+          dataToSend.append('experienceCertificate', exp.experienceCertificate, exp.experienceCertificate.name);
+          delete expCopy.experienceCertificate;
+        }
+        experiencesData.push(expCopy);
+      });
+      dataToSend.append('experiences', JSON.stringify(experiencesData));
     }
     delete tempFormData.experiences;
 
-    
     for (const key in tempFormData) {
       const value = tempFormData[key];
       if (value === null || value === undefined) continue;
@@ -62,7 +74,6 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
       }
     }
 
-
     dataToSend.append('profileType', selectedRole);
     
     console.log("Submitting FormData to backend...");
@@ -72,17 +83,15 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
         withCredentials: true,
       });
 
-    
       alert('Candidate profile created successfully!');
       
-      if(response.data && response.data.user){
-        setAuthUser({user : response.data.user}) ;
+      if (response.data && response.data.user) {
+        setAuthUser({ user: response.data.user });
       }
      
-   
-       clearFormData();
+      clearFormData();
       if (onSubmit) {
-          onSubmit(); 
+        onSubmit(); 
       }
       
       const userTypeFromDb = response.data.profileType || response.data.userType;
@@ -99,8 +108,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
             navigate('/home', { replace: true });
             break;
           default:
-           
-             navigate('/home', { replace: true });
+            navigate('/home', { replace: true });
         }
       } else {
         console.warn("User type not found in response. Navigating to general home.");
@@ -121,37 +129,61 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
   };
 
   return (
-    <div className="justify-center items-stretch bg-white z-0 flex min-w-60 flex-col w-[1144px] my-auto pb-6 max-md:max-w-full">
-      <div className="flex min-h-6 w-full items-stretch gap-[15px] justify-center flex-wrap mt-5 max-md:max-w-full">
-        <div className="flex items-center gap-2.5 justify-center h-full w-6">
-          <input type="checkbox" id="terms" checked={agreed} onChange={handleCheckboxChange} className="w-6 h-6 cursor-pointer" />
+    <>
+      <div className="justify-center items-stretch bg-white z-0 flex min-w-60 flex-col w-[1144px] my-auto pb-6 max-md:max-w-full">
+        <div className="flex min-h-6 w-full items-stretch gap-[15px] justify-center flex-wrap mt-5 max-md:max-w-full">
+          <div className="flex items-center gap-2.5 justify-center h-full w-6">
+            <input 
+              type="checkbox" 
+              id="terms" 
+              checked={agreed} 
+              onChange={handleCheckboxChange} 
+              className="w-6 h-6 cursor-pointer" 
+            />
+          </div>
+          <label htmlFor="terms" className="self-stretch min-w-60 min-h-6 gap-2.5 text-base text-black font-normal text-center my-auto cursor-pointer">
+            I agree to the 
+            <span 
+              className="text-blue-600 underline ml-1 cursor-pointer hover:text-blue-800" 
+              onClick={handleTermsClick}
+            >
+              Terms & Conditions and Privacy Policy
+            </span>
+            .
+          </label>
         </div>
-        <label htmlFor="terms" className="self-stretch min-w-60 min-h-6 gap-2.5 text-base text-black font-normal text-center my-auto cursor-pointer">
-          I agree to the Terms & Conditions and Privacy Policy.
-        </label>
-      </div>
-      
-      {selectedRole && (
-        <div className="text-center mt-2">
-          <p>Profile type: <strong>{selectedRole}</strong></p>
-        </div>
-      )}
+        
+        {selectedRole && (
+          <div className="text-center mt-2">
+            <p>Profile type: <strong>{selectedRole}</strong></p>
+          </div>
+        )}
 
-      <div className="self-center flex items-center gap-4 text-base font-normal mt-6">
-        <div className="self-stretch flex min-w-60 gap-4 my-auto">
-          <button onClick={onCancel} className="self-stretch gap-2 border rounded-md text-black whitespace-nowrap px-6 py-3 max-md:px-5 cursor-pointer" type="button">
-            Back
-          </button>
-          <button 
-            onClick={handleSubmit} 
-            disabled={!agreed} 
-            className={`self-stretch gap-2 text-white px-6 border rounded-md py-3 max-md:px-5 cursor-pointer ${agreed ? "bg-black" : "bg-gray-400"}`} 
-            type="submit"
-          >
-            Get Started
-          </button>
+        <div className="self-center flex items-center gap-4 text-base font-normal mt-6">
+          <div className="self-stretch flex min-w-60 gap-4 my-auto">
+            <button onClick={onCancel} className="self-stretch gap-2 border rounded-md text-black whitespace-nowrap px-6 py-3 max-md:px-5 cursor-pointer" type="button">
+              Back
+            </button>
+            <button 
+              onClick={handleSubmit} 
+              disabled={!agreed} 
+              className={`self-stretch gap-2 text-white px-6 border rounded-md py-3 max-md:px-5 cursor-pointer ${agreed ? "bg-black" : "bg-gray-400"}`} 
+              type="submit"
+            >
+              Get Started
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Terms and Conditions Modal */}
+      {showTermsModal && (
+        <TermsModal
+          isOpen={showTermsModal}
+          onClose={handleCloseTermsModal}
+          onAgree={handleAgree}
+        />
+      )}
+    </>
   );
 };

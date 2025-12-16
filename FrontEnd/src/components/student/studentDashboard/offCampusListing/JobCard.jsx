@@ -144,7 +144,7 @@ const JobCard = ({ job }) => {
         </div>
 
         <Link
-          to={`/${localStorage.getItem("selectedRole")}-dashboard/job-listing/${job._id}`}
+          to={`/${localStorage.getItem("selectedRole")}-dashboard/Off-campus/${job._id}`}
           className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
         >
           Details
