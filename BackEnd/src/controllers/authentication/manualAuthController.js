@@ -1,4 +1,5 @@
-import { loginUser, registerUser, generateToken,getTotalUsersCount } from "../../services/authService.js";
+import { loginUser, registerUser, generateToken,getTotalUsersCount, sendSignupOtpService } from "../../services/authService.js";
+import Otp from "../../models/otpModel.js";
 
 const setJwtCookie = (res, token) => {
     res.cookie('jwt', token, {
@@ -14,14 +15,23 @@ const setJwtCookie = (res, token) => {
 
 export const signup = async (req, res) => {
     try {
-        const { email, password, userType } = req.body;
+        const { email, password, userType , otp } = req.body;
 
-        if (!email || !password || !userType) {
+        if (!email || !password || !userType || !otp) {
             return res.status(400).json({
                 message: "Email, password and userType are required"
             });
         }
+
+        const validOtp = await Otp.findOne({ email, otp });
+        if (!validOtp) {
+            return res.status(400).json({ message: "Invalid or expired OTP" });
+        }
+
         const newUser = await registerUser({ email, password, userType });
+
+        await Otp.deleteOne({ _id: validOtp._id });
+        
         const token = generateToken({
             userId: newUser._id,
             email: newUser.email,
@@ -45,6 +55,19 @@ export const signup = async (req, res) => {
     }
 };
 
+export const sendSignupOtp = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        const response = await sendSignupOtpService({ email });
+        res.status(200).json(response);
+    } catch (error) {
+        console.error("Send Signup OTP Error:", error);
+        res.status(error.statusCode || 500).json({ message: error.message || "Internal Server Error" });
+    }
+};
+
+  
 
 export const login = async (req, res) => {
     try {
