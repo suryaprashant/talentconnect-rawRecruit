@@ -251,9 +251,15 @@ export const handleOnboardingUpdate = async (updateData, files) => {
   // };
 
   if (files?.resume?.[0]) {
-    const upload = await streamUpload(files.resume[0].buffer, "resumes");
-    updateData.resume = upload.secure_url;
-  }
+  const file = files.resume[0];
+  const upload = await streamUpload(file.buffer, "resumes", file.mimetype);
+
+  // existing field (keep it for backward compatibility)
+  updateData.resume = upload.secure_url;
+
+  // ✅ ADD THIS LINE (DO NOT REMOVE resume)
+  updateData.resumeUrl = upload.secure_url;
+}
   if (files?.degreeCertificate?.[0]) {
     const upload = await streamUpload(files.degreeCertificate[0].buffer, "degreeCertificates");
     updateData.degreeCertificate = upload.secure_url;

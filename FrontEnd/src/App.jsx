@@ -249,6 +249,8 @@ import PoolcampusAcceptedListing from "./pages/college/acceptedCompanies/poolcam
 import PoolcampusAcceptedDetailPage from "./pages/college/acceptedCompanies/poolcampus/AcceptedDetailPage"
 
 import HomapPage from "./pages/homePage/HomePage"
+import ResumePreview from "./pages/fresher/ResumePreview";
+import BlankLayout from "./components/layout/BlankLayout";
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -287,6 +289,14 @@ function AppRoutes() {
       <Route path="/college-edit/*" element={<EditOnboardingFlow />} />
 
       <Route path="OnboardingflowForm" element={<OnboardingFlowForm />} />
+      <Route
+                path="/fresher-resume-preview"
+                element={
+                   
+                     <ResumePreview />
+                    
+                  }
+              />
 
       {/* from home page to direct hiring channels  */}
        {/* <Route path='hiring-channels/on-campus' element={<OnCampusHiring />} />
@@ -376,6 +386,7 @@ function AppRoutes() {
               <Route path='/fresher-dashboard/service-request/career-craft' element={<FresherCareerCraft />} />
               <Route path='/fresher-dashboard/service-request/mock-interview' element={<FresherMockInterview />} />
               <Route path='/fresher-dashboard/service-request/counselling' element={<FresherCounselling />} />
+              
             
 
 
@@ -626,6 +637,7 @@ function AppRoutes() {
                   authUser ? <ChatLayout /> : <Navigate to="/login" />
                 }
               />
+              
 
 
             </Routes>
