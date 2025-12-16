@@ -460,7 +460,7 @@ function SignupPage() {
 
   const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '' });
   const [otp, setOtp] = useState('');
-  const [isOtpSent, setIsOtpSent] = useState(false); // State to track OTP step
+  const [isOtpSent, setIsOtpSent] = useState(false); 
   
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -519,7 +519,7 @@ function SignupPage() {
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  // --- STEP 1: Send OTP ---
+
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setError('');
@@ -553,7 +553,7 @@ function SignupPage() {
     }
   };
 
-  // --- STEP 2: Verify & Signup ---
+  
   const handleVerifyAndSignup = async (e) => {
     e.preventDefault();
     setError('');
