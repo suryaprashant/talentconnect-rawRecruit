@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { sendEmail } from "../utils/sendEmail.js";
 import axios from "axios";
+import { sendOtpEmail } from "../utils/sendOtpEmail.js";
+import OtpModel from "../models/otpModel.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -165,6 +167,32 @@ export const registerUser = async ({ email, password, userType }) => {
 
   return newUser;
 };
+
+
+export const sendSignupOtpService = async ({ email }) => {
+
+  if (!email) {
+    const error = new Error("Email is required");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const existingUser = await Auth.findOne({ email });
+  if (existingUser) {
+    const error = new Error("Email already registered");
+    error.statusCode = 409;
+    throw error;
+  }
+  const otpCode = crypto.randomInt(100000, 999999).toString(); 
+  await OtpModel.findOneAndUpdate(
+    { email },
+    { otp: otpCode, createdAt: new Date() }, 
+    { upsert: true, new: true, setDefaultsOnInsert: true }  
+  );
+  await sendOtpEmail(email, otpCode);
+
+  return { success: true, msg: "OTP sent successfully" };
+}
 
 // Login service
 export const loginUser = async ({ email, password }) => {

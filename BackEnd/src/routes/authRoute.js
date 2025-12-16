@@ -1,6 +1,6 @@
 // src/routes/auth.js
 import express from 'express';
-import { signup, login, logout,getCountOfTotalUsers } from '../controllers/authentication/manualAuthController.js';
+import { signup, login, logout,getCountOfTotalUsers, sendSignupOtp } from '../controllers/authentication/manualAuthController.js';
 import { googleAuth } from '../controllers/authentication/googleAuthController.js';
 import {  handleLinkedInCallback, redirectToLinkedIn } from '../controllers/authentication/linkedInAuthController.js';
 import {
@@ -20,6 +20,8 @@ router.post('/forgot-password', sendResetLink);
 router.post('/reset-password/:token', resetPassword);
 router.post("/getcount/toteluser", getCountOfTotalUsers) ;
 router.post("/logout", logout) ;
+
+router.post('/send-otp',sendSignupOtp) ;
 
 // // routes/auth.js
 // router.get("/current-user",secureRoute, (req, res) => {
