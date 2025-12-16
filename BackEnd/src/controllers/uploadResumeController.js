@@ -1,5 +1,5 @@
 // controllers/uploadResume.controller.js
-import UploadResume from "../models/servicerequestUploadresumeModel.js";
+/*import UploadResume from "../models/servicerequestUploadresumeModel.js";
 
 export const uploadResume = async (req, res) => {
   try {
@@ -26,4 +26,38 @@ export const uploadResume = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Upload failed", error: error.message });
   }
+};*/
+
+import UploadResume from "../models/servicerequestUploadresumeModel.js";
+
+export const uploadResume = async (req, res) => {
+  try {
+    const studentId = req.user.id || req.body.student; // prefer token
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const newResume = new UploadResume({
+      student: studentId,
+      resumeUrl: file.path,          // ✅ CLOUDINARY URL
+      publicId: file.filename,       // optional but recommended
+      originalFilename: file.originalname,
+      fileType: file.mimetype,
+    });
+
+    await newResume.save();
+
+    res.status(201).json({
+      message: "Resume uploaded successfully",
+      data: newResume,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Upload failed",
+      error: error.message,
+    });
+  }
 };
+

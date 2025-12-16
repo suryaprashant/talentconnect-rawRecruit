@@ -1,7 +1,7 @@
 import { fetchAllResumeService, saveParsedResumeService } from "../services/resumeService.js";
 import { calculateMatchScore } from "../utils/weightedResumeSearch.js";
 import { parseResume } from '../services/resumeParserService.js';
-export const uploadResume = async (req, res) => {
+/*export const uploadResume = async (req, res) => {
   try {
     // --- All Pre-checks are here in the controller ---
     console.log("Resume upload request received by controller.");
@@ -19,7 +19,39 @@ export const uploadResume = async (req, res) => {
     console.error("Error in uploadResume controller:", error.message);
     res.status(500).json({ message: "Server error during resume parsing." });
   }
+};*/
+
+export const uploadResume = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No resume uploaded" });
+    }
+
+    // 1️⃣ Upload ORIGINAL buffer to Cloudinary (correct way)
+    const cloudinaryResult = await cloudinary.uploader.upload(
+      `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+      {
+        folder: "rawrecruit/resumes",
+        resource_type: "raw", // ✅ critical
+      }
+    );
+
+    // 2️⃣ Parse resume (unchanged)
+    const extractedData = await parseResume(req.file.buffer);
+
+    // 3️⃣ Respond with BOTH
+    res.status(200).json({
+      resumeUrl: cloudinaryResult.secure_url,
+      publicId: cloudinaryResult.public_id,
+      parsedData: extractedData,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Resume upload failed" });
+  }
 };
+
 
 export async function resumeSearch(req, res) {
     // reqbody jobdesc. 
