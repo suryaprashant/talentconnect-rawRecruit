@@ -4,13 +4,25 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
 // Configure Cloudinary storage for documents
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'event-documents',
-    allowed_formats: ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt', 'zip'],
-    resource_type: 'raw', // Important for non-image files
-  },
+  cloudinary,
+  params: async (req, file) => ({
+    folder: "event-documents",
+    resource_type: "raw", // 🔥 NOW IT WILL ACTUALLY APPLY
+    allowed_formats: [
+      "pdf",
+      "doc",
+      "docx",
+      "ppt",
+      "pptx",
+      "xls",
+      "xlsx",
+      "txt",
+      "zip",
+    ],
+    public_id: `doc_${Date.now()}_${file.originalname}`,
+  }),
 });
+
 
 // Create multer upload instance
 export const uploadDocument = multer({

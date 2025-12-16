@@ -1,5 +1,30 @@
 
-import streamifier from 'streamifier';
+import streamifier from "streamifier";
+import cloudinary from "../../config/cloudinary.js";
+
+export const streamUpload = (buffer, folder, mimetype = "") => {
+  return new Promise((resolve, reject) => {
+    const isPdf = mimetype === "application/pdf";
+
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: `rawrecruit/${folder}`,
+        resource_type: isPdf ? "raw" : "image", // 🔥 FIX
+      },
+      (error, result) => {
+        if (error) {
+          console.error("Cloudinary Upload Error:", error);
+          return reject(error);
+        }
+        resolve(result);
+      }
+    );
+
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
+};
+
+/*import streamifier from 'streamifier';
 import cloudinary from '../../config/cloudinary.js';
 
 
@@ -18,7 +43,7 @@ import cloudinary from '../../config/cloudinary.js';
     );
     streamifier.createReadStream(buffer).pipe(stream);
   });
-};
+};*/
 
 
 // import streamifier from 'streamifier';
