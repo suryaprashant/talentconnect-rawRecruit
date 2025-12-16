@@ -10,7 +10,7 @@ export const sendOtpEmail = async (to, otp) => {
   const msg = {
     to,
     from: `Rawrecruit Security <${sender}>`,
-    subject: "Your Verification Code",
+    subject: "Your One-time Verification Code",
     html: `
       <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
         <h2 style="color: #667eea;">Verify Your Email</h2>
