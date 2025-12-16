@@ -8,8 +8,12 @@ function OffCampusJobDetail() {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  
+  // Converted to state to handle immediate UI updates
+  const [isSaved, setIsSaved] = useState((searchParams.get('isSaved') || '').toLowerCase() === 'true');
+  // keeping isApplied as is, or you can convert to state if you want immediate update on apply too
   const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
-  const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
+  
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [jobDetail, setJobDetail] = useState(null);
@@ -55,7 +59,10 @@ function OffCampusJobDetail() {
     try {
       const response = await SaveOppurtunity(jobId, jobDetail?.jobType);
       // console.log("Applicaiton: ", response);
-      if (response?.data?.success === true) toast.success('Job saved!');
+      if (response?.data?.success === true) {
+        toast.success('Job saved!');
+        setIsSaved(true); // Update UI immediately
+      } 
       else toast.error(response.response.data?.msg);
     } catch (err) {
       // console.error('Error applying for job:', err);
@@ -142,7 +149,10 @@ function OffCampusJobDetail() {
           </div>
           <div>
             <h2 className="text-xl font-bold">
-              {jobDetail.companyPosted?.companyDetails?.companyName || "N/A"} - {jobDetail.jobTitle || 'N/A'}
+              {jobDetail.companyPosted?.companyDetails?.companyName || "N/A"} - 
+              {Array.isArray(jobDetail.jobRoles) 
+                ? jobDetail.jobRoles.join(', ') 
+                : jobDetail.jobRoles || 'N/A'}
             </h2>
             {/* <p className={`text-sm font-semibold ${headerStatusClasses}`}>Application {jobDetail.jobStatus}</p> */}
           </div>
@@ -151,10 +161,26 @@ function OffCampusJobDetail() {
           <button onClick={handleBackToList} className="p-2 border border-gray-300 rounded hover:bg-gray-100">
             <ArrowLeft className="w-5 h-5" />
           </button>
-          {!isApplied && (<>
-            <button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Apply</button>
-            {!isSaved && (<button className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800" onClick={handleApply}>Apply</button>)}
-          </>)}
+          {!isApplied && (
+            <>
+              {/* Only show Save button if NOT saved */}
+              {!isSaved && (
+                <button 
+                  onClick={handleSave} 
+                  className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300"
+                >
+                  Save
+                </button>
+              )}
+              {/* Always show Apply button if not applied (regardless of save status) */}
+              <button 
+                className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800" 
+                onClick={handleApply}
+              >
+                Apply
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -203,7 +229,7 @@ function OffCampusJobDetail() {
         </div>
       </section>
 
-     
+      
       <section className="mb-8">
         <h3 className="text-lg font-semibold mb-3">Compensation & Benefits</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

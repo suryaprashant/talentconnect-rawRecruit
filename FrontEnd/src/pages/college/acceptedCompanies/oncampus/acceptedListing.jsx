@@ -219,10 +219,8 @@ export default function OnCampusJobManagement() {
   const handlePageClick = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleViewCompanies = (job) => {
-    if (job.applicationCount === 0) {
-      toast.error("No companies have applied for this drive yet.");
-      return;
-    }
+    // Logic to block 0 applications removed.
+    // It will now fetch and display the "No Applications Yet" view if empty.
     setSelectedJob(job);
     fetchCompaniesForJob(job._id, job.jobType);
   };
@@ -638,9 +636,8 @@ export default function OnCampusJobManagement() {
                       const views = job.views || 0;
                       const applications = job.applicationCount || 0;
                       
-                      // Check if the eye icon (View) should be disabled
-                      const isViewDisabled = applications === 0;
-                      const viewButtonClass = `transition-all duration-200 ${isViewDisabled ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-[#3b82f6]'}`;
+                      // NOTE: View disabled logic removed here
+                      const viewButtonClass = "transition-all duration-200 text-gray-500 hover:text-[#3b82f6]";
                       
                       return (
                         <tr
@@ -679,7 +676,7 @@ export default function OnCampusJobManagement() {
                             className="px-6 py-4 cursor-pointer"
                             onClick={(e) => { 
                               e.stopPropagation(); 
-                              if (!isViewDisabled) handleViewCompanies(job); 
+                              handleViewCompanies(job); 
                             }}
                           >
                             <div className="flex items-center gap-1 text-gray-700">
@@ -692,11 +689,10 @@ export default function OnCampusJobManagement() {
                               <button 
                                 onClick={(e) => { 
                                   e.stopPropagation(); 
-                                  if (!isViewDisabled) handleViewCompanies(job); 
+                                  handleViewCompanies(job); 
                                 }} 
                                 className={viewButtonClass} 
-                                title={isViewDisabled ? "No applications to view" : "View Company Applications"}
-                                disabled={isViewDisabled}
+                                title="View Company Applications"
                               >
                                 <Eye size={18} />
                               </button>

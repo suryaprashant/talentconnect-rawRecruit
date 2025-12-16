@@ -1,13 +1,17 @@
 import React from "react";
 import { ProgressIndicator } from "../ProgressIndicator";
-import { MailIcon, PhoneIcon, ChevronDownIcon } from "lucide-react";
+import { MailIcon, PhoneIcon, ChevronDownIcon, AlertCircle } from "lucide-react";
 import { extractValidEmail } from "@/lib/utils";
-import Profile from "@/pages/students/Profile";
 
 export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChange }) => {
   const [hasAutoSeparated, setHasAutoSeparated] = React.useState(false);
+  const [validationErrors, setValidationErrors] = React.useState({
+    name: '',
+    email: '',
+    phone: '',
+    profileType: ''
+  });
 
-   
   const separateContactInfo = (text) => {
     if (!text) return { name: '', phone: '', email: '' };
 
@@ -16,10 +20,8 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     let email = '';
     let remainingText = text;
 
-   
     const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
     
-   
     const phonePatterns = [
       /(\+91[\s-]?[6-9]\d{9})/g,         
       /(\+91[\s-]?\d{10})/g,              
@@ -122,7 +124,6 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
   // Enhanced function with additional parsing for complex formats
   const separateContactInfoAdvanced = (text) => {
     if (!text) return { name: '', phone: '', email: '' };
-
     
     // Pattern 1: Name directly followed by "Email:"
     const nameEmailPattern = /^([A-Za-z\s]+?)(?:Email\s*:|E-?mail\s*:)/i;
@@ -181,7 +182,6 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
           updates.phone = phone;
         }
         
-        // Only update email if we found one and don't already have one
         if (email && !formData.email) {
           updates.email = email;
         }
@@ -192,17 +192,86 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     }
   }, [formData.name]);
 
+  // Validate individual fields
+  const validateField = (name, value) => {
+    let error = '';
+    
+    switch (name) {
+      case 'name':
+        if (!value.trim()) {
+          error = 'Name is required';
+        } else if (value.trim().length < 2) {
+          error = 'Name must be at least 2 characters';
+        }
+        break;
+        
+      case 'email':
+        if (!value.trim()) {
+          error = 'Email is required';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          error = 'Please enter a valid email address';
+        }
+        break;
+        
+      case 'phone':
+        if (!value.trim()) {
+          error = 'Phone number is required';
+        } else if (!/^\+?[0-9\s\-\(\)]{10,}$/.test(value.replace(/\s/g, ''))) {
+          error = 'Please enter a valid phone number';
+        }
+        break;
+        
+      case 'profileType':
+        if (!value) {
+          error = 'Please select a profile type';
+        }
+        break;
+        
+      default:
+        break;
+    }
+    
+    return error;
+  };
+
+  // Handle field blur for validation
+  const handleFieldBlur = (e) => {
+    const { name, value } = e.target;
+    const error = validateField(name, value);
+    
+    setValidationErrors(prev => ({
+      ...prev,
+      [name]: error
+    }));
+  };
+
   const handleNameChange = (e) => {
     const { name, value } = e.target;
     // Clean the name field to only contain letters, spaces, and basic punctuation
     const cleanedName = value.replace(/[^a-zA-Z\s\.\-']/g, '');
     onChange({ [name]: cleanedName });
+    
+    // Clear validation error when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
     const cleanedEmail = extractValidEmail(value);
     onChange({ email: cleanedEmail });
+    
+    // Clear validation error when user starts typing
+    if (validationErrors.email) {
+      setValidationErrors(prev => ({
+        ...prev,
+        email: ''
+      }));
+    }
   };
 
   const handlePhoneChange = (e) => {
@@ -210,19 +279,64 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     // Clean phone number to only contain numbers, spaces, +, -, and ()
     const cleanedPhone = value.replace(/[^0-9\s\+\-\(\)]/g, '');
     onChange({ [name]: cleanedPhone });
+    
+    // Clear validation error when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleProfileTypeChange = (e) => {
     const selectedProfileType = e.target.value;
+    localStorage.setItem('selectedRole', selectedProfileType);
     onProfileTypeSelect(selectedProfileType);
     onChange({ profileType: selectedProfileType });
+    
+    // Clear validation error when user selects an option
+    if (validationErrors.profileType) {
+      setValidationErrors(prev => ({
+        ...prev,
+        profileType: ''
+      }));
+    }
+  };
+
+  const validateAllFields = () => {
+    const errors = {
+      name: validateField('name', formData.name || ''),
+      email: validateField('email', formData.email || ''),
+      phone: validateField('phone', formData.phone || ''),
+      profileType: validateField('profileType', formData.profileType || '')
+    };
+    
+    setValidationErrors(errors);
+    
+    // Check if there are any errors
+    return !Object.values(errors).some(error => error !== '');
   };
 
   const handleNextClick = () => {
-    if (!formData.email || !formData.phone || !formData.profileType || !formData.name) {
-      alert("Please fill in all required fields: Name, Email, Phone, and Profile Type.");
+    const isValid = validateAllFields();
+    
+    if (!isValid) {
+      // Highlight the first error field
+      const firstErrorField = Object.keys(validationErrors).find(
+        key => validationErrors[key]
+      );
+      
+      if (firstErrorField) {
+        const element = document.getElementById(firstErrorField);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.focus();
+        }
+      }
       return;
     }
+    
     onNext();
   };
 
@@ -240,7 +354,9 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
           <label htmlFor="name" className="block text-black">
             Your Name <span className="text-red-500">*</span>
           </label>
-          <div className="flex items-center min-h-12 w-full mt-2 p-3 border rounded">
+          <div className={`flex items-center min-h-12 w-full mt-2 p-3 border rounded ${
+            validationErrors.name ? 'border-red-500' : ''
+          }`}>
             <input
               type="text"
               id="name"
@@ -250,8 +366,15 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
               className="w-full bg-transparent border-none focus:outline-none"
               value={formData.name || ""}
               onChange={handleNameChange}
+              onBlur={handleFieldBlur}
             />
           </div>
+          {validationErrors.name && (
+            <div className="flex items-center mt-1 text-red-500 text-sm">
+              <AlertCircle className="w-4 h-4 mr-1" />
+              {validationErrors.name}
+            </div>
+          )}
         </div>
 
         {/* Email ID Input */}
@@ -259,7 +382,9 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
           <label htmlFor="email" className="block text-black">
             Email ID <span className="text-red-500">*</span>
           </label>
-          <div className="flex items-center min-h-12 w-full mt-2 p-3 border rounded">
+          <div className={`flex items-center min-h-12 w-full mt-2 p-3 border rounded ${
+            validationErrors.email ? 'border-red-500' : ''
+          }`}>
             <MailIcon className="w-6 h-6" />
             <input
               type="email"
@@ -269,9 +394,16 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
               className="w-full bg-transparent border-none focus:outline-none ml-2"
               value={formData.email || ""}
               onChange={handleEmailChange}
+              onBlur={handleFieldBlur}
               required
             />
           </div>
+          {validationErrors.email && (
+            <div className="flex items-center mt-1 text-red-500 text-sm">
+              <AlertCircle className="w-4 h-4 mr-1" />
+              {validationErrors.email}
+            </div>
+          )}
         </div>
 
         {/* Phone Number Input */}
@@ -279,7 +411,9 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
           <label htmlFor="phone" className="block text-black">
             Phone Number <span className="text-red-500">*</span>
           </label>
-          <div className="flex items-center min-h-12 w-full mt-2 p-3 border rounded">
+          <div className={`flex items-center min-h-12 w-full mt-2 p-3 border rounded ${
+            validationErrors.phone ? 'border-red-500' : ''
+          }`}>
             <PhoneIcon className="w-6 h-6" />
             <input
               type="tel"
@@ -289,9 +423,16 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
               className="w-full bg-transparent border-none focus:outline-none ml-2"
               value={formData.phone || ""}
               onChange={handlePhoneChange}
+              onBlur={handleFieldBlur}
               required
             />
           </div>
+          {validationErrors.phone && (
+            <div className="flex items-center mt-1 text-red-500 text-sm">
+              <AlertCircle className="w-4 h-4 mr-1" />
+              {validationErrors.phone}
+            </div>
+          )}
         </div>
 
         {/* Profile Type Select */}
@@ -305,8 +446,11 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
               name="profileType"
               value={formData.profileType || ""}
               onChange={handleProfileTypeChange}
+              onBlur={handleFieldBlur}
               required
-              className="items-center appearance-none flex min-h-12 w-full mt-2 p-3 border rounded"
+              className={`items-center appearance-none flex min-h-12 w-full mt-2 p-3 border rounded ${
+                validationErrors.profileType ? 'border-red-500' : ''
+              }`}
             >
               <option value="" disabled>Select a profile type</option>
               <option value="student">Student</option>
@@ -315,6 +459,12 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
             </select>
             <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
           </div>
+          {validationErrors.profileType && (
+            <div className="flex items-center mt-1 text-red-500 text-sm">
+              <AlertCircle className="w-4 h-4 mr-1" />
+              {validationErrors.profileType}
+            </div>
+          )}
         </div>
 
         {/* Buttons */}
@@ -322,14 +472,18 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
           <button
             type="button"
             onClick={onBack}
-            className="text-black px-6 py-3 border rounded-md"
+            className="text-black px-6 py-3 border rounded-md hover:bg-gray-50 transition-colors"
           >
             Back
           </button>
           <button
             type="button"
             onClick={handleNextClick}
-            className="bg-black text-white px-6 py-3 border rounded-md"
+            className={`px-6 py-3 border rounded-md transition-colors ${
+              !formData.email || !formData.phone || !formData.profileType || !formData.name
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-black text-white hover:bg-gray-800'
+            }`}
             disabled={!formData.email || !formData.phone || !formData.profileType || !formData.name}
           >
             Next

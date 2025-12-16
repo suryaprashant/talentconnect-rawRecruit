@@ -297,7 +297,8 @@ function PoolApplicationsPage() {
               <table className="w-full">
                 <thead className="bg-white/50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Job Title</th>
+                    {/* CHANGED: Job Title to Degree */}
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Degree</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Deadline</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Views</th>
@@ -335,7 +336,7 @@ function PoolApplicationsPage() {
                     currentJobs.map(job => {
                       const jobId = job._id || job.id;
                       const jobTitle = job.jobTitle || 'N/A';
-                      const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : '';
+                      const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : job.degree || 'N/A';
                       const jobLocation = Array.isArray(job.location) ? job.location.join(', ') : job.location || 'N/A';
                       const jobStatus = job.jobStatus || 'Unknown';
                       const deadline = job.endDate || job.deadline;
@@ -354,20 +355,11 @@ function PoolApplicationsPage() {
                             className="px-6 py-4 cursor-pointer" 
                             onClick={() => navigate(`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}
                           >
-                            <div className="font-medium text-gray-900">{jobTitle}</div>
-                            <div className="flex flex-col gap-1 text-sm text-gray-500 mt-1">
-                              {jobDegree && (
-                                <div className="flex items-center gap-1">
-                                  <Briefcase className="w-3 h-3" />
-                                  {jobDegree}
-                                </div>
-                              )}
-                              {jobLocation && (
-                                <div className="flex items-center gap-1">
-                                  <MapPin className="w-3 h-3" />
-                                  {jobLocation}
-                                </div>
-                              )}
+                             {/* UPDATED: Display Degree and Location */}
+                            <div className="font-medium text-gray-900">{jobDegree}</div>
+                            <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                                <MapPin className="w-3 h-3" />
+                                {jobLocation}
                             </div>
                           </td>
                           <td className="px-6 py-4">
