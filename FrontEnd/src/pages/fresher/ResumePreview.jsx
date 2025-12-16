@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf";
-import workerSrc from "pdfjs-dist/legacy/build/pdf.worker?url";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
+import workerSrc from "pdfjs-dist/build/pdf.worker.min?url";
 
 // 🔥 THIS IS THE FIX
 GlobalWorkerOptions.workerSrc = workerSrc;
