@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import Badge from '@/components/ui/Badge';
-import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown, FiTrash2 } from 'react-icons/fi';
+import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown, FiTrash2, FiEdit2, FiSave } from 'react-icons/fi';
 import axios from 'axios';
 import { Country, State, City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
@@ -46,7 +46,6 @@ function Profile() {
     experiences: [],
     projectUrl: '',
     referralSource: '',
-    // Existing fields from previous update
     dob: '',
     ethnicity: '',
     maritalStatus: '',
@@ -54,44 +53,32 @@ function Profile() {
     awards: [],
     publications: [],
     achievements: [],
-    // New fields added
     gender: '',
     languagesKnown: [],
     toolsAndPlatforms: [],
     openToShift: '',
   });
 
-  // States for files that upload immediately
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [backgroundImageFile, setBackgroundImageFile] = useState(null);
   const [resumeFile, setResumeFile] = useState(null);
-
-  // States for files saved with the main "Save" button
   const [degreeCertificateFile, setDegreeCertificateFile] = useState(null);
   const [projectFile, setProjectFile] = useState(null);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [isJobRolesDropdownOpen, setIsJobRolesDropdownOpen] = useState(false);
-  // Locations dropdown state removed as we use React-Select
-
   const jobRolesDropdownRef = useRef(null);
   
-  // Predefined options for new fields
   const predefinedMaritalStatuses = ['Single', 'Married', 'Divorced', 'Widowed', 'Prefer not to say'];
   const predefinedEthnicities = ['Asian', 'Black or African American', 'Hispanic or Latino', 'Native American or Alaska Native', 'White', 'Two or More Races', 'Prefer not to say'];
   const predefinedVisaStatuses = ['Citizen', 'Permanent Resident', 'Work Visa (e.g., H1B)', 'Student Visa (e.g., F1)', 'Not Authorized to Work', 'Other'];
   const predefinedGenders = ['Male', 'Female', 'Other', 'Prefer not to say'];
   const predefinedShifts = ['Day', 'Night', 'Rotational', 'Any'];
-
   const predefinedJobRoles = ['Software Engineer', 'Data Analyst', 'Product Manager', 'UX Designer', 'DevOps Engineer', 'Full Stack Developer'];
-  // predefinedLocations removed as we use City data
   const predefinedEmploymentTypes = ['part time', 'full time', 'contract'];
   const predefinedLookingFor = ['Job', 'Internship', 'Both'];
   const predefinedIndustries = ['IT Industry', 'Finance', 'Healthcare', 'Education', 'Marketing', 'Retail', 'Manufacturing', 'Automotive'];
 
-  // --- Location Options (React-Select) ---
   const locationOptions = useMemo(() => {
     return City.getCitiesOfCountry("IN")
       ?.map((city) => ({
@@ -135,7 +122,6 @@ function Profile() {
               ...exp,
               experienceCertificateUrl: exp.experienceCertificate || ''
             })) : [],
-            // Set existing new fields from fetched data
             dob: fetchedData.dob ? new Date(fetchedData.dob).toISOString().split('T')[0] : '',
             ethnicity: fetchedData.ethnicity || '',
             maritalStatus: fetchedData.maritalStatus || '',
@@ -143,12 +129,10 @@ function Profile() {
             awards: fetchedData.awards || [],
             publications: fetchedData.publications || [],
             achievements: fetchedData.achievements || [],
-            // Set newly added fields
             gender: fetchedData.gender || '',
             languagesKnown: Array.isArray(fetchedData.languagesKnown) ? fetchedData.languagesKnown : (typeof fetchedData.languagesKnown === 'string' && fetchedData.languagesKnown ? fetchedData.languagesKnown.split(',').map(s => s.trim()) : []),
             toolsAndPlatforms: Array.isArray(fetchedData.toolsAndPlatforms) ? fetchedData.toolsAndPlatforms : (typeof fetchedData.toolsAndPlatforms === 'string' && fetchedData.toolsAndPlatforms ? fetchedData.toolsAndPlatforms.split(',').map(s => s.trim()) : []),
             openToShift: fetchedData.openToShift || '',
-            
           }));
         }
       } catch (err) {
@@ -170,7 +154,6 @@ function Profile() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
 
   const handleProfessionalSwitch = async () => {
     const isConfirmed = window.confirm(
@@ -238,7 +221,6 @@ function Profile() {
         const urlFieldMap = { profileImage: 'profileImageUrl', backgroundImage: 'backgroundImageUrl', resume: 'resumeUrl' };
         const urlStateField = urlFieldMap[fieldName];
 
-        // Update the state with the permanent URL from the server
         if (urlStateField && savedData[fieldName]) {
           setProfileData(prevData => ({ ...prevData, [urlStateField]: savedData[fieldName] }));
         }
@@ -247,7 +229,6 @@ function Profile() {
       console.error(`Error uploading ${fieldName}:`, err);
       setError(`Failed to upload ${fieldName}. Please try again.`);
     } finally {
-      // Clear the temporary file state after upload attempt
       if (fieldName === 'profileImage') setProfileImageFile(null);
       if (fieldName === 'backgroundImage') setBackgroundImageFile(null);
       if (fieldName === 'resume') setResumeFile(null);
@@ -268,7 +249,7 @@ function Profile() {
       await handleImmediateFileUpload(file, 'backgroundImage');
     } else if (fileType === 'resume') {
       setResumeFile(file);
-      setProfileData(prev => ({ ...prev, resumeUrl: file.name })); // Use filename as preview text
+      setProfileData(prev => ({ ...prev, resumeUrl: file.name }));
       await handleImmediateFileUpload(file, 'resume');
     }
     else if (fileType === 'awardCertificate' && index !== null) {
@@ -292,7 +273,6 @@ function Profile() {
       }
     }
   };
-
 
   const handleSaveChanges = async () => {
     setLoading(true);
@@ -318,7 +298,6 @@ function Profile() {
         } else if (Array.isArray(profileData[key]) && !['certifications', 'lookingFor'].includes(key)) {
           formData.append(key, profileData[key].join(','));
         } else if (key === 'lookingFor' && Array.isArray(profileData[key])) {
-            // Handle lookingFor as array specifically if needed, or join
             formData.append(key, profileData[key].join(','));
         } else if (key === 'certifications') {
           formData.append(key, Array.isArray(profileData.certifications) ? profileData.certifications.map(cert => cert.name).join('; ') : '');
@@ -345,7 +324,6 @@ function Profile() {
         withCredentials: true,
       });
 
-
       if (response.data && response.data.data) {
         const savedData = response.data.data;
 
@@ -364,7 +342,6 @@ function Profile() {
           toolsAndPlatforms: Array.isArray(savedData.toolsAndPlatforms) ? savedData.toolsAndPlatforms : (typeof savedData.toolsAndPlatforms === 'string' && savedData.toolsAndPlatforms ? savedData.toolsAndPlatforms.split(',').map(s => s.trim()) : []),
         }));
       }
-
 
       setIsProfileEditing(false);
       setHasOnboardingData(true);
@@ -392,7 +369,6 @@ function Profile() {
 
   const handleProfileDataChange = (field, value) => setProfileData(prev => ({ ...prev, [field]: value }));
 
-  // Generic handlers for array fields
   const handleArrayChange = (arrayName, index, field, value) => {
     const newArray = [...profileData[arrayName]];
     newArray[index][field] = value;
@@ -424,7 +400,6 @@ function Profile() {
   const addAchievement = () => addArrayItem('achievements', { title: '', event: '', date: '' });
   const removeAchievement = (index) => removeArrayItem('achievements', index);
 
-
   const handleProfileImageClick = () => document.getElementById('profileImageUpload').click();
   const handleBackgroundImageClick = () => document.getElementById('backgroundImageUpload').click();
   const handleResumeClick = () => document.getElementById('resume-upload').click();
@@ -435,7 +410,6 @@ function Profile() {
     });
   };
 
-  // --- Handler for Locations (React-Select) ---
   const handleLocationChange = (selectedOptions) => {
     const locations = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
     handleProfileDataChange('locations', locations);
@@ -446,7 +420,6 @@ function Profile() {
     value: loc
   }));
 
-  // --- Handlers for Looking For ---
   const handleLookingForChange = (option) => {
     let newVal;
     if (option === 'Both') {
@@ -462,26 +435,24 @@ function Profile() {
     if (option === 'Both') {
         return Array.isArray(val) && val.includes('Job') && val.includes('Internship');
     }
-    // If val is string
     if (val === option) return true;
-    // If val is array but not both (edge case)
     if (Array.isArray(val) && val.includes(option) && val.length === 1) return true;
     return false;
   };
 
   const renderContent = () => {
-    if (loading) return <div className="text-center py-8">Loading profile data...</div>;
+    if (loading) return <div className="text-center py-8 text-gray-600">Loading profile data...</div>;
 
     if (error && !hasOnboardingData) return (
       <div className="text-center py-8">
         <p className="text-red-600 mb-4">{error}</p>
         <Button
           variant="primary"
-          className="bg-black hover:bg-gray-900"
+          className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200"
           onClick={() => {
-            setActiveTab('profile'); // Navigate to profile tab to fill data
-            setError(null); // Clear error after navigating
-            setIsProfileEditing(true); // Enable editing mode immediately
+            setActiveTab('profile');
+            setError(null);
+            setIsProfileEditing(true);
           }}
         >
           Go to Profile Section to Fill Data
@@ -490,12 +461,11 @@ function Profile() {
     );
     if (error && hasOnboardingData) return <div className="text-center py-8 text-red-600">{error}</div>;
 
-
     if (switchToPro) {
       return (
         <div className="max-w-3xl mx-auto">
-          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50">
+            <div className="p-6 border-b border-gray-100">
               <h3 className="text-lg font-semibold text-gray-900">Upload your recent resume or CV</h3>
               <p className="mt-1 text-sm text-gray-600">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.
@@ -512,13 +482,13 @@ function Profile() {
 
               <div className="space-y-6">
                 {profileData.experiences.map((exp, index) => (
-                  <div key={index} className="p-4 border border-gray-200 rounded-lg relative">
+                  <div key={index} className="p-4 border border-gray-100 rounded-xl bg-gray-50/50 relative">
                     <h4 className="font-medium text-gray-900 mb-4">Work Experience {index + 1}</h4>
                     {profileData.experiences.length > 1 && (
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="absolute top-2 right-2 text-red-600 hover:bg-red-50"
+                        className="absolute top-2 right-2 text-red-600 hover:bg-red-50 rounded-lg"
                         onClick={() => removeWorkExperience(index)}
                       >
                         Remove
@@ -530,11 +500,10 @@ function Profile() {
                       </label>
                       <input
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                         placeholder="Enter company name"
                         value={exp.company}
                         onChange={(e) => handleWorkExperienceChange(index, 'company', e.target.value)}
-                      // disabled={!isProfileEditing}
                       />
                     </div>
 
@@ -544,11 +513,10 @@ function Profile() {
                       </label>
                       <input
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                         placeholder="Enter job role"
                         value={exp.role}
                         onChange={(e) => handleWorkExperienceChange(index, 'role', e.target.value)}
-                      // disabled={!isProfileEditing}
                       />
                     </div>
 
@@ -559,10 +527,9 @@ function Profile() {
                         </label>
                         <input
                           type="date"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                           value={exp.startDate}
                           onChange={(e) => handleWorkExperienceChange(index, 'startDate', e.target.value)}
-                        // disabled={!isProfileEditing}
                         />
                       </div>
                       <div>
@@ -571,10 +538,9 @@ function Profile() {
                         </label>
                         <input
                           type="date"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                           value={exp.endDate}
                           onChange={(e) => handleWorkExperienceChange(index, 'endDate', e.target.value)}
-                        // disabled={!isProfileEditing}
                         />
                       </div>
                     </div>
@@ -584,12 +550,11 @@ function Profile() {
                         Description
                       </label>
                       <textarea
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                         rows="3"
                         placeholder="Enter job description"
                         value={exp.description}
                         onChange={(e) => handleWorkExperienceChange(index, 'description', e.target.value)}
-                      // disabled={!isProfileEditing}
                       ></textarea>
                     </div>
 
@@ -597,13 +562,13 @@ function Profile() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Experience Certificate (Optional)
                       </label>
-                      <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                      <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl bg-white/50">
                         <div className="space-y-1 text-center">
                           <FiUploadCloud className="mx-auto h-12 w-12 text-gray-400" />
                           <div className="flex text-sm text-gray-600">
                             <label
                               htmlFor={`experience-certificate-upload-${index}`}
-                              className={`relative cursor-pointer bg-white rounded-md font-medium text-black focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 ${isProfileEditing ? 'hover:text-gray-700' : 'opacity-50 cursor-not-allowed'}`}
+                              className="relative cursor-pointer bg-white rounded-md font-medium text-[#667eea] hover:text-[#764ba2] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#667eea]"
                             >
                               <span>Upload a file</span>
                               <input
@@ -613,7 +578,6 @@ function Profile() {
                                 className="sr-only"
                                 accept=".pdf,.doc,.docx"
                                 onChange={(e) => handleFileChange(e, 'experienceCertificate', index)}
-                              // disabled={!isProfileEditing}
                               />
                             </label>
                             <p className="pl-1">or drag and drop</p>
@@ -629,12 +593,14 @@ function Profile() {
                     </div>
                   </div>
                 ))}
-                <Button variant="outline" size="sm" onClick={addWorkExperience} className="w-full"
-                // disabled={!isProfileEditing}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={addWorkExperience} 
+                  className="w-full border-gray-200 hover:bg-gray-50 rounded-xl"
                 >
                   <FiPlus className="w-4 h-4 mr-2" /> Add More Experience
                 </Button>
-
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -642,10 +608,9 @@ function Profile() {
                   </label>
                   <div className="flex">
                     <select
-                      className="inline-flex items-center px-3 text-gray-500 bg-gray-50 border border-r-0 border-gray-300 rounded-l-md"
+                      className="inline-flex items-center px-3 text-gray-500 bg-gray-50 border border-r-0 border-gray-200 rounded-l-xl"
                       value={profileData.currentSalaryCurrency}
                       onChange={(e) => handleProfileDataChange('currentSalaryCurrency', e.target.value)}
-                    // disabled={!isProfileEditing}
                     >
                       <option>USD</option>
                       <option>INR</option>
@@ -653,11 +618,10 @@ function Profile() {
                     </select>
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-none rounded-r-md focus:outline-none focus:ring-2 focus:ring-black"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-none rounded-r-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                       placeholder="Enter amount"
                       value={profileData.currentSalaryAmount}
                       onChange={(e) => handleProfileDataChange('currentSalaryAmount', e.target.value)}
-                    // disabled={!isProfileEditing}
                     />
                   </div>
                 </div>
@@ -668,10 +632,9 @@ function Profile() {
                   </label>
                   <div className="flex">
                     <select
-                      className="inline-flex items-center px-3 text-gray-500 bg-gray-50 border border-r-0 border-gray-300 rounded-l-md"
+                      className="inline-flex items-center px-3 text-gray-500 bg-gray-50 border border-r-0 border-gray-200 rounded-l-xl"
                       value={profileData.expectedSalaryCurrency}
                       onChange={(e) => handleProfileDataChange('expectedSalaryCurrency', e.target.value)}
-                    // disabled={!isProfileEditing}
                     >
                       <option>USD</option>
                       <option>INR</option>
@@ -679,27 +642,25 @@ function Profile() {
                     </select>
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-none rounded-r-md focus:outline-none focus:ring-2 focus:ring-black"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-none rounded-r-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                       placeholder="Enter amount"
                       value={profileData.expectedSalaryAmount}
                       onChange={(e) => handleProfileDataChange('expectedSalaryAmount', e.target.value)}
-                    // disabled={!isProfileEditing}
                     />
                   </div>
                 </div>
 
-
-                <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                   <Button
                     variant="outline"
                     onClick={() => setSwitchToPro(false)}
-                    className="border-black text-black hover:bg-gray-50"
+                    className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl"
                   >
                     Cancel
                   </Button>
                   <Button
                     variant="primary"
-                    className="bg-black hover:bg-gray-900"
+                    className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
                     onClick={handleProfessionalSwitch}
                     disabled={loading}
                   >
@@ -713,371 +674,370 @@ function Profile() {
       );
     }
 
-    const displayFieldStyle = "w-full px-3 py-2 border border-gray-200 rounded-md bg-gray-50 text-gray-900 min-h-[40px] flex items-center";
+    const displayFieldStyle = "w-full px-3 py-2 border border-gray-200 rounded-xl bg-gray-50/50 text-gray-900 min-h-[40px] flex items-center";
     const displayFieldWrapperStyle = "relative mt-1";
 
     switch (activeTab) {
-     case 'overview':
-  return (
-    <div className="space-y-6">
-      <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">What recruiters will see</h3>
-        <div className="border-2 border-gray-200 rounded-lg divide-y divide-gray-200">
-          <div className="p-6">
-            <div className="flex items-start gap-4">
-              <Avatar size="lg" name={profileData.fullName} src={profileData.profileImageUrl} />
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
-                  <div>
-                    <h4 className="text-lg font-medium text-gray-900">{profileData.fullName || 'N/A'}</h4>
-                    <p className="text-sm text-gray-600">
-                      {profileData.degree || 'N/A'} in {profileData.specialization || 'N/A'} at {profileData.college || 'N/A'}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    {profileData.linkedin && (
-                      <a href={profileData.linkedin} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" size="sm" className="border-black text-black hover:bg-gray-50">
-                          <FiLinkedin className="w-4 h-4" />
-                        </Button>
-                      </a>
-                    )}
-                    {profileData.github && (
-                      <a href={profileData.github} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" size="sm" className="border-black text-black hover:bg-gray-50">
-                          <FiGithub className="w-4 h-4" />
-                        </Button>
-                      </a>
-                    )}
-                    {profileData.portfolio && (
-                      <a href={profileData.portfolio} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" size="sm" className="border-black text-black hover:bg-gray-50">
-                          <FiGlobe className="w-4 h-4" />
-                        </Button>
-                      </a>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                   <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      About
-                    </h5>
-                    <p className="text-gray-600">{profileData.about || 'No information provided.'}</p>
-                  </div>
-
-                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Contact Information
-                    </h5>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-gray-500">Email address</p>
-                        <p className="text-gray-900">{profileData.email || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Mobile Number</p>
-                        <p className="text-gray-900">{profileData.phone || 'N/A'}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* New Personal Details in Overview */}
-                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Personal Details
-                    </h5>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-gray-500">Date of Birth</p>
-                        <p className="text-gray-900">{profileData.dob || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Gender</p>
-                        <p className="text-gray-900">{profileData.gender || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Marital Status</p>
-                        <p className="text-gray-900">{profileData.maritalStatus || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Ethnicity</p>
-                        <p className="text-gray-900">{profileData.ethnicity || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Visa / Work Authorization</p>
-                        <p className="text-gray-900">{profileData.visaStatus || 'N/A'}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* START OF MODIFIED ACADEMIC SECTION */}
-                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Academic Background
-                    </h5>
-                    
-                    <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
-                      {/* Degree & Specialization */}
-                      <div className="col-span-2 sm:col-span-1">
-                        <p className="text-gray-500">Degree & Specialization</p>
-                        <p className="font-semibold text-gray-900">
-                          {profileData.degree || 'N/A'} / {profileData.specialization || 'N/A'}
-                        </p>
-                      </div>
-
-                      {/* CGPA / Percentage */}
-                      <div className="col-span-2 sm:col-span-1">
-                        <p className="text-gray-500">CGPA / Percentage</p>
-                        <p className="font-semibold text-gray-900">{profileData.cgpa || 'N/A'}</p>
-                      </div>
-
-                      {/* Institution */}
-                      <div className="col-span-2">
-                        <p className="text-gray-500">Institution</p>
-                        <p className="font-semibold text-gray-900">{profileData.college || 'N/A'}</p>
-                      </div>
-                      
-                      {/* Graduation Date */}
-                      <div className="col-span-2">
-                        <p className="text-gray-500">Graduation Date</p>
-                        <p className="font-semibold text-green-600">
-                          {profileData.yearOfGraduation || 'N/A'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  {/* END OF MODIFIED ACADEMIC SECTION */}
- <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Skills
-                    </h5>
-                    <div className="flex flex-wrap gap-2">
-                      {profileData.skills && profileData.skills.length > 0 ? (
-                        profileData.skills.map((skill) => (
-                          <Badge key={skill} variant="primary" size="md" className="bg-gray-100 text-gray-800">
-                            {skill}
-                          </Badge>
-                        ))
-                      ) : (
-                        <span className="text-gray-600">N/A</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Tools and Platforms
-                    </h5>
-                    <div className="flex flex-wrap gap-2">
-                      {profileData.toolsAndPlatforms && profileData.toolsAndPlatforms.length > 0 ? (
-                        profileData.toolsAndPlatforms.map((tool) => (
-                          <Badge key={tool} variant="primary" size="md" className="bg-gray-100 text-gray-800">
-                            {tool}
-                          </Badge>
-                        ))
-                      ) : (
-                        <span className="text-gray-600">N/A</span>
-                      )}
-                    </div>
-                  </div>
-
-                   <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Interested Industry type
-                    </h5>
-                    <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.industry && profileData.industry.length > 0 ? profileData.industry[0] : 'N/A'}</Badge>
-                  </div>
-
- <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Interested Job Roles
-                    </h5>
-                    <div className="flex flex-wrap gap-2">
-                      {profileData.jobRoles && profileData.jobRoles.length > 0 ? (
-                        profileData.jobRoles.map((role) => (
-                          <Badge key={role} variant="primary" size="md" className="bg-gray-100 text-gray-800">{role}</Badge>
-                        ))
-                      ) : (
-                        <span className="text-gray-600">N/A</span>
-                      )}
-                    </div>
-                  </div>
-
-                   <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Preferred Job Locations
-                    </h5>
-                    <div className="flex flex-wrap gap-2">
-                      {profileData.locations && profileData.locations.length > 0 ? (
-                        profileData.locations.map((location) => (
-                          <Badge key={location} variant="primary" size="md" className="bg-gray-100 text-gray-800">
-                            {location}
-                          </Badge>
-                        ))
-                      ) : (
-                        <span className="text-gray-600">N/A</span>
-                      )}
-                    </div>
-                  </div>
-
- <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Looking for
-                    </h5>
-                    <div className="flex flex-wrap gap-2">
-                        {Array.isArray(profileData.lookingFor) && profileData.lookingFor.length > 0 ? (
-                            profileData.lookingFor.map((item) => (
-                                <Badge key={item} variant="primary" size="md" className="bg-gray-100 text-gray-800">{item}</Badge>
-                            ))
-                        ) : (
-                            <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.lookingFor || 'N/A'}</Badge>
-                        )}
-                    </div>
-                  </div>
-
-                   <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Employment type
-                    </h5>
-                    <div className="flex gap-2">
-                      {profileData.employmentType ? (
-                        <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.employmentType}</Badge>
-                      ) : (
-                        <span className="text-gray-600">N/A</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Shift Preference
-                    </h5>
-                    <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.openToShift || 'N/A'}</Badge>
-                  </div>
-
-                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Certifications
-                    </h5>
-                    {profileData.certifications && profileData.certifications.length > 0 ? (
-                      <ul className="list-disc list-inside text-gray-600">
-                        {profileData.certifications.map((cert, idx) => (
-                          <li key={idx}>
-                            {cert.name || 'N/A'}
-                            {cert.url && (
-                              <a href={cert.url} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-600 hover:underline">
-                                (Link)
-                              </a>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <span className="text-gray-600">No certifications added.</span>
-                    )}
-                  </div>
-
-                  {/* New Awards & Recognition Section */}
-<div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-  <h5 className="text-lg font-bold text-gray-800 mb-4">
-    Awards & Recognition
-  </h5>
-  {profileData.awards && Array.isArray(profileData.awards) && profileData.awards.length > 0 ? (
-    <div className="space-y-4">
-      {profileData.awards.map((award, idx) => (
-        <div key={idx} className="pb-3 border-b border-gray-200 last:border-b-0 last:pb-0">
-          {/* Title and Organization */}
-          <p className="text-base font-semibold text-gray-900">
-            {/* Using 'title' and 'organization' */}
-            {award.title || 'Award Title N/A'}
-          </p>
-          <p className="text-sm text-gray-600 mb-1">
-            {award.organization || 'Issuer N/A'}
-          </p>
-          
-          {/* Dates */}
-          <p className="text-xs text-gray-500">
-            {/* Displaying Start and End Date */}
-            {award.startDate || 'N/A'} {award.endDate ? `— ${award.endDate}` : ''}
-          </p>
-          
-          {/* Description (Optional) */}
-          {award.description && (
-            <p className="text-sm text-gray-700 mt-2 italic border-l-2 border-indigo-300 pl-2">
-              {award.description}
-            </p>
-          )}
-        </div>
-      ))}
-    </div>
-  ) : (
-    <span className="text-gray-600">No awards added.</span>
-  )}
-</div>
-
-                   <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Published Blogs/Articles
-                    </h5>
-                    {profileData.publications && profileData.publications.length > 0 ? (
-                        <ul className="list-disc list-inside text-gray-600">
-                          {profileData.publications.map((pub, idx) => (
-                              <li key={idx}>
-                                {pub.url ? (
-                                  <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{pub.title}</a>
-                                ) : pub.title}
-                              </li>
-                          ))}
-                        </ul>
-                    ) : (<span className="text-gray-600">No publications added.</span>)}
-                  </div>
-
- <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Achievements 
-                    </h5>
-                    {profileData.achievements && profileData.achievements.length > 0 ? (
-                      profileData.achievements.map((ach, idx) => (
-                        <div key={idx} className="mb-2">
-                          <p className="font-medium text-gray-800">{ach.title}</p>
-                          <p className="text-sm text-gray-600">{ach.event} - {ach.date}</p>
+      case 'overview':
+        return (
+          <div className="space-y-6">
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">What recruiters will see</h3>
+              <div className="border-2 border-gray-100 rounded-xl divide-y divide-gray-100">
+                <div className="p-6">
+                  <div className="flex items-start gap-4">
+                    <Avatar size="lg" name={profileData.fullName} src={profileData.profileImageUrl} />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
+                        <div>
+                          <h4 className="text-lg font-medium text-gray-900">{profileData.fullName || 'N/A'}</h4>
+                          <p className="text-sm text-gray-600">
+                            {profileData.degree || 'N/A'} in {profileData.specialization || 'N/A'} at {profileData.college || 'N/A'}
+                          </p>
                         </div>
-                      ))
-                    ) : (<span className="text-gray-600">No achievements added.</span>)}
-                  </div>
+                        <div className="flex gap-2">
+                          {profileData.linkedin && (
+                            <a href={profileData.linkedin} target="_blank" rel="noopener noreferrer">
+                              <Button variant="outline" size="sm" className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg">
+                                <FiLinkedin className="w-4 h-4" />
+                              </Button>
+                            </a>
+                          )}
+                          {profileData.github && (
+                            <a href={profileData.github} target="_blank" rel="noopener noreferrer">
+                              <Button variant="outline" size="sm" className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg">
+                                <FiGithub className="w-4 h-4" />
+                              </Button>
+                            </a>
+                          )}
+                          {profileData.portfolio && (
+                            <a href={profileData.portfolio} target="_blank" rel="noopener noreferrer">
+                              <Button variant="outline" size="sm" className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg">
+                                <FiGlobe className="w-4 h-4" />
+                              </Button>
+                            </a>
+                          )}
+                        </div>
+                      </div>
 
-                  <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow-sm">
-                    <h5 className="text-lg font-bold text-gray-800 mb-4">
-                      Known Languages
-                    </h5>
-                    <div className="flex flex-wrap gap-2">
-                      {profileData.languagesKnown && profileData.languagesKnown.length > 0 ? (
-                        profileData.languagesKnown.map((lang) => (
-                          <Badge key={lang} variant="primary" size="md" className="bg-gray-100 text-gray-800">
-                            {lang}
+                      <div className="space-y-6">
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            About
+                          </h5>
+                          <p className="text-gray-600">{profileData.about || 'No information provided.'}</p>
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Contact Information
+                          </h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-sm text-gray-500">Email address</p>
+                              <p className="text-gray-900">{profileData.email || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Mobile Number</p>
+                              <p className="text-gray-900">{profileData.phone || 'N/A'}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Personal Details
+                          </h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-sm text-gray-500">Date of Birth</p>
+                              <p className="text-gray-900">{profileData.dob || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Gender</p>
+                              <p className="text-gray-900">{profileData.gender || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Marital Status</p>
+                              <p className="text-gray-900">{profileData.maritalStatus || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Ethnicity</p>
+                              <p className="text-gray-900">{profileData.ethnicity || 'N/A'}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500">Visa / Work Authorization</p>
+                              <p className="text-gray-900">{profileData.visaStatus || 'N/A'}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Academic Background
+                          </h5>
+                          
+                          <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
+                            <div className="col-span-2 sm:col-span-1">
+                              <p className="text-gray-500">Degree & Specialization</p>
+                              <p className="font-semibold text-gray-900">
+                                {profileData.degree || 'N/A'} / {profileData.specialization || 'N/A'}
+                              </p>
+                            </div>
+
+                            <div className="col-span-2 sm:col-span-1">
+                              <p className="text-gray-500">CGPA / Percentage</p>
+                              <p className="font-semibold text-gray-900">{profileData.cgpa || 'N/A'}</p>
+                            </div>
+
+                            <div className="col-span-2">
+                              <p className="text-gray-500">Institution</p>
+                              <p className="font-semibold text-gray-900">{profileData.college || 'N/A'}</p>
+                            </div>
+                            
+                            <div className="col-span-2">
+                              <p className="text-gray-500">Graduation Date</p>
+                              <p className="font-semibold bg-gradient-to-r from-[#10b981] to-[#059669] bg-clip-text text-transparent">
+                                {profileData.yearOfGraduation || 'N/A'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Skills
+                          </h5>
+                          <div className="flex flex-wrap gap-2">
+                            {profileData.skills && profileData.skills.length > 0 ? (
+                              profileData.skills.map((skill) => (
+                                <Badge key={skill} variant="primary" size="md" className="bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30 rounded-xl">
+                                  {skill}
+                                </Badge>
+                              ))
+                            ) : (
+                              <span className="text-gray-600">N/A</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Tools and Platforms
+                          </h5>
+                          <div className="flex flex-wrap gap-2">
+                            {profileData.toolsAndPlatforms && profileData.toolsAndPlatforms.length > 0 ? (
+                              profileData.toolsAndPlatforms.map((tool) => (
+                                <Badge key={tool} variant="primary" size="md" className="bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30 rounded-xl">
+                                  {tool}
+                                </Badge>
+                              ))
+                            ) : (
+                              <span className="text-gray-600">N/A</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Interested Industry type
+                          </h5>
+                          <Badge variant="primary" size="md" className="bg-gradient-to-r from-[#fbcfe8]/20 to-[#f9a8d4]/20 text-[#9d174d] border border-[#fbcfe8]/30 rounded-xl">
+                            {profileData.industry && profileData.industry.length > 0 ? profileData.industry[0] : 'N/A'}
                           </Badge>
-                        ))
-                      ) : (
-                        <span className="text-gray-600">N/A</span>
-                      )}
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Interested Job Roles
+                          </h5>
+                          <div className="flex flex-wrap gap-2">
+                            {profileData.jobRoles && profileData.jobRoles.length > 0 ? (
+                              profileData.jobRoles.map((role) => (
+                                <Badge key={role} variant="primary" size="md" className="bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30 rounded-xl">
+                                  {role}
+                                </Badge>
+                              ))
+                            ) : (
+                              <span className="text-gray-600">N/A</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Preferred Job Locations
+                          </h5>
+                          <div className="flex flex-wrap gap-2">
+                            {profileData.locations && profileData.locations.length > 0 ? (
+                              profileData.locations.map((location) => (
+                                <Badge key={location} variant="primary" size="md" className="bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30 rounded-xl">
+                                  {location}
+                                </Badge>
+                              ))
+                            ) : (
+                              <span className="text-gray-600">N/A</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Looking for
+                          </h5>
+                          <div className="flex flex-wrap gap-2">
+                              {Array.isArray(profileData.lookingFor) && profileData.lookingFor.length > 0 ? (
+                                  profileData.lookingFor.map((item) => (
+                                      <Badge key={item} variant="primary" size="md" className="bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30 rounded-xl">
+                                        {item}
+                                      </Badge>
+                                  ))
+                              ) : (
+                                  <Badge variant="primary" size="md" className="bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30 rounded-xl">
+                                    {profileData.lookingFor || 'N/A'}
+                                  </Badge>
+                              )}
+                          </div>
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Employment type
+                          </h5>
+                          <div className="flex gap-2">
+                            {profileData.employmentType ? (
+                              <Badge variant="primary" size="md" className="bg-gradient-to-r from-[#fbcfe8]/20 to-[#f9a8d4]/20 text-[#9d174d] border border-[#fbcfe8]/30 rounded-xl">
+                                {profileData.employmentType}
+                              </Badge>
+                            ) : (
+                              <span className="text-gray-600">N/A</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Shift Preference
+                          </h5>
+                          <Badge variant="primary" size="md" className="bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30 rounded-xl">
+                            {profileData.openToShift || 'N/A'}
+                          </Badge>
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Certifications
+                          </h5>
+                          {profileData.certifications && profileData.certifications.length > 0 ? (
+                            <ul className="list-disc list-inside text-gray-600">
+                              {profileData.certifications.map((cert, idx) => (
+                                <li key={idx}>
+                                  {cert.name || 'N/A'}
+                                  {cert.url && (
+                                    <a href={cert.url} target="_blank" rel="noopener noreferrer" className="ml-2 text-[#667eea] hover:underline">
+                                      (Link)
+                                    </a>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <span className="text-gray-600">No certifications added.</span>
+                          )}
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Awards & Recognition
+                          </h5>
+                          {profileData.awards && Array.isArray(profileData.awards) && profileData.awards.length > 0 ? (
+                            <div className="space-y-4">
+                              {profileData.awards.map((award, idx) => (
+                                <div key={idx} className="pb-3 border-b border-gray-100 last:border-b-0 last:pb-0">
+                                  <p className="text-base font-semibold text-gray-900">
+                                    {award.title || 'Award Title N/A'}
+                                  </p>
+                                  <p className="text-sm text-gray-600 mb-1">
+                                    {award.organization || 'Issuer N/A'}
+                                  </p>
+                                  
+                                  <p className="text-xs text-gray-500">
+                                    {award.startDate || 'N/A'} {award.endDate ? `— ${award.endDate}` : ''}
+                                  </p>
+                                  
+                                  {award.description && (
+                                    <p className="text-sm text-gray-700 mt-2 italic border-l-2 border-indigo-300 pl-2">
+                                      {award.description}
+                                    </p>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-gray-600">No awards added.</span>
+                          )}
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Published Blogs/Articles
+                          </h5>
+                          {profileData.publications && profileData.publications.length > 0 ? (
+                              <ul className="list-disc list-inside text-gray-600">
+                                {profileData.publications.map((pub, idx) => (
+                                    <li key={idx}>
+                                      {pub.url ? (
+                                        <a href={pub.url} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">{pub.title}</a>
+                                      ) : pub.title}
+                                    </li>
+                                ))}
+                              </ul>
+                          ) : (<span className="text-gray-600">No publications added.</span>)}
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Achievements 
+                          </h5>
+                          {profileData.achievements && profileData.achievements.length > 0 ? (
+                            profileData.achievements.map((ach, idx) => (
+                              <div key={idx} className="mb-2">
+                                <p className="font-medium text-gray-800">{ach.title}</p>
+                                <p className="text-sm text-gray-600">{ach.event} - {ach.date}</p>
+                              </div>
+                            ))
+                          ) : (<span className="text-gray-600">No achievements added.</span>)}
+                        </div>
+
+                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#a5b4fc]/10 to-[#c4b5fd]/10 shadow-sm">
+                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                            Known Languages
+                          </h5>
+                          <div className="flex flex-wrap gap-2">
+                            {profileData.languagesKnown && profileData.languagesKnown.length > 0 ? (
+                              profileData.languagesKnown.map((lang) => (
+                                <Badge key={lang} variant="primary" size="md" className="bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30 rounded-xl">
+                                  {lang}
+                                </Badge>
+                              ))
+                            ) : (
+                              <span className="text-gray-600">N/A</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  );
+        );
       case 'profile':
         return (
           <div className="space-y-6">
             {/* About Section */}
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">About</h3>
@@ -1085,7 +1045,6 @@ function Profile() {
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Enter your name *
@@ -1093,7 +1052,7 @@ function Profile() {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                       placeholder="Enter your name"
                       value={profileData.fullName}
                       onChange={(e) => handleProfileDataChange('fullName', e.target.value)}
@@ -1122,7 +1081,7 @@ function Profile() {
                     {isProfileEditing ? (
                       <input
                         type="email"
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                         placeholder="hello@xyz.com"
                         value={profileData.email}
                         onChange={(e) => handleProfileDataChange('email', e.target.value)}
@@ -1158,7 +1117,7 @@ function Profile() {
                     {isProfileEditing ? (
                       <input
                         type="tel"
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                         placeholder="1234567890"
                         value={profileData.phone}
                         onChange={(e) => handleProfileDataChange('phone', e.target.value)}
@@ -1184,14 +1143,14 @@ function Profile() {
                     </label>
                     {isProfileEditing ? (
                         <textarea
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                         rows="4"
                         placeholder="Tell us a little about yourself"
                         value={profileData.about}
                         onChange={(e) => handleProfileDataChange('about', e.target.value)}
                         ></textarea>
                     ) : (
-                        <div className={displayFieldStyle + " h-auto min-h-[100px] items-start py-2 whitespace-pre-wrap"}>
+                        <div className={displayFieldStyle + " h-auto min-h-[100px] items-start py-2 whitespace-pre-wrap rounded-xl"}>
                         {profileData.about || "N/A"}
                         </div>
                     )}
@@ -1199,8 +1158,8 @@ function Profile() {
               </div>
             </div>
             
-            {/* New Personal Details Section */}
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+            {/* Personal Details Section */}
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
                 <div className="mb-4">
                     <h3 className="text-lg font-medium text-gray-900">Personal Details</h3>
                     <p className="text-sm text-gray-600">Provide some personal information.</p>
@@ -1209,13 +1168,13 @@ function Profile() {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
                         {isProfileEditing ? (
-                            <input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500" value={profileData.dob} onChange={(e) => handleProfileDataChange('dob', e.target.value)} />
+                            <input type="date" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.dob} onChange={(e) => handleProfileDataChange('dob', e.target.value)} />
                         ) : (<div className={displayFieldStyle}>{profileData.dob || "N/A"}</div>)}
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
                         {isProfileEditing ? (
-                            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500" value={profileData.gender} onChange={(e) => handleProfileDataChange('gender', e.target.value)}>
+                            <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.gender} onChange={(e) => handleProfileDataChange('gender', e.target.value)}>
                                 <option value="">Select Gender</option>
                                 {predefinedGenders.map(gender => <option key={gender} value={gender}>{gender}</option>)}
                             </select>
@@ -1224,7 +1183,7 @@ function Profile() {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
                         {isProfileEditing ? (
-                            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500" value={profileData.maritalStatus} onChange={(e) => handleProfileDataChange('maritalStatus', e.target.value)}>
+                            <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.maritalStatus} onChange={(e) => handleProfileDataChange('maritalStatus', e.target.value)}>
                                 <option value="">Select Status</option>
                                 {predefinedMaritalStatuses.map(status => <option key={status} value={status}>{status}</option>)}
                             </select>
@@ -1233,7 +1192,7 @@ function Profile() {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Ethnicity</label>
                         {isProfileEditing ? (
-                            <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500" value={profileData.ethnicity} onChange={(e) => handleProfileDataChange('ethnicity', e.target.value)}>
+                            <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.ethnicity} onChange={(e) => handleProfileDataChange('ethnicity', e.target.value)}>
                                 <option value="">Select Ethnicity</option>
                                 {predefinedEthnicities.map(ethnicity => <option key={ethnicity} value={ethnicity}>{ethnicity}</option>)}
                             </select>
@@ -1242,7 +1201,7 @@ function Profile() {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Visa Status / Work Authorization</label>
                         {isProfileEditing ? (
-                           <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500" value={profileData.visaStatus} onChange={(e) => handleProfileDataChange('visaStatus', e.target.value)}>
+                           <select className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.visaStatus} onChange={(e) => handleProfileDataChange('visaStatus', e.target.value)}>
                                 <option value="">Select Status</option>
                                 {predefinedVisaStatuses.map(status => <option key={status} value={status}>{status}</option>)}
                             </select>
@@ -1252,7 +1211,7 @@ function Profile() {
             </div>
 
             {/* Educational Background Section */}
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Educational Background</h3>
@@ -1267,7 +1226,7 @@ function Profile() {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                       placeholder="Placeholder"
                       value={profileData.college}
                       onChange={(e) => handleProfileDataChange('college', e.target.value)}
@@ -1285,7 +1244,7 @@ function Profile() {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                       placeholder="Placeholder"
                       value={profileData.degree}
                       onChange={(e) => handleProfileDataChange('degree', e.target.value)}
@@ -1303,7 +1262,7 @@ function Profile() {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                       placeholder="Placeholder"
                       value={profileData.yearOfGraduation}
                       onChange={(e) => handleProfileDataChange('yearOfGraduation', e.target.value)}
@@ -1321,7 +1280,7 @@ function Profile() {
                   {isProfileEditing ? (
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                       placeholder="Placeholder"
                       value={profileData.cgpa}
                       onChange={(e) => handleProfileDataChange('cgpa', e.target.value)}
@@ -1337,13 +1296,13 @@ function Profile() {
                     Degree Certificate (Optional)
                   </label>
                   {isProfileEditing ? (
-                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl bg-white/50">
                       <div className="space-y-1 text-center">
                         <FiUploadCloud className="mx-auto h-12 w-12 text-gray-400" />
                         <div className="flex text-sm text-gray-600">
                           <label
                             htmlFor="degree-certificate-upload"
-                            className="relative cursor-pointer bg-white rounded-md font-medium text-black hover:text-gray-700 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
+                            className="relative cursor-pointer bg-white rounded-md font-medium text-[#667eea] hover:text-[#764ba2] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#667eea]"
                           >
                             <span>Upload a file</span>
                             <input
@@ -1368,7 +1327,7 @@ function Profile() {
                   ) : (
                     <div className={displayFieldStyle}>
                       {profileData.degreeCertificateUrl ? (
-                        <a href={profileData.degreeCertificateUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                        <a href={profileData.degreeCertificateUrl} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
                           View Certificate
                         </a>
                       ) : (
@@ -1381,7 +1340,7 @@ function Profile() {
             </div>
 
             {/* Career Goals Section */}
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Career Goals</h3>
@@ -1395,9 +1354,9 @@ function Profile() {
                   </label>
                   {isProfileEditing ? (
                     <select
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      value={profileData.industry && profileData.industry.length > 0 ? profileData.industry[0] : ''} // Get first item if array
-                      onChange={(e) => handleProfileDataChange('industry', [e.target.value])} // Convert to array for schema
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                      value={profileData.industry && profileData.industry.length > 0 ? profileData.industry[0] : ''}
+                      onChange={(e) => handleProfileDataChange('industry', [e.target.value])}
                     >
                       <option value="">Select Industry</option>
                       {predefinedIndustries.map(industry => (
@@ -1418,18 +1377,18 @@ function Profile() {
                   {isProfileEditing ? (
                     <div className="relative" ref={jobRolesDropdownRef}>
                       <div
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white flex items-center justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl bg-white/50 flex items-center justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea]"
                         onClick={() => setIsJobRolesDropdownOpen(!isJobRolesDropdownOpen)}
                       >
                         <div className="flex flex-wrap gap-2 pr-6">
                           {profileData.jobRoles.length > 0 ? (
                             profileData.jobRoles.map(role => (
-                              <Badge key={role} variant="primary" size="sm" className="bg-gray-200 text-gray-800">
+                              <Badge key={role} variant="primary" size="sm" className="bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30 rounded-lg">
                                 {role}
                                 <span
                                   className="ml-1 cursor-pointer text-gray-600 hover:text-gray-900"
                                   onClick={(e) => {
-                                    e.stopPropagation(); // Prevent dropdown from closing
+                                    e.stopPropagation();
                                     handleCustomMultiSelectToggle('jobRoles', role);
                                   }}
                                 >x</span>
@@ -1442,11 +1401,11 @@ function Profile() {
                         <FiChevronDown className="w-5 h-5 text-gray-400 absolute right-3" />
                       </div>
                       {isJobRolesDropdownOpen && (
-                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                        <div className="absolute z-10 w-full mt-1 bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg shadow-purple-50/50 max-h-60 overflow-y-auto">
                           {predefinedJobRoles.map((role) => (
                             <div
                               key={role}
-                              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${profileData.jobRoles.includes(role) ? 'bg-blue-50 text-blue-800' : ''
+                              className={`px-3 py-2 cursor-pointer hover:bg-gray-50 ${profileData.jobRoles.includes(role) ? 'bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6]' : ''
                                 }`}
                               onClick={() => handleCustomMultiSelectToggle('jobRoles', role)}
                             >
@@ -1461,7 +1420,7 @@ function Profile() {
                       {profileData.jobRoles && profileData.jobRoles.length > 0 ? (
                         <div className="flex flex-wrap gap-2 py-1">
                           {profileData.jobRoles.map(role => (
-                            <Badge key={role} variant="primary" size="md" className="bg-gray-100 text-gray-800">
+                            <Badge key={role} variant="primary" size="md" className="bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30 rounded-xl">
                               {role}
                             </Badge>
                           ))}
@@ -1485,47 +1444,51 @@ function Profile() {
                         styles={{
                             control: (base) => ({
                                 ...base,
-                                borderColor: '#d1d5db',
+                                borderColor: '#e5e7eb',
                                 minHeight: '42px',
-                                borderRadius: '0.375rem',
-                                backgroundColor: 'white',
+                                borderRadius: '0.75rem',
+                                backgroundColor: 'rgba(255, 255, 255, 0.5)',
                                 padding: '2px',
                                 boxShadow: 'none',
                                 '&:hover': {
-                                    borderColor: '#9ca3af'
+                                    borderColor: '#d1d5db'
                                 },
                                 '&:focus-within': {
-                                    borderColor: '#000',
-                                    boxShadow: '0 0 0 1px #000'
+                                    borderColor: '#667eea',
+                                    boxShadow: '0 0 0 2px rgba(102, 126, 234, 0.1)'
                                 }
                             }),
                             menu: (base) => ({
                                 ...base,
-                                borderRadius: '0.375rem',
+                                borderRadius: '0.75rem',
                                 border: '1px solid #e5e7eb',
-                                zIndex: 50
+                                zIndex: 50,
+                                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                backdropFilter: 'blur(4px)'
                             }),
                             option: (base, state) => ({
                                 ...base,
-                                backgroundColor: state.isSelected ? '#e5e7eb' : state.isFocused ? '#f3f4f6' : 'white',
+                                backgroundColor: state.isSelected ? 'rgba(165, 180, 252, 0.2)' : state.isFocused ? 'rgba(243, 244, 246, 0.5)' : 'transparent',
                                 color: '#374151',
                                 cursor: 'pointer',
+                                borderRadius: '0.5rem',
+                                margin: '2px',
                                 '&:active': {
-                                    backgroundColor: '#e5e7eb'
+                                    backgroundColor: 'rgba(165, 180, 252, 0.3)'
                                 }
                             }),
                             multiValue: (base) => ({
                                 ...base,
-                                backgroundColor: '#e5e7eb',
+                                backgroundColor: 'rgba(165, 180, 252, 0.2)',
                                 borderRadius: '9999px',
                             }),
                             multiValueRemove: (base) => ({
                                 ...base,
                                 borderRadius: '0 9999px 9999px 0',
-                                color: '#4b5563',
+                                color: '#6b7280',
                                 ':hover': {
-                                    backgroundColor: '#d1d5db',
-                                    color: 'black',
+                                    backgroundColor: 'rgba(209, 213, 219, 0.5)',
+                                    color: '#374151',
                                 },
                             }),
                         }}
@@ -1535,7 +1498,7 @@ function Profile() {
                       {profileData.locations && profileData.locations.length > 0 ? (
                         <div className="flex flex-wrap gap-2 py-1">
                           {profileData.locations.map(location => (
-                            <Badge key={location} variant="primary" size="md" className="bg-gray-100 text-gray-800">
+                            <Badge key={location} variant="primary" size="md" className="bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30 rounded-xl">
                               {location}
                             </Badge>
                           ))}
@@ -1555,7 +1518,7 @@ function Profile() {
                         <Button
                           key={option}
                           variant={isLookingForActive(option) ? 'primary' : 'outline'}
-                          className={isLookingForActive(option) ? 'bg-black text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}
+                          className={`rounded-xl ${isLookingForActive(option) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}
                           onClick={() => handleLookingForChange(option)}
                         >
                           {option}
@@ -1582,7 +1545,7 @@ function Profile() {
                         <Button
                           key={type}
                           variant={profileData.employmentType === type ? 'primary' : 'outline'}
-                          className={profileData.employmentType === type ? 'bg-black text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}
+                          className={`rounded-xl ${profileData.employmentType === type ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30' : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}
                           onClick={() => handleProfileDataChange('employmentType', type)}
                         >
                           {type}
@@ -1601,7 +1564,7 @@ function Profile() {
                     </label>
                     {isProfileEditing ? (
                         <select
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                         value={profileData.openToShift}
                         onChange={(e) => handleProfileDataChange('openToShift', e.target.value)}
                         >
@@ -1620,7 +1583,7 @@ function Profile() {
             </div>
 
             {/* Skills Section */}
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Skills</h3>
@@ -1633,18 +1596,18 @@ function Profile() {
                 </label>
                 {isProfileEditing ? (
                   <textarea
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                     rows="3"
                     placeholder="Enter your skills (comma separated)"
                     value={profileData.skills.join(', ')}
                     onChange={(e) => handleProfileDataChange('skills', e.target.value.split(',').map(s => s.trim()))}
                   ></textarea>
                 ) : (
-                  <div className={displayFieldStyle + " h-24 overflow-auto"}>
+                  <div className={displayFieldStyle + " h-24 overflow-auto rounded-xl"}>
                     {profileData.skills.length > 0 ? (
                       <div className="flex flex-wrap gap-2 py-1">
                         {profileData.skills.map(skill => (
-                          <Badge key={skill} variant="primary" size="md" className="bg-gray-100 text-gray-800">
+                          <Badge key={skill} variant="primary" size="md" className="bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30 rounded-xl">
                             {skill}
                           </Badge>
                         ))}
@@ -1656,7 +1619,7 @@ function Profile() {
             </div>
 
             {/* Tools & Platforms Section */}
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Tools & Platforms</h3>
@@ -1669,18 +1632,18 @@ function Profile() {
                 </label>
                 {isProfileEditing ? (
                   <textarea
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                     rows="3"
                     placeholder="Enter tools and platforms (comma separated), e.g., Jira, Docker, AWS"
                     value={profileData.toolsAndPlatforms.join(', ')}
                     onChange={(e) => handleProfileDataChange('toolsAndPlatforms', e.target.value.split(',').map(s => s.trim()))}
                   ></textarea>
                 ) : (
-                  <div className={displayFieldStyle + " h-24 overflow-auto"}>
+                  <div className={displayFieldStyle + " h-24 overflow-auto rounded-xl"}>
                     {profileData.toolsAndPlatforms.length > 0 ? (
                       <div className="flex flex-wrap gap-2 py-1">
                         {profileData.toolsAndPlatforms.map(tool => (
-                          <Badge key={tool} variant="primary" size="md" className="bg-gray-100 text-gray-800">
+                          <Badge key={tool} variant="primary" size="md" className="bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30 rounded-xl">
                             {tool}
                           </Badge>
                         ))}
@@ -1692,7 +1655,7 @@ function Profile() {
             </div>
 
             {/* Social Profiles Section */}
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Social Profiles</h3>
@@ -1705,21 +1668,21 @@ function Profile() {
                     LinkedIn
                   </label>
                   <div className="flex">
-                    <span className="inline-flex items-center px-3 text-gray-500 bg-gray-50 border border-r-0 border-gray-300 rounded-l-md">
+                    <span className="inline-flex items-center px-3 text-gray-500 bg-gray-50 border border-r-0 border-gray-200 rounded-l-xl">
                       http://
                     </span>
                     {isProfileEditing ? (
                       <input
                         type="text"
-                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md focus:ring-primary-500 focus:border-primary-500 sm:text-sm border border-gray-300"
+                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#667eea] focus:border-[#667eea] sm:text-sm border border-gray-200 bg-white/50"
                         placeholder="www.linkedin.com/in/yourprofile"
                         value={profileData.linkedin.replace(/^(https?:\/\/)?(www\.)?/i, '')}
                         onChange={(e) => handleProfileDataChange('linkedin', `http://${e.target.value}`)}
                       />
                     ) : (
-                      <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md bg-gray-50 border border-gray-200 text-gray-900">
+                      <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl bg-gray-50/50 border border-gray-200 text-gray-900">
                         {profileData.linkedin ? (
-                          <a href={profileData.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          <a href={profileData.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
                             {profileData.linkedin}
                           </a>
                         ) : "N/A"}
@@ -1732,21 +1695,21 @@ function Profile() {
                     Github
                   </label>
                   <div className="flex">
-                    <span className="inline-flex items-center px-3 text-gray-500 bg-gray-50 border border-r-0 border-gray-300 rounded-l-md">
+                    <span className="inline-flex items-center px-3 text-gray-500 bg-gray-50 border border-r-0 border-gray-200 rounded-l-xl">
                       http://
                     </span>
                     {isProfileEditing ? (
                       <input
                         type="text"
-                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md focus:ring-primary-500 focus:border-primary-500 sm:text-sm border border-gray-300"
+                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#667eea] focus:border-[#667eea] sm:text-sm border border-gray-200 bg-white/50"
                         placeholder="github.com/yourprofile"
                         value={profileData.github.replace(/^(https?:\/\/)?(www\.)?/i, '')}
                         onChange={(e) => handleProfileDataChange('github', `http://${e.target.value}`)}
                       />
                     ) : (
-                      <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md bg-gray-50 border border-gray-200 text-gray-900">
+                      <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl bg-gray-50/50 border border-gray-200 text-gray-900">
                         {profileData.github ? (
-                          <a href={profileData.github} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          <a href={profileData.github} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
                             {profileData.github}
                           </a>
                         ) : "N/A"}
@@ -1759,21 +1722,21 @@ function Profile() {
                     Portfolio Website
                   </label>
                   <div className="flex">
-                    <span className="inline-flex items-center px-3 text-gray-500 bg-gray-50 border border-r-0 border-gray-300 rounded-l-md">
+                    <span className="inline-flex items-center px-3 text-gray-500 bg-gray-50 border border-r-0 border-gray-200 rounded-l-xl">
                       http://
                     </span>
                     {isProfileEditing ? (
                       <input
                         type="text"
-                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md focus:ring-primary-500 focus:border-primary-500 sm:text-sm border border-gray-300"
+                        className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#667eea] focus:border-[#667eea] sm:text-sm border border-gray-200 bg-white/50"
                         placeholder="www.yourwebsite.com"
                         value={profileData.portfolio.replace(/^(https?:\/\/)?(www\.)?/i, '')}
                         onChange={(e) => handleProfileDataChange('portfolio', `http://${e.target.value}`)}
                       />
                     ) : (
-                      <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md bg-gray-50 border border-gray-200 text-gray-900">
+                      <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl bg-gray-50/50 border border-gray-200 text-gray-900">
                         {profileData.portfolio ? (
-                          <a href={profileData.portfolio} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          <a href={profileData.portfolio} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
                             {profileData.portfolio}
                           </a>
                         ) : "N/A"}
@@ -1785,7 +1748,7 @@ function Profile() {
             </div>
 
             {/* Certifications Section */}
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Certifications</h3>
@@ -1793,7 +1756,7 @@ function Profile() {
                 </div>
               </div>
               {profileData.certifications.map((cert, index) => (
-                <div key={index} className="space-y-4 mb-4 p-4 border border-gray-200 rounded-lg">
+                <div key={index} className="space-y-4 mb-4 p-4 border border-gray-100 rounded-xl bg-gray-50/50">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Certification Name
@@ -1801,7 +1764,7 @@ function Profile() {
                     {isProfileEditing ? (
                       <input
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                         value={cert.name}
                         onChange={(e) => {
                           const newCerts = [...profileData.certifications];
@@ -1820,13 +1783,13 @@ function Profile() {
                       Certification URL
                     </label>
                     <div className="flex">
-                      <span className="inline-flex items-center px-3 text-gray-500 bg-gray-50 border border-r-0 border-gray-300 rounded-l-md">
+                      <span className="inline-flex items-center px-3 text-gray-500 bg-gray-50 border border-r-0 border-gray-200 rounded-l-xl">
                         http://
                       </span>
                       {isProfileEditing ? (
                         <input
                           type="text"
-                          className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md focus:ring-primary-500 focus:border-primary-500 sm:text-sm border border-gray-300"
+                          className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl focus:ring-[#667eea] focus:border-[#667eea] sm:text-sm border border-gray-200 bg-white/50"
                           placeholder="www.example.com"
                           value={cert.url.replace(/^(https?:\/\/)?(www\.)?/i, '')}
                           onChange={(e) => {
@@ -1836,9 +1799,9 @@ function Profile() {
                           }}
                         />
                       ) : (
-                        <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md bg-gray-50 border border-gray-200 text-gray-900">
+                        <div className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-xl bg-gray-50/50 border border-gray-200 text-gray-900">
                           {cert.url ? (
-                            <a href={cert.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                            <a href={cert.url} target="_blank" rel="noopener noreferrer" className="text-[#667eea] hover:underline">
                               {cert.url}
                             </a>
                           ) : "N/A"}
@@ -1849,40 +1812,44 @@ function Profile() {
                 </div>
               ))}
               {isProfileEditing && (
-                <Button variant="outline" size="sm" onClick={() => handleProfileDataChange('certifications', [...profileData.certifications, { name: '', url: '' }])}>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handleProfileDataChange('certifications', [...profileData.certifications, { name: '', url: '' }])}
+                  className="border-gray-200 hover:bg-gray-50 rounded-xl"
+                >
                   <FiPlus className="w-4 h-4 mr-2" /> Add Certification
                 </Button>
               )}
             </div>
          
-          {/* New Awards & Recognition Section */}
-<div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+          {/* Awards & Recognition Section */}
+<div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
     <div className="mb-4">
         <h3 className="text-lg font-medium text-gray-900">Awards & Recognition</h3>
         <p className="text-sm text-gray-600">Showcase your awards and recognitions.</p>
     </div>
     
     {profileData.awards.map((award, index) => (
-        <div key={index} className="relative mb-6 p-4 border border-gray-200 rounded-xl space-y-4 shadow-sm bg-gray-50">
+        <div key={index} className="relative mb-6 p-4 border border-gray-100 rounded-2xl space-y-4 shadow-sm bg-gradient-to-r from-[#fde68a]/10 to-[#fcd34d]/10">
             {isProfileEditing && (
                 <Button 
                     variant="ghost" 
                     size="sm" 
                     onClick={() => removeAward(index)} 
-                    className="absolute top-2 right-2 text-red-600 hover:bg-red-50"
+                    className="absolute top-2 right-2 text-red-600 hover:bg-red-50 rounded-lg"
                 >
                     <FiTrash2 className="w-4 h-4 mr-1" /> Remove
                 </Button>
             )}
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Field: title (Mapped from 'name') */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Award Title</label>
                     {isProfileEditing ? (
                         <input 
                             type="text" 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                            className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" 
                             value={award.title} 
                             onChange={(e) => handleAwardChange(index, 'title', e.target.value)} 
                             placeholder="e.g., Dean's List, Best Capstone Project"
@@ -1892,13 +1859,12 @@ function Profile() {
                     )}
                 </div>
                 
-                {/* Field: organization (Mapped from 'issuer') */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Organization / Issuer</label>
                     {isProfileEditing ? (
                         <input 
                             type="text" 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                            className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" 
                             value={award.organization} 
                             onChange={(e) => handleAwardChange(index, 'organization', e.target.value)} 
                             placeholder="e.g., Google, IEEE, University Name"
@@ -1910,13 +1876,12 @@ function Profile() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                {/* Field: startDate (Mapped from 'date') */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Start Date / Received Date</label>
                     {isProfileEditing ? (
                         <input 
                             type="date" 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                            className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" 
                             value={award.startDate} 
                             onChange={(e) => handleAwardChange(index, 'startDate', e.target.value)} 
                         />
@@ -1925,13 +1890,12 @@ function Profile() {
                     )}
                 </div>
                 
-                {/* Field: endDate */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">End Date (Optional)</label>
                     {isProfileEditing ? (
                         <input 
                             type="date" 
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                            className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" 
                             value={award.endDate} 
                             onChange={(e) => handleAwardChange(index, 'endDate', e.target.value)} 
                         />
@@ -1941,13 +1905,12 @@ function Profile() {
                 </div>
             </div>
 
-            {/* Field: description */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description / Notes</label>
                 {isProfileEditing ? (
                     <textarea 
                         rows="3"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md" 
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" 
                         value={award.description} 
                         onChange={(e) => handleAwardChange(index, 'description', e.target.value)} 
                         placeholder="Briefly describe the award and your role or contribution."
@@ -1964,63 +1927,72 @@ function Profile() {
     )}
 
     {isProfileEditing && (
-        <Button variant="outline" size="sm" onClick={addAward} className="mt-4">
+        <Button variant="outline" size="sm" onClick={addAward} className="mt-4 border-gray-200 hover:bg-gray-50 rounded-xl">
             <FiPlus className="w-4 h-4 mr-2" /> Add Award
         </Button>
     )}
 </div>
-            {/* New Published Articles/Blogs Section */}
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+
+            {/* Published Articles/Blogs Section */}
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
                 <div className="mb-4">
                     <h3 className="text-lg font-medium text-gray-900">Published Articles/Blogs</h3>
                     <p className="text-sm text-gray-600">Link to your published work.</p>
                 </div>
                 {profileData.publications.map((pub, index) => (
-                    <div key={index} className="relative mb-4 p-4 border border-gray-200 rounded-lg space-y-4">
-                        {isProfileEditing && (<Button variant="ghost" size="sm" onClick={() => removePublication(index)} className="absolute top-2 right-2 text-red-600 hover:bg-red-50">Remove</Button>)}
+                    <div key={index} className="relative mb-4 p-4 border border-gray-100 rounded-xl space-y-4 bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10">
+                        {isProfileEditing && (<Button variant="ghost" size="sm" onClick={() => removePublication(index)} className="absolute top-2 right-2 text-red-600 hover:bg-red-50 rounded-lg">Remove</Button>)}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                            {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md" value={pub.title} onChange={(e) => handlePublicationChange(index, 'title', e.target.value)} />) : (<div className={displayFieldStyle}>{pub.title || "N/A"}</div>)}
+                            {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={pub.title} onChange={(e) => handlePublicationChange(index, 'title', e.target.value)} />) : (<div className={displayFieldStyle}>{pub.title || "N/A"}</div>)}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">URL</label>
-                            {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="http://example.com" value={pub.url} onChange={(e) => handlePublicationChange(index, 'url', e.target.value)} />) : (<div className={displayFieldStyle}>{pub.url ? <a href={pub.url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">{pub.url}</a> : "N/A"}</div>)}
+                            {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" placeholder="http://example.com" value={pub.url} onChange={(e) => handlePublicationChange(index, 'url', e.target.value)} />) : (<div className={displayFieldStyle}>{pub.url ? <a href={pub.url} target="_blank" rel="noreferrer" className="text-[#667eea] hover:underline">{pub.url}</a> : "N/A"}</div>)}
                         </div>
                     </div>
                 ))}
-                {isProfileEditing && (<Button variant="outline" size="sm" onClick={addPublication}><FiPlus className="w-4 h-4 mr-2" /> Add Publication</Button>)}
+                {isProfileEditing && (
+                  <Button variant="outline" size="sm" onClick={addPublication} className="border-gray-200 hover:bg-gray-50 rounded-xl">
+                    <FiPlus className="w-4 h-4 mr-2" /> Add Publication
+                  </Button>
+                )}
             </div>
 
-            {/* New Achievements Section */}
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+            {/* Achievements Section */}
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
                 <div className="mb-4">
                     <h3 className="text-lg font-medium text-gray-900">Achievements</h3>
                     <p className="text-sm text-gray-600">Mention your achievements like hackathons or coding competitions.</p>
                 </div>
                 {profileData.achievements.map((ach, index) => (
-                    <div key={index} className="relative mb-4 p-4 border border-gray-200 rounded-lg space-y-4">
-                          {isProfileEditing && (<Button variant="ghost" size="sm" onClick={() => removeAchievement(index)} className="absolute top-2 right-2 text-red-600 hover:bg-red-50">Remove</Button>)}
+                    <div key={index} className="relative mb-4 p-4 border border-gray-100 rounded-xl space-y-4 bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10">
+                          {isProfileEditing && (<Button variant="ghost" size="sm" onClick={() => removeAchievement(index)} className="absolute top-2 right-2 text-red-600 hover:bg-red-50 rounded-lg">Remove</Button>)}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                              <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md" value={ach.title} onChange={(e) => handleAchievementChange(index, 'title', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.title || "N/A"}</div>)}
+                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={ach.title} onChange={(e) => handleAchievementChange(index, 'title', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.title || "N/A"}</div>)}
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Event (e.g., Hackathon Name)</label>
-                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md" value={ach.event} onChange={(e) => handleAchievementChange(index, 'event', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.event || "N/A"}</div>)}
+                                {isProfileEditing ? (<input type="text" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={ach.event} onChange={(e) => handleAchievementChange(index, 'event', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.event || "N/A"}</div>)}
                             </div>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                            {isProfileEditing ? (<input type="date" className="w-full px-3 py-2 border border-gray-300 rounded-md" value={ach.date} onChange={(e) => handleAchievementChange(index, 'date', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.date || "N/A"}</div>)}
+                            {isProfileEditing ? (<input type="date" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={ach.date} onChange={(e) => handleAchievementChange(index, 'date', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.date || "N/A"}</div>)}
                         </div>
                     </div>
                 ))}
-                {isProfileEditing && (<Button variant="outline" size="sm" onClick={addAchievement}><FiPlus className="w-4 h-4 mr-2" /> Add Achievement</Button>)}
+                {isProfileEditing && (
+                  <Button variant="outline" size="sm" onClick={addAchievement} className="border-gray-200 hover:bg-gray-50 rounded-xl">
+                    <FiPlus className="w-4 h-4 mr-2" /> Add Achievement
+                  </Button>
+                )}
             </div>
 
             {/* Languages Known Section */}
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Languages Known</h3>
@@ -2033,18 +2005,18 @@ function Profile() {
                 </label>
                 {isProfileEditing ? (
                   <textarea
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                     rows="3"
                     placeholder="Enter languages (comma separated), e.g., English, Hindi, Spanish"
                     value={profileData.languagesKnown.join(', ')}
                     onChange={(e) => handleProfileDataChange('languagesKnown', e.target.value.split(',').map(s => s.trim()))}
                   ></textarea>
                 ) : (
-                  <div className={displayFieldStyle + " h-24 overflow-auto"}>
+                  <div className={displayFieldStyle + " h-24 overflow-auto rounded-xl"}>
                     {profileData.languagesKnown.length > 0 ? (
                       <div className="flex flex-wrap gap-2 py-1">
                         {profileData.languagesKnown.map(lang => (
-                          <Badge key={lang} variant="primary" size="md" className="bg-gray-100 text-gray-800">
+                          <Badge key={lang} variant="primary" size="md" className="bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30 rounded-xl">
                             {lang}
                           </Badge>
                         ))}
@@ -2055,15 +2027,25 @@ function Profile() {
               </div>
             </div>
 
-            {/* Save Changes / Edit Profile Button for Profile Tab */}
-            <div className="flex justify-end p-6 bg-white border border-gray-200 rounded-lg shadow-sm mt-6">
+            {/* Save Changes / Edit Profile Button */}
+            <div className="flex justify-end p-6 bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 mt-6">
               <Button
                 variant="primary"
-                className="bg-black hover:bg-gray-900"
+                className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
                 onClick={isProfileEditing ? handleSaveChanges : () => setIsProfileEditing(true)}
                 disabled={loading}
               >
-                {loading ? 'Saving...' : (isProfileEditing ? 'Save Changes' : 'Edit Profile')}
+                {isProfileEditing ? (
+                  <>
+                    <FiSave className="w-4 h-4 mr-2" />
+                    {loading ? 'Saving...' : 'Save Changes'}
+                  </>
+                ) : (
+                  <>
+                    <FiEdit2 className="w-4 h-4 mr-2" />
+                    Edit Profile
+                  </>
+                )}
               </Button>
             </div>
           </div>
@@ -2071,13 +2053,13 @@ function Profile() {
       case 'resume':
         return (
           <div className="space-y-6">
-            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Upload your resume/CV</h3>
-              {(profileData.resumeUrl) && ( // Simplified condition
-                <div className="mb-4 p-4 border border-gray-200 rounded-lg bg-gray-50 flex justify-between items-center">
+              {(profileData.resumeUrl) && (
+                <div className="mb-4 p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 flex justify-between items-center">
                   <div>
                     <p className="text-sm font-medium text-gray-900">Current Resume</p>
-                    <a href={profileData.resumeUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+                    <a href={profileData.resumeUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-[#667eea] hover:underline">
                       View Resume
                     </a>
                   </div>
@@ -2087,7 +2069,7 @@ function Profile() {
                 </div>
               )}
               <div
-                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition-colors cursor-pointer"
+                className="border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center hover:bg-gray-50/50 transition-colors cursor-pointer bg-white/50"
                 onClick={handleResumeClick}
               >
                 <input type="file" className="hidden" id="resume-upload" accept=".pdf,.doc,.docx" onChange={(e) => handleFileChange(e, 'resume')} />
@@ -2108,67 +2090,80 @@ function Profile() {
   };
 
   return (
-    <div className="flex flex-col w-full bg-gray-100 min-h-screen">
-      <div
-        className="w-full h-32 bg-gray-300 relative bg-cover bg-center cursor-pointer"
-        style={{ backgroundImage: `url(${profileData.backgroundImageUrl})` }}
-        onClick={handleBackgroundImageClick}
-      >
-        <input id="backgroundImageUpload" type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e, 'backgroundImage')} />
-        {!profileData.backgroundImageUrl && (
-          <div className="absolute inset-0 flex items-center justify-center text-gray-500 bg-gray-200 bg-opacity-50">
-            <FiUploadCloud className="w-8 h-8 mr-2" />
-            <span>Upload Background Image</span>
-          </div>
-        )}
+    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      {/* Pastel blur background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
       </div>
-      <div className="bg-white pb-4">
-        <div className="relative px-4">
-          <div className="absolute -top-16 left-4 cursor-pointer" onClick={handleProfileImageClick}>
-            <div className="relative w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white overflow-hidden">
-              {profileData.profileImageUrl ? (
-                <img src={profileData.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <div className="text-gray-400 flex flex-col items-center">
-                  <FiUploadCloud className="h-8 w-8 mb-1" />
-                  <span className="text-xs">Upload</span>
-                </div>
-              )}
+
+      <div className="relative z-10">
+        <div
+          className="w-full h-32 bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 relative bg-cover bg-center cursor-pointer rounded-b-2xl"
+          style={{ backgroundImage: `url(${profileData.backgroundImageUrl})` }}
+          onClick={handleBackgroundImageClick}
+        >
+          <input id="backgroundImageUpload" type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e, 'backgroundImage')} />
+          {!profileData.backgroundImageUrl && (
+            <div className="absolute inset-0 flex items-center justify-center text-gray-500 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 bg-opacity-50 rounded-b-2xl">
+              <FiUploadCloud className="w-8 h-8 mr-2" />
+              <span>Upload Background Image</span>
             </div>
-            <input id="profileImageUpload" type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e, 'profileImage')} />
+          )}
+        </div>
+        <div className="bg-white/90 backdrop-blur-sm border-b border-white/50 pb-4 shadow-lg shadow-purple-50/50 rounded-b-2xl">
+          <div className="relative px-4">
+            <div className="absolute -top-16 left-4 cursor-pointer" onClick={handleProfileImageClick}>
+              <div className="relative w-24 h-24 rounded-full bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center border-4 border-white/90 overflow-hidden shadow-lg">
+                {profileData.profileImageUrl ? (
+                  <img src={profileData.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="text-gray-400 flex flex-col items-center">
+                    <FiUploadCloud className="h-8 w-8 mb-1" />
+                    <span className="text-xs">Upload</span>
+                  </div>
+                )}
+              </div>
+              <input id="profileImageUpload" type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e, 'profileImage')} />
+            </div>
+          </div>
+          <div className="px-6 pt-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                {profileData.fullName || 'Name Surname'}
+              </h2>
+              <p className="text-gray-600">{profileData.email || 'hello@gmail.com'}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Switch to Professional</span>
+              <button
+                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${switchToPro ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2]' : 'bg-gray-200'}`}
+                role="switch"
+                aria-checked={switchToPro}
+                onClick={() => setSwitchToPro(!switchToPro)}
+              >
+                <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${switchToPro ? 'translate-x-5' : 'translate-x-0'}`} />
+              </button>
+            </div>
+          </div>
+          <div className="flex px-6 mt-4">
+            {['overview', 'profile', 'resume'].map((tab) => (
+              <button 
+                key={tab} 
+                className={`px-6 py-3 font-medium transition-all duration-200 ${activeTab === tab 
+                  ? 'border-b-2 border-[#667eea] text-[#667eea]' 
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50/50 rounded-t-lg'}`} 
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1).replace('resume', 'Resume / CV')}
+              </button>
+            ))}
           </div>
         </div>
-        <div className="px-6 pt-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">{profileData.fullName || 'Name Surname'}</h2>
-            <p className="text-gray-600">{profileData.email || 'hello@gmail.com'}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Switch to Professional</span>
-
-            <button
-              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${switchToPro ? 'bg-black' : 'bg-gray-200'}`}
-              role="switch"
-              aria-checked={switchToPro}
-              onClick={() => {
-                setSwitchToPro(!switchToPro);
-              }}
-            >
-              <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${switchToPro ? 'translate-x-5' : 'translate-x-0'}`} />
-            </button>
-          </div>
+        <div className="p-6">
+          {renderContent()}
         </div>
-        <div className="flex border-b mt-4">
-          {['overview', 'profile', 'resume'].map((tab) => (
-            <button key={tab} className={`px-6 py-2 ${activeTab === tab ? 'border-b-2 border-black font-medium' : 'text-gray-500'}`} onClick={() => setActiveTab(tab)}>
-              {tab.charAt(0).toUpperCase() + tab.slice(1).replace('resume', 'Resume / CV')}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="p-4 flex-1">
-
-        {renderContent()}
       </div>
     </div>
   );
