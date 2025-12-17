@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { ChevronDown, X, Mail, Phone, Link, Building2 } from 'lucide-react';
+import { ChevronDown, X, Mail, Phone, Link, Building2, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function RequestInfo() {
   const degreeStreamMapping = {
@@ -154,22 +156,29 @@ export default function RequestInfo() {
     setFormData({ ...formData, [name]: value });
   };
 
+  // Helper function to handle top-level date changes
+  const handleDateChange = (date, name) => {
+    const formattedDate = date ? date.toISOString().split('T')[0] : '';
+    setFormData(prev => ({ ...prev, [name]: formattedDate }));
+  };
+
+  // Helper function to handle nested interview window date changes
+  const handleInterviewDateChange = (date, field) => {
+    const formattedDate = date ? date.toISOString().split('T')[0] : '';
+    setFormData(prev => ({
+      ...prev,
+      interviewWindow: {
+        ...prev.interviewWindow,
+        [field]: formattedDate
+      }
+    }));
+  };
+
   const handlePackageDetailsChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       packageDetails: { ...prev.packageDetails, [name]: value }
-    }));
-  };
-  
-  const handleInterviewWindowChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      interviewWindow: {
-        ...prev.interviewWindow,
-        [name]: value
-      }
     }));
   };
   
@@ -325,20 +334,20 @@ export default function RequestInfo() {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
-  <div className="text-center mb-6">
-    <div className="flex items-center justify-center mb-3">
-      <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-        <Building2 className="h-5 w-5 text-[#667eea]" />
-      </div>
-      <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-        OnCampus Connect: Hire Smarter
-      </h1>
-    </div>
-    <p className="text-md text-gray-600 max-w-2xl mx-auto">
-      Our OnCampus service brings career opportunities directly to students, connecting them with top employers through campus recruitment drives and job events.
-    </p>
-  </div>
-</div>
+          <div className="text-center mb-6">
+            <div className="flex items-center justify-center mb-3">
+              <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
+                <Building2 className="h-5 w-5 text-[#667eea]" />
+              </div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                OnCampus Connect: Hire Smarter
+              </h1>
+            </div>
+            <p className="text-md text-gray-600 max-w-2xl mx-auto">
+              Our OnCampus service brings career opportunities directly to students, connecting them with top employers through campus recruitment drives and job events.
+            </p>
+          </div>
+        </div>
 
         {/* Form Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
@@ -942,13 +951,29 @@ export default function RequestInfo() {
             <div>
               <label className="block mb-2 font-medium text-gray-700">Tentative Date of Placement / Hiring *</label>
               <div className="flex space-x-4">
-                <div className="w-1/2">
+                <div className="w-1/2 relative">
                   <label className="block mb-1 text-sm text-gray-600"> Start Date</label>
-                  <input type="date" name="startDate" className="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" value={formData.startDate} onChange={handleInputChange} />
+                  <DatePicker
+                    selected={formData.startDate ? new Date(formData.startDate) : null}
+                    onChange={(date) => handleDateChange(date, 'startDate')}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Select start date"
+                    className="w-full p-2 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    wrapperClassName="w-full"
+                  />
+                  <Calendar className="absolute left-3 top-[38px] transform -translate-y-1/2 text-gray-400" size={16} />
                 </div>
-                <div className="w-1/2">
+                <div className="w-1/2 relative">
                   <label className="block mb-1 text-sm text-gray-600"> End Date</label>
-                  <input type="date" name="endDate" className="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" value={formData.endDate} onChange={handleInputChange} />
+                  <DatePicker
+                    selected={formData.endDate ? new Date(formData.endDate) : null}
+                    onChange={(date) => handleDateChange(date, 'endDate')}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Select end date"
+                    className="w-full p-2 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    wrapperClassName="w-full"
+                  />
+                  <Calendar className="absolute left-3 top-[38px] transform -translate-y-1/2 text-gray-400" size={16} />
                 </div>
               </div>
             </div>
@@ -957,25 +982,57 @@ export default function RequestInfo() {
             <div>
               <label className="block mb-2 font-medium text-gray-700">Hiring Timeline</label>
               <div className="space-y-4">
-                <div>
+                <div className="relative">
                   <label className="block mb-1 text-sm text-gray-600">Online Test Date</label>
-                  <input type="date" name="onlineTestDate" className="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" value={formData.onlineTestDate} onChange={handleInputChange} />
+                  <DatePicker
+                    selected={formData.onlineTestDate ? new Date(formData.onlineTestDate) : null}
+                    onChange={(date) => handleDateChange(date, 'onlineTestDate')}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Select online test date"
+                    className="w-full p-2 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    wrapperClassName="w-full"
+                  />
+                  <Calendar className="absolute left-3 top-[38px] transform -translate-y-1/2 text-gray-400" size={16} />
                 </div>
 
                 <div className="flex space-x-4">
-                  <div className="w-1/2">
+                  <div className="w-1/2 relative">
                     <label className="block mb-1 text-sm text-gray-600">Interview Window (Start)</label>
-                    <input type="date" name="start" className="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" value={formData.interviewWindow.start} onChange={handleInterviewWindowChange} />
+                    <DatePicker
+                        selected={formData.interviewWindow.start ? new Date(formData.interviewWindow.start) : null}
+                        onChange={(date) => handleInterviewDateChange(date, 'start')}
+                        dateFormat="dd-MM-yyyy"
+                        placeholderText="Select start date"
+                        className="w-full p-2 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        wrapperClassName="w-full"
+                    />
+                    <Calendar className="absolute left-3 top-[38px] transform -translate-y-1/2 text-gray-400" size={16} />
                   </div>
-                  <div className="w-1/2">
+                  <div className="w-1/2 relative">
                     <label className="block mb-1 text-sm text-gray-600">Interview Window (End)</label>
-                    <input type="date" name="end" className="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" value={formData.interviewWindow.end} onChange={handleInterviewWindowChange} />
+                    <DatePicker
+                        selected={formData.interviewWindow.end ? new Date(formData.interviewWindow.end) : null}
+                        onChange={(date) => handleInterviewDateChange(date, 'end')}
+                        dateFormat="dd-MM-yyyy"
+                        placeholderText="Select end date"
+                        className="w-full p-2 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        wrapperClassName="w-full"
+                    />
+                    <Calendar className="absolute left-3 top-[38px] transform -translate-y-1/2 text-gray-400" size={16} />
                   </div>
                 </div>
                 
-                <div>
+                <div className="relative">
                   <label className="block mb-1 text-sm text-gray-600">Offer Rollout Date</label>
-                  <input type="date" name="offerRolloutDate" className="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" value={formData.offerRolloutDate} onChange={handleInputChange} />
+                  <DatePicker
+                    selected={formData.offerRolloutDate ? new Date(formData.offerRolloutDate) : null}
+                    onChange={(date) => handleDateChange(date, 'offerRolloutDate')}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Select offer rollout date"
+                    className="w-full p-2 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    wrapperClassName="w-full"
+                  />
+                  <Calendar className="absolute left-3 top-[38px] transform -translate-y-1/2 text-gray-400" size={16} />
                 </div>
               </div>
             </div>

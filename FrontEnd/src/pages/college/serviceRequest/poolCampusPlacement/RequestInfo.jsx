@@ -4,6 +4,8 @@ import { ChevronDown, X, Calendar, Clock, Users, Target, GraduationCap, Building
 import toast from 'react-hot-toast';
 import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function PoolCampusHiringForm({ onBackClick }) {
     const initialFormState = {
@@ -98,6 +100,24 @@ export default function PoolCampusHiringForm({ onBackClick }) {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    // Helper function to handle top-level date changes
+    const handleDateChange = (date, field) => {
+        const formattedDate = date ? date.toISOString().split('T')[0] : '';
+        setFormData(prev => ({ ...prev, [field]: formattedDate }));
+    };
+
+    // Helper function to handle nested proposedSchedule date changes
+    const handleProposedDateChange = (date, field) => {
+        const formattedDate = date ? date.toISOString().split('T')[0] : '';
+        setFormData(prev => ({
+            ...prev,
+            proposedSchedule: {
+                ...prev.proposedSchedule,
+                [field]: formattedDate
+            }
+        }));
     };
 
     const handleVenueChange = (selectedOption) => {
@@ -360,6 +380,9 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                             ))}
                                         </div>
                                     ) : <span className="text-gray-500">Select degrees</span>}
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                        <ChevronDown className={`w-5 h-5 text-[#3b82f6] transition-transform ${dropdownOpen.degree ? "rotate-180" : ""}`} />
+                                    </div>
                                 </div>
                                 {dropdownOpen.degree && (
                                     <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
@@ -476,6 +499,9 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                             ))}
                                         </div>
                                     ) : <span className="text-gray-500">Select company types</span>}
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                        <ChevronDown className={`w-5 h-5 text-[#3b82f6] transition-transform ${dropdownOpen.companyType ? "rotate-180" : ""}`} />
+                                    </div>
                                 </div>
                                 {dropdownOpen.companyType && (
                                     <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
@@ -563,20 +589,28 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                 Application Start/End Date
                             </label>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input 
-                                    name="tentativeStartDate" 
-                                    type="date" 
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
-                                    value={formData.tentativeStartDate} 
-                                    onChange={handleChange} 
-                                />
-                                <input 
-                                    name="tentativeEndDate" 
-                                    type="date" 
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
-                                    value={formData.tentativeEndDate} 
-                                    onChange={handleChange} 
-                                />
+                                <div className="relative">
+                                    <DatePicker
+                                        selected={formData.tentativeStartDate ? new Date(formData.tentativeStartDate) : null}
+                                        onChange={(date) => handleDateChange(date, 'tentativeStartDate')}
+                                        dateFormat="dd-MM-yyyy"
+                                        placeholderText="Start Date"
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                                        wrapperClassName="w-full"
+                                    />
+                                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                                </div>
+                                <div className="relative">
+                                    <DatePicker
+                                        selected={formData.tentativeEndDate ? new Date(formData.tentativeEndDate) : null}
+                                        onChange={(date) => handleDateChange(date, 'tentativeEndDate')}
+                                        dateFormat="dd-MM-yyyy"
+                                        placeholderText="End Date"
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                                        wrapperClassName="w-full"
+                                    />
+                                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                                </div>
                             </div>
                         </div>
 
@@ -588,22 +622,28 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                             </label>
                             <div className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input 
-                                        type="date" 
-                                        name="startDate" 
-                                        placeholder="Proposed Start Date" 
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
-                                        value={formData.proposedSchedule.startDate} 
-                                        onChange={handleProposedScheduleChange} 
-                                    />
-                                    <input 
-                                        type="date" 
-                                        name="endDate" 
-                                        placeholder="Proposed End Date" 
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
-                                        value={formData.proposedSchedule.endDate} 
-                                        onChange={handleProposedScheduleChange} 
-                                    />
+                                    <div className="relative">
+                                        <DatePicker
+                                            selected={formData.proposedSchedule.startDate ? new Date(formData.proposedSchedule.startDate) : null}
+                                            onChange={(date) => handleProposedDateChange(date, 'startDate')}
+                                            dateFormat="dd-MM-yyyy"
+                                            placeholderText="Proposed Start Date"
+                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                                            wrapperClassName="w-full"
+                                        />
+                                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                                    </div>
+                                    <div className="relative">
+                                        <DatePicker
+                                            selected={formData.proposedSchedule.endDate ? new Date(formData.proposedSchedule.endDate) : null}
+                                            onChange={(date) => handleProposedDateChange(date, 'endDate')}
+                                            dateFormat="dd-MM-yyyy"
+                                            placeholderText="Proposed End Date"
+                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                                            wrapperClassName="w-full"
+                                        />
+                                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                                    </div>
                                 </div>
                                 <div className="relative">
                                     <select 
@@ -737,42 +777,43 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                             ))}
                                         </div>
                                     ) : <span className="text-gray-500">Select facilities</span>}
+                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                        <ChevronDown className={`w-5 h-5 text-[#3b82f6] transition-transform ${dropdownOpen.amenities ? "rotate-180" : ""}`} />
+                                    </div>
                                 </div>
                                 {dropdownOpen.amenities && (
                                     <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
-                                        <div className="p-3 border-b border-white/50">
-                                            <div className="flex gap-2">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Add custom facility..."
-                                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent"
-                                                    value={customAmenity}
-                                                    onChange={(e) => setCustomAmenity(e.target.value)}
-                                                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCustomAdd('amenities', customAmenity, setCustomAmenity); } }}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    className="px-4 py-2 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-lg text-sm font-medium"
-                                                    onClick={() => handleCustomAdd('amenities', customAmenity, setCustomAmenity)}
-                                                >
-                                                    Add
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="max-h-60 overflow-auto">
-                                            {amenitiesOptions.map(opt => (
-                                                <div key={opt} className={`px-4 py-3 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.amenities.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} onClick={() => handleMultiToggle('amenities', opt)}>
-                                                    <div className="flex items-center">
-                                                        <div className={`w-5 h-5 border-2 rounded mr-3 flex items-center justify-center ${formData.amenities.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                            {formData.amenities.includes(opt) && (
-                                                                <CheckSquare size={12} className="text-white" />
-                                                            )}
-                                                        </div>
-                                                        {opt}
+                                        {amenitiesOptions.map(opt => (
+                                            <div 
+                                                key={opt} 
+                                                className={`px-4 py-3 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.amenities.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} 
+                                                onClick={() => handleMultiToggle('amenities', opt)}
+                                            >
+                                                <div className="flex items-center">
+                                                    <div className={`w-5 h-5 border-2 rounded mr-3 flex items-center justify-center ${formData.amenities.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
+                                                        {formData.amenities.includes(opt) && (
+                                                            <CheckSquare size={12} className="text-white" />
+                                                        )}
                                                     </div>
-                                                    {formData.amenities.includes(opt) && <span className="text-[#3b82f6]">✓</span>}
+                                                    {opt}
                                                 </div>
-                                            ))}
+                                                {formData.amenities.includes(opt) && <span className="text-[#3b82f6]">✓</span>}
+                                            </div>
+                                        ))}
+                                        <div className="p-3 border-t border-white/50">
+                                            <input 
+                                                type="text" 
+                                                placeholder="Add custom facility..." 
+                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent" 
+                                                value={customAmenity} 
+                                                onChange={(e) => setCustomAmenity(e.target.value)} 
+                                                onKeyDown={(e) => { 
+                                                    if (e.key === 'Enter') { 
+                                                        e.preventDefault(); 
+                                                        handleCustomAdd('amenities', customAmenity, setCustomAmenity); 
+                                                    } 
+                                                }} 
+                                            />
                                         </div>
                                     </div>
                                 )}

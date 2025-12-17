@@ -4,6 +4,8 @@ import { ChevronDown, X, Calendar, Clock, Users, Target, GraduationCap, Building
 import toast from 'react-hot-toast';
 import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function RegisterPage({ onBackClick }) {
     const initialFormState = {
@@ -78,6 +80,24 @@ export default function RegisterPage({ onBackClick }) {
 
     const handleChange = (field, value) => {
         setFormData({ ...formData, [field]: value });
+    };
+
+    // Helper function to handle top-level date changes
+    const handleDateChange = (date, field) => {
+        const formattedDate = date ? date.toISOString().split('T')[0] : '';
+        setFormData(prev => ({ ...prev, [field]: formattedDate }));
+    };
+
+    // Helper function to handle nested proposedSchedule date changes
+    const handleProposedDateChange = (date, field) => {
+        const formattedDate = date ? date.toISOString().split('T')[0] : '';
+        setFormData(prev => ({
+            ...prev,
+            proposedSchedule: {
+                ...prev.proposedSchedule,
+                [field]: formattedDate
+            }
+        }));
     };
 
     const handleProposedScheduleChange = (e) => {
@@ -331,20 +351,28 @@ export default function RegisterPage({ onBackClick }) {
                                 Application Start/End Date
                             </label>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input 
-                                    type="date" 
-                                    placeholder="Start Date" 
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
-                                    value={formData.tentativeStartDate} 
-                                    onChange={(e) => handleChange('tentativeStartDate', e.target.value)} 
-                                />
-                                <input 
-                                    type="date" 
-                                    placeholder="End Date" 
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
-                                    value={formData.tentativeEndDate} 
-                                    onChange={(e) => handleChange('tentativeEndDate', e.target.value)} 
-                                />
+                                <div className="relative">
+                                    <DatePicker
+                                        selected={formData.tentativeStartDate ? new Date(formData.tentativeStartDate) : null}
+                                        onChange={(date) => handleDateChange(date, 'tentativeStartDate')}
+                                        dateFormat="dd-MM-yyyy"
+                                        placeholderText="Start Date"
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                                        wrapperClassName="w-full"
+                                    />
+                                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                                </div>
+                                <div className="relative">
+                                    <DatePicker
+                                        selected={formData.tentativeEndDate ? new Date(formData.tentativeEndDate) : null}
+                                        onChange={(date) => handleDateChange(date, 'tentativeEndDate')}
+                                        dateFormat="dd-MM-yyyy"
+                                        placeholderText="End Date"
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                                        wrapperClassName="w-full"
+                                    />
+                                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                                </div>
                             </div>
                         </div>
 
@@ -356,22 +384,28 @@ export default function RegisterPage({ onBackClick }) {
                             </label>
                             <div className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input 
-                                        type="date" 
-                                        name="startDate" 
-                                        placeholder="Proposed Start Date" 
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
-                                        value={formData.proposedSchedule.startDate} 
-                                        onChange={handleProposedScheduleChange} 
-                                    />
-                                    <input 
-                                        type="date" 
-                                        name="endDate" 
-                                        placeholder="Proposed End Date" 
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
-                                        value={formData.proposedSchedule.endDate} 
-                                        onChange={handleProposedScheduleChange} 
-                                    />
+                                    <div className="relative">
+                                        <DatePicker
+                                            selected={formData.proposedSchedule.startDate ? new Date(formData.proposedSchedule.startDate) : null}
+                                            onChange={(date) => handleProposedDateChange(date, 'startDate')}
+                                            dateFormat="dd-MM-yyyy"
+                                            placeholderText="Proposed Start Date"
+                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                                            wrapperClassName="w-full"
+                                        />
+                                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                                    </div>
+                                    <div className="relative">
+                                        <DatePicker
+                                            selected={formData.proposedSchedule.endDate ? new Date(formData.proposedSchedule.endDate) : null}
+                                            onChange={(date) => handleProposedDateChange(date, 'endDate')}
+                                            dateFormat="dd-MM-yyyy"
+                                            placeholderText="Proposed End Date"
+                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                                            wrapperClassName="w-full"
+                                        />
+                                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                                    </div>
                                 </div>
                                 <div className="relative">
                                     <select 
