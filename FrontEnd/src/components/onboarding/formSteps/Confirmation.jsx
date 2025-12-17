@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useRole } from "@/context/RoleContext/RoleContext";
 import axios from 'axios';
 import { useAuth } from "@/context/AuthProvider";
-import { TermsModal } from '../Terms&conditionModal'; // Changed import
+import { TermsModal } from '../Terms&conditionModal';
+import { CheckCircle, Shield, FileText } from "lucide-react";
 
 export const Confirmation = ({ onSubmit, onCancel }) => {
   const [agreed, setAgreed] = useState(false);
@@ -130,48 +131,95 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
 
   return (
     <>
-      <div className="justify-center items-stretch bg-white z-0 flex min-w-60 flex-col w-[1144px] my-auto pb-6 max-md:max-w-full">
-        <div className="flex min-h-6 w-full items-stretch gap-[15px] justify-center flex-wrap mt-5 max-md:max-w-full">
-          <div className="flex items-center gap-2.5 justify-center h-full w-6">
-            <input 
-              type="checkbox" 
-              id="terms" 
-              checked={agreed} 
-              onChange={handleCheckboxChange} 
-              className="w-6 h-6 cursor-pointer" 
-            />
-          </div>
-          <label htmlFor="terms" className="self-stretch min-w-60 min-h-6 gap-2.5 text-base text-black font-normal text-center my-auto cursor-pointer">
-            I agree to the 
-            <span 
-              className="text-blue-600 underline ml-1 cursor-pointer hover:text-blue-800" 
-              onClick={handleTermsClick}
-            >
-              Terms & Conditions and Privacy Policy
-            </span>
-            .
-          </label>
+      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+        {/* Pastel blur background elements */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
         </div>
-        
-        {selectedRole && (
-          <div className="text-center mt-2">
-            <p>Profile type: <strong>{selectedRole}</strong></p>
-          </div>
-        )}
 
-        <div className="self-center flex items-center gap-4 text-base font-normal mt-6">
-          <div className="self-stretch flex min-w-60 gap-4 my-auto">
-            <button onClick={onCancel} className="self-stretch gap-2 border rounded-md text-black whitespace-nowrap px-6 py-3 max-md:px-5 cursor-pointer" type="button">
-              Back
-            </button>
-            <button 
-              onClick={handleSubmit} 
-              disabled={!agreed} 
-              className={`self-stretch gap-2 text-white px-6 border rounded-md py-3 max-md:px-5 cursor-pointer ${agreed ? "bg-black" : "bg-gray-400"}`} 
-              type="submit"
-            >
-              Get Started
-            </button>
+        <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 w-full max-w-2xl">
+            
+            {/* Header with gradient */}
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-10 h-10 text-[#667eea]" />
+              </div>
+              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+                Almost There!
+              </h1>
+              <p className="text-gray-600 mb-4">
+                Review and accept the terms to complete your profile setup
+              </p>
+            </div>
+
+            {/* Terms Agreement Section */}
+            <div className="mb-8 p-6 bg-gradient-to-r from-[#f8fafc] to-[#f1f5f9] border border-gray-200 rounded-xl">
+              <div className="flex items-start gap-4">
+                <div className={`mt-1 flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center cursor-pointer ${
+                  agreed 
+                    ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] border-transparent" 
+                    : "border-gray-300 bg-white"
+                }`} onClick={handleCheckboxChange}>
+                  {agreed && (
+                    <CheckCircle className="w-4 h-4 text-white" />
+                  )}
+                </div>
+                
+                <div className="flex-grow">
+                  <label className="text-gray-700 cursor-pointer">
+                    <span className="font-medium">I agree to the</span>
+                    <button
+                      type="button"
+                      onClick={handleTermsClick}
+                      className="mx-1 text-[#667eea] hover:text-[#764ba2] font-medium hover:underline transition-all duration-200"
+                    >
+                      Terms & Conditions and Privacy Policy
+                    </button>
+                    <span className="font-medium">.</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Selected Role Display */}
+              {selectedRole && (
+                <div className="mt-6 p-4 bg-gradient-to-r from-[#e0e7ff]/20 to-[#c7d2fe]/20 border border-[#e0e7ff]/30 rounded-xl">
+                  <div className="flex items-center">
+                    <FileText className="w-5 h-5 text-[#5b21b6] mr-3" />
+                    <div>
+                      <p className="text-sm text-gray-500 mb-1">Profile Type</p>
+                      <p className="text-[#5b21b6] font-medium capitalize">{selectedRole}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-between">
+              <button
+                onClick={onCancel}
+                className="flex items-center justify-center px-8 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-700 hover:bg-white/90 hover:shadow-md transition-all duration-200 font-medium"
+                type="button"
+              >
+                Back
+              </button>
+              <button 
+                onClick={handleSubmit} 
+                disabled={!agreed} 
+                className={`flex items-center justify-center px-8 py-3 rounded-xl transition-all duration-200 font-medium ${
+                  agreed 
+                    ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30" 
+                    : "bg-gradient-to-r from-gray-300 to-gray-400 text-gray-500 cursor-not-allowed"
+                }`} 
+                type="submit"
+              >
+                <CheckCircle className="w-5 h-5 mr-2" />
+                Get Started
+              </button>
+            </div>
           </div>
         </div>
       </div>

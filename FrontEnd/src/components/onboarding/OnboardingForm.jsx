@@ -106,7 +106,7 @@ import { FresherStepThree } from "./formSteps/FresherStepThree";
 import { FresherStepFour } from "./formSteps/FresherStepFour";
 import { ProfessionalStepFour } from "./formSteps/ProfessionalStepFour";
 import { useRole } from "@/context/RoleContext/RoleContext";
-import { StepSix } from "./formSteps/StepSix"; 
+import { StepSix } from "./formSteps/StepSix";
 import { ProfessionalDetailsStep } from "./formSteps/ProfessionalDetailsStep";
 
 const STEP_STORAGE_KEY = 'candidateOnboardingCurrentStep';
