@@ -60,7 +60,7 @@ export async function getApplicationService(userId, userType, jobId, jobType) {
     }
 }
 
-export async function getSavedJobsService(userId) {
+/*export async function getSavedJobsService(userId) {
     try {
         const applications = await Application.aggregate([
             {
@@ -84,96 +84,30 @@ export async function getSavedJobsService(userId) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");
     }
-}
+}*/
 //Prathmesh
-/*export async function getSavedJobsService(userId) {
+export async function getSavedJobsService(userId) {
   try {
-    const applications = await Application.aggregate([
-      // 1️⃣ Match saved jobs for user
-      {
-        $match: {
-          currentStatus: "Saved",
-          applicant: new mongoose.Types.ObjectId(userId),
+    const applications = await Application.find({
+      currentStatus: "Saved",
+      applicant: userId,
+    })
+      .populate({
+        path: "job",
+        populate: {
+          path: "companyPosted",
+          model: "CompanyProfile",
+          select: "companyDetails.companyName",
         },
-      },
+      })
+      .lean();
 
-      // 2️⃣ Lookup job details
-      {
-        $lookup: {
-          from: "jobpostingtables", // JobPosting collection
-          localField: "job",
-          foreignField: "_id",
-          as: "jobDetails",
-        },
-      },
-
-      // 3️⃣ Unwind jobDetails (required for nested lookup)
-      {
-        $unwind: {
-          path: "$jobDetails",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-
-
-      // 4️⃣ Lookup company profile using Auth userId
-      {
-        $lookup: {
-          from: "companyprofiles", // CompanyProfile collection
-          localField: "jobDetails.companyPosted", // Auth userId
-          foreignField: "userId",                 // CompanyProfile.userId
-          as: "companyProfile",
-        },
-      },
-
-      // 5️⃣ Attach company name inside jobDetails.companyPosted
-      {
-        $addFields: {
-          "jobDetails.companyPosted": {
-            companyName: {
-              $arrayElemAt: [
-                "$companyProfile.companyDetails.companyName",
-                0,
-              ],
-            },
-          },
-        },
-      },
-
-      // 6️⃣ Remove temp field
-      {
-        $project: {
-          companyProfile: 0,
-        },
-      },
-
-      // 7️⃣ Re-wrap jobDetails into array (frontend safety)
-      {
-        $group: {
-          _id: "$_id",
-          root: { $first: "$$ROOT" },
-          jobDetails: { $push: "$jobDetails" },
-        },
-      },
-
-      {
-        $replaceRoot: {
-          newRoot: {
-            $mergeObjects: ["$root", { jobDetails: "$jobDetails" }],
-          },
-        },
-      },
-    ]);
-
-    return {
-      success: true,
-      data: applications,
-    };
+    return { success: true, data: applications };
   } catch (error) {
-    console.error("getSavedJobsService error:", error.message);
+    console.error("Error:", error.message);
     throw new Error("Failed to fetch saved jobs");
   }
-}*/
+}
 
 // save job by user
 export async function saveJobService(userId, userType, jobId, jobType) {
