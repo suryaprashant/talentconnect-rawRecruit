@@ -1,13 +1,14 @@
-
 import { useState, useRef, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { ChevronDown, X, Mail, Phone, Link, Building2, Calendar, Users, Briefcase, MapPin } from 'lucide-react';
+import { ChevronDown, X, Mail, Phone, Link, Building2, Calendar, Users, MapPin } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function OffCampusHiringForm({ onBackClick }) {
-  // --- Data for Dropdowns ---
+  
   const degreeStreamMapping = {
     "Bachelor of Technology (B.Tech)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
     "Bachelor of Engineering (BE)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
@@ -144,6 +145,12 @@ export default function OffCampusHiringForm({ onBackClick }) {
       }
     }
     setFormData({ ...formData, [name]: value });
+  };
+
+  // Helper function to handle top-level date changes
+  const handleDateChange = (date, name) => {
+    const formattedDate = date ? date.toISOString().split('T')[0] : '';
+    setFormData(prev => ({ ...prev, [name]: formattedDate }));
   };
 
   const handleMultiSelect = (field, value) => {
@@ -821,34 +828,38 @@ export default function OffCampusHiringForm({ onBackClick }) {
               </div>
             </div>
 
-            {/* Tentative Date of Placement */}
+            {/* Tentative Date of Placement / Hiring */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">
                 <Calendar className="inline w-4 h-4 mr-1" />
                 Tentative Date of Placement / Hiring <span className="text-red-500">*</span>
               </label>
               <div className="flex space-x-4">
-                <div className="w-1/2">
+                <div className="w-1/2 relative">
                   <label className="block mb-1 text-sm text-gray-600">Start Date</label>
-                  <input 
-                    type="date" 
-                    name="placementStartDate" 
-                    value={formData.placementStartDate} 
-                    onChange={handleChange} 
-                    className="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
-                    required 
+                  <DatePicker
+                    selected={formData.placementStartDate ? new Date(formData.placementStartDate) : null}
+                    onChange={(date) => handleDateChange(date, 'placementStartDate')}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Select start date"
+                    className="w-full p-2 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    required
+                    wrapperClassName="w-full"
                   />
+                  <Calendar className="absolute left-3 top-[38px] transform -translate-y-1/2 text-gray-400" size={16} />
                 </div>
-                <div className="w-1/2">
+                <div className="w-1/2 relative">
                   <label className="block mb-1 text-sm text-gray-600">End Date</label>
-                  <input 
-                    type="date" 
-                    name="placementEndDate" 
-                    value={formData.placementEndDate} 
-                    onChange={handleChange} 
-                    className="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
-                    required 
+                  <DatePicker
+                    selected={formData.placementEndDate ? new Date(formData.placementEndDate) : null}
+                    onChange={(date) => handleDateChange(date, 'placementEndDate')}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Select end date"
+                    className="w-full p-2 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    required
+                    wrapperClassName="w-full"
                   />
+                  <Calendar className="absolute left-3 top-[38px] transform -translate-y-1/2 text-gray-400" size={16} />
                 </div>
               </div>
             </div>

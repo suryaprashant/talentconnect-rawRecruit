@@ -954,15 +954,31 @@ export default function RequestInfo() {
                 <div className="w-1/2">
                   <label className="block mb-1 text-sm text-gray-600">Start Date</label>
                   <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                    <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} onClick={(e) => e.target.showPicker && e.target.showPicker()} className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                    <input 
+                      type="date" 
+                      name="startDate" 
+                      value={formData.startDate} 
+                      onChange={handleChange} 
+                      onClick={(e) => e.target.showPicker && e.target.showPicker()} 
+                      className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                      required 
+                    />
                   </div>
                 </div>
                 <div className="w-1/2">
                   <label className="block mb-1 text-sm text-gray-600">End Date</label>
                   <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                    <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} onClick={(e) => e.target.showPicker && e.target.showPicker()} className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" required />
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                    <input 
+                      type="date" 
+                      name="endDate" 
+                      value={formData.endDate} 
+                      onChange={handleChange} 
+                      onClick={(e) => e.target.showPicker && e.target.showPicker()} 
+                      className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                      required 
+                    />
                   </div>
                 </div>
               </div>
@@ -974,8 +990,15 @@ export default function RequestInfo() {
                 <div>
                   <label className="block mb-1 text-sm text-gray-600">Online Test Date</label>
                   <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                    <input type="date" name="onlineTestDate" className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" value={formData.onlineTestDate} onChange={handleChange} onClick={(e) => e.target.showPicker && e.target.showPicker()} />
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                    <input 
+                      type="date" 
+                      name="onlineTestDate" 
+                      className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                      value={formData.onlineTestDate} 
+                      onChange={handleChange} 
+                      onClick={(e) => e.target.showPicker && e.target.showPicker()} 
+                    />
                   </div>
                 </div>
 
@@ -983,15 +1006,29 @@ export default function RequestInfo() {
                   <div className="w-1/2">
                     <label className="block mb-1 text-sm text-gray-600">Interview Window (Start)</label>
                     <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                      <input type="date" name="start" className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" value={formData.interviewWindow.start} onChange={handleInterviewWindowChange} onClick={(e) => e.target.showPicker && e.target.showPicker()} />
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                      <input 
+                        type="date" 
+                        name="start" 
+                        className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                        value={formData.interviewWindow.start} 
+                        onChange={handleInterviewWindowChange} 
+                        onClick={(e) => e.target.showPicker && e.target.showPicker()} 
+                      />
                     </div>
                   </div>
                   <div className="w-1/2">
                     <label className="block mb-1 text-sm text-gray-600">Interview Window (End)</label>
                     <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                      <input type="date" name="end" className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" value={formData.interviewWindow.end} onChange={handleInterviewWindowChange} onClick={(e) => e.target.showPicker && e.target.showPicker()} />
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                      <input 
+                        type="date" 
+                        name="end" 
+                        className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                        value={formData.interviewWindow.end} 
+                        onChange={handleInterviewWindowChange} 
+                        onClick={(e) => e.target.showPicker && e.target.showPicker()} 
+                      />
                     </div>
                   </div>
                 </div>
@@ -999,8 +1036,15 @@ export default function RequestInfo() {
                 <div>
                   <label className="block mb-1 text-sm text-gray-600">Offer Rollout Date</label>
                   <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                    <input type="date" name="offerRolloutDate" className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" value={formData.offerRolloutDate} onChange={handleChange} onClick={(e) => e.target.showPicker && e.target.showPicker()} />
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                    <input 
+                      type="date" 
+                      name="offerRolloutDate" 
+                      className="w-full p-3 pl-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
+                      value={formData.offerRolloutDate} 
+                      onChange={handleChange} 
+                      onClick={(e) => e.target.showPicker && e.target.showPicker()} 
+                    />
                   </div>
                 </div>
               </div>
