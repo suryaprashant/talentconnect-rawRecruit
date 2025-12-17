@@ -102,7 +102,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
             navigate('/profhome', { replace: true });
             break;
           case 'fresher':
-            navigate('/fresherhome', { replace: true });
+            navigate('/home', { replace: true });
             break;
           case 'student':
             navigate('/home', { replace: true });
