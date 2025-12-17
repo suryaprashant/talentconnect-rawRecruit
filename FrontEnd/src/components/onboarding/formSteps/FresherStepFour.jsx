@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { ProgressIndicator } from "../ProgressIndicator";
-import { ChevronDownIcon, X } from "lucide-react";
+import { ChevronDownIcon, X, Target, MapPin, Briefcase, Building, DollarSign, Calendar, Plus } from "lucide-react";
 import { useRole } from "@/context/RoleContext/RoleContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -41,20 +40,18 @@ const roleOptions = [
     "Marketing Specialist"
 ];
 
-
 const SelectedTag = ({ item, onRemove }) => (
-    <div className="flex items-center bg-gray-200 text-sm px-3 py-1 rounded-full text-black">
+    <div className="flex items-center bg-gradient-to-r from-[#e0e7ff]/20 to-[#c7d2fe]/20 border border-[#e0e7ff]/30 text-gray-700 text-sm px-3 py-1.5 rounded-full">
         <span>{item}</span>
         <button
             type="button"
             onClick={onRemove}
-            className="ml-2 text-gray-600 hover:text-black"
+            className="ml-2 text-gray-500 hover:text-red-500 transition-colors"
         >
             <X size={14} />
         </button>
     </div>
 );
-
 
 export const FresherStepFour = ({ onNext, onBack }) => {
     const { formData, updateFormData } = useRole();
@@ -113,7 +110,6 @@ export const FresherStepFour = ({ onNext, onBack }) => {
         const newValues = currentValues.filter(item => item !== value);
         updateFormData({ [field]: newValues });
     };
-
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -189,37 +185,49 @@ export const FresherStepFour = ({ onNext, onBack }) => {
 
     const currentEmploymentType = Array.isArray(formData.employmentType) ? formData.employmentType : [];
 
-    // Custom reusable MultiSelect Dropdown component (for Industry and Job Roles)
+    // Custom reusable MultiSelect Dropdown component
     const MultiSelectDropdown = ({ field, options, label, ref }) => {
-        const displayLabel = `Select   ${label.toLowerCase()}`;
-
         return (
-            <div ref={ref} className="w-full mt-6 max-md:max-w-full relative">
-                <label className="block text-black max-md:max-w-full">{label}</label>
+            <div ref={ref} className="relative">
+                <label className="block text-gray-700 font-medium text-sm mb-2">{label}</label>
 
-                <div className="flex flex-wrap gap-2 mt-2 mb-2">
-                    {(formData[field] || []).map(item => (
-                        <SelectedTag
-                            key={item}
-                            item={item}
-                            onRemove={() => removeSelectedItem(field, item)}
-                        />
-                    ))}
-                </div>
+                {/* Selected Tags */}
+                {(formData[field] || []).length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+                        {(formData[field] || []).map(item => (
+                            <SelectedTag
+                                key={item}
+                                item={item}
+                                onRemove={() => removeSelectedItem(field, item)}
+                            />
+                        ))}
+                    </div>
+                )}
 
+                {/* Dropdown Trigger */}
                 <div
-                    className="flex justify-between items-center min-h-12 w-full p-3 border border-gray-300 rounded cursor-pointer text-[#666] hover:border-gray-400"
+                    className="flex items-center justify-between p-4 w-full border border-gray-300 rounded-xl cursor-pointer hover:border-[#667eea] transition-all duration-200"
                     onClick={(e) => { e.stopPropagation(); toggleDropdown(field); }}
                 >
-                    <span className={(formData[field] || []).length > 0 ? "text-black" : "text-[#666]"}>
-                        {displayLabel}
-                    </span>
-                    <ChevronDownIcon className={`w-6 h-6 transition-transform ${dropdownOpen[field] ? "rotate-180" : ""}`} />
+                    <div className="flex items-center">
+                        {field === "industry" ? (
+                            <Building className="w-5 h-5 text-gray-400 mr-3" />
+                        ) : (
+                            <Briefcase className="w-5 h-5 text-gray-400 mr-3" />
+                        )}
+                        <span className={(formData[field] || []).length > 0 ? "text-gray-700" : "text-gray-400"}>
+                            {(formData[field] || []).length > 0
+                                ? `Selected ${(formData[field] || []).length} ${(formData[field] || []).length === 1 ? 'item' : 'items'}`
+                                : `Select ${label.toLowerCase()}`}
+                        </span>
+                    </div>
+                    <ChevronDownIcon className={`w-5 h-5 text-gray-400 transition-transform ${dropdownOpen[field] ? "rotate-180" : ""}`} />
                 </div>
 
+                {/* Dropdown Menu */}
                 {dropdownOpen[field] && (
                     <div
-                        className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg"
+                        className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-xl shadow-lg"
                         onMouseDown={(e) => e.stopPropagation()}
                     >
                         <ul className="max-h-60 overflow-y-auto">
@@ -227,12 +235,20 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                                 <li
                                     key={option}
                                     onClick={(e) => { e.stopPropagation(); handleMultiSelect(field, option); }}
-                                    className={`p-2 hover:bg-gray-100 cursor-pointer text-black ${
-                                        (formData[field] || []).includes(option) ? "bg-gray-100 font-medium" : ""
-                                        }`}
+                                    className={`px-4 py-3 hover:bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 cursor-pointer transition-all duration-200 border-b border-gray-100 last:border-b-0 ${
+                                        (formData[field] || []).includes(option)
+                                            ? "bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#5b21b6]"
+                                            : ""
+                                    }`}
                                 >
-                                    {option}
-                                    {(formData[field] || []).includes(option) && <span className="float-right text-gray-500">✓</span>}
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-gray-700">{option}</span>
+                                        {(formData[field] || []).includes(option) && (
+                                            <svg className="w-5 h-5 text-[#667eea]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        )}
+                                    </div>
                                 </li>
                             ))}
                         </ul>
@@ -243,276 +259,350 @@ export const FresherStepFour = ({ onNext, onBack }) => {
     };
 
     return (
-        <div className="justify-center items-stretch bg-white z-0 flex min-w-60 flex-col w-[560px] my-auto p-12 max-md:max-w-full max-md:px-5">
-            <ProgressIndicator currentStep={4} totalSteps={6} />
+        <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+            {/* Pastel blur background elements */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+            </div>
 
-            <div className="flex w-full flex-col items-stretch justify-center mt-8 max-md:max-w-full">
-                <div className="w-full text-black max-md:max-w-full">
-                    <h2 className="text-[32px] font-bold leading-[42px] max-md:max-w-full">
-                        Awesome! Let's define your career goals and skills!
-                    </h2>
-                    <p className="text-base font-normal leading-6 mt-2 max-md:max-w-full">
-                        Let us know your job interests and preferred locations so we can
-                        recommend the best opportunities for you.
-                    </p>
-                </div>
-
-                <form className="w-full text-base font-normal mt-8 max-md:max-w-full">
-
-                    {/* Interested Industry Type (Multi-Select Dropdown) */}
-                    <MultiSelectDropdown
-                        field="industry"
-                        options={industryOptions}
-                        label="Interested Industry Type"
-                        ref={industryRef}
-                    />
-
-                    {/* Interested Job Roles (Multi-Select Dropdown) */}
-                    <MultiSelectDropdown
-                        field="jobRoles"
-                        options={jobRoleOptions}
-                        label="Interested Job Roles"
-                        ref={jobRolesRef}
-                    />
-
-                    {/* Preferred Job Locations (CreatableSelect) */}
-                    <div className="w-full mt-6 max-md:max-w-full">
-                        <label className="block text-black mb-2">Preferred Job Locations</label>
-                        <CreatableSelect
-                            isMulti
-                            options={locationOptions}
-                            value={selectedLocationsValue}
-                            onChange={handleLocationChange}
-                            placeholder="Select or type to add locations..."
-                            styles={{
-                                control: (base) => ({
-                                    ...base,
-                                    borderColor: '#d1d5db',
-                                    minHeight: '48px',
-                                    borderRadius: '0.25rem', // rounded
-                                    backgroundColor: 'white',
-                                    padding: '2px',
-                                    boxShadow: 'none',
-                                    '&:hover': {
-                                        borderColor: '#9ca3af'
-                                    },
-                                    '&:focus-within': {
-                                        borderColor: '#000',
-                                        boxShadow: '0 0 0 1px #000'
-                                    }
-                                }),
-                                menu: (base) => ({
-                                    ...base,
-                                    borderRadius: '0.375rem',
-                                    border: '1px solid #e5e7eb',
-                                    zIndex: 50
-                                }),
-                                option: (base, state) => ({
-                                    ...base,
-                                    backgroundColor: state.isSelected ? '#e5e7eb' : state.isFocused ? '#f3f4f6' : 'white',
-                                    color: '#374151',
-                                    cursor: 'pointer',
-                                    '&:active': {
-                                        backgroundColor: '#e5e7eb'
-                                    }
-                                }),
-                                multiValue: (base) => ({
-                                    ...base,
-                                    backgroundColor: '#e5e7eb',
-                                    borderRadius: '9999px',
-                                }),
-                                multiValueRemove: (base) => ({
-                                    ...base,
-                                    borderRadius: '0 9999px 9999px 0',
-                                    color: '#4b5563',
-                                    ':hover': {
-                                        backgroundColor: '#d1d5db',
-                                        color: 'black',
-                                    },
-                                }),
-                            }}
-                        />
+            <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
+                <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 w-full max-w-2xl">
+                    
+                    {/* Header with gradient */}
+                    <div className="text-center mb-8">
+                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mx-auto mb-4">
+                            <Target className="w-10 h-10 text-[#667eea]" />
+                        </div>
+                        <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+                            Career Goals & Experience
+                        </h1>
+                        <p className="text-gray-600 mb-4">
+                            Let us know your job interests and preferred locations so we can recommend the best opportunities for you.
+                        </p>
                     </div>
 
+                    {/* Wider Form Section */}
+                    <div className="space-y-6">
+                        {/* Interested Industry Type (Multi-Select Dropdown) */}
+                        <MultiSelectDropdown
+                            field="industry"
+                            options={industryOptions}
+                            label="Interested Industry Type"
+                            ref={industryRef}
+                        />
 
-                    {/* Expected Salary */}
-                    <div className="w-full mt-6 max-md:max-w-full">
-                        <label htmlFor="expectedSalary" className="block text-black">
-                            Expected Salary
-                        </label>
-                        <div className="flex items-center gap-2 mt-2">
-                            <div className="relative w-24">
-                                <select
-                                    id="expectedSalaryCurrency"
-                                    name="expectedSalaryCurrency"
-                                    value={formData.expectedSalaryCurrency || "INR"}
-                                    onChange={handleChange}
-                                    className="items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] whitespace-nowrap p-3 border border-gray-300 rounded"
-                                >
-                                    <option value="INR">INR</option>
-                                    <option value="USD">USD</option>
-                                    <option value="EUR">EUR</option>
-                                </select>
-                                <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none" />
-                            </div>
-                            <div className="flex-1">
-                                <input
-                                    id="expectedSalaryAmount"
-                                    name="expectedSalaryAmount"
-                                    type="text"
-                                    value={formData.expectedSalaryAmount || ""}
-                                    onChange={handleChange}
-                                    placeholder="e.g., 50000"
-                                    className="w-full min-h-12 p-3 border border-gray-300 rounded"
+                        {/* Interested Job Roles (Multi-Select Dropdown) */}
+                        <MultiSelectDropdown
+                            field="jobRoles"
+                            options={jobRoleOptions}
+                            label="Interested Job Roles"
+                            ref={jobRolesRef}
+                        />
+
+                        {/* Preferred Job Locations */}
+                        <div>
+                            <label className="block text-gray-700 font-medium text-sm mb-2">Preferred Job Locations</label>
+                            <div className="flex items-center p-1">
+                                <MapPin className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
+                                <CreatableSelect
+                                    isMulti
+                                    options={locationOptions}
+                                    value={selectedLocationsValue}
+                                    onChange={handleLocationChange}
+                                    placeholder="Select or type to add locations..."
+                                    styles={{
+                                        control: (base, state) => ({
+                                            ...base,
+                                            border: 'none',
+                                            minHeight: '40px',
+                                            backgroundColor: 'transparent',
+                                            boxShadow: 'none',
+                                            '&:hover': {
+                                                border: 'none'
+                                            }
+                                        }),
+                                        container: (base) => ({
+                                            ...base,
+                                            width: '100%'
+                                        }),
+                                        valueContainer: (base) => ({
+                                            ...base,
+                                            padding: '0'
+                                        }),
+                                        input: (base) => ({
+                                            ...base,
+                                            margin: '0',
+                                            padding: '0',
+                                            color: '#374151'
+                                        }),
+                                        placeholder: (base) => ({
+                                            ...base,
+                                            color: '#9ca3af',
+                                            margin: '0'
+                                        }),
+                                        menu: (base) => ({
+                                            ...base,
+                                            borderRadius: '12px',
+                                            border: '1px solid #e5e7eb',
+                                            zIndex: 50,
+                                            marginTop: '8px'
+                                        }),
+                                        option: (base, state) => ({
+                                            ...base,
+                                            backgroundColor: state.isSelected 
+                                                ? 'rgba(102, 126, 234, 0.1)' 
+                                                : state.isFocused 
+                                                ? 'rgba(102, 126, 234, 0.05)' 
+                                                : 'white',
+                                            color: state.isSelected ? '#5b21b6' : '#374151',
+                                            cursor: 'pointer',
+                                            padding: '12px 16px',
+                                            '&:active': {
+                                                backgroundColor: 'rgba(102, 126, 234, 0.1)'
+                                            }
+                                        }),
+                                        multiValue: (base) => ({
+                                            ...base,
+                                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                            borderRadius: '9999px',
+                                            border: '1px solid rgba(102, 126, 234, 0.2)'
+                                        }),
+                                        multiValueLabel: (base) => ({
+                                            ...base,
+                                            color: '#5b21b6',
+                                            padding: '4px 8px',
+                                            fontWeight: '500'
+                                        }),
+                                        multiValueRemove: (base) => ({
+                                            ...base,
+                                            borderRadius: '0 9999px 9999px 0',
+                                            color: '#8b5cf6',
+                                            ':hover': {
+                                                backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                                                color: '#5b21b6',
+                                            },
+                                        }),
+                                    }}
                                 />
                             </div>
                         </div>
-                    </div>
 
-                    {/* Looking For (Updated logic) */}
-                    <div className="w-full mt-6 max-md:max-w-full">
-                        <label className="block text-black">Looking for</label>
-                        <div className="flex w-full gap-4 text-black whitespace-nowrap flex-wrap mt-2">
-                            {["Job", "Internship", "Both"].map((option) => (
-                                <button
-                                    key={option}
-                                    type="button"
-                                    className={`self-stretch gap-2 px-4 py-2 border rounded-md ${isLookingForActive(option) ? "bg-black text-white" : ""}`}
-                                    onClick={() => handleLookingForChange(option)}
-                                >
-                                    {option}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Employment type (Multi-Select Toggles) */}
-                    <div className="w-full mt-6 max-md:max-w-full">
-                        <label className="block text-black">Employment type</label>
-                        <div className="flex w-full gap-4 text-black whitespace-nowrap flex-wrap mt-2">
-                            {employmentTypeOptions.map((option) => (
-                                <button
-                                    key={option}
-                                    type="button"
-                                    className={`self-stretch gap-2 px-4 py-2 border rounded-md capitalize ${currentEmploymentType.includes(option) ? "bg-black text-white" : ""}`}
-                                    onClick={() => handleMultiSelect("employmentType", option)}
-                                >
-                                    {option}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Internships/Trainings */}
-                    <div className="w-full mt-6 max-md:max-w-full">
-                        <label className="block text-black">Internships/Trainings</label>
-                        {(formData.experiences || []).map((exp, index) => (
-                            <div key={index} className="p-4 border rounded-md mt-4 relative">
-                                <button
-                                    type="button"
-                                    onClick={() => handleRemoveExperience(index)}
-                                    className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
-                                >
-                                    <X size={18} />
-                                </button>
-                                {/* Company Dropdown */}
-                                <div className="relative mt-2">
+                        {/* Expected Salary */}
+                        <div>
+                            <label className="block text-gray-700 font-medium text-sm mb-2">Expected Salary</label>
+                            <div className="flex items-center gap-3">
+                                <div className="relative flex-1">
+                                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
+                                        id="expectedSalaryAmount"
+                                        name="expectedSalaryAmount"
+                                        type="text"
+                                        value={formData.expectedSalaryAmount || ""}
+                                        onChange={handleChange}
+                                        placeholder="e.g., 50000"
+                                        className="w-full p-4 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
+                                    />
+                                </div>
+                                <div className="relative w-32">
                                     <select
-                                        name="company"
-                                        value={exp.company}
-                                        onChange={(e) => handleExperienceChange(index, e)}
-                                        className="items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] whitespace-nowrap p-3 border border-gray-300 rounded"
+                                        id="expectedSalaryCurrency"
+                                        name="expectedSalaryCurrency"
+                                        value={formData.expectedSalaryCurrency || "INR"}
+                                        onChange={handleChange}
+                                        className="appearance-none w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
                                     >
-                                        <option value="" disabled>Select Company</option>
-                                        {companyOptions.map(company => (
-                                            <option key={company} value={company}>{company}</option>
-                                        ))}
+                                        <option value="INR">INR</option>
+                                        <option value="USD">USD</option>
+                                        <option value="EUR">EUR</option>
                                     </select>
-                                    <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
-                                </div>
-                                {/* Role Dropdown */}
-                                <div className="relative mt-4">
-                                    <select
-                                        name="role"
-                                        value={exp.role}
-                                        onChange={(e) => handleExperienceChange(index, e)}
-                                        className="items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] whitespace-nowrap p-3 border border-gray-300 rounded"
-                                    >
-                                        <option value="" disabled>Select Role</option>
-                                        {roleOptions.map(role => (
-                                            <option key={role} value={role}>{role}</option>
-                                        ))}
-                                    </select>
-                                    <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
-                                </div>
-                                <div className="flex w-full gap-6 mt-4">
-                                    <div className="flex-1">
-                                        <label className="block text-black">Start Date</label>
-                                        <DatePicker
-                                            selected={exp.startDate ? new Date(exp.startDate) : null}
-                                            onChange={(date) => handleDateChange(index, "startDate", date)}
-                                            selectsStart
-                                            startDate={exp.startDate ? new Date(exp.startDate) : null}
-                                            endDate={exp.endDate ? new Date(exp.endDate) : null}
-                                            placeholderText="Select start date"
-                                            className="w-full min-h-12 p-3 border border-gray-300 rounded mt-2"
-                                        />
-                                    </div>
-                                    <div className="flex-1">
-                                        <label className="block text-black">End Date</label>
-                                        <DatePicker
-                                            selected={exp.endDate ? new Date(exp.endDate) : null}
-                                            onChange={(date) => handleDateChange(index, "endDate", date)}
-                                            selectsEnd
-                                            startDate={exp.startDate ? new Date(exp.startDate) : null}
-                                            endDate={exp.endDate ? new Date(exp.endDate) : null}
-                                            minDate={exp.startDate ? new Date(exp.startDate) : null}
-                                            placeholderText="Select end date"
-                                            className="w-full min-h-12 p-3 border border-gray-300 rounded mt-2"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="w-full mt-4">
-                                    <textarea
-                                        name="description"
-                                        value={exp.description}
-                                        onChange={(e) => handleExperienceChange(index, e)}
-                                        className="flex min-h-24 w-full gap-2 text-[#666] p-3 border border-gray-300 rounded"
-                                        placeholder="Describe your role..."
-                                    ></textarea>
+                                    <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                                 </div>
                             </div>
-                        ))}
-                        <div className="flex justify-end mt-4">
-                            <button
-                                type="button"
-                                onClick={handleAddExperience}
-                                className="text-blue-600 cursor-pointer"
-                            >
-                                Add experience +
-                            </button>
+                        </div>
+
+                        {/* Looking For */}
+                        <div>
+                            <label className="block text-gray-700 font-medium text-sm mb-2">Looking for</label>
+                            <div className="grid grid-cols-3 gap-3">
+                                {["Job", "Internship", "Both"].map((option) => (
+                                    <button
+                                        key={option}
+                                        type="button"
+                                        className={`p-3 border rounded-xl transition-all duration-200 font-medium ${
+                                            isLookingForActive(option)
+                                                ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-lg shadow-purple-500/30"
+                                                : "text-gray-700 border-gray-300 hover:border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5"
+                                        }`}
+                                        onClick={() => handleLookingForChange(option)}
+                                    >
+                                        {option}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Employment Type */}
+                        <div>
+                            <label className="block text-gray-700 font-medium text-sm mb-2">Employment Type</label>
+                            <div className="grid grid-cols-3 gap-3">
+                                {employmentTypeOptions.map((option) => (
+                                    <button
+                                        key={option}
+                                        type="button"
+                                        className={`p-3 border rounded-xl transition-all duration-200 font-medium capitalize ${
+                                            currentEmploymentType.includes(option)
+                                                ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-lg shadow-purple-500/30"
+                                                : "text-gray-700 border-gray-300 hover:border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5"
+                                        }`}
+                                        onClick={() => handleMultiSelect("employmentType", option)}
+                                    >
+                                        {option}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Internships/Trainings */}
+                        <div>
+                            <label className="block text-gray-700 font-medium text-sm mb-2">Internships/Trainings</label>
+                            {(formData.experiences || []).map((exp, index) => (
+                                <div key={index} className="p-6 border border-gray-300 rounded-xl mt-4 relative bg-gradient-to-r from-[#f8fafc] to-[#f1f5f9]">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveExperience(index)}
+                                        className="absolute top-3 right-3 p-1.5 rounded-full bg-gradient-to-r from-[#fecaca]/20 to-[#fca5a5]/20 border border-[#fecaca]/30 text-red-500 hover:from-[#fecaca]/30 hover:to-[#fca5a5]/30 transition-all duration-200"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                    
+                                    {/* Company Dropdown */}
+                                    <div className="relative mt-2">
+                                        <label className="block text-gray-700 font-medium text-sm mb-2">Company</label>
+                                        <div className="flex items-center">
+                                            <Building className="w-5 h-5 text-gray-400 mr-3" />
+                                            <div className="relative flex-grow">
+                                                <select
+                                                    name="company"
+                                                    value={exp.company}
+                                                    onChange={(e) => handleExperienceChange(index, e)}
+                                                    className="appearance-none w-full p-4 bg-transparent border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
+                                                >
+                                                    <option value="" disabled>Select Company</option>
+                                                    {companyOptions.map(company => (
+                                                        <option key={company} value={company}>{company}</option>
+                                                    ))}
+                                                </select>
+                                                <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Role Dropdown */}
+                                    <div className="relative mt-4">
+                                        <label className="block text-gray-700 font-medium text-sm mb-2">Role</label>
+                                        <div className="flex items-center">
+                                            <Briefcase className="w-5 h-5 text-gray-400 mr-3" />
+                                            <div className="relative flex-grow">
+                                                <select
+                                                    name="role"
+                                                    value={exp.role}
+                                                    onChange={(e) => handleExperienceChange(index, e)}
+                                                    className="appearance-none w-full p-4 bg-transparent border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
+                                                >
+                                                    <option value="" disabled>Select Role</option>
+                                                    {roleOptions.map(role => (
+                                                        <option key={role} value={role}>{role}</option>
+                                                    ))}
+                                                </select>
+                                                <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Date Range */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                        <div>
+                                            <label className="block text-gray-700 font-medium text-sm mb-2">Start Date</label>
+                                            <div className="flex items-center">
+                                                <Calendar className="w-5 h-5 text-gray-400 mr-3" />
+                                                <DatePicker
+                                                    selected={exp.startDate ? new Date(exp.startDate) : null}
+                                                    onChange={(date) => handleDateChange(index, "startDate", date)}
+                                                    selectsStart
+                                                    startDate={exp.startDate ? new Date(exp.startDate) : null}
+                                                    endDate={exp.endDate ? new Date(exp.endDate) : null}
+                                                    placeholderText="Select start date"
+                                                    className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-gray-700 font-medium text-sm mb-2">End Date</label>
+                                            <div className="flex items-center">
+                                                <Calendar className="w-5 h-5 text-gray-400 mr-3" />
+                                                <DatePicker
+                                                    selected={exp.endDate ? new Date(exp.endDate) : null}
+                                                    onChange={(date) => handleDateChange(index, "endDate", date)}
+                                                    selectsEnd
+                                                    startDate={exp.startDate ? new Date(exp.startDate) : null}
+                                                    endDate={exp.endDate ? new Date(exp.endDate) : null}
+                                                    minDate={exp.startDate ? new Date(exp.startDate) : null}
+                                                    placeholderText="Select end date"
+                                                    className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Description */}
+                                    <div className="mt-4">
+                                        <label className="block text-gray-700 font-medium text-sm mb-2">Description</label>
+                                        <textarea
+                                            name="description"
+                                            value={exp.description}
+                                            onChange={(e) => handleExperienceChange(index, e)}
+                                            className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400 min-h-[100px]"
+                                            placeholder="Describe your role, responsibilities, and achievements..."
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                            
+                            {/* Add Experience Button */}
+                            <div className="flex justify-end mt-4">
+                                <button
+                                    type="button"
+                                    onClick={handleAddExperience}
+                                    className="flex items-center px-4 py-2 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 border border-[#667eea]/30 rounded-xl text-[#5b21b6] hover:bg-gradient-to-r hover:from-[#667eea]/20 hover:to-[#764ba2]/20 hover:shadow-md transition-all duration-200 font-medium"
+                                >
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Add experience
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex min-h-12 w-full gap-2.5 whitespace-nowrap mt-6 max-md:max-w-full">
-                        <div className="flex gap-4">
-                            <button
-                                type="button"
-                                onClick={onBack}
-                                className="self-stretch gap-2 text-black px-6 py-3 border rounded-md max-md:px-5 cursor-pointer"
-                            >
-                                Back
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleClick}
-                                className="self-stretch bg-black gap-2 text-white px-6 py-3 border rounded-md max-md:px-5 cursor-pointer"
-                            >
-                                Next
-                            </button>
-                        </div>
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-4 justify-between mt-8">
+                        <button
+                            type="button"
+                            onClick={onBack}
+                            className="flex items-center justify-center px-8 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-700 hover:bg-white/90 hover:shadow-md transition-all duration-200 font-medium"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleClick}
+                            className="flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium"
+                        >
+                            Next
+                        </button>
                     </div>
-                </form>
+
+                </div>
             </div>
         </div>
     );
