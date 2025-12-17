@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function TermsAndConditions({
   formData,
-  updateFormData,
+  updateFormData, 
   prevStep,
   onSubmit,
 }) {

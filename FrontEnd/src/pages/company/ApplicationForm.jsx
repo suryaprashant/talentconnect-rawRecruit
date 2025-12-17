@@ -1,15 +1,15 @@
 import { useState } from "react";
 import axios from 'axios';
-import {useAuth} from '@/context/AuthProvider'
+import { useAuth } from '@/context/AuthProvider'
 
 const useApplicationForm = () => {
 
-    const[authUser , setAuthUser] = useAuth() ;
+    const [authUser, setAuthUser] = useAuth();
     const [formData, setFormData] = useState({
         employerDetails: {
             name: '',
             designation: '',
-            workEmail: authUser?.user?.email || '' ,
+            workEmail: authUser?.user?.email || '',
             mobile: '',
             linkedIn: ''
         },
@@ -24,7 +24,7 @@ const useApplicationForm = () => {
             companyLinkedin: '',
             phoneNumber: '',
             alternatePhoneNumber: '',
-        //    companyLocation: '',
+            //    companyLocation: '',
             state: '',
             city: '',
             country: '',
@@ -53,27 +53,27 @@ const useApplicationForm = () => {
         acceptedTerms: false,
     });
 
-   const updateFormData = (sectionOrField, fieldOrValue, value) => {
-    setFormData(prev => {
-    
-        if (fieldOrValue !== undefined && value !== undefined) {
-            return {
-                ...prev,
-                [sectionOrField]: {
-                    ...prev[sectionOrField],
-                    [fieldOrValue]: value
-                }
-            };
-        } 
-       
-        else {
-            return {
-                ...prev,
-                [sectionOrField]: fieldOrValue
-            };
-        }
-    });
-};
+    const updateFormData = (sectionOrField, fieldOrValue, value) => {
+        setFormData(prev => {
+
+            if (fieldOrValue !== undefined && value !== undefined) {
+                return {
+                    ...prev,
+                    [sectionOrField]: {
+                        ...prev[sectionOrField],
+                        [fieldOrValue]: value
+                    }
+                };
+            }
+
+            else {
+                return {
+                    ...prev,
+                    [sectionOrField]: fieldOrValue
+                };
+            }
+        });
+    };
 
     const handleSubmit = async () => {
         if (!formData.acceptedTerms) {
@@ -85,12 +85,12 @@ const useApplicationForm = () => {
             const backendUrl = import.meta.env.VITE_Backend_URL;
             const dataToSend = new FormData();
 
-            
+
             dataToSend.append('employerDetails', JSON.stringify(formData.employerDetails));
-            
+
             dataToSend.append('companyDetails', JSON.stringify(formData.companyDetails));
             dataToSend.append('hiringPreferences', JSON.stringify(formData.hiringPreferences));
-            
+
             const kycDetailsWithoutDocs = { ...formData.kycDetails };
             delete kycDetailsWithoutDocs.kycDocuments;
             dataToSend.append('kycDetails', JSON.stringify(kycDetailsWithoutDocs));
@@ -113,31 +113,31 @@ const useApplicationForm = () => {
                 withCredentials: true
             });
 
-            if(response.data && response.data.user){
-                const updatedUserFromServer = response.data.user ;
+            if (response.data && response.data.user) {
+                const updatedUserFromServer = response.data.user;
 
                 const finalUser = {
-                    ...authUser.user ,
+                    ...authUser.user,
                     ...updatedUserFromServer,
                 }
-                setAuthUser({user : finalUser})
+                setAuthUser({ user: finalUser })
             }
             alert('Company profile created successfully!');
             return true;
         } catch (error) {
             console.error('Failed to create company profile:', error);
-             if (error.response) {
-   
-            console.error('Error Response Data:', error.response.data);
-            console.error('Error Response Status:', error.response.status);
-            console.error('Error Response Headers:', error.response.headers);
-        } else if (error.request) {
-            
-            console.error('Error Request:', error.request);
-        } else {
-       
-            console.error('Error Message:', error.message);
-        }
+            if (error.response) {
+
+                console.error('Error Response Data:', error.response.data);
+                console.error('Error Response Status:', error.response.status);
+                console.error('Error Response Headers:', error.response.headers);
+            } else if (error.request) {
+
+                console.error('Error Request:', error.request);
+            } else {
+
+                console.error('Error Message:', error.message);
+            }
             alert('Failed to create company profile. Please try again.');
             return false;
         }
