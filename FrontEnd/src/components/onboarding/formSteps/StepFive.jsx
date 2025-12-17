@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ProgressIndicator } from "../ProgressIndicator";
-import { ChevronDownIcon, UploadIcon, XIcon } from "lucide-react"; // Make sure XIcon is imported
+import { ChevronDownIcon, UploadIcon, XIcon, Award, Link, FileCode, Code } from "lucide-react";
 
 const isValidLinkedIn = (url) => {
   const pattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9-_]+\/?$/;
@@ -20,7 +19,6 @@ const isValidPortfolio = (url) => {
     return false;
   }
 };
-
 
 const skillOptions = [
   "JavaScript",
@@ -139,166 +137,214 @@ export const StepFive = ({ onNext, onBack, formData, onChange }) => {
   };
 
   return (
-    <div className="justify-center items-stretch bg-white z-0 flex min-w-60 flex-col w-[560px] my-auto p-12 max-md:max-w-full max-md:px-5">
-      <ProgressIndicator currentStep={5} totalSteps={6} />
-      <div className="flex w-full flex-col items-stretch justify-center mt-8 max-md:max-w-full">
-        <h2 className="text-[32px] font-bold leading-[42px] max-md:max-w-full">
-          You're almost there! Let's add final details.
-        </h2>
-        <p className="text-base font-normal leading-6 mt-2 max-md:max-w-full">
-          Highlight your skills and achievements to stand out to employers.
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      {/* Pastel blur background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+      </div>
 
-        <form className="w-full text-base font-normal mt-8 max-md:max-w-full">
-          {/* Skills with Tag system */}
-          <div className="w-full">
-            <label htmlFor="skills" className="block text-black mb-2">
-              Skills
-            </label>
-            <div className="relative">
-              <select
-                id="skills"
-                onChange={handleSkillSelect}
-                value="" // Keep the select reset
-                className="appearance-none bg-white flex min-h-12 w-full p-3 border border-gray-300 rounded"
-              >
-                <option value="" disabled>
-                  Add a skill
-                </option>
-                {skillOptions.map((skill) => (
-                  <option key={skill} value={skill}>
-                    {skill}
-                  </option>
-                ))}
-              </select>
-              <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
+        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 w-full max-w-2xl">
+          
+          {/* Header with gradient */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mx-auto mb-4">
+              <Award className="w-10 h-10 text-[#667eea]" />
             </div>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {localFormData.skills.map((skill) => (
-                <div
-                  key={skill}
-                  className="flex items-center bg-gray-200 text-black rounded-full px-3 py-1 text-sm"
-                >
-                  {skill}
-                  <button
-                    type="button"
-                    onClick={() => removeSkill(skill)}
-                    className="ml-2 focus:outline-none"
-                  >
-                    <XIcon className="w-4 h-4" />
-                  </button>
+            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+              Skills & Achievements
+            </h1>
+            <p className="text-gray-600 mb-4">
+              Highlight your skills and achievements to stand out to employers.
+            </p>
+          </div>
+
+          {/* Form Section */}
+          <div className="space-y-6">
+            {/* Skills with Tag system */}
+            <div>
+              <label className="block text-gray-700 font-medium text-sm mb-2">
+                Skills
+              </label>
+              
+              {/* Selected Skills Tags */}
+              {localFormData.skills.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {localFormData.skills.map((skill) => (
+                    <div
+                      key={skill}
+                      className="flex items-center bg-gradient-to-r from-[#e0e7ff]/20 to-[#c7d2fe]/20 border border-[#e0e7ff]/30 text-gray-700 rounded-full px-3 py-1.5 text-sm"
+                    >
+                      {skill}
+                      <button
+                        type="button"
+                        onClick={() => removeSkill(skill)}
+                        className="ml-2 text-gray-500 hover:text-red-500 transition-colors"
+                      >
+                        <XIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
+
+              {/* Skills Dropdown */}
+              <div className="flex items-center">
+                <Code className="w-5 h-5 text-gray-400 mr-3" />
+                <div className="relative flex-grow">
+                  <select
+                    onChange={handleSkillSelect}
+                    value=""
+                    className="appearance-none w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
+                  >
+                    <option value="" disabled>Add a skill</option>
+                    {skillOptions.map((skill) => (
+                      <option key={skill} value={skill}>{skill}</option>
+                    ))}
+                  </select>
+                  <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
+            </div>
+
+            {/* Certifications */}
+            <div>
+              <label htmlFor="certifications" className="block text-gray-700 font-medium text-sm mb-2">
+                Certifications
+              </label>
+              <div className="flex items-start">
+                <Award className="w-5 h-5 text-gray-400 mr-3 mt-4" />
+                <textarea
+                  id="certifications"
+                  name="certifications"
+                  rows="3"
+                  value={localFormData.certifications}
+                  onChange={handleChange}
+                  className="flex-grow p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
+                  placeholder="e.g., Google Cloud Certified, AWS Certified Developer (One per line)"
+                />
+              </div>
+            </div>
+
+            {/* Social Links */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* LinkedIn */}
+              <div>
+                <label htmlFor="linkedin" className="block text-gray-700 font-medium text-sm mb-2">
+                  LinkedIn Profile
+                </label>
+                <div className="flex items-center">
+                  <Link className="w-5 h-5 text-gray-400 mr-3" />
+                  <div className="relative flex-grow">
+                    <input
+                      id="linkedin"
+                      name="linkedin"
+                      type="url"
+                      value={localFormData.linkedin}
+                      onChange={handleChange}
+                      className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
+                      placeholder="linkedin.com/in/username"
+                    />
+                    {errors.linkedin && (
+                      <p className="text-red-500 text-sm mt-1">{errors.linkedin}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* GitHub */}
+              <div>
+                <label htmlFor="github" className="block text-gray-700 font-medium text-sm mb-2">
+                  GitHub Profile
+                </label>
+                <div className="flex items-center">
+                  <FileCode className="w-5 h-5 text-gray-400 mr-3" />
+                  <div className="relative flex-grow">
+                    <input
+                      id="github"
+                      name="github"
+                      type="url"
+                      value={localFormData.github}
+                      onChange={handleChange}
+                      className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
+                      placeholder="github.com/username"
+                    />
+                    {errors.github && (
+                      <p className="text-red-500 text-sm mt-1">{errors.github}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Portfolio Website */}
+            <div>
+              <label htmlFor="portfolio" className="block text-gray-700 font-medium text-sm mb-2">
+                Portfolio Website
+              </label>
+              <div className="flex items-center">
+                <Link className="w-5 h-5 text-gray-400 mr-3" />
+                <div className="relative flex-grow">
+                  <input
+                    id="portfolio"
+                    name="portfolio"
+                    type="url"
+                    value={localFormData.portfolio}
+                    onChange={handleChange}
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
+                    placeholder="https://yourportfolio.com"
+                  />
+                  {errors.portfolio && (
+                    <p className="text-red-500 text-sm mt-1">{errors.portfolio}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Project Upload */}
+            <div>
+              <label className="block text-gray-700 font-medium text-sm mb-2">
+                Upload a Project (Optional)
+              </label>
+              <label className="flex items-center w-full p-4 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-[#667eea] hover:bg-[#667eea]/5 transition-all duration-200">
+                <div className="flex items-center flex-grow">
+                  <UploadIcon className="w-5 h-5 text-gray-400 mr-3" />
+                  <span className="text-gray-600">
+                    {localFormData.project
+                      ? localFormData.project.name
+                      : "Click to upload project file (PDF, ZIP, etc.)"}
+                  </span>
+                </div>
+                <input
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </label>
             </div>
           </div>
 
-          {/* Certifications */}
-          <div className="w-full mt-6">
-            <label htmlFor="certifications" className="block text-black mb-2">
-              Certifications
-            </label>
-            <textarea
-              id="certifications"
-              name="certifications"
-              rows="3"
-              value={localFormData.certifications}
-              onChange={handleChange}
-              className="w-full p-3 mt-2 border border-gray-300 rounded"
-              placeholder="e.g., Google Cloud Certified, AWS Certified Developer"
-            />
-          </div>
-
-          {/* Social Links */}
-          <div className="w-full mt-6">
-            <label htmlFor="linkedin" className="block text-black mb-2">
-              LinkedIn Profile
-            </label>
-            <input
-              id="linkedin"
-              name="linkedin"
-              type="url"
-              value={localFormData.linkedin}
-              onChange={handleChange}
-              className="flex min-h-12 w-full mt-2 p-3 border border-gray-300 rounded"
-              placeholder="https://linkedin.com/in/yourprofile"
-            />
-            {errors.linkedin && (
-              <p className="text-red-500 text-sm mt-1">{errors.linkedin}</p>
-            )}
-          </div>
-          <div className="w-full mt-6">
-            <label htmlFor="github" className="block text-black mb-2">
-              Github Profile
-            </label>
-            <input
-              id="github"
-              name="github"
-              type="url"
-              value={localFormData.github}
-              onChange={handleChange}
-              className="flex min-h-12 w-full mt-2 p-3 border border-gray-300 rounded"
-              placeholder="https://github.com/yourusername"
-            />
-            {errors.github && (
-              <p className="text-red-500 text-sm mt-1">{errors.github}</p>
-            )}
-          </div>
-          <div className="w-full mt-6">
-            <label htmlFor="portfolio" className="block text-black mb-2">
-              Portfolio Website
-            </label>
-            <input
-              id="portfolio"
-              name="portfolio"
-              type="url"
-              value={localFormData.portfolio}
-              onChange={handleChange}
-              className="flex min-h-12 w-full mt-2 p-3 border border-gray-300 rounded"
-              placeholder="https://yourportfolio.com"
-            />
-            {errors.portfolio && (
-              <p className="text-red-500 text-sm mt-1">{errors.portfolio}</p>
-            )}
-          </div>
-
-          {/* Project Upload */}
-          <div className="w-full mt-6">
-            <label className="block text-black mb-2">
-              Upload a Project (Optional)
-            </label>
-            <label className="flex items-center min-h-12 w-full gap-2 text-[#666] p-3 mt-2 border border-gray-300 rounded cursor-pointer hover:bg-gray-50">
-              <span className="flex-1">
-                {localFormData.project
-                  ? localFormData.project.name
-                  : "Upload File"}
-              </span>
-              <UploadIcon className="w-6 h-6" />
-              <input
-                type="file"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-            </label>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex gap-4 mt-8">
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-between mt-8">
             <button
               type="button"
               onClick={onBack}
-              className="px-6 py-3 border rounded-md"
+              className="flex items-center justify-center px-8 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-700 hover:bg-white/90 hover:shadow-md transition-all duration-200 font-medium"
             >
               Back
             </button>
             <button
               type="button"
               onClick={handleNextClick}
-              className="bg-black text-white px-6 py-3 border rounded-md"
+              className="flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium"
             >
               Next
             </button>
           </div>
-        </form>
+
+        </div>
       </div>
     </div>
   );

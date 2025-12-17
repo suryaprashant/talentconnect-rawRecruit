@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { ProgressIndicator } from "../ProgressIndicator";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, Target, MapPin, Briefcase, Building, Edit2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export const EditStepFour = () => {
@@ -31,124 +30,164 @@ export const EditStepFour = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
-      <div className="justify-center items-stretch flex min-w-60 flex-col w-[560px] my-auto p-12 max-md:max-w-full max-md:px-5">
-        <ProgressIndicator currentStep={4} totalSteps={5} />
+    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
+      {/* Pastel blur background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+      </div>
 
-        <div className="flex w-full flex-col items-stretch justify-center mt-8 max-md:max-w-full">
-          <div className="w-full text-black max-md:max-w-full">
-            <h2 className="text-[32px] font-bold leading-[42px] max-md:max-w-full">
-              Awesome! Let's define your career goals and skills!
-            </h2>
-            <p className="text-base font-normal leading-6 mt-2 max-md:max-w-full">
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
+        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 w-full max-w-2xl">
+          
+          {/* Header with gradient */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mx-auto mb-4">
+              <Target className="w-10 h-10 text-[#667eea]" />
+            </div>
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                Career Preferences
+              </h1>
+              {!isEditable && (
+                <button
+                  onClick={handleEditClick}
+                  className="p-2 rounded-full bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 hover:from-[#667eea]/20 hover:to-[#764ba2]/20 transition-all duration-200"
+                >
+                  <Edit2 className="w-4 h-4 text-[#667eea]" />
+                </button>
+              )}
+            </div>
+            <p className="text-gray-600 mb-4">
               Let us know your job interests and preferred locations so we can recommend the best opportunities for you.
             </p>
           </div>
 
-          <form className="w-full text-base font-normal mt-8 max-md:max-w-full">
+          {/* Form Section */}
+          <div className="space-y-6">
             {/* Industry Type */}
-            <div className="w-full max-md:max-w-full">
-              <label htmlFor="industryType" className="block text-black">
+            <div>
+              <label htmlFor="industryType" className="block text-gray-700 font-medium text-sm mb-2">
                 Interested Industry Type
               </label>
-              <div className="relative">
-                <select
-                  id="industryType"
-                  name="industryType"
-                  value={formData.industryType}
-                  onChange={handleChange}
-                  disabled={!isEditable}
-                  className={`items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 border border-gray-300 rounded ${
-                    !isEditable ? "bg-gray-100 cursor-not-allowed" : ""
-                  }`}
-                >
-                  <option value="" disabled>
-                    Select Industry
-                  </option>
-                  <option value="technology">Technology</option>
-                  <option value="finance">Finance</option>
-                  <option value="healthcare">Healthcare</option>
-                  <option value="education">Education</option>
-                  <option value="manufacturing">Manufacturing</option>
-                </select>
-                <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
+              <div className="flex items-center">
+                <Building className={`w-5 h-5 mr-3 ${!isEditable ? "text-gray-400" : "text-gray-500"}`} />
+                <div className="relative flex-grow">
+                  <select
+                    id="industryType"
+                    name="industryType"
+                    value={formData.industryType}
+                    onChange={handleChange}
+                    disabled={!isEditable}
+                    className={`appearance-none w-full p-4 border rounded-xl focus:outline-none transition-all duration-200 pr-10 ${
+                      !isEditable 
+                        ? "bg-gradient-to-r from-gray-50/50 to-gray-50/30 border-gray-200 text-gray-500 cursor-not-allowed" 
+                        : "border-gray-300 hover:border-[#667eea] focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700"
+                    }`}
+                  >
+                    <option value="" disabled>Select Industry</option>
+                    <option value="technology">Technology</option>
+                    <option value="finance">Finance</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="education">Education</option>
+                    <option value="manufacturing">Manufacturing</option>
+                  </select>
+                  <ChevronDownIcon className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 pointer-events-none ${
+                    !isEditable ? "text-gray-400" : "text-gray-500"
+                  }`} />
+                </div>
               </div>
             </div>
 
             {/* Job Roles */}
-            <div className="w-full mt-6 max-md:max-w-full">
-              <label htmlFor="jobRoles" className="block text-black">
+            <div>
+              <label htmlFor="jobRoles" className="block text-gray-700 font-medium text-sm mb-2">
                 Interested Job Roles
               </label>
-              <div className="relative">
-                <select
-                  id="jobRoles"
-                  name="jobRoles"
-                  value={formData.jobRoles}
-                  onChange={handleChange}
-                  disabled={!isEditable}
-                  className={`items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 border border-gray-300 rounded ${
-                    !isEditable ? "bg-gray-100 cursor-not-allowed" : ""
-                  }`}
-                >
-                  <option value="" disabled>
-                    Select Job Role
-                  </option>
-                  <option value="developer">Software Developer</option>
-                  <option value="designer">UI/UX Designer</option>
-                  <option value="manager">Project Manager</option>
-                  <option value="analyst">Data Analyst</option>
-                  <option value="marketing">Marketing Specialist</option>
-                </select>
-                <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
+              <div className="flex items-center">
+                <Briefcase className={`w-5 h-5 mr-3 ${!isEditable ? "text-gray-400" : "text-gray-500"}`} />
+                <div className="relative flex-grow">
+                  <select
+                    id="jobRoles"
+                    name="jobRoles"
+                    value={formData.jobRoles}
+                    onChange={handleChange}
+                    disabled={!isEditable}
+                    className={`appearance-none w-full p-4 border rounded-xl focus:outline-none transition-all duration-200 pr-10 ${
+                      !isEditable 
+                        ? "bg-gradient-to-r from-gray-50/50 to-gray-50/30 border-gray-200 text-gray-500 cursor-not-allowed" 
+                        : "border-gray-300 hover:border-[#667eea] focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700"
+                    }`}
+                  >
+                    <option value="" disabled>Select Job Role</option>
+                    <option value="developer">Software Developer</option>
+                    <option value="designer">UI/UX Designer</option>
+                    <option value="manager">Project Manager</option>
+                    <option value="analyst">Data Analyst</option>
+                    <option value="marketing">Marketing Specialist</option>
+                  </select>
+                  <ChevronDownIcon className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 pointer-events-none ${
+                    !isEditable ? "text-gray-400" : "text-gray-500"
+                  }`} />
+                </div>
               </div>
             </div>
 
             {/* Locations */}
-            <div className="w-full mt-6 max-md:max-w-full">
-              <label htmlFor="locations" className="block text-black">
+            <div>
+              <label htmlFor="locations" className="block text-gray-700 font-medium text-sm mb-2">
                 Preferred Job Locations
               </label>
-              <div className="relative">
-                <select
-                  id="locations"
-                  name="locations"
-                  value={formData.locations}
-                  onChange={handleChange}
-                  disabled={!isEditable}
-                  className={`items-center appearance-none flex min-h-12 w-full gap-2 text-[#666] mt-2 p-3 border border-gray-300 rounded ${
-                    !isEditable ? "bg-gray-100 cursor-not-allowed" : ""
-                  }`}
-                >
-                  <option value="" disabled>
-                    Select Location
-                  </option>
-                  <option value="bangalore">Bangalore</option>
-                  <option value="mumbai">Mumbai</option>
-                  <option value="delhi">Delhi</option>
-                  <option value="hyderabad">Hyderabad</option>
-                  <option value="pune">Pune</option>
-                  <option value="remote">Remote</option>
-                </select>
-                <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 pointer-events-none" />
+              <div className="flex items-center">
+                <MapPin className={`w-5 h-5 mr-3 ${!isEditable ? "text-gray-400" : "text-gray-500"}`} />
+                <div className="relative flex-grow">
+                  <select
+                    id="locations"
+                    name="locations"
+                    value={formData.locations}
+                    onChange={handleChange}
+                    disabled={!isEditable}
+                    className={`appearance-none w-full p-4 border rounded-xl focus:outline-none transition-all duration-200 pr-10 ${
+                      !isEditable 
+                        ? "bg-gradient-to-r from-gray-50/50 to-gray-50/30 border-gray-200 text-gray-500 cursor-not-allowed" 
+                        : "border-gray-300 hover:border-[#667eea] focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700"
+                    }`}
+                  >
+                    <option value="" disabled>Select Location</option>
+                    <option value="bangalore">Bangalore</option>
+                    <option value="mumbai">Mumbai</option>
+                    <option value="delhi">Delhi</option>
+                    <option value="hyderabad">Hyderabad</option>
+                    <option value="pune">Pune</option>
+                    <option value="remote">Remote</option>
+                  </select>
+                  <ChevronDownIcon className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 pointer-events-none ${
+                    !isEditable ? "text-gray-400" : "text-gray-500"
+                  }`} />
+                </div>
               </div>
             </div>
 
             {/* Looking For */}
-            <div className="w-full mt-6 max-md:max-w-full">
-              <label className="block text-black">Looking for</label>
-              <div className="flex gap-4 mt-2 flex-wrap">
+            <div>
+              <label className="block text-gray-700 font-medium text-sm mb-2">
+                Looking for
+              </label>
+              <div className="grid grid-cols-3 gap-3">
                 {["job", "internship", "both"].map((option) => (
                   <button
                     key={option}
                     type="button"
                     onClick={() => handleRadioChange("lookingFor", option)}
                     disabled={!isEditable}
-                    className={`px-4 py-2 border rounded-md ${
+                    className={`p-3 border rounded-xl transition-all duration-200 font-medium ${
                       formData.lookingFor === option
-                        ? "bg-black text-white"
-                        : "text-black"
-                    } ${!isEditable ? "cursor-not-allowed" : ""}`}
+                        ? isEditable
+                          ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-lg shadow-purple-500/30"
+                          : "bg-gradient-to-r from-[#667eea]/60 to-[#764ba2]/60 text-white border-transparent"
+                        : "text-gray-700 border-gray-300"
+                    } ${!isEditable ? "cursor-not-allowed" : "hover:border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5"}`}
                   >
                     {option.charAt(0).toUpperCase() + option.slice(1)}
                   </button>
@@ -157,20 +196,24 @@ export const EditStepFour = () => {
             </div>
 
             {/* Employment Type */}
-            <div className="w-full mt-6 max-md:max-w-full">
-              <label className="block text-black">Employment Type</label>
-              <div className="flex gap-4 mt-2 flex-wrap">
+            <div>
+              <label className="block text-gray-700 font-medium text-sm mb-2">
+                Employment Type
+              </label>
+              <div className="grid grid-cols-3 gap-3">
                 {["part-time", "full-time", "contract"].map((type) => (
                   <button
                     key={type}
                     type="button"
                     onClick={() => handleRadioChange("employmentType", type)}
                     disabled={!isEditable}
-                    className={`px-4 py-2 border rounded-md ${
+                    className={`p-3 border rounded-xl transition-all duration-200 font-medium ${
                       formData.employmentType === type
-                        ? "bg-black text-white"
-                        : "text-black"
-                    } ${!isEditable ? "cursor-not-allowed" : ""}`}
+                        ? isEditable
+                          ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-lg shadow-purple-500/30"
+                          : "bg-gradient-to-r from-[#667eea]/60 to-[#764ba2]/60 text-white border-transparent"
+                        : "text-gray-700 border-gray-300"
+                    } ${!isEditable ? "cursor-not-allowed" : "hover:border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5"}`}
                   >
                     {type.replace("-", " ").replace(/^\w/, (c) => c.toUpperCase())}
                   </button>
@@ -178,36 +221,39 @@ export const EditStepFour = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-between mt-8">
-              <button
-                type="button"
-                onClick={() => navigate('/step/3')}
-                className="text-black border border-gray-300 rounded px-6 py-2 hover:bg-gray-100"
-              >
-                Cancel
-              </button>
+          </div>
 
-              <div className="flex gap-3">
-                {!isEditable && (
-                  <button
-                    type="button"
-                    onClick={handleEditClick}
-                    className="text-black border border-gray-300 rounded px-6 py-2 hover:bg-gray-100"
-                  >
-                    Edit
-                  </button>
-                )}
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-between mt-8">
+            <button
+              type="button"
+              onClick={() => navigate('/step/3')}
+              className="flex items-center justify-center px-8 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-700 hover:bg-white/90 hover:shadow-md transition-all duration-200 font-medium"
+            >
+              Cancel
+            </button>
+
+            <div className="flex gap-3">
+              {!isEditable && (
                 <button
                   type="button"
-                  onClick={() => navigate('/step/5')}
-                  className="bg-black text-white rounded px-6 py-2 hover:bg-gray-800"
+                  onClick={handleEditClick}
+                  className="flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 border border-[#667eea]/30 rounded-xl text-[#5b21b6] hover:bg-gradient-to-r hover:from-[#667eea]/20 hover:to-[#764ba2]/20 hover:shadow-md transition-all duration-200 font-medium"
                 >
-                  Next
+                  <Edit2 className="w-4 h-4 mr-2" />
+                  Edit
                 </button>
-              </div>
+              )}
+              <button
+                type="button"
+                onClick={() => navigate('/step/5')}
+                className="flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium"
+              >
+                Next
+              </button>
             </div>
-          </form>
+          </div>
+
         </div>
       </div>
     </div>
