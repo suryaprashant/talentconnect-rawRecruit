@@ -102,17 +102,6 @@ const VerificationStep = ({ formData, handleChange, prevStep, nextStep, updateFo
                         </p>
                     </div>
 
-                    {/* Progress Indicator */}
-                    <div className="mb-8">
-                        <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                            <span>Step 5 of 5</span>
-                            <span>100%</span>
-                        </div>
-                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                            <div className="h-full bg-gradient-to-r from-[#667eea] to-[#764ba2] w-full"></div>
-                        </div>
-                    </div>
-
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* KYC Documents Upload */}
                         <div className="bg-gradient-to-r from-[#667eea]/5 to-transparent p-5 rounded-xl border border-gray-100">
