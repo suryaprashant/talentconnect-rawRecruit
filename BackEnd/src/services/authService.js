@@ -83,15 +83,16 @@ export const getAll = async () => {
 
 
 
-export async function getAuthUser(attribute) {
-    try {
-        const user = await Auth.findOne({ attribute }).lean();
-        return { success: true, data: user };
-    } catch (error) {
-        console.log("Error: ", error.message);
-        throw new Error("Failed to fetch");
-    }
+export async function getAuthUser(email) {
+  try {
+    const user = await Auth.findOne({ email });          // no .lean()
+    return { success: true, data: user };
+  } catch (error) {
+    console.log("Error: ", error.message);
+    throw new Error("Failed to fetch");
+  }
 }
+
 
 export async function updateAuthUserService(userId, data) {
     try {
@@ -104,27 +105,45 @@ export async function updateAuthUserService(userId, data) {
 }
 
 export const upsertLinkedInAuthUser = async ({ linkedinId, email, name, profileImage, userType }) => {
-    let user = await Auth.findOne({ linkedinId });
-    let isNewUser = false;
+  let user = await Auth.findOne({ linkedinId });
+  let isNewUser = false;
 
-    if (!user) {
-        user = await getAuthUser(email)?.data;
-        if (user) {
-            user.linkedinId = linkedinId;
-            user.name = user.name || name;
-            user.profileImage = user.profileImage || profileImage;
-            await user.save();
-            isNewUser = false;
-        } else {
-            user = new Auth({ linkedinId, email, name, profileImage, userType, isNewUser: true });
-            await user.save();
-            isNewUser = true;
-        }
+  if (!user) {
+    // Check if user exists with this email
+    const result = await getAuthUser(email);
+    user = result?.data;
+
+    if (user) {
+      // Update existing user with LinkedIn info
+      user.linkedinId = linkedinId;
+      user.name = user.name || name;
+      user.profileImage = user.profileImage || profileImage;
+      user.authProvider = 'linkedin';           // ensure provider is updated
+      user.userType = user.userType || userType;
+      await user.save();
+      isNewUser = false;
     } else {
-        isNewUser = false;
+      // Create new user
+      user = new Auth({
+        linkedinId,
+        email,
+        name,
+        profileImage,
+        userType,
+        authProvider: 'linkedin',
+        isNewUser: true,
+      });
+      await user.save();
+      isNewUser = true;
     }
+  } else {
+    // Existing LinkedIn user: make sure provider is set correctly
+    user.authProvider = 'linkedin';
+    await user.save();
+    isNewUser = false;
+  }
 
-    return { user, isNewUser };
+  return { user, isNewUser };
 };
 
 
@@ -184,49 +203,79 @@ const generateRandomString = (length) => {
     ).join('');
 };
 
+// src/services/authService.js
 export const generateLinkedInAuthUrl = ({ userType }) => {
-    const state = generateRandomString(16);
-    // Combine state and userType to pass it through the OAuth flow
-    const combinedState = `${state}_${userType}`;
+  const state = generateRandomString(16);
+  const combinedState = `${state}_${userType}`;
 
-    const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.LINKEDIN_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.LINKEDIN_REDIRECT_URI)}&state=${combinedState}&scope=openid%20profile%20email`;
+  const linkedInAuthUrl =
+    `https://www.linkedin.com/oauth/v2/authorization` +
+    `?response_type=code` +
+    `&client_id=${process.env.LINKEDIN_CLIENT_ID}` +
+    `&redirect_uri=${encodeURIComponent(process.env.LINKEDIN_REDIRECT_URI)}` +
+    `&state=${encodeURIComponent(combinedState)}` +
+    `&scope=openid%20profile%20email`;
 
-    return linkedInAuthUrl;
+  return linkedInAuthUrl;
 };
 
-
+// in src/services/authService.js
 export const handleLinkedInLogin = async ({ code, state }) => {
-    const [originalState, userType] = state.split('_');
+  try {
+    const stateParts = state.split('_');
+    if (stateParts.length < 2) {
+      throw new Error('Invalid state parameter');
+    }
+    const [, userType] = stateParts;
 
-    const tokenResponse = await axios.post(process.env.LINKEDIN_URL, null, {
-        params: {
-            grant_type: 'authorization_code',
-            code,
-            redirect_uri: process.env.LINKEDIN_REDIRECT_URI,
-            client_id: process.env.LINKEDIN_CLIENT_ID,
-            client_secret: process.env.LINKEDIN_CLIENT_SECRET,
-        },
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    const tokenParams = new URLSearchParams({
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: process.env.LINKEDIN_REDIRECT_URI,
+      client_id: process.env.LINKEDIN_CLIENT_ID,
+      client_secret: process.env.LINKEDIN_CLIENT_SECRET,
     });
+
+    const tokenResponse = await axios.post(
+      'https://www.linkedin.com/oauth/v2/accessToken',
+      tokenParams.toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      }
+    );
+
     const accessToken = tokenResponse.data.access_token;
 
-
-    const profileResponse = await axios.get('https://api.linkedin.com/v2/userinfo', {
+    const profileResponse = await axios.get(
+      'https://api.linkedin.com/v2/userinfo',
+      {
         headers: { Authorization: `Bearer ${accessToken}` },
-    });
+      }
+    );
+
     const profile = profileResponse.data;
-
-
     const linkedinId = profile.sub;
     const email = profile.email;
-    const name = profile.name || `${profile.given_name} ${profile.family_name}`;
+    const name =
+      profile.name ||
+      `${profile.given_name || ''} ${profile.family_name || ''}`.trim();
     const profileImage = profile.picture;
 
-
-    const { user, isNewUser } = await upsertLinkedInAuthUser({ linkedinId, email, name, profileImage, userType });
+    const { user, isNewUser } = await upsertLinkedInAuthUser({
+      linkedinId,
+      email,
+      name,
+      profileImage,
+      userType,
+    });
 
     return { user, isNewUser };
+  } catch (error) {
+    console.error('LinkedIn login error:', error.response?.data || error.message);
+    throw error;
+  }
 };
+
 
 
 const resetTokens = {};

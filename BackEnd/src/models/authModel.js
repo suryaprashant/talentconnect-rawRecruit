@@ -55,6 +55,15 @@ const AuthSchema = new mongoose.Schema({
     default: Date.now
   },
 
+  linkedInProfile: {
+    firstName: String,
+    lastName: String,
+    headline: String,
+    profilePictureUrl: String,
+    email: String,
+    location: String,
+  },
+
   //  Added for password reset
   resetToken: String,
   resetTokenExpires: Date,
