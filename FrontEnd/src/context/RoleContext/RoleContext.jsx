@@ -1,99 +1,72 @@
+// src/context/RoleContext/RoleContext.jsx
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+const ROLE_KEY = "selectedRole";
+const FORM_KEY = "onboardingFormData";
 
-const RoleContext = createContext();
+const RoleContext = createContext(null);
 
 export const RoleProvider = ({ children }) => {
-
   const [selectedRole, setSelectedRole] = useState(() => {
     try {
-      return localStorage.getItem('selectedRole') || null;
-    } catch (error) {
-      console.error("Error reading selectedRole from localStorage:", error);
+      return localStorage.getItem(ROLE_KEY) || null;
+    } catch {
       return null;
     }
   });
 
-  useEffect(() => {
-    try {
-      if (selectedRole) {
-        localStorage.setItem('selectedRole', selectedRole);
-      } else {
-        localStorage.removeItem('selectedRole');
-      }
-    } catch (error) {
-      console.error("Error saving selectedRole to localStorage:", error);
-    }
-  }, [selectedRole]);
-
-  // --- FIX: Persist formData in localStorage ---
-  // 1. Initialize formData from localStorage on component mount.
   const [formData, setFormData] = useState(() => {
     try {
-      const storedFormData = localStorage.getItem('onboardingFormData');
-      // Parse the stored JSON, or return an empty object if nothing is stored.
-      return storedFormData ? JSON.parse(storedFormData) : {};
-    } catch (error) {
-      console.error("Error reading formData from localStorage:", error);
+      const stored = localStorage.getItem(FORM_KEY);
+      return stored ? JSON.parse(stored) : {};
+    } catch {
       return {};
     }
   });
 
- 
   useEffect(() => {
     try {
- 
-      localStorage.setItem('onboardingFormData', JSON.stringify(formData));
-    } catch (error) {
-      console.error("Error saving formData to localStorage:", error);
+      if (selectedRole) localStorage.setItem(ROLE_KEY, selectedRole);
+      else localStorage.removeItem(ROLE_KEY);
+    } catch {
+      // ignore
+    }
+  }, [selectedRole]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(FORM_KEY, JSON.stringify(formData));
+    } catch {
+      // ignore
     }
   }, [formData]);
-  
- 
-  const updateFormData = (newData) => {
-    setFormData(prev => ({ ...prev, ...newData }));
-  };
-  
-  const updateRole = (role) => {
-    setSelectedRole(role);
-  };
-  
+
+  const updateFormData = (newData) => setFormData((prev) => ({ ...prev, ...newData }));
+  const updateRole = (role) => setSelectedRole(role);
 
   const clearFormData = () => {
     setFormData({});
     try {
-      localStorage.removeItem('onboardingFormData');
-    } catch (error) {
-      console.error("Error removing formData from localStorage:", error);
+      localStorage.removeItem(FORM_KEY);
+    } catch {
+      // ignore
     }
   };
 
-  
   const clearData = () => {
     setSelectedRole(null);
     setFormData({});
     try {
-      localStorage.removeItem('selectedRole');
-      localStorage.removeItem('onboardingFormData');
-    } catch (error) {
-      console.error("Error clearing localStorage:", error);
+      localStorage.removeItem(ROLE_KEY);
+      localStorage.removeItem(FORM_KEY);
+    } catch {
+      // ignore
     }
   };
 
-  return (
-    <RoleContext.Provider 
-      value={{ 
-        selectedRole, 
-        setSelectedRole: updateRole,
-        formData, 
-        updateFormData,
-        clearData,
-        clearFormData
-      }}
-    >
-      {children}
-    </RoleContext.Provider>
-  );
+  const value = { selectedRole, updateRole, formData, updateFormData, clearFormData, clearData };
+
+  return <RoleContext.Provider value={value}>{children}</RoleContext.Provider>;
 };
 
 export const useRole = () => useContext(RoleContext);

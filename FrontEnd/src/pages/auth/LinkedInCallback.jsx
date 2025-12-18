@@ -12,11 +12,28 @@ function LinkedInCallback() {
     const error = urlParams.get('error');
     const errorDescription = urlParams.get('error_description');
 
-    if (window.opener) {
-      // Send the code and state (or error) back to the opening window (SignupPage)
-      window.opener.postMessage(window.location.search, window.location.origin); // Send full query string
+    const linkedInProfileRaw = urlParams.get("linkedInProfile");
+    let linkedInProfile = null;
+    if (linkedInProfileRaw) {
+      try {
+        linkedInProfile = JSON.parse(decodeURIComponent(linkedInProfileRaw));
+      } catch (e) {
+        console.error("Failed to parse linkedInProfile from callback:", e);
+      }
+    }
 
-      // Close the popup window after sending the message
+    if (window.opener) {
+      // Send both the full query string and parsed LinkedIn profile back to SignupPage
+      const payload = {
+        search: window.location.search,
+        linkedInProfile,
+      };
+
+      window.opener.postMessage(
+        JSON.stringify(payload),
+        window.location.origin
+      );
+
       window.close();
     } else {
       // Fallback for direct access or if opener is gone

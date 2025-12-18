@@ -301,10 +301,25 @@ function AppRoutes() {
             <Routes>
 
               {/* Universal Home Route - Renders based on user role */}
-              <Route path="/home" element={<UnifiedDashboard />} />
+              <Route
+                path="/home"
+                element={
+                  <Layout>
+                    <UnifiedDashboard />
+                  </Layout>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <Layout>
+                    <Profile />
+                  </Layout>
+                }
+              />
 
               {/* student */}
-              <Route path="/profile" element={<Profile />} />
+              {/* <Route path="/profile" element={<Profile />} /> */}
               <Route path="/student-dashboard/Job-listing" element={<JobListings />} />
               <Route path="/student-dashboard/Job-listing/:jobId" element={<JobDetails />} />
               <Route path="/student-dashboard/Internship" element={<InternJobListings />} />
@@ -405,7 +420,7 @@ function AppRoutes() {
 
 
               {/* Company  */}
-              <Route path="/company-profile" element={<CompanyProfile />} />
+              <Route path="/company-profile" element={<Layout><CompanyProfile /></Layout>} />
 
               <Route path="/company/saved-jobs/*" element={<JobRoutes />} />
 
@@ -485,7 +500,7 @@ function AppRoutes() {
 
               {/* Employer Dashboard  */}
 
-              <Route path="/employer-profile" element={<EmployerProfile />} />
+              <Route path="/employer-profile" element={<Layout><EmployerProfile /></Layout>} />
 
               <Route path="/interviews" element={<EmployerInterviewScheduler />} />
               <Route path="/employer-dashboard/resume-search" element={<EmployerResumeApp />} />
@@ -551,7 +566,7 @@ function AppRoutes() {
               <Route path='/hiring-channels/off-campus-hiring/employer' element={<EmployerOffCampus />} />
 
               {/* College  */}
-              <Route path="college-profile" element={<CollegeProfile />} />
+              <Route path="/college-profile" element={<Layout><CollegeProfile /></Layout>} />
 
               {/* college Dashboard  */}
               <Route path="/college/saved-jobs/*" element={<JobRoutes />} />
@@ -671,27 +686,25 @@ function AppRoutes() {
           />
         ))}
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      {/*   
-    <Router> */}
-      <AppProvider>  {/* Global app state */}
-        <AdminProvider>  {/* Admin state */}
-          <FormProvider>  {/* Form-specific state */}
+    <AdminProvider>
+      <FormProvider>
+        <AppProvider>
+          <TooltipProvider>
             <AppRoutes />
-          </FormProvider>
-        </AdminProvider>
-      </AppProvider>
-      {/* </Router> */}
-
-    </TooltipProvider>
+            {/* Global toasters */}
+            <Toaster />
+            <Sonner />
+          </TooltipProvider>
+        </AppProvider>
+      </FormProvider>
+    </AdminProvider>
   </QueryClientProvider>
 );
 

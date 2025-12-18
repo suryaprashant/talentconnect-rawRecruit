@@ -20,9 +20,23 @@ export default function CollegeProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const {auth} = useAuth() ;
+  const user =
+    auth?.user ||
+    (() => {
+      try { return JSON.parse(localStorage.getItem("ChatAppUser")); } catch { return null; }
+    })();
+
+  const token = localStorage.getItem("token");
+
 
   const profileInputRef = useRef(null);
   const backgroundInputRef = useRef(null);
+
+  useEffect(() => {
+    if (user?.profileImage) {
+      setProfileImageUrl(user.profileImage);
+    }
+  }, [user?.profileImage]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,16 +44,24 @@ export default function CollegeProfile() {
       setError(null);
       try {
         const backendUrl = import.meta.env.VITE_Backend_URL; // Ensure your backend URL is configured
-        const response = await axios.get(`${backendUrl}/api/college-onboarding/profile-data`, {
+        const response = await axios.get(`${backendUrl}api/college-onboarding/profile-data`, {
           withCredentials: true,
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
+
         const data = response.data.data;
 
         if (data) {
           setOnboardingData(data);
           // Set image URLs from fetched data for display in header
-          setProfileImageUrl(data.placementCoordinatorDetails?.profilePictureUrl || null);
-          setBackgroundImageUrl(data.profileAchievements?.backgroundImageUrl || null);
+          setProfileImageUrl(
+            data.profileImage ||
+            data.placementCoordinatorDetails?.profilePictureUrl ||
+            user?.profileImage ||
+            null
+          );
+
+          setBackgroundImageUrl(data.backgroundImage || data.profileAchievements?.backgroundImageUrl || null);
         } else {
           setOnboardingData(null); // No data found for this user
         }
@@ -153,7 +175,7 @@ export default function CollegeProfile() {
   };
 
  
-  const coordinatorName = onboardingData?.placementCoordinatorDetails?.coordinatorName || 'Not Set';
+  const coordinatorName = onboardingData?.placementCoordinatorDetails?.coordinatorName || user?.name || "Not Set";
   const designation = onboardingData?.placementCoordinatorDetails?.designation || 'Not Set';
   const collegeName = onboardingData?.collegeUniversityDetails?.collegeName || 'Your College Name';
   const linkedinUrl = onboardingData?.placementCoordinatorDetails?.linkedinUrl || '#';

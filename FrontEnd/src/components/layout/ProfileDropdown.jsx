@@ -22,10 +22,16 @@ function StandardProfileDropdown() {
 
   const getProfileRoute = () => {
     const userType = auth?.user?.userType || '';
-    // console.log("User type kya hai ", userType);
-    // console.log(userType)
+    const onboardingCompleted = auth?.user?.onboardingCompleted;
+
+    // First‑time students/candidates (including LinkedIn) go to onboarding form
+    if ((userType === 'student' || userType === 'candidate') && !onboardingCompleted) {
+      return '/student-form';
+    }
+
     switch (userType) {
       case 'student':
+      case 'candidate': // existing students use profile editor
         return '/profile?editProfile=true';
       case 'fresher':
         return '/fresherprofile?editProfile=true';
@@ -35,8 +41,13 @@ function StandardProfileDropdown() {
         return '/company-profile?editProfile=true';
       case 'professional':
         return '/profprofile?editProfile=true';
+      default:
+        // Safe fallback
+        return '/profile?editProfile=true';
     }
   };
+
+
 
   const profileRoute = getProfileRoute();
 

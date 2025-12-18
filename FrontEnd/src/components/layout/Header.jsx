@@ -1,121 +1,134 @@
-import { useEffect, useRef, useState } from 'react';
-import { FiMenu, FiBell, FiChevronDown } from 'react-icons/fi';
-import { useAuth } from '@/context/AuthProvider';
-import axios from 'axios';
-import SearchBar from '../ui/SearchBar';
-import Avatar from '../ui/Avatar';
-import NotificationsDropdown from './NotificationDropdown';
-import ProfileSwitchDropdown from '../employer/ProfileSwitchDropdown';
-import StandardProfileDropdown from './ProfileDropdown';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { FiMenu, FiBell, FiChevronDown } from "react-icons/fi";
+import axios from "axios";
 
-function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
-    const [authuser] = useAuth();
+import { useAuth } from "@/context/AuthProvider";
+import SearchBar from "../ui/SearchBar";
+import Avatar from "../ui/Avatar";
 
+import ProfileSwitchDropdown from "../employer/ProfileSwitchDropdown";
+import StandardProfileDropdown from "./ProfileDropdown";
 
-    const [notificationsOpen, setNotificationsOpen] = useState(false);
-    const [notifications, setNotifications] = useState([]);
-    const [unreadCount, setUnreadCount] = useState(0);
-
-    const profileRef = useRef(null);
-    const notificationRef = useRef(null);
-
-    
-    useEffect(() => {
-        if (authuser) {
-            const fetchNotifications = async () => {
-                try {
-                    const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/notifications`, { withCredentials: true });
-                    setNotifications(data);
-                    setUnreadCount(data.filter(n => !n.read).length);
-                } catch (error) {
-                    console.error("Failed to fetch notifications:", error);
-                }
-            };
-            fetchNotifications();
-        }
-    }, [authuser]);
-
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (profileRef.current && !profileRef.current.contains(event.target)) {
-                setProfileOpen(false);
-            }
-            if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-                setNotificationsOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [setProfileOpen]);
-
-  
-
-    return (
-        <header className="sticky top-0 z-30 flex items-center h-16 px-4 bg-white border-b border-gray-200 shadow-sm">
-            <button
-                type="button"
-                className="p-2 mr-4 text-gray-500 rounded-md lg:hidden"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-            >
-                <FiMenu className="w-6 h-6" aria-hidden="true" />
-            </button>
-            <div className="flex-1  max-w-2xl mx-auto  lg:max-w-xs">
-                <SearchBar placeholder="Search" />
-            </div>
-
-            <div className="flex items-center ml-4 space-x-4">
-                {authuser && (
-                    <>
-                        {/* Notifications Section */}
-                        <div className="relative" ref={notificationRef}>
-                            <button
-                                type="button"
-                                onClick={() => setNotificationsOpen(!notificationsOpen)}
-                                className="relative p-1 text-gray-500 rounded-full hover:text-gray-900 hover:bg-gray-100 focus:outline-none"
-                            >
-                                <FiBell className="w-6 h-6" aria-hidden="true" />
-                                {unreadCount > 0 && (
-                                    <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full">
-                                        {unreadCount}
-                                    </span>
-                                )}
-                            </button>
-                            {notificationsOpen && (
-                                <NotificationsDropdown
-                                    notifications={notifications}
-                                    setNotifications={setNotifications}
-                                    setUnreadCount={setUnreadCount}
-                                />
-                            )}
-                        </div>
-
-
-                        <div className="relative" ref={profileRef}>
-                            <button
-                                type="button"
-                                className="flex items-center max-w-xs text-sm rounded-full focus:outline-none"
-                                onClick={() => setProfileOpen(!profileOpen)}
-                            >
-                                <Avatar name={authuser?.user?.name || authuser?.user?.email} />
-                                <span className="hidden ml-2 mr-1 font-medium text-gray-700 md:block">
-                                    {authuser?.user?.name || authuser?.user?.email}
-                                </span>
-                                <FiChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileOpen ? 'transform rotate-180' : ''}`} />
-                            </button>
-
-
-                            {profileOpen && (
-                                authuser.user.userType === 'employer'
-                                    ? <ProfileSwitchDropdown />
-                                    : <StandardProfileDropdown />
-                            )}
-                        </div>
-                    </>
-                )}
-            </div>
-        </header>
-    );
+function readStoredUser() {
+  try {
+    const raw = localStorage.getItem("ChatAppUser");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
 }
 
-export default Header;
+function resolveImageUrl(src) {
+  if (!src) return null;
+  if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("data:")) return src;
+
+  const base = import.meta.env.VITE_Backend_URL;
+  if (!base) return src;
+
+  const normalized = src.startsWith("/") ? src : `/${src}`;
+  return `${base}${normalized}`;
+}
+
+export default function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
+  const [authUser] = useAuth();
+
+  const storedUser = useMemo(() => readStoredUser(), []);
+  const user = authUser?.user || storedUser || null;
+
+  const displayName = user?.name || user?.email || "User";
+  const avatarSrc = resolveImageUrl(user?.profileImage || null);
+
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const profileRef = useRef(null);
+  const notificationRef = useRef(null);
+
+  useEffect(() => {
+    if (!user?._id) return;
+
+    const fetchNotifications = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/notifications`, {
+          withCredentials: true,
+        });
+        const unread = Array.isArray(data) ? data.filter((n) => !n.read).length : 0;
+        setUnreadCount(unread);
+      } catch {
+        // ignore
+      }
+    };
+
+    fetchNotifications();
+  }, [user?._id]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) setProfileOpen(false);
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) setNotificationsOpen(false);
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [setProfileOpen]);
+
+  const showProfileSwitch = user?.userType === "employer" || Boolean(user?.activeCompanyId);
+
+  return (
+    <header className="h-16 border-b bg-white flex items-center justify-between px-4">
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          className="p-2 rounded hover:bg-gray-100"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-label="Toggle sidebar"
+        >
+          <FiMenu />
+        </button>
+
+        <div className="hidden md:block w-[420px] max-w-[45vw]">
+          <SearchBar />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <div ref={notificationRef} className="relative">
+          <button
+            type="button"
+            className="p-2 rounded hover:bg-gray-100 relative"
+            onClick={() => setNotificationsOpen((v) => !v)}
+            aria-label="Notifications"
+          >
+            <FiBell />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 text-xs bg-red-600 text-white rounded-full px-1">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        <div ref={profileRef} className="relative">
+          <button
+            type="button"
+            className="flex items-center gap-2 p-2 rounded hover:bg-gray-100"
+            onClick={() => setProfileOpen((v) => !v)}
+            aria-label="Profile menu"
+          >
+            <Avatar src={avatarSrc} name={displayName} size="md" />
+            <span className="hidden sm:block text-sm font-medium">{displayName}</span>
+            <FiChevronDown className="hidden sm:block" />
+          </button>
+
+          {profileOpen && (
+            <div className="absolute right-0 mt-2 w-72 bg-white border rounded shadow">
+              <div className="p-2">
+                {showProfileSwitch ? <ProfileSwitchDropdown /> : <StandardProfileDropdown />}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}

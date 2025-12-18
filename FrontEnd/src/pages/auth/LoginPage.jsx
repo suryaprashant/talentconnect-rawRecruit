@@ -17,12 +17,13 @@ const ONBOARDING_ROUTES = {
 };
 
 const DASHBOARD_ROUTES = {
-  student: '/home',
-  fresher: '/fresherhome',
-  professional: '/Profhome',
-  company: '/home',
-  college: '/home',
-  employer: '/home'
+  student: "/home",        // candidate normalized to student
+  fresher: "/home",
+  professional: "/home",
+
+  company: "/company-profile",
+  college: "/college-profile",
+  employer: "/employer-profile",
 };
 
 
@@ -43,6 +44,10 @@ const HIRING_CHANNEL_ROUTES = {
   }
 };
 
+const selectedRole =
+  sessionStorage.getItem("tempSelectedRole") ||
+  localStorage.getItem("selectedRole") ||
+  "candidate";
 
 // --- Reusable Redirect Logic ---
 const handleAuthRedirect = (user, navigate) => {
@@ -120,17 +125,14 @@ function LoginPage() {
     };
   }, []);
 
-  const handleLinkedInLogin = () => {
-    const clientId = import.meta.env.VITE_LINKEDIN_CLIENT_ID;
-    const redirectUri = encodeURIComponent(`${window.location.origin}/auth/linkedin/callback`);
-    const state = Math.random().toString(36).substring(2);
-    const scope = encodeURIComponent('r_liteprofile r_emailaddress');
+  // LoginPage.jsx
 
-    const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
-
-    sessionStorage.setItem('linkedin_oauth_state', state);
-    window.location.href = linkedInAuthUrl;
+  const handleLinkedInLogin = (userType = selectedRole) => {
+    const backendUrl = import.meta.env.VITE_Backend_URL; // e.g. http://localhost:5000
+    // This hits your Express route: router.get('/linkedin', redirectToLinkedIn)
+    window.location.href = `${backendUrl}/api/auth/linkedin?userType=${userType}`;
   };
+
 
   const handleChange = (e) => {
     setFormData({
@@ -157,27 +159,50 @@ function LoginPage() {
 
       if (response.status === 200) {
         const { token, user } = response.data;
-         sessionStorage.removeItem('tempSelectedRole');
+
+        const normalizedUserType =
+          user.userType === 'candidate' ? 'student' : user.userType;
+
+        sessionStorage.removeItem('tempSelectedRole');
+
+        const normalizedUser = {
+          ...user,
+          userType: normalizedUserType,
+        };
 
         setAuthUser({
           user: {
             _id: user._id,
             email: user.email,
-            userType: user.userType,
+            userType: normalizedUserType,
             name: user.basicDetails.name,
             profileImage: user.profileImage,
-            onboardingCompleted: user.onboardingCompleted
+            onboardingCompleted: user.onboardingCompleted,
           },
-          token: token
+          token,
         });
 
-        localStorage.setItem('ChatAppUser', JSON.stringify(user));
-        localStorage.setItem('token', token);
-        localStorage.setItem('selectedRole', user.userType);
+        // localStorage.setItem('ChatAppUser', JSON.stringify(normalizedUser));
+        // localStorage.setItem('token', token);
+        // localStorage.setItem('selectedRole', normalizedUserType);  // ← use normalized
+        const authPayloadUser = {
+          _id: user._id,
+          email: user.email,
+          userType: normalizedUserType,
+          name: user.basicDetails?.name || user.name || user.email,
+          profileImage: user.profileImage || null,
+          onboardingCompleted: user.onboardingCompleted,
+        };
 
+        setAuthUser({ user: authPayloadUser, token });
+
+        localStorage.setItem("ChatAppUser", JSON.stringify(authPayloadUser));
+        localStorage.setItem("token", token);
+        localStorage.setItem("selectedRole", normalizedUserType);
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        handleAuthRedirect(authPayloadUser, navigate);
 
-        handleAuthRedirect(user, navigate);
+        // handleAuthRedirect(normalizedUser, navigate);
       }
     } catch (err) {
       console.error('Login Error:', err.response?.data || err.message);
@@ -206,33 +231,43 @@ function LoginPage() {
       if (response.data.success) {
         const { user, isNewUser, token } = response.data;
 
-        if (isNewUser) {
-          toast.error('Account not found. Please sign up first with Google.');
-          navigate('/signup');
-          return;
-        }
+        const normalizedUserType =
+          user.userType === 'candidate' ? 'student' : user.userType;
+        const normalizedUser = { ...user, userType: normalizedUserType };
 
-        toast.success('Google login successful!');
-
+        // ...
         setAuthUser({
           user: {
             _id: user._id,
             email: user.email,
-            userType: user.userType,
+            userType: normalizedUserType,
             name: user.name,
             profileImage: user.profileImage,
-            onboardingCompleted: user.onboardingCompleted
+            onboardingCompleted: user.onboardingCompleted,
           },
-          token: token
+          token,
         });
 
-        localStorage.setItem('ChatAppUser', JSON.stringify(user));
-        localStorage.setItem('token', token);
-        localStorage.setItem('selectedRole', user.userType);
+        // localStorage.setItem('ChatAppUser', JSON.stringify(normalizedUser));
+        // localStorage.setItem('token', token);
+        // localStorage.setItem('selectedRole', normalizedUserType);  // ← use normalized
+        const authPayloadUser = {
+          _id: user._id,
+          email: user.email,
+          userType: normalizedUserType,
+          name: user.basicDetails?.name || user.name || user.email,
+          profileImage: user.profileImage || null,
+          onboardingCompleted: user.onboardingCompleted,
+        };
 
+        setAuthUser({ user: authPayloadUser, token });
+
+        localStorage.setItem("ChatAppUser", JSON.stringify(authPayloadUser));
+        localStorage.setItem("token", token);
+        localStorage.setItem("selectedRole", normalizedUserType);
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-        handleAuthRedirect(user, navigate);
+        handleAuthRedirect(authPayloadUser, navigate);
+        // handleAuthRedirect(normalizedUser, navigate);
       }
     } catch (error) {
       console.error('Google Auth Error:', error);
@@ -345,7 +380,7 @@ function LoginPage() {
           </button>
 
           <button
-            onClick={handleLinkedInLogin}
+            onClick={() => handleLinkedInLogin(selectedRole)}
             className="w-full border border-gray-300 py-3 flex items-center justify-center hover:bg-gray-50"
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

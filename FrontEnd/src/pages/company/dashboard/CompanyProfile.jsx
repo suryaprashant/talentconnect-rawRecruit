@@ -1,58 +1,59 @@
+// src/pages/company/dashboard/CompanyProfile.jsx
 
-
-import { useState, useEffect } from 'react';
-import { Globe, Users, Calendar } from 'lucide-react';
-import CompanyOverview from './CompanyOverview';
-import CompanyProfileForm from './CompanyProfileForm';
-import UserManagement from './UserManagement';
-import axios from 'axios';
-
-import { useAuth } from '@/context/AuthProvider';
+import { useState, useEffect } from "react";
+import { Globe, Users, Calendar } from "lucide-react";
+import CompanyOverview from "./CompanyOverview";
+import CompanyProfileForm from "./CompanyProfileForm";
+import UserManagement from "./UserManagement";
+import axios from "axios";
+import { useAuth } from "@/context/AuthProvider";
 
 export default function CompanyProfile() {
-  const [activeTab, setActiveTab] = useState('Overview');
+  const [activeTab, setActiveTab] = useState("Overview");
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const {auth} = useAuth() ;
+
+  // Correct useAuth usage and derive LinkedIn user
+  const [authUser] = useAuth();
+  const linkedInUser = authUser?.user || null;
 
   useEffect(() => {
     fetchProfileData();
   }, []);
 
-  const backendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
+  const backendUrl =
+    import.meta.env.VITE_Backend_URL || "http://localhost:5000";
 
-const fetchProfileData = async () => {
-  setLoading(true);
-  setError(null);
- 
-  try {
-    console.log('Fetching profile data...');
-    const response = await axios.get(`${backendUrl}/api/companyDashboard/getInformation`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      },
-      withCredentials:true ,
-    });
-    console.log('Profile data fetched:', response.data);
-    setProfileData(response.data.profile);
-  } catch (err) {
-    console.error('Error fetching profile:', err);
-    setError('Failed to load profile data.');
-  } finally {
-    setLoading(false);
-  }
-};
+  const fetchProfileData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(
+        `${backendUrl}/api/companyDashboard/getInformation`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          withCredentials: true,
+        }
+      );
+      setProfileData(response.data.profile);
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+      setError("Failed to load profile data.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const fromEditProfile = urlParams.get('editProfile');
-    
-    if (fromEditProfile === 'true') {
-      setActiveTab('Profile');
-      // Clean up the URL
+    const fromEditProfile = urlParams.get("editProfile");
+    if (fromEditProfile === "true") {
+      setActiveTab("Profile");
       const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
+      window.history.replaceState({}, "", newUrl);
     }
   }, []);
 
@@ -61,147 +62,178 @@ const fetchProfileData = async () => {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append(imageType === 'backgroundImage' ? 'backgroundImage' : 'profileImage', file);
+    formData.append(
+      imageType === "backgroundImage" ? "backgroundImage" : "profileImage",
+      file
+    );
 
     try {
-      const response = await axios.put(`${backendUrl}/api/companyDashboard/updateInformation`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+      const response = await axios.put(
+        `${backendUrl}/api/companyDashboard/updateInformation`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
-      });
-      setProfileData(response.data.profile); // Update profile data with new image URL
-      alert(`${imageType === 'backgroundImage' ? 'Background' : 'Profile'} image updated successfully!`);
+      );
+      setProfileData(response.data.profile);
+      alert(
+        `${
+          imageType === "backgroundImage" ? "Background" : "Profile"
+        } image updated successfully!`
+      );
     } catch (err) {
       console.error(`Error uploading ${imageType} image:`, err);
-      alert(`Failed to upload ${imageType} image. Make sure it's a valid image file.`);
+      alert(
+        `Failed to upload ${imageType} image. Make sure it's a valid image file.`
+      );
     }
   };
 
+  // Derive display values with LinkedIn fallback
+  const companyName =
+    profileData?.companyDetails?.name ||
+    profileData?.name ||
+    linkedInUser?.name ||
+    "Company Name";
+
+  const companyTagline =
+    profileData?.companyDetails?.tagline ||
+    profileData?.tagline ||
+    "Describe your company here.";
+
+  const contactName =
+    profileData?.primaryContact?.name ||
+    linkedInUser?.name ||
+    "Contact name";
+
+  const contactEmail =
+    profileData?.primaryContact?.email ||
+    linkedInUser?.email ||
+    "Contact email";
+
+  const contactAvatarSrc =
+    profileData?.profileImage || linkedInUser?.profileImage || null;
+
   const renderContent = () => {
-    if (loading) return <div className="text-center py-8">Loading...</div>;
-    if (error) return <div className="text-center py-8 text-red-600">{error}</div>;
-    if (!profileData) return <div className="text-center py-8">No company profile data available.</div>;
+    if (loading) return <p>Loading profile...</p>;
+    if (error) return <p className="text-red-500">{error}</p>;
+
+    if (!profileData) {
+      return (
+        <div className="rounded-lg border bg-white p-4">
+          <p className="mb-2 text-gray-700">
+            No company profile found. Please create one in the Profile tab.
+          </p>
+        </div>
+      );
+    }
 
     switch (activeTab) {
-      case 'Overview':
+      case "Overview":
         return <CompanyOverview profileData={profileData} />;
-      case 'Profile':
-        return <CompanyProfileForm profileData={profileData} onProfileUpdate={fetchProfileData} />;
-      case 'Users':
-        return <UserManagement />;
+      case "Profile":
+        return (
+          <CompanyProfileForm
+            profileData={profileData}
+            onProfileUpdated={setProfileData}
+            onImageUpload={handleImageUpload}
+          />
+        );
+      case "Users":
+        return <UserManagement companyId={profileData._id} />;
       default:
         return null;
     }
   };
 
   return (
-    <div className="flex flex-col w-full bg-gray-100 min-h-screen">
-      {/* Header Banner */}
-      <div
-        className="w-full h-32 bg-gray-300 relative bg-cover bg-center"
-        style={{ backgroundImage: `url(${profileData?.backgroundImageUrl || ''})` }}
-      >
-        <label htmlFor="backgroundImageUpload" className="absolute inset-0 cursor-pointer flex items-center justify-center bg-black bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity">
-          <span className="text-white text-sm font-bold">Upload Background Image</span>
-        </label>
-        <input
-          id="backgroundImageUpload"
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => handleImageUpload(e, 'backgroundImage')}
-        />
-      </div>
-
-      {/* Profile Section */}
-      <div className="bg-white pb-4">
-        <div className="relative px-4">
-          {/* Profile Image */}
-          <div className="absolute -top-16 left-4">
-            <label htmlFor="profileImageUpload" className="relative w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white cursor-pointer overflow-hidden">
-              {profileData?.profileImageUrl ? (
-                <img src={profileData.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <div className="text-gray-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              )}
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity">
-                <span className="text-white text-xs font-bold">Upload</span>
+    <div className="space-y-6">
+      {/* Header / hero section – same structure, smarter data */}
+      <section className="relative overflow-hidden rounded-lg bg-gray-900 text-white">
+        {/* Background image if available */}
+        {profileData?.backgroundImage && (
+          <img
+            src={profileData.backgroundImage}
+            alt="Company background"
+            className="absolute inset-0 h-full w-full object-cover opacity-60"
+          />
+        )}
+        <div className="relative flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-4">
+            {/* Avatar with LinkedIn fallback */}
+            {contactAvatarSrc ? (
+              <img
+                src={contactAvatarSrc}
+                alt={companyName}
+                className="h-16 w-16 rounded-full border-2 border-white object-cover"
+              />
+            ) : (
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-700 text-2xl font-semibold">
+                {companyName.charAt(0).toUpperCase()}
               </div>
-            </label>
-            <input
-              id="profileImageUpload"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => handleImageUpload(e, 'profileImage')}
-            />
-          </div>
-        </div>
-
-        {/* Company Info */}
-        <div className="px-6 pt-10">
-          <h2 className="text-2xl font-bold">
-            {profileData?.companyDetails?.companyName || 'Company Name'}
-          </h2>
-
-          <div className="flex flex-wrap items-center gap-6 mt-2">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Users size={16} className="text-gray-500" />
-              <span>{profileData?.companyDetails?.numberOfEmployees || 'N/A'} Employees</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Calendar size={16} className="text-gray-500" />
-              <span>Established Year: {profileData?.companyDetails?.establishedYear || 'N/A'}</span>
+            )}
+            <div>
+              <h1 className="text-xl font-semibold md:text-2xl">
+                {companyName}
+              </h1>
+              <p className="text-sm text-gray-200">{companyTagline}</p>
+              <p className="mt-1 text-xs text-gray-300">
+                Contact: {contactName} · {contactEmail}
+              </p>
             </div>
           </div>
-
-          {/* Social Links */}
-          <div className="flex justify-between mt-4">
-            <div></div>
-            <div className="flex gap-2">
-              {profileData?.companyDetails?.companyLinkedin && (
-                <a href={profileData.companyDetails.companyLinkedin} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-8 h-8 border border-gray-300 rounded">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path>
-                  </svg>
-                </a>
-              )}
-              {profileData?.companyDetails?.websiteUrl && (
-                <a href={profileData.companyDetails.websiteUrl} target="_blank" rel="noopener noreferrer" className="border border-gray-300 rounded px-4 py-1 text-sm flex items-center">
-                  <Globe size={14} className="mr-1 text-gray-600" />
-                  Website
-                </a>
-              )}
+          <div className="flex gap-4 text-xs md:text-sm">
+            <div className="flex items-center gap-1">
+              <Globe className="h-4 w-4" />
+              <span>
+                {profileData?.companyDetails?.website ||
+                  profileData?.website ||
+                  "Website not set"}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Users className="h-4 w-4" />
+              <span>
+                {profileData?.companyDetails?.companySize ||
+                  profileData?.companySize ||
+                  "Size not set"}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Calendar className="h-4 w-4" />
+              <span>
+                Founded{" "}
+                {profileData?.companyDetails?.foundedYear ||
+                  profileData?.foundedYear ||
+                  "N/A"}
+              </span>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Tabs */}
-        <div className="flex border-b mt-4">
-          {['Overview', 'Profile', 'Users'].map((tab) => (
-            <button
-              key={tab}
-              className={`px-6 py-2 ${activeTab === tab ? 'border-b-2 border-black font-medium' : 'text-gray-500'}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+      {/* Tabs */}
+      <div className="flex gap-2 border-b">
+        {["Overview", "Profile", "Users"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 text-sm ${
+              activeTab === tab
+                ? "border-b-2 border-blue-600 font-semibold text-blue-600"
+                : "text-gray-600"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
 
-      {/* Tab Content */}
-      <div className="p-4">
-        {renderContent()}
-      </div>
+      {/* Tab content */}
+      {renderContent()}
     </div>
   );
 }
-
-
