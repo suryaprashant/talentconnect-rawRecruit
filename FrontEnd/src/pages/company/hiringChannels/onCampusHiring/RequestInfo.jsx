@@ -75,7 +75,6 @@ export default function RequestInfo() {
   const [formData, setFormData] = useState(initialData);
   const [descriptionError, setDescriptionError] = useState("");
 
-  // City Options generated from the npm package
   const cityOptions = useMemo(() =>
     City.getCitiesOfCountry('IN').map(city => ({
       value: city.name,
@@ -156,15 +155,22 @@ export default function RequestInfo() {
     setFormData({ ...formData, [name]: value });
   };
 
-  // Helper function to handle top-level date changes
+  // Improved date formatting to avoid Timezone offset shift
+  const formatDateLocal = (date) => {
+    if (!date) return '';
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleDateChange = (date, name) => {
-    const formattedDate = date ? date.toISOString().split('T')[0] : '';
+    const formattedDate = formatDateLocal(date);
     setFormData(prev => ({ ...prev, [name]: formattedDate }));
   };
 
-  // Helper function to handle nested interview window date changes
   const handleInterviewDateChange = (date, field) => {
-    const formattedDate = date ? date.toISOString().split('T')[0] : '';
+    const formattedDate = formatDateLocal(date);
     setFormData(prev => ({
       ...prev,
       interviewWindow: {
@@ -232,7 +238,6 @@ export default function RequestInfo() {
     }));
   };
 
-  // Handler for CreatableSelect components
   const handleLocationChange = (field, selectedOptions) => {
     setFormData(prev => ({
       ...prev,
@@ -332,7 +337,6 @@ export default function RequestInfo() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
           <div className="text-center mb-6">
             <div className="flex items-center justify-center mb-3">
@@ -349,9 +353,7 @@ export default function RequestInfo() {
           </div>
         </div>
 
-        {/* Form Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
-          {/* Main heading */}
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">Register for On-Campus Hiring</h2>
             <p className="text-gray-500 mt-2">Fill in your requirements to find the best talent from campuses across the nation.</p>

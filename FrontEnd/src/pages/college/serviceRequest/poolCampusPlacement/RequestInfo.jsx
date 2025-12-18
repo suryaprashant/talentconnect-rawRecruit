@@ -102,15 +102,24 @@ export default function PoolCampusHiringForm({ onBackClick }) {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    // Helper function to format date locally to prevent UTC "day back" shift
+    const formatDateLocal = (date) => {
+        if (!date) return '';
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
     // Helper function to handle top-level date changes
     const handleDateChange = (date, field) => {
-        const formattedDate = date ? date.toISOString().split('T')[0] : '';
+        const formattedDate = formatDateLocal(date);
         setFormData(prev => ({ ...prev, [field]: formattedDate }));
     };
 
     // Helper function to handle nested proposedSchedule date changes
     const handleProposedDateChange = (date, field) => {
-        const formattedDate = date ? date.toISOString().split('T')[0] : '';
+        const formattedDate = formatDateLocal(date);
         setFormData(prev => ({
             ...prev,
             proposedSchedule: {
@@ -344,15 +353,6 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                         borderRadius: '12px',
                                         border: '1px solid rgba(255, 255, 255, 0.5)',
                                     }),
-                                    option: (base, state) => ({
-                                        ...base,
-                                        backgroundColor: state.isSelected ? '#93c5fd' : state.isFocused ? 'rgba(147, 197, 253, 0.1)' : 'transparent',
-                                        color: state.isSelected ? 'white' : '#374151',
-                                    }),
-                                    placeholder: (base) => ({
-                                        ...base,
-                                        color: '#9ca3af',
-                                    }),
                                 }}
                             />
                         </div>
@@ -410,9 +410,7 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                                 <div key={opt} className={`px-4 py-3 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.degree.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} onClick={() => handleMultiToggle('degree', opt)}>
                                                     <div className="flex items-center">
                                                         <div className={`w-5 h-5 border-2 rounded mr-3 flex items-center justify-center ${formData.degree.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                            {formData.degree.includes(opt) && (
-                                                                <CheckSquare size={12} className="text-white" />
-                                                            )}
+                                                            {formData.degree.includes(opt) && <CheckSquare size={12} className="text-white" />}
                                                         </div>
                                                         {opt}
                                                     </div>
@@ -425,7 +423,7 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                             </div>
                         </div>
 
-                        {/* Type of College */}
+                        {/* College Type */}
                         <div ref={collegeTypesRef}>
                             <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
                                 <School className="w-4 h-4 text-[#3b82f6]" />
@@ -474,74 +472,6 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                     </div>
                                 </div>
                             )}
-                        </div>
-
-                        {/* Company Type */}
-                        <div ref={companyTypeRef}>
-                            <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
-                                <Building className="w-4 h-4 text-[#3b82f6]" />
-                                Company Type
-                            </label>
-                            <div className="relative">
-                                <div
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 min-h-[48px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200"
-                                    onClick={() => setDropdownOpen(prev => ({ ...prev, companyType: !prev.companyType }))}
-                                >
-                                    {formData.companyType.length > 0 ? (
-                                        <div className="flex flex-wrap gap-2">
-                                            {formData.companyType.map(item => (
-                                                <span key={item} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-3 py-1 rounded-full border border-[#93c5fd]/30">
-                                                    {item}
-                                                    <button type="button" onClick={(e) => { e.stopPropagation(); removeItem('companyType', item); }} className="ml-1.5 hover:bg-[#3b82f6]/20 rounded-full p-0.5">
-                                                        <X size={12} />
-                                                    </button>
-                                                </span>
-                                            ))}
-                                        </div>
-                                    ) : <span className="text-gray-500">Select company types</span>}
-                                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                                        <ChevronDown className={`w-5 h-5 text-[#3b82f6] transition-transform ${dropdownOpen.companyType ? "rotate-180" : ""}`} />
-                                    </div>
-                                </div>
-                                {dropdownOpen.companyType && (
-                                    <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
-                                        <div className="p-3 border-b border-white/50">
-                                            <div className="flex gap-2">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Add custom type..."
-                                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent"
-                                                    value={customCompanyType}
-                                                    onChange={(e) => setCustomCompanyType(e.target.value)}
-                                                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCustomAdd('companyType', customCompanyType, setCustomCompanyType); } }}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    className="px-4 py-2 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-lg text-sm font-medium"
-                                                    onClick={() => handleCustomAdd('companyType', customCompanyType, setCustomCompanyType)}
-                                                >
-                                                    Add
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="max-h-60 overflow-auto">
-                                            {companyTypeOptions.map(opt => (
-                                                <div key={opt} className={`px-4 py-3 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.companyType.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} onClick={() => handleMultiToggle('companyType', opt)}>
-                                                    <div className="flex items-center">
-                                                        <div className={`w-5 h-5 border-2 rounded mr-3 flex items-center justify-center ${formData.companyType.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                            {formData.companyType.includes(opt) && (
-                                                                <CheckSquare size={12} className="text-white" />
-                                                            )}
-                                                        </div>
-                                                        {opt}
-                                                    </div>
-                                                    {formData.companyType.includes(opt) && <span className="text-[#3b82f6]">✓</span>}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
                         </div>
 
                         {/* Work Mode */}
@@ -783,37 +713,37 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                 </div>
                                 {dropdownOpen.amenities && (
                                     <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
-                                        {amenitiesOptions.map(opt => (
-                                            <div 
-                                                key={opt} 
-                                                className={`px-4 py-3 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.amenities.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} 
-                                                onClick={() => handleMultiToggle('amenities', opt)}
-                                            >
-                                                <div className="flex items-center">
-                                                    <div className={`w-5 h-5 border-2 rounded mr-3 flex items-center justify-center ${formData.amenities.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                        {formData.amenities.includes(opt) && (
-                                                            <CheckSquare size={12} className="text-white" />
-                                                        )}
-                                                    </div>
-                                                    {opt}
-                                                </div>
-                                                {formData.amenities.includes(opt) && <span className="text-[#3b82f6]">✓</span>}
+                                        <div className="p-3 border-b border-white/50">
+                                            <div className="flex gap-2">
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Add custom facility..." 
+                                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent" 
+                                                    value={customAmenity} 
+                                                    onChange={(e) => setCustomAmenity(e.target.value)} 
+                                                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCustomAdd('amenities', customAmenity, setCustomAmenity); } }} 
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="px-4 py-2 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-lg text-sm font-medium"
+                                                    onClick={() => handleCustomAdd('amenities', customAmenity, setCustomAmenity)}
+                                                >
+                                                    Add
+                                                </button>
                                             </div>
-                                        ))}
-                                        <div className="p-3 border-t border-white/50">
-                                            <input 
-                                                type="text" 
-                                                placeholder="Add custom facility..." 
-                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent" 
-                                                value={customAmenity} 
-                                                onChange={(e) => setCustomAmenity(e.target.value)} 
-                                                onKeyDown={(e) => { 
-                                                    if (e.key === 'Enter') { 
-                                                        e.preventDefault(); 
-                                                        handleCustomAdd('amenities', customAmenity, setCustomAmenity); 
-                                                    } 
-                                                }} 
-                                            />
+                                        </div>
+                                        <div className="max-h-60 overflow-auto">
+                                            {amenitiesOptions.map(opt => (
+                                                <div key={opt} className={`px-4 py-3 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.amenities.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} onClick={() => handleMultiToggle('amenities', opt)}>
+                                                    <div className="flex items-center">
+                                                        <div className={`w-5 h-5 border-2 rounded mr-3 flex items-center justify-center ${formData.amenities.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
+                                                            {formData.amenities.includes(opt) && <CheckSquare size={12} className="text-white" />}
+                                                        </div>
+                                                        {opt}
+                                                    </div>
+                                                    {formData.amenities.includes(opt) && <span className="text-[#3b82f6]">✓</span>}
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 )}
@@ -839,29 +769,28 @@ export default function PoolCampusHiringForm({ onBackClick }) {
 
                         <hr className="border-white/50" />
 
-                        {/* Contact Person Fields */}
-                        <div>
-                            <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
-                                <User className="w-4 h-4 text-[#3b82f6]" />
-                                Contact Person Name <span className="text-red-500">*</span>
-                            </label>
-                            <input 
-                                type="text" 
-                                name="name" 
-                                value={formData.contactPerson.name} 
-                                onChange={handleContactChange} 
-                                placeholder="Enter full name" 
-                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
-                                required 
-                            />
-                        </div>
-                        
-                        <div>
-                            <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
-                                <User className="w-4 h-4 text-[#3b82f6]" />
-                                Contact person designation <span className="text-red-500">*</span>
-                            </label>
-                            <div className="relative">
+                        {/* Contact Person */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                                    <User className="w-4 h-4 text-[#3b82f6]" />
+                                    Contact Person Name <span className="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    name="name" 
+                                    value={formData.contactPerson.name} 
+                                    onChange={handleContactChange} 
+                                    placeholder="Enter full name" 
+                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
+                                    required 
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                                    <User className="w-4 h-4 text-[#3b82f6]" />
+                                    Designation <span className="text-red-500">*</span>
+                                </label>
                                 <select 
                                     name="designation" 
                                     value={formData.contactPerson.designation} 
@@ -874,44 +803,39 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                         <option key={designation} value={designation}>{designation}</option>
                                     ))}
                                 </select>
-                                <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                                    <ChevronDown className="w-4 h-4 text-[#3b82f6]" />
-                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                                    <Mail className="w-4 h-4 text-[#3b82f6]" />
+                                    Contact person email <span className="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="email" 
+                                    name="email" 
+                                    value={formData.contactPerson.email} 
+                                    onChange={handleContactChange} 
+                                    placeholder="example@company.com" 
+                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
+                                    required 
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                                    <Phone className="w-4 h-4 text-[#3b82f6]" />
+                                    Contact person mobile no <span className="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    type="tel" 
+                                    name="mobile" 
+                                    value={formData.contactPerson.mobile} 
+                                    onChange={handleContactChange} 
+                                    placeholder="Enter 10-digit mobile number" 
+                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
+                                    required 
+                                />
                             </div>
                         </div>
-                        
-                        <div>
-                            <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
-                                <Mail className="w-4 h-4 text-[#3b82f6]" />
-                                Contact person email <span className="text-red-500">*</span>
-                            </label>
-                            <input 
-                                type="email" 
-                                name="email" 
-                                value={formData.contactPerson.email} 
-                                onChange={handleContactChange} 
-                                placeholder="example@company.com" 
-                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
-                                required 
-                            />
-                        </div>
-                        
-                        <div>
-                            <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
-                                <Phone className="w-4 h-4 text-[#3b82f6]" />
-                                Contact person mobile no <span className="text-red-500">*</span>
-                            </label>
-                            <input 
-                                type="tel" 
-                                name="mobile" 
-                                value={formData.contactPerson.mobile} 
-                                onChange={handleContactChange} 
-                                placeholder="Enter 10-digit mobile number" 
-                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
-                                required 
-                            />
-                        </div>
-                        
+
                         <div>
                             <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
                                 <Linkedin className="w-4 h-4 text-[#3b82f6]" />
@@ -926,7 +850,7 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                 className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
                             />
                         </div>
-                        
+
                         <div>
                             <label htmlFor="minStudentsToBePlaced" className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
                                 <Users className="w-4 h-4 text-[#3b82f6]" />
@@ -936,7 +860,7 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                 <select 
                                     id="minStudentsToBePlaced" 
                                     name="minStudentsToBePlaced" 
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent appearance-none transition-all duration-200" 
+                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent appearance-none transition-all duration-200" 
                                     value={formData.minStudentsToBePlaced} 
                                     onChange={handleChange} 
                                     required 

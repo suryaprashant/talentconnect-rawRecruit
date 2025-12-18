@@ -143,16 +143,22 @@ export default function PoolCampusHiringForm() {
     setFormData({ ...formData, [name]: value });
   };
 
-  // Helper function to handle top-level date changes
-  // Stores date in YYYY-MM-DD for backend consistency, but UI displays DD-MM-YYYY
+  // Improved helper function to handle date changes without UTC offset issues
+  const formatDateLocal = (date) => {
+    if (!date) return '';
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleDateChange = (date, name) => {
-    const formattedDate = date ? date.toISOString().split('T')[0] : '';
+    const formattedDate = formatDateLocal(date);
     setFormData(prev => ({ ...prev, [name]: formattedDate }));
   };
 
-  // Helper function to handle nested interview window date changes
   const handleInterviewDateChange = (date, field) => {
-    const formattedDate = date ? date.toISOString().split('T')[0] : '';
+    const formattedDate = formatDateLocal(date);
     setFormData(prev => ({
       ...prev,
       interviewWindow: { ...prev.interviewWindow, [field]: formattedDate }
@@ -200,12 +206,10 @@ export default function PoolCampusHiringForm() {
     setFormData({ ...formData, contactPerson: { ...formData.contactPerson, [name]: value } });
   };
 
-  // Handle venue selection (single select)
   const handleVenueChange = (selectedOption) => {
     setFormData(prev => ({ ...prev, venue: selectedOption }));
   };
 
-  // Handle work location selection (multi select)
   const handleWorkLocationChange = (selectedOptions) => {
     setFormData(prev => ({ ...prev, workLocation: selectedOptions || [] }));
   };
@@ -249,7 +253,6 @@ export default function PoolCampusHiringForm() {
       return;
     }
 
-    // Validate required fields
     if (!formData.venue) {
       const errorMsg = "Please select a Pool Campus Hiring Venue. This field is required.";
       setError(errorMsg);
@@ -361,7 +364,6 @@ export default function PoolCampusHiringForm() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
           <div className="text-center mb-6">
             <div className="flex items-center justify-center mb-3">
@@ -389,15 +391,13 @@ export default function PoolCampusHiringForm() {
           </div>
         )}
 
-        {/* Form */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
-          {/* Main heading */}
           <div className="text-center mb-6">
             <h2 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">Register for Pool-Campus Hiring</h2>
             <p className="text-gray-500 mt-2">Fill in your requirements to find the best talent from multiple campuses across the nation.</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Pool Campus Hiring Venue with CreatableSelect */}
+            {/* Pool Campus Hiring Venue */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">Pool Campus Hiring Venue <span className="text-red-500">*</span></label>
               <CreatableSelect
@@ -762,7 +762,7 @@ export default function PoolCampusHiringForm() {
               </div>
             </div>
 
-            {/* Work Location with CreatableSelect (multi-select) */}
+            {/* Work Location */}
             <div>
               <label className="block font-medium mb-2 text-gray-700">Work Location <span className="text-red-500">*</span></label>
               <CreatableSelect
@@ -802,7 +802,7 @@ export default function PoolCampusHiringForm() {
               />
             </div>
 
-            {/* Job Role */}
+            {/* Job Role Selection */}
             <div ref={jobRolesRef} className="relative">
               <label className="block font-medium mb-2 text-gray-700">Job Role <span className="text-red-500">*</span></label>
               <div className="flex flex-wrap gap-2 mb-2">
@@ -1038,13 +1038,12 @@ export default function PoolCampusHiringForm() {
               )}
             </div>
 
-            {/* Contact Person */}
+            {/* Contact Person Details */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">Contact Person <span className="text-red-500">*</span></label>
               <input type="text" name="name" value={formData.contactPerson.name} onChange={handleContactChange} placeholder="Enter full name" className="w-full p-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white mb-2" required />
             </div>
 
-            {/* Contact person designation */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">Contact person designation <span className="text-red-500">*</span></label>
               <div className="relative">
@@ -1056,7 +1055,6 @@ export default function PoolCampusHiringForm() {
               </div>
             </div>
 
-            {/* Contact person email */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">Contact person email <span className="text-red-500">*</span></label>
               <div className="relative">
@@ -1065,7 +1063,6 @@ export default function PoolCampusHiringForm() {
               </div>
             </div>
 
-            {/* Contact person mobile no */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">Contact person mobile no <span className="text-red-500">*</span></label>
               <div className="relative">
@@ -1074,7 +1071,6 @@ export default function PoolCampusHiringForm() {
               </div>
             </div>
 
-            {/* Contact person LinkedIn Profile */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">Contact person LinkedIn Profile</label>
               <div className="relative">

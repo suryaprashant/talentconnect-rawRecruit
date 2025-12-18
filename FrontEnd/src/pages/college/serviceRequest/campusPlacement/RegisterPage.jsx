@@ -82,15 +82,24 @@ export default function RegisterPage({ onBackClick }) {
         setFormData({ ...formData, [field]: value });
     };
 
+    // Helper function to format date locally to prevent UTC "day back" shift
+    const formatDateLocal = (date) => {
+        if (!date) return '';
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
     // Helper function to handle top-level date changes
     const handleDateChange = (date, field) => {
-        const formattedDate = date ? date.toISOString().split('T')[0] : '';
+        const formattedDate = formatDateLocal(date);
         setFormData(prev => ({ ...prev, [field]: formattedDate }));
     };
 
     // Helper function to handle nested proposedSchedule date changes
     const handleProposedDateChange = (date, field) => {
-        const formattedDate = date ? date.toISOString().split('T')[0] : '';
+        const formattedDate = formatDateLocal(date);
         setFormData(prev => ({
             ...prev,
             proposedSchedule: {
@@ -542,8 +551,8 @@ export default function RegisterPage({ onBackClick }) {
                                             {companyTypeOptions.map(opt => (
                                                 <div 
                                                     key={opt} 
+                                                    onClick={() => handleMultiToggle('companyType', opt)} 
                                                     className={`px-4 py-3 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.companyType.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} 
-                                                    onClick={() => handleMultiToggle('companyType', opt)}
                                                 >
                                                     <div className="flex items-center">
                                                         <div className={`w-5 h-5 border-2 rounded mr-3 flex items-center justify-center ${formData.companyType.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
