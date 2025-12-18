@@ -9,6 +9,7 @@ import {
   getSavedJobsService,
   saveJobService,
   fetchCompanyDashboardMetrics,
+  getSavedCollegesService,
   // getApplicationService,
   // getOffCampusApplicantsService, fetchShortlistedCandidates, fetchInternshipApplicationService, fetchApplicationStatusService
 } from "../services/applicationService.js";
@@ -108,16 +109,34 @@ export async function fetchSavedJobs(req, res) {
     if (!userType || !user)
       return res.status(404).json({ msg: "User not found!" });
 
-    const application = await getSavedJobsService(user?.data[0]._id);
+    let result;
+
+    // ✅ candidate saved jobs
+    if (["student", "fresher", "professional"].includes(userType)) {
+      result = await getSavedJobsService(user.data[0]._id);
+    }
+
+    // ✅ company saved colleges
+    else if (userType === "company") {
+      result = await getSavedCollegesService(user.data[0]._id);
+    }
+
+    //const application = await getSavedJobsService(user?.data[0]._id);
     // if (application.success !== true) return res.status(403).json({ msg: application });
-    if (application.success === true)
+    /*if (application.success === true)
       return res.status(200).json(application.data);
-    res.status(503).json(application);
+    res.status(503).json(application);*/
+
+    if (result?.success)
+      return res.status(200).json(result.data);
+
+    return res.status(503).json(result);
   } catch (error) {
     console.log("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
 
 // apply for opportunity
 
