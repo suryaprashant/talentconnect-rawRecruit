@@ -299,7 +299,7 @@ const OffcampusStatus = () => {
 
                   <div className="mt-4">
                     <Link 
-                      to={`/professional-dashboard/Job-listing/${selectedJob?.jobDetails[0]?._id}?isApplied=true`} 
+                      to={`/${localStorage.getItem("selectedRole")}-dashboard/Off-campus/${selectedJob?.jobDetails[0]?._id}?isApplied=true`} 
                       className="text-[#667eea] text-sm font-medium hover:text-[#764ba2] transition-colors duration-200"
                     >
                       View full description
