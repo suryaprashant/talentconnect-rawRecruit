@@ -11,7 +11,7 @@ export default function RegisterPage({ onBackClick }) {
     const initialFormState = {
         degree: [],
         lookingFor: ['job'],
-        employmentType: [],
+        employmentType: ['Full-time'],
         salaryRange: 'USD',
         salaryValue: '',
         tentativeStartDate: '',
@@ -31,6 +31,7 @@ export default function RegisterPage({ onBackClick }) {
     };
 
     const [formData, setFormData] = useState(initialFormState);
+    const [errors, setErrors] = useState({});
     const [alert, setAlert] = useState({ show: false, message: '', type: '' });
 
     const [dropdownOpen, setDropdownOpen] = useState({ 
@@ -78,8 +79,40 @@ export default function RegisterPage({ onBackClick }) {
         return () => { document.removeEventListener('mousedown', handleClickOutside); };
     }, []);
 
+    const validateProposedSchedule = () => {
+        const newErrors = {};
+        const { startDate, endDate, preferredMode } = formData.proposedSchedule;
+
+        if (!startDate.trim()) {
+            newErrors.proposedStartDate = 'Please select proposed start date';
+        }
+
+        if (!endDate.trim()) {
+            newErrors.proposedEndDate = 'Please select proposed end date';
+        }
+
+        if (!preferredMode.trim()) {
+            newErrors.proposedMode = 'Please select preferred mode';
+        }
+
+        // If both dates are selected, validate that end date is after start date
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            if (end <= start) {
+                newErrors.proposedEndDate = 'End date must be after start date';
+            }
+        }
+
+        return newErrors;
+    };
+
     const handleChange = (field, value) => {
         setFormData({ ...formData, [field]: value });
+        // Clear error when field is being filled
+        if (errors[field]) {
+            setErrors(prev => ({ ...prev, [field]: '' }));
+        }
     };
 
     // Helper function to format date locally to prevent UTC "day back" shift
@@ -107,6 +140,13 @@ export default function RegisterPage({ onBackClick }) {
                 [field]: formattedDate
             }
         }));
+        // Clear error when date is selected
+        if (field === 'startDate' && errors.proposedStartDate) {
+            setErrors(prev => ({ ...prev, proposedStartDate: '' }));
+        }
+        if (field === 'endDate' && errors.proposedEndDate) {
+            setErrors(prev => ({ ...prev, proposedEndDate: '' }));
+        }
     };
 
     const handleProposedScheduleChange = (e) => {
@@ -118,6 +158,10 @@ export default function RegisterPage({ onBackClick }) {
                 [name]: value
             }
         }));
+        // Clear error when field is being filled
+        if (name === 'preferredMode' && errors.proposedMode) {
+            setErrors(prev => ({ ...prev, proposedMode: '' }));
+        }
     };
 
     const handleMultiToggle = (field, value) => {
@@ -157,13 +201,66 @@ export default function RegisterPage({ onBackClick }) {
 
     const resetForm = () => {
         setFormData(initialFormState);
+        setErrors({});
+    };
+
+    const validateForm = () => {
+        let formValid = true;
+        const newErrors = {};
+
+        // Required fields validation
+        if (!formData.degree.length) {
+            newErrors.degree = 'Please select at least one degree';
+            formValid = false;
+        }
+
+        if (!formData.collegeLocation) {
+            newErrors.collegeLocation = 'Please select college location';
+            formValid = false;
+        }
+
+        if (!formData.email.trim()) {
+            newErrors.email = 'Please enter official email';
+            formValid = false;
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = 'Please enter a valid email address';
+            formValid = false;
+        }
+
+        if (!formData.mobile.trim()) {
+            newErrors.mobile = 'Please enter official mobile number';
+            formValid = false;
+        } else if (!/^\d{10}$/.test(formData.mobile)) {
+            newErrors.mobile = 'Please enter a valid 10-digit mobile number';
+            formValid = false;
+        }
+
+        if (!formData.coordinatorDesignation.trim()) {
+            newErrors.coordinatorDesignation = 'Please select coordinator designation';
+            formValid = false;
+        }
+
+        if (!formData.minStudentsToBePlaced.trim()) {
+            newErrors.minStudentsToBePlaced = 'Please select minimum students to be placed';
+            formValid = false;
+        }
+
+        // Proposed schedule validation
+        const proposedScheduleErrors = validateProposedSchedule();
+        if (Object.keys(proposedScheduleErrors).length > 0) {
+            Object.assign(newErrors, proposedScheduleErrors);
+            formValid = false;
+        }
+
+        setErrors(newErrors);
+        return formValid;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!formData.degree.length || !formData.collegeLocation || !formData.email || !formData.mobile) {
-            showAlert('Please fill all the required fields marked with *', 'error');
+        if (!validateForm()) {
+            showAlert('Please fill all required fields correctly', 'error');
             return;
         }
 
@@ -256,6 +353,13 @@ export default function RegisterPage({ onBackClick }) {
                     </p>
                 </div>
 
+                {/* Alert Message */}
+                {alert.show && (
+                    <div className={`mb-4 p-4 rounded-xl border ${alert.type === 'error' ? 'bg-red-50 border-red-200 text-red-800' : 'bg-green-50 border-green-200 text-green-800'}`}>
+                        {alert.message}
+                    </div>
+                )}
+
                 {/* Form Section */}
                 <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-8">
                     <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-2 text-center">
@@ -274,7 +378,7 @@ export default function RegisterPage({ onBackClick }) {
                             </label>
                             <div className="relative">
                                 <div 
-                                    className="flex items-center justify-between p-3 w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl cursor-pointer hover:border-[#93c5fd] min-h-[48px] transition-all duration-200"
+                                    className={`flex items-center justify-between p-3 w-full bg-white/50 backdrop-blur-sm border ${errors.degree ? 'border-red-300' : 'border-white/50'} rounded-xl cursor-pointer hover:border-[#93c5fd] min-h-[48px] transition-all duration-200`}
                                     onClick={() => setDropdownOpen(prev => ({ ...prev, degree: !prev.degree }))}
                                 >
                                     <div className="flex flex-wrap gap-2 flex-1">
@@ -300,6 +404,9 @@ export default function RegisterPage({ onBackClick }) {
                                     </div>
                                     <ChevronDown className={`w-5 h-5 text-[#3b82f6] transition-transform ${dropdownOpen.degree ? "rotate-180" : ""}`} />
                                 </div>
+                                {errors.degree && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.degree}</p>
+                                )}
                                 {dropdownOpen.degree && (
                                     <div className="absolute z-20 mt-1 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-50/50 overflow-hidden">
                                         <div className="p-3 border-b border-white/50">
@@ -389,7 +496,7 @@ export default function RegisterPage({ onBackClick }) {
                         <div>
                             <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
                                 <Clock className="w-4 h-4 text-[#3b82f6]" />
-                                Proposed Schedule (Tentative Dates)
+                                Proposed Schedule (Tentative Dates) <span className="text-red-500">*</span>
                             </label>
                             <div className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -399,10 +506,13 @@ export default function RegisterPage({ onBackClick }) {
                                             onChange={(date) => handleProposedDateChange(date, 'startDate')}
                                             dateFormat="dd-MM-yyyy"
                                             placeholderText="Proposed Start Date"
-                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedStartDate ? 'border-red-300' : 'border-white/50'} rounded-xl p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200`}
                                             wrapperClassName="w-full"
                                         />
                                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                                        {errors.proposedStartDate && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.proposedStartDate}</p>
+                                        )}
                                     </div>
                                     <div className="relative">
                                         <DatePicker
@@ -410,16 +520,19 @@ export default function RegisterPage({ onBackClick }) {
                                             onChange={(date) => handleProposedDateChange(date, 'endDate')}
                                             dateFormat="dd-MM-yyyy"
                                             placeholderText="Proposed End Date"
-                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedEndDate ? 'border-red-300' : 'border-white/50'} rounded-xl p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200`}
                                             wrapperClassName="w-full"
                                         />
                                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                                        {errors.proposedEndDate && (
+                                            <p className="mt-1 text-sm text-red-600">{errors.proposedEndDate}</p>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="relative">
                                     <select 
                                         name="preferredMode" 
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent appearance-none transition-all duration-200" 
+                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedMode ? 'border-red-300' : 'border-white/50'} rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent appearance-none transition-all duration-200`} 
                                         value={formData.proposedSchedule.preferredMode} 
                                         onChange={handleProposedScheduleChange}
                                     >
@@ -431,6 +544,9 @@ export default function RegisterPage({ onBackClick }) {
                                     <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
                                         <ChevronDown size={16} className="text-[#3b82f6]" />
                                     </div>
+                                    {errors.proposedMode && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.proposedMode}</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -756,16 +872,16 @@ export default function RegisterPage({ onBackClick }) {
                                 onChange={(selectedOption) => handleChange('collegeLocation', selectedOption)}
                                 placeholder="Select or type to add a city..."
                                 styles={{
-                                    control: (base) => ({
+                                    control: (base, state) => ({
                                         ...base,
                                         backgroundColor: 'rgba(255, 255, 255, 0.5)',
                                         backdropFilter: 'blur(8px)',
-                                        borderColor: 'rgba(255, 255, 255, 0.5)',
+                                        borderColor: errors.collegeLocation ? '#fca5a5' : state.isFocused ? '#93c5fd' : 'rgba(255, 255, 255, 0.5)',
                                         minHeight: '48px',
                                         borderRadius: '12px',
                                         boxShadow: 'none',
                                         '&:hover': {
-                                            borderColor: '#93c5fd',
+                                            borderColor: errors.collegeLocation ? '#fca5a5' : '#93c5fd',
                                         },
                                     }),
                                     menu: (base) => ({
@@ -786,6 +902,9 @@ export default function RegisterPage({ onBackClick }) {
                                     }),
                                 }}
                             />
+                            {errors.collegeLocation && (
+                                <p className="mt-1 text-sm text-red-600">{errors.collegeLocation}</p>
+                            )}
                         </div>
 
                         <div>
@@ -811,7 +930,7 @@ export default function RegisterPage({ onBackClick }) {
                             <div className="relative">
                                 <select 
                                     id="coordinatorDesignation" 
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent appearance-none transition-all duration-200" 
+                                    className={`w-full bg-white/50 backdrop-blur-sm border ${errors.coordinatorDesignation ? 'border-red-300' : 'border-white/50'} rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent appearance-none transition-all duration-200`} 
                                     value={formData.coordinatorDesignation} 
                                     onChange={(e) => handleChange('coordinatorDesignation', e.target.value)} 
                                     required
@@ -824,6 +943,9 @@ export default function RegisterPage({ onBackClick }) {
                                 <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
                                     <ChevronDown size={16} className="text-[#3b82f6]" />
                                 </div>
+                                {errors.coordinatorDesignation && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.coordinatorDesignation}</p>
+                                )}
                             </div>
                         </div>
 
@@ -836,11 +958,14 @@ export default function RegisterPage({ onBackClick }) {
                                 id="email" 
                                 type="email" 
                                 placeholder="hello@xyz.com" 
-                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
+                                className={`w-full bg-white/50 backdrop-blur-sm border ${errors.email ? 'border-red-300' : 'border-white/50'} rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200`} 
                                 value={formData.email} 
                                 onChange={(e) => handleChange('email', e.target.value)} 
                                 required 
                             />
+                            {errors.email && (
+                                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                            )}
                         </div>
 
                         <div>
@@ -852,11 +977,14 @@ export default function RegisterPage({ onBackClick }) {
                                 id="mobile" 
                                 type="tel" 
                                 placeholder="1234567890" 
-                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200" 
+                                className={`w-full bg-white/50 backdrop-blur-sm border ${errors.mobile ? 'border-red-300' : 'border-white/50'} rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200`} 
                                 value={formData.mobile} 
                                 onChange={(e) => handleChange('mobile', e.target.value)} 
                                 required 
                             />
+                            {errors.mobile && (
+                                <p className="mt-1 text-sm text-red-600">{errors.mobile}</p>
+                            )}
                         </div>
 
                         <div>
@@ -882,7 +1010,7 @@ export default function RegisterPage({ onBackClick }) {
                             <div className="relative">
                                 <select 
                                     id="minStudentsToBePlaced" 
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent appearance-none transition-all duration-200" 
+                                    className={`w-full bg-white/50 backdrop-blur-sm border ${errors.minStudentsToBePlaced ? 'border-red-300' : 'border-white/50'} rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent appearance-none transition-all duration-200`} 
                                     value={formData.minStudentsToBePlaced} 
                                     onChange={(e) => handleChange('minStudentsToBePlaced', e.target.value)} 
                                     required 
@@ -895,6 +1023,9 @@ export default function RegisterPage({ onBackClick }) {
                                 <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
                                     <ChevronDown size={16} className="text-[#3b82f6]" />
                                 </div>
+                                {errors.minStudentsToBePlaced && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.minStudentsToBePlaced}</p>
+                                )}
                             </div>
                         </div>
 
