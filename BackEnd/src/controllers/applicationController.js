@@ -112,7 +112,7 @@ export async function fetchSavedJobs(req, res) {
     let result;
 
     // ✅ candidate saved jobs
-    if (["student", "fresher", "professional"].includes(userType)) {
+    if (["student", "fresher", "professional", "college"].includes(userType)) {
       result = await getSavedJobsService(user.data[0]._id);
     }
 
