@@ -109,6 +109,36 @@ export async function getSavedJobsService(userId) {
   }
 }
 
+//prathmesh-company
+export async function getSavedCollegesService(companyId) {
+  try {
+    const applications = await Application.find({
+      applicant: companyId,
+      applicantType: "company",
+      currentStatus: "Saved",
+    })
+      .populate({
+        path: "job",
+        populate: {
+          path: "collegePosted",
+        },
+      })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return {
+      success: true,
+      data: applications,
+    };
+  } catch (error) {
+    console.error("Error in getSavedCollegesService:", error);
+    return {
+      success: false,
+      message: "Failed to fetch saved colleges",
+    };
+  }
+}
+
 // save job by user
 export async function saveJobService(userId, userType, jobId, jobType) {
     try {
