@@ -428,7 +428,7 @@ const ONBOARDING_ROUTES = {
 
 const DASHBOARD_ROUTES = {
   student: '/home',
-  fresher: '/fresherhome',
+  fresher: '/home',
   professional: '/Profhome',
   company: '/home',
   college: '/home',
