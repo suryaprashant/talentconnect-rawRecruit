@@ -10,7 +10,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
   const [agreed, setAgreed] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const navigate = useNavigate();
-  
+
   const { selectedRole, formData, clearFormData } = useRole();
   const [, setAuthUser] = useAuth();
 
@@ -42,7 +42,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
       alert("Profile type not selected. Please go back and select a profile type.");
       return;
     }
-   
+
     const dataToSend = new FormData();
     const tempFormData = { ...formData };
 
@@ -76,25 +76,25 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
     }
 
     dataToSend.append('profileType', selectedRole);
-    
+
     console.log("Submitting FormData to backend...");
-    
+
     try {
       const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/onboarding`, dataToSend, {
         withCredentials: true,
       });
 
       alert('Candidate profile created successfully!');
-      
+
       if (response.data && response.data.user) {
         setAuthUser({ user: response.data.user });
       }
-     
+
       clearFormData();
       if (onSubmit) {
-        onSubmit(); 
+        onSubmit();
       }
-      
+
       const userTypeFromDb = response.data.profileType || response.data.userType;
       if (userTypeFromDb) {
         const lowerCaseUserType = userTypeFromDb.toLowerCase();
@@ -141,7 +141,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
 
         <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 w-full max-w-2xl">
-            
+
             {/* Header with gradient */}
             <div className="text-center mb-8">
               <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mx-auto mb-4">
@@ -158,16 +158,15 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
             {/* Terms Agreement Section */}
             <div className="mb-8 p-6 bg-gradient-to-r from-[#f8fafc] to-[#f1f5f9] border border-gray-200 rounded-xl">
               <div className="flex items-start gap-4">
-                <div className={`mt-1 flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center cursor-pointer ${
-                  agreed 
-                    ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] border-transparent" 
-                    : "border-gray-300 bg-white"
-                }`} onClick={handleCheckboxChange}>
+                <div className={`mt-1 flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center cursor-pointer ${agreed
+                  ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] border-transparent"
+                  : "border-gray-300 bg-white"
+                  }`} onClick={handleCheckboxChange}>
                   {agreed && (
                     <CheckCircle className="w-4 h-4 text-white" />
                   )}
                 </div>
-                
+
                 <div className="flex-grow">
                   <label className="text-gray-700 cursor-pointer">
                     <span className="font-medium">I agree to the</span>
@@ -206,14 +205,13 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
               >
                 Back
               </button>
-              <button 
-                onClick={handleSubmit} 
-                disabled={!agreed} 
-                className={`flex items-center justify-center px-8 py-3 rounded-xl transition-all duration-200 font-medium ${
-                  agreed 
-                    ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30" 
-                    : "bg-gradient-to-r from-gray-300 to-gray-400 text-gray-500 cursor-not-allowed"
-                }`} 
+              <button
+                onClick={handleSubmit}
+                disabled={!agreed}
+                className={`flex items-center justify-center px-8 py-3 rounded-xl transition-all duration-200 font-medium ${agreed
+                  ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30"
+                  : "bg-gradient-to-r from-gray-300 to-gray-400 text-gray-500 cursor-not-allowed"
+                  }`}
                 type="submit"
               >
                 <CheckCircle className="w-5 h-5 mr-2" />
