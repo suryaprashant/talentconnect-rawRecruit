@@ -39,10 +39,8 @@ export default function OffCampusHiringForm({ onBackClick }) {
   const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
   const minStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '201-500', '500+'];
   const degrees = Object.keys(degreeStreamMapping).sort();
-  // Tags options for multi-select
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
-  // --- Component State and Logic ---
   const initialState = {
     venue: '',
     degree: [],
@@ -70,7 +68,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
   const [error, setError] = useState(null);
   const [descriptionError, setDescriptionError] = useState("");
 
-  // City Options generated from the npm package
   const cityOptions = useMemo(() =>
     City.getCitiesOfCountry('IN').map(city => ({
       value: city.name,
@@ -78,7 +75,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
     })),
   []);
 
-  // --- NEW: State for custom add inputs ---
   const [customDegree, setCustomDegree] = useState('');
   const [customStream, setCustomStream] = useState('');
   const [customJobRole, setCustomJobRole] = useState('');
@@ -130,7 +126,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // --- MODIFIED: useEffect to reset studentStreams when degree changes ---
   useEffect(() => {
     setFormData(prev => ({ ...prev, studentStreams: [] }));
   }, [formData.degree]);
@@ -147,9 +142,17 @@ export default function OffCampusHiringForm({ onBackClick }) {
     setFormData({ ...formData, [name]: value });
   };
 
-  // Helper function to handle top-level date changes
+  // Helper function to format date locally to prevent "one day back" UTC issue
+  const formatDateLocal = (date) => {
+    if (!date) return '';
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleDateChange = (date, name) => {
-    const formattedDate = date ? date.toISOString().split('T')[0] : '';
+    const formattedDate = formatDateLocal(date);
     setFormData(prev => ({ ...prev, [name]: formattedDate }));
   };
 
@@ -197,7 +200,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
     setFormData({ ...formData, contactPerson: { ...formData.contactPerson, [name]: value } });
   };
 
-  // --- NEW: Handler for adding custom (manual) items ---
   const handleCustomAdd = (field, value, setValue, predefinedOptions = []) => {
     if (value.trim() === '') return;
     setFormData(prev => {
@@ -214,7 +216,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
     setValue('');
   };
 
-  // Handler for CreatableSelect components
   const handleLocationChange = (field, selectedOption) => {
     setFormData(prev => ({
       ...prev,
@@ -229,7 +230,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
     }));
   };
 
-  // --- MODIFIED: Calculate available streams based on multi-select degree (Union) ---
   const availableStreams = (() => {
     if (formData.degree.length === 0) {
       return [];
@@ -333,7 +333,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header section with gradient design */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
           <div className="text-center mb-6">
             <div className="flex items-center justify-center mb-3">
@@ -350,7 +349,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
           </div>
         </div>
 
-        {/* Form Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
@@ -366,7 +364,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Off-Campus Hiring Venue */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">
                 <MapPin className="inline w-4 h-4 mr-1" />
@@ -396,7 +393,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               />
             </div>
 
-            {/* Degree Multi-Select with Custom Add */}
             <div ref={degreeRef} className="relative">
               <label className="block font-medium mb-2 text-gray-700">Degree <span className="text-red-500">*</span></label>
               <div className="flex flex-wrap gap-2 mb-2">
@@ -458,7 +454,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               )}
             </div>
 
-            {/* Student Stream with Custom Add */}
             <div ref={studentStreamsRef} className="relative">
               <label className="block font-medium mb-2 text-gray-700">Student Stream <span className="text-red-500">*</span></label>
               <div className="flex flex-wrap gap-2 mb-2">
@@ -526,7 +521,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               )}
             </div>
 
-            {/* Eligibility Criteria */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">Eligibility Criteria <span className="text-red-500">*</span></label>
               <textarea 
@@ -539,7 +533,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               />
             </div>
 
-            {/* Job Description */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">Job Description <span className="text-red-500">*</span></label>
               <textarea
@@ -558,7 +551,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               </div>
             </div>
 
-            {/* Skills with Custom Add */}
             <div ref={skillsRef} className="relative">
               <label className="block font-medium mb-2 text-gray-700">Skills <span className="text-red-500">*</span></label>
               <div className="flex flex-wrap gap-2 mb-2">
@@ -617,7 +609,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               )}
             </div>
 
-            {/* Benefits */}
             <div ref={benefitsRef} className="relative">
               <label className="block font-medium mb-2 text-gray-700">Benefits Offered <span className="text-red-500">*</span></label>
               <div className="flex flex-wrap gap-2 mb-2">
@@ -648,7 +639,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               )}
             </div>
 
-            {/* Package Details */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">Package Details <span className="text-red-500">*</span></label>
               <div className="flex mb-2">
@@ -695,7 +685,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               </div>
             </div>
 
-            {/* Work Location */}
             <div>
               <label className="block font-medium mb-2 text-gray-700">Work Location <span className="text-red-500">*</span></label>
               <CreatableSelect
@@ -735,7 +724,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               />
             </div>
 
-            {/* Job Roles with Custom Add */}
             <div ref={jobRolesRef} className="relative">
               <label className="block font-medium mb-2 text-gray-700">Job Role <span className="text-red-500">*</span></label>
               <div className="flex flex-wrap gap-2 mb-2">
@@ -794,7 +782,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               )}
             </div>
 
-            {/* Work Mode */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">Work Mode <span className="text-red-500">*</span></label>
               <div className="flex flex-wrap gap-2">
@@ -811,7 +798,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               </div>
             </div>
 
-            {/* Employment Type */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">Employment Type <span className="text-red-500">*</span></label>
               <div className="flex flex-wrap gap-2">
@@ -828,7 +814,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               </div>
             </div>
 
-            {/* Tentative Date of Placement / Hiring */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">
                 <Calendar className="inline w-4 h-4 mr-1" />
@@ -864,7 +849,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               </div>
             </div>
 
-            {/* Number of Rounds */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">Number of Rounds <span className="text-red-500">*</span></label>
               <div className="relative">
@@ -882,7 +866,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               </div>
             </div>
 
-            {/* Process of Selection */}
             <div ref={selectionProcessRef} className="relative">
               <label className="block font-medium mb-2 text-gray-700">Process of Selection <span className="text-red-500">*</span></label>
               <div
@@ -914,7 +897,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               )}
             </div>
 
-            {/* Tags */}
             <div ref={tagsRef} className="relative">
               <label className="block font-medium mb-2 text-gray-700">Tags</label>
               <div className="flex flex-wrap gap-2 mb-2">
@@ -945,10 +927,8 @@ export default function OffCampusHiringForm({ onBackClick }) {
               )}
             </div>
 
-            {/* Contact Person Section */}
             <div className="border-t border-gray-200 pt-6">
               <h3 className="text-lg font-semibold text-gray-700 mb-4">Contact Information</h3>
-              
               <div className="space-y-4">
                 <div>
                   <label className="block mb-2 font-medium text-gray-700">Contact Person <span className="text-red-500">*</span></label>
@@ -962,7 +942,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
                     required 
                   />
                 </div>
-
                 <div>
                   <label className="block mb-2 font-medium text-gray-700">Contact person designation <span className="text-red-500">*</span></label>
                   <div className="relative">
@@ -979,7 +958,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
                     <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                   </div>
                 </div>
-
                 <div>
                   <label className="block mb-2 font-medium text-gray-700">Contact person email <span className="text-red-500">*</span></label>
                   <div className="relative">
@@ -995,7 +973,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
                     />
                   </div>
                 </div>
-
                 <div>
                   <label className="block mb-2 font-medium text-gray-700">Contact person mobile no <span className="text-red-500">*</span></label>
                   <div className="relative">
@@ -1011,7 +988,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
                     />
                   </div>
                 </div>
-
                 <div>
                   <label className="block mb-2 font-medium text-gray-700">Contact person LinkedIn Profile</label>
                   <div className="relative">
@@ -1029,7 +1005,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               </div>
             </div>
 
-            {/* Minimum Students to be Hired */}
             <div>
               <label className="block mb-2 font-medium text-gray-700">
                 <Users className="inline w-4 h-4 mr-1" />
@@ -1050,7 +1025,6 @@ export default function OffCampusHiringForm({ onBackClick }) {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex justify-between pt-6 border-t border-gray-200">
               <button
                 type="button"
