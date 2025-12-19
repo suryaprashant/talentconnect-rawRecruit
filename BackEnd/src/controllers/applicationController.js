@@ -603,7 +603,7 @@ export async function rejectCompanyApplicationByCollege(req, res) {
       const companyData = companyMail.data ? companyMail.data[0] : null;
       const workEmail = companyData?.employerDetails?.workEmail;
 
-      console.log("Company work email for rejection:", workEmail);
+      // console.log("Company work email for rejection:", workEmail);
 
       // if (companyMail.success && workEmail) {
       //     sendStatusChangeEmail(
@@ -771,7 +771,7 @@ export async function scheduleInterview(req, res) {
   const companyId = req.user._id;
   const { applicantId, applicantType, jobRole } = req.body;
   const { date, time, meetLink, message } = req.body.data;
-  console.log("data", applicantId, applicantType, date, meetLink, jobRole);
+  // console.log("data", applicantId, applicantType, date, meetLink, jobRole);
   if (!date || !time || !meetLink || !jobRole)
     return res.status(404).json({ msg: "required fields missing" });
 
