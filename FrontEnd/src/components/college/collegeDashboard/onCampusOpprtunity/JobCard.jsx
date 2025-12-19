@@ -82,18 +82,31 @@
 
 
 
-import React from 'react';
+import React from 'react'; 
 import { Link } from 'react-router-dom';
-import { MapPin, User, Banknote, Building, Home, Monitor, Building2, Calendar, Briefcase, Tag } from 'lucide-react';
+import {
+    MapPin, User, Banknote, Building, Home, Monitor,
+    Building2, Calendar, Briefcase, Tag
+} from 'lucide-react';
 import PropTypes from 'prop-types';
 
 const JobCard = ({ job }) => {
     if (!job) return null;
 
-    const companyName = job.companyPosted?.companyDetails?.companyName || 'Company';
-    const logo = job.companyPosted?.profileImageUrl || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeRfV9n69zxuV4DQX7sYF7ql8ajx47wLioPeP-m4qFbHLkD9UNwfQSneRtkQEDnx-QxFs&usqp=CAU';
+    const companyName =
+        job.companyPosted?.companyDetails?.companyName || 'Company';
 
-    // Get job status based on dates
+    const logo = job.companyPosted?.profileImageUrl || '';
+
+    // 🔹 Initials helper (NEW)
+    const getInitials = (name = '') => {
+        if (!name) return '?';
+        const words = name.trim().split(' ');
+        if (words.length === 1) return words[0][0].toUpperCase();
+        return (words[0][0] + words[1][0]).toUpperCase();
+    };
+
+    // Get job status
     const getJobStatus = () => {
         const now = new Date();
         const startDate = new Date(job.startDate);
@@ -110,7 +123,6 @@ const JobCard = ({ job }) => {
 
     const jobStatus = getJobStatus();
 
-    // Format package details
     const formatPackage = () => {
         if (job.packageDetails?.totalCTC) {
             const currency = job.packageDetails.currency || 'INR';
@@ -120,148 +132,46 @@ const JobCard = ({ job }) => {
         return 'Package not specified';
     };
 
-    // Format location - max 2 locations
-    const formatLocation = () => {
-        if (job.workLocation && job.workLocation.length > 0) {
-            return job.workLocation.slice(0, 2).join(', ');
-        }
-        return 'Location not specified';
-    };
+    const formatLocation = () =>
+        job.workLocation?.slice(0, 2).join(', ') || 'Location not specified';
 
-    // Format job roles - max 1 role for consistent display
-    const formatJobRoles = () => {
-        if (job.jobRoles && job.jobRoles.length > 0) {
-            return job.jobRoles[0]; // Only show first role
-        }
-        return 'Role not specified';
-    };
+    const formatJobRoles = () =>
+        job.jobRoles?.[0] || 'Role not specified';
 
-    // Format streams - only show if present, max 2 items
-    const formatStreams = () => {
-        if (job.studentStreams && job.studentStreams.length > 0) {
-            return job.studentStreams.slice(0, 2);
-        }
-        return [];
-    };
+    const formatStreams = () =>
+        job.studentStreams?.slice(0, 2) || [];
 
-    // Format hiring process steps - max 3 steps
     const formatHiringProcess = () => {
-        if (job.selectionProcess && job.selectionProcess.length > 0) {
-            if (typeof job.selectionProcess === 'string') {
-                const steps = job.selectionProcess.split(' + ');
-                return steps.slice(0, 3);
-            }
-            return job.selectionProcess.slice(0, 3);
+        if (!job.selectionProcess) return [];
+        if (typeof job.selectionProcess === 'string') {
+            return job.selectionProcess.split(' + ').slice(0, 3);
         }
-        return [];
+        return job.selectionProcess.slice(0, 3);
     };
 
-    // Get work mode details with safe type checking
-    const getWorkModeDetails = () => {
-        // Safely handle workMode - check if it exists and is a string
-        const workMode = job.workMode && typeof job.workMode === 'string' 
-            ? job.workMode.toLowerCase() 
-            : 'not specified';
-        
-        switch (workMode) {
-            case 'remote':
-                return {
-                    label: 'Remote',
-                    icon: Home,
-                    color: 'bg-blue-100',
-                    textColor: 'text-blue-800'
-                };
-            case 'hybrid':
-                return {
-                    label: 'Hybrid',
-                    icon: Monitor,
-                    color: 'bg-purple-100',
-                    textColor: 'text-purple-800'
-                };
-            case 'onsite':
-            case 'on-site':
-                return {
-                    label: 'On-Site',
-                    icon: Building2,
-                    color: 'bg-green-100',
-                    textColor: 'text-green-800'
-                };
-            case 'office':
-                return {
-                    label: 'Office',
-                    icon: Building,
-                    color: 'bg-orange-100',
-                    textColor: 'text-orange-800'
-                };
-            default:
-                return {
-                    label: workMode === 'not specified' ? 'Not specified' : 
-                           workMode.charAt(0).toUpperCase() + workMode.slice(1),
-                    icon: Building,
-                    color: 'bg-gray-100',
-                    textColor: 'text-gray-800'
-                };
-        }
-    };
-
-    const workModeDetails = getWorkModeDetails();
-    const WorkModeIcon = workModeDetails.icon;
-
-    // Check if work mode should be displayed
-    const shouldDisplayWorkMode = job.workMode && 
-                                 job.workMode !== 'Not specified' && 
-                                 job.workMode !== 'not specified' &&
-                                 workModeDetails.label !== 'Not specified';
-
-    // Format employment type
     const formatEmploymentType = () => {
-        if (job.employmentType) {
-            if (typeof job.employmentType === 'string') {
-                return job.employmentType;
-            } else if (Array.isArray(job.employmentType) && job.employmentType.length > 0) {
-                return job.employmentType.join(', ');
-            }
+        if (!job.employmentType) return 'Employment type not specified';
+        if (Array.isArray(job.employmentType)) {
+            return job.employmentType.join(', ');
         }
-        return 'Employment type not specified';
+        return job.employmentType;
     };
 
-    // Format tags - only show if present, max 3 items
-    const formatTags = () => {
-        if (job?.tags && job.tags.length > 0) {
-            return job.tags.slice(0, 3);
-        }
-        return [];
-    };
+    const formatTags = () => job.tags?.slice(0, 3) || [];
 
-    // Format dates
     const formatDateRange = () => {
-        const startDate = new Date(job.startDate);
-        const endDate = new Date(job.endDate);
-        
-        const formatDate = (date) => {
-            return date.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric' 
-            });
-        };
-        
-        return `${formatDate(startDate)} - ${formatDate(endDate)}`;
+        const s = new Date(job.startDate);
+        const e = new Date(job.endDate);
+        return `${s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - 
+                ${e.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
     };
 
-    // Format description to fixed height with consistent word count
     const formatDescription = () => {
-        if (!job.description) {
-            return 'No description provided.';
-        }
-        
+        if (!job.description) return 'No description provided.';
         const words = job.description.split(' ');
-        if (words.length <= 15) {
-            return job.description;
-        }
-        
-        // Always take exactly 15 words
-        const truncatedWords = words.slice(0, 15);
-        return truncatedWords.join(' ') + '...';
+        return words.length <= 15
+            ? job.description
+            : words.slice(0, 15).join(' ') + '...';
     };
 
     const streams = formatStreams();
@@ -269,159 +179,120 @@ const JobCard = ({ job }) => {
     const tags = formatTags();
 
     return (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-200 flex flex-col h-full">
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition duration-200 flex flex-col h-full">
             <div className="p-6 flex-1 flex flex-col">
+
                 {/* Company Header */}
                 <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center flex-1 min-w-0">
-                        <div className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0">
-                            <img
-                                src={logo}
-                                alt={`${companyName} logo`}
-                                className="w-full h-full object-contain"
-                                onError={(e) => {
-                                    e.target.src = "https://via.placeholder.com/48";
-                                }}
-                            />
+                        
+                        {/* 🔹 LOGO / INITIALS BLOCK (UPDATED) */}
+                        <div className="w-12 h-12 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0 bg-gray-200">
+                            {logo ? (
+                                <img
+                                    src={logo}
+                                    alt={`${companyName} logo`}
+                                    className="w-full h-full object-contain"
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.style.display = 'none';
+                                    }}
+                                />
+                            ) : (
+                                <span className="text-sm font-semibold text-gray-700">
+                                    {getInitials(companyName)}
+                                </span>
+                            )}
                         </div>
+
                         <div className="ml-3 min-w-0">
-                            <h3 className="font-semibold text-gray-900 truncate" title={companyName}>
+                            <h3
+                                className="font-semibold text-gray-900 truncate"
+                                title={companyName}
+                            >
                                 {companyName}
                             </h3>
                         </div>
                     </div>
-                    
-                    {/* Status Badge moved to the top right corner */}
-                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${jobStatus.color} flex-shrink-0 ml-2`}>
+
+                    <div className={`px-2 py-1 rounded-full text-xs text-white ${jobStatus.color}`}>
                         {jobStatus.status}
                     </div>
                 </div>
 
-                {/* Streams - Only show if present */}
+                {/* Streams */}
                 {streams.length > 0 && (
                     <div className="flex gap-2 mb-3">
-                        {streams.map((stream, index) => (
-                            <span 
-                                key={index} 
-                                className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex-1 text-center truncate" 
-                                title={stream}
-                            >
-                                {stream}
+                        {streams.map((s, i) => (
+                            <span key={i} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded truncate">
+                                {s}
                             </span>
                         ))}
                     </div>
                 )}
 
-                {/* Info Sections with consistent height */}
+                {/* Info */}
                 <div className="space-y-3 mb-4">
-                    {/* Position/Role */}
-                    <div className="flex items-center min-h-[24px]">
-                        <Briefcase className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                        <p className="text-sm font-medium text-gray-800 truncate" title={formatJobRoles()}>
-                            {formatJobRoles()}
-                        </p>
+                    <div className="flex items-center">
+                        <Briefcase className="w-4 h-4 mr-2 text-gray-500" />
+                        <p className="text-sm truncate">{formatJobRoles()}</p>
                     </div>
 
-                    {/* Location */}
-                    <div className="flex items-center min-h-[24px]">
-                        <MapPin className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                        <p className="text-sm text-gray-700 truncate" title={formatLocation()}>
-                            {formatLocation()}
-                        </p>
+                    <div className="flex items-center">
+                        <MapPin className="w-4 h-4 mr-2 text-gray-500" />
+                        <p className="text-sm truncate">{formatLocation()}</p>
                     </div>
 
-                    {/* Employment Type & Work Mode Row */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center min-h-[24px]">
-                            <User className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                            <p className="text-sm text-gray-700 truncate max-w-[120px]" title={formatEmploymentType()}>
-                                {formatEmploymentType()}
-                            </p>
-                        </div>
-                        
-                        {/* Work Mode Badge */}
-                        {shouldDisplayWorkMode && (
-                            <div className={`inline-flex items-center px-2 py-1 rounded-full ${workModeDetails.color}`}>
-                                <WorkModeIcon className={`h-3 w-3 mr-1 ${workModeDetails.textColor}`} />
-                                <span className={`text-xs font-medium ${workModeDetails.textColor}`}>
-                                    {workModeDetails.label}
-                                </span>
-                            </div>
-                        )}
+                    <div className="flex items-center">
+                        <User className="w-4 h-4 mr-2 text-gray-500" />
+                        <p className="text-sm truncate">{formatEmploymentType()}</p>
                     </div>
 
-                    {/* Package */}
-                    <div className="flex items-center min-h-[24px]">
-                        <Banknote className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                        <p className="text-sm text-gray-700 truncate" title={formatPackage()}>
-                            {formatPackage()}
-                        </p>
+                    <div className="flex items-center">
+                        <Banknote className="w-4 h-4 mr-2 text-gray-500" />
+                        <p className="text-sm truncate">{formatPackage()}</p>
                     </div>
 
-                    {/* Date Range */}
-                    <div className="flex items-center min-h-[24px]">
-                        <Calendar className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                        <p className="text-sm text-gray-700 truncate">
-                            {formatDateRange()}
-                        </p>
+                    <div className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-2 text-gray-500" />
+                        <p className="text-sm truncate">{formatDateRange()}</p>
                     </div>
                 </div>
 
-                {/* Description - Fixed height */}
-                <div className="mb-4 flex-1">
-                    <p className="text-sm text-gray-600 line-clamp-3 h-[60px] overflow-hidden">
-                        {formatDescription()}
-                    </p>
-                </div>
+                {/* Description */}
+                <p className="text-sm text-gray-600 mb-4 line-clamp-3 h-[60px]">
+                    {formatDescription()}
+                </p>
 
-                {/* Hiring Process - Only show if present */}
+                {/* Hiring Process */}
                 {hiringProcess.length > 0 && (
                     <div className="mb-4">
-                        <div className="flex items-center mb-2">
-                            <div className="bg-yellow-100 border border-yellow-200 rounded-md px-3 py-1">
-                                <p className="text-xs font-medium text-yellow-800">Hiring Process</p>
-                            </div>
-                        </div>
-                        <div className="flex gap-2 mb-2">
-                            {hiringProcess.map((step, index) => (
-                                <div key={index} className="bg-gray-50 border border-gray-100 rounded-md px-2 py-1 flex-1">
-                                    <p className="text-xs text-gray-700 truncate text-center" title={step}>
-                                        {step}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Tags - Only show if present */}
-                {tags.length > 0 && (
-                    <div className="mb-4">
-                        <div className="flex items-center mb-2">
-                            <Tag className="h-3 w-3 text-gray-500 mr-1" />
-                            <span className="text-xs font-medium text-gray-700">Tags</span>
-                        </div>
+                        <p className="text-xs font-medium mb-1">Hiring Process</p>
                         <div className="flex gap-2">
-                            {tags.map((tag, index) => (
-                                <span 
-                                    key={index} 
-                                    className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full truncate max-w-[100px]" 
-                                    title={tag}
-                                >
-                                    {tag}
+                            {hiringProcess.map((step, i) => (
+                                <span key={i} className="bg-gray-100 text-xs px-2 py-1 rounded truncate">
+                                    {step}
                                 </span>
                             ))}
                         </div>
                     </div>
                 )}
 
-                {/* View Details Button - Always at bottom */}
-                <div className="mt-auto pt-4">
-                    <Link 
-                        to={`/college-dashboard/On-campus/${job._id || job.id}`} 
-                        className="block w-full"
-                    >
-                        <button className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition duration-200 font-medium">
+                {/* Tags */}
+                {tags.length > 0 && (
+                    <div className="mb-4 flex gap-2">
+                        {tags.map((tag, i) => (
+                            <span key={i} className="bg-gray-100 text-xs px-2 py-1 rounded-full truncate">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                )}
+
+                {/* CTA */}
+                <div className="mt-auto">
+                    <Link to={`/college-dashboard/On-campus/${job._id || job.id}`}>
+                        <button className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800">
                             View Details
                         </button>
                     </Link>
@@ -429,43 +300,6 @@ const JobCard = ({ job }) => {
             </div>
         </div>
     );
-};
-
-JobCard.propTypes = {
-    job: PropTypes.shape({
-        _id: PropTypes.string.isRequired,
-        id: PropTypes.string,
-        companyPosted: PropTypes.shape({
-            companyDetails: PropTypes.shape({
-                companyName: PropTypes.string
-            }),
-            profileImageUrl: PropTypes.string
-        }),
-        studentStreams: PropTypes.arrayOf(PropTypes.string),
-        jobRoles: PropTypes.arrayOf(PropTypes.string),
-        workLocation: PropTypes.arrayOf(PropTypes.string),
-        packageDetails: PropTypes.shape({
-            totalCTC: PropTypes.number,
-            currency: PropTypes.string
-        }),
-        workMode: PropTypes.oneOfType([
-            PropTypes.string,
-            PropTypes.number,
-            PropTypes.bool
-        ]),
-        employmentType: PropTypes.oneOfType([
-            PropTypes.string,
-            PropTypes.arrayOf(PropTypes.string)
-        ]),
-        description: PropTypes.string,
-        selectionProcess: PropTypes.oneOfType([
-            PropTypes.string,
-            PropTypes.arrayOf(PropTypes.string)
-        ]),
-        tags: PropTypes.arrayOf(PropTypes.string),
-        startDate: PropTypes.string.isRequired,
-        endDate: PropTypes.string.isRequired
-    }).isRequired
 };
 
 export default JobCard;

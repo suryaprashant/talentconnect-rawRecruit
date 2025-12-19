@@ -143,7 +143,7 @@ const JobCard = ({ job }) => {
                         </div>
                         <div className="ml-3 min-w-0">
                             <h3 className="font-semibold text-gray-900 truncate" title={job.companyName}>
-                                {job.companyName}
+                                {job.companyName} 
                             </h3>
                         </div>
                     </div>

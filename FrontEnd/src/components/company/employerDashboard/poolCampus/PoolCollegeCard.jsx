@@ -49,7 +49,7 @@
 
 // export default PoolCollegeCard;
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, User, Banknote } from 'lucide-react';
 
@@ -57,45 +57,40 @@ const PoolCollegeCard = ({ college }) => {
     if (!college) return null;
 
     const collegeDetails = college.collegePosted;
-    const collegeName = collegeDetails?.collegeUniversityDetails?.collegeName || 'College';
-    const logo = collegeDetails?.profileImage || 'https://via.placeholder.com/48';
+    const collegeName =
+        collegeDetails?.collegeUniversityDetails?.collegeName || 'College';
+    const logo = collegeDetails?.profileImage || '';
 
-    // Format venue/location
+    const [imageError, setImageError] = useState(false);
+
+    /* ---------------- HELPERS ---------------- */
+
+    const getInitials = (name) => {
+        if (!name) return '?';
+        const words = name.trim().split(' ');
+        if (words.length === 1) return words[0][0].toUpperCase();
+        return (
+            words[0][0] + words[words.length - 1][0]
+        ).toUpperCase();
+    };
+
     const formatVenue = () => {
-        if (college.venue) {
-            return college.venue;
-        }
-        if (college.location && college.location.length > 0) {
-            return college.location.join(', ');
-        }
+        if (college.venue) return college.venue;
+        if (college.location?.length) return college.location.join(', ');
         return 'Venue not specified';
     };
 
-    // Format degree types - only show if present
-    const formatDegreeTypes = () => {
-        if (college.degree && college.degree.length > 0) {
-            return college.degree.slice(0, 2); // Show max 2 items
-        }
-        return [];
-    };
+    const formatDegreeTypes = () =>
+        college.degree?.length ? college.degree.slice(0, 2) : [];
 
-    // Format work modes - only show if present
-    const formatWorkModes = () => {
-        if (college.workMode && college.workMode.length > 0) {
-            return college.workMode.slice(0, 2); // Show max 2 items
-        }
-        return [];
-    };
+    const formatWorkModes = () =>
+        college.workMode?.length ? college.workMode.slice(0, 2) : [];
 
-    // Format employment types
-    const formatEmploymentTypes = () => {
-        if (college.employmentType && college.employmentType.length > 0) {
-            return college.employmentType.join(', ');
-        }
-        return 'Employment type not specified';
-    };
+    const formatEmploymentTypes = () =>
+        college.employmentType?.length
+            ? college.employmentType.join(', ')
+            : 'Employment type not specified';
 
-    // Format package details
     const formatPackage = () => {
         if (college.packageDetails?.totalCTC) {
             const currency = college.packageDetails.currency || 'INR';
@@ -105,204 +100,188 @@ const PoolCollegeCard = ({ college }) => {
         return 'Package not specified';
     };
 
-    // Format amenities - only show if present
-    const formatAmenities = () => {
-        if (college.amenitiesRequired && college.amenitiesRequired.length > 0) {
-            return college.amenitiesRequired.slice(0, 3); // Show max 3 items
-        }
-        return [];
-    };
+    const formatAmenities = () =>
+        college.amenitiesRequired?.length
+            ? college.amenitiesRequired.slice(0, 3)
+            : [];
 
-    // Format company types - only show if present
-    const formatCompanyTypes = () => {
-        if (college.companyType && college.companyType.length > 0) {
-            return college.companyType.slice(0, 2); // Show max 2 items
-        }
-        return [];
-    };
+    const formatCompanyTypes = () =>
+        college.companyType?.length ? college.companyType.slice(0, 2) : [];
 
-    // Format college types - only show if present
-    const formatCollegeTypes = () => {
-        if (college.collegeTypes && college.collegeTypes.length > 0) {
-            return college.collegeTypes.slice(0, 2); // Show max 2 items
-        }
-        return [];
-    };
+    const formatCollegeTypes = () =>
+        college.collegeTypes?.length ? college.collegeTypes.slice(0, 2) : [];
 
-    // Format description to fixed height with consistent word count
     const formatDescription = () => {
-        if (!college.description) {
-            return 'No description provided.';
-        }
-        
+        if (!college.description) return 'No description provided.';
         const words = college.description.split(' ');
-        if (words.length <= 15) {
-            return college.description;
-        }
-        
-        // Always take exactly 15 words
-        const truncatedWords = words.slice(0, 15);
-        return truncatedWords.join(' ') + '...';
+        return words.length <= 15
+            ? college.description
+            : words.slice(0, 15).join(' ') + '...';
     };
 
-    // Get status based on dates
     const getCollegeStatus = () => {
         const now = new Date();
-        const startDate = college.startDate ? new Date(college.startDate) : null;
-        const endDate = college.endDate ? new Date(college.endDate) : null;
+        const startDate = college.startDate && new Date(college.startDate);
+        const endDate = college.endDate && new Date(college.endDate);
 
-        if (!startDate || !endDate) {
+        if (!startDate || !endDate)
             return { status: 'Not Scheduled', color: 'bg-gray-400' };
-        }
 
-        if (now < startDate) {
+        if (now < startDate)
             return { status: 'Upcoming', color: 'bg-blue-500' };
-        } else if (now >= startDate && now <= endDate) {
+
+        if (now <= endDate)
             return { status: 'Active', color: 'bg-green-500' };
-        } else {
-            return { status: 'Completed', color: 'bg-gray-500' };
-        }
+
+        return { status: 'Completed', color: 'bg-gray-500' };
     };
 
     const collegeStatus = getCollegeStatus();
-
     const degreeTypes = formatDegreeTypes();
     const collegeTypes = formatCollegeTypes();
     const companyTypes = formatCompanyTypes();
     const workModes = formatWorkModes();
     const amenities = formatAmenities();
 
+    /* ---------------- RENDER ---------------- */
+
     return (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-200 flex flex-col h-full">
-            <div className="p-6 flex-1 flex flex-col">
-                {/* College Header */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition flex flex-col h-full">
+            <div className="p-6 flex flex-col flex-1">
+                {/* Header */}
                 <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center flex-1 min-w-0">
-                        <div className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0">
-                            <img
-                                src={logo}
-                                alt={`${collegeName} logo`}
-                                className="w-full h-full object-contain"
-                                onError={(e) => {
-                                    e.target.src = "https://via.placeholder.com/48";
-                                }}
-                            />
+                    <div className="flex items-center min-w-0">
+                        {/* Logo / Initials */}
+                        <div className="w-12 h-12 rounded-md flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-lg flex-shrink-0">
+                            {logo && !imageError ? (
+                                <img
+                                    src={logo}
+                                    alt={collegeName}
+                                    className="w-full h-full object-contain bg-white rounded-md"
+                                    onError={() => setImageError(true)}
+                                />
+                            ) : (
+                                <span>{getInitials(collegeName)}</span>
+                            )}
                         </div>
+
                         <div className="ml-3 min-w-0">
-                            <h3 className="font-semibold text-gray-900 truncate" title={collegeName}>
+                            <h3
+                                className="font-semibold text-gray-900 truncate"
+                                title={collegeName}
+                            >
                                 {collegeName}
                             </h3>
                         </div>
                     </div>
-                    
-                    {/* Status Badge */}
-                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${collegeStatus.color} flex-shrink-0 ml-2`}>
+
+                    <span
+                        className={`px-2 py-1 rounded-full text-xs text-white font-medium ${collegeStatus.color}`}
+                    >
                         {collegeStatus.status}
-                    </div>
+                    </span>
                 </div>
 
-                {/* Degree Types - Only show if present */}
+                {/* Tags */}
                 {degreeTypes.length > 0 && (
                     <div className="flex gap-2 mb-3">
-                        {degreeTypes.map((degree, index) => (
-                            <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex-1 text-center truncate" title={degree}>
-                                {degree}
+                        {degreeTypes.map((d, i) => (
+                            <span
+                                key={i}
+                                className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex-1 text-center truncate"
+                            >
+                                {d}
                             </span>
                         ))}
                     </div>
                 )}
 
-                {/* College Types - Only show if present */}
                 {collegeTypes.length > 0 && (
                     <div className="flex gap-2 mb-3">
-                        {collegeTypes.map((collegeType, index) => (
-                            <span key={index} className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded flex-1 text-center truncate" title={collegeType}>
-                                {collegeType}
+                        {collegeTypes.map((c, i) => (
+                            <span
+                                key={i}
+                                className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded flex-1 text-center truncate"
+                            >
+                                {c}
                             </span>
                         ))}
                     </div>
                 )}
 
-                {/* Company Types - Only show if present */}
                 {companyTypes.length > 0 && (
                     <div className="flex gap-2 mb-3">
-                        {companyTypes.map((companyType, index) => (
-                            <span key={index} className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded flex-1 text-center truncate" title={companyType}>
-                                {companyType}
+                        {companyTypes.map((c, i) => (
+                            <span
+                                key={i}
+                                className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded flex-1 text-center truncate"
+                            >
+                                {c}
                             </span>
                         ))}
                     </div>
                 )}
 
-                {/* Info Sections with consistent height */}
+                {/* Info */}
                 <div className="space-y-3 mb-4">
-                    {/* Venue/Location */}
-                    <div className="flex items-center min-h-[24px]">
-                        <MapPin className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                        <p className="text-sm text-gray-700 truncate" title={formatVenue()}>
-                            {formatVenue()}
-                        </p>
+                    <div className="flex items-center">
+                        <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                        <p className="text-sm truncate">{formatVenue()}</p>
                     </div>
 
-                    {/* Work Modes - Only show if present */}
                     {workModes.length > 0 && (
                         <div className="flex gap-2">
-                            {workModes.map((workMode, index) => (
-                                <div key={index} className="bg-gray-50 border border-gray-100 rounded-md px-2 py-1 flex-1">
-                                    <p className="text-xs text-gray-700 truncate text-center" title={workMode}>
-                                        {workMode}
-                                    </p>
+                            {workModes.map((w, i) => (
+                                <div
+                                    key={i}
+                                    className="bg-gray-50 border rounded px-2 py-1 flex-1 text-xs text-center truncate"
+                                >
+                                    {w}
                                 </div>
                             ))}
                         </div>
                     )}
 
-                    {/* Employment Type */}
-                    <div className="flex items-center min-h-[24px]">
-                        <User className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                        <p className="text-sm font-medium text-gray-800 truncate" title={formatEmploymentTypes()}>
+                    <div className="flex items-center">
+                        <User className="h-4 w-4 text-gray-500 mr-2" />
+                        <p className="text-sm font-medium truncate">
                             {formatEmploymentTypes()}
                         </p>
                     </div>
 
-                    {/* Package */}
-                    <div className="flex items-center min-h-[24px]">
-                        <Banknote className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                        <p className="text-sm text-gray-700 truncate" title={formatPackage()}>
+                    <div className="flex items-center">
+                        <Banknote className="h-4 w-4 text-gray-500 mr-2" />
+                        <p className="text-sm truncate">
                             Min Package: {formatPackage()}
                         </p>
                     </div>
                 </div>
 
-                {/* Description - Fixed height */}
-                <div className="mb-4 flex-1">
-                    <p className="text-sm text-gray-600 line-clamp-3 h-[60px] overflow-hidden">
-                        {formatDescription()}
-                    </p>
-                </div>
+                {/* Description */}
+                <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                    {formatDescription()}
+                </p>
 
-                {/* Amenities - Only show if present */}
+                {/* Amenities */}
                 {amenities.length > 0 && (
-                    <div className="mb-4">
-                        <div className="flex gap-2 mb-2">
-                            {amenities.map((amenity, index) => (
-                                <div key={index} className="bg-gray-50 border border-gray-100 rounded-md px-2 py-1 flex-1">
-                                    <p className="text-xs text-gray-700 truncate text-center" title={amenity}>
-                                        {amenity}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
+                    <div className="flex gap-2 mb-4">
+                        {amenities.map((a, i) => (
+                            <div
+                                key={i}
+                                className="bg-gray-50 border rounded px-2 py-1 flex-1 text-xs text-center truncate"
+                            >
+                                {a}
+                            </div>
+                        ))}
                     </div>
                 )}
 
-                {/* Contact Button - Always at bottom */}
+                {/* CTA */}
                 <div className="mt-auto pt-4">
-                    <Link 
-                        to={`/company-dashboard/Pool-campus/${college._id || college.id}`} 
-                        className="block w-full"
+                    <Link
+                        to={`/company-dashboard/Pool-campus/${college._id || college.id}`}
                     >
-                        <button className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition duration-200 font-medium">
+                        <button className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition">
                             Contact College
                         </button>
                     </Link>
