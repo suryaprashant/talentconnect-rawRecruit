@@ -51,7 +51,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, User, Banknote, Calendar, GraduationCap, Users, Building } from 'lucide-react';
+import { MapPin, User, Banknote } from 'lucide-react';
 
 const PoolCollegeCard = ({ college }) => {
     if (!college) return null;
@@ -71,20 +71,20 @@ const PoolCollegeCard = ({ college }) => {
         return 'Venue not specified';
     };
 
-    // Format degree types
+    // Format degree types - only show if present
     const formatDegreeTypes = () => {
         if (college.degree && college.degree.length > 0) {
-            return college.degree;
+            return college.degree.slice(0, 2); // Show max 2 items
         }
-        return ['Degree not specified'];
+        return [];
     };
 
-    // Format work modes
+    // Format work modes - only show if present
     const formatWorkModes = () => {
         if (college.workMode && college.workMode.length > 0) {
-            return college.workMode.join(', ');
+            return college.workMode.slice(0, 2); // Show max 2 items
         }
-        return 'Work mode not specified';
+        return [];
     };
 
     // Format employment types
@@ -105,62 +105,43 @@ const PoolCollegeCard = ({ college }) => {
         return 'Package not specified';
     };
 
-    // Format dates
-    const formatDateRange = () => {
-        if (college.startDate && college.endDate) {
-            const start = new Date(college.startDate).toLocaleDateString();
-            const end = new Date(college.endDate).toLocaleDateString();
-            return `${start} - ${end}`;
-        }
-        return 'Dates not specified';
-    };
-
-    // Format student count
-    const formatStudentCount = () => {
-        if (college.numberOfStudent && college.numberOfStudent.length > 0) {
-            const total = college.numberOfStudent.reduce((sum, count) => sum + (parseInt(count) || 0), 0);
-            return `${total}+ Students`;
-        }
-        return 'Student count not specified';
-    };
-
-    // Format amenities
+    // Format amenities - only show if present
     const formatAmenities = () => {
         if (college.amenitiesRequired && college.amenitiesRequired.length > 0) {
-            return college.amenitiesRequired.slice(0, 3); // Show only first 3 amenities
+            return college.amenitiesRequired.slice(0, 3); // Show max 3 items
         }
-        return ['Facilities not specified'];
+        return [];
     };
 
-    // Format company types
+    // Format company types - only show if present
     const formatCompanyTypes = () => {
         if (college.companyType && college.companyType.length > 0) {
-            return college.companyType;
+            return college.companyType.slice(0, 2); // Show max 2 items
         }
-        return ['Company type not specified'];
+        return [];
     };
 
-    // Format college types
+    // Format college types - only show if present
     const formatCollegeTypes = () => {
         if (college.collegeTypes && college.collegeTypes.length > 0) {
-            return college.collegeTypes;
+            return college.collegeTypes.slice(0, 2); // Show max 2 items
         }
-        return ['College type not specified'];
+        return [];
     };
 
-    // Format description to show only 15-20 words
+    // Format description to fixed height with consistent word count
     const formatDescription = () => {
         if (!college.description) {
             return 'No description provided.';
         }
         
         const words = college.description.split(' ');
-        if (words.length <= 20) {
+        if (words.length <= 15) {
             return college.description;
         }
         
-        // Take first 15-20 words and add ellipsis
-        const truncatedWords = words.slice(0, 20);
+        // Always take exactly 15 words
+        const truncatedWords = words.slice(0, 15);
         return truncatedWords.join(' ') + '...';
     };
 
@@ -183,30 +164,20 @@ const PoolCollegeCard = ({ college }) => {
         }
     };
 
-    // Format selection process rounds
-    const formatRounds = () => {
-        if (college.rounds && college.rounds.length > 0) {
-            return college.rounds.slice(0, 4); // Show only first 4 rounds
-        }
-        return ['Selection process not specified'];
-    };
-
-    // Format skills
-    const formatSkills = () => {
-        if (college.skills && college.skills.length > 0) {
-            return college.skills.slice(0, 5); // Show only first 5 skills
-        }
-        return [];
-    };
-
     const collegeStatus = getCollegeStatus();
 
+    const degreeTypes = formatDegreeTypes();
+    const collegeTypes = formatCollegeTypes();
+    const companyTypes = formatCompanyTypes();
+    const workModes = formatWorkModes();
+    const amenities = formatAmenities();
+
     return (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-200">
-            <div className="p-6">
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-200 flex flex-col h-full">
+            <div className="p-6 flex-1 flex flex-col">
                 {/* College Header */}
                 <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center">
+                    <div className="flex items-center flex-1 min-w-0">
                         <div className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0">
                             <img
                                 src={logo}
@@ -217,108 +188,125 @@ const PoolCollegeCard = ({ college }) => {
                                 }}
                             />
                         </div>
-                        <div className="ml-3">
-                            <h3 className="font-semibold text-gray-900">{collegeName}</h3>
-                            {/* Pool Campus Badge */}
-                           
+                        <div className="ml-3 min-w-0">
+                            <h3 className="font-semibold text-gray-900 truncate" title={collegeName}>
+                                {collegeName}
+                            </h3>
                         </div>
                     </div>
                     
                     {/* Status Badge */}
-                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${collegeStatus.color}`}>
+                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${collegeStatus.color} flex-shrink-0 ml-2`}>
                         {collegeStatus.status}
                     </div>
                 </div>
 
-                {/* Degree Types */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                    {formatDegreeTypes().map((degree, index) => (
-                        <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                            {degree}
-                        </span>
-                    ))}
-                </div>
+                {/* Degree Types - Only show if present */}
+                {degreeTypes.length > 0 && (
+                    <div className="flex gap-2 mb-3">
+                        {degreeTypes.map((degree, index) => (
+                            <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex-1 text-center truncate" title={degree}>
+                                {degree}
+                            </span>
+                        ))}
+                    </div>
+                )}
 
-                {/* College Types */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                    {formatCollegeTypes().map((collegeType, index) => (
-                        <span key={index} className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">
-                            {collegeType}
-                        </span>
-                    ))}
-                </div>
+                {/* College Types - Only show if present */}
+                {collegeTypes.length > 0 && (
+                    <div className="flex gap-2 mb-3">
+                        {collegeTypes.map((collegeType, index) => (
+                            <span key={index} className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded flex-1 text-center truncate" title={collegeType}>
+                                {collegeType}
+                            </span>
+                        ))}
+                    </div>
+                )}
 
-                {/* Company Types */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                    {formatCompanyTypes().map((companyType, index) => (
-                        <span key={index} className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
-                            {companyType}
-                        </span>
-                    ))}
-                </div>
+                {/* Company Types - Only show if present */}
+                {companyTypes.length > 0 && (
+                    <div className="flex gap-2 mb-3">
+                        {companyTypes.map((companyType, index) => (
+                            <span key={index} className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded flex-1 text-center truncate" title={companyType}>
+                                {companyType}
+                            </span>
+                        ))}
+                    </div>
+                )}
 
-                {/* Venue */}
-                <div className="mb-3">
-                    <div className="flex items-center">
+                {/* Info Sections with consistent height */}
+                <div className="space-y-3 mb-4">
+                    {/* Venue/Location */}
+                    <div className="flex items-center min-h-[24px]">
                         <MapPin className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                        <p className="text-sm text-gray-700">
+                        <p className="text-sm text-gray-700 truncate" title={formatVenue()}>
                             {formatVenue()}
                         </p>
                     </div>
-                </div>
 
-              
+                    {/* Work Modes - Only show if present */}
+                    {workModes.length > 0 && (
+                        <div className="flex gap-2">
+                            {workModes.map((workMode, index) => (
+                                <div key={index} className="bg-gray-50 border border-gray-100 rounded-md px-2 py-1 flex-1">
+                                    <p className="text-xs text-gray-700 truncate text-center" title={workMode}>
+                                        {workMode}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
-                {/* Employment Type */}
-                <div className="mb-3">
-                    <div className="flex items-center">
+                    {/* Employment Type */}
+                    <div className="flex items-center min-h-[24px]">
                         <User className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                        <p className="text-sm font-medium text-gray-800">
+                        <p className="text-sm font-medium text-gray-800 truncate" title={formatEmploymentTypes()}>
                             {formatEmploymentTypes()}
                         </p>
                     </div>
-                </div>
 
-                {/* Package */}
-                <div className="mb-3">
-                    <div className="flex items-center">
+                    {/* Package */}
+                    <div className="flex items-center min-h-[24px]">
                         <Banknote className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                        <p className="text-sm text-gray-700">
-                          Min Package to offer:  {formatPackage()}
+                        <p className="text-sm text-gray-700 truncate" title={formatPackage()}>
+                            Min Package: {formatPackage()}
                         </p>
                     </div>
                 </div>
 
-
-               
-                {/* Description - Limited to 15-20 words */}
-                <p className="text-sm text-gray-600 mb-4 line-clamp-3">
-                    {formatDescription()}
-                </p>
-
-              
-
-                {/* Amenities */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                    <div className="bg-green-50 border border-green-100 rounded-md px-3 py-1">
-                        <p className="text-xs font-medium text-green-800">Campus Facilities</p>
-                    </div>
-                    {formatAmenities().map((amenity, index) => (
-                        <div key={index} className="bg-gray-50 border border-gray-100 rounded-md px-3 py-1">
-                            <p className="text-xs text-gray-700">{amenity}</p>
-                        </div>
-                    ))}
+                {/* Description - Fixed height */}
+                <div className="mb-4 flex-1">
+                    <p className="text-sm text-gray-600 line-clamp-3 h-[60px] overflow-hidden">
+                        {formatDescription()}
+                    </p>
                 </div>
 
-                {/* Contact Button */}
-                <Link 
-                    to={`/company-dashboard/Pool-campus/${college._id || college.id}`} 
-                    className="block w-full"
-                >
-                    <button className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition duration-200 font-medium">
-                        Contact College
-                    </button>
-                </Link>
+                {/* Amenities - Only show if present */}
+                {amenities.length > 0 && (
+                    <div className="mb-4">
+                        <div className="flex gap-2 mb-2">
+                            {amenities.map((amenity, index) => (
+                                <div key={index} className="bg-gray-50 border border-gray-100 rounded-md px-2 py-1 flex-1">
+                                    <p className="text-xs text-gray-700 truncate text-center" title={amenity}>
+                                        {amenity}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Contact Button - Always at bottom */}
+                <div className="mt-auto pt-4">
+                    <Link 
+                        to={`/company-dashboard/Pool-campus/${college._id || college.id}`} 
+                        className="block w-full"
+                    >
+                        <button className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition duration-200 font-medium">
+                            Contact College
+                        </button>
+                    </Link>
+                </div>
             </div>
         </div>
     );

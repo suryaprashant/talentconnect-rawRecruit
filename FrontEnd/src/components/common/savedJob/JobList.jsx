@@ -40,15 +40,7 @@ const JobList = ({ jobs }) => {
           </h1>
           <p className="text-gray-600 mt-2">Browse your saved opportunities</p>
 
-          <div className="relative mt-4">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+          
         </div>
 
         {/* Cards */}
