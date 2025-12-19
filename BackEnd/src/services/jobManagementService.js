@@ -16,7 +16,7 @@ export async function getOffCampusJobsService(companyId) {
 }
 
 
-export const getJobPostedByCollegeService = async (collegeId, jobType, key) => {
+export const getJobPostedByCollegeService = async (collegeId, jobType, key, isVisited) => {
     let target = "";
 
     switch (key) {
@@ -66,7 +66,8 @@ export const getJobPostedByCollegeService = async (collegeId, jobType, key) => {
                                 cond: { 
                                     $and: [
                                         { $eq: ["$$application.currentStatus", target] },
-                                        { $eq: ["$$application.jobType", jobType] }
+                                        { $eq: ["$$application.jobType", jobType] },
+                                        { $eq: ["$$application.isVisited", false] },
                                     ]
                                 }
                             }

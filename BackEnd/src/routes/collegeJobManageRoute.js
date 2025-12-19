@@ -3,7 +3,7 @@ import { deleteCollegeJob, getCollegePostedJobs } from "../controllers/collegeJo
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
-
+// api.. /college/jobmanagement
 
 router.get('/:key/:jobType', secureRoute, getCollegePostedJobs);
 
