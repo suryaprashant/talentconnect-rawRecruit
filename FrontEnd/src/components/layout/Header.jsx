@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { FiMenu, FiBell, FiChevronDown } from 'react-icons/fi';
 import { useAuth } from '@/context/AuthProvider';
 import axios from 'axios';
-import SearchBar from '../ui/SearchBar';
 import Avatar from '../ui/Avatar';
 import NotificationsDropdown from './NotificationDropdown';
 import ProfileSwitchDropdown from '../employer/ProfileSwitchDropdown';
@@ -10,7 +9,6 @@ import StandardProfileDropdown from './ProfileDropdown';
 
 function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
     const [authuser] = useAuth();
-
 
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
@@ -52,19 +50,16 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
   
 
     return (
-        <header className="sticky top-0 z-30 flex items-center h-16 px-4 bg-white border-b border-gray-200 shadow-sm">
+        <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 bg-white border-b border-gray-200 shadow-sm">
             <button
                 type="button"
-                className="p-2 mr-4 text-gray-500 rounded-md lg:hidden"
+                className="p-2 text-gray-500 rounded-md lg:hidden"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
             >
                 <FiMenu className="w-6 h-6" aria-hidden="true" />
             </button>
-            <div className="flex-1  max-w-2xl mx-auto  lg:max-w-xs">
-                <SearchBar placeholder="Search" />
-            </div>
 
-            <div className="flex items-center ml-4 space-x-4">
+            <div className="flex items-center ml-auto space-x-4">
                 {authuser && (
                     <>
                         {/* Notifications Section */}
