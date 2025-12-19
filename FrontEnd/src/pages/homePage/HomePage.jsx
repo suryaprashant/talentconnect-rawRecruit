@@ -7,11 +7,17 @@ import {
   ArrowRight, Users2, TargetIcon, Zap, Globe, Shield,
   BarChart3, HeartHandshake, Rocket
 } from 'lucide-react';
+import { FaLinkedinIn } from 'react-icons/fa';
+import { TermsModal } from '@/components/onboarding/Terms&conditionModal';
 
 const App = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+
+// "terms" | "privacy" | null
+
 
   const handleCardClick = (cardType) => {
     const hiringRoutes = {
@@ -170,7 +176,7 @@ const App = () => {
             {['Services', 'How It Works', 'Features', 'About'].map((item) => (
               <a
                 key={item}
-                href={`#${item.toLowerCase().replace(' ', '-')}`}
+                href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
                 className="text-gray-700 hover:text-[#667eea] transition-all duration-300 font-medium hover:scale-105"
               >
                 {item}
@@ -214,7 +220,7 @@ const App = () => {
       </header>
 
       {/* Hero Section */}
-      <section id="features" className="relative overflow-hidden py-20 px-6">
+      <section id="hero" className="relative overflow-hidden py-20 px-6">
         <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5" />
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-16">
@@ -251,7 +257,7 @@ const App = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div id="services" className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto scroll-mt-24">
             {heroCards.map((card, idx) => (
               <div
                 key={idx}
@@ -322,7 +328,7 @@ const App = () => {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-20 px-6">
+      <section id="features" className="py-20 px-6">
         <div className="max-w-7xl mx-auto">
           {[
             { key: 'company', title: 'For Companies', desc: 'Complete recruitment solutions for your organization' },
@@ -510,7 +516,7 @@ const App = () => {
                 Transforming campus recruitment through innovation and excellence.
               </p>
               <div className="flex gap-4">
-                {[Users, Building2, GraduationCap, Briefcase].map((Icon, idx) => (
+                {[FaLinkedinIn].map((Icon, idx) => (
                   <div key={idx} className="bg-gray-800 p-3 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer">
                     <Icon className="w-5 h-5" />
                   </div>
@@ -519,18 +525,22 @@ const App = () => {
             </div>
 
             {[
-              { title: 'Product', links: ['Features', 'Solutions', 'Pricing', 'Demo'] },
-              { title: 'Company', links: ['About', 'Careers', 'Press', 'Blog'] },
-              { title: 'Support', links: ['Help Center', 'Contact', 'Privacy', 'Terms'] }
+              { title: 'Product', links: ['Features', 'Solutions', 'Demo'] },
+              { title: 'Company', links: ['About', 'Careers'] },
+              { title: 'Support', links: ['Help Center', 'Contact', 'Privacy & Terms'] }
             ].map((column, idx) => (
               <div key={idx}>
                 <h3 className="text-lg font-bold mb-6">{column.title}</h3>
                 <ul className="space-y-3">
                   {column.links.map((link) => (
                     <li key={link}>
-                      <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                      <button
+                      onClick={() => setIsLegalModalOpen(true)}
+                        className="text-gray-400 hover:text-white transition-colors text-left">
                         {link}
-                      </a>
+                      </button>
+
+
                     </li>
                   ))}
                 </ul>
@@ -543,7 +553,14 @@ const App = () => {
           </div>
         </div>
       </footer>
+      {/* Terms & Privacy Modal */}
+      <TermsModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+      />
+
     </div>
+    
   );
 };
 
