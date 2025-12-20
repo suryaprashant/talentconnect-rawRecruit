@@ -41,7 +41,7 @@ export default function CollegeDescription({ onboardingData }) {
                   College Description
                 </h1>
               </div>
-              <div className="w-full max-w-md">
+              {/* <div className="w-full max-w-md">
                 <div className="relative">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -52,7 +52,7 @@ export default function CollegeDescription({ onboardingData }) {
                     className="w-full pl-10 pr-4 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none shadow-sm"
                   />
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

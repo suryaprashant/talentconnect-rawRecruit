@@ -4,7 +4,6 @@ import { getCollegeService } from "../services/collegeService.js";
 export const getCollegePostedJobs = async (req, res) => {
     const collegeId = req.user._id;
     const { jobType,key } = req.params;
-    console.log(key);
     
     if (!jobType) return res.status(404).json({ msg: "job not found!" });
     // console.log("companyid: ", companyId);   
