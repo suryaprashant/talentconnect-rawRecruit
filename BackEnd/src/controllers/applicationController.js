@@ -148,7 +148,7 @@ export async function createOffcampusApplication(req, res) {
   try {
     const user = await getStudentService(userId);
 
-    // if (!userId || !jobId) return res.status(404).json({ msg: "Fields missing" });
+   
     if (!jobId || !user)
       return res.status(404).json({ msg: "User or Job not found!" });
 

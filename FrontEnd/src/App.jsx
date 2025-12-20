@@ -251,6 +251,10 @@ import PoolcampusAcceptedDetailPage from "./pages/college/acceptedCompanies/pool
 import HomapPage from "./pages/homePage/HomePage"
 import ResumePreview from "./pages/fresher/ResumePreview";
 import BlankLayout from "./components/layout/BlankLayout";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage" ;
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage" ;
+
+
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -263,7 +267,16 @@ function AppRoutes() {
       <Route path="/userselection" element={<RoleSelection />} />
       <Route path="/" element={<HomapPage />} />
       <Route path="/signup" element={<SignupPage />} />
+
+
+
       <Route path="/login" element={<LoginPage />} />
+
+      <Route path="/forgot-password" element={<ForgotPasswordPage/>} />
+      <Route path="/reset-password/:token" element={<ResetPasswordPage/>} />
+
+
+
       <Route path="/auth/linkedin/callback" element={<LinkedInCallback />} />
       <Route path="/invitations" element={<InvitationsPage />} />
       <Route path="/invitation-accepted" element={<ConfirmationPage />} />

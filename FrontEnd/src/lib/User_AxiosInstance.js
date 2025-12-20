@@ -202,5 +202,35 @@ export function createMockInterviewRequest(formData) {
     .catch(error => error);
 }
 
+export function requestPasswordReset(email) {
+  return axiosClient.post('/api/auth/forgot-password', { email })
+    .then(response => response)
+    .catch(error => {
+      console.error('Forgot password error:', error);
+      throw error;
+    });
+}
+
+export function validateResetToken(token) {
+  return axiosClient.post('/api/auth/validate-reset-token', { token })
+    .then(response => response)
+    .catch(error => {
+      console.error('Token validation error:', error);
+      throw error;
+    });
+}
+
+export function resetPassword(token, newPassword) {
+  return axiosClient.post('/api/auth/reset-password', { token, newPassword })
+    .then(response => response)
+    .catch(error => {
+      console.error('Reset password error:', error);
+      throw error;
+    });
+}
+
+
+
+
 
 
