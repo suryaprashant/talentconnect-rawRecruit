@@ -49,53 +49,48 @@
 
 // export default PoolCollegeCard;
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, User, Banknote, Calendar, GraduationCap, Users, Building } from 'lucide-react';
+import { MapPin, User, Banknote } from 'lucide-react';
 
 const PoolCollegeCard = ({ college }) => {
     if (!college) return null;
 
     const collegeDetails = college.collegePosted;
-    const collegeName = collegeDetails?.collegeUniversityDetails?.collegeName || 'College';
-    const logo = collegeDetails?.profileImage || 'https://via.placeholder.com/48';
+    const collegeName =
+        collegeDetails?.collegeUniversityDetails?.collegeName || 'College';
+    const logo = collegeDetails?.profileImage || '';
 
-    // Format venue/location
+    const [imageError, setImageError] = useState(false);
+
+    /* ---------------- HELPERS ---------------- */
+
+    const getInitials = (name) => {
+        if (!name) return '?';
+        const words = name.trim().split(' ');
+        if (words.length === 1) return words[0][0].toUpperCase();
+        return (
+            words[0][0] + words[words.length - 1][0]
+        ).toUpperCase();
+    };
+
     const formatVenue = () => {
-        if (college.venue) {
-            return college.venue;
-        }
-        if (college.location && college.location.length > 0) {
-            return college.location.join(', ');
-        }
+        if (college.venue) return college.venue;
+        if (college.location?.length) return college.location.join(', ');
         return 'Venue not specified';
     };
 
-    // Format degree types
-    const formatDegreeTypes = () => {
-        if (college.degree && college.degree.length > 0) {
-            return college.degree;
-        }
-        return ['Degree not specified'];
-    };
+    const formatDegreeTypes = () =>
+        college.degree?.length ? college.degree.slice(0, 2) : [];
 
-    // Format work modes
-    const formatWorkModes = () => {
-        if (college.workMode && college.workMode.length > 0) {
-            return college.workMode.join(', ');
-        }
-        return 'Work mode not specified';
-    };
+    const formatWorkModes = () =>
+        college.workMode?.length ? college.workMode.slice(0, 2) : [];
 
-    // Format employment types
-    const formatEmploymentTypes = () => {
-        if (college.employmentType && college.employmentType.length > 0) {
-            return college.employmentType.join(', ');
-        }
-        return 'Employment type not specified';
-    };
+    const formatEmploymentTypes = () =>
+        college.employmentType?.length
+            ? college.employmentType.join(', ')
+            : 'Employment type not specified';
 
-    // Format package details
     const formatPackage = () => {
         if (college.packageDetails?.totalCTC) {
             const currency = college.packageDetails.currency || 'INR';
@@ -105,220 +100,192 @@ const PoolCollegeCard = ({ college }) => {
         return 'Package not specified';
     };
 
-    // Format dates
-    const formatDateRange = () => {
-        if (college.startDate && college.endDate) {
-            const start = new Date(college.startDate).toLocaleDateString();
-            const end = new Date(college.endDate).toLocaleDateString();
-            return `${start} - ${end}`;
-        }
-        return 'Dates not specified';
-    };
+    const formatAmenities = () =>
+        college.amenitiesRequired?.length
+            ? college.amenitiesRequired.slice(0, 3)
+            : [];
 
-    // Format student count
-    const formatStudentCount = () => {
-        if (college.numberOfStudent && college.numberOfStudent.length > 0) {
-            const total = college.numberOfStudent.reduce((sum, count) => sum + (parseInt(count) || 0), 0);
-            return `${total}+ Students`;
-        }
-        return 'Student count not specified';
-    };
+    const formatCompanyTypes = () =>
+        college.companyType?.length ? college.companyType.slice(0, 2) : [];
 
-    // Format amenities
-    const formatAmenities = () => {
-        if (college.amenitiesRequired && college.amenitiesRequired.length > 0) {
-            return college.amenitiesRequired.slice(0, 3); // Show only first 3 amenities
-        }
-        return ['Facilities not specified'];
-    };
+    const formatCollegeTypes = () =>
+        college.collegeTypes?.length ? college.collegeTypes.slice(0, 2) : [];
 
-    // Format company types
-    const formatCompanyTypes = () => {
-        if (college.companyType && college.companyType.length > 0) {
-            return college.companyType;
-        }
-        return ['Company type not specified'];
-    };
-
-    // Format college types
-    const formatCollegeTypes = () => {
-        if (college.collegeTypes && college.collegeTypes.length > 0) {
-            return college.collegeTypes;
-        }
-        return ['College type not specified'];
-    };
-
-    // Format description to show only 15-20 words
     const formatDescription = () => {
-        if (!college.description) {
-            return 'No description provided.';
-        }
-        
+        if (!college.description) return 'No description provided.';
         const words = college.description.split(' ');
-        if (words.length <= 20) {
-            return college.description;
-        }
-        
-        // Take first 15-20 words and add ellipsis
-        const truncatedWords = words.slice(0, 20);
-        return truncatedWords.join(' ') + '...';
+        return words.length <= 15
+            ? college.description
+            : words.slice(0, 15).join(' ') + '...';
     };
 
-    // Get status based on dates
     const getCollegeStatus = () => {
         const now = new Date();
-        const startDate = college.startDate ? new Date(college.startDate) : null;
-        const endDate = college.endDate ? new Date(college.endDate) : null;
+        const startDate = college.startDate && new Date(college.startDate);
+        const endDate = college.endDate && new Date(college.endDate);
 
-        if (!startDate || !endDate) {
+        if (!startDate || !endDate)
             return { status: 'Not Scheduled', color: 'bg-gray-400' };
-        }
 
-        if (now < startDate) {
+        if (now < startDate)
             return { status: 'Upcoming', color: 'bg-blue-500' };
-        } else if (now >= startDate && now <= endDate) {
+
+        if (now <= endDate)
             return { status: 'Active', color: 'bg-green-500' };
-        } else {
-            return { status: 'Completed', color: 'bg-gray-500' };
-        }
-    };
 
-    // Format selection process rounds
-    const formatRounds = () => {
-        if (college.rounds && college.rounds.length > 0) {
-            return college.rounds.slice(0, 4); // Show only first 4 rounds
-        }
-        return ['Selection process not specified'];
-    };
-
-    // Format skills
-    const formatSkills = () => {
-        if (college.skills && college.skills.length > 0) {
-            return college.skills.slice(0, 5); // Show only first 5 skills
-        }
-        return [];
+        return { status: 'Completed', color: 'bg-gray-500' };
     };
 
     const collegeStatus = getCollegeStatus();
+    const degreeTypes = formatDegreeTypes();
+    const collegeTypes = formatCollegeTypes();
+    const companyTypes = formatCompanyTypes();
+    const workModes = formatWorkModes();
+    const amenities = formatAmenities();
+
+    /* ---------------- RENDER ---------------- */
 
     return (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-200">
-            <div className="p-6">
-                {/* College Header */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition flex flex-col h-full">
+            <div className="p-6 flex flex-col flex-1">
+                {/* Header */}
                 <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center">
-                        <div className="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center overflow-hidden flex-shrink-0">
-                            <img
-                                src={logo}
-                                alt={`${collegeName} logo`}
-                                className="w-full h-full object-contain"
-                                onError={(e) => {
-                                    e.target.src = "https://via.placeholder.com/48";
-                                }}
-                            />
+                    <div className="flex items-center min-w-0">
+                        {/* Logo / Initials */}
+                        <div className="w-12 h-12 rounded-md flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-lg flex-shrink-0">
+                            {logo && !imageError ? (
+                                <img
+                                    src={logo}
+                                    alt={collegeName}
+                                    className="w-full h-full object-contain bg-white rounded-md"
+                                    onError={() => setImageError(true)}
+                                />
+                            ) : (
+                                <span>{getInitials(collegeName)}</span>
+                            )}
                         </div>
-                        <div className="ml-3">
-                            <h3 className="font-semibold text-gray-900">{collegeName}</h3>
-                            {/* Pool Campus Badge */}
-                           
+
+                        <div className="ml-3 min-w-0">
+                            <h3
+                                className="font-semibold text-gray-900 truncate"
+                                title={collegeName}
+                            >
+                                {collegeName}
+                            </h3>
                         </div>
                     </div>
-                    
-                    {/* Status Badge */}
-                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${collegeStatus.color}`}>
+
+                    <span
+                        className={`px-2 py-1 rounded-full text-xs text-white font-medium ${collegeStatus.color}`}
+                    >
                         {collegeStatus.status}
+                    </span>
+                </div>
+
+                {/* Tags */}
+                {degreeTypes.length > 0 && (
+                    <div className="flex gap-2 mb-3">
+                        {degreeTypes.map((d, i) => (
+                            <span
+                                key={i}
+                                className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex-1 text-center truncate"
+                            >
+                                {d}
+                            </span>
+                        ))}
                     </div>
-                </div>
+                )}
 
-                {/* Degree Types */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                    {formatDegreeTypes().map((degree, index) => (
-                        <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                            {degree}
-                        </span>
-                    ))}
-                </div>
-
-                {/* College Types */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                    {formatCollegeTypes().map((collegeType, index) => (
-                        <span key={index} className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">
-                            {collegeType}
-                        </span>
-                    ))}
-                </div>
-
-                {/* Company Types */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                    {formatCompanyTypes().map((companyType, index) => (
-                        <span key={index} className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
-                            {companyType}
-                        </span>
-                    ))}
-                </div>
-
-                {/* Venue */}
-                <div className="mb-3">
-                    <div className="flex items-center">
-                        <MapPin className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                        <p className="text-sm text-gray-700">
-                            {formatVenue()}
-                        </p>
+                {collegeTypes.length > 0 && (
+                    <div className="flex gap-2 mb-3">
+                        {collegeTypes.map((c, i) => (
+                            <span
+                                key={i}
+                                className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded flex-1 text-center truncate"
+                            >
+                                {c}
+                            </span>
+                        ))}
                     </div>
-                </div>
+                )}
 
-              
+                {companyTypes.length > 0 && (
+                    <div className="flex gap-2 mb-3">
+                        {companyTypes.map((c, i) => (
+                            <span
+                                key={i}
+                                className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded flex-1 text-center truncate"
+                            >
+                                {c}
+                            </span>
+                        ))}
+                    </div>
+                )}
 
-                {/* Employment Type */}
-                <div className="mb-3">
+                {/* Info */}
+                <div className="space-y-3 mb-4">
                     <div className="flex items-center">
-                        <User className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                        <p className="text-sm font-medium text-gray-800">
+                        <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                        <p className="text-sm truncate">{formatVenue()}</p>
+                    </div>
+
+                    {workModes.length > 0 && (
+                        <div className="flex gap-2">
+                            {workModes.map((w, i) => (
+                                <div
+                                    key={i}
+                                    className="bg-gray-50 border rounded px-2 py-1 flex-1 text-xs text-center truncate"
+                                >
+                                    {w}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    <div className="flex items-center">
+                        <User className="h-4 w-4 text-gray-500 mr-2" />
+                        <p className="text-sm font-medium truncate">
                             {formatEmploymentTypes()}
                         </p>
                     </div>
-                </div>
 
-                {/* Package */}
-                <div className="mb-3">
                     <div className="flex items-center">
-                        <Banknote className="h-4 w-4 text-gray-500 mr-2 flex-shrink-0" />
-                        <p className="text-sm text-gray-700">
-                          Min Package to offer:  {formatPackage()}
+                        <Banknote className="h-4 w-4 text-gray-500 mr-2" />
+                        <p className="text-sm truncate">
+                            Min Package: {formatPackage()}
                         </p>
                     </div>
                 </div>
 
-
-               
-                {/* Description - Limited to 15-20 words */}
+                {/* Description */}
                 <p className="text-sm text-gray-600 mb-4 line-clamp-3">
                     {formatDescription()}
                 </p>
 
-              
-
                 {/* Amenities */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                    <div className="bg-green-50 border border-green-100 rounded-md px-3 py-1">
-                        <p className="text-xs font-medium text-green-800">Campus Facilities</p>
+                {amenities.length > 0 && (
+                    <div className="flex gap-2 mb-4">
+                        {amenities.map((a, i) => (
+                            <div
+                                key={i}
+                                className="bg-gray-50 border rounded px-2 py-1 flex-1 text-xs text-center truncate"
+                            >
+                                {a}
+                            </div>
+                        ))}
                     </div>
-                    {formatAmenities().map((amenity, index) => (
-                        <div key={index} className="bg-gray-50 border border-gray-100 rounded-md px-3 py-1">
-                            <p className="text-xs text-gray-700">{amenity}</p>
-                        </div>
-                    ))}
-                </div>
+                )}
 
-                {/* Contact Button */}
-                <Link 
-                    to={`/company-dashboard/Pool-campus/${college._id || college.id}`} 
-                    className="block w-full"
-                >
-                    <button className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition duration-200 font-medium">
-                        Contact College
-                    </button>
-                </Link>
+                {/* CTA */}
+                <div className="mt-auto pt-4">
+                    <Link
+                        to={`/company-dashboard/Pool-campus/${college._id || college.id}`}
+                    >
+                        <button className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition">
+                            Contact College
+                        </button>
+                    </Link>
+                </div>
             </div>
         </div>
     );

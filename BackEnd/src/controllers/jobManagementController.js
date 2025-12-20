@@ -7,7 +7,7 @@ import { getStudentService } from "../services/studentService.js";
 
 export const getPostedJobs = async (req, res) => {
     const Id = req.user._id;
-   
+    // console.log("User ID: ", Id);
     const userType = req.user.userType;
     const { jobType, status } = req.query;
     if (!jobType || !status) return res.status(404).json({ msg: "parameters missing!" });
@@ -19,7 +19,7 @@ export const getPostedJobs = async (req, res) => {
         let companyProfile;
         if (userType === 'college') {
             companyProfile = await getCollegeService(Id);
-            
+            // console.log("college profile: ", companyProfile);
         }
         else if (userType === 'company') {
             companyProfile = await getCompanyService(Id);
@@ -28,7 +28,7 @@ export const getPostedJobs = async (req, res) => {
         }
         else if(userType === 'employer'){
             companyProfile = await getEmployerService(req.user);
-          
+            // console.log("Employer profile: ", companyProfile);
         }
 
      

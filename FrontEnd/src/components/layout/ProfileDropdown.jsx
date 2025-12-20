@@ -45,7 +45,7 @@ function StandardProfileDropdown() {
       <div className="py-1">
         <Link to={profileRoute} className="dropdown-item">
           <FiUser className="mr-3 text-gray-400" />
-          Edit Profile
+          Profile
         </Link>
         <Link to="/settings" className="dropdown-item">
           <FiSettings className="mr-3 text-gray-400" />

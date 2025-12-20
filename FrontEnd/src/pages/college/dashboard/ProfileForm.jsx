@@ -657,7 +657,7 @@ export default function ProfileForm({
                                 )}
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
                                 {isEditing ? (
                                     <select 
@@ -674,7 +674,7 @@ export default function ProfileForm({
                                 ) : (
                                     <input type="text" value={collegeUniversityDetails.city || ''} readOnly className="w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl text-gray-900" />
                                 )}
-                            </div>
+                            </div> */}
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Pincode</label>

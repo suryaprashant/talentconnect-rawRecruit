@@ -96,12 +96,12 @@ function Sidebar({ open, setOpen }) {
               label="Support"
               active={isActive('/support')}
             />
-            <SidebarNavItem
+            {/*<SidebarNavItem
               to="/settings"
               icon={<FiSettings />}
               label="Settings"
               active={isActive('/settings')}
-            />
+            />*/}
           </div>
         </div>
       </aside>

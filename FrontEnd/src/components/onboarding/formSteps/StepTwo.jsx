@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { MailIcon, PhoneIcon, ChevronDownIcon, AlertCircle, User } from "lucide-react";
 import { extractValidEmail } from "@/lib/utils";
 
 export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChange }) => {
+  console.log("form:data\n", formData)
   const [hasAutoSeparated, setHasAutoSeparated] = React.useState(false);
   const [validationErrors, setValidationErrors] = React.useState({
     name: '',
@@ -20,17 +21,17 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     let remainingText = text;
 
     const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
-    
+
     const phonePatterns = [
-      /(\+91[\s-]?[6-9]\d{9})/g,         
-      /(\+91[\s-]?\d{10})/g,              
-      /([6-9]\d{9})/g,                   
-      /(\d{10})/g,                        
-      /(\+\d{1,3}[\s-]?\d{6,14})/g,     
+      /(\+91[\s-]?[6-9]\d{9})/g,
+      /(\+91[\s-]?\d{10})/g,
+      /([6-9]\d{9})/g,
+      /(\d{10})/g,
+      /(\+\d{1,3}[\s-]?\d{6,14})/g,
     ];
 
     const contactKeywords = [
-      'email:', 'e-mail:', 'mail:', 'contact:', 'phone:', 'mobile:', 'mob:', 
+      'email:', 'e-mail:', 'mail:', 'contact:', 'phone:', 'mobile:', 'mob:',
       'cell:', 'tel:', 'telephone:', 'call:', 'number:', 'ph:', 'contact no:',
       'mobile no:', 'phone no:', 'contact number:', 'mobile number:', 'phone number:'
     ];
@@ -96,7 +97,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
       const prefixesToRemove = [
         'name:', 'full name:', 'candidate:', 'applicant:', 'resume of:', 'cv of:'
       ];
-      
+
       prefixesToRemove.forEach(prefix => {
         const prefixRegex = new RegExp(`^${prefix}\\s*`, 'gi');
         name = name.replace(prefixRegex, '').trim();
@@ -110,32 +111,32 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
 
   const separateContactInfoAdvanced = (text) => {
     if (!text) return { name: '', phone: '', email: '' };
-    
+
     const nameEmailPattern = /^([A-Za-z\s]+?)(?:Email\s*:|E-?mail\s*:)/i;
     const nameEmailMatch = text.match(nameEmailPattern);
-    
+
     if (nameEmailMatch) {
       const extractedName = nameEmailMatch[1].trim();
       const result = separateContactInfo(text);
-      
+
       if (extractedName && extractedName.length > result.name.length) {
         result.name = extractedName.replace(/\b\w/g, l => l.toUpperCase());
       }
-      
+
       return result;
     }
-    
+
     const complexPattern = /^([A-Za-z\s]+?)(?:\s*[-|,]\s*)?(?:Email|E-?mail|Phone|Mobile|Contact)/i;
     const complexMatch = text.match(complexPattern);
-    
+
     if (complexMatch) {
       const extractedName = complexMatch[1].trim();
       const result = separateContactInfo(text);
-      
+
       if (extractedName && extractedName.length > result.name.length) {
         result.name = extractedName.replace(/\b\w/g, l => l.toUpperCase());
       }
-      
+
       return result;
     }
 
@@ -143,39 +144,39 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
   };
 
   React.useEffect(() => {
-    if (formData.name && !hasAutoSeparated && 
-        (formData.name.includes('+91') || 
-         /\d{10}/.test(formData.name) || 
-         /@/.test(formData.name) ||
-         /email:/i.test(formData.name) ||
-         /mobile:/i.test(formData.name) ||
-         /phone:/i.test(formData.name))) {
-      
-      const { name, phone, email } = separateContactInfoAdvanced(formData.name);
-      
-      if (name !== formData.name || phone || email) {
+    if (formData.parsedData.name && !hasAutoSeparated &&
+      (formData.parsedData.name.includes('+91') ||
+        /\d{10}/.test(formData.parsedData.name) ||
+        /@/.test(formData.parsedData.name) ||
+        /email:/i.test(formData.parsedData.name) ||
+        /mobile:/i.test(formData.parsedData.name) ||
+        /phone:/i.test(formData.parsedData.name))) {
+
+      const { name, phone, email } = separateContactInfoAdvanced(formData.parsedData.name);
+
+      if (name !== formData.parsedData.name || phone || email) {
         const updates = {
           ...formData,
-          name: name || formData.name
+          name: name || formData.parsedData.name
         };
-        
-        if (phone && !formData.phone) {
+
+        if (phone && !formData.parsedData.phone) {
           updates.phone = phone;
         }
-        
-        if (email && !formData.email) {
+
+        if (email && !formData.parsedData.email) {
           updates.email = email;
         }
-        
+
         onChange(updates);
         setHasAutoSeparated(true);
       }
     }
-  }, [formData.name]);
+  }, [formData.parsedData.name]);
 
   const validateField = (name, value) => {
     let error = '';
-    
+
     switch (name) {
       case 'name':
         if (!value.trim()) {
@@ -184,7 +185,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
           error = 'Name must be at least 2 characters';
         }
         break;
-        
+
       case 'email':
         if (!value.trim()) {
           error = 'Email is required';
@@ -192,7 +193,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
           error = 'Please enter a valid email address';
         }
         break;
-        
+
       case 'phone':
         if (!value.trim()) {
           error = 'Phone number is required';
@@ -200,24 +201,24 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
           error = 'Please enter a valid phone number';
         }
         break;
-        
+
       case 'profileType':
         if (!value) {
           error = 'Please select a profile type';
         }
         break;
-        
+
       default:
         break;
     }
-    
+
     return error;
   };
 
   const handleFieldBlur = (e) => {
     const { name, value } = e.target;
     const error = validateField(name, value);
-    
+
     setValidationErrors(prev => ({
       ...prev,
       [name]: error
@@ -228,7 +229,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     const { name, value } = e.target;
     const cleanedName = value.replace(/[^a-zA-Z\s\.\-']/g, '');
     onChange({ [name]: cleanedName });
-    
+
     if (validationErrors[name]) {
       setValidationErrors(prev => ({
         ...prev,
@@ -241,7 +242,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     const value = e.target.value;
     const cleanedEmail = extractValidEmail(value);
     onChange({ email: cleanedEmail });
-    
+
     if (validationErrors.email) {
       setValidationErrors(prev => ({
         ...prev,
@@ -254,7 +255,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     const { name, value } = e.target;
     const cleanedPhone = value.replace(/[^0-9\s\+\-\(\)]/g, '');
     onChange({ [name]: cleanedPhone });
-    
+
     if (validationErrors[name]) {
       setValidationErrors(prev => ({
         ...prev,
@@ -268,7 +269,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     localStorage.setItem('selectedRole', selectedProfileType);
     onProfileTypeSelect(selectedProfileType);
     onChange({ profileType: selectedProfileType });
-    
+
     if (validationErrors.profileType) {
       setValidationErrors(prev => ({
         ...prev,
@@ -279,25 +280,25 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
 
   const validateAllFields = () => {
     const errors = {
-      name: validateField('name', formData.name || ''),
-      email: validateField('email', formData.email || ''),
-      phone: validateField('phone', formData.phone || ''),
+      name: validateField('name', formData.parsedData.name || ''),
+      email: validateField('email', formData.parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser")).user.email || ''),
+      phone: validateField('phone', formData.parsedData.phone || ''),
       profileType: validateField('profileType', formData.profileType || '')
     };
-    
+
     setValidationErrors(errors);
-    
+
     return !Object.values(errors).some(error => error !== '');
   };
 
   const handleNextClick = () => {
     const isValid = validateAllFields();
-    
+
     if (!isValid) {
       const firstErrorField = Object.keys(validationErrors).find(
         key => validationErrors[key]
       );
-      
+
       if (firstErrorField) {
         const element = document.getElementById(firstErrorField);
         if (element) {
@@ -307,7 +308,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
       }
       return;
     }
-    
+
     onNext();
   };
 
@@ -322,7 +323,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 w-full max-w-2xl"> {/* Changed to max-w-2xl for wider container */}
-          
+
           {/* Header with gradient */}
           <div className="text-center mb-8">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mx-auto mb-4">
@@ -340,17 +341,16 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
           <div className="space-y-6">
             {/* Two-column layout for fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> {/* Added grid layout */}
-              
+
               {/* Name Field - Full width on mobile, half on desktop */}
               <div className="md:col-span-2"> {/* Name field takes full width */}
                 <label htmlFor="name" className="block text-gray-700 font-medium text-sm mb-2">
                   Your Name <span className="text-red-500">*</span>
                 </label>
-                <div className={`relative flex items-center p-4 border rounded-xl transition-all duration-200 ${
-                  validationErrors.name 
-                    ? 'border-red-300 bg-gradient-to-r from-[#fecaca]/10 to-[#fca5a5]/10' 
-                    : 'border-gray-300 hover:border-[#667eea] focus-within:border-[#667eea] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
-                }`}>
+                <div className={`relative flex items-center p-4 border rounded-xl transition-all duration-200 ${validationErrors.name
+                  ? 'border-red-300 bg-gradient-to-r from-[#fecaca]/10 to-[#fca5a5]/10'
+                  : 'border-gray-300 hover:border-[#667eea] focus-within:border-[#667eea] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
+                  }`}>
                   <User className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
                   <input
                     type="text"
@@ -359,7 +359,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
                     name="name"
                     placeholder="Enter your full name"
                     className="w-full bg-transparent border-none focus:outline-none text-gray-700 placeholder-gray-400 text-base"
-                    value={formData.name || ""}
+                    value={formData.parsedData.name || ""}
                     onChange={handleNameChange}
                     onBlur={handleFieldBlur}
                   />
@@ -377,11 +377,10 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
                 <label htmlFor="email" className="block text-gray-700 font-medium text-sm mb-2">
                   Email ID <span className="text-red-500">*</span>
                 </label>
-                <div className={`relative flex items-center p-4 border rounded-xl transition-all duration-200 ${
-                  validationErrors.email 
-                    ? 'border-red-300 bg-gradient-to-r from-[#fecaca]/10 to-[#fca5a5]/10' 
-                    : 'border-gray-300 hover:border-[#667eea] focus-within:border-[#667eea] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
-                }`}>
+                <div className={`relative flex items-center p-4 border rounded-xl transition-all duration-200 ${validationErrors.email
+                  ? 'border-red-300 bg-gradient-to-r from-[#fecaca]/10 to-[#fca5a5]/10'
+                  : 'border-gray-300 hover:border-[#667eea] focus-within:border-[#667eea] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
+                  }`}>
                   <MailIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
                   <input
                     type="email"
@@ -389,7 +388,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
                     name="email"
                     placeholder="name@example.com"
                     className="w-full bg-transparent border-none focus:outline-none text-gray-700 placeholder-gray-400 text-base"
-                    value={formData.email || ""}
+                    value={formData.parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser")).user.email || ""}
                     onChange={handleEmailChange}
                     onBlur={handleFieldBlur}
                     required
@@ -408,11 +407,10 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
                 <label htmlFor="phone" className="block text-gray-700 font-medium text-sm mb-2">
                   Phone Number <span className="text-red-500">*</span>
                 </label>
-                <div className={`relative flex items-center p-4 border rounded-xl transition-all duration-200 ${
-                  validationErrors.phone 
-                    ? 'border-red-300 bg-gradient-to-r from-[#fecaca]/10 to-[#fca5a5]/10' 
-                    : 'border-gray-300 hover:border-[#667eea] focus-within:border-[#667eea] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
-                }`}>
+                <div className={`relative flex items-center p-4 border rounded-xl transition-all duration-200 ${validationErrors.phone
+                  ? 'border-red-300 bg-gradient-to-r from-[#fecaca]/10 to-[#fca5a5]/10'
+                  : 'border-gray-300 hover:border-[#667eea] focus-within:border-[#667eea] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
+                  }`}>
                   <PhoneIcon className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
                   <input
                     type="tel"
@@ -420,7 +418,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
                     name="phone"
                     placeholder="+91 9876543210"
                     className="w-full bg-transparent border-none focus:outline-none text-gray-700 placeholder-gray-400 text-base"
-                    value={formData.phone || ""}
+                    value={formData.parsedData.phone || ""}
                     onChange={handlePhoneChange}
                     onBlur={handleFieldBlur}
                     required
@@ -441,11 +439,10 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
               <label htmlFor="profileType" className="block text-gray-700 font-medium text-sm mb-2">
                 Profile Type <span className="text-red-500">*</span>
               </label>
-              <div className={`relative border rounded-xl transition-all duration-200 ${
-                validationErrors.profileType 
-                  ? 'border-red-300 bg-gradient-to-r from-[#fecaca]/10 to-[#fca5a5]/10' 
-                  : 'border-gray-300 hover:border-[#667eea] focus-within:border-[#667eea] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
-              }`}>
+              <div className={`relative border rounded-xl transition-all duration-200 ${validationErrors.profileType
+                ? 'border-red-300 bg-gradient-to-r from-[#fecaca]/10 to-[#fca5a5]/10'
+                : 'border-gray-300 hover:border-[#667eea] focus-within:border-[#667eea] focus-within:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]'
+                }`}>
                 <select
                   id="profileType"
                   name="profileType"
@@ -481,7 +478,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
             </button>
             <button
               onClick={handleNextClick}
-              disabled={!formData.email || !formData.phone || !formData.profileType || !formData.name}
+              disabled={!formData.parsedData.phone || !formData.profileType || !formData.parsedData.name}
               className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none" /* Increased padding and text */
             >
               Next
