@@ -172,7 +172,7 @@ export async function saveJobService(userId, userType, jobId, jobType) {
 export async function createApplicationService(userId, userType, jobId, jobType) {
     try {
         const existing = await getApplicationService(userId, userType, jobId, jobType);
-        // console.log("existing response: ", existing.response);
+       
         if (existing?.response[0]?.currentStatus === "Shortlisted" || existing?.response[0]?.currentStatus === "Accepted" || existing?.response[0]?.currentStatus === "Rejected") {
             return { success: false, message: `currentStatus: ${existing?.response[0]?.currentStatus}` };
         }

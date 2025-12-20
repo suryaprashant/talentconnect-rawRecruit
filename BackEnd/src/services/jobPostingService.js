@@ -379,7 +379,6 @@ export const getJobPostedByCompanyService = async (Id, jobType, userType , authU
           
         }
          else if (userType === 'employer') {
-           
             const query = { 
                 companyPosted: Id,      
                 jobType: jobType,
