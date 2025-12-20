@@ -377,7 +377,7 @@ const PoolJobListingPage = () => {
                   Explore pool campus opportunities from various companies. Apply filters to find your perfect career match.
                 </p>
               </div>
-              <div className="w-full lg:w-96">
+              {/* <div className="w-full lg:w-96">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
@@ -388,7 +388,7 @@ const PoolJobListingPage = () => {
                     className="w-full pl-10 pr-4 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none shadow-sm"
                   />
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
