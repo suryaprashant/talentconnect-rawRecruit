@@ -471,6 +471,9 @@ function JobManagementApplicationForPool() {
   const [activeTab, setActiveTab] = useState('All Jobs');
   const [showFilters, setShowFilters] = useState(false);
 
+  // Define jobType for Pool-campus
+  const jobType = 'Pool-campus';
+
   const getJobStatus = (job) => {
     const currentDate = new Date();
     const startDate = new Date(job.startDate);
@@ -595,8 +598,49 @@ function JobManagementApplicationForPool() {
     setCurrentPage(pageNumber);
   };
 
-  const handleView = (jobId, status = 'Applied') => {
-    navigate(`/manage-application/PoolCampus-placement/${jobId}?status=${status}`);
+  // Function to build query parameters
+  const buildQueryParams = (jobId, targetStatus, isVisited = false) => {
+    const customParam = {
+      jobId: jobId,
+      jobType: jobType,
+      targetStatus: targetStatus,
+    };
+    
+    // Only add isVisited if it's true
+    if (isVisited) {
+      customParam.isVisited = isVisited;
+    }
+    
+    return customParam;
+  };
+
+  // Function to navigate with query parameters
+  const navigateWithParams = (jobId, targetStatus, isVisited = false) => {
+    const customParam = buildQueryParams(jobId, targetStatus, isVisited);
+    const queryString = new URLSearchParams(customParam).toString();
+    
+    // Navigate to Pool Campus job detail with query parameters
+    // This matches your route: /manage-application/PoolCampus-placement/:jobId
+    navigate(`/manage-application/PoolCampus-placement/${jobId}?${queryString}`);
+  };
+
+  // Handle Applications count click (with isVisited = true)
+  const handleApplicationsClick = (jobId, targetStatus, e) => {
+    e.stopPropagation();
+    // Navigate with isVisited = true
+    navigateWithParams(jobId, targetStatus, true);
+  };
+
+  // Handle Eye icon click (without isVisited)
+  const handleViewJob = (jobId, targetStatus, e) => {
+    e.stopPropagation();
+    // Navigate without isVisited
+    navigateWithParams(jobId, targetStatus, false);
+  };
+
+  // Handle row click for degree/location - goes to preview
+  const handleRowClick = (jobId) => {
+    navigate(`/college-dashboard/preview/Pool-campus/${jobId}?isApplied=true`);
   };
 
   const handleDelete = async (jobId, e) => {
@@ -800,6 +844,7 @@ function JobManagementApplicationForPool() {
                         job.location.join(', ') :
                         job.location || 'N/A';
                       const jobStatus = job.jobStatus || 'Unknown';
+                      const targetStatus = jobStatus; // Using jobStatus as targetStatus
                       const deadline = job.endDate || job.deadline;
                       const views = job?.views ?? 0;
                       const applications = job.applicationCount || job.applications || 0;
@@ -813,8 +858,8 @@ function JobManagementApplicationForPool() {
                           className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200"
                         >
                           <td 
-                            className="px-6 py-4" 
-                            onClick={() => navigate(`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}
+                            className="px-6 py-4 cursor-pointer" 
+                            onClick={() => handleRowClick(jobId)}
                           >
                             <div className="font-medium text-gray-900">{jobDegree}</div>
                             <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
@@ -846,12 +891,9 @@ function JobManagementApplicationForPool() {
                           </td>
                           <td 
                             className="px-6 py-4" 
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              if(!isViewDisabled) handleView(jobId, 'Applied'); 
-                            }}
+                            onClick={(e) => handleApplicationsClick(jobId, targetStatus, e)}
                           >
-                            <div className="flex items-center gap-1 text-gray-700">
+                            <div className="flex items-center gap-1 text-gray-700 cursor-pointer hover:text-[#3b82f6] transition-colors duration-200">
                               <Users className="w-4 h-4 text-[#3b82f6]" />
                               {applications}
                             </div>
@@ -861,7 +903,7 @@ function JobManagementApplicationForPool() {
                               <button 
                                 onClick={(e) => { 
                                   e.stopPropagation(); 
-                                  if (!isViewDisabled) handleView(jobId, 'Applied'); 
+                                  if (!isViewDisabled) handleViewJob(jobId, targetStatus, e); 
                                 }} 
                                 className={viewButtonClass} 
                                 title={isViewDisabled ? "No applications to view" : "View Applicants"}
@@ -870,7 +912,7 @@ function JobManagementApplicationForPool() {
                                 <Eye size={18} />
                               </button>
                               <Link
-                                to={`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`}
+                                to={`/college-dashboard/preview/Pool-campus/${jobId}?isApplied=true`}
                                 className="text-gray-500 hover:text-[#3b82f6] p-1 rounded-md hover:bg-white/50 transition-all duration-200"
                                 title="View Job Description"
                                 onClick={e => e.stopPropagation()}

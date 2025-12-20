@@ -10,7 +10,7 @@ import { getCollegePostedJobs, deleteCollegeJob } from '@/lib/College_AxiosIntan
 
 function JobManagementApplication() {
     const navigate = useNavigate();
-    const location = useLocation()
+    const location = useLocation();
     const pathParts = location.pathname.split('/').filter(Boolean);
     const lastSegment = pathParts[pathParts.length - 1];
 
@@ -23,6 +23,9 @@ function JobManagementApplication() {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState('All Jobs');
     const [showFilters, setShowFilters] = useState(false);
+
+    // Define jobType based on context - assuming 'On-campus' from your API call
+    const jobType = 'On-campus';
 
     const getJobStatus = (job) => {
         const currentDate = new Date();
@@ -150,23 +153,48 @@ function JobManagementApplication() {
         setCurrentPage(pageNumber);
     };
 
-    const handleView = (jobId) => {
-        navigate(`${location.pathname}/${jobId}`);
+    // Function to build query parameters
+    const buildQueryParams = (jobId, targetStatus, isVisited = false) => {
+        const customParam = {
+            jobId: jobId,
+            jobType: jobType,
+            targetStatus: targetStatus,
+        };
+        
+        // Only add isVisited if it's true
+        if (isVisited) {
+            customParam.isVisited = isVisited;
+        }
+        
+        return customParam;
     };
 
-    const handleEdit = (jobId, e) => {
-        e.stopPropagation();
-        console.log(`Edit job with ID: ${jobId}`);
+    // Function to navigate with query parameters
+    const navigateWithParams = (jobId, targetStatus, isVisited = false) => {
+        const customParam = buildQueryParams(jobId, targetStatus, isVisited);
+        const queryString = new URLSearchParams(customParam).toString();
+    
+        // Navigate to the job detail page with applications status
+        navigate(`/manage-application/campus-placement/${jobId}?${queryString}`);
     };
 
-    const handleApplications = (jobId, e) => {
+    // Handle Applications count click (with isVisited = true)
+    const handleApplicationsClick = (jobId, targetStatus, e) => {
         e.stopPropagation();
-        console.log(`View applications for job ID: ${jobId}`);
+        // Navigate with isVisited = true
+        navigateWithParams(jobId, targetStatus, true);
     };
 
-    const handleExport = (jobId, e) => {
+    // Handle Eye icon click (without isVisited)
+    const handleViewJob = (jobId, targetStatus, e) => {
         e.stopPropagation();
-        console.log(`Export job with ID: ${jobId}`);
+        // Navigate without isVisited
+        navigateWithParams(jobId, targetStatus, false);
+    };
+
+    // Handle row click for degree/location - goes to preview
+    const handleRowClick = (jobId) => {
+        navigate(`/college-dashboard/preview/On-campus/${jobId}?isApplied=true`);
     };
 
     const handleDelete = async (jobId, e) => {
@@ -364,6 +392,7 @@ function JobManagementApplication() {
                                                 job.location.join(', ') :
                                                 job.location || 'N/A';
                                             const jobStatus = job.jobStatus || 'Unknown';
+                                            const targetStatus = jobStatus; // Using jobStatus as targetStatus
                                             const deadline = job.endDate || job.deadline;
                                             const views = job?.views ?? 0;
                                             const applications = job.applicationCount || job.applications || 0;
@@ -376,7 +405,7 @@ function JobManagementApplication() {
                                                     key={jobId}
                                                     className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200"
                                                 >
-                                                    <td className="px-6 py-4" onClick={() => navigate(`/college-dashboard/preview/On-campus/${job._id}?isApplied=true`)}>
+                                                    <td className="px-6 py-4 cursor-pointer" onClick={() => handleRowClick(jobId)}>
                                                         <div className="font-medium text-gray-900">{jobDegree}</div>
                                                         <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
                                                             <MapPin className="w-3 h-3" />
@@ -405,8 +434,11 @@ function JobManagementApplication() {
                                                             {views}
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4" onClick={(e) => { e.stopPropagation(); handleView(jobId); }}>
-                                                        <div className="flex items-center gap-1 text-gray-700">
+                                                    <td className="px-6 py-4">
+                                                        <div 
+                                                            className="flex items-center gap-1 text-gray-700 cursor-pointer hover:text-[#3b82f6] transition-colors duration-200"
+                                                            onClick={(e) => handleApplicationsClick(jobId, targetStatus, e)}
+                                                        >
                                                             <Users className="w-4 h-4 text-[#3b82f6]" />
                                                             {applications}
                                                         </div>
@@ -415,8 +447,7 @@ function JobManagementApplication() {
                                                         <div className="flex gap-3">
                                                             <button 
                                                                 onClick={(e) => { 
-                                                                    e.stopPropagation(); 
-                                                                    if (!isViewDisabled) handleView(jobId); 
+                                                                    if (!isViewDisabled) handleViewJob(jobId, targetStatus, e); 
                                                                 }} 
                                                                 className={viewButtonClass} 
                                                                 title={isViewDisabled ? "No applications to view" : "View Job"}
