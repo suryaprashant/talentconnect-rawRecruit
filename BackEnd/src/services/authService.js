@@ -7,6 +7,8 @@ import axios from "axios";
 import { sendOtpEmail } from "../utils/sendOtpEmail.js";
 import OtpModel from "../models/otpModel.js";
 
+import { sendPasswordResetEmail , sendPasswordChangedConfirmation } from "../utils/sendPasswordResetEmail.js";
+
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // Total number of all users
@@ -313,41 +315,41 @@ export const handleLinkedInLogin = async ({ code, state }) => {
 
 const resetTokens = {};
 
-export const requestPasswordReset = async ({ email }) => {
-  const user = await Auth.findOne({ email });
-  if (!user) {
-    const error = new Error("User with that email does not exist.");
-    error.statusCode = 404;
-    throw error;
-  }
-  const token = crypto.randomBytes(32).toString("hex");
+// export const requestPasswordReset = async ({ email }) => {
+//   const user = await Auth.findOne({ email });
+//   if (!user) {
+//     const error = new Error("User with that email does not exist.");
+//     error.statusCode = 404;
+//     throw error;
+//   }
+//   const token = crypto.randomBytes(32).toString("hex");
 
-  resetTokens[token] = { email, expires: Date.now() + 15 * 60 * 1000 };
+//   resetTokens[token] = { email, expires: Date.now() + 15 * 60 * 1000 };
 
-  const resetLink = `${process.env.Frontend_URL}/reset-password/${token}`;
+//   const resetLink = `${process.env.Frontend_URL}/reset-password/${token}`;
 
-  await sendEmail(
-    email,
-    "Password Reset Link",
-    `<p>Click <a href="${resetLink}">here</a> to reset your password. This link will expire in 15 minutes.</p>`
-  );
-};
+//   await sendEmail(
+//     email,
+//     "Password Reset Link",
+//     `<p>Click <a href="${resetLink}">here</a> to reset your password. This link will expire in 15 minutes.</p>`
+//   );
+// };
 
-export const performPasswordReset = async ({ token, newPassword }) => {
-  const tokenData = resetTokens[token];
-  if (!tokenData || tokenData.expires < Date.now()) {
-    const error = new Error("Token is invalid or has expired.");
-    error.statusCode = 400;
-    throw error;
-  }
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  await Auth.findOneAndUpdate(
-    { email: tokenData.email },
-    { password: hashedPassword }
-  );
+// export const performPasswordReset = async ({ token, newPassword }) => {
+//   const tokenData = resetTokens[token];
+//   if (!tokenData || tokenData.expires < Date.now()) {
+//     const error = new Error("Token is invalid or has expired.");
+//     error.statusCode = 400;
+//     throw error;
+//   }
+//   const hashedPassword = await bcrypt.hash(newPassword, 10);
+//   await Auth.findOneAndUpdate(
+//     { email: tokenData.email },
+//     { password: hashedPassword }
+//   );
 
-  delete resetTokens[token];
-};
+//   delete resetTokens[token];
+// };
 
 export const getTotalUsersCount = async (filter = {}) => {
   try {
@@ -358,3 +360,131 @@ export const getTotalUsersCount = async (filter = {}) => {
     throw new Error("Failed to get total users count");
   }
 };
+
+
+
+export const requestPasswordResetService = async ({ email }) => {
+  try {
+    const user = await Auth.findOne({ email });
+    
+    if (!user) {
+   
+      return { 
+        success: true, 
+        message: "If an account exists with this email, you will receive a reset link." 
+      };
+    }
+
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(rawToken)
+      .digest('hex');
+
+   
+   
+
+ 
+    user.resetToken = hashedToken; 
+    user.resetTokenExpires = Date.now() + 15 * 60 * 1000;
+    await user.save();
+
+    const frontendUrl = process.env.Frontend_URL || 'http://localhost:3000';
+    const resetLink = `${frontendUrl}/reset-password/${rawToken}`;
+
+    // Send email
+    await sendPasswordResetEmail(email, resetLink, user.name);
+
+    return { 
+      success: true, 
+      message: "If an account exists with this email, you will receive a reset link." 
+    };
+  } catch (error) {
+    console.error("Password reset request error:", error);
+    throw new Error("Failed to process password reset request");
+  }
+};
+
+
+export const validateResetTokenService = async ({ token }) => {
+  try {
+    if (!token) {
+      return { valid: false, message: "Invalid or expired reset token" };
+    }
+
+
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(token)
+      .digest('hex');
+
+
+    const user = await Auth.findOne({
+      resetToken: hashedToken,
+      resetTokenExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return { valid: false, message: "Invalid or expired reset token" };
+    }
+
+    return { 
+      valid: true, 
+      message: "Token is valid",
+      email: user.email 
+    };
+  } catch (error) {
+    console.error("Token validation error:", error);
+    throw new Error("Failed to validate reset token");
+  }
+};
+
+
+export const resetPasswordService = async ({ token, newPassword }) => {
+  try {
+    if (!token || !newPassword) {
+      throw new Error("Token and new password are required");
+    }
+
+    if (newPassword.length < 6) {
+      throw new Error("Password must be at least 6 characters");
+    }
+
+ 
+    const hashedToken = crypto
+      .createHash('sha256')
+      .update(token)
+      .digest('hex');
+
+    const user = await Auth.findOne({
+      resetToken: hashedToken,
+      resetTokenExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      throw new Error("Invalid or expired reset token");
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+   user.password = hashedPassword;
+    
+    user.resetToken = undefined;
+    user.resetTokenExpires = undefined;
+    user.lastActivity = Date.now();
+    await user.save();
+
+ 
+    sendPasswordChangedConfirmation(user.email, user.name).catch(console.error);
+
+    return { 
+      success: true, 
+      message: "Password has been reset successfully" 
+    };
+  } catch (error) {
+    console.error("Password reset error:", error);
+    throw error;
+  }
+};
+
+
