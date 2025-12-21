@@ -336,13 +336,13 @@ export default function OffCampusJobManagement() {
                         >
                           <Eye size={16} />
                         </button>
-                        <button
+                        {/* <button
                           onClick={() => handleEdit(job._id)}
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
                           title="Edit Job"
                         >
                           <Edit size={16} />
-                        </button>
+                        </button> */}
                         <button 
                           onClick={() => handleDelete(job._id)}
                           className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
