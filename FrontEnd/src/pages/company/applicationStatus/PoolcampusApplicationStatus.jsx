@@ -318,7 +318,7 @@ export default function PoolcampusApplicationStatus() {
               </div> */}
               
               {/* Sort Dropdown */}
-              <div className="relative">
+              {/* <div className="relative">
                 <select
                   className="pl-4 pr-10 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none appearance-none transition-all duration-200"
                   value={sortBy}
@@ -331,7 +331,7 @@ export default function PoolcampusApplicationStatus() {
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                   <ChevronDown className="h-4 w-4 text-gray-400" />
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -480,7 +480,7 @@ export default function PoolcampusApplicationStatus() {
                   </div>
 
                   {/* Current Status */}
-                  <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl">
+                  {/* <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl">
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="text-sm font-medium text-gray-500">Current Status</h3>
@@ -491,7 +491,7 @@ export default function PoolcampusApplicationStatus() {
                         <p className="text-sm text-gray-700 font-mono">{selectedJob.id?.substring(0, 8) || "N/A"}...</p>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Skills */}
                   {selectedJob.skills && selectedJob.skills !== "-" && (

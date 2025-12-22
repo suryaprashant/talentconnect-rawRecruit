@@ -904,14 +904,7 @@ function JobManagementApplicationForPool() {
                               >
                                 <Eye size={18} />
                               </button>
-                              <Link
-                                to={`/college-dashboard/preview/Pool-campus/${jobId}?isApplied=true`}
-                                className="text-gray-500 hover:text-[#3b82f6] p-1 rounded-md hover:bg-white/50 transition-all duration-200"
-                                title="View Job Description"
-                                onClick={e => e.stopPropagation()}
-                              >
-                                <FileSearch size={18} />
-                              </Link>
+                              
                               <button 
                                 onClick={(e) => handleDelete(jobId, e)} 
                                 className={`text-gray-500 hover:text-red-500 transition-all duration-200 ${deletingJobId === jobId ? 'opacity-50 cursor-not-allowed' : ''}`} 
