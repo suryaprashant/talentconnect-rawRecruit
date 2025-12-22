@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 
 const Spinner = () => (
   <div className="flex justify-center items-center h-full">
-    <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+    <div className="w-12 h-12 border-4 border-[#93c5fd] border-t-[#3b82f6] rounded-full animate-spin"></div>
   </div>
 );
 
@@ -316,12 +316,16 @@ function JobDetailPage(props) {
   }, [jobId, targetStatusKey]);
 
   if (loading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><Spinner /></div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center text-red-500">
+      <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex flex-col items-center justify-center text-red-500">
         <h2 className="text-2xl font-bold mb-4">An Error Occurred</h2>
         <p>{error}</p>
         <button onClick={() => navigate(-1)} className="mt-6 bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 flex items-center">
@@ -332,29 +336,44 @@ function JobDetailPage(props) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-800">Applicant Colleges ({applicants.length})</h1>
+    <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
+      {/* Pastel blur background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative z-10 max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div className="mb-6 flex items-center gap-4">
+          {/* <button onClick={() => navigate(-1)} className="text-sm text-gray-600 hover:text-black font-semibold flex items-center">
+            <ArrowLeft size={16} className="mr-1" /> Back to Jobs
+          </button> */}
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-2">Applicant Colleges ({applicants.length})</h1>
+        </div>
+        <div>
           <button onClick={() => navigate(-1)} className="text-sm text-gray-600 hover:text-black font-semibold flex items-center">
             <ArrowLeft size={16} className="mr-1" /> Back to Jobs
           </button>
         </div>
-        <div className="space-y-4">
-          {applicants.length > 0 ? (
-            applicants.map(application => (
-              <ApplicantCard
-                key={application._id}
-                applicationData={application}
-                jobRole={jobRole}
-                onStatusChange={handleApplicantStatusChange}
-              />
-            ))
-          ) : (
-            <div className="text-center py-12 bg-white rounded-lg border">
-              <p className="text-gray-500">There are no college applications for this job yet.</p>
-            </div>
-          )}
+        
+        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden p-6 mt-4">
+          <div className="space-y-4">
+            {applicants.length > 0 ? (
+              applicants.map(application => (
+                <ApplicantCard
+                  key={application._id}
+                  applicationData={application}
+                  jobRole={jobRole}
+                  onStatusChange={handleApplicantStatusChange}
+                />
+              ))
+            ) : (
+              <div className="text-center py-12 bg-white rounded-lg border">
+                <p className="text-gray-500">There are no college applications for this job yet.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

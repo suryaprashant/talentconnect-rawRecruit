@@ -187,7 +187,7 @@ export default function OffCampusJobManagement() {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg mb-6 overflow-hidden">
+        {/* <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg mb-6 overflow-hidden">
           <div className="flex overflow-x-auto">
             {['All Jobs', 'Published', 'Drafts'].map(tab => (
               <button
@@ -218,10 +218,10 @@ export default function OffCampusJobManagement() {
               </button>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Stats Bar */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <div className="flex items-center justify-between text-sm text-gray-600 px-2">
             <div>
               Showing <span className="font-semibold text-[#667eea]">{startIndex + 1}</span> - <span className="font-semibold text-[#667eea]">{Math.min(endIndex, filteredJobs?.length || 0)}</span> of <span className="font-semibold text-[#667eea]">{filteredJobs?.length || 0}</span> jobs
@@ -234,7 +234,7 @@ export default function OffCampusJobManagement() {
               Filters
             </button>
           </div>
-        </div>
+        </div> */}
 
         {/* Jobs Table */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
@@ -359,7 +359,7 @@ export default function OffCampusJobManagement() {
           </div>
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {/* {totalPages > 1 && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-white">
               <div className="flex items-center gap-4">
                 <button
@@ -426,7 +426,7 @@ export default function OffCampusJobManagement() {
                 <ChevronRight size={16} />
               </button>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>

@@ -5,13 +5,11 @@ import useConversation from '@/statemanage/useConversation.js';
 import { ArrowLeft, Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-
 const Spinner = () => (
   <div className="flex justify-center items-center h-full">
-    <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+    <div className="w-12 h-12 border-4 border-[#93c5fd] border-t-[#3b82f6] rounded-full animate-spin"></div>
   </div>
 );
-
 
 const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
   const navigate = useNavigate();
@@ -39,10 +37,13 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
           userType: 'company',
           fullname: companyDetails?.companyName || 'Unknown Company'
         };
+
         setSelectedConversation(conversationUser);
+
         setTimeout(() => {
           navigate('/chat-application');
         }, 100);
+
       } else {
         toast.error('Failed to create conversation');
       }
@@ -55,13 +56,16 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
   const handleShortlist = async (e) => {
     e.stopPropagation();
     if (isProcessing) return;
+
     if (currentStatus === 'Shortlisted') {
       toast('Company is already Shortlisted!', { icon: 'ℹ️' });
       return;
     }
+
     setIsProcessing(true);
     try {
       const response = await shortlistCompanyByCollege(applicationId, jobRole);
+
       if (response.data && response.data.success) {
         const newStatus = 'Shortlisted';
         setCurrentStatus(newStatus);
@@ -81,13 +85,16 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
   const handleReject = async (e) => {
     e.stopPropagation();
     if (isProcessing) return;
+
     if (currentStatus === 'Rejected') {
       toast('Company is already Rejected!', { icon: 'ℹ️' });
       return;
     }
+
     setIsProcessing(true);
     try {
       const response = await rejectCompanyApplicationForCollege(applicationId, jobRole);
+
       if (response.data && response.data.success) {
         const newStatus = 'Rejected';
         setCurrentStatus(newStatus);
@@ -107,13 +114,16 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
   const handleAccept = async (e) => {
     e.stopPropagation();
     if (isProcessing) return;
+
     if (currentStatus === 'Accepted') {
       toast('Company is already Accepted!', { icon: 'ℹ️' });
       return;
     }
+
     setIsProcessing(true);
     try {
       const response = await acceptCompanies(applicationId, jobRole);
+
       if (response.data && response.data.success) {
         const newStatus = 'Accepted';
         setCurrentStatus(newStatus);
@@ -132,47 +142,46 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Shortlisted': return 'bg-green-100 text-green-800';
-      case 'Rejected': return 'bg-red-100 text-red-800';
-      case 'Accepted': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-blue-100 text-blue-800';
+      case 'Shortlisted':
+        return 'bg-green-100 text-green-800';
+      case 'Rejected':
+        return 'bg-red-100 text-red-800';
+      case 'Accepted':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-blue-100 text-blue-800';
     }
   };
 
-  const getButtonClass = (buttonType, currentStatus, isProcessing) => {
+  const getButtonClass = (status, currentStatus, isProcessing) => {
     const baseClass = `w-full text-white px-4 py-2 rounded-md font-semibold transition-colors text-center text-sm ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`;
-    switch (buttonType) {
-      case 'shortlist': return `${baseClass} ${currentStatus === 'Shortlisted' ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`;
-      case 'reject': return `${baseClass} ${currentStatus === 'Rejected' ? 'bg-red-700 hover:bg-red-800' : 'bg-red-500 hover:bg-red-600'}`;
-      case 'accept': return `${baseClass} ${currentStatus === 'Accepted' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'}`;
-      default: return baseClass;
+    
+    switch (status) {
+      case 'Shortlisted':
+        return `${baseClass} ${currentStatus === 'Shortlisted' ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`;
+      case 'Rejected':
+        return `${baseClass} ${currentStatus === 'Rejected' ? 'bg-red-700 hover:bg-red-800' : 'bg-red-500 hover:bg-red-600'}`;
+      case 'Accepted':
+        return `${baseClass} ${currentStatus === 'Accepted' ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'}`;
+      default:
+        return baseClass;
     }
   };
 
-  const getButtonText = (buttonType, currentStatus, isProcessing) => {
-    if (isProcessing) {
-      switch (buttonType) {
-        case 'shortlist': return currentStatus === 'Shortlisted' ? 'Shortlisted' : 'Shortlisting...';
-        case 'reject': return currentStatus === 'Rejected' ? 'Rejected' : 'Rejecting...';
-        case 'accept': return currentStatus === 'Accepted' ? 'Accepted' : 'Accepting...';
-        default: return '';
-      }
+  const getButtonText = (status, currentStatus, isProcessing) => {
+    if (isProcessing && currentStatus !== status) {
+      return `${status}ing...`;
     }
-    switch (buttonType) {
-      case 'shortlist': return currentStatus === 'Shortlisted' ? 'Shortlisted' : 'Shortlist';
-      case 'reject': return currentStatus === 'Rejected' ? 'Rejected' : 'Reject';
-      case 'accept': return currentStatus === 'Accepted' ? 'Accepted' : 'Accept';
-      default: return '';
-    }
+    return currentStatus === status ? status : status;
   };
 
   return (
     <div className="bg-white p-5 rounded-lg border border-gray-200 transition-shadow hover:shadow-md">
       <div className="flex items-start space-x-4">
-        <img 
-          src={profileImageUrl || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJEApBPkYRaZmScBMYKaEu2hX5pvqzJpXEIA&s'} 
-          alt={`${companyDetails?.companyName} Logo`} 
-          className="w-20 h-20 rounded-md object-cover border" 
+        <img
+          src={profileImageUrl || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJEApBPkYRaZmScBMYKaEu2hX5pvqzJpXEIA&s'}
+          alt={`${companyDetails?.companyName} Logo`}
+          className="w-20 h-20 rounded-md object-cover border"
         />
         <div className="flex-grow">
           <div className="flex justify-between items-start">
@@ -182,13 +191,40 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
             </span>
           </div>
           <div className="mt-2 space-y-1.5 text-sm text-gray-600">
-            <div className="flex items-center"><Building2 size={14} className="mr-2.5 text-gray-400" /><span>Type: {companyDetails?.companyType || 'N/A'}</span></div>
-            <div className="flex items-center"><Briefcase size={14} className="mr-2.5 text-gray-400" /><span>Industry: {companyDetails?.industryType || 'N/A'}</span></div>
-            <div className="flex items-center"><MapPin size={14} className="mr-2.5 text-gray-400" /><span>{companyDetails?.city || 'N/A'}, {companyDetails?.state || 'N/A'}</span></div>
-            <div className="flex items-center"><Globe size={14} className="mr-2.5 text-gray-400" /><a href={companyDetails?.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{companyDetails?.websiteUrl ? 'Website' : 'No website provided'}</a></div>
-            <div className="flex items-center"><Mail size={14} className="mr-2.5 text-gray-400" /><a href={`mailto:${employerDetails?.workEmail}`} className="text-blue-600 hover:underline">{employerDetails?.workEmail || 'No email provided'}</a></div>
-            <div className="flex items-center"><Phone size={14} className="mr-2.5 text-gray-400" /><span>{companyDetails?.phoneNumber || 'No phone provided'}</span></div>
-            <div className="flex items-center"><Linkedin size={14} className="mr-2.5 text-gray-400" /><a href={companyDetails?.companyLinkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{companyDetails?.companyLinkedin ? 'LinkedIn Profile' : 'No LinkedIn provided'}</a></div>
+            <div className="flex items-center">
+              <Briefcase size={14} className="mr-2.5 text-gray-400" />
+              <span>{companyDetails?.industryType || 'N/A'}</span>
+            </div>
+            <div className="flex items-center">
+              <Building2 size={14} className="mr-2.5 text-gray-400" />
+              <span>{companyDetails?.companyType || 'N/A'}</span>
+            </div>
+            <div className="flex items-center">
+              <MapPin size={14} className="mr-2.5 text-gray-400" />
+              <span>{companyDetails?.city || 'N/A'}, {companyDetails?.state || 'N/A'}</span>
+            </div>
+            <div className="flex items-center">
+              <Globe size={14} className="mr-2.5 text-gray-400" />
+              <a href={companyDetails?.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                {companyDetails?.websiteUrl ? 'Website' : 'No website provided'}
+              </a>
+            </div>
+            <div className="flex items-center">
+              <Mail size={14} className="mr-2.5 text-gray-400" />
+              <a href={`mailto:${employerDetails?.workEmail}`} className="text-blue-600 hover:underline">
+                {employerDetails?.workEmail || 'No email provided'}
+              </a>
+            </div>
+            <div className="flex items-center">
+              <Phone size={14} className="mr-2.5 text-gray-400" />
+              <span>{companyDetails?.phoneNumber || 'No phone provided'}</span>
+            </div>
+            <div className="flex items-center">
+              <Linkedin size={14} className="mr-2.5 text-gray-400" />
+              <a href={companyDetails?.companyLinkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                {companyDetails?.companyLinkedin ? 'LinkedIn Profile' : 'No LinkedIn provided'}
+              </a>
+            </div>
           </div>
           <p className="text-xs text-gray-400 mt-2">
             Applied on: {new Date(createdAt).toLocaleDateString()}
@@ -197,30 +233,30 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mt-4 border-t pt-4">
-        <button 
-          onClick={handleShortlist} 
-          disabled={isProcessing} 
-          className={getButtonClass('shortlist', currentStatus, isProcessing)}
+        <button
+          onClick={handleShortlist}
+          disabled={isProcessing}
+          className={getButtonClass('Shortlisted', currentStatus, isProcessing)}
         >
-          {getButtonText('shortlist', currentStatus, isProcessing)}
+          {getButtonText('Shortlist', currentStatus, isProcessing)}
         </button>
-        <button 
-          onClick={handleReject} 
-          disabled={isProcessing} 
-          className={getButtonClass('reject', currentStatus, isProcessing)}
+        <button
+          onClick={handleReject}
+          disabled={isProcessing}
+          className={getButtonClass('Rejected', currentStatus, isProcessing)}
         >
-          {getButtonText('reject', currentStatus, isProcessing)}
+          {getButtonText('Reject', currentStatus, isProcessing)}
         </button>
-        <button 
-          onClick={handleAccept} 
-          disabled={isProcessing} 
-          className={getButtonClass('accept', currentStatus, isProcessing)}
+        <button
+          onClick={handleAccept}
+          disabled={isProcessing}
+          className={getButtonClass('Accepted', currentStatus, isProcessing)}
         >
-          {getButtonText('accept', currentStatus, isProcessing)}
+          {getButtonText('Accept', currentStatus, isProcessing)}
         </button>
-        <button 
-          onClick={handleMessageClick} 
-          disabled={isProcessing} 
+        <button
+          onClick={handleMessageClick}
+          disabled={isProcessing}
           className={`w-full bg-gray-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center text-center text-sm ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           <Send size={14} className="mr-2" /> Message
@@ -289,12 +325,16 @@ function JobDetailForPool(props) {
   }, [jobId, currentStatus]);
 
   if (loading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><Spinner /></div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center text-red-500">
+      <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex flex-col items-center justify-center text-red-500">
         <h2 className="text-2xl font-bold mb-4">An Error Occurred</h2>
         <p>{error}</p>
         <button onClick={() => navigate(-1)} className="mt-6 bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 flex items-center">
@@ -305,35 +345,44 @@ function JobDetailForPool(props) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-6 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">
-              {currentStatus} Applicants ({applicants.length})
-            </h1>
-            <p className="text-sm text-gray-500">Pool Campus Drive</p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
+      {/* Pastel blur background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#93c5fd]/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#a7f3d0]/20 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative z-10 max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div className="mb-6 flex items-center gap-4">
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-2">
+            {currentStatus} Applicants ({applicants.length})
+          </h1>
+        </div>
+        
+        <div>
           <button onClick={() => navigate(-1)} className="text-sm text-gray-600 hover:text-black font-semibold flex items-center">
             <ArrowLeft size={16} className="mr-1" /> Back to Jobs
           </button>
         </div>
-
-        <div className="space-y-4">
-          {applicants.length > 0 ? (
-            applicants.map(application => (
-              <ApplicantCard
-                key={application._id}
-                applicationData={application}
-                jobRole={jobRole}
-                onStatusChange={handleApplicantStatusChange}
-              />
-            ))
-          ) : (
-            <div className="text-center py-12 bg-white rounded-lg border">
-              <p className="text-gray-500">There are no {currentStatus.toLowerCase()} applications for this job drive yet.</p>
-            </div>
-          )}
+        
+        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden p-6 mt-4">
+          <div className="space-y-4">
+            {applicants.length > 0 ? (
+              applicants.map(application => (
+                <ApplicantCard
+                  key={application._id}
+                  applicationData={application}
+                  jobRole={jobRole}
+                  onStatusChange={handleApplicantStatusChange}
+                />
+              ))
+            ) : (
+              <div className="text-center py-12 bg-white rounded-lg border">
+                <p className="text-gray-500">There are no {currentStatus.toLowerCase()} applications for this job drive yet.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -341,5 +390,3 @@ function JobDetailForPool(props) {
 }
 
 export default JobDetailForPool;
-
-

@@ -298,7 +298,7 @@ export default function PoolCampusJobManagement() {
               <div className="col-span-3">Work Locations</div>
               <div className="col-span-2">End Date</div>
               <div className="col-span-1 text-center">Views</div>
-              <div className="col-span-1 text-center">New Apps</div>
+              <div className="col-span-1 text-center">New Applications</div>
               <div className="col-span-2 text-center">Actions</div>
             </div>
           </div>
@@ -403,7 +403,7 @@ export default function PoolCampusJobManagement() {
           </div>
 
           {/* Pagination */}
-          {totalPages > 1 && (
+          {/* {totalPages > 1 && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-white">
               <div className="flex items-center gap-4">
                 <button
@@ -470,7 +470,7 @@ export default function PoolCampusJobManagement() {
                 <ChevronRight size={16} />
               </button>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>

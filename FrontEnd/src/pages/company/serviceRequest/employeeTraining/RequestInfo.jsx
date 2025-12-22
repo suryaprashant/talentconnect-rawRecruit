@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, X, Building2, Users, Target, Clock, Monitor, BookOpen } from 'lucide-react';
 import { createEmployeeTrainingRegistration } from '@/lib/Company_AxiosInstance';
@@ -136,7 +135,7 @@ export default function RequesInfo({ onBackClick }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-8 mb-8">
           <div className="text-center">
@@ -166,115 +165,118 @@ export default function RequesInfo({ onBackClick }) {
             <p className="text-gray-500 mt-2">Fill in your training requirements to get started</p>
           </div>
 
-          <div className="space-y-8">
-            {/* Number of Employees */}
-            <div>
-              <label className="block font-medium mb-3 text-gray-700 text-lg">Number of Employees</label>
-              <div ref={employeeRef} className="relative">
-                <div
-                  className="flex items-center justify-between p-4 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white"
-                  onClick={() => toggleDropdown('numberOfEmployees')}
-                >
-                  <div className="flex items-center">
-                    <Users className="h-5 w-5 text-gray-400 mr-3" />
-                    <span className={formData.numberOfEmployees ? "text-gray-700 font-medium" : "text-gray-500"}>
-                      {formData.numberOfEmployees || 'Select number of employees'}
-                    </span>
-                  </div>
-                  <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.numberOfEmployees ? "rotate-180" : ""} text-gray-400`} />
-                </div>
-                {dropdownOpen.numberOfEmployees && (
-                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
-                    {employeeOptions.map((option) => (
-                      <div
-                        key={option}
-                        onClick={() => {
-                          updateFormData('numberOfEmployees', option);
-                          setDropdownOpen(prev => ({ ...prev, numberOfEmployees: false }));
-                        }}
-                        className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.numberOfEmployees === option ? "bg-blue-50" : ""}`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className={formData.numberOfEmployees === option ? "text-[#667eea] font-medium" : "text-gray-700"}>
-                            {option}
-                          </span>
-                          {formData.numberOfEmployees === option && <span className="text-[#667eea]">✓</span>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Types of Skills - Multi-select */}
-            <div>
-              <label className="block font-medium mb-3 text-gray-700 text-lg">Types of Skills</label>
-              <div ref={skillsRef} className="relative">
-                
-                {/* Selected Skills Display */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {formData.skillTypes.map(skill => (
-                    <div key={skill} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full">
-                      <Target className="h-4 w-4 mr-2 text-gray-500" />
-                      <span>{skill}</span>
-                      <button 
-                        type="button" 
-                        onClick={() => removeSkill(skill)} 
-                        className="ml-2 text-gray-500 hover:text-gray-700"
-                      >
-                        <X size={14} />
-                      </button>
+          <div className="space-y-6">
+            {/* Row 1: Number of Employees and Skills in one row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Number of Employees */}
+              <div>
+                <label className="block font-medium mb-3 text-gray-700 text-lg">Number of Employees</label>
+                <div ref={employeeRef} className="relative">
+                  <div
+                    className="flex items-center justify-between p-4 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white"
+                    onClick={() => toggleDropdown('numberOfEmployees')}
+                  >
+                    <div className="flex items-center">
+                      <Users className="h-5 w-5 text-gray-400 mr-3" />
+                      <span className={formData.numberOfEmployees ? "text-gray-700 font-medium" : "text-gray-500"}>
+                        {formData.numberOfEmployees || 'Select number of employees'}
+                      </span>
                     </div>
-                  ))}
-                </div>
-
-                {/* Dropdown Trigger */}
-                <div
-                  className="flex items-center justify-between p-4 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white"
-                  onClick={() => toggleDropdown('skillTypes')}
-                >
-                  <div className="flex items-center">
-                    <BookOpen className="h-5 w-5 text-gray-400 mr-3" />
-                    <span className={formData.skillTypes.length > 0 ? "text-gray-700 font-medium" : "text-gray-500"}>
-                      {formData.skillTypes.length > 0 ? `${formData.skillTypes.length} skills selected` : 'Select skills'}
-                    </span>
+                    <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.numberOfEmployees ? "rotate-180" : ""} text-gray-400`} />
                   </div>
-                  <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.skillTypes ? "rotate-180" : ""} text-gray-400`} />
-                </div>
-
-                {/* Dropdown Content */}
-                {dropdownOpen.skillTypes && (
-                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
-                    {skillOptions.map((option) => (
-                      <div
-                        key={option}
-                        onClick={() => handleSkillToggle(option)}
-                        className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.skillTypes.includes(option) ? "bg-blue-50" : ""}`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <input
-                              type="checkbox"
-                              checked={formData.skillTypes.includes(option)}
-                              readOnly
-                              className="mr-3 h-4 w-4 text-[#667eea] border-gray-300 rounded focus:ring-[#667eea]"
-                            />
-                            <span className={formData.skillTypes.includes(option) ? "text-[#667eea] font-medium" : "text-gray-700"}>
+                  {dropdownOpen.numberOfEmployees && (
+                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+                      {employeeOptions.map((option) => (
+                        <div
+                          key={option}
+                          onClick={() => {
+                            updateFormData('numberOfEmployees', option);
+                            setDropdownOpen(prev => ({ ...prev, numberOfEmployees: false }));
+                          }}
+                          className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.numberOfEmployees === option ? "bg-blue-50" : ""}`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className={formData.numberOfEmployees === option ? "text-[#667eea] font-medium" : "text-gray-700"}>
                               {option}
                             </span>
+                            {formData.numberOfEmployees === option && <span className="text-[#667eea]">✓</span>}
                           </div>
-                          {formData.skillTypes.includes(option) && <span className="text-[#667eea]">✓</span>}
                         </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Types of Skills - Multi-select */}
+              <div>
+                <label className="block font-medium mb-3 text-gray-700 text-lg">Types of Skills</label>
+                <div ref={skillsRef} className="relative">
+                  
+                  {/* Selected Skills Display */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {formData.skillTypes.map(skill => (
+                      <div key={skill} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-sm px-3 py-1 rounded-full">
+                        <Target className="h-4 w-4 mr-2 text-gray-500" />
+                        <span>{skill}</span>
+                        <button 
+                          type="button" 
+                          onClick={() => removeSkill(skill)} 
+                          className="ml-2 text-gray-500 hover:text-gray-700"
+                        >
+                          <X size={14} />
+                        </button>
                       </div>
                     ))}
                   </div>
-                )}
+
+                  {/* Dropdown Trigger */}
+                  <div
+                    className="flex items-center justify-between p-4 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white"
+                    onClick={() => toggleDropdown('skillTypes')}
+                  >
+                    <div className="flex items-center">
+                      <BookOpen className="h-5 w-5 text-gray-400 mr-3" />
+                      <span className={formData.skillTypes.length > 0 ? "text-gray-700 font-medium" : "text-gray-500"}>
+                        {formData.skillTypes.length > 0 ? `${formData.skillTypes.length} skills selected` : 'Select skills'}
+                      </span>
+                    </div>
+                    <ChevronDown className={`w-5 h-5 transition-transform ${dropdownOpen.skillTypes ? "rotate-180" : ""} text-gray-400`} />
+                  </div>
+
+                  {/* Dropdown Content */}
+                  {dropdownOpen.skillTypes && (
+                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                      {skillOptions.map((option) => (
+                        <div
+                          key={option}
+                          onClick={() => handleSkillToggle(option)}
+                          className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.skillTypes.includes(option) ? "bg-blue-50" : ""}`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                              <input
+                                type="checkbox"
+                                checked={formData.skillTypes.includes(option)}
+                                readOnly
+                                className="mr-3 h-4 w-4 text-[#667eea] border-gray-300 rounded focus:ring-[#667eea]"
+                              />
+                              <span className={formData.skillTypes.includes(option) ? "text-[#667eea] font-medium" : "text-gray-700"}>
+                                {option}
+                              </span>
+                            </div>
+                            {formData.skillTypes.includes(option) && <span className="text-[#667eea]">✓</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* Training Mode & Evaluation Type - Side by side */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Row 2: Training Mode & Evaluation Type - Side by side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Mode of Training */}
               <div>
                 <label className="block font-medium mb-3 text-gray-700 text-lg">Mode of Training</label>
@@ -320,7 +322,7 @@ export default function RequesInfo({ onBackClick }) {
               </div>
             </div>
 
-            {/* Row 4: Number of Hours/Days */}
+            {/* Row 3: Number of Hours/Days - Full width but takes less space */}
             <div>
               <label className="block font-medium mb-3 text-gray-700 text-lg">Training Duration</label>
               <div ref={hoursRef} className="relative">
@@ -360,7 +362,7 @@ export default function RequesInfo({ onBackClick }) {
               </div>
             </div>
 
-            {/* Row 5: Buttons */}
+            {/* Row 4: Buttons */}
             <div className="flex justify-between pt-6 border-t border-gray-100">
               <button 
                 type="button"
