@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ChevronDownIcon, UploadIcon, XIcon, Award, Link, FileCode, Code } from "lucide-react";
 
 const isValidLinkedIn = (url) => {
-  const pattern = /^https?:\/\/(www\.)?linkedin\.com\/in\/[A-Za-z0-9-_]+\/?$/;
+  const pattern = /^https?:\/\/(www\.)?linkedin\.com(\/in\/[A-Za-z0-9-_]+\/?)?$/;
   return pattern.test(url.trim());
 };
 

@@ -27,7 +27,7 @@ function CollegeSidebar({ activePath }) {
     <div>
       {/* College Sidebar */}
       <SidebarNavItem to="/home" icon={<FiHome />} label="Home" active={activePath === '/home'} />
-      <SidebarNavItem to="/college-profile" icon={<FiUser />} label="Profile" active={activePath === '/college-profile'} />
+      
 
       <SidebarNavItem to="/college/saved-jobs" icon={<FiUser />} label="Saved Opportunities" active={activePath === '/college/saved-jobs'} />
 
