@@ -366,12 +366,22 @@ function ApplicationPage() {
                         >
                           {/* UPDATED COLUMN: Degree and Location */}
                           <td className="px-6 py-4">
-                            <div className="font-medium text-gray-900">{jobDegree}</div>
-                            <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-                              <MapPin className="w-3 h-3" />
-                              {jobLocation}
-                            </div>
-                          </td>
+  <Link
+    to={`/college-dashboard/preview/On-campus/${job._id}?isApplied=true`}
+    disabled={job.applicationCount === 0}
+    className="block hover:bg-white/30 rounded-md -mx-2 px-2 py-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed no-underline"
+    title={job.applicationCount === 0 ? "No applications to view" : "View Job Description"}
+    onClick={e => e.stopPropagation()}
+  >
+    <div className={`font-medium ${job.applicationCount === 0 ? 'text-black-400' : 'text-gray-900'}`}>
+      {jobDegree}
+    </div>
+    <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+      <MapPin className="w-3 h-3" />
+      {jobLocation}
+    </div>
+  </Link>
+</td>
 
                           <td className="px-6 py-4">
                             <span className={`px-3 py-1 text-xs font-medium rounded-full ${jobStatus === 'Open'
@@ -413,7 +423,7 @@ function ApplicationPage() {
                               >
                                 <Eye size={18} />
                               </button>
-                              <Link
+                              {/* <Link
                                 to={`/college-dashboard/preview/On-campus/${job._id}?isApplied=true`}
                                 disabled={job.applicationCount === 0}
                                 className="text-gray-500 hover:text-blue-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -426,7 +436,7 @@ function ApplicationPage() {
                                   <path d="m21 22-2.88-2.88" />
                                   <circle cx="16" cy="17" r="3" />
                                 </svg>
-                              </Link>
+                              </Link> */}
                               <button 
                                 onClick={(e) => handleDelete(jobId, e)} 
                                 className={`text-gray-500 hover:text-red-500 transition-all duration-200 ${deletingJobId === jobId ? 'opacity-50 cursor-not-allowed' : ''}`} 

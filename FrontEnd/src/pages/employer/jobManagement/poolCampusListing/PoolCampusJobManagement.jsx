@@ -354,10 +354,14 @@ export default function PoolCampusJobManagement() {
 
                     {/* Applications Count */}
                     <div className="col-span-1 text-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
-                        {job.applicationCount || 0}
-                      </span>
-                    </div>
+  <button
+    onClick={() => handleViewColleges(job)}
+    className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium hover:bg-gradient-to-r hover:from-blue-200 hover:to-blue-100 hover:shadow-md hover:shadow-blue-100 transition-all duration-200"
+    title="View College Applications"
+  >
+    {job.applicationCount || 0}
+  </button>
+</div>
 
                     {/* Actions */}
                     <div className="col-span-2">
@@ -370,7 +374,7 @@ export default function PoolCampusJobManagement() {
                         >
                           <Eye size={16} />
                         </button>
-                        <Link
+                        {/* <Link
                           to={`/company-dashboard/preview/Pool-campus/${job._id}?isApplied=true`}
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
                           title="View Job Description"
@@ -381,7 +385,7 @@ export default function PoolCampusJobManagement() {
                             <path d="m21 22-2.88-2.88" />
                             <circle cx="16" cy="17" r="3" />
                           </svg>
-                        </Link>
+                        </Link> */}
                         <button 
                           onClick={() => handleDelete(job._id)} 
                           className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"

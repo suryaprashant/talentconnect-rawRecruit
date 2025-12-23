@@ -353,7 +353,7 @@ export default function OnCampusJobManagement() {
                             >
                               <Eye size={16} />
                             </button>
-                            <Link
+                            {/* <Link
                               to={`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`}
                               className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-200"
                               title="View Job Description"
@@ -364,7 +364,7 @@ export default function OnCampusJobManagement() {
                                 <path d="m21 22-2.88-2.88" />
                                 <circle cx="16" cy="17" r="3" />
                               </svg>
-                            </Link>
+                            </Link> */}
                             <button 
                               onClick={() => handleDelete(job._id)} 
                               className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200" 
@@ -383,7 +383,7 @@ export default function OnCampusJobManagement() {
           </div>
 
           {/* Pagination */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-gradient-to-r from-gray-50 to-white border-t border-gray-100">
+          {/* <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-gradient-to-r from-gray-50 to-white border-t border-gray-100">
             <button
               onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
               disabled={currentPage === 1}
@@ -448,7 +448,7 @@ export default function OnCampusJobManagement() {
               Next
               <ChevronRight size={16} />
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

@@ -525,7 +525,7 @@ const JobsListingPage = () => {
               </div>
 
               {/* Sort Dropdown */}
-              <div className="relative">
+              {/* <div className="relative">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
@@ -536,7 +536,7 @@ const JobsListingPage = () => {
                   <option value="company">Sort: Company Name (A-Z)</option>
                 </select>
                 <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              </div>
+              </div> */}
             </div>
 
             {/* Clear All Button */}
