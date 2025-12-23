@@ -164,9 +164,18 @@ export const RoleProvider = ({ children }) => {
     }
   }, [formData]);
   
-  const updateFormData = (newData) => {
+  /*const updateFormData = (newData) => {
     setFormData(prev => ({ ...prev, ...newData }));
-  };
+  };*/
+
+  const updateFormData = (newDataOrUpdater) => {
+  setFormData((prev) =>
+    typeof newDataOrUpdater === "function"
+      ? newDataOrUpdater(prev)
+      : { ...prev, ...newDataOrUpdater }
+  );
+};
+
   
   const updateRole = (role) => {
     setSelectedRole(role);

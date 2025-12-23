@@ -175,8 +175,39 @@ export const OnboardingForm = () => {
   };
 
   const handleFormDataChange = (newData) => {
-    updateFormData(newData);
-  };
+  updateFormData((prev) => {
+    const merged = { ...prev };
+
+    Object.entries(newData || {}).forEach(([key, value]) => {
+      // Manual input always wins
+      if (
+        merged[key] !== undefined &&
+        merged[key] !== null &&
+        merged[key] !== ""
+      ) {
+        return;
+      }
+
+      // Arrays (skills, etc.)
+      if (Array.isArray(value)) {
+        merged[key] = value;
+        return;
+      }
+
+      // Objects (education, experience, etc.)
+      if (typeof value === "object" && value !== null) {
+        merged[key] = value;
+        return;
+      }
+
+      // Primitives
+      merged[key] = value;
+    });
+
+    return merged;
+  });
+};
+
 
   const renderStep = () => {
     const role = selectedRole?.toLowerCase();

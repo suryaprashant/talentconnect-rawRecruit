@@ -62,7 +62,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
     }
     delete tempFormData.experiences;
 
-    for (const key in tempFormData) {
+    /*for (const key in tempFormData) {
       const value = tempFormData[key];
       if (value === null || value === undefined) continue;
 
@@ -73,7 +73,23 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
       } else {
         dataToSend.append(key, value.toString());
       }
-    }
+    }*/
+
+      for (const key in tempFormData) {
+  const value = tempFormData[key];
+  if (value === null || value === undefined) continue;
+
+  if (value instanceof File) {
+    dataToSend.append(key, value, value.name);
+  } else if (Array.isArray(value)) {
+    dataToSend.append(key, JSON.stringify(value));
+  } else if (typeof value === "object") {
+    dataToSend.append(key, JSON.stringify(value));
+  } else {
+    dataToSend.append(key, value.toString());
+  }
+}
+
 
     dataToSend.append('profileType', selectedRole);
 
