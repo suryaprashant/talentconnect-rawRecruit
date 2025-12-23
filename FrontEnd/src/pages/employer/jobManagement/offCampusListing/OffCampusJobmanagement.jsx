@@ -541,7 +541,7 @@ export default function OffCampusJobManagement() {
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-1 mt-6 bg-gradient-to-r from-gray-50 to-white p-1 rounded-xl border border-gray-200">
+          {/* <div className="flex gap-1 mt-6 bg-gradient-to-r from-gray-50 to-white p-1 rounded-xl border border-gray-200">
             {['All Jobs', 'Published', 'Drafts'].map((tab) => (
               <button
                 key={tab}
@@ -558,7 +558,7 @@ export default function OffCampusJobManagement() {
                 {tab} {tab === 'All Jobs' ? `(${jobs?.length || 0})` : ''}
               </button>
             ))}
-          </div>
+          </div> */}
         </div>
 
         {/* Search and Filters */}
@@ -672,10 +672,14 @@ export default function OffCampusJobManagement() {
                     </div>
 
                     <div className="col-span-2 text-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200">
-                        {job?.applicationCount || 0}
-                      </span>
-                    </div>
+  <button
+    onClick={() => handleView(job._id)}
+    className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200 hover:bg-gradient-to-r hover:from-blue-200 hover:to-blue-100 hover:shadow-md hover:shadow-blue-100 hover:border-[#667eea]/50 transition-all duration-200"
+    title="View Applications"
+  >
+    {job?.applicationCount || 0}
+  </button>
+</div>
 
                     <div className="col-span-2">
                       <div className="flex items-center justify-center gap-2">
@@ -686,13 +690,13 @@ export default function OffCampusJobManagement() {
                         >
                           <Eye size={16} />
                         </button>
-                        <Link
+                        {/* <Link
                           to={`/company-dashboard/Off-campus/${job._id}?isApplied=true`}
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-all duration-200"
                           title="Preview Job"
                         >
                           <FileText size={16} />
-                        </Link>
+                        </Link> */}
                         <button 
                           onClick={() => handleDelete(job._id)}
                           className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"

@@ -481,7 +481,7 @@ export default function OffCampusJobManagement() {
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-1 mt-6 bg-gradient-to-r from-gray-50 to-white p-1 rounded-xl border border-gray-200">
+          {/* <div className="flex gap-1 mt-6 bg-gradient-to-r from-gray-50 to-white p-1 rounded-xl border border-gray-200">
             {['All Jobs', 'Published', 'Drafts'].map((tab) => (
               <button
                 key={tab}
@@ -498,7 +498,7 @@ export default function OffCampusJobManagement() {
                 {tab} {tab === 'All Jobs' ? `(${jobs?.length || 0})` : ''}
               </button>
             ))}
-          </div>
+          </div> */}
         </div>
 
         {/* Search and Filters */}

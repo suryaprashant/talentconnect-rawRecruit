@@ -384,18 +384,21 @@ function PoolApplicationsPage() {
                               {views}
                             </div>
                           </td>
-                          <td 
-                            className="px-6 py-4 cursor-pointer"
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              if (!isViewDisabled) handleView(jobId); 
-                            }}
-                          >
-                            <div className="flex items-center gap-1 text-gray-700">
-                              <Users className="w-4 h-4 text-[#3b82f6]" />
-                              {applications}
-                            </div>
-                          </td>
+                          
+                          <td className="px-6 py-4">
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      handleView(jobId);
+    }}
+    className={`flex items-center gap-1 text-gray-700 hover:bg-white/30 rounded-md -mx-2 px-2 py-2 transition-all duration-200 w-full text-left cursor-pointer ${isViewDisabled ? 'opacity-70 hover:opacity-100' : ''}`}
+    title={isViewDisabled ? "No applications to view (Click to refresh)" : "View Shortlisted"}
+  >
+    <Users className="w-4 h-4 text-[#3b82f6]" />
+    {applications}
+  </button>
+</td>
+
                           <td className="px-6 py-4">
                             <div className="flex gap-3">
                               <button
@@ -409,7 +412,7 @@ function PoolApplicationsPage() {
                               >
                                 <Eye size={18} />
                               </button>
-                              <Link
+                              {/* <Link
                                 to={`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`}
                                 className="text-gray-500 hover:text-blue-600 transition-all duration-200"
                                 title="View Job Description"
@@ -421,7 +424,7 @@ function PoolApplicationsPage() {
                                   <path d="m21 22-2.88-2.88" />
                                   <circle cx="16" cy="17" r="3" />
                                 </svg>
-                              </Link>
+                              </Link> */}
                               <button 
                                 onClick={(e) => handleDelete(jobId, e)} 
                                 className={`text-gray-500 hover:text-red-500 transition-all duration-200 ${deletingJobId === jobId ? 'opacity-50 cursor-not-allowed' : ''}`} 
