@@ -46,7 +46,7 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
           </p>
         </header>
 
-        {/* Services */}
+        {/* Services - Square Cards with Hover */}
         <section className="mb-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {serviceData.map((service) => {
@@ -54,19 +54,27 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
               return (
                 <div
                   key={service.id}
-                  className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-lg shadow p-4 hover:shadow-md transition-all duration-200 h-full flex flex-col"
+                  className="group relative bg-white/90 backdrop-blur-sm border border-gray-100 rounded-lg shadow p-6 hover:shadow-md transition-all duration-200 flex flex-col h-96"
                 >
-                  <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mb-3">
-                    <IconComponent className="h-5 w-5 text-[#667eea]" />
+                  {/* Purple hover overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/0 to-[#764ba2]/0 group-hover:from-[#667eea]/5 group-hover:to-[#764ba2]/5 rounded-lg transition-all duration-300"></div>
+                  
+                  {/* Purple border on hover */}
+                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#667eea]/20 rounded-lg transition-all duration-300"></div>
+                  
+                  <div className="relative z-10 h-full flex flex-col">
+                    <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mb-4">
+                      <IconComponent className="h-5 w-5 text-[#667eea]" />
+                    </div>
+                    
+                    <h3 className="text-base font-bold text-gray-900 mb-3">
+                      {service.title}
+                    </h3>
+                    
+                    <p className="text-gray-600 text-sm leading-relaxed flex-grow overflow-y-auto">
+                      {service.description}
+                    </p>
                   </div>
-
-                  <h3 className="text-base font-bold text-gray-900 mb-2">
-                    {service.title}
-                  </h3>
-
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {service.description}
-                  </p>
                 </div>
               );
             })}

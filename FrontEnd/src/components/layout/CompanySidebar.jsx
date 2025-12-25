@@ -3,7 +3,8 @@ import SidebarNavGroup from './SidebarNavGroup';
 
 function CompanySidebar({ activePath }) {
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white border-r border-gray-200">
+    <div className="h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white">
+      {/* Removed border-r border-gray-200 */}
       
       <div className="flex-1 flex flex-col min-h-0">
       
@@ -21,19 +22,6 @@ function CompanySidebar({ activePath }) {
             active={activePath === '/home'} 
           />
 
-     
-          {/*<SidebarNavItem 
-            to="/company-profile" 
-            icon={
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
-              </svg>
-            } 
-            label="Profile" 
-            active={activePath === '/company-profile'} 
-          />*/}
-
-          
           <SidebarNavItem 
             to="/company/saved-jobs/" 
             icon={
@@ -87,7 +75,7 @@ function CompanySidebar({ activePath }) {
             />
           </SidebarNavGroup>
 
-           {/* Service Request */}
+          {/* Service Request */}
           <SidebarNavGroup 
             label="Service Request" 
             icon={
@@ -132,7 +120,6 @@ function CompanySidebar({ activePath }) {
             />
           </SidebarNavGroup>
 
-
           {/* Application Status */}
           <SidebarNavGroup 
             label="Application Status" 
@@ -166,7 +153,7 @@ function CompanySidebar({ activePath }) {
             />
           </SidebarNavGroup>
 
-            {/* Hiring Channels */}
+          {/* Hiring Channels */}
           <SidebarNavGroup 
             label="Hiring Channels" 
             icon={
@@ -207,27 +194,6 @@ function CompanySidebar({ activePath }) {
               label="Off-campus Hiring"
               active={activePath === '/hiring-channels/off-campus-hiring'}
             />
-            {/* <SidebarNavItem
-              to="/hiring-channels/post-a-job"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
-                </svg>
-              }
-              label="Post a Job"
-              active={activePath === '/hiring-channels/post-a-job'}
-            /> */}
-            {/* <SidebarNavItem
-              to="/hiring-channels/post-an-internship"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clipRule="evenodd" />
-                  <path fillRule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zM6 12a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V12zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 15a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V15zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 18a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V18zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75z" clipRule="evenodd" />
-                </svg>
-              }
-              label="Post an Internship"
-              active={activePath === '/hiring-channels/post-an-internship'}
-            /> */}
           </SidebarNavGroup>
 
           {/* Job Management */}
@@ -251,8 +217,7 @@ function CompanySidebar({ activePath }) {
               label="On-campus Listings"
               active={activePath === '/job-management/On-campus'}
             />
-
-             <SidebarNavItem
+            <SidebarNavItem
               to="/job-management/Pool-campus"
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -262,7 +227,6 @@ function CompanySidebar({ activePath }) {
               label="Pool Campus Listings"
               active={activePath === '/job-management/Pool-campus'}
             />
-
             <SidebarNavItem
               to="/job-management/Off-campus"
               icon={
@@ -273,7 +237,6 @@ function CompanySidebar({ activePath }) {
               label="Off-campus Listings"
               active={activePath === '/job-management/Off-campus'}
             />
-           
           </SidebarNavGroup>
 
           {/* Shortlisted Candidates/Colleges */}
@@ -296,8 +259,7 @@ function CompanySidebar({ activePath }) {
               label="On-campus Listings"
               active={activePath === '/shortlisted/on-campus-listings'}
             />
-
-             <SidebarNavItem
+            <SidebarNavItem
               to="/shortlisted/pool-campus-listings"
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -307,7 +269,6 @@ function CompanySidebar({ activePath }) {
               label="Pool Campus Listings"
               active={activePath === '/shortlisted/pool-campus-listings'}
             />
-
             <SidebarNavItem
               to="/shortlisted/Off-campus"
               icon={
@@ -318,7 +279,6 @@ function CompanySidebar({ activePath }) {
               label="Off-campus Listings"
               active={activePath === '/shortlisted/Off-campus'}
             />
-           
           </SidebarNavGroup>
 
           {/* Accepted Candidates/Colleges */}
@@ -341,7 +301,7 @@ function CompanySidebar({ activePath }) {
               label="On-campus Listings"
               active={activePath === '/accepted/on-campus-listings'}
             />
-              <SidebarNavItem
+            <SidebarNavItem
               to="/accepted/pool-campus-listings"
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -351,7 +311,6 @@ function CompanySidebar({ activePath }) {
               label="Pool Campus Listings"
               active={activePath === '/accepted/pool-campus-listings'}
             />
-
             <SidebarNavItem
               to="/accepted/Off-campus"
               icon={
@@ -362,92 +321,11 @@ function CompanySidebar({ activePath }) {
               label="Off-campus Listings"
               active={activePath === '/accepted/Off-campus'}
             />
-          
           </SidebarNavGroup>
 
-        
-
-          {/* Hosting */}
-          {/* <SidebarNavGroup 
-            label="Hosting" 
-            icon={
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-2.625 6c-.54 0-.828.419-.936.634a1.96 1.96 0 00-.189.866c0 .298.059.605.189.866.108.215.395.634.936.634.54 0 .828-.419.936-.634.13-.26.189-.568.189-.866 0-.298-.059-.605-.189-.866-.108-.215-.395-.634-.936-.634zm4.314.634c.108-.215.395-.634.936-.634.54 0 .828.419.936.634.13.26.189.568.189.866 0 .298-.059.605-.189.866-.108.215-.395.634-.936.634-.54 0-.828-.419-.936-.634a1.96 1.96 0 01-.189-.866c0-.298.059-.605.189-.866zm-4.34 7.964a.75.75 0 01-1.061-1.06 5.236 5.236 0 013.73-1.538 5.236 5.236 0 013.695 1.538.75.75 0 11-1.061 1.06 3.736 3.736 0 00-2.634-1.098 3.736 3.736 0 00-2.634 1.098z" clipRule="evenodd" />
-              </svg>
-            } 
-            active={activePath.includes('/company/hosting')}
-          >
-            <SidebarNavItem
-              to="/company/hosting/host-hackathon"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" clipRule="evenodd" />
-                </svg>
-              }
-              label="Hackathon"
-              active={activePath === '/company/hosting/host-hackathon'}
-            />
-            <SidebarNavItem
-              to="/company/hosting/host-workshop"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path d="M11.584 2.376a.75.75 0 01.832 0l9 6a.75.75 0 11-.832 1.248L12 3.901 3.416 9.624a.75.75 0 01-.832-1.248l9-6z" />
-                  <path fillRule="evenodd" d="M20.25 10.332v9.918H21a.75.75 0 010 1.5H3a.75.75 0 010-1.5h.75v-9.918a.75.75 0 01.634-.74A49.109 49.109 0 0112 9c2.59 0 5.134.202 7.616.592a.75.75 0 01.634.74zm-7.5 2.418a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75zm3-.75a.75.75 0 01.75.75v6.75a.75.75 0 01-1.5 0v-6.75a.75.75 0 01.75-.75zM9 12.75a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75z" clipRule="evenodd" />
-                  <path d="M12 7.875a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z" />
-                </svg>
-              }
-              label="Workshop"
-              active={activePath === '/company/hosting/host-workshop'}
-            />
-            <SidebarNavItem
-              to="/company/hosting/host-case-studies"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M5.625 1.5H9a3.75 3.75 0 013.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 013.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 01-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875zM12.75 12a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V18a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V12z" clipRule="evenodd" />
-                  <path d="M14.25 5.25a5.23 5.23 0 00-1.279-3.434 9.768 9.768 0 016.963 6.963A5.23 5.23 0 0016.5 7.5h-1.875a.375.375 0 01-.375-.375V5.25z" />
-                </svg>
-              }
-              label="Case Studies"
-              active={activePath === '/company/hosting/host-case-studies'}
-            />
-          </SidebarNavGroup> */}
-
-          {/* Hosting Management */}
-          {/* <SidebarNavItem 
-            to="/hosting-management" 
-            icon={
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z" />
-              </svg>
-            } 
-            label="Hosting Management" 
-            active={activePath.includes('/hosting-management')} 
-          /> */}
-
-         
           {/* Quick Actions at Bottom */}
-          <div className="pt-4 mt-4 border-t border-gray-200">
-            {/* <SidebarNavItem
-              to="/interviews"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path d="M8.25 4.5a3.75 3.75 0 117.5 0v3a3.75 3.75 0 11-7.5 0v-3z" />
-                  <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
-                </svg>
-              }
-              label="Interviews"
-              active={activePath === '/interviews'}
-            /> */}
-            {/* <SidebarNavItem
-              to="/reports"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path fillRule="evenodd" d="M2.25 2.25a.75.75 0 000 1.5H3v10.5a3 3 0 003 3h1.21l-1.172 3.513a.75.75 0 001.424.474l.329-.987h8.418l.33.987a.75.75 0 001.422-.474l-1.17-3.513H18a3 3 0 003-3V3.75h.75a.75.75 0 000-1.5H2.25zm6.04 16.5l.5-1.5h6.42l.5 1.5H8.29zm7.46-12a.75.75 0 00-1.5 0v6a.75.75 0 001.5 0v-6zm-3 2.25a.75.75 0 00-1.5 0v3.75a.75.75 0 001.5 0V9zm-3 2.25a.75.75 0 00-1.5 0v1.5a.75.75 0 001.5 0v-1.5z" clipRule="evenodd" />
-                </svg>
-              }
-              label="Reports"
-              active={activePath === '/reports'}
-            /> */}
+          <div className="pt-4 mt-4">
+            {/* Removed border-t border-gray-200 */}
             <SidebarNavItem
               to="/chat-application"
               icon={
