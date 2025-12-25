@@ -25,17 +25,21 @@ function ResumeSearch({ onSearch, onFileUpload }) {
       <div className="w-full max-w-4xl">
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-8">
           {/* Header Section */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 mb-4">
-              <Search className="h-8 w-8 text-[#667eea]" />
-            </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-3">
-              Smart Resume Search for Faster Hiring
-            </h1>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Leverage AI-driven recommendations and powerful filters to find the right talent instantly.
-            </p>
-          </div>
+          <div className="flex flex-col md:flex-row items-center justify-center mb-8">
+  <div className="flex items-center mb-4 md:mb-0 md:mr-6">
+    <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20">
+      <Search className="h-8 w-8 text-[#667eea]" />
+    </div>
+  </div>
+  <div className="text-center md:text-left">
+    <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-3">
+      Smart Resume Search for Faster Hiring
+    </h1>
+    <p className="text-gray-600 max-w-2xl text-center">
+      Leverage AI-driven recommendations and powerful filters to find the right talent instantly.
+    </p>
+  </div>
+</div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Search Query Input */}

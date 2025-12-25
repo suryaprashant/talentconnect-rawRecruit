@@ -521,3 +521,28 @@ export function submitAlternateDates(jobId, dateData) {
 }
 
 
+// Add these functions to your Company_AxiosInstance.js file:
+
+// Get all shortlisted candidates for company dashboard
+export function getShortlistedCandidates() {
+  return axiosClient
+    .get(`/application/company/shortlisted`)
+    .then((response) => response)
+    .catch((error) => error);
+}
+
+// Get all accepted candidates for company dashboard
+export function getAcceptedCandidates() {
+  return axiosClient
+    .get(`/application/company/accepted`)
+    .then((response) => response)
+    .catch((error) => error);
+}
+
+// Get categorized applications for dashboard
+export function getCompanyApplicationsByCategory() {
+  return axiosClient
+    .get(`/application/company/applications-by-category`)
+    .then((response) => response)
+    .catch((error) => error);
+}
