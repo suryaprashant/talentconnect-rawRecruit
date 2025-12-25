@@ -13,7 +13,10 @@ const onboardingSchema = new mongoose.Schema({
     state: String,
     city: String,
     country: String,
-    pincode: String
+    pincode: String,
+    establishedYear: { type: String }, // or Number if you prefer
+    phoneNumber: { type: String },
+    alternatePhoneNumber: { type: String }
   },
   placementCoordinatorDetails: {
     coordinatorName: String,

@@ -374,16 +374,16 @@ export default function PoolcampusApplicationStatus() {
                           <h3 className="font-medium text-gray-900 truncate">
                             {job?.companyDetails?.[0]?.collegeUniversityDetails?.collegeName || job?.company || "Unknown College"}
                           </h3>
-                          <p className="text-sm text-gray-600 truncate">{job.jobTitle}</p>
+                          {/*<p className="text-sm text-gray-600 truncate">{job.jobTitle}</p>*/}
                           <div className="mt-2 flex items-center text-xs text-gray-500 flex-wrap gap-2">
                             <span className="inline-flex items-center">
                               <Clock className="h-3 w-3 mr-1" />
                               {job.degree}
                             </span>
-                            <span className="inline-flex items-center">
+                            {/*<span className="inline-flex items-center">
                               <MapPin className="h-3 w-3 mr-1" />
                               {job.city}, {job.state}
-                            </span>
+                            </span>*/}
                           </div>
                         </div>
                       </div>
@@ -452,21 +452,25 @@ export default function PoolcampusApplicationStatus() {
                   <div className="flex items-start justify-between mb-6">
                     <div>
                       <h2 className="text-2xl font-bold text-gray-900">
-                        {selectedJob?.companyDetails?.[0]?.collegeUniversityDetails?.collegeName || selectedJob?.company || "Unknown College"}
+                        {selectedJob?.jobDetails?.[0]?.contactPerson?.name || "N/A"}
                       </h2>
-                      <p className="text-lg text-gray-600 mt-1">{selectedJob.jobTitle}</p>
+                      <p className="text-lg text-gray-600 mt-1">
+                        {selectedJob?.jobDetails?.[0]?.contactPerson?.designation || "N/A"}
+                      </p>
                       <div className="mt-4 flex flex-wrap gap-3">
                         <span className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-lg text-sm">
                           <Briefcase className="h-3 w-3 mr-1.5" />
-                          {selectedJob.employmentType}
+                          {selectedJob?.jobDetails?.[0]?.employmentType?.join(", ")}
                         </span>
                         <span className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-lg text-sm">
                           <Calendar className="h-3 w-3 mr-1.5" />
-                          {selectedJob.degree}
+                          {selectedJob?.jobDetails?.[0]?.degree?.join(", ")}
                         </span>
                         <span className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 rounded-lg text-sm">
                           <MapPin className="h-3 w-3 mr-1.5" />
-                          {selectedJob.city}, {selectedJob.state}
+                          {selectedJob?.collegeDetails?.[0]?.collegeUniversityDetails?.city},
+                          {" "}
+                          {selectedJob?.collegeDetails?.[0]?.collegeUniversityDetails?.state}
                         </span>
                       </div>
                     </div>
@@ -494,18 +498,22 @@ export default function PoolcampusApplicationStatus() {
                   </div> */}
 
                   {/* Skills */}
-                  {selectedJob.skills && selectedJob.skills !== "-" && (
+                  {selectedJob?.jobDetails?.[0]?.skills?.length > 0 && (
                     <div className="mb-6">
                       <h3 className="text-sm font-medium text-gray-700 mb-2">Required Skills</h3>
                       <div className="flex flex-wrap gap-2">
-                        {selectedJob.skills.split(", ").map((skill, index) => (
-                          <span key={index} className="px-3 py-1.5 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 rounded-lg text-sm">
+                        {selectedJob.jobDetails[0].skills.map((skill, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1.5 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 rounded-lg text-sm"
+                          >
                             {skill}
                           </span>
                         ))}
                       </div>
                     </div>
                   )}
+
 
                   {/* Job Description */}
                   <div className="mb-6">

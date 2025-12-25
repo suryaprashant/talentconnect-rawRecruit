@@ -72,7 +72,7 @@ export default function CompanyOverview({ profileData }) {
 
                 <div className="font-medium text-gray-600">Email:</div>
                 <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
-                  {profileData.userId?.email || '-'}
+                  {profileData.employerDetails?.workEmail || '-'}
                 </div>
 
                 <div className="font-medium text-gray-600">Phone:</div>
@@ -119,9 +119,13 @@ export default function CompanyOverview({ profileData }) {
                 </div>
                 <h3 className="text-lg font-bold text-gray-900">Hiring Preferences</h3>
               </div>
-              <p className="text-gray-700 text-sm p-3 bg-gradient-to-r from-yellow-50 to-white rounded-lg">
-                {profileData.hiringPreferences.hiringPara || 'No hiring preferences description provided'}
-              </p>
+              {!(
+                  Array.isArray(profileData?.hiringPreferences?.jobRoles) && profileData.hiringPreferences.jobRoles.length > 0
+              ) && (
+                  <p className="text-gray-700 text-sm p-3 bg-gradient-to-r from-yellow-50 to-white rounded-lg">
+                      No hiring preferences description provided
+                  </p>
+              )}
             </div>
 
             <div className="p-6">

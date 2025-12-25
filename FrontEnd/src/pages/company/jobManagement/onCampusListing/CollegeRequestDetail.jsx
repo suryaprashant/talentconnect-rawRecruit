@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Calendar, MapPin, FileText, Users, CheckCircle, ArrowUpRight, User, Mail, Phone, Link, Briefcase, DollarSign, Target, ClipboardList } from 'lucide-react';
 import { format, isValid } from 'date-fns';
+import CollegeInfoModal from '@/components/college/collegeDashboard/collegeInfoModal';
 
 const DetailRow = ({ icon: Icon, label, value }) => {
   if (!value || (Array.isArray(value) && value.length === 0)) return null;
@@ -18,6 +19,9 @@ const DetailRow = ({ icon: Icon, label, value }) => {
 // 1. Accept 'jobDetails' as a new prop
 const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShortlist, onReject }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [modalPos, setModalPos] = useState(null);
+  const [showCollegeModal, setShowCollegeModal] = useState(false);
+
 
   const safeFormatDate = (dateString, formatStr = 'MMM d, yyyy') => {
     if (!dateString) return 'Not Specified';
@@ -96,7 +100,27 @@ const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShor
             <div className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center text-gray-500 text-xs">No Image</div>
           )}
           <div className="ml-4 flex-grow">
-            <h1 className="text-xl font-bold text-gray-900">{collegeName || 'College Name Not Found'}</h1>
+            <h1
+              className="text-xl font-bold text-blue-600 cursor-pointer hover:underline"
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+
+                setModalPos({
+                  top: rect.top + window.scrollY,
+                  left: rect.left + window.scrollX,
+                  right: rect.right + window.scrollX,
+                  height: rect.height
+                });
+              
+                setShowCollegeModal(true);
+              }}
+
+
+
+            >           
+              {collegeName || 'College Name Not Found'}
+            </h1>
+
             <div className="flex items-center text-gray-600 text-sm mt-1">
               <MapPin size={14} className="mr-1" />
               <span>{[city, state].filter(Boolean).join(', ')}</span>
@@ -176,6 +200,15 @@ const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShor
           {isSubmitting ? 'Processing...' : 'Reject Application'}
         </button>
       </div>
+      {showCollegeModal && modalPos && (
+        <CollegeInfoModal
+          college={collegeApplication.applicant}
+          position={modalPos}
+          onClose={() => setShowCollegeModal(false)}
+        />
+      )}
+
+
     </div>
   );
 };
