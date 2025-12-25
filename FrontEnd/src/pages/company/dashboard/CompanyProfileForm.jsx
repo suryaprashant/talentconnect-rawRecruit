@@ -239,7 +239,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
   const renderInputField = (section, field, label, type = 'text', placeholder = '', options = [], isRequired = false) => {
     const value = formData[section]?.[field] || '';
     const inputProps = {
-      className: "w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200",
+      className: "w-full border bg-white border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200",
       value: value,
       onChange: (e) => handleChange(e, section, field),
       readOnly: !isEditing,
@@ -599,7 +599,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1  md:grid-cols-2 gap-4">
                     {renderInputField('kycDetails', 'TAN', 'TAN (Tax Deduction and Collection Account Number)', 'text', '10-digit alphanumeric')}
                     {renderInputField('kycDetails', 'GSTNumber', 'GST Number', 'text', '15-digit alphanumeric')}
                     {renderInputField('kycDetails', 'companyRegistrationNumber', 'Company Registration Number (CIN/LLPIN)', 'text', '21-digit alphanumeric')}
@@ -657,8 +657,8 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                       LinkedIn
                     </label>
                     <div className="flex">
-                      <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-200 border-r-0 p-2.5 rounded-l-xl">https://</div>
-                      <input type="text" className="w-full border border-gray-200 p-2.5 rounded-r-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none" placeholder="www.linkedin.com/company/your-company" value={formData.companyDetails.companyLinkedin || ''} onChange={(e) => handleChange(e, 'companyDetails', 'companyLinkedin')} readOnly={!isEditing} disabled={!isEditing} />
+                      
+                      <input type="text" className="w-full border bg-white border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none" placeholder="www.linkedin.com/company/your-company" value={formData.companyDetails.companyLinkedin || ''} onChange={(e) => handleChange(e, 'companyDetails', 'companyLinkedin')} readOnly={!isEditing} disabled={!isEditing} />
                     </div>
                   </div>
                   <div>
@@ -669,8 +669,8 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
                       Website
                     </label>
                     <div className="flex">
-                      <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-200 border-r-0 p-2.5 rounded-l-xl">https://</div>
-                      <input type="text" className="w-full border border-gray-200 p-2.5 rounded-r-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none" placeholder="www.yourcompany.com" value={formData.companyDetails.websiteUrl || ''} onChange={(e) => handleChange(e, 'companyDetails', 'websiteUrl')} readOnly={!isEditing} disabled={!isEditing} />
+                     
+                      <input type="text" className="w-full border bg-white border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none" placeholder="www.yourcompany.com" value={formData.companyDetails.websiteUrl || ''} onChange={(e) => handleChange(e, 'companyDetails', 'websiteUrl')} readOnly={!isEditing} disabled={!isEditing} />
                     </div>
                   </div>
                 </div>

@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, X, Filter, SortAsc, Building2, MapPin, Users, Calendar, Briefcase, Search, GraduationCap, BookOpen, Clock } from 'lucide-react';
 import PoolCollegeCard from '@/components/company/employerDashboard/poolCampus/PoolCollegeCard';
 import { getPoolCampusForCompany } from '../../../../lib/College_AxiosIntance';
+import CreatableSelect from 'react-select/creatable';
+import { useMemo } from 'react';
+import { City } from 'country-state-city';
 
 const PoolEmployeeListing = () => {
     const [postings, setPostings] = useState([]);
@@ -9,7 +12,7 @@ const PoolEmployeeListing = () => {
     const [filters, setFilters] = useState({
         degree: [],
         courses: [],
-        location: '',
+        location: [],
         internship: false,
         fullTime: false
     });
@@ -93,6 +96,19 @@ const PoolEmployeeListing = () => {
         fetchData();
     }, []);
 
+    const cityOptions = useMemo(
+  () =>
+    City.getCitiesOfCountry('IN').map(city => ({
+      value: city.name,
+      label: city.name,
+    })),
+  []
+);
+
+const safeLocation = Array.isArray(filters.location)
+  ? filters.location
+  : [];
+
     const extractFilterOptions = (postingsData) => {
         const degrees = new Set();
         const courses = new Set();
@@ -147,9 +163,16 @@ const PoolEmployeeListing = () => {
         }
 
         // Apply location filter
-        if (filters.location && filters.location !== 'Multi - Select') {
-            result = result.filter(posting => posting.location && posting.location.includes(filters.location));
-        }
+    if (Array.isArray(filters.location) && filters.location.length > 0) {
+      result = result.filter(college =>
+        Array.isArray(college.location) &&
+        filters.location.some(filterLoc =>
+          college.location.some(
+            loc => loc.toLowerCase() === filterLoc.toLowerCase()
+          )
+        )
+      );
+    }
 
         // Apply sorting
         if (sortBy === 'newest') {
@@ -257,6 +280,15 @@ const PoolEmployeeListing = () => {
             location: false
         });
     };
+
+    const handleLocationMultiChange = (selectedOptions) => {
+  setFilters(prev => ({
+    ...prev,
+    location: selectedOptions
+      ? selectedOptions.map(opt => opt.value)
+      : []
+  }));
+};
 
     const getActiveFiltersCount = () => {
         let count = 0;
@@ -405,17 +437,21 @@ const PoolEmployeeListing = () => {
                                 )}
                                 
                                 {/* Location Filter */}
-                                {filters.location && filters.location !== 'Multi - Select' && (
-                                    <span className="inline-flex items-center bg-gradient-to-r from-red-100 to-red-50 text-red-700 px-3 py-1.5 rounded-lg text-sm">
-                                        Location: {filters.location}
-                                        <button 
-                                            onClick={() => removeFilter('location', filters.location)}
-                                            className="ml-2 text-red-600 hover:text-red-800"
-                                        >
-                                            <X className="h-3 w-3" />
-                                        </button>
-                                    </span>
-                                )}
+                                {Array.isArray(filters.location) &&
+                                     filters.location.map(loc => (
+                                     <span
+                                       key={loc}
+                                       className="inline-flex items-center bg-gradient-to-r from-red-100 to-red-50 text-red-700 px-3 py-1.5 rounded-lg text-sm"
+                                     >
+                                       Location: {loc}
+                                       <button
+                                         onClick={() => removeFilter('location', loc)}
+                                         className="ml-2 text-red-600 hover:text-red-800"
+                                       >
+                                         <X className="h-3 w-3" />
+                                       </button>
+                                     </span>
+                                ))}
                             </div>
                         </div>
                     )}
@@ -627,18 +663,18 @@ const PoolEmployeeListing = () => {
                                             <div className="flex items-center">
                                                 <MapPin className="h-4 w-4 text-gray-500 mr-2" />
                                                 <span className="text-sm font-medium text-gray-700">Location</span>
-                                                {filters.location && filters.location !== '' && filters.location !== 'Multi - Select' && (
+                                                {Array.isArray(filters.location) && filters.location.length > 0 && (
                                                     <span className="ml-2 px-2 py-0.5 bg-[#667eea] text-white text-xs rounded-full">
-                                                        1
+                                                      {filters.location.length}
                                                     </span>
                                                 )}
                                             </div>
-                                            {filters.location && filters.location !== '' && (
+                                            {Array.isArray(filters.location) && filters.location.length > 0 && (
                                                 <button
-                                                    onClick={() => handleFilterChange('location', '')}
-                                                    className="text-xs text-[#667eea] hover:text-[#764ba2]"
+                                                  onClick={() => handleFilterChange('location', [])}
+                                                  className="text-xs text-[#667eea] hover:text-[#764ba2]"
                                                 >
-                                                    Clear
+                                                  Clear
                                                 </button>
                                             )}
                                         </div>
@@ -653,14 +689,52 @@ const PoolEmployeeListing = () => {
                                         
                                         {openSubDropdowns.location && (
                                             <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                                                <select
-                                                    value={filters.location}
-                                                    onChange={(e) => handleFilterChange('location', e.target.value)}
-                                                    className="w-full p-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 text-sm"
-                                                >
-                                                    <option value="">Select Location</option>
-                                                    <option value="Multi - Select">Multi - Select</option>
-                                                </select>
+                                                <CreatableSelect
+                                                  isMulti
+                                                  options={cityOptions}
+                                                  value={safeLocation.map(loc => ({ value: loc, label: loc }))}
+                                                  onChange={handleLocationMultiChange}
+                                                  placeholder="Select or type locations..."
+                                                  menuPortalTarget={document.body}
+                                                  menuPosition="fixed"
+                                                  styles={{
+                                                    control: (base) => ({
+                                                      ...base,
+                                                      borderColor: '#e5e7eb',
+                                                      minHeight: '38px',
+                                                      fontSize: '14px',
+                                                      borderRadius: '0.75rem',
+                                                      backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
+                                                      backgroundImage:
+                                                        'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
+                                                    }),
+                                                    menu: (base) => ({
+                                                      ...base,
+                                                      borderRadius: '0.5rem',
+                                                      fontSize: '14px',
+                                                      border: '1px solid #e5e7eb',
+                                                    }),
+                                                    menuPortal: (base) => ({
+                                                      ...base,
+                                                      zIndex: 9999,
+                                                    }),
+                                                    multiValue: (base) => ({
+                                                      ...base,
+                                                      fontSize: '12px',
+                                                      backgroundColor: '#f3f4f6',
+                                                      borderRadius: '9999px',
+                                                    }),
+                                                    multiValueRemove: (base) => ({
+                                                      ...base,
+                                                      fontSize: '12px',
+                                                      color: '#6b7280',
+                                                      ':hover': {
+                                                        backgroundColor: '#e5e7eb',
+                                                        color: '#374151',
+                                                      },
+                                                    }),
+                                                  }}
+                                                /> 
                                             </div>
                                         )}
                                     </div>

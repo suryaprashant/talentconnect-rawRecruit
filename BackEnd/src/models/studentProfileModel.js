@@ -21,7 +21,7 @@ const studentProfileSchema = new mongoose.Schema({
     interestedJobRoles: [{ type: String, enum: ['Software Engineer', 'Data Analyst'] }],
     preferredJobLocations: [{ type: String, enum: ['noida', 'delhi', 'gurgaon', 'bangalore', 'pune', 'mumbai', 'hyderabad'] }],
     lookingFor: { type: String, enum: ['job', 'internship', 'both'] },
-    employmentType: [{ type: String, enum: ['full-time', 'part-time', 'contract', 'remote'] }],
+    employmentType: [{ type: String, enum: ['full time', 'part-time', 'contract', 'remote'] }],
   },
   skills: [String],
   socialProfiles: {

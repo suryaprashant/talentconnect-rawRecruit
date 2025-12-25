@@ -75,7 +75,7 @@ const studentOverviewSchema = new mongoose.Schema(
     },
     employmentType: {
       type: String,
-      enum: ['Full-Time', 'Remote'],
+      enum: ['full time', 'Remote'],
     },
     language: {
       type: String,
