@@ -3,10 +3,10 @@ import SidebarNavGroup from './SidebarNavGroup';
 
 function EmployerSidebar({ activePath }) {
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white border-r border-gray-200">
-      {/* Fixed Sidebar Container */}
+    <div className="h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white">
+      {/* Removed border-r border-gray-200 */}
+      
       <div className="flex-1 flex flex-col min-h-0">
-        {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
           {/* Home */}
           <SidebarNavItem 
@@ -20,18 +20,6 @@ function EmployerSidebar({ activePath }) {
             label="Home" 
             active={activePath === '/home'} 
           />
-
-          {/* Profile */}
-          {/*<SidebarNavItem 
-            to="/employer-profile" 
-            icon={
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
-              </svg>
-            } 
-            label="Profile" 
-            active={activePath === '/employer-profile'} 
-          />*/}
 
           {/* Employer Dashboard */}
           <SidebarNavGroup 
@@ -120,7 +108,7 @@ function EmployerSidebar({ activePath }) {
             />
           </SidebarNavGroup>
 
-           {/* Application Status */}
+          {/* Application Status */}
           <SidebarNavGroup 
             label="Application Status" 
             icon={
@@ -153,8 +141,7 @@ function EmployerSidebar({ activePath }) {
             />
           </SidebarNavGroup>
 
-
-           {/* Hiring Channels */}
+          {/* Hiring Channels */}
           <SidebarNavGroup 
             label="Hiring Channels" 
             icon={
@@ -195,28 +182,7 @@ function EmployerSidebar({ activePath }) {
               label="Off-campus Hiring"
               active={activePath === '/hiring-channels/off-campus-hiring/employer'}
             />
-            {/* <SidebarNavItem
-              to="/hiring-channels/post-a-job/employer"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
-                </svg>
-              }
-              label="Post a Job"
-              active={activePath === '/hiring-channels/post-a-job/employer'}
-            />
-            <SidebarNavItem
-              to="/hiring-channels/post-an-internship/employer"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
-                </svg>
-              }
-              label="Post an Internship"
-              active={activePath === '/hiring-channels/post-an-internship/employer'}
-            /> */}
           </SidebarNavGroup>
-
 
           {/* Job Management */}
           <SidebarNavGroup 
@@ -259,32 +225,7 @@ function EmployerSidebar({ activePath }) {
               label="Off-campus Listings"
               active={activePath === '/job-management/Off-campus/employer'}
             />
-            {/* <SidebarNavItem
-              to="/job-management/job-listings/employer"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clipRule="evenodd" />
-                  <path fillRule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zm9.586 4.594a.75.75 0 00-1.172-.938l-2.476 3.096-.634-.682a.75.75 0 00-1.06 1.06l1.125 1.125a.75.75 0 001.116-.062l3-3.75z" clipRule="evenodd" />
-                </svg>
-              }
-              label="Job Listings"
-              active={activePath === '/job-management/job-listings/employer'}
-            />
-            <SidebarNavItem
-              to="/employer/job-management/Internship"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clipRule="evenodd" />
-                  <path fillRule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zM6 12a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V12zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 15a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V15zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 18a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V18zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75z" clipRule="evenodd" />
-                </svg>
-              }
-              label="Internship Listings"
-              active={activePath === '/employer/job-management/Internship'}
-            /> */}
           </SidebarNavGroup>
-
-         
-         
 
           {/* Shortlisted Candidates */}
           <SidebarNavGroup 
@@ -306,7 +247,6 @@ function EmployerSidebar({ activePath }) {
               label="On-campus Listings"
               active={activePath === '/employer/shortlisted/on-campus-listings'}
             />
-
             <SidebarNavItem
               to="/employer/shortlisted/pool-campus-listings"
               icon={
@@ -317,7 +257,6 @@ function EmployerSidebar({ activePath }) {
               label="Pool Campus Listings"
               active={activePath === '/employer/shortlisted/pool-campus-listings'}
             />
-
             <SidebarNavItem
               to="/employer/shortlisted/Off-campus"
               icon={
@@ -328,29 +267,6 @@ function EmployerSidebar({ activePath }) {
               label="Off-campus Listings"
               active={activePath === '/employer/shortlisted/Off-campus'}
             />
-            
-            {/* <SidebarNavItem
-              to="/employer/shortlisted/jobs-listings"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clipRule="evenodd" />
-                  <path fillRule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zm9.586 4.594a.75.75 0 00-1.172-.938l-2.476 3.096-.634-.682a.75.75 0 00-1.06 1.06l1.125 1.125a.75.75 0 001.116-.062l3-3.75z" clipRule="evenodd" />
-                </svg>
-              }
-              label="Job Listings"
-              active={activePath === '/employer/shortlisted/jobs-listings'}
-            />
-            <SidebarNavItem
-              to="/employer/shortlisted/internship-listings"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clipRule="evenodd" />
-                  <path fillRule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zM6 12a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V12zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 15a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V15zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 18a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V18zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75z" clipRule="evenodd" />
-                </svg>
-              }
-              label="Internship"
-              active={activePath === '/employer/shortlisted/internship-listings'}
-            /> */}
           </SidebarNavGroup>
 
           {/* Accepted Candidates */}
@@ -373,8 +289,7 @@ function EmployerSidebar({ activePath }) {
               label="On-campus Listings"
               active={activePath === '/employer/accepted/on-campus-listings'}
             />
-
-             <SidebarNavItem
+            <SidebarNavItem
               to="/employer/accepted/pool-campus-listings"
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -384,7 +299,6 @@ function EmployerSidebar({ activePath }) {
               label="Pool Campus Listings"
               active={activePath === '/employer/accepted/pool-campus-listings'}
             />
-
             <SidebarNavItem
               to="/employer/accepted/off-campus-listings"
               icon={
@@ -395,44 +309,11 @@ function EmployerSidebar({ activePath }) {
               label="Off-campus Listings"
               active={activePath === '/employer/accepted/off-campus-listings'}
             />
-           
-            {/* <SidebarNavItem
-              to="/employee/acceptedJobList"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clipRule="evenodd" />
-                  <path fillRule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zm9.586 4.594a.75.75 0 00-1.172-.938l-2.476 3.096-.634-.682a.75.75 0 00-1.06 1.06l1.125 1.125a.75.75 0 001.116-.062l3-3.75z" clipRule="evenodd" />
-                </svg>
-              }
-              label="Accepted Job-Listing"
-              active={activePath === '/employee/acceptedJobList'}
-            /> */}
-            {/* <SidebarNavItem
-              to="/employer/accepted/internship-listings"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0118 9.375v9.375a3 3 0 003-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 00-.673-.05A3 3 0 0015 1.5h-1.5a3 3 0 00-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6zM13.5 3A1.5 1.5 0 0012 4.5h4.5A1.5 1.5 0 0015 3h-1.5z" clipRule="evenodd" />
-                  <path fillRule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 013 20.625V9.375zM6 12a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V12zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 15a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V15zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75zM6 18a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V18zm2.25 0a.75.75 0 01.75-.75h3.75a.75.75 0 010 1.5H9a.75.75 0 01-.75-.75z" clipRule="evenodd" />
-                </svg>
-              }
-              label="Internship"
-              active={activePath === '/employer/accepted/internship-listings'}
-            /> */}
           </SidebarNavGroup>
 
           {/* Quick Actions at Bottom */}
-          <div className="pt-4 mt-4 border-t border-gray-200">
-            {/* <SidebarNavItem
-              to="/interviews"
-              icon={
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                  <path d="M8.25 4.5a3.75 3.75 0 117.5 0v3a3.75 3.75 0 11-7.5 0v-3z" />
-                  <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
-                </svg>
-              }
-              label="Interviews"
-              active={activePath === '/interviews'}
-            /> */}
+          <div className="pt-4 mt-4">
+            {/* Removed border-t border-gray-200 */}
             <SidebarNavItem
               to="/chat-application"
               icon={

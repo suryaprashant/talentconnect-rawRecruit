@@ -28,14 +28,18 @@ function Sidebar({ open, setOpen }) {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-white border-r border-gray-200 
+        className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-white  
                   transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto
                   ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex flex-col h-full">
-          <div className="px-4 py-5 border-b border-gray-200">
+          {/* <div className="px-4 py-5 border-b border-gray-200">
+            <Logo />
+          </div> */}
+          <div className="h-16 flex items-center px-5 border-b shadow-grey">
             <Logo />
           </div>
+
 
           <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
     

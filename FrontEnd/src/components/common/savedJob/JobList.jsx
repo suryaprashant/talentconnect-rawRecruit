@@ -8,6 +8,79 @@ const JobList = ({ jobs }) => {
   const selectedRole = localStorage.getItem("selectedRole");
   const isCompany = selectedRole === "company";
 
+  // Function to get initials from name
+  const getInitials = (name) => {
+    if (!name) return "?";
+    
+    // Remove extra spaces and split by spaces
+    const words = name.trim().split(/\s+/);
+    
+    if (words.length === 1) {
+      // Single word - take first 2 characters
+      return name.substring(0, 2).toUpperCase();
+    } else {
+      // Multiple words - take first letter of first two words
+      return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+    }
+  };
+
+  // Function to get logo URL or initials
+  const getLogoOrInitials = (job) => {
+    if (isCompany) {
+      // For college
+      const logoUrl = job?.job?.collegePosted?.collegeUniversityDetails?.logo;
+      const collegeName = job?.job?.collegePosted?.collegeUniversityDetails?.collegeName;
+      
+      if (logoUrl) {
+        return (
+          <img 
+            src={logoUrl} 
+            alt={collegeName || "College"} 
+            className="w-10 h-10 rounded-lg object-cover"
+            onError={(e) => {
+              // If image fails to load, show initials
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'flex';
+            }}
+          />
+        );
+      }
+      
+      // Show initials if no logo
+      return (
+        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-sm">
+          {getInitials(collegeName)}
+        </div>
+      );
+    } else {
+      // For student (viewing company)
+      const logoUrl = job?.job?.companyPosted?.companyDetails?.logo;
+      const companyName = job?.job?.companyPosted?.companyDetails?.companyName;
+      
+      if (logoUrl) {
+        return (
+          <img 
+            src={logoUrl} 
+            alt={companyName || "Company"} 
+            className="w-10 h-10 rounded-lg object-cover"
+            onError={(e) => {
+              // If image fails to load, show initials
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'flex';
+            }}
+          />
+        );
+      }
+      
+      // Show initials if no logo
+      return (
+        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-sm">
+          {getInitials(companyName)}
+        </div>
+      );
+    }
+  };
+
   const filteredJobs =
     jobs?.filter((job) => {
       const name = isCompany
@@ -39,8 +112,6 @@ const JobList = ({ jobs }) => {
             Saved Opportunities
           </h1>
           <p className="text-gray-600 mt-2">Browse your saved opportunities</p>
-
-          
         </div>
 
         {/* Cards */}
@@ -68,45 +139,48 @@ const JobList = ({ jobs }) => {
                     {/* Header */}
                     <div className="p-6 border-b border-gray-100">
                       <div className="flex items-start justify-between">
-                        <div>
-                          <div className="flex items-center mb-2">
-                            <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                              {/* ICON KEPT */}
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#667eea" className="w-5 h-5">
-                                <path d="M7.5 5.25h9v3h-9z" />
-                              </svg>
-                            </div>
-
-                            <div>
-                              <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#667eea] transition-colors">
-                                {titleName || "Name"}
-                              </h3>
-
-                              <div className="flex items-center text-sm text-gray-600">
-                                <span className="mr-3">{titleName}</span>
-                                <span className="px-2 py-1 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full text-xs font-medium">
-                                  {job?.jobType}
-                                </span>
-                              </div>
-                            </div>
+                        <div className="flex items-start space-x-4">
+                          {/* Logo or Initials Container */}
+                          <div className="relative">
+                            {getLogoOrInitials(job)}
                           </div>
 
-                          {!isCompany && (
-                            <div className="flex flex-wrap gap-2 mt-3">
-                              {roles.slice(0, 3).map((role, index) => (
-                                <span
-                                  key={index}
-                                  className="px-3 py-1 bg-gradient-to-r from-gray-100 to-white text-gray-700 rounded-full text-xs font-medium"
-                                >
-                                  {role}
-                                </span>
-                              ))}
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#667eea] transition-colors line-clamp-1">
+                              {titleName || "Name"}
+                            </h3>
+
+                            <div className="flex items-center text-sm text-gray-600 mt-1">
+                              <span className="mr-3 capitalize">{job?.jobType || "Job"}</span>
+                              <span className="px-2 py-1 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full text-xs font-medium">
+                                Saved
+                              </span>
                             </div>
-                          )}
+
+                            {!isCompany && roles.length > 0 && (
+                              <div className="flex flex-wrap gap-2 mt-3">
+                                {roles.slice(0, 3).map((role, index) => (
+                                  <span
+                                    key={index}
+                                    className="px-3 py-1 bg-gradient-to-r from-gray-100 to-white text-gray-700 rounded-full text-xs font-medium"
+                                  >
+                                    {role}
+                                  </span>
+                                ))}
+                                {roles.length > 3 && (
+                                  <span className="px-3 py-1 bg-gradient-to-r from-gray-100 to-white text-gray-700 rounded-full text-xs font-medium">
+                                    +{roles.length - 3} more
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
 
                         <div className="p-2 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-lg">
-                          ⭐
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
                         </div>
                       </div>
                     </div>
@@ -115,14 +189,24 @@ const JobList = ({ jobs }) => {
                     <div className="p-6">
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>
-                          <div className="text-gray-600 mb-1">Location</div>
-                          <div className="font-medium">
+                          <div className="text-gray-600 mb-1 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                            </svg>
+                            Location
+                          </div>
+                          <div className="font-medium line-clamp-1">
                             {locationText || "Not specified"}
                           </div>
                         </div>
 
                         <div>
-                          <div className="text-gray-600 mb-1">Start Date</div>
+                          <div className="text-gray-600 mb-1 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                            </svg>
+                            Start Date
+                          </div>
                           <div className="font-medium">
                             {job?.job?.startDate
                               ? new Date(job.job.startDate).toLocaleDateString()
@@ -131,7 +215,12 @@ const JobList = ({ jobs }) => {
                         </div>
 
                         <div>
-                          <div className="text-gray-600 mb-1">End Date</div>
+                          <div className="text-gray-600 mb-1 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                            </svg>
+                            End Date
+                          </div>
                           <div className="font-medium">
                             {job?.job?.endDate
                               ? new Date(job.job.endDate).toLocaleDateString()
@@ -146,8 +235,14 @@ const JobList = ({ jobs }) => {
               );
             })
           ) : (
-            <div className="col-span-2 bg-white/90 rounded-2xl shadow-lg p-8 text-center">
-              <h3 className="text-xl font-bold">No Saved Opportunities</h3>
+            <div className="col-span-2 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-12 text-center">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">No Saved Opportunities</h3>
+              <p className="text-gray-600">You haven't saved any opportunities yet.</p>
             </div>
           )}
         </div>
