@@ -273,6 +273,7 @@ export async function createApplicationService(userId, userType, jobId, jobType)
 //     }
 // }
 
+
 export async function fetchApplicationStatusService(userId, jobType, userType) {
     try {
         console.log("🔍 BACKEND DEBUG - Starting service");
@@ -387,6 +388,117 @@ export async function fetchApplicationStatusService(userId, jobType, userType) {
         throw new Error("Failed to fetch");
     }
 }
+
+// export async function fetchApplicationStatusService(userId, jobType, userType) {
+//     try {
+//         console.log("🔍 BACKEND DEBUG - Starting service");
+//         console.log("🔍 Parameters:", { userId, jobType, userType });
+
+//         const applicationData = await Application.aggregate([
+//             {
+//                 $match: {
+//                     applicant: new mongoose.Types.ObjectId(userId),
+//                     jobType: jobType,
+//                     currentStatus: { $ne: 'Saved' }
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'jobpostingtables',
+//                     localField: 'job',
+//                     foreignField: '_id',
+//                     as: 'jobDetails'
+//                 }
+//             },
+//             // 🔥 DYNAMIC LOOKUP based on applicantType
+//             {
+//                 $lookup: {
+//                     from: {
+//                         $switch: {
+//                             branches: [
+//                                 {
+//                                     case: { $eq: ["$applicantType", "college"] },
+//                                     then: "collegeonboardings"
+//                                 },
+//                                 {
+//                                     case: { $eq: ["$applicantType", "student"] },
+//                                     then: "students"
+//                                 },
+//                                 {
+//                                     case: { $eq: ["$applicantType", "company"] },
+//                                     then: "companyprofiles"
+//                                 },
+//                                 {
+//                                     case: { $eq: ["$applicantType", "employer"] },
+//                                     then: "employers"
+//                                 }
+//                             ],
+//                             default: "collegeonboardings"  // Default if unknown
+//                         }
+//                     },
+//                     localField: 'applicant',
+//                     foreignField: '_id',
+//                     as: 'applicantDetails'
+//                 }
+//             },
+//             // For company info from job
+//             {
+//                 $lookup: {
+//                     from: 'companyprofiles',
+//                     localField: 'jobDetails.postedBy',
+//                     foreignField: '_id',
+//                     as: 'companyDetails'
+//                 }
+//             },
+//             // Add debug fields
+//             {
+//                 $addFields: {
+//                     debugApplicant: "$applicant",
+//                     debugApplicantType: "$applicantType",
+//                     debugApplicantDetailsCount: { $size: "$applicantDetails" },
+//                     debugJobDetailsCount: { $size: "$jobDetails" },
+//                     debugApplicantDetailsKeys: {
+//                         $cond: {
+//                             if: { $gt: [{ $size: "$applicantDetails" }, 0] },
+//                             then: { $objectToArray: { $arrayElemAt: ["$applicantDetails", 0] } },
+//                             else: []
+//                         }
+//                     }
+//                 }
+//             }
+//         ]);
+
+//         // DEBUGGING
+//         console.log("🔍 Total applications found:", applicationData.length);
+        
+//         if (applicationData.length > 0) {
+//             const firstApp = applicationData[0];
+//             console.log("🔍 FIRST APPLICATION DEBUG:");
+//             console.log("applicantType:", firstApp.applicantType);
+//             console.log("applicantDetails count:", firstApp.debugApplicantDetailsCount);
+            
+//             if (firstApp.applicantDetails && firstApp.applicantDetails.length > 0) {
+//                 const applicant = firstApp.applicantDetails[0];
+//                 console.log("🔍 Applicant Details Found!");
+//                 console.log("Collection:", firstApp.applicantType === 'college' ? 'collegeonboardings' : 'unknown');
+//                 console.log("All keys:", Object.keys(applicant));
+                
+//                 // Search for name/college name in all possible fields
+//                 const nameFields = ['collegeName', 'name', 'institutionName', 'universityName', 'collegeUniversityName', 'title'];
+//                 nameFields.forEach(field => {
+//                     if (applicant[field]) {
+//                         console.log(`✅ Found ${field}: "${applicant[field]}"`);
+//                     }
+//                 });
+//             }
+//         }
+
+//         return { success: true, data: applicationData };
+//     } catch (error) {
+//         console.log("Error: ", error.message);
+//         throw new Error("Failed to fetch");
+//     }
+// }
 
 // job management
 // joblisting and offcampus
