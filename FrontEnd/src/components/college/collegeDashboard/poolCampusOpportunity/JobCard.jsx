@@ -173,13 +173,13 @@ const JobCard = ({ job }) => {
   };
 
   return (
-    <div className={`
+    <div className="
       w-full max-w-[350px] min-h-[430px] mx-auto rounded-2xl 
       border shadow-sm hover:shadow-lg transition overflow-hidden
-      flex flex-col ${stableColor}
-    `}>
-      {/* FULL PASTEL CARD */}
-      <div className="p-5 flex-grow flex flex-col">
+      flex flex-col
+    ">
+      {/* FULL PASTEL CARD - matching the second component structure */}
+      <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-grow`}>
 
         {/* Work Mode + Save */}
         <div className="flex justify-between items-start">
@@ -206,7 +206,7 @@ const JobCard = ({ job }) => {
         </div>
 
         {/* Company Name + Position */}
-        <div className="mt-4 flex justify-between items-start gap-2">
+        <div className="mt-3 flex justify-between items-start gap-2">
           <div className="flex flex-col gap-1">
             <h3 className="text-black font-semibold text-lg truncate max-w-[200px]">
               {job.companyName}
@@ -215,7 +215,7 @@ const JobCard = ({ job }) => {
             {/* Position */}
             <div className="flex flex-wrap gap-1 mt-1">
               <span 
-                className="text-sm font-bold text-gray-900 bg-white/50 px-2 py-0.5 rounded border border-white/50"
+                className="text-sm font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded border border-black/5"
               >
                 {job.position || 'Position not specified'}
               </span>
@@ -223,38 +223,43 @@ const JobCard = ({ job }) => {
           </div>
 
           <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
-            <img 
-              src={job.logo || "https://via.placeholder.com/48"}
-              alt={`${job.companyName} logo`}
-              className="w-12 h-12 object-cover"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "https://via.placeholder.com/48";
-                setImageError(true);
-              }}
-            />
+            {job.logo && !imageError ? (
+              <img 
+                src={job.logo} 
+                alt={`${job.companyName} logo`}
+                className="w-12 h-12 object-cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                <span className="text-sm font-semibold text-gray-700">
+                  {getInitials(job.companyName)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Streams */}
+        {/* Streams - Updated to match second component styling */}
         {streams.length > 0 && (
-          <div className="mt-4">
-            <div className="flex flex-wrap gap-2">
-              {streams.map((stream, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-white/70 text-blue-800 border border-white/80 rounded-full text-xs"
-                >
-                  {stream}
-                </span>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-2 mt-3">
+            {streams.map((stream, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-blue-100 text-blue-800 border border-blue-300 rounded-full text-xs"
+              >
+                {stream}
+              </span>
+            ))}
+            {streams.length > 2 && (
+              <span className="px-2 py-1 text-xs text-gray-600">+{streams.length - 2}</span>
+            )}
           </div>
         )}
 
         {/* Date Range */}
         {job.startDate && job.endDate && (
-          <div className="mt-4">
+          <div className="mt-3">
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3 text-gray-600" />
               <span className="text-xs text-gray-800">
@@ -264,13 +269,13 @@ const JobCard = ({ job }) => {
           </div>
         )}
 
-        {/* Hiring Process */}
+        {/* Hiring Process - Updated to match second component styling */}
         {hiringProcess.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-4">
+          <div className="flex flex-wrap gap-2 mt-3">
             {hiringProcess.map((step, index) => (
               <span
                 key={index}
-                className="px-3 py-1 border border-white/80 text-gray-800 rounded-full text-xs bg-white/60"
+                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
               >
                 {step}
               </span>
@@ -280,7 +285,7 @@ const JobCard = ({ job }) => {
 
         {/* Venue */}
         {job.venue && (
-          <div className="mt-4">
+          <div className="mt-3">
             <div className="flex items-center gap-1">
               <Building className="h-3 w-3 text-gray-600" />
               <span className="text-xs text-gray-800 truncate">
@@ -290,33 +295,33 @@ const JobCard = ({ job }) => {
           </div>
         )}
 
-        {/* Tags */}
+        {/* Tags - Updated to match second component styling */}
         {job.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-4">
+          <div className="flex flex-wrap gap-2 mt-3">
             {job.tags.slice(0, 3).map((tag, index) => (
               <span
                 key={index}
-                className="px-3 py-1 bg-white/70 text-gray-800 border border-white/80 rounded-full text-xs"
+                className="px-3 py-1 bg-gray-100 text-gray-800 border border-gray-300 rounded-full text-xs"
               >
                 {tag}
               </span>
             ))}
             {job.tags.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-700">+{job.tags.length - 3}</span>
+              <span className="px-2 py-1 text-xs text-gray-600">+{job.tags.length - 3}</span>
             )}
           </div>
         )}
 
         {/* Description - Fixed height */}
-        <div className="mt-4 flex-grow">
-          <p className="text-sm text-gray-800 line-clamp-3">
+        <div className="mt-3">
+          <p className="text-sm text-gray-700 line-clamp-3">
             {job.description 
               ? job.description.split(' ').slice(0, 20).join(' ') + (job.description.split(' ').length > 20 ? '...' : '')
               : 'No description provided.'}
           </p>
         </div>
 
-        {/* BOTTOM SECTION WITH PACKAGE AND BUTTON */}
+        {/* BOTTOM SECTION WITHIN PASTEL CARD */}
         <div className="mt-6 pt-4 border-t border-white/50 flex justify-between items-center">
           <div>
             {/* Package */}
@@ -327,8 +332,8 @@ const JobCard = ({ job }) => {
             </p>
 
             {/* Location */}
-            <div className="flex items-center gap-1 text-gray-800 text-xs mt-1">
-              <MapPin className="h-4 w-4 text-gray-600" />
+            <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
+              <MapPin className="h-4 w-4 text-gray-500" />
               <span className="line-clamp-1 max-w-[120px]">
                 {formatLocation()}
               </span>
@@ -337,7 +342,7 @@ const JobCard = ({ job }) => {
 
           <Link
             to={`/college-dashboard/Pool-campus/${job.id}`}
-            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition shadow"
+            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
           >
             Register
           </Link>

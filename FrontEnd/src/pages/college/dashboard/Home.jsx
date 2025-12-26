@@ -137,15 +137,21 @@ function Home() {
         </div>
 
         {/* Key Metrics Cards */}
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 mb-8">
+<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
   
   {/* Card 1 - On-Campus */}
   <div
-    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col aspect-video"
+    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
     onClick={() => navigate('/application-status/oncampus')}
   >
+    {/* Bottom accent border */}
     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4c1d95] to-[#5b21b6] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-    <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95]/5 via-transparent to-[#5b21b6]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    
+    {/* Glow effect on hover */}
+    <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95]/10 via-transparent to-[#5b21b6]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+    
+    {/* Additional glow border */}
+    <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#4c1d95]/20 rounded-2xl transition-all duration-300"></div>
 
     <div className="relative z-10 flex flex-col flex-grow">
       {/* Top row: Icon + Title + Button */}
@@ -175,11 +181,12 @@ function Home() {
 
   {/* Card 2 - Pool-Campus */}
   <div
-    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col aspect-video"
+    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
     onClick={() => navigate('/application-status/poolcampus')}
   >
     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#5b21b6] to-[#6d28d9] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-    <div className="absolute inset-0 bg-gradient-to-br from-[#5b21b6]/5 via-transparent to-[#6d28d9]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    <div className="absolute inset-0 bg-gradient-to-br from-[#5b21b6]/10 via-transparent to-[#6d28d9]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+    <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#5b21b6]/20 rounded-2xl transition-all duration-300"></div>
 
     <div className="relative z-10 flex flex-col flex-grow">
       <div className="flex items-start justify-between mb-2">
@@ -207,11 +214,12 @@ function Home() {
 
   {/* Card 3 - Status */}
   <div
-    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col aspect-video"
+    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
     onClick={() => navigate('/applications')}
   >
     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#6d28d9] to-[#7c3aed] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-    <div className="absolute inset-0 bg-gradient-to-br from-[#6d28d9]/5 via-transparent to-[#7c3aed]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    <div className="absolute inset-0 bg-gradient-to-br from-[#6d28d9]/10 via-transparent to-[#7c3aed]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+    <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#6d28d9]/20 rounded-2xl transition-all duration-300"></div>
 
     <div className="relative z-10 flex flex-col flex-grow">
       <div className="flex items-start justify-between mb-2">
@@ -230,18 +238,15 @@ function Home() {
         </div>
       </div>
 
-      <div className="space-y-1 mt-auto">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-600">Applied</span>
-          <span className="font-bold text-[#6d28d9] text-xs">{dashboardData.totalApplied}</span>
+      {/* Status grid */}
+      <div className="grid grid-cols-2 gap-1.5 mt-auto">
+        <div className="text-center">
+          <div className="text-sm font-bold text-[#4c1d95]">{dashboardData.totalApplied}</div>
+          <div className="text-[10px] text-gray-500 truncate">Applied</div>
         </div>
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-600">Shortlisted</span>
-          <span className="font-bold text-[#7c3aed] text-xs">{dashboardData.totalShortlisted}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-600">Rejected</span>
-          <span className="font-bold text-[#8b5cf6] text-xs">{dashboardData.totalRejected}</span>
+        <div className="text-center">
+          <div className="text-sm font-bold text-[#8b5cf6]">{dashboardData.totalRejected}</div>
+          <div className="text-[10px] text-gray-500 truncate">Rejected</div>
         </div>
       </div>
     </div>
@@ -249,11 +254,12 @@ function Home() {
 
   {/* Card 4 - Shortlisted */}
   <div
-    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col aspect-video"
+    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
     onClick={() => navigate('/shortlisted/on-campus-listings')}
   >
     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#7c3aed] to-[#8b5cf6] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-    <div className="absolute inset-0 bg-gradient-to-br from-[#7c3aed]/5 via-transparent to-[#8b5cf6]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    <div className="absolute inset-0 bg-gradient-to-br from-[#7c3aed]/10 via-transparent to-[#8b5cf6]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+    <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#7c3aed]/20 rounded-2xl transition-all duration-300"></div>
 
     <div className="relative z-10 flex flex-col flex-grow">
       <div className="flex items-start justify-between mb-2">
@@ -277,22 +283,20 @@ function Home() {
         <span className="text-xs text-gray-500">Companies</span>
       </div>
       
-      <div className="flex items-center text-xs mt-0.5">
-        <FiTrendingUp className="w-2.5 h-2.5 mr-1 text-[#7c3aed]" />
-        <span className="text-gray-500">
-          {dashboardData.totalShortlisted > 0 ? 'In Progress' : 'No Companies'}
-        </span>
+      <div className="text-[10px] text-gray-500 mt-0.5">
+        {dashboardData.totalShortlisted > 0 ? 'In Progress' : 'No Companies'}
       </div>
     </div>
   </div>
 
   {/* Card 5 - Service Requests */}
   <div
-    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col aspect-video"
+    className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
     onClick={() => navigate('/service-request/workforce-solution')}
   >
     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8b5cf6] to-[#a78bfa] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-    <div className="absolute inset-0 bg-gradient-to-br from-[#8b5cf6]/5 via-transparent to-[#a78bfa]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    <div className="absolute inset-0 bg-gradient-to-br from-[#8b5cf6]/10 via-transparent to-[#a78bfa]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+    <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#8b5cf6]/20 rounded-2xl transition-all duration-300"></div>
 
     <div className="relative z-10 flex flex-col flex-grow">
       <div className="flex items-start justify-between mb-2">
@@ -316,9 +320,8 @@ function Home() {
         <span className="text-xs text-gray-500">Pending</span>
       </div>
       
-      <div className="flex items-center text-xs mt-0.5">
-        <FiCheckCircle className="w-2.5 h-2.5 mr-1 text-[#8b5cf6]" />
-        <span className="text-gray-500">Pending Requests</span>
+      <div className="text-[10px] text-gray-500 mt-0.5">
+        Service Requests
       </div>
     </div>
   </div>
@@ -566,6 +569,17 @@ function Home() {
               </svg>
               Post New Opportunity
             </Button>
+            {/* <Button
+              variant="primary"
+              size="md"
+              className="flex items-center justify-center bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 backdrop-blur-sm"
+              onClick={() => navigate('/hiring-channels/post-a-job')}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 mr-2">
+                <path fillRule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clipRule="evenodd" />
+              </svg>
+              Post New Opportunity
+            </Button> */}
             <Button
               variant="outline"
               size="md"

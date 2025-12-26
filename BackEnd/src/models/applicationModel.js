@@ -11,6 +11,16 @@ const ApplicationSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        // applicant: {
+        //     type: mongoose.Schema.Types.ObjectId,
+        //     required: true,
+        //     refPath: 'applicantType'  // Dynamic reference based on applicantType
+        // },
+        // applicantType: {
+        //     type: String,
+        //     required: true,
+        //     enum: ['college', 'student', 'company', 'employer']  // Add all possible types
+        // },
         job: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "JobPostingTable",
