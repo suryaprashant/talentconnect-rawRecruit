@@ -1,13 +1,11 @@
-import { 
-  getAllOnboardingFormsService, 
-  getOnboardingFormService, 
-  updateOnboardingFormService, 
-  submitOnboardingFormService, 
-  handleOnboardingUpdate 
+import {
+  getAllOnboardingFormsService,
+  getOnboardingFormService,
+  updateOnboardingFormService,
+  submitOnboardingFormService,
+  handleOnboardingUpdate
 } from "../services/studentService.js";
-// ...existing code...
 
-// File upload logic moved to service layer
 
 
 export const getAllOnboardingForms = async (req, res) => {
