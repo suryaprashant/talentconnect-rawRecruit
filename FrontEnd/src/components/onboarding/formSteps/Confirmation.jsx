@@ -48,94 +48,93 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
 
     delete tempFormData.profileType;
 
-    if (tempFormData.experiences && Array.isArray(tempFormData.experiences)) {
-      const experiencesData = [];
-      tempFormData.experiences.forEach((exp) => {
-        const expCopy = { ...exp };
-        if (exp.experienceCertificate instanceof File) {
-          dataToSend.append('experienceCertificate', exp.experienceCertificate, exp.experienceCertificate.name);
-          delete expCopy.experienceCertificate;
+    if (Array.isArray(tempFormData.experiences)) {
+      const expData = [];
+      tempFormData.experiences.forEach(exp => {
+        const copy = { ...exp };
+        if (copy.experienceCertificate instanceof File) {
+          dataToSend.append(
+            "experienceCertificate",
+            copy.experienceCertificate,
+            copy.experienceCertificate.name
+          );
+          delete copy.experienceCertificate;
         }
-        experiencesData.push(expCopy);
+        expData.push(copy);
       });
-      dataToSend.append('experiences', JSON.stringify(experiencesData));
+      dataToSend.append("experiences", JSON.stringify(expData));
+      delete tempFormData.experiences;
     }
-    delete tempFormData.experiences;
 
-    /*for (const key in tempFormData) {
+    if (Array.isArray(tempFormData.education)) {
+      dataToSend.append("education", JSON.stringify(tempFormData.education));
+      delete tempFormData.education;
+    }
+
+    if (tempFormData.parsedData && typeof tempFormData.parsedData === "object") {
+      dataToSend.append("parsedData", JSON.stringify(tempFormData.parsedData));
+      delete tempFormData.parsedData;
+    }
+
+    for (const key in tempFormData) {
       const value = tempFormData[key];
       if (value === null || value === undefined) continue;
 
       if (value instanceof File) {
         dataToSend.append(key, value, value.name);
       } else if (Array.isArray(value)) {
-        dataToSend.append(key, value.join(','));
+        dataToSend.append(key, JSON.stringify(value));
+      } else if (typeof value === "object") {
+        dataToSend.append(key, JSON.stringify(value));
       } else {
-        dataToSend.append(key, value.toString());
+        dataToSend.append(key, String(value));
       }
-    }*/
+    }
 
-      for (const key in tempFormData) {
-  const value = tempFormData[key];
-  if (value === null || value === undefined) continue;
-
-  if (value instanceof File) {
-    dataToSend.append(key, value, value.name);
-  } else if (Array.isArray(value)) {
-    dataToSend.append(key, JSON.stringify(value));
-  } else if (typeof value === "object") {
-    dataToSend.append(key, JSON.stringify(value));
-  } else {
-    dataToSend.append(key, value.toString());
-  }
-}
-
-
-    dataToSend.append('profileType', selectedRole);
-
-    console.log("Submitting FormData to backend...");
+    dataToSend.append("profileType", selectedRole);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/onboarding`, dataToSend, {
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_Backend_URL}/api/onboarding`,
+        dataToSend,
+        { withCredentials: true }
+      );
 
-      alert('Candidate profile created successfully!');
+      alert("Candidate profile created successfully!");
 
       if (response.data && response.data.user) {
         setAuthUser({ user: response.data.user });
       }
 
       clearFormData();
-      if (onSubmit) {
-        onSubmit();
-      }
+      if (onSubmit) onSubmit();
 
       const userTypeFromDb = response.data.profileType || response.data.userType;
       if (userTypeFromDb) {
         const lowerCaseUserType = userTypeFromDb.toLowerCase();
         switch (lowerCaseUserType) {
-          case 'professional':
-            navigate('/profhome', { replace: true });
+          case "professional":
+            navigate("/profhome", { replace: true });
             break;
-          case 'fresher':
-            navigate('/home', { replace: true });
-            break;
-          case 'student':
-            navigate('/home', { replace: true });
+          case "fresher":
+          case "student":
+            navigate("/home", { replace: true });
             break;
           default:
-            navigate('/home', { replace: true });
+            navigate("/home", { replace: true });
         }
       } else {
         console.warn("User type not found in response. Navigating to general home.");
-        navigate('/home', { replace: true });
+        navigate("/home", { replace: true });
       }
     } catch (error) {
       console.error("Network or backend submission error:", error);
       if (error.response) {
         console.error("Error Response Data:", error.response.data);
-        const errorMessage = error.response.data.details || error.response.data.error || 'An unknown error occurred.';
+        const errorMessage =
+          error.response.data.details ||
+          error.response.data.error ||
+          "An unknown error occurred.";
         alert(`Submission failed: ${errorMessage}`);
       } else if (error.request) {
         alert("Network error: No response from server.");
@@ -144,6 +143,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
       }
     }
   };
+
 
   return (
     <>

@@ -33,7 +33,7 @@ const SelectedTag = ({ item, onRemove }) => (
 );
 
 export const StepFour = ({ onNext, onBack, formData, onChange }) => {
-  
+
   const locationOptions = useMemo(() => {
     return City.getCitiesOfCountry("IN")
       ?.map((city) => ({
@@ -48,19 +48,19 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
     jobRoles: Array.isArray(formData.jobRoles)
       ? formData.jobRoles
       : formData.jobRoles
-      ? [formData.jobRoles]
-      : [],
+        ? [formData.jobRoles]
+        : [],
     locations: Array.isArray(formData.locations)
       ? formData.locations
       : formData.locations
-      ? [formData.locations]
-      : [],
+        ? [formData.locations]
+        : [],
     lookingFor: formData.lookingFor || "Internship",
     employmentType: Array.isArray(formData.employmentType)
       ? formData.employmentType
       : formData.employmentType
-      ? [formData.employmentType]
-      : [],
+        ? [formData.employmentType]
+        : [],
   });
 
   const [dropdownOpen, setDropdownOpen] = useState({
@@ -92,7 +92,6 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
     }));
   };
 
-  // --- Handlers for Job Roles (Legacy Custom Dropdown) ---
   const handleMultiSelect = (field, value) => {
     setLocalFormData((prev) => {
       const currentValues = prev[field] || [];
@@ -134,15 +133,15 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
 
   const isLookingForActive = (option) => {
     const val = localFormData.lookingFor;
-    
+
     if (val === option) return true;
 
     if (Array.isArray(val)) {
-        if (option === 'Both') {
-            return val.includes('Job') && val.includes('Internship');
-        }
-        // If state is array but checking single option (rare edge case with this UI logic, but safe to have)
-        return val.includes(option) && val.length === 1;
+      if (option === 'Both') {
+        return val.includes('Job') && val.includes('Internship');
+      }
+      // If state is array but checking single option (rare edge case with this UI logic, but safe to have)
+      return val.includes(option) && val.length === 1;
     }
     return false;
   };
@@ -170,7 +169,7 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 w-full max-w-2xl">
-          
+
           {/* Header with gradient */}
           <div className="text-center mb-8">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mx-auto mb-4">
@@ -248,9 +247,8 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
                   </span>
                 </div>
                 <ChevronDownIcon
-                  className={`w-5 h-5 text-gray-400 transition-transform ${
-                    dropdownOpen.jobRoles ? "rotate-180" : ""
-                  }`}
+                  className={`w-5 h-5 text-gray-400 transition-transform ${dropdownOpen.jobRoles ? "rotate-180" : ""
+                    }`}
                 />
               </div>
 
@@ -264,11 +262,10 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
                         e.stopPropagation();
                         handleMultiSelect("jobRoles", role);
                       }}
-                      className={`px-4 py-3 hover:bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 cursor-pointer transition-all duration-200 border-b border-gray-100 last:border-b-0 ${
-                        localFormData.jobRoles.includes(role)
-                          ? "bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#5b21b6]"
-                          : ""
-                      }`}
+                      className={`px-4 py-3 hover:bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 cursor-pointer transition-all duration-200 border-b border-gray-100 last:border-b-0 ${localFormData.jobRoles.includes(role)
+                        ? "bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#5b21b6]"
+                        : ""
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-gray-700">{role}</span>
@@ -336,11 +333,11 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
                     }),
                     option: (base, state) => ({
                       ...base,
-                      backgroundColor: state.isSelected 
-                        ? 'rgba(102, 126, 234, 0.1)' 
-                        : state.isFocused 
-                        ? 'rgba(102, 126, 234, 0.05)' 
-                        : 'white',
+                      backgroundColor: state.isSelected
+                        ? 'rgba(102, 126, 234, 0.1)'
+                        : state.isFocused
+                          ? 'rgba(102, 126, 234, 0.05)'
+                          : 'white',
                       color: state.isSelected ? '#5b21b6' : '#374151',
                       cursor: 'pointer',
                       padding: '12px 16px',
@@ -385,11 +382,10 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
                     key={option}
                     type="button"
                     onClick={() => handleLookingForClick(option)}
-                    className={`p-3 border rounded-xl transition-all duration-200 font-medium ${
-                      isLookingForActive(option)
-                        ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-lg shadow-purple-500/30"
-                        : "text-gray-700 border-gray-300 hover:border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5"
-                    }`}
+                    className={`p-3 border rounded-xl transition-all duration-200 font-medium ${isLookingForActive(option)
+                      ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-lg shadow-purple-500/30"
+                      : "text-gray-700 border-gray-300 hover:border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5"
+                      }`}
                   >
                     {option}
                   </button>
@@ -408,11 +404,10 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
                     key={type}
                     type="button"
                     onClick={() => handleMultiSelect("employmentType", type)}
-                    className={`p-3 border rounded-xl transition-all duration-200 font-medium capitalize ${
-                      localFormData.employmentType.includes(type)
-                        ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-lg shadow-purple-500/30"
-                        : "text-gray-700 border-gray-300 hover:border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5"
-                    }`}
+                    className={`p-3 border rounded-xl transition-all duration-200 font-medium capitalize ${localFormData.employmentType.includes(type)
+                      ? "bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent shadow-lg shadow-purple-500/30"
+                      : "text-gray-700 border-gray-300 hover:border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5"
+                      }`}
                   >
                     {type.replace("-", " ")}
                   </button>

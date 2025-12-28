@@ -26,56 +26,84 @@ export async function getOnboardingFormService(userId) {
 
 export async function submitOnboardingFormService(userId, body, files) {
 
+  const parseJsonArray = (field) => {
+    if (!body[field]) return [];
+    try {
+      const parsed = JSON.parse(body[field]);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const parseJsonObject = (field) => {
+    if (!body[field]) return null;
+    try {
+      return JSON.parse(body[field]);
+    } catch {
+      return null;
+    }
+  };
+
   const updateData = {
     userId,
     name: body.name,
     email: body.email,
     phone: body.phone,
     profileType: body.profileType,
+
     college: body.college,
     degree: body.degree,
     semester: body.semester,
     specialization: body.specialization,
     cgpa: body.cgpa,
     yearOfGraduation: body.yearOfGraduation,
+
     expectedSalaryCurrency: body.expectedSalaryCurrency,
     expectedSalaryAmount: body.expectedSalaryAmount,
     currentSalaryCurrency: body.currentSalaryCurrency,
     currentSalaryAmount: body.currentSalaryAmount,
-    lookingFor: body.lookingFor ? body.lookingFor.split(",") : [],
-    employmentType: body.employmentType ? body.employmentType.split(",") : [],
-    certifications: body.certifications,
-    linkedin: body.linkedin,
-    github: body.github,
-    portfolio: body.portfolio,
-    referralSource: body.referralSource,
-    industry: body.industry ? body.industry.split(",") : [],
-    jobRoles: body.jobRoles ? body.jobRoles.split(",") : [],
-    locations: body.locations ? body.locations.split(",") : [],
-    skills: body.skills ? body.skills.split(",") : [],
+
+    lookingFor: parseJsonArray("lookingFor"),
+    employmentType: parseJsonArray("employmentType"),
+    industry: parseJsonArray("industry"),
+    jobRoles: parseJsonArray("jobRoles"),
+    locations: parseJsonArray("locations"),
+    skills: parseJsonArray("skills"),
+    languagesKnown: parseJsonArray("languagesKnown"),
+    toolsAndPlatforms: parseJsonArray("toolsAndPlatforms"),
+    domainKnowledge: parseJsonArray("domainKnowledge"),
+    openToShift: Array.isArray(body.openToShift)
+      ? body.openToShift.join(",")
+      : body.openToShift || "",
+
+    // complex arrays
+    education: parseJsonArray("education"),
     experiences: body.experiences ? JSON.parse(body.experiences) : [],
     leadership: body.leadership ? JSON.parse(body.leadership) : [],
     internationalExperience: body.internationalExperience ? JSON.parse(body.internationalExperience) : [],
     awards: body.awards ? JSON.parse(body.awards) : [],
     publications: body.publications ? JSON.parse(body.publications) : [],
     achievements: body.achievements ? JSON.parse(body.achievements) : [],
+
     about: body.about,
     gender: body.gender,
-    openToShift: body.openToShift,
     noticePeriod: body.noticePeriod,
-    servingNotivePeriod: body.servingNoticePeriod == 'true',
+    servingNoticePeriod: body.servingNoticePeriod === "true",
     totalYearsOfExperience: body.totalYearsOfExperience,
-    languagesKnown: body.languagesKnown ? body.languagesKnown.split(",") : [],
-    toolsAndPlatforms: body.toolsAndPlatforms ? body.toolsAndPlatforms.split(",") : [],
-    domainKnowledge: body.domainKnowledge ? body.domainKnowledge.split(",") : [],
     currentCompany: body.currentCompany,
+
+    certifications: body.certifications,
+    linkedin: body.linkedin,
+    github: body.github,
+    portfolio: body.portfolio,
+    referralSource: body.referralSource,
   };
   return await handleOnboardingUpdate(updateData, files);
 }
 
 
 export async function updateOnboardingFormService(userId, body, files) {
-  // Prepare updates as in controller
   const updates = { ...body };
   const fieldsToParse = ['jobRoles', 'locations', 'industry', 'skills', 'languagesKnown', 'toolsAndPlatforms', 'domainKnowledge'];
   fieldsToParse.forEach(field => {
@@ -89,7 +117,6 @@ export async function updateOnboardingFormService(userId, body, files) {
       updates[field] = JSON.parse(updates[field]);
     }
   });
-  // Use handleOnboardingUpdate for file uploads and DB update
   updates.userId = userId;
   const result = await handleOnboardingUpdate(updates, files);
   return result.updatedOnboarding;
@@ -251,15 +278,15 @@ export const handleOnboardingUpdate = async (updateData, files) => {
   // };
 
   if (files?.resume?.[0]) {
-  const file = files.resume[0];
-  const upload = await streamUpload(file.buffer, "resumes", file.mimetype);
+    const file = files.resume[0];
+    const upload = await streamUpload(file.buffer, "resumes", file.mimetype);
 
-  // existing field (keep it for backward compatibility)
-  updateData.resume = upload.secure_url;
+    // existing field (keep it for backward compatibility)
+    updateData.resume = upload.secure_url;
 
-  // ✅ ADD THIS LINE (DO NOT REMOVE resume)
-  updateData.resumeUrl = upload.secure_url;
-}
+    // ✅ ADD THIS LINE (DO NOT REMOVE resume)
+    updateData.resumeUrl = upload.secure_url;
+  }
   if (files?.degreeCertificate?.[0]) {
     const upload = await streamUpload(files.degreeCertificate[0].buffer, "degreeCertificates");
     updateData.degreeCertificate = upload.secure_url;

@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { MailIcon, PhoneIcon, ChevronDownIcon, AlertCircle, User } from "lucide-react";
 import { extractValidEmail } from "@/lib/utils";
 
 export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChange }) => {
-  console.log("form:data\n", formData)
   const [hasAutoSeparated, setHasAutoSeparated] = React.useState(false);
   const [validationErrors, setValidationErrors] = React.useState({
     name: '',
@@ -11,6 +10,28 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     phone: '',
     profileType: ''
   });
+
+  React.useEffect(() => {
+    if (!formData?.parsedData) return;
+
+    const { name, phone, email } = formData.parsedData;
+    const updates = {};
+
+    if (name && !formData.name) {
+      updates.name = name;
+    }
+    if (phone && !formData.phone) {
+      updates.phone = phone;
+    }
+    if (email && !formData.email) {
+      updates.email = email;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      onChange(updates);
+    }
+  }, [formData.parsedData]);
+
 
   const separateContactInfo = (text) => {
     if (!text) return { name: '', phone: '', email: '' };
