@@ -705,7 +705,6 @@ export async function fetchCompanyDashboardMetrics(user) {
             throw new AppError("This user type cannot access this resource.", 403);
         }
 
-
         let query = {};
         if (userType === 'college') {
             query = { collegePosted: collegeProfileId };
@@ -725,16 +724,21 @@ export async function fetchCompanyDashboardMetrics(user) {
                 totalApplied: 0,
                 totalShortlisted: 0,
                 totalAccepted: 0,
-                totalRejected: 0
+                totalRejected: 0,
+                // Add these for dashboard display
+                shortlistedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 },
+                acceptedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 },
+                rejectedByCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 }
             };
         }
 
-        // Count by job type (Applied)
-        const appliedCounts = await Application.aggregate([
+        // ===== FIX 1: Count ALL applications (not just 'Applied') =====
+        // Count by job type (ALL applications regardless of status)
+        const allApplicationsByType = await Application.aggregate([
             {
                 $match: {
-                    job: { $in: allJobIds },
-                    currentStatus: 'Applied'
+                    job: { $in: allJobIds }
+                    // REMOVED: currentStatus: 'Applied' - This was the bug!
                 }
             },
             {
@@ -754,7 +758,34 @@ export async function fetchCompanyDashboardMetrics(user) {
             }
         ]);
 
-        // Count shortlisted / accepted / rejected
+        // ===== FIX 2: Also get counts by status AND type for dashboard table =====
+        const applicationsByStatusAndType = await Application.aggregate([
+            {
+                $match: {
+                    job: { $in: allJobIds }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'jobpostingtables',
+                    localField: 'job',
+                    foreignField: '_id',
+                    as: 'jobDetails'
+                }
+            },
+            { $unwind: '$jobDetails' },
+            {
+                $group: {
+                    _id: {
+                        status: '$currentStatus',
+                        jobType: '$jobDetails.jobType'
+                    },
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        // ===== FIX 3: Count by status (same as before) =====
         const statusCounts = await Application.aggregate([
             {
                 $match: {
@@ -770,18 +801,37 @@ export async function fetchCompanyDashboardMetrics(user) {
             }
         ]);
 
+        // Format applied counts
         const formattedAppliedCounts = {
             'On-campus': 0,
             'Pool-campus': 0,
             'Off-campus': 0
         };
 
-        appliedCounts.forEach(item => {
+        allApplicationsByType.forEach(item => {
             if (formattedAppliedCounts[item._id] !== undefined) {
                 formattedAppliedCounts[item._id] = item.count;
             }
         });
 
+        // Format counts by status and type for dashboard table
+        const formattedCountsByStatusAndType = {
+            'On-campus': { 'Shortlisted': 0, 'Accepted': 0, 'Rejected': 0 },
+            'Pool-campus': { 'Shortlisted': 0, 'Accepted': 0, 'Rejected': 0 },
+            'Off-campus': { 'Shortlisted': 0, 'Accepted': 0, 'Rejected': 0 }
+        };
+
+        applicationsByStatusAndType.forEach(item => {
+            const jobType = item._id.jobType;
+            const status = item._id.status;
+            
+            if (formattedCountsByStatusAndType[jobType] && 
+                formattedCountsByStatusAndType[jobType][status] !== undefined) {
+                formattedCountsByStatusAndType[jobType][status] = item.count;
+            }
+        });
+
+        // Format status counts
         const formattedStatusCounts = {
             'Shortlisted': 0,
             'Accepted': 0,
@@ -794,16 +844,46 @@ export async function fetchCompanyDashboardMetrics(user) {
             }
         });
 
+        // Calculate total applied (sum of all applications)
+        const totalApplied = Object.values(formattedAppliedCounts).reduce((sum, count) => sum + count, 0);
+
+        // For debugging
+        console.log('📊 Dashboard Metrics Debug:', {
+            allJobIds,
+            allApplicationsByType,
+            applicationsByStatusAndType,
+            statusCounts,
+            formattedAppliedCounts,
+            formattedCountsByStatusAndType,
+            totalApplied
+        });
+
         return {
             appliedByCategory: formattedAppliedCounts,
+            shortlistedByCategory: {
+                'On-campus': formattedCountsByStatusAndType['On-campus']['Shortlisted'],
+                'Pool-campus': formattedCountsByStatusAndType['Pool-campus']['Shortlisted'],
+                'Off-campus': formattedCountsByStatusAndType['Off-campus']['Shortlisted']
+            },
+            acceptedByCategory: {
+                'On-campus': formattedCountsByStatusAndType['On-campus']['Accepted'],
+                'Pool-campus': formattedCountsByStatusAndType['Pool-campus']['Accepted'],
+                'Off-campus': formattedCountsByStatusAndType['Off-campus']['Accepted']
+            },
+            rejectedByCategory: {
+                'On-campus': formattedCountsByStatusAndType['On-campus']['Rejected'],
+                'Pool-campus': formattedCountsByStatusAndType['Pool-campus']['Rejected'],
+                'Off-campus': formattedCountsByStatusAndType['Off-campus']['Rejected']
+            },
             statusTotals: formattedStatusCounts,
-            totalApplied: Object.values(formattedAppliedCounts).reduce((sum, count) => sum + count, 0),
+            totalApplied: totalApplied,
             totalShortlisted: formattedStatusCounts.Shortlisted,
             totalAccepted: formattedStatusCounts.Accepted,
             totalRejected: formattedStatusCounts.Rejected
         };
 
     } catch (error) {
+        console.error('❌ Error in fetchCompanyDashboardMetrics:', error);
         throw new AppError(error.message || 'Failed to fetch dashboard metrics', 500);
     }
 }

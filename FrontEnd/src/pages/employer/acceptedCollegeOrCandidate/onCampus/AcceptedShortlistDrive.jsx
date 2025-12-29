@@ -313,17 +313,22 @@ export default function OnCampusJobManagement() {
               currentJobs.map(job => (
                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                   <div className="grid grid-cols-12 gap-4 items-center">
-                    {/* Job Roles */}
+                    {/* Job Roles - Clickable Link for Job Preview */}
                     <div className="col-span-4">
-                      <div className="font-semibold text-gray-900">
-                        {displayJobRoles(job)}
-                      </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <FileText className="h-3 w-3 text-gray-400" />
-                        <span className="text-sm text-gray-500">
-                          {Array.isArray(job.employmentType) ? job.employmentType.join(', ') : job.employmentType || 'N/A Type'}
-                        </span>
-                      </div>
+                      <Link
+                        to={`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`}
+                        className="group cursor-pointer block"
+                      >
+                        <div className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
+                          {displayJobRoles(job)}
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <FileText className="h-3 w-3 text-gray-400" />
+                          <span className="text-sm text-gray-500">
+                            {Array.isArray(job.employmentType) ? job.employmentType.join(', ') : job.employmentType || 'N/A Type'}
+                          </span>
+                        </div>
+                      </Link>
                     </div>
 
                     {/* Work Locations */}
@@ -346,14 +351,18 @@ export default function OnCampusJobManagement() {
                       </div>
                     </div>
 
-                    {/* Applications */}
+                    {/* Applications - Clickable to View Colleges */}
                     <div className="col-span-1 text-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                      <div
+                        onClick={() => handleViewColleges(job)}
+                        className="inline-flex items-center justify-center w-8 h-8 text-sm font-medium rounded-full transition-all duration-200 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 hover:bg-gradient-to-r hover:from-blue-200 hover:to-blue-100 hover:shadow-md hover:shadow-blue-100 cursor-pointer"
+                        title="View College Applications"
+                      >
                         {job.applicationCount || 0}
-                      </span>
+                      </div>
                     </div>
 
-                    {/* Actions */}
+                    {/* Actions - Only Eye and Trash buttons (removed edit/file search button) */}
                     <div className="col-span-2">
                       <div className="flex items-center justify-center gap-2">
                         <button
@@ -364,18 +373,6 @@ export default function OnCampusJobManagement() {
                         >
                           <Eye size={16} />
                         </button>
-                        <Link
-                          to={`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`}
-                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-blue-600 hover:border-blue-200 transition-all duration-200"
-                          title="View Job Description"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M11.1 22H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.589 3.588A2.4 2.4 0 0 1 20 8v3.25" />
-                            <path d="M14 2v5a1 1 0 0 0 1 1h5" />
-                            <path d="m21 22-2.88-2.88" />
-                            <circle cx="16" cy="17" r="3" />
-                          </svg>
-                        </Link>
                         <button 
                           onClick={() => handleDelete(job._id)}
                           className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"

@@ -546,3 +546,9 @@ export function getCompanyApplicationsByCategory() {
     .then((response) => response)
     .catch((error) => error);
 }
+
+// In lib/Company_AxiosInstance.js
+// export const getCompanyApplications = () => axios.get('/api/company/applications');
+// export const getCompanyApplicationsByType = (type) => axios.get(`/api/company/applications?type=${type}`);
+// export const getCompanyShortlistedCandidates = () => axios.get('/api/company/candidates/shortlisted');
+// export const getCompanyAcceptedCandidates = () => axios.get('/api/company/candidates/accepted');

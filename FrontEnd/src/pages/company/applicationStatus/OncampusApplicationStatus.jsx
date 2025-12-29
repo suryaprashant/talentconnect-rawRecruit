@@ -321,14 +321,14 @@ export default function OncampusApplicationStatus() {
                   )}
 
                   {/* Description - Compact */}
-                  <div className="mb-5">
+                  {/* <div className="mb-5">
                     <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
                     <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
                       <p className="text-sm text-gray-700 line-clamp-3">
                         {selectedJob.description}
                       </p>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Action Button */}
                   <div className="mt-auto">

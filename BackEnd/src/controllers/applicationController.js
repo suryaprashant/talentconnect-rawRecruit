@@ -813,16 +813,25 @@ export async function scheduleInterview(req, res) {
     res.status(500).json({ Error: "Internal server error" });
   }
 }
+// In controllers/applicationController.js
 export const getCompanyDashboardMetrics = async (req, res) => {
   try {
+    console.log('🚀 getCompanyDashboardMetrics called');
+    console.log('User ID:', req.user._id);
+    console.log('User Type:', req.user.userType);
+    console.log('User Email:', req.user.email);
+    
     const user = req.user;
     const metricsData = await fetchCompanyDashboardMetrics(user);
+    
+    console.log('📈 Metrics data:', JSON.stringify(metricsData, null, 2));
 
     res.status(200).json({
       success: true,
       data: metricsData,
     });
   } catch (error) {
+    console.error('❌ Error in getCompanyDashboardMetrics:', error);
     const statusCode = error.statusCode || 500;
 
     res.status(statusCode).json({

@@ -222,199 +222,176 @@ export default function PoolcampusApplicationStatus() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const fetchApplication = async () => {
-  try {
-    const response = await getUserApplicationStatus("Pool-campus");
-    const rawData = response?.data?.data || [];
+    try {
+      const response = await getUserApplicationStatus("Pool-campus");
+      const rawData = response?.data?.data || [];
 
-    console.log("🔍 POOL CAMPUS - Raw API response:", rawData);
-    
-    // Debug: Show the structure of first item
-    if (rawData.length > 0) {
-      const firstItem = rawData[0];
-      console.log("🔍 First item structure:", firstItem);
-      console.log("🔍 jobDetails structure:", firstItem.jobDetails);
-      console.log("🔍 companyDetails structure:", firstItem.companyDetails);
-      console.log("🔍 postedByDetails structure:", firstItem.postedByDetails);
-    }
+      console.log("🔍 POOL CAMPUS - Raw API response:", rawData);
+      
+      if (rawData.length > 0) {
+        const firstItem = rawData[0];
+        console.log("🔍 First item structure:", firstItem);
+        console.log("🔍 jobDetails structure:", firstItem.jobDetails);
+        console.log("🔍 collegeDetails structure:", firstItem.collegeDetails);
+        console.log("🔍 postedByDetails structure:", firstItem.postedByDetails);
+      }
 
-    const normalized = rawData.map((item) => {
-  // Extract nested details
-  const jobDetails = item.jobDetails?.[0] || {};
-  const collegeDetails = item.collegeDetails?.[0] || {};
-  
-  // Get college name
-  let collegeName = "College/University";
-  if (collegeDetails?.collegeUniversityDetails?.collegeName) {
-    collegeName = collegeDetails.collegeUniversityDetails.collegeName;
-  } else if (collegeDetails?.collegeName) {
-    collegeName = collegeDetails.collegeName;
-  } else if (jobDetails?.collegeName) {
-    collegeName = jobDetails.collegeName;
-  }
-  
-  // FIXED: Better job title/designation extraction for college postings
-  let jobTitle = "Pool Campus Drive";
-  
-  // For college postings, look for these fields in priority:
-  if (jobDetails?.lookingFor) {
-    // This is what the college is looking for (e.g., "2024 Batch Graduates")
-    jobTitle = jobDetails.lookingFor;
-  }
-  else if (jobDetails?.eventName || jobDetails?.driveName) {
-    // Often colleges name their drives (e.g., "Annual Recruitment Drive 2024")
-    jobTitle = jobDetails.eventName || jobDetails.driveName;
-  }
-  else if (jobDetails?.designation) {
-    jobTitle = jobDetails.designation;
-  }
-  else if (jobDetails?.jobTitle) {
-    jobTitle = jobDetails.jobTitle;
-  }
-  else if (jobDetails?.role) {
-    jobTitle = jobDetails.role;
-  }
-  // If it's a generic college posting without specific role, show college info
-  else if (!jobDetails?.lookingFor && !jobDetails?.designation) {
-    // Generate a meaningful title based on available info
-    const degree = Array.isArray(jobDetails?.degree) ? jobDetails.degree[0] : 
-                  jobDetails?.qualification || jobDetails?.education;
-    
-    const batch = jobDetails?.batch || 
-                 jobDetails?.academicYear || 
-                 jobDetails?.graduationYear;
-    
-    if (degree && batch) {
-      jobTitle = `${degree} ${batch} Recruitment`;
-    } else if (degree) {
-      jobTitle = `${degree} Recruitment Drive`;
-    } else if (batch) {
-      jobTitle = `Batch ${batch} Campus Drive`;
-    } else {
-      // Default to college-focused title
-      jobTitle = `${collegeName} Campus Recruitment`;
+      const normalized = rawData.map((item) => {
+        const jobDetails = item.jobDetails?.[0] || {};
+        const collegeDetails = item.collegeDetails?.[0] || {};
+        
+        let collegeName = "College/University";
+        if (collegeDetails?.collegeUniversityDetails?.collegeName) {
+          collegeName = collegeDetails.collegeUniversityDetails.collegeName;
+        } else if (collegeDetails?.collegeName) {
+          collegeName = collegeDetails.collegeName;
+        } else if (jobDetails?.collegeName) {
+          collegeName = jobDetails.collegeName;
+        }
+        
+        let jobTitle = "Pool Campus Drive";
+        if (jobDetails?.lookingFor) {
+          jobTitle = jobDetails.lookingFor;
+        }
+        else if (jobDetails?.eventName || jobDetails?.driveName) {
+          jobTitle = jobDetails.eventName || jobDetails.driveName;
+        }
+        else if (jobDetails?.designation) {
+          jobTitle = jobDetails.designation;
+        }
+        else if (jobDetails?.jobTitle) {
+          jobTitle = jobDetails.jobTitle;
+        }
+        else if (jobDetails?.role) {
+          jobTitle = jobDetails.role;
+        }
+        else if (!jobDetails?.lookingFor && !jobDetails?.designation) {
+          const degree = Array.isArray(jobDetails?.degree) ? jobDetails.degree[0] : 
+                        jobDetails?.qualification || jobDetails?.education;
+          
+          const batch = jobDetails?.batch || 
+                       jobDetails?.academicYear || 
+                       jobDetails?.graduationYear;
+          
+          if (degree && batch) {
+            jobTitle = `${degree} ${batch} Recruitment`;
+          } else if (degree) {
+            jobTitle = `${degree} Recruitment Drive`;
+          } else if (batch) {
+            jobTitle = `Batch ${batch} Campus Drive`;
+          } else {
+            jobTitle = `${collegeName} Campus Recruitment`;
+          }
+        }
+        
+        let location = "Location not specified";
+        if (jobDetails?.venue) {
+          location = jobDetails.venue;
+        }
+        else if (jobDetails?.location) {
+          if (Array.isArray(jobDetails.location)) {
+            location = jobDetails.location[0] || "Location not specified";
+          } else {
+            location = jobDetails.location;
+          }
+        }
+        else if (jobDetails?.collegeLocation) {
+          location = jobDetails.collegeLocation;
+        }
+        else if (jobDetails?.jobLocation) {
+          location = jobDetails.jobLocation;
+        }
+        else if (collegeDetails?.collegeUniversityDetails?.collegeLocation) {
+          location = collegeDetails.collegeUniversityDetails.collegeLocation;
+        }
+        
+        let companyLogo = null;
+        if (collegeDetails?.collegeUniversityDetails?.logo) {
+          companyLogo = collegeDetails.collegeUniversityDetails.logo;
+        }
+        else if (collegeDetails?.logo) {
+          companyLogo = collegeDetails.logo;
+        }
+        else if (collegeDetails?.profileImage) {
+          companyLogo = collegeDetails.profileImage;
+        }
+        
+        let skills = [];
+        if (Array.isArray(jobDetails?.skills)) {
+          skills = jobDetails.skills;
+        } else if (Array.isArray(jobDetails?.skillsRequired)) {
+          skills = jobDetails.skillsRequired;
+        } else if (jobDetails?.skills) {
+          skills = jobDetails.skills.split(',').map(skill => skill.trim());
+        }
+        
+        let degree = "Any Degree";
+        if (Array.isArray(jobDetails?.degree) && jobDetails.degree.length > 0) {
+          degree = jobDetails.degree.join(", ");
+        } else if (jobDetails?.qualification) {
+          degree = jobDetails.qualification;
+        } else if (jobDetails?.education) {
+          degree = jobDetails.education;
+        } else if (jobDetails?.degreeRequired) {
+          degree = jobDetails.degreeRequired;
+        }
+        
+        let employmentType = "Campus Placement";
+        if (jobDetails?.employmentType) {
+          if (Array.isArray(jobDetails.employmentType)) {
+            employmentType = jobDetails.employmentType.join(", ");
+          } else {
+            employmentType = jobDetails.employmentType;
+          }
+        } else if (jobDetails?.jobType) {
+          employmentType = jobDetails.jobType;
+        }
+        
+        let description = jobDetails?.description || jobDetails?.jobDescription || "Description not available";
+        if (description === "Description not available" || !description.trim()) {
+          description = `Campus recruitment drive at ${collegeName}. Open for eligible students to apply for various positions.`;
+        }
+        
+        const batch = jobDetails?.batch || 
+                      jobDetails?.academicYear || 
+                      jobDetails?.graduationYear || 
+                      "Current Batch";
+        
+        const driveType = item.jobType === "Pool-campus" ? "Pool Campus" : 
+                         item.jobType === "On-campus" ? "On-Campus" : "Campus Drive";
+        
+        return {
+          ...item,
+          id: item._id,
+          status: item.currentStatus ?? item.status ?? "Applied",
+          date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+          company: collegeName,
+          companyLogo: companyLogo,
+          location: location,
+          jobTitle: jobTitle,
+          degree: degree,
+          employmentType: employmentType,
+          skills: skills,
+          description: description,
+          batch: batch,
+          driveType: driveType,
+          isCollegePosting: true,
+          postingType: driveType,
+          jobDetails: item.jobDetails || [],
+          collegeDetails: item.collegeDetails || []
+        };
+      });
+
+      console.log("✅ Normalized data:", normalized);
+      setPoolJobs(normalized);
+      if (normalized.length > 0) {
+        setSelectedJob(normalized[0]);
+      }
+    } catch (error) {
+      console.log("Error fetching pool applications: ", error);
+      setPoolJobs([]);
     }
-  }
-  
-  // Location extraction
-  let location = "Location not specified";
-  if (jobDetails?.venue) {
-    location = jobDetails.venue;
-  }
-  else if (jobDetails?.location) {
-    if (Array.isArray(jobDetails.location)) {
-      location = jobDetails.location[0] || "Location not specified";
-    } else {
-      location = jobDetails.location;
-    }
-  }
-  else if (jobDetails?.collegeLocation) {
-    location = jobDetails.collegeLocation;
-  }
-  else if (jobDetails?.jobLocation) {
-    location = jobDetails.jobLocation;
-  }
-  else if (collegeDetails?.collegeUniversityDetails?.collegeLocation) {
-    location = collegeDetails.collegeUniversityDetails.collegeLocation;
-  }
-  
-  // Extract logo
-  let companyLogo = null;
-  if (collegeDetails?.collegeUniversityDetails?.logo) {
-    companyLogo = collegeDetails.collegeUniversityDetails.logo;
-  }
-  else if (collegeDetails?.logo) {
-    companyLogo = collegeDetails.logo;
-  }
-  else if (collegeDetails?.profileImage) {
-    companyLogo = collegeDetails.profileImage;
-  }
-  
-  // Skills extraction
-  let skills = [];
-  if (Array.isArray(jobDetails?.skills)) {
-    skills = jobDetails.skills;
-  } else if (Array.isArray(jobDetails?.skillsRequired)) {
-    skills = jobDetails.skillsRequired;
-  } else if (jobDetails?.skills) {
-    skills = jobDetails.skills.split(',').map(skill => skill.trim());
-  }
-  
-  // Degree/Qualification
-  let degree = "Any Degree";
-  if (Array.isArray(jobDetails?.degree) && jobDetails.degree.length > 0) {
-    degree = jobDetails.degree.join(", ");
-  } else if (jobDetails?.qualification) {
-    degree = jobDetails.qualification;
-  } else if (jobDetails?.education) {
-    degree = jobDetails.education;
-  } else if (jobDetails?.degreeRequired) {
-    degree = jobDetails.degreeRequired;
-  }
-  
-  // Employment type - for college drives, it's often "Full-time" or "Campus Placement"
-  let employmentType = "Campus Placement";
-  if (jobDetails?.employmentType) {
-    if (Array.isArray(jobDetails.employmentType)) {
-      employmentType = jobDetails.employmentType.join(", ");
-    } else {
-      employmentType = jobDetails.employmentType;
-    }
-  } else if (jobDetails?.jobType) {
-    employmentType = jobDetails.jobType;
-  }
-  
-  // For college drives, add some contextual description
-  let description = jobDetails?.description || jobDetails?.jobDescription || "Description not available";
-  if (description === "Description not available" || !description.trim()) {
-    description = `Campus recruitment drive at ${collegeName}. Open for eligible students to apply for various positions.`;
-  }
-  
-  // Extract batch/year info
-  const batch = jobDetails?.batch || 
-                jobDetails?.academicYear || 
-                jobDetails?.graduationYear || 
-                "Current Batch";
-  
-  // Extract drive type (Pool/On-Campus)
-  const driveType = item.jobType === "Pool-campus" ? "Pool Campus" : 
-                   item.jobType === "On-campus" ? "On-Campus" : "Campus Drive";
-  
-  return {
-    ...item,
-    id: item._id,
-    status: item.currentStatus ?? item.status ?? "Applied",
-    date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
-    company: collegeName,
-    companyLogo: companyLogo,
-    location: location,
-    jobTitle: jobTitle, // Now shows appropriate info for college postings
-    degree: degree,
-    employmentType: employmentType,
-    skills: skills,
-    description: description,
-    batch: batch,
-    driveType: driveType,
-    
-    // Additional contextual info for display
-    isCollegePosting: true,
-    postingType: driveType,
-    
-    // Keep original arrays
-    jobDetails: item.jobDetails || [],
-    collegeDetails: item.collegeDetails || []
   };
-});
-
-    console.log("✅ Normalized data:", normalized);
-    setPoolJobs(normalized);
-    if (normalized.length > 0) {
-      setSelectedJob(normalized[0]);
-    }
-  } catch (error) {
-    console.log("Error fetching pool applications: ", error);
-    setPoolJobs([]);
-  }
-};
 
   useEffect(() => {
     fetchApplication();
@@ -432,7 +409,6 @@ export default function PoolcampusApplicationStatus() {
     return index >= 0 ? index : 0;
   };
 
-  // Helper function to get initials for company logo
   const getCompanyInitials = (companyName) => {
     if (!companyName || companyName === "College/University") return "CU";
     const words = companyName.split(' ');
@@ -443,7 +419,7 @@ export default function PoolcampusApplicationStatus() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       <div className="container mx-auto px-4 py-6">
-        {/* Compact Header Section */}
+        {/* Compact Header Section - Matched styling */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-5 mb-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg">
@@ -459,14 +435,14 @@ export default function PoolcampusApplicationStatus() {
             </div>
           </div>
           
-          {/* Compact Search */}
+          {/* Compact Search - Matched styling */}
           <div className="relative">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               <Search className="h-4 w-4 text-gray-400" />
             </div>
             <input
               type="text"
-              placeholder="Search pool applications..."
+              placeholder="Search applications..."
               className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -474,60 +450,87 @@ export default function PoolcampusApplicationStatus() {
           </div>
         </div>
 
-        {/* Compact Main Layout - No Scroll Needed */}
+        {/* Compact Main Layout - Matched grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 max-h-[calc(100vh-180px)]">
-          {/* Compact Applications List */}
+          {/* Compact Applications List - Matched styling */}
           <div className="lg:col-span-1">
             <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg h-full flex flex-col">
+              <div className="p-4 border-b border-gray-100">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-base font-semibold text-gray-900">Applications</h2>
+                  <span className="text-xs font-medium px-2 py-1 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full">
+                    {filteredJobs.length}
+                  </span>
+                </div>
+              </div>
+              
               <div className="flex-1 overflow-y-auto p-2">
-  {filteredJobs.length > 0 ? (
-    <div className="space-y-2">
-      {filteredJobs.map((job) => (
-        <button
-          key={job.id}
-          onClick={() => setSelectedJob(job)}
-          className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${
-            selectedJob?.id === job.id
-              ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white'
-              : 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700'
-          }`}
-        >
-          <div className="flex items-start gap-3">
-            {/* Avatar */}
-            <div className="w-8 h-8 rounded-full bg-white/30 flex items-center justify-center font-medium">
-              {job.company?.charAt(0) || "C"}
-            </div>
-
-            {/* Details */}
-            <div className="flex-1 min-w-0">
-              <h3 className="font-medium truncate">
-                {job.company || "Unknown College"}
-              </h3>
-
-              <div className="mt-1 flex items-center text-xs opacity-80 gap-2">
-                <Clock className="h-3 w-3 mr-1" />
-                {job.degree}
+                {filteredJobs.length > 0 ? (
+                  <div className="space-y-2">
+                    {filteredJobs.map((job) => (
+                      <button
+                        key={job.id}
+                        onClick={() => setSelectedJob(job)}
+                        className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${
+                          selectedJob?.id === job.id 
+                            ? 'bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 border border-[#667eea]/20' 
+                            : 'hover:bg-gray-50/50 border border-transparent'
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          {/* Logo/Initials with matched styling */}
+                          {job.companyLogo ? (
+                            <img 
+                              src={job.companyLogo} 
+                              alt={job.company}
+                              className="w-9 h-9 rounded-lg object-cover border border-gray-200"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                            selectedJob?.id === job.id 
+                              ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
+                              : 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700'
+                          }`}>
+                            <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-sm font-semibold text-gray-900 truncate">{job.company}</h3>
+                            <p className="text-xs text-gray-600 truncate">{job.jobTitle}</p>
+                            <div className="mt-1.5 flex items-center text-xs text-gray-500 gap-2">
+                              <span className="inline-flex items-center">
+                                <MapPin className="h-3 w-3 mr-1" />
+                                {job.location}
+                              </span>
+                              <span className="text-xs px-1.5 py-0.5 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-600 rounded">
+                                {job.status}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-6 text-center">
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-3">
+                      <Search className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <p className="text-sm text-gray-500">No applications found</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
-        </button>
-      ))}
-    </div>
-  ) : (
-    <div className="p-6 text-center">
-      <p className="text-sm text-gray-500">No pool applications found</p>
-    </div>
-  )}
-</div>
 
-            </div>
-          </div>
-
-          {/* Compact Status and Details */}
+          {/* Compact Status and Details - Matched styling */}
           <div className="lg:col-span-2">
             {selectedJob ? (
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg h-full flex flex-col">
-                {/* Status Progress - Compact */}
+                {/* Status Progress - Matched styling */}
                 <div className="p-5 border-b border-gray-100">
                   <div className="flex items-center justify-between mb-3">
                     <div>
@@ -573,31 +576,13 @@ export default function PoolcampusApplicationStatus() {
                   </div>
                 </div>
 
-                {/* Job Details Content */}
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-6">
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900">
-                        {selectedJob?.jobDetails?.[0]?.contactPerson?.name || "N/A"}
-                      </h2>
-                      <p className="text-lg text-gray-600 mt-1">
-                        {selectedJob?.jobDetails?.[0]?.contactPerson?.designation || "N/A"}
-                      </p>
-                      <div className="mt-4 flex flex-wrap gap-3">
-                        <span className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-lg text-sm">
-                          <Briefcase className="h-3 w-3 mr-1.5" />
-                          {selectedJob?.jobDetails?.[0]?.employmentType?.join(", ")}
-                        </span>
-                        <span className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-lg text-sm">
-                          <Calendar className="h-3 w-3 mr-1.5" />
-                          {selectedJob?.jobDetails?.[0]?.degree?.join(", ")}
-                        </span>
-                        <span className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 rounded-lg text-sm">
-                          <MapPin className="h-3 w-3 mr-1.5" />
-                          {selectedJob?.collegeDetails?.[0]?.collegeUniversityDetails?.city},
-                          {" "}
-                          {selectedJob?.collegeDetails?.[0]?.collegeUniversityDetails?.state}
-                        </span>
+                {/* Job Details - Compact Grid - Matched styling */}
+                <div className="flex-1 p-5">
+                  <div className="grid grid-cols-2 gap-4 mb-5">
+                    <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Briefcase className="h-4 w-4 text-[#667eea]" />
+                        <span className="text-xs font-medium text-gray-700">Type</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.employmentType}</p>
                     </div>
@@ -605,7 +590,7 @@ export default function PoolcampusApplicationStatus() {
                     <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
                         <Calendar className="h-4 w-4 text-[#667eea]" />
-                        <span className="text-xs font-medium text-gray-700">Education Required</span>
+                        <span className="text-xs font-medium text-gray-700">Education</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.degree}</p>
                     </div>
@@ -621,22 +606,19 @@ export default function PoolcampusApplicationStatus() {
                     <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
                         <Clock className="h-4 w-4 text-[#667eea]" />
-                        <span className="text-xs font-medium text-gray-700">Applied On</span>
+                        <span className="text-xs font-medium text-gray-700">Applied</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.date}</p>
                     </div>
                   </div>
 
-                  {/* Skills */}
-                  {selectedJob?.jobDetails?.[0]?.skills?.length > 0 && (
-                    <div className="mb-6">
+                  {/* Skills - Compact - Matched styling */}
+                  {selectedJob.skills && selectedJob.skills.length > 0 && (
+                    <div className="mb-5">
                       <h3 className="text-sm font-medium text-gray-700 mb-2">Required Skills</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedJob.jobDetails[0].skills.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="px-3 py-1.5 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 rounded-lg text-sm"
-                          >
+                      <div className="flex flex-wrap gap-1.5">
+                        {selectedJob.skills.slice(0, 5).map((skill, index) => (
+                          <span key={index} className="px-2 py-1 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 rounded-lg text-xs">
                             {skill}
                           </span>
                         ))}
@@ -649,16 +631,17 @@ export default function PoolcampusApplicationStatus() {
                     </div>
                   )}
 
-
-                  {/* Job Description */}
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Description</h3>
-                    <div className="p-4 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
-                      <p className="text-gray-700 leading-relaxed">{selectedJob.description}</p>
+                  {/* Description - Compact - Matched styling */}
+                  {/* <div className="mb-5">
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
+                    <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
+                      <p className="text-sm text-gray-700 line-clamp-3">
+                        {selectedJob.description}
+                      </p>
                     </div>
-                  </div>
+                  </div> */}
 
-                  {/* Action Button */}
+                  {/* Action Button - Matched styling */}
                   <div className="mt-auto">
                     <Link 
                       to={`/company-dashboard/Pool-campus/${selectedJob?.jobDetails?.[0]?._id || selectedJob.id}?isApplied=true`} 
@@ -674,7 +657,7 @@ export default function PoolcampusApplicationStatus() {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-4">
                   <Users className="h-8 w-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Select a Pool Application</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Select an Application</h3>
                 <p className="text-sm text-gray-600 text-center">
                   Choose a pool campus application from the list to view detailed status
                 </p>
