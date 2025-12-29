@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Sidebar from './Sidebar'
 import Header from './Header'
+import bgImage from "../../assets/bg_image.webp";
 
 function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -19,7 +20,25 @@ function Layout({ children }) {
           profileOpen={profileOpen}
           setProfileOpen={setProfileOpen}
         />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50">
+        {/* <main
+  className="relative flex-1 overflow-y-auto p-4 md:p-6 bg-transparent"
+  style={{
+    backgroundImage: `url(${bgImage})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+  }}
+> */}
+
+          {/* <main
+  className="relative flex-1 overflow-y-auto p-4 md:p-6 bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10
+            "
+> */}
+
+<main
+  className="relative flex-1 overflow-y-auto p-4 md:p-6 bg-white
+            "
+>
           {children}
         </main>
       </div>

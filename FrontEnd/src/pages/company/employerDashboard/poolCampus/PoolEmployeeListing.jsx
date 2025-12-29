@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, X, Filter, SortAsc, Building2, MapPin, Users, Calendar, Briefcase, Search, GraduationCap, BookOpen, Clock } from 'lucide-react';
+import { ChevronDown, ChevronUp, X, Filter, SortAsc, Building2, MapPin, Users, Calendar, Briefcase, Search, GraduationCap, BookOpen, Clock, TrendingUp } from 'lucide-react';
 import PoolCollegeCard from '@/components/company/employerDashboard/poolCampus/PoolCollegeCard';
 import { getPoolCampusForCompany } from '../../../../lib/College_AxiosIntance';
 import CreatableSelect from 'react-select/creatable';
@@ -97,17 +97,17 @@ const PoolEmployeeListing = () => {
     }, []);
 
     const cityOptions = useMemo(
-  () =>
-    City.getCitiesOfCountry('IN').map(city => ({
-      value: city.name,
-      label: city.name,
-    })),
-  []
-);
+        () =>
+            City.getCitiesOfCountry('IN').map(city => ({
+                value: city.name,
+                label: city.name,
+            })),
+        []
+    );
 
-const safeLocation = Array.isArray(filters.location)
-  ? filters.location
-  : [];
+    const safeLocation = Array.isArray(filters.location)
+        ? filters.location
+        : [];
 
     const extractFilterOptions = (postingsData) => {
         const degrees = new Set();
@@ -163,16 +163,16 @@ const safeLocation = Array.isArray(filters.location)
         }
 
         // Apply location filter
-    if (Array.isArray(filters.location) && filters.location.length > 0) {
-      result = result.filter(college =>
-        Array.isArray(college.location) &&
-        filters.location.some(filterLoc =>
-          college.location.some(
-            loc => loc.toLowerCase() === filterLoc.toLowerCase()
-          )
-        )
-      );
-    }
+        if (Array.isArray(filters.location) && filters.location.length > 0) {
+            result = result.filter(college =>
+                Array.isArray(college.location) &&
+                filters.location.some(filterLoc =>
+                    college.location.some(
+                        loc => loc.toLowerCase() === filterLoc.toLowerCase()
+                    )
+                )
+            );
+        }
 
         // Apply sorting
         if (sortBy === 'newest') {
@@ -268,7 +268,7 @@ const safeLocation = Array.isArray(filters.location)
         setFilters({
             degree: [],
             courses: [],
-            location: '',
+            location: [],
             internship: false,
             fullTime: false
         });
@@ -282,13 +282,13 @@ const safeLocation = Array.isArray(filters.location)
     };
 
     const handleLocationMultiChange = (selectedOptions) => {
-  setFilters(prev => ({
-    ...prev,
-    location: selectedOptions
-      ? selectedOptions.map(opt => opt.value)
-      : []
-  }));
-};
+        setFilters(prev => ({
+            ...prev,
+            location: selectedOptions
+                ? selectedOptions.map(opt => opt.value)
+                : []
+        }));
+    };
 
     const getActiveFiltersCount = () => {
         let count = 0;
@@ -378,6 +378,59 @@ const safeLocation = Array.isArray(filters.location)
                     </div>
                 </div>
 
+                {/* Stats Cards Section - Added below header */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-100/50 p-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-600">Total Pool Drives</p>
+                                <p className="text-2xl font-bold text-[#3b82f6]">{postings.length}</p>
+                            </div>
+                            <div className="p-2 bg-gradient-to-br from-[#93c5fd]/30 to-[#3b82f6]/20 rounded-lg">
+                                <Building2 className="w-5 h-5 text-[#3b82f6]" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-pink-100/50 p-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-600">Showing Results</p>
+                                <p className="text-2xl font-bold text-[#ec4899]">{filteredPostings.length}</p>
+                            </div>
+                            <div className="p-2 bg-gradient-to-br from-[#f9a8d4]/30 to-[#ec4899]/20 rounded-lg">
+                                <Filter className="w-5 h-5 text-[#ec4899]" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-amber-100/50 p-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-600">Active Filters</p>
+                                <p className="text-2xl font-bold text-[#f59e0b]">
+                                    {getActiveFiltersCount()}
+                                </p>
+                            </div>
+                            <div className="p-2 bg-gradient-to-br from-[#fde68a]/30 to-[#f59e0b]/20 rounded-lg">
+                                <TrendingUp className="w-5 h-5 text-[#f59e0b]" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-emerald-100/50 p-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-600">Last Updated</p>
+                                <p className="text-2xl font-bold text-[#10b981]">Today</p>
+                            </div>
+                            <div className="p-2 bg-gradient-to-br from-[#a7f3d0]/30 to-[#10b981]/20 rounded-lg">
+                                <Calendar className="w-5 h-5 text-[#10b981]" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Filter Section - Single button with nested dropdowns */}
                 <div className="mb-6">
                     {/* Active Filters Tags - Always visible */}
@@ -438,19 +491,19 @@ const safeLocation = Array.isArray(filters.location)
                                 
                                 {/* Location Filter */}
                                 {Array.isArray(filters.location) &&
-                                     filters.location.map(loc => (
-                                     <span
-                                       key={loc}
-                                       className="inline-flex items-center bg-gradient-to-r from-red-100 to-red-50 text-red-700 px-3 py-1.5 rounded-lg text-sm"
-                                     >
-                                       Location: {loc}
-                                       <button
-                                         onClick={() => removeFilter('location', loc)}
-                                         className="ml-2 text-red-600 hover:text-red-800"
-                                       >
-                                         <X className="h-3 w-3" />
-                                       </button>
-                                     </span>
+                                    filters.location.map(loc => (
+                                    <span
+                                        key={loc}
+                                        className="inline-flex items-center bg-gradient-to-r from-red-100 to-red-50 text-red-700 px-3 py-1.5 rounded-lg text-sm"
+                                    >
+                                        Location: {loc}
+                                        <button
+                                            onClick={() => removeFilter('location', loc)}
+                                            className="ml-2 text-red-600 hover:text-red-800"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </span>
                                 ))}
                             </div>
                         </div>
@@ -665,16 +718,16 @@ const safeLocation = Array.isArray(filters.location)
                                                 <span className="text-sm font-medium text-gray-700">Location</span>
                                                 {Array.isArray(filters.location) && filters.location.length > 0 && (
                                                     <span className="ml-2 px-2 py-0.5 bg-[#667eea] text-white text-xs rounded-full">
-                                                      {filters.location.length}
+                                                        {filters.location.length}
                                                     </span>
                                                 )}
                                             </div>
                                             {Array.isArray(filters.location) && filters.location.length > 0 && (
                                                 <button
-                                                  onClick={() => handleFilterChange('location', [])}
-                                                  className="text-xs text-[#667eea] hover:text-[#764ba2]"
+                                                    onClick={() => handleFilterChange('location', [])}
+                                                    className="text-xs text-[#667eea] hover:text-[#764ba2]"
                                                 >
-                                                  Clear
+                                                    Clear
                                                 </button>
                                             )}
                                         </div>
@@ -690,50 +743,50 @@ const safeLocation = Array.isArray(filters.location)
                                         {openSubDropdowns.location && (
                                             <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
                                                 <CreatableSelect
-                                                  isMulti
-                                                  options={cityOptions}
-                                                  value={safeLocation.map(loc => ({ value: loc, label: loc }))}
-                                                  onChange={handleLocationMultiChange}
-                                                  placeholder="Select or type locations..."
-                                                  menuPortalTarget={document.body}
-                                                  menuPosition="fixed"
-                                                  styles={{
-                                                    control: (base) => ({
-                                                      ...base,
-                                                      borderColor: '#e5e7eb',
-                                                      minHeight: '38px',
-                                                      fontSize: '14px',
-                                                      borderRadius: '0.75rem',
-                                                      backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
-                                                      backgroundImage:
-                                                        'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
-                                                    }),
-                                                    menu: (base) => ({
-                                                      ...base,
-                                                      borderRadius: '0.5rem',
-                                                      fontSize: '14px',
-                                                      border: '1px solid #e5e7eb',
-                                                    }),
-                                                    menuPortal: (base) => ({
-                                                      ...base,
-                                                      zIndex: 9999,
-                                                    }),
-                                                    multiValue: (base) => ({
-                                                      ...base,
-                                                      fontSize: '12px',
-                                                      backgroundColor: '#f3f4f6',
-                                                      borderRadius: '9999px',
-                                                    }),
-                                                    multiValueRemove: (base) => ({
-                                                      ...base,
-                                                      fontSize: '12px',
-                                                      color: '#6b7280',
-                                                      ':hover': {
-                                                        backgroundColor: '#e5e7eb',
-                                                        color: '#374151',
-                                                      },
-                                                    }),
-                                                  }}
+                                                    isMulti
+                                                    options={cityOptions}
+                                                    value={safeLocation.map(loc => ({ value: loc, label: loc }))}
+                                                    onChange={handleLocationMultiChange}
+                                                    placeholder="Select or type locations..."
+                                                    menuPortalTarget={document.body}
+                                                    menuPosition="fixed"
+                                                    styles={{
+                                                        control: (base) => ({
+                                                            ...base,
+                                                            borderColor: '#e5e7eb',
+                                                            minHeight: '38px',
+                                                            fontSize: '14px',
+                                                            borderRadius: '0.75rem',
+                                                            backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
+                                                            backgroundImage:
+                                                                'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
+                                                        }),
+                                                        menu: (base) => ({
+                                                            ...base,
+                                                            borderRadius: '0.5rem',
+                                                            fontSize: '14px',
+                                                            border: '1px solid #e5e7eb',
+                                                        }),
+                                                        menuPortal: (base) => ({
+                                                            ...base,
+                                                            zIndex: 9999,
+                                                        }),
+                                                        multiValue: (base) => ({
+                                                            ...base,
+                                                            fontSize: '12px',
+                                                            backgroundColor: '#f3f4f6',
+                                                            borderRadius: '9999px',
+                                                        }),
+                                                        multiValueRemove: (base) => ({
+                                                            ...base,
+                                                            fontSize: '12px',
+                                                            color: '#6b7280',
+                                                            ':hover': {
+                                                                backgroundColor: '#e5e7eb',
+                                                                color: '#374151',
+                                                            },
+                                                        }),
+                                                    }}
                                                 /> 
                                             </div>
                                         )}

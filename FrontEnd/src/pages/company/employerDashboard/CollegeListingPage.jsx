@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, X, Filter, SortAsc, Building2, MapPin, Users, Calendar, Briefcase, Search, GraduationCap, BookOpen } from 'lucide-react';
+import { ChevronDown, ChevronUp, X, Filter, SortAsc, Building2, MapPin, Users, Calendar, Briefcase, Search, GraduationCap, BookOpen, TrendingUp } from 'lucide-react';
 import CollegeCard from '../../../components/company/employerDashboard/CollegeCard';
 import { getRegisteredColleges } from '@/lib/Company_AxiosInstance';
 import CreatableSelect from 'react-select/creatable';
@@ -73,19 +73,17 @@ const CollegeListingPage = () => {
   });
 
   const cityOptions = useMemo(
-  () =>
-    City.getCitiesOfCountry('IN').map(city => ({
-      value: city.name,
-      label: city.name,
-    })),
-  []
-);
+    () =>
+      City.getCitiesOfCountry('IN').map(city => ({
+        value: city.name,
+        label: city.name,
+      })),
+    []
+  );
 
-const safeLocation = Array.isArray(filters.location)
-  ? filters.location
-  : [];
-
-
+  const safeLocation = Array.isArray(filters.location)
+    ? filters.location
+    : [];
 
   useEffect(() => {
     const getColleges = async () => {
@@ -203,7 +201,6 @@ const safeLocation = Array.isArray(filters.location)
       );
     }
 
-
     // Apply sorting
     if (sortBy === 'newest') {
       result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
@@ -275,7 +272,7 @@ const safeLocation = Array.isArray(filters.location)
     setFilters({
       degree: [],
       courses: [],
-      location: '',
+      location: [],
       employmentType: [],
     });
     setShowMainFilter(false);
@@ -288,16 +285,13 @@ const safeLocation = Array.isArray(filters.location)
   };
 
   const handleLocationMultiChange = (selectedOptions) => {
-  setFilters(prev => ({
-    ...prev,
-    location: selectedOptions
-      ? selectedOptions.map(opt => opt.value)
-      : []
-  }));
-};
-
-
-
+    setFilters(prev => ({
+      ...prev,
+      location: selectedOptions
+        ? selectedOptions.map(opt => opt.value)
+        : []
+    }));
+  };
 
   const getActiveFiltersCount = () => {
     let count = 0;
@@ -381,6 +375,59 @@ const safeLocation = Array.isArray(filters.location)
               >
                 Clear all
               </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Cards Section - Added below header */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-100/50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Colleges</p>
+                <p className="text-2xl font-bold text-[#3b82f6]">{colleges.length}</p>
+              </div>
+              <div className="p-2 bg-gradient-to-br from-[#93c5fd]/30 to-[#3b82f6]/20 rounded-lg">
+                <Building2 className="w-5 h-5 text-[#3b82f6]" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-pink-100/50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Showing Results</p>
+                <p className="text-2xl font-bold text-[#ec4899]">{filteredColleges.length}</p>
+              </div>
+              <div className="p-2 bg-gradient-to-br from-[#f9a8d4]/30 to-[#ec4899]/20 rounded-lg">
+                <Filter className="w-5 h-5 text-[#ec4899]" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-amber-100/50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Active Filters</p>
+                <p className="text-2xl font-bold text-[#f59e0b]">
+                  {getActiveFiltersCount()}
+                </p>
+              </div>
+              <div className="p-2 bg-gradient-to-br from-[#fde68a]/30 to-[#f59e0b]/20 rounded-lg">
+                <TrendingUp className="w-5 h-5 text-[#f59e0b]" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-emerald-100/50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Last Updated</p>
+                <p className="text-2xl font-bold text-[#10b981]">Today</p>
+              </div>
+              <div className="p-2 bg-gradient-to-br from-[#a7f3d0]/30 to-[#10b981]/20 rounded-lg">
+                <Calendar className="w-5 h-5 text-[#10b981]" />
+              </div>
             </div>
           </div>
         </div>
