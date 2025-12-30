@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { ChevronDown, X, Calendar, Clock, Users, Target, GraduationCap, Building, DollarSign, List, MapPin, User, Mail, Phone, Linkedin, ArrowLeft, Send, CheckSquare, Briefcase, MessageSquare } from 'lucide-react';
+import { ChevronDown, X, Calendar, Clock, Users, Target, GraduationCap, Building, DollarSign, List, MapPin, User, Mail, Phone, Linkedin, ArrowLeft, Send, CheckSquare, Briefcase, MessageSquare, Trash2, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
@@ -31,7 +31,28 @@ export default function RegisterPage({ onBackClick }) {
     const minStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '200+'];
     const companyTypeOptions = ["MNC", "Startup", "SME", "Public Sector"];
     const proposedModeOptions = ["Online", "Offline", "Hybrid"];
+    
+    // Add branch options
+    const branchOptions = [
+        'Computer Science',
+        'Information Technology',
+        'Electronics & Communication',
+        'Electrical Engineering',
+        'Mechanical Engineering',
+        'Civil Engineering',
+        'Chemical Engineering',
+        'Biotechnology',
+        'Aerospace Engineering',
+        'Bio-medical',
+        'Mathematics',
+        'Physics',
+        'Chemistry',
+        'Statistics',
+        'Biology',
+        'All Branches'
+    ];
 
+    // Update initialFormState to include branch in rounds
     const initialFormState = {
         degree: [],
         stream: [],
@@ -41,7 +62,12 @@ export default function RegisterPage({ onBackClick }) {
         salaryValue: '',
         tentativeStartDate: '',
         tentativeEndDate: '',
-        rounds: Array.from({ length: 3 }, (_, i) => ({ id: i + 1, students: '', skills: '' })),
+        rounds: Array.from({ length: 3 }, (_, i) => ({ 
+            id: i + 1, 
+            branch: '', 
+            students: '', 
+            skills: '' 
+        })),
         collegeLocation: null,
         coordinatorName: '',
         coordinatorDesignation: '',
@@ -193,11 +219,31 @@ export default function RegisterPage({ onBackClick }) {
         setFormData({ ...formData, [field]: newValues });
     };
 
+    // Updated handleRoundChange to handle branch field
     const handleRoundChange = (id, field, value) => {
         const updatedRounds = formData.rounds.map(round =>
             round.id === id ? { ...round, [field]: value } : round
         );
         setFormData({ ...formData, rounds: updatedRounds });
+    };
+
+    // Function to add a new round
+    const addRound = () => {
+        const newId = formData.rounds.length > 0 ? Math.max(...formData.rounds.map(r => r.id)) + 1 : 1;
+        setFormData(prev => ({
+            ...prev,
+            rounds: [...prev.rounds, { id: newId, branch: '', students: '', skills: '' }]
+        }));
+    };
+
+    // Function to remove a round
+    const removeRound = (roundId) => {
+        if (formData.rounds.length > 1) {
+            setFormData(prev => ({
+                ...prev,
+                rounds: prev.rounds.filter(round => round.id !== roundId)
+            }));
+        }
     };
 
     const handleCustomAdd = (field, value, setValue, predefinedOptions = []) => {
@@ -294,7 +340,7 @@ export default function RegisterPage({ onBackClick }) {
         let roundNames = [];
         let studentCounts = [];
 
-        const nonEmptyRounds = formData.rounds.filter(round => round.students || round.skills);
+        const nonEmptyRounds = formData.rounds.filter(round => round.students || round.skills || round.branch);
         nonEmptyRounds.forEach(round => {
             if (round.skills) aggregatedSkills = [...new Set([...aggregatedSkills, ...round.skills.split(',').map(s => s.trim()).filter(Boolean)])];
             if (round.students) studentCounts.push(round.students);
@@ -374,6 +420,11 @@ export default function RegisterPage({ onBackClick }) {
         });
         return [...allStreams].sort((a, b) => a.localeCompare(b));
     })();
+
+    // Calculate total students across all rounds
+    const totalStudents = formData.rounds.reduce((sum, round) => {
+        return sum + (parseInt(round.students) || 0);
+    }, 0);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
@@ -960,23 +1011,48 @@ export default function RegisterPage({ onBackClick }) {
 
                         {/* Row 9: Rounds Table - Full Width */}
                         <div>
-                            <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                <List className="w-4 h-4 text-[#3b82f6]" />
-                                Rounds Details
-                            </label>
-                            <div className="overflow-x-auto">
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="block text-gray-700 font-medium text-sm flex items-center gap-1.5">
+                                    <List className="w-4 h-4 text-[#3b82f6]" />
+                                    Rounds Details
+                                </label>
+                                <button
+                                    type="button"
+                                    onClick={addRound}
+                                    className="flex items-center gap-1.5 text-xs bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white px-2.5 py-1.5 rounded hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200"
+                                >
+                                    <Plus size={12} />
+                                    Add Round
+                                </button>
+                            </div>
+                            
+                            <div className="overflow-x-auto mb-3">
                                 <table className="min-w-full divide-y divide-white/50 text-xs">
                                     <thead className="bg-white/50">
                                         <tr>
                                             <th className="px-2 py-1.5 text-left font-medium text-gray-500">Round</th>
-                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">No. of Students</th>
+                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Branch</th>
+                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Students</th>
                                             <th className="px-2 py-1.5 text-left font-medium text-gray-500">Skills (comma separated)</th>
+                                            {/* <th className="px-2 py-1.5 text-left font-medium text-gray-500">Actions</th> */}
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white/30 divide-y divide-white/50">
                                         {formData.rounds.map((round) => (
                                             <tr key={round.id}>
                                                 <td className="px-2 py-1.5">#{round.id}</td>
+                                                <td className="px-2 py-1.5">
+                                                    <select 
+                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs" 
+                                                        value={round.branch} 
+                                                        onChange={(e) => handleRoundChange(round.id, 'branch', e.target.value)}
+                                                    >
+                                                        <option value="">Select</option>
+                                                        {branchOptions.map(option => (
+                                                            <option key={option} value={option}>{option}</option>
+                                                        ))}
+                                                    </select>
+                                                </td>
                                                 <td className="px-2 py-1.5">
                                                     <input 
                                                         type="number" 
@@ -992,13 +1068,33 @@ export default function RegisterPage({ onBackClick }) {
                                                         className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs" 
                                                         value={round.skills} 
                                                         onChange={(e) => handleRoundChange(round.id, 'skills', e.target.value)} 
-                                                        placeholder="Skills" 
+                                                        placeholder="e.g., Java, Python, React" 
                                                     />
                                                 </td>
+                                                {/* <td className="px-2 py-1.5">
+                                                    {formData.rounds.length > 1 && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeRound(round.id)}
+                                                            className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs"
+                                                        >
+                                                            <Trash2 size={12} />
+                                                            Remove
+                                                        </button>
+                                                    )}
+                                                </td> */}
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
+                            </div>
+                            
+                            {/* Summary section */}
+                            <div className="mt-2 p-2 bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 border border-[#93c5fd]/20 rounded text-xs">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-medium text-[#3b82f6]">Total Students:</span>
+                                    <span className="font-bold text-[#3b82f6]">{totalStudents}</span>
+                                </div>
                             </div>
                         </div>
 
@@ -1111,7 +1207,7 @@ export default function RegisterPage({ onBackClick }) {
                                 className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-lg hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 text-sm font-medium"
                             >
                                 <Send className="w-4 h-4" />
-                                Register College
+                                Register OnCampus
                             </button>
                         </div>
                     </form>

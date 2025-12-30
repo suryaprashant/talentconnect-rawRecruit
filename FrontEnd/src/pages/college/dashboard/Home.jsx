@@ -435,83 +435,96 @@ function Home() {
         </div>
 
         {/* Applications by Job Type Breakdown */}
-        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 mb-8">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Applications by Job Type</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200/50 text-sm">
-              <thead>
-                <tr className="bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 backdrop-blur-sm">
-                  <th className="px-4 py-3 text-left font-medium text-gray-600">Job Type</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-600">Applied</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-600">Shortlisted</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-600">Rejected</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100/50">
-                {/* On-Campus Row */}
-                <tr className="hover:bg-gradient-to-r from-[#93c5fd]/5 to-transparent transition-colors duration-200">
-                  <td className="px-4 py-3 font-medium text-gray-800">On-Campus</td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#93c5fd]/20 text-[#3b82f6] backdrop-blur-sm">
-                      {dashboardData.appliedByCategory['On-campus']}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fde68a]/20 text-[#f59e0b] backdrop-blur-sm">
-                      -
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fca5a5]/20 text-[#ef4444] backdrop-blur-sm">
-                      -
-                    </span>
-                  </td>
-                </tr>
-                {/* Pool-Campus Row */}
-                <tr className="hover:bg-gradient-to-r from-[#f9a8d4]/5 to-transparent transition-colors duration-200">
-                  <td className="px-4 py-3 font-medium text-gray-800">Pool-Campus</td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#f9a8d4]/20 text-[#ec4899] backdrop-blur-sm">
-                      {dashboardData.appliedByCategory['Pool-campus']}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fde68a]/20 text-[#f59e0b] backdrop-blur-sm">
-                      -
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fca5a5]/20 text-[#ef4444] backdrop-blur-sm">
-                      -
-                    </span>
-                  </td>
-                </tr>
-                {/* Totals Row */}
-                <tr className="hover:bg-gradient-to-r from-gray-100/20 to-transparent font-semibold bg-white/50 backdrop-blur-sm">
-                  <td className="px-4 py-3 font-medium text-gray-900">Total</td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#93c5fd]/30 text-[#3b82f6] backdrop-blur-sm">
-                      {dashboardData.totalApplied}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fde68a]/30 text-[#f59e0b] backdrop-blur-sm">
-                      {dashboardData.totalShortlisted}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fca5a5]/30 text-[#ef4444] backdrop-blur-sm">
-                      {dashboardData.totalRejected}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="mt-4 text-xs text-gray-500">
-            Applied counts are shown by category. Shortlisted and Rejected counts are totals across all categories.
-          </div>
-        </div>
+<div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 mb-8">
+  <h2 className="mb-4 text-lg font-semibold text-gray-900">Applications by Job Type</h2>
+  <div className="overflow-x-auto">
+    <table className="min-w-full divide-y divide-gray-200/50 text-sm">
+      <thead>
+        <tr className="bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 backdrop-blur-sm">
+          <th className="px-4 py-3 text-left font-medium text-gray-600">Job Type</th>
+          <th className="px-4 py-3 text-left font-medium text-gray-600">Applied</th>
+          <th className="px-4 py-3 text-left font-medium text-gray-600">Shortlisted</th>
+          <th className="px-4 py-3 text-left font-medium text-gray-600">Rejected</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-gray-100/50">
+        {/* On-Campus Row */}
+        <tr className="hover:bg-gradient-to-r from-[#93c5fd]/5 to-transparent transition-colors duration-200">
+          <td className="px-4 py-3 font-medium text-gray-800">On-Campus</td>
+          <td className="px-4 py-3">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#93c5fd]/20 text-[#3b82f6] backdrop-blur-sm">
+              {dashboardData.appliedByCategory['On-campus']}
+            </span>
+          </td>
+          <td className="px-4 py-3">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fde68a]/20 text-[#f59e0b] backdrop-blur-sm">
+              {dashboardData.totalApplied > 0 ? 
+                Math.round((dashboardData.appliedByCategory['On-campus'] / dashboardData.totalApplied) * dashboardData.totalShortlisted) : 0
+              }
+            </span>
+          </td>
+          <td className="px-4 py-3">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fca5a5]/20 text-[#ef4444] backdrop-blur-sm">
+              {dashboardData.totalApplied > 0 ? 
+                Math.round((dashboardData.appliedByCategory['On-campus'] / dashboardData.totalApplied) * dashboardData.totalRejected) : 0
+              }
+            </span>
+          </td>
+        </tr>
+        {/* Pool-Campus Row */}
+        <tr className="hover:bg-gradient-to-r from-[#f9a8d4]/5 to-transparent transition-colors duration-200">
+          <td className="px-4 py-3 font-medium text-gray-800">Pool-Campus</td>
+          <td className="px-4 py-3">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#f9a8d4]/20 text-[#ec4899] backdrop-blur-sm">
+              {dashboardData.appliedByCategory['Pool-campus']}
+            </span>
+          </td>
+          <td className="px-4 py-3">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fde68a]/20 text-[#f59e0b] backdrop-blur-sm">
+              {dashboardData.totalApplied > 0 ? 
+                Math.round((dashboardData.appliedByCategory['Pool-campus'] / dashboardData.totalApplied) * dashboardData.totalShortlisted) : 0
+              }
+            </span>
+          </td>
+          <td className="px-4 py-3">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fca5a5]/20 text-[#ef4444] backdrop-blur-sm">
+              {dashboardData.totalApplied > 0 ? 
+                Math.round((dashboardData.appliedByCategory['Pool-campus'] / dashboardData.totalApplied) * dashboardData.totalRejected) : 0
+              }
+            </span>
+          </td>
+        </tr>
+        {/* Totals Row */}
+        <tr className="hover:bg-gradient-to-r from-gray-100/20 to-transparent font-semibold bg-white/50 backdrop-blur-sm">
+          <td className="px-4 py-3 font-medium text-gray-900">Total</td>
+          <td className="px-4 py-3">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#93c5fd]/30 text-[#3b82f6] backdrop-blur-sm">
+              {dashboardData.totalApplied}
+            </span>
+          </td>
+          <td className="px-4 py-3">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fde68a]/30 text-[#f59e0b] backdrop-blur-sm">
+              {dashboardData.totalShortlisted}
+            </span>
+          </td>
+          <td className="px-4 py-3">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[#fca5a5]/30 text-[#ef4444] backdrop-blur-sm">
+              {dashboardData.totalRejected}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div className="mt-4 text-xs text-gray-500 flex items-start">
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 mt-0.5 text-gray-400 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+    </svg>
+    <span>
+      Shortlisted and Rejected counts are estimated based on application proportions. Actual category-specific data may vary.
+    </span>
+  </div>
+</div>
 
         {/* Recent Applications & Service Requests Overview */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">

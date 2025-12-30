@@ -1,179 +1,153 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, MapPin, Clock, Calendar, Briefcase, Award, CheckCircle, Building, Users, FileText, ArrowRight } from 'lucide-react';
 import { statusSteps } from '../../../constants/data.js';
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
+import { getPoolCampusJobById } from '@/lib/College_AxiosIntance'; // Import the same function
 import { Link } from 'react-router-dom';
 
 export default function PoolCampusApplicationStatus() {
     const [poolcampusJobs, setPoolcampusJobs] = useState([]);
     const [selectedJob, setSelectedJob] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const fetchApplication = async () => {
         try {
+            setLoading(true);
+            setError(null);
+            
+            // Step 1: Get application list
             const response = await getUserApplicationStatus("Pool-campus");
-            const rawData = response?.data?.data || [];
-
-            console.log("🔍 POOL CAMPUS - Raw API response:", rawData);
-
-            const normalized = rawData.map((item) => {
-    const jobDetails = item.jobDetails?.[0] || {};
-    const companyDetails = item.companyDetails?.[0] || {};
-
-    // Company/college name extraction - based on your data structure
-    let companyName = "Company/College";
-    let companyLogo = null;
-    
-    // Check top-level fields first (based on your data)
-    if (item.company && item.company !== "Company/College") {
-        companyName = item.company;
-        console.log("✅ Found company name in item.company:", companyName);
-    }
-    // Then check jobDetails
-    else if (jobDetails?.company) {
-        companyName = jobDetails.company;
-        console.log("✅ Found company name in jobDetails.company:", companyName);
-    }
-    else if (jobDetails?.collegeName) {
-        companyName = jobDetails.collegeName;
-        console.log("✅ Found company name in jobDetails.collegeName:", companyName);
-    }
-    // Then check companyDetails
-    else if (companyDetails?.name) {
-        companyName = companyDetails.name;
-        console.log("✅ Found company name in companyDetails.name:", companyName);
-    }
-    else if (companyDetails?.companyName) {
-        companyName = companyDetails.companyName;
-        console.log("✅ Found company name in companyDetails.companyName:", companyName);
-    }
-    else if (companyDetails?.collegeName) {
-        companyName = companyDetails.collegeName;
-        console.log("✅ Found company name in companyDetails.collegeName:", companyName);
-    }
-
-    // Extract logo - check multiple possible locations
-    if (item.companyLogo) {
-        companyLogo = item.companyLogo;
-    } else if (jobDetails?.logo) {
-        companyLogo = jobDetails.logo;
-    } else if (jobDetails?.companyLogo) {
-        companyLogo = jobDetails.companyLogo;
-    } else if (companyDetails?.logo) {
-        companyLogo = companyDetails.logo;
-    } else if (companyDetails?.image) {
-        companyLogo = companyDetails.image;
-    }
-
-    // Enhanced location extraction
-    let location = "Location not specified";
-    
-    // From your data, I see location is directly on item
-    if (item.location && item.location !== "Location not specified") {
-        location = item.location;
-        console.log("✅ Found location in item.location:", location);
-    }
-    else if (jobDetails?.city && jobDetails?.state) {
-        location = `${jobDetails.city}, ${jobDetails.state}`;
-    } else if (jobDetails?.city) {
-        location = jobDetails.city;
-    } else if (Array.isArray(jobDetails?.location) && jobDetails.location.length > 0) {
-        location = jobDetails.location[0];
-    } else if (Array.isArray(jobDetails?.workLocation) && jobDetails.workLocation.length > 0) {
-        location = jobDetails.workLocation[0];
-    } else if (jobDetails?.venue) {
-        location = jobDetails.venue;
-    } else if (jobDetails?.address) {
-        location = jobDetails.address;
-    }
-
-    // Enhanced job title extraction
-    let jobTitle = "Position/Designation";
-    if (item.jobTitle && item.jobTitle !== "Software Developer") {
-        jobTitle = item.jobTitle;
-    } else if (jobDetails?.designation) {
-        jobTitle = jobDetails.designation;
-    } else if (jobDetails?.jobTitle) {
-        jobTitle = jobDetails.jobTitle;
-    } else if (jobDetails?.lookingFor) {
-        jobTitle = jobDetails.lookingFor;
-    } else if (Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0) {
-        jobTitle = jobDetails.jobRoles[0];
-    } else if (jobDetails?.role) {
-        jobTitle = jobDetails.role;
-    } else if (jobDetails?.position) {
-        jobTitle = jobDetails.position;
-    }
-
-    // Enhanced degree extraction
-    let degree = "Degree requirements";
-    if (item.degree && item.degree.trim() !== "") {
-        degree = item.degree;
-    } else if (Array.isArray(jobDetails?.degree)) {
-        degree = jobDetails.degree.join(", ");
-    } else if (jobDetails?.qualification) {
-        degree = jobDetails.qualification;
-    } else if (jobDetails?.education) {
-        degree = jobDetails.education;
-    }
-
-    // Enhanced description extraction
-    let description = "No description available";
-    if (item.description && item.description !== "Software Engineer\nData Analyst") {
-        description = item.description;
-    } else if (jobDetails?.description) {
-        description = jobDetails.description;
-    } else if (jobDetails?.jobDescription) {
-        description = jobDetails.jobDescription;
-    }
-
-    // Enhanced skills extraction
-    let skills = [];
-    if (Array.isArray(item.skills) && item.skills.length > 0) {
-        skills = item.skills;
-    } else if (Array.isArray(jobDetails?.skills)) {
-        skills = jobDetails.skills;
-    } else if (jobDetails?.skillsRequired) {
-        skills = Array.isArray(jobDetails.skillsRequired) ? jobDetails.skillsRequired : [jobDetails.skillsRequired];
-    }
-
-    // Employment type extraction
-    let employmentType = "Full-time";
-    if (Array.isArray(item.employmentType) && item.employmentType.length > 0) {
-        employmentType = item.employmentType[0];
-    } else if (jobDetails?.employmentType) {
-        employmentType = jobDetails.employmentType;
-    } else if (jobDetails?.jobType) {
-        employmentType = jobDetails.jobType;
-    }
-
-    return {
-        ...item,
-        id: item._id,
-        status: item.currentStatus ?? item.status ?? "Applied",
-        date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
-        company: companyName,
-        companyLogo: companyLogo,
-        location: location,
-        jobTitle: jobTitle,
-        degree: degree,
-        employmentType: employmentType,
-        skills: skills,
-        description: description,
-        // Keep original arrays for reference
-        jobDetails: item.jobDetails || [],
-        companyDetails: item.companyDetails || []
-    };
-});
-
-            console.log("✅ Pool Campus Normalized data:", normalized);
-            setPoolcampusJobs(normalized);
-            if (normalized.length > 0) {
-                setSelectedJob(normalized[0]);
+            console.log("🔍 Step 1 - Application list response:", response);
+            
+            if (!response || !response.data) {
+                throw new Error("No response from API");
             }
+            
+            const rawData = response.data?.data || [];
+            console.log(`🔍 Found ${rawData.length} applications`);
+            
+            if (rawData.length === 0) {
+                setPoolcampusJobs([]);
+                setLoading(false);
+                return;
+            }
+            
+            // Step 2: For each application, fetch the full job details
+            console.log("🔍 Step 2 - Fetching job details for each application...");
+            
+            const detailedJobs = await Promise.all(
+                rawData.map(async (item) => {
+                    try {
+                        // Get the job ID from the application
+                        const jobId = item.job || item.jobDetails?.[0]?._id || item._id;
+                        console.log(`🔍 Fetching job details for jobId: ${jobId}`);
+                        
+                        // Fetch full job details using the SAME function as PoolJobDetailsPage
+                        const jobResponse = await getPoolCampusJobById(jobId);
+                        const jobDetails = jobResponse.data;
+                        
+                        console.log(`✅ Successfully fetched job ${jobId}:`, {
+                            companyName: jobDetails.companyPosted?.companyDetails?.companyName,
+                            jobTitle: jobDetails.jobRoles?.[0]
+                        });
+                        
+                        // Extract data using the SAME logic as PoolJobDetailsPage
+                        const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company/College";
+                        const companyLogo = jobDetails.companyPosted?.profileImageUrl || null;
+                        const location = jobDetails?.venue || "Location not specified";
+                        const jobTitle = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0 
+                            ? jobDetails.jobRoles[0] 
+                            : "Position/Designation";
+                        const degree = Array.isArray(jobDetails?.studentStreams) && jobDetails.studentStreams.length > 0
+                            ? jobDetails.studentStreams.join(", ")
+                            : "Degree requirements";
+                        const employmentType = Array.isArray(jobDetails?.employmentType) && jobDetails.employmentType.length > 0
+                            ? jobDetails.employmentType[0]
+                            : "Full-time";
+                        const skills = Array.isArray(jobDetails?.skills) ? jobDetails.skills : [];
+                        const description = jobDetails?.description || "No description available";
+                        
+                        return {
+                            ...item,
+                            id: item._id,
+                            jobId: jobId,
+                            status: item.currentStatus || item.status || "Applied",
+                            date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+                            company: companyName,
+                            companyLogo: companyLogo,
+                            location: location,
+                            jobTitle: jobTitle,
+                            degree: degree,
+                            employmentType: employmentType,
+                            skills: skills,
+                            description: description,
+                            // Store the full job details for the View Details link
+                            fullJobDetails: jobDetails,
+                            // Store for debugging
+                            _debug: {
+                                jobId: jobId,
+                                hasCompanyPosted: !!jobDetails.companyPosted,
+                                companyNameFound: companyName !== "Company/College"
+                            }
+                        };
+                        
+                    } catch (jobError) {
+                        console.error(`❌ Error fetching job ${item.job}:`, jobError);
+                        // Return a fallback if we can't fetch job details
+                        return {
+                            ...item,
+                            id: item._id,
+                            status: item.currentStatus || item.status || "Applied",
+                            date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+                            company: "Company/College",
+                            companyLogo: null,
+                            location: "Location not specified",
+                            jobTitle: "Position/Designation",
+                            degree: "Degree requirements",
+                            employmentType: "Full-time",
+                            skills: [],
+                            description: "No description available",
+                            fullJobDetails: null,
+                            _debug: { error: jobError.message }
+                        };
+                    }
+                })
+            );
+            
+            console.log("✅ Step 3 - Final detailed jobs:", detailedJobs);
+            setPoolcampusJobs(detailedJobs);
+            if (detailedJobs.length > 0) {
+                setSelectedJob(detailedJobs[0]);
+            }
+            
         } catch (error) {
-            console.log("Error fetching pool campus applications: ", error);
-            setPoolcampusJobs([]);
+            console.error("❌ Error in fetchApplication:", error);
+            setError(error.message || "Failed to fetch applications");
+            
+            // Even if there's an error, try to show what we have
+            if (error.response?.data?.data) {
+                const rawData = error.response.data.data;
+                const fallbackJobs = rawData.map(item => ({
+                    ...item,
+                    id: item._id,
+                    status: item.currentStatus || "Applied",
+                    date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+                    company: item.company || "Company/College",
+                    companyLogo: null,
+                    location: item.location || "Location not specified",
+                    jobTitle: item.jobTitle || "Position/Designation",
+                    degree: "Degree requirements",
+                    employmentType: "Full-time",
+                    skills: [],
+                    description: "No description available"
+                }));
+                setPoolcampusJobs(fallbackJobs);
+                if (fallbackJobs.length > 0) setSelectedJob(fallbackJobs[0]);
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -181,6 +155,7 @@ export default function PoolCampusApplicationStatus() {
         fetchApplication();
     }, []);
 
+    // Rest of your component remains the same...
     const filteredJobs = poolcampusJobs.filter(job =>
         (job?.jobTitle?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
         (job?.company?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
@@ -201,22 +176,99 @@ export default function PoolCampusApplicationStatus() {
         return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
     };
 
+    // Add a retry function for individual jobs
+    const retryFetchJob = async (jobId) => {
+        try {
+            console.log(`🔄 Retrying fetch for job ${jobId}`);
+            const jobResponse = await getPoolCampusJobById(jobId);
+            const jobDetails = jobResponse.data;
+            
+            // Update the job in the list
+            setPoolcampusJobs(prev => prev.map(job => {
+                if (job.jobId === jobId) {
+                    const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company/College";
+                    console.log(`✅ Updated job ${jobId}: ${companyName}`);
+                    
+                    return {
+                        ...job,
+                        company: companyName,
+                        companyLogo: jobDetails.companyPosted?.profileImageUrl,
+                        location: jobDetails?.venue || job.location,
+                        jobTitle: Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0 
+                            ? jobDetails.jobRoles[0] 
+                            : job.jobTitle,
+                        degree: Array.isArray(jobDetails?.studentStreams) && jobDetails.studentStreams.length > 0
+                            ? jobDetails.studentStreams.join(", ")
+                            : job.degree,
+                        employmentType: Array.isArray(jobDetails?.employmentType) && jobDetails.employmentType.length > 0
+                            ? jobDetails.employmentType[0]
+                            : job.employmentType,
+                        skills: Array.isArray(jobDetails?.skills) ? jobDetails.skills : job.skills,
+                        description: jobDetails?.description || job.description,
+                        fullJobDetails: jobDetails
+                    };
+                }
+                return job;
+            }));
+            
+        } catch (error) {
+            console.error(`❌ Failed to retry job ${jobId}:`, error);
+        }
+    };
+
+    // Loading state
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#3b82f6] mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading pool campus applications...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (error && poolcampusJobs.length === 0) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex items-center justify-center p-4">
+                <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg p-6 max-w-md">
+                    <div className="text-red-500 mb-4 text-center">
+                        <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">Error Loading Applications</h3>
+                    <p className="text-sm text-gray-600 mb-4 text-center">{error}</p>
+                    <button
+                        onClick={fetchApplication}
+                        className="w-full px-4 py-2 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-300"
+                    >
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
             <div className="container mx-auto px-4 py-6">
-                {/* Header Section with Blue Colors */}
+                {/* Header */}
                 <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg p-5 mb-6">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="p-2.5 bg-gradient-to-br from-[#93c5fd]/20 to-[#3b82f6]/20 rounded-lg">
-                            <Award className="h-5 w-5 text-[#3b82f6]" />
-                        </div>
-                        <div>
-                            <h1 className="text-xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
-                                Pool Campus Application Status
-                            </h1>
-                            <p className="text-sm text-gray-600">
-                                Track your pool campus applications
-                            </p>
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 bg-gradient-to-br from-[#93c5fd]/20 to-[#3b82f6]/20 rounded-lg">
+                                <Award className="h-5 w-5 text-[#3b82f6]" />
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
+                                    Pool Campus Application Status
+                                </h1>
+                                <p className="text-sm text-gray-600">
+                                    {poolcampusJobs.length} application(s) found
+                                </p>
+                            </div>
                         </div>
                     </div>
                     
@@ -236,7 +288,7 @@ export default function PoolCampusApplicationStatus() {
                 </div>
 
                 {/* Main Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 max-h-[calc(100vh-180px)]">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                     {/* Applications List */}
                     <div className="lg:col-span-1">
                         <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg h-full flex flex-col">
@@ -270,7 +322,9 @@ export default function PoolCampusApplicationStatus() {
                                                             className="w-9 h-9 rounded-lg object-cover border border-white/60"
                                                             onError={(e) => {
                                                                 e.target.style.display = 'none';
-                                                                e.target.nextSibling.style.display = 'flex';
+                                                                if (e.target.nextSibling) {
+                                                                    e.target.nextSibling.style.display = 'flex';
+                                                                }
                                                             }}
                                                         />
                                                     ) : null}
@@ -282,7 +336,14 @@ export default function PoolCampusApplicationStatus() {
                                                         <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h3 className="text-sm font-semibold text-gray-900 truncate">{job.company}</h3>
+                                                        <h3 className="text-sm font-semibold text-gray-900 truncate">
+                                                            {job.company}
+                                                            {job._debug?.companyNameFound === false && (
+                                                                <span className="ml-1 text-xs text-red-500" title="Could not fetch company name">
+                                                                    ⚠️
+                                                                </span>
+                                                            )}
+                                                        </h3>
                                                         <p className="text-xs text-gray-600 truncate">{job.jobTitle}</p>
                                                         <div className="mt-1.5 flex items-center text-xs text-gray-500 gap-2">
                                                             <span className="inline-flex items-center">
@@ -300,6 +361,20 @@ export default function PoolCampusApplicationStatus() {
                                                         </div>
                                                     </div>
                                                 </div>
+                                                {/* Debug retry button for failed fetches */}
+                                                {job._debug?.error && (
+                                                    <div className="mt-2 text-right">
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                retryFetchJob(job.jobId);
+                                                            }}
+                                                            className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200"
+                                                        >
+                                                            Retry Fetch
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </button>
                                         ))}
                                     </div>
@@ -433,7 +508,7 @@ export default function PoolCampusApplicationStatus() {
                                     {/* Action Button */}
                                     <div className="mt-auto">
                                         <Link 
-                                            to={`/college-dashboard/Pool-campus/${selectedJob?.jobDetails[0]?._id || selectedJob.id}?isApplied=true`} 
+                                            to={`/college-dashboard/Pool-campus/${selectedJob?.fullJobDetails?._id || selectedJob.jobId || selectedJob.id}?isApplied=true`} 
                                             className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-300"
                                         >
                                             View Full Details
@@ -441,6 +516,16 @@ export default function PoolCampusApplicationStatus() {
                                         </Link>
                                     </div>
                                 </div>
+                            </div>
+                        ) : poolcampusJobs.length === 0 ? (
+                            <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg h-full flex flex-col items-center justify-center p-6">
+                                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-white/50 to-white/30 border border-white/60 mb-4">
+                                    <Award className="h-8 w-8 text-gray-400" />
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Pool Applications</h3>
+                                <p className="text-sm text-gray-600 text-center">
+                                    You haven't applied to any pool campus drives yet.
+                                </p>
                             </div>
                         ) : (
                             <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg h-full flex flex-col items-center justify-center p-6">

@@ -524,20 +524,20 @@ export function submitAlternateDates(jobId, dateData) {
 // Add these functions to your Company_AxiosInstance.js file:
 
 // Get all shortlisted candidates for company dashboard
-export function getShortlistedCandidates() {
-  return axiosClient
-    .get(`/application/company/shortlisted`)
-    .then((response) => response)
-    .catch((error) => error);
-}
+// export function getShortlistedCandidates() {
+//   return axiosClient
+//     .get(`/application/company/shortlisted`)
+//     .then((response) => response)
+//     .catch((error) => error);
+// }
 
-// Get all accepted candidates for company dashboard
-export function getAcceptedCandidates() {
-  return axiosClient
-    .get(`/application/company/accepted`)
-    .then((response) => response)
-    .catch((error) => error);
-}
+// // Get all accepted candidates for company dashboard
+// export function getAcceptedCandidates() {
+//   return axiosClient
+//     .get(`/application/company/accepted`)
+//     .then((response) => response)
+//     .catch((error) => error);
+// }
 
 // Get categorized applications for dashboard
 export function getCompanyApplicationsByCategory() {
@@ -552,3 +552,69 @@ export function getCompanyApplicationsByCategory() {
 // export const getCompanyApplicationsByType = (type) => axios.get(`/api/company/applications?type=${type}`);
 // export const getCompanyShortlistedCandidates = () => axios.get('/api/company/candidates/shortlisted');
 // export const getCompanyAcceptedCandidates = () => axios.get('/api/company/candidates/accepted');
+
+// Add these functions to your Company_AxiosInstance.js file:
+
+// Get all shortlisted candidates for company dashboard (aggregated across all job types)
+export function getShortlistedCandidates() {
+  // Since the backend doesn't have this endpoint, we need to aggregate from existing endpoints
+  return Promise.all([
+    getShorlistedCandidateByCompany('student', 'oncampus'),
+    getShorlistedCandidateByCompany('student', 'poolcampus'),
+    getShorlistedCandidateByCompany('student', 'offcampus')
+  ])
+    .then(([oncampusRes, poolcampusRes, offcampusRes]) => {
+      const data = {
+        success: true,
+        data: []
+      };
+      
+      if (oncampusRes.data?.success && Array.isArray(oncampusRes.data.data)) {
+        data.data.push(...oncampusRes.data.data.map(item => ({...item, category: 'On-campus'})));
+      }
+      if (poolcampusRes.data?.success && Array.isArray(poolcampusRes.data.data)) {
+        data.data.push(...poolcampusRes.data.data.map(item => ({...item, category: 'Pool-campus'})));
+      }
+      if (offcampusRes.data?.success && Array.isArray(offcampusRes.data.data)) {
+        data.data.push(...offcampusRes.data.data.map(item => ({...item, category: 'Off-campus'})));
+      }
+      
+      return { data };
+    })
+    .catch((error) => {
+      console.error('Error aggregating shortlisted candidates:', error);
+      return { data: { success: false, data: [] } };
+    });
+}
+
+// Get all accepted candidates for company dashboard (aggregated across all job types)
+export function getAcceptedCandidates() {
+  // Since the backend doesn't have this endpoint, we need to aggregate from existing endpoints
+  return Promise.all([
+    getAcceptedCandidateByCompany('student', 'oncampus'),
+    getAcceptedCandidateByCompany('student', 'poolcampus'),
+    getAcceptedCandidateByCompany('student', 'offcampus')
+  ])
+    .then(([oncampusRes, poolcampusRes, offcampusRes]) => {
+      const data = {
+        success: true,
+        data: []
+      };
+      
+      if (oncampusRes.data?.success && Array.isArray(oncampusRes.data.data)) {
+        data.data.push(...oncampusRes.data.data.map(item => ({...item, category: 'On-campus'})));
+      }
+      if (poolcampusRes.data?.success && Array.isArray(poolcampusRes.data.data)) {
+        data.data.push(...poolcampusRes.data.data.map(item => ({...item, category: 'Pool-campus'})));
+      }
+      if (offcampusRes.data?.success && Array.isArray(offcampusRes.data.data)) {
+        data.data.push(...offcampusRes.data.data.map(item => ({...item, category: 'Off-campus'})));
+      }
+      
+      return { data };
+    })
+    .catch((error) => {
+      console.error('Error aggregating accepted candidates:', error);
+      return { data: { success: false, data: [] } };
+    });
+}
