@@ -114,190 +114,154 @@ function Home() {
   }, [])
 
   const fetchDashboardData = async () => {
-    try {
-      setDashboardData(prev => ({ ...prev, loading: true }))
+  try {
+    setDashboardData(prev => ({ ...prev, loading: true }))
 
-      const [metricsResponse, serviceRequestsResponse, shortlistedResponse, acceptedResponse] = await Promise.all([
-        getCompanyDashboardMetrics(),
-        getCompanyServiceRequestStatus().catch(() => ({
+    const [metricsResponse, serviceRequestsResponse] = await Promise.all([
+      getCompanyDashboardMetrics(),
+      getCompanyServiceRequestStatus().catch(() => ({
+        data: {
+          success: false,
           data: {
-            success: false,
-            data: {
-              total: 0,
-              pending: 0,
-              approved: 0,
-              rejected: 0
-            }
-          }
-        })),
-        getShortlistedCandidates().catch(() => ({
-          data: {
-            success: false,
-            data: []
-          }
-        })),
-        getAcceptedCandidates().catch(() => ({
-          data: {
-            success: false,
-            data: []
-          }
-        }))
-      ])
-
-      if (metricsResponse.data?.success) {
-        const metricsData = metricsResponse.data.data
-
-        let serviceRequestsData = {
-          total: 0,
-          pending: 0,
-          approved: 0,
-          rejected: 0
-        }
-
-        if (serviceRequestsResponse.data?.success && serviceRequestsResponse.data?.data) {
-          serviceRequestsData = serviceRequestsResponse.data.data
-        } else if (serviceRequestsResponse.data?.data) {
-          serviceRequestsData = serviceRequestsResponse.data.data
-        }
-
-        // Process shortlisted candidates
-        let shortlistedData = []
-        let totalShortlisted = 0
-        let shortlistedByCategory = {
-          'On-campus': 0,
-          'Pool-campus': 0,
-          'Off-campus': 0
-        }
-
-        if (shortlistedResponse.data?.success) {
-          shortlistedData = Array.isArray(shortlistedResponse.data.data) 
-            ? shortlistedResponse.data.data 
-            : []
-          
-          // If the API returns count separately, use it
-          if (shortlistedResponse.data.total !== undefined) {
-            totalShortlisted = shortlistedResponse.data.total
-          } else {
-            totalShortlisted = shortlistedData.length
-          }
-
-          // Count by category
-          shortlistedByCategory = {
-            'On-campus': shortlistedData.filter(c => 
-              c.jobType?.toLowerCase() === 'on-campus' || 
-              c.jobType?.toLowerCase() === 'oncampus' ||
-              c.hiringType?.toLowerCase() === 'on-campus' ||
-              c.category?.toLowerCase() === 'on-campus'
-            ).length,
-            'Pool-campus': shortlistedData.filter(c => 
-              c.jobType?.toLowerCase() === 'pool-campus' || 
-              c.jobType?.toLowerCase() === 'poolcampus' ||
-              c.hiringType?.toLowerCase() === 'pool-campus' ||
-              c.category?.toLowerCase() === 'pool-campus'
-            ).length,
-            'Off-campus': shortlistedData.filter(c => 
-              c.jobType?.toLowerCase() === 'off-campus' || 
-              c.jobType?.toLowerCase() === 'offcampus' ||
-              c.hiringType?.toLowerCase() === 'off-campus' ||
-              c.category?.toLowerCase() === 'off-campus'
-            ).length
+            total: 0,
+            pending: 0,
+            approved: 0,
+            rejected: 0
           }
         }
+      }))
+    ])
 
-        // Process accepted candidates
-        let acceptedData = []
-        let totalAccepted = 0
-        let acceptedByCategory = {
-          'On-campus': 0,
-          'Pool-campus': 0,
-          'Off-campus': 0
-        }
+    if (metricsResponse.data?.success) {
+      const metricsData = metricsResponse.data.data
 
-        if (acceptedResponse.data?.success) {
-          acceptedData = Array.isArray(acceptedResponse.data.data) 
-            ? acceptedResponse.data.data 
-            : []
-          
-          // If the API returns count separately, use it
-          if (acceptedResponse.data.total !== undefined) {
-            totalAccepted = acceptedResponse.data.total
-          } else {
-            totalAccepted = acceptedData.length
-          }
-
-          // Count by category
-          acceptedByCategory = {
-            'On-campus': acceptedData.filter(c => 
-              c.jobType?.toLowerCase() === 'on-campus' || 
-              c.jobType?.toLowerCase() === 'oncampus' ||
-              c.hiringType?.toLowerCase() === 'on-campus' ||
-              c.category?.toLowerCase() === 'on-campus'
-            ).length,
-            'Pool-campus': acceptedData.filter(c => 
-              c.jobType?.toLowerCase() === 'pool-campus' || 
-              c.jobType?.toLowerCase() === 'poolcampus' ||
-              c.hiringType?.toLowerCase() === 'pool-campus' ||
-              c.category?.toLowerCase() === 'pool-campus'
-            ).length,
-            'Off-campus': acceptedData.filter(c => 
-              c.jobType?.toLowerCase() === 'off-campus' || 
-              c.jobType?.toLowerCase() === 'offcampus' ||
-              c.hiringType?.toLowerCase() === 'off-campus' ||
-              c.category?.toLowerCase() === 'off-campus'
-            ).length
-          }
-        }
-
-        // Use the metrics from the dashboard API
-        const appliedByCategory = metricsData.appliedByCategory || {
-          'On-campus': 0,
-          'Pool-campus': 0,
-          'Off-campus': 0
-        }
-
-        const rejectedByCategory = metricsData.rejectedByCategory || {
-          'On-campus': 0,
-          'Pool-campus': 0,
-          'Off-campus': 0
-        }
-
-        const statusTotals = metricsData.statusTotals || {
-          'Shortlisted': 0,
-          'Accepted': 0,
-          'Rejected': 0
-        }
-
-        // Calculate totals
-        const totalApplied = metricsData.totalApplied || 0
-        const totalRejected = metricsData.totalRejected || 0
-
-        // Calculate shortlisted and accepted totals if not provided
-        const finalTotalShortlisted = metricsData.totalShortlisted || totalShortlisted
-        const finalTotalAccepted = metricsData.totalAccepted || totalAccepted
-
-        setDashboardData({
-          appliedByCategory,
-          shortlistedByCategory,
-          acceptedByCategory,
-          rejectedByCategory,
-          statusTotals,
-          totalApplied,
-          totalShortlisted: finalTotalShortlisted,
-          totalAccepted: finalTotalAccepted,
-          totalRejected,
-          serviceRequests: serviceRequestsData,
-          recentShortlisted: shortlistedData.slice(0, 3),
-          recentAccepted: acceptedData.slice(0, 3),
-          loading: false
-        })
-      } else {
-        throw new Error('Failed to fetch dashboard data')
+      let serviceRequestsData = {
+        total: 0,
+        pending: 0,
+        approved: 0,
+        rejected: 0
       }
-    } catch (error) {
-      console.error('Failed to fetch dashboard data:', error)
-      setDashboardData(prev => ({ ...prev, loading: false }))
+
+      if (serviceRequestsResponse.data?.success && serviceRequestsResponse.data?.data) {
+        serviceRequestsData = serviceRequestsResponse.data.data
+      } else if (serviceRequestsResponse.data?.data) {
+        serviceRequestsData = serviceRequestsResponse.data.data
+      }
+
+      // Use the metrics from the dashboard API
+      const appliedByCategory = metricsData.appliedByCategory || {
+        'On-campus': 0,
+        'Pool-campus': 0,
+        'Off-campus': 0
+      }
+
+      const shortlistedByCategory = metricsData.shortlistedByCategory || {
+        'On-campus': 0,
+        'Pool-campus': 0,
+        'Off-campus': 0
+      }
+
+      const acceptedByCategory = metricsData.acceptedByCategory || {
+        'On-campus': 0,
+        'Pool-campus': 0,
+        'Off-campus': 0
+      }
+
+      const rejectedByCategory = metricsData.rejectedByCategory || {
+        'On-campus': 0,
+        'Pool-campus': 0,
+        'Off-campus': 0
+      }
+
+      const statusTotals = metricsData.statusTotals || {
+        'Shortlisted': 0,
+        'Accepted': 0,
+        'Rejected': 0
+      }
+
+      // Calculate totals
+      const totalApplied = metricsData.totalApplied || 0
+      const totalShortlisted = metricsData.totalShortlisted || 0
+      const totalAccepted = metricsData.totalAccepted || 0
+      const totalRejected = metricsData.totalRejected || 0
+
+      // Now fetch candidate details for display
+      let recentShortlisted = [];
+      let recentAccepted = [];
+
+      try {
+        // Fetch shortlisted candidates
+        const shortlistedResponse = await getShortlistedCandidates();
+        if (shortlistedResponse.data?.success) {
+          recentShortlisted = shortlistedResponse.data.data.slice(0, 3);
+        }
+      } catch (error) {
+        console.warn('Failed to fetch shortlisted candidates:', error);
+      }
+
+      try {
+        // Fetch accepted candidates
+        const acceptedResponse = await getAcceptedCandidates();
+        if (acceptedResponse.data?.success) {
+          recentAccepted = acceptedResponse.data.data.slice(0, 3);
+        }
+      } catch (error) {
+        console.warn('Failed to fetch accepted candidates:', error);
+      }
+
+      // If the metrics API doesn't provide categorized shortlisted/accepted data,
+      // we need to fetch it from the individual endpoints
+      if (!metricsData.shortlistedByCategory || !metricsData.acceptedByCategory) {
+        try {
+          // Fetch detailed data to calculate categories
+          const [shortlistedResponse, acceptedResponse] = await Promise.all([
+            getShortlistedCandidates(),
+            getAcceptedCandidates()
+          ]);
+
+          // Calculate shortlisted by category from fetched data
+          if (shortlistedResponse.data?.success && shortlistedResponse.data.data) {
+            const shortlistedData = shortlistedResponse.data.data;
+            shortlistedByCategory['On-campus'] = shortlistedData.filter(c => c.category === 'On-campus').length;
+            shortlistedByCategory['Pool-campus'] = shortlistedData.filter(c => c.category === 'Pool-campus').length;
+            shortlistedByCategory['Off-campus'] = shortlistedData.filter(c => c.category === 'Off-campus').length;
+          }
+
+          // Calculate accepted by category from fetched data
+          if (acceptedResponse.data?.success && acceptedResponse.data.data) {
+            const acceptedData = acceptedResponse.data.data;
+            acceptedByCategory['On-campus'] = acceptedData.filter(c => c.category === 'On-campus').length;
+            acceptedByCategory['Pool-campus'] = acceptedData.filter(c => c.category === 'Pool-campus').length;
+            acceptedByCategory['Off-campus'] = acceptedData.filter(c => c.category === 'Off-campus').length;
+          }
+        } catch (error) {
+          console.warn('Failed to fetch categorized data:', error);
+        }
+      }
+
+      setDashboardData({
+        appliedByCategory,
+        shortlistedByCategory,
+        acceptedByCategory,
+        rejectedByCategory,
+        statusTotals,
+        totalApplied,
+        totalShortlisted,
+        totalAccepted,
+        totalRejected,
+        serviceRequests: serviceRequestsData,
+        recentShortlisted,
+        recentAccepted,
+        loading: false
+      });
+    } else {
+      throw new Error('Failed to fetch dashboard data');
     }
+  } catch (error) {
+    console.error('Failed to fetch dashboard data:', error);
+    setDashboardData(prev => ({ ...prev, loading: false }));
   }
+}
 
 //   const fetchDashboardData = async () => {
 //   try {

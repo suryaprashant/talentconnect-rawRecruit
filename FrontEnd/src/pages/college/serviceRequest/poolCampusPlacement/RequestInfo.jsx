@@ -2028,7 +2028,7 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                 className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-lg hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 text-sm font-medium disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 <Send className="w-4 h-4" />
-                                {isSubmitting ? 'Submitting...' : 'Register'}
+                                {isSubmitting ? 'Submitting...' : 'Register PoolCampus'}
                             </button>
                         </div>
                     </form>

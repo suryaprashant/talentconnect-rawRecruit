@@ -56,7 +56,8 @@ function Home() {
   try {
     setDashboardData(prev => ({ ...prev, loading: true }))
 
-    const [metricsResponse, serviceRequestsResponse, shortlistedResponse, acceptedResponse] = await Promise.all([
+    // Fetch data in parallel for better performance
+    const [metricsResponse, serviceRequestsResponse] = await Promise.all([
       getCompanyDashboardMetrics(),
       getCompanyServiceRequestStatus().catch(() => ({
         data: {
@@ -67,18 +68,6 @@ function Home() {
             approved: 0,
             rejected: 0
           }
-        }
-      })),
-      getShortlistedCandidates().catch(() => ({
-        data: {
-          success: false,
-          data: []
-        }
-      })),
-      getAcceptedCandidates().catch(() => ({
-        data: {
-          success: false,
-          data: []
         }
       }))
     ])
@@ -99,100 +88,20 @@ function Home() {
         serviceRequestsData = serviceRequestsResponse.data.data
       }
 
-      // DEBUG: Log the responses to see what's coming back
-      console.log('Shortlisted Response:', shortlistedResponse.data)
-      console.log('Accepted Response:', acceptedResponse.data)
-
-      // Process shortlisted candidates - check response structure
-      let shortlistedData = []
-      let totalShortlisted = 0
-      let shortlistedByCategory = {
-        'On-campus': 0,
-        'Pool-campus': 0,
-        'Off-campus': 0
-      }
-
-      if (shortlistedResponse.data?.success) {
-        shortlistedData = Array.isArray(shortlistedResponse.data.data) 
-          ? shortlistedResponse.data.data 
-          : []
-        
-        // If the API returns count separately, use it
-        if (shortlistedResponse.data.total !== undefined) {
-          totalShortlisted = shortlistedResponse.data.total
-        } else {
-          totalShortlisted = shortlistedData.length
-        }
-
-        // Count by category
-        shortlistedByCategory = {
-          'On-campus': shortlistedData.filter(c => 
-            c.jobType?.toLowerCase() === 'on-campus' || 
-            c.jobType?.toLowerCase() === 'oncampus' ||
-            c.hiringType?.toLowerCase() === 'on-campus' ||
-            c.category?.toLowerCase() === 'on-campus'
-          ).length,
-          'Pool-campus': shortlistedData.filter(c => 
-            c.jobType?.toLowerCase() === 'pool-campus' || 
-            c.jobType?.toLowerCase() === 'poolcampus' ||
-            c.hiringType?.toLowerCase() === 'pool-campus' ||
-            c.category?.toLowerCase() === 'pool-campus'
-          ).length,
-          'Off-campus': shortlistedData.filter(c => 
-            c.jobType?.toLowerCase() === 'off-campus' || 
-            c.jobType?.toLowerCase() === 'offcampus' ||
-            c.hiringType?.toLowerCase() === 'off-campus' ||
-            c.category?.toLowerCase() === 'off-campus'
-          ).length
-        }
-      }
-
-      // Process accepted candidates - check response structure
-      let acceptedData = []
-      let totalAccepted = 0
-      let acceptedByCategory = {
-        'On-campus': 0,
-        'Pool-campus': 0,
-        'Off-campus': 0
-      }
-
-      if (acceptedResponse.data?.success) {
-        acceptedData = Array.isArray(acceptedResponse.data.data) 
-          ? acceptedResponse.data.data 
-          : []
-        
-        // If the API returns count separately, use it
-        if (acceptedResponse.data.total !== undefined) {
-          totalAccepted = acceptedResponse.data.total
-        } else {
-          totalAccepted = acceptedData.length
-        }
-
-        // Count by category
-        acceptedByCategory = {
-          'On-campus': acceptedData.filter(c => 
-            c.jobType?.toLowerCase() === 'on-campus' || 
-            c.jobType?.toLowerCase() === 'oncampus' ||
-            c.hiringType?.toLowerCase() === 'on-campus' ||
-            c.category?.toLowerCase() === 'on-campus'
-          ).length,
-          'Pool-campus': acceptedData.filter(c => 
-            c.jobType?.toLowerCase() === 'pool-campus' || 
-            c.jobType?.toLowerCase() === 'poolcampus' ||
-            c.hiringType?.toLowerCase() === 'pool-campus' ||
-            c.category?.toLowerCase() === 'pool-campus'
-          ).length,
-          'Off-campus': acceptedData.filter(c => 
-            c.jobType?.toLowerCase() === 'off-campus' || 
-            c.jobType?.toLowerCase() === 'offcampus' ||
-            c.hiringType?.toLowerCase() === 'off-campus' ||
-            c.category?.toLowerCase() === 'off-campus'
-          ).length
-        }
-      }
-
-      // Use the metrics from the dashboard API or calculate from our data
+      // Use the data from dashboard metrics API
       const appliedByCategory = metricsData.appliedByCategory || {
+        'On-campus': 0,
+        'Pool-campus': 0,
+        'Off-campus': 0
+      }
+
+      const shortlistedByCategory = metricsData.shortlistedByCategory || {
+        'On-campus': 0,
+        'Pool-campus': 0,
+        'Off-campus': 0
+      }
+
+      const acceptedByCategory = metricsData.acceptedByCategory || {
         'On-campus': 0,
         'Pool-campus': 0,
         'Off-campus': 0
@@ -212,25 +121,130 @@ function Home() {
 
       // Calculate totals
       const totalApplied = metricsData.totalApplied || 0
+      const totalShortlisted = metricsData.totalShortlisted || 0
+      const totalAccepted = metricsData.totalAccepted || 0
       const totalRejected = metricsData.totalRejected || 0
 
-      // Calculate shortlisted and accepted totals if not provided
-      const finalTotalShortlisted = metricsData.totalShortlisted || totalShortlisted
-      const finalTotalAccepted = metricsData.totalAccepted || totalAccepted
+      // Now fetch recent shortlisted and accepted candidates for display
+      // Note: We need to fetch these separately since the dashboard API might not include candidate details
+      let recentShortlisted = [];
+      let recentAccepted = [];
+
+      try {
+        // Fetch shortlisted candidates for all types
+        const shortlistedPromises = ['On-campus', 'Pool-campus', 'Off-campus'].map(async (type) => {
+          const jobType = type.toLowerCase().replace('-campus', 'campus');
+          try {
+            const response = await getShorlistedCandidateByCompany('student', jobType);
+            if (response.data?.success && Array.isArray(response.data.data)) {
+              return response.data.data.map(candidate => ({
+                ...candidate,
+                jobType: type,
+                category: type
+              }));
+            }
+            return [];
+          } catch (error) {
+            console.warn(`Failed to fetch shortlisted for ${type}:`, error);
+            return [];
+          }
+        });
+
+        // Fetch accepted candidates for all types
+        const acceptedPromises = ['On-campus', 'Pool-campus', 'Off-campus'].map(async (type) => {
+          const jobType = type.toLowerCase().replace('-campus', 'campus');
+          try {
+            const response = await getAcceptedCandidateByCompany('student', jobType);
+            if (response.data?.success && Array.isArray(response.data.data)) {
+              return response.data.data.map(candidate => ({
+                ...candidate,
+                jobType: type,
+                category: type
+              }));
+            }
+            return [];
+          } catch (error) {
+            console.warn(`Failed to fetch accepted for ${type}:`, error);
+            return [];
+          }
+        });
+
+        // Execute all fetches in parallel
+        const [shortlistedOnCampus, shortlistedPoolCampus, shortlistedOffCampus] = await Promise.all(shortlistedPromises);
+        const [acceptedOnCampus, acceptedPoolCampus, acceptedOffCampus] = await Promise.all(acceptedPromises);
+
+        // Combine all shortlisted and accepted candidates
+        const allShortlisted = [
+          ...shortlistedOnCampus,
+          ...shortlistedPoolCampus,
+          ...shortlistedOffCampus
+        ];
+        
+        const allAccepted = [
+          ...acceptedOnCampus,
+          ...acceptedPoolCampus,
+          ...acceptedOffCampus
+        ];
+
+        // Sort by date (assuming there's a createdAt or updatedAt field) and take first 3
+        recentShortlisted = allShortlisted
+          .sort((a, b) => new Date(b.createdAt || b.updatedAt || 0) - new Date(a.createdAt || a.updatedAt || 0))
+          .slice(0, 3);
+
+        recentAccepted = allAccepted
+          .sort((a, b) => new Date(b.createdAt || b.updatedAt || 0) - new Date(a.createdAt || a.updatedAt || 0))
+          .slice(0, 3);
+
+      } catch (error) {
+        console.warn('Failed to fetch candidate details:', error);
+        // Continue without recent candidate data
+      }
+
+      // If the dashboard API doesn't provide categorized data, calculate from totals
+      // This is a fallback - ideally the API should provide this
+      const finalShortlistedByCategory = shortlistedByCategory;
+      const finalAcceptedByCategory = acceptedByCategory;
+      
+      // If all categories are 0 but we have totals, distribute them
+      // This is a temporary fix until the API provides proper categorized data
+      const totalShortlistedFromCategories = Object.values(shortlistedByCategory).reduce((a, b) => a + b, 0);
+      const totalAcceptedFromCategories = Object.values(acceptedByCategory).reduce((a, b) => a + b, 0);
+      
+      if (totalShortlistedFromCategories === 0 && totalShortlisted > 0) {
+        // Distribute shortlisted count evenly (or based on applied distribution)
+        const appliedTotal = Object.values(appliedByCategory).reduce((a, b) => a + b, 0);
+        if (appliedTotal > 0) {
+          Object.keys(finalShortlistedByCategory).forEach(category => {
+            const proportion = appliedByCategory[category] / appliedTotal;
+            finalShortlistedByCategory[category] = Math.round(totalShortlisted * proportion);
+          });
+        }
+      }
+      
+      if (totalAcceptedFromCategories === 0 && totalAccepted > 0) {
+        // Distribute accepted count evenly (or based on shortlisted distribution)
+        const shortlistedTotal = totalShortlistedFromCategories > 0 ? totalShortlistedFromCategories : totalShortlisted;
+        if (shortlistedTotal > 0) {
+          Object.keys(finalAcceptedByCategory).forEach(category => {
+            const proportion = finalShortlistedByCategory[category] / shortlistedTotal;
+            finalAcceptedByCategory[category] = Math.round(totalAccepted * proportion);
+          });
+        }
+      }
 
       setDashboardData({
         appliedByCategory,
-        shortlistedByCategory,
-        acceptedByCategory,
+        shortlistedByCategory: finalShortlistedByCategory,
+        acceptedByCategory: finalAcceptedByCategory,
         rejectedByCategory,
         statusTotals,
         totalApplied,
-        totalShortlisted: finalTotalShortlisted,
-        totalAccepted: finalTotalAccepted,
+        totalShortlisted,
+        totalAccepted,
         totalRejected,
         serviceRequests: serviceRequestsData,
-        recentShortlisted: shortlistedData.slice(0, 3),
-        recentAccepted: acceptedData.slice(0, 3),
+        recentShortlisted,
+        recentAccepted,
         loading: false
       })
     } else {
