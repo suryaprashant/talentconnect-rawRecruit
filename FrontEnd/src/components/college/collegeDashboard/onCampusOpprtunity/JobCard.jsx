@@ -85,6 +85,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, User, Banknote, Heart, Briefcase, Calendar } from 'lucide-react';
+import { SaveOppurtunity } from '@/lib/Company_AxiosInstance';
+import  toast  from 'react-hot-toast';
 
 const pastelColors = [
   // Purple/Indigo gradient variants (primary theme colors)
@@ -177,6 +179,28 @@ const JobCard = ({ job }) => {
     }
   };
 
+  const handleSave = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  
+    try {
+      const response = await SaveOppurtunity(
+        job._id,        // ✅ jobId
+        job.jobType     // ✅ jobType = "Pool-campus"
+      );
+  
+      if (response?.data?.success === true) {
+        setIsSaved(true);
+        toast.success("Saved");
+      } else {
+        toast.error(response?.response?.data?.msg || "Unable to save");
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+      toast.error("Something went wrong!");
+    }
+  };
+
   const getInitials = (name = '') => {
     if (!name) return '?';
     const words = name.trim().split(' ');
@@ -234,10 +258,7 @@ const JobCard = ({ job }) => {
           </span>
 
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              setIsSaved(!isSaved);
-            }}
+            onClick={handleSave}
             className="bg-white p-2 rounded-full shadow"
           >
             <Heart

@@ -111,13 +111,22 @@ export default function OnCampusJobManagement() {
   const currentJobs = filteredJobs?.slice(startIndex, startIndex + itemsPerPage);
 
   const handleViewColleges = (job) => {
-    if (job?.applicationCount === 0) {
+    {/*if (job?.applicationCount === 0) {
       alert("No colleges have applied for this drive yet.");
       return;
-    }
+    }*/}
     setSelectedJob(job);
     fetchCollegesForJob(job._id, job.jobType);
   };
+
+  const showNewApplication = async (job) => {
+    try {
+      setSelectedJob(job);
+      await fetchCollegesForJob(job._id, job.jobType, false);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const handleBackToList = () => {
     setSelectedJob(null);
@@ -232,7 +241,7 @@ export default function OnCampusJobManagement() {
             </div>
             
             {/* Search Bar */}
-            <div className="relative w-full md:w-96">
+            {/*<div className="relative w-full md:w-96">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-4 w-4 text-gray-400" />
               </div>
@@ -243,7 +252,7 @@ export default function OnCampusJobManagement() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </div>
+            </div>*/}
           </div>
         </div>
 
@@ -265,10 +274,11 @@ export default function OnCampusJobManagement() {
           {/* Table Header */}
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
             <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
-              <div className="col-span-4">Looking For</div>
+              <div className="col-span-3">Looking For</div>
               <div className="col-span-3">Locations</div>
               <div className="col-span-2">End Date</div>
-              <div className="col-span-1 text-center">Applications</div>
+              <div className="col-span-1 text-center">Views</div>
+              <div className="col-span-1 text-center">New Apps</div>
               <div className="col-span-2 text-center">Actions</div>
             </div>
           </div>
@@ -293,7 +303,7 @@ export default function OnCampusJobManagement() {
                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                   <div className="grid grid-cols-12 gap-4 items-center">
                     {/* Looking For */}
-                    <div className="col-span-4">
+                    <div className="col-span-3">
                       <Link
                         to={`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`}
                         className="group cursor-pointer block"
@@ -328,7 +338,26 @@ export default function OnCampusJobManagement() {
                       </div>
                     </div>
 
-                    {/* Applications Count */}
+                    {/* Views */}
+                    <div className="col-span-1 text-center">
+                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                        {job?.views || 0}
+                      </span>
+                    </div>
+
+                    {/* New Applications */}
+                    <div 
+                      className="col-span-1 text-center cursor-pointer group"
+                      onClick={() => showNewApplication(job)}
+                    >
+                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
+                        {job?.applicationCount || 0}
+                      </span>
+                    </div>
+
+
+
+                    {/* Applications Count 
                     <div className="col-span-1 text-center">
   <div
     onClick={() => handleViewColleges(job)}
@@ -337,14 +366,14 @@ export default function OnCampusJobManagement() {
   >
     {job?.applicationCount || 0}
   </div>
-</div>
+</div>*/}
 
                     {/* Actions */}
                     <div className="col-span-2">
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => handleViewColleges(job)}
-                          disabled={job.applicationCount === 0}
+                          
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                           title="View College Applications"
                         >

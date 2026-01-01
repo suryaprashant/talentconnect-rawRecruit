@@ -20,7 +20,7 @@ const buildFormData = (data, files) => {
   return formData;
 };
 
-export default function EmployerProfileForm({ employerData, onProfileUpdated }) {
+export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
   const [formData, setFormData] = useState({
     employerDetails: {
       name: '',
@@ -64,23 +64,58 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    if (employerData) {
+    if (profileData) {
       setFormData({
-        employerDetails: employerData.employerDetails || {},
-        companyDetails: employerData.companyDetails || {},
-        hiringPreferences: {
-            ...employerData.hiringPreferences,
-            // Ensure lookingFor is always an array coming from DB
-            lookingFor: Array.isArray(employerData.hiringPreferences?.lookingFor) 
-                ? employerData.hiringPreferences.lookingFor 
-                : (employerData.hiringPreferences?.lookingFor ? [employerData.hiringPreferences.lookingFor] : [])
-        } || {},
-      });
+  employerDetails: {
+    name: profileData.employerDetails?.name || '',
+    designation: profileData.employerDetails?.designation || '',
+    workEmail: profileData.employerDetails?.workEmail || '',
+    mobile: profileData.employerDetails?.mobile || '',
+    linkedIn: profileData.employerDetails?.linkedIn || '' // future safe
+  },
+
+  companyDetails: {
+    companyName: profileData.companyDetails?.companyName || '',
+    location: profileData.companyDetails
+      ? `${profileData.companyDetails.city || ''}${profileData.companyDetails.state ? ', ' + profileData.companyDetails.state : ''}`
+      : '',
+    state: profileData.companyDetails?.state || '',
+    city: profileData.companyDetails?.city || '',
+    country: profileData.companyDetails?.country || '',
+    pincode: profileData.companyDetails?.pincode || '',
+    companyType: profileData.companyDetails?.companyType || '',
+    industryType: profileData.companyDetails?.industryType || '',
+    establishedYear: profileData.companyDetails?.establishedYear || '',
+    contactNumber: profileData.companyDetails?.contactNumber || '',
+    description: profileData.companyDetails?.description || '',
+    companyWebsite: profileData.companyDetails?.companyWebsite || ''
+  },
+
+  hiringPreferences: {
+    jobRoles: profileData.hiringPreferences?.jobRoles || [],
+    hiringLocations: profileData.hiringPreferences?.hiringLocations || [],
+    lookingFor: Array.isArray(profileData.hiringPreferences?.lookingFor)
+      ? profileData.hiringPreferences.lookingFor
+      : profileData.hiringPreferences?.lookingFor
+        ? [profileData.hiringPreferences.lookingFor]
+        : [],
+    employmentType: profileData.hiringPreferences?.employmentType || []
+  }
+});
+
       setIsEditing(false);
     } else {
       setIsEditing(true);
     }
-  }, [employerData]);
+  }, [profileData]);
+
+  useEffect(() => {
+  console.log("API PROFILE:", profileData);
+}, [profileData]);
+
+useEffect(() => {
+  console.log("FORM DATA STATE:", formData);
+}, [formData]);
 
   const handleEmployerDetailsChange = (e) => {
     const { name, value } = e.target;
@@ -155,7 +190,7 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
     try {
       const dataToSend = buildFormData(formData, files);
       let response;
-      if (employerData) {
+      if (profileData) {
         response = await axios.put(
           `${import.meta.env.VITE_Backend_URL}/api/dashboard/update-employer`,
           dataToSend,
@@ -198,11 +233,11 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
 
   const handleCancelClick = () => {
     setIsEditing(false);
-    if (employerData) {
+    if (profileData) {
       setFormData({
-        employerDetails: employerData.employerDetails || {},
-        companyDetails: employerData.companyDetails || {},
-        hiringPreferences: employerData.hiringPreferences || {},
+        employerDetails: profileData.employerDetails || {},
+        companyDetails: profileData.companyDetails || {},
+        hiringPreferences: profileData.hiringPreferences || {},
       });
     } else {
         setFormData({
@@ -271,7 +306,7 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
           <div className="p-8">
             <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
-              {employerData ? 'Edit Employer Profile' : 'Create Employer Profile'}
+              {profileData ? 'Edit Employer Profile' : 'Create Employer Profile'}
             </h2>
 
             <form onSubmit={handleSubmit}>
@@ -396,7 +431,7 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
                       value={formData.companyDetails.companyName || ''}
                       onChange={handleCompanyDetailsChange}
                       className={inputClass}
-                      required
+                      //required
                       readOnly={!isEditing}
                     />
                   </div>
@@ -409,7 +444,7 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
                       value={formData.companyDetails.location || ''}
                       onChange={handleCompanyDetailsChange}
                       className={inputClass}
-                      required
+                     // required
                       readOnly={!isEditing}
                     />
                   </div>
@@ -649,7 +684,7 @@ export default function EmployerProfileForm({ employerData, onProfileUpdated }) 
                       ) : (
                         <>
                           <Save size={18} />
-                          {employerData ? 'Save Changes' : 'Create Profile'}
+                          {profileData ? 'Save Changes' : 'Create Profile'}
                         </>
                       )}
                     </button>
