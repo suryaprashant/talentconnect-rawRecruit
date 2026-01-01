@@ -509,6 +509,7 @@ function AppRoutes() {
               {/* Employer Dashboard  */}
 
               <Route path="/employer-profile" element={<EmployerProfile />} />
+              <Route path="/employer/saved-jobs/*" element={<JobRoutes />} />
 
               <Route path="/interviews" element={<EmployerInterviewScheduler />} />
               <Route path="/employer-dashboard/resume-search" element={<EmployerResumeApp />} />

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import JobCard from '@/components/college/collegeDashboard/poolCampusOpportunity/JobCard';
 import { MapPin, Filter, Search, Briefcase, TrendingUp, Calendar, Users, X, RefreshCw, ChevronDown, ChevronUp, Building, GraduationCap, BookOpen, Tag, DollarSign, Check, Award } from 'lucide-react';
 import axios from 'axios';
+import { useMemo } from 'react';
+import { City } from 'country-state-city';
+import CreatableSelect from 'react-select/creatable';
 
 const PoolJobListingPage = () => {
   const [filters, setFilters] = useState({
@@ -19,6 +22,7 @@ const PoolJobListingPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('relevance');
+
 
   // State for dropdown visibility
   const [showMainFilter, setShowMainFilter] = useState(false);
@@ -114,6 +118,14 @@ const PoolJobListingPage = () => {
     }
   };
 
+  const cityOptions = useMemo(() => {
+  const cities = City.getCitiesOfCountry("IN") || [];
+  return cities.map(city => ({
+    value: city.name,
+    label: city.name,
+  }));
+}, []);
+
   useEffect(() => {
     fetchJobs();
   }, []);
@@ -174,6 +186,8 @@ const PoolJobListingPage = () => {
       );
     }
 
+       // Apply location filter
+
     // Apply sorting
     if (sortBy === 'date') {
       result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
@@ -221,6 +235,16 @@ const PoolJobListingPage = () => {
       return prev;
     });
   };
+
+  const handleLocationMultiChange = (selectedOptions) => {
+  setFilters(prev => ({
+    ...prev,
+    locations: selectedOptions
+      ? selectedOptions.map(opt => opt.value)
+      : [],
+  }));
+};
+
 
   const toggleSubDropdown = (dropdown) => {
     setOpenSubDropdowns(prev => ({
@@ -674,58 +698,70 @@ const PoolJobListingPage = () => {
 
                 {/* Locations Filter */}
                 <div className="relative">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 text-[#10b981] mr-2" />
-                      <span className="text-sm font-medium text-gray-700">Locations</span>
-                      {filters.locations.length > 0 && (
-                        <span className="ml-2 px-2 py-0.5 bg-[#10b981] text-white text-xs rounded-full">
-                          {filters.locations.length}
-                        </span>
-                      )}
-                    </div>
-                    {filters.locations.length > 0 && (
-                      <button
-                        onClick={() => clearFilterSection('locations')}
-                        className="text-xs text-[#10b981] hover:text-[#059669] font-medium"
-                      >
-                        Clear
-                      </button>
-                    )}
-                  </div>
-                  
-                  <button
-                    onClick={() => toggleSubDropdown('locations')}
-                    className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-white/50 to-white/30 border border-white/50 rounded-xl hover:border-[#a7f3d0]/50 transition-all duration-200 mb-2 backdrop-blur-sm"
-                  >
-                    <span className="text-sm text-gray-700">Select Locations</span>
-                    <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.locations ? 'transform rotate-180' : ''}`} />
-                  </button>
-                  
-                  {openSubDropdowns.locations && (
-                    <div className="mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
-                      <div className="space-y-2">
-                        {filterOptions.locations.map((location, index) => (
-                          <div key={location + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
-                            <input
-                              type="checkbox"
-                              id={`location-${location}-${index}`}
-                              checked={filters.locations.includes(location)}
-                              onChange={() => handleFilterChange('locations', location)}
-                              className="h-4 w-4 text-[#10b981] focus:ring-[#a7f3d0]/50 border-gray-300 rounded"
-                            />
-                            <label 
-                              htmlFor={`location-${location}-${index}`}
-                              className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
-                            >
-                              {location}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center">
+                                                <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                                                <span className="text-sm font-medium text-gray-700">Location</span>
+                                                {Array.isArray(filters.locations) && filters.locations.length > 0 && (
+                                                    <span className="ml-2 px-2 py-0.5 bg-[#667eea] text-white text-xs rounded-full">
+                                                      {filters.locations.length}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {Array.isArray(filters.locations) && filters.locations.length > 0 && (
+                                                <button
+                                                  onClick={() => setFilters(prev => ({ ...prev, locations: [] }))}
+                                                  className="text-xs text-[#667eea] hover:text-[#764ba2]"
+                                                >
+                                                  Clear
+                                                </button>
+                                            )}
+                                        </div>
+                                        
+                                        <button
+                                            type="button"
+  onClick={(e) => {
+    e.stopPropagation();
+    toggleSubDropdown('locations');
+  }}
+                                            className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all duration-200 mb-2"
+                                        >
+                                            <span className="text-sm text-gray-700">Select Location</span>
+                                            <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.locations ? 'transform rotate-180' : ''}`} />
+                                        </button>
+                                        
+                                        {openSubDropdowns.locations && (
+  <div
+    className="relative z-50 mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200"
+    onClick={(e) => e.stopPropagation()}
+  >
+    <CreatableSelect
+      isMulti
+      options={cityOptions}
+      value={(Array.isArray(filters.locations) ? filters.locations : []).map(loc => ({
+        value: loc,
+        label: loc,
+      }))}
+      onChange={handleLocationMultiChange}
+      placeholder="Select or type locations..."
+      menuPortalTarget={document.body}
+      menuPosition="fixed"
+      styles={{
+        menuPortal: base => ({ ...base, zIndex: 9999 }),
+        menu: base => ({ ...base, zIndex: 9999 }),
+        control: base => ({
+          ...base,
+          minHeight: '38px',
+          borderRadius: '0.75rem',
+          backgroundColor: 'rgb(249 250 251)',
+          borderColor: '#e5e7eb',
+        }),
+      }}
+    />
+  </div>
+)}
+
+                                    </div>
 
                 {/* Role Filter */}
                 <div className="relative">

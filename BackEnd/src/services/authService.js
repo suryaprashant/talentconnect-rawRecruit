@@ -197,7 +197,7 @@ export const sendSignupOtpService = async ({ email }) => {
 }
 
 // Login service
-export const loginUser = async ({ email, password }) => {
+/*export const loginUser = async ({ email, password }) => {
   const user = await Auth.findOne({ email });
 
   if (!user) {
@@ -213,7 +213,43 @@ export const loginUser = async ({ email, password }) => {
     throw error;
   }
   return user;
+};*/
+
+//login Prathmesh 
+export const loginUser = async ({ email, password }) => {
+  const user = await Auth.findOne({ email });
+
+  if (!user) {
+    const error = new Error("Invalid email or password");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  // 🔥 IMPORTANT FIX
+  if (user.authProvider !== 'manual') {
+    const error = new Error(
+      `This account was created using ${user.authProvider}. Please login using ${user.authProvider}.`
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (!user.password) {
+    const error = new Error("Password not set for this account");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    const error = new Error("Invalid email or password");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  return user;
 };
+
 
 export const generateToken = ({ userId, email, userType }) => {
   return jwt.sign({ userId, email, userType }, JWT_SECRET, { expiresIn: "7d" });
