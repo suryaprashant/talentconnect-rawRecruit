@@ -132,6 +132,10 @@ export default function EmployerProfile() {
       );
     }
 
+   /* {activeTab === "overview" && (
+  <CompanyOverview profileData={profileData} />
+)}*/
+
     switch (activeTab) {
       case 'Overview':
         return <CompanyOverview profileData={profileData} />;

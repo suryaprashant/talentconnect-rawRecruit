@@ -12,6 +12,11 @@ const useJobs = () => {
     const loadJobs = async () => {
       try {
         const data = await fetchSavedJobs();
+
+      console.log("Saved jobs full response:", data);
+      console.log("Saved jobs count:", data?.data?.length);
+      console.log("Saved jobs array:", data?.data);
+
      
         setJobs(data.data);
       } catch (err) {

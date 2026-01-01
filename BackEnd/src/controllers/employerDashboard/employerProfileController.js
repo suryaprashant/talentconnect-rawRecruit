@@ -92,7 +92,7 @@ export const getEmployerOnboarding = async (req, res) => {
 
 // PUT: Update onboarding profile
 export const updateEmployerOnboarding = async (req, res) => {
-    try {
+      try {
         const userId = req.user._id;
         const { employerDetails, companyDetails, hiringPreferences } = req.body;
         const files = req.files;
@@ -125,7 +125,7 @@ export const updateEmployerOnboarding = async (req, res) => {
             });
         }
 
-        const updatedProfile = await updateCompanyProfileService({ userId }, updates);
+        const updatedProfile = await updateCompanyProfileService(userId, updates);
 
         if (!updatedProfile) {
             return res.status(404).json({ message: 'No onboarding profile found to update.' });
