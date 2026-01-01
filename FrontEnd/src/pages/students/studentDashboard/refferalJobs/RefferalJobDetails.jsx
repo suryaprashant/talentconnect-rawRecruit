@@ -1,258 +1,469 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApplyForReferral, getReferralJobById, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
+import { 
+  MapPin, 
+  ArrowLeft, 
+  Building2, 
+  Users, 
+  Navigation, 
+  Briefcase, 
+  Calendar, 
+  DollarSign, 
+  GraduationCap,
+  BookOpen,
+  Target,
+  Award,
+  FileText,
+  Clock,
+  CheckCircle,
+  Star,
+  ExternalLink
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const StudentRefferalJobDetails = () => {
-    const { jobId } = useParams();
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
-    const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
-    const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
-    const [jobDetails, setJobDetails] = useState(null);
-    // const [similarJobs, setSimilarJobs] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const { jobId } = useParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  // Converted to state to handle immediate UI updates
+  const [isSaved, setIsSaved] = useState((searchParams.get('isSaved') || '').toLowerCase() === 'true');
+  const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
+  
+  const [jobDetails, setJobDetails] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    const loadJobDetails = async () => {
-        try {
-            setIsLoading(true);
-            const response = await getReferralJobById(jobId);
-            setJobDetails(response.data);
-            await viewed(details.data._id);
-            // console.log("Details:", response.data);
-            setError(null);
-        } catch (err) {
-            setError('Failed to load details. Please try again later.');
-            console.error('Error fetching details:', err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (jobId) {
-            loadJobDetails();
-        }
-    }, [jobId]);
-
-    const handleApply = async () => {
-        try {
-            const response = await ApplyForReferral(jobId);
-            if (response?.data?.success === true) toast.success('Application submitted!');
-            else toast.error(response.response.data?.msg);
-        } catch (err) {
-            console.error('Error applying for job:', err);
-            toast.error('Something went wrong!');
-        }
-    };
-
-    const handleSave = async () => {
-        try {
-            const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
-            if (response?.data?.success === true) toast.success('Job saved!');
-            else toast.error(response.response.data?.msg)
-        } catch (err) {
-            console.error('Error saving job:', err);
-            toast.error('Something went wrong!');
-        }
-    };
-
-    // --- Loading State (from FJobDetails) ---
-    if (isLoading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen bg-slate-50">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
-            </div>
-        );
+  const loadJobDetails = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getReferralJobById(jobId);
+      setJobDetails(response.data);
+      await viewed(response.data._id);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load details. Please try again later.');
+      console.error('Error fetching details:', err);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    // --- Error State (from FJobDetails, with navigation from original) ---
-    if (error || !jobDetails) {
-        return (
-            <div className="flex justify-center items-center min-h-screen bg-slate-50 p-4 text-center">
-                <div>
-                    <svg className="mx-auto h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    <h2 className="mt-4 text-2xl font-bold text-slate-800">{error || "Job not found"}</h2>
-                    <p className="mt-2 text-slate-600">We couldn't retrieve the details for this referral job posting.</p>
-                    <button
-                        className="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg"
-                        onClick={() => navigate('/fresher-dashboard/Referral')} // <-- Original navigation
-                    >
-                        Back to Referral Jobs
-                    </button>
-                </div>
-            </div>
-        );
+  useEffect(() => {
+    if (jobId) {
+      loadJobDetails();
     }
+  }, [jobId]);
 
-    // --- Helper Components (from FJobDetails) ---
-    const Section = ({ title, children }) => (
-        <section>
-            <h2 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-200">{title}</h2>
-            <div className="text-slate-700 leading-relaxed space-y-4">
-                {children}
-            </div>
-        </section>
-    );
+  const handleBackToList = () => {
+    window.history.back();
+  };
 
-    const InfoPill = ({ icon, text }) => (
-        <div className="flex items-center text-slate-500">
-            {icon}
-            <span className="ml-1.5">{text}</span>
+  const handleApply = async () => {
+    try {
+      const response = await ApplyForReferral(jobId);
+      if (response?.data?.success === true) {
+        toast.success('Application submitted!');
+      } else {
+        toast.error(response.response.data?.msg);
+      }
+    } catch (err) {
+      console.error('Error applying for job:', err);
+      toast.error('Something went wrong!');
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
+      if (response?.data?.success === true) {
+        toast.success('Job saved!');
+        setIsSaved(true); // Update UI immediately
+      } else {
+        toast.error(response.response.data?.msg);
+      }
+    } catch (err) {
+      console.error('Error saving job:', err);
+      toast.error('Something went wrong!');
+    }
+  };
+
+  // Helper function to render array data as tags
+  const renderTags = (data) => {
+    if (Array.isArray(data) && data.length > 0) {
+      return (
+        <div className="flex flex-wrap gap-2 mt-1">
+          {data.map((item, index) => (
+            <span key={index} className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full capitalize border border-gray-200">
+              {item}
+            </span>
+          ))}
         </div>
-    );
+      );
+    }
+    return <span className="text-gray-700">N/A</span>;
+  };
 
-    const SnapshotListItem = ({ icon, label, value }) => (
-        <div className="flex-1 min-w-[200px]">
-            <div className="flex items-center text-sm text-slate-500">
-                {icon}
-                <span className="ml-2">{label}</span>
-            </div>
-            <p className="font-semibold text-slate-800 mt-0.5">{value || 'N/A'}</p>
-        </div>
-    );
-
-    // --- Merged JSX ---
+  if (isLoading) {
     return (
-        <div className="bg-slate-50 min-h-screen font-sans p-4 sm:p-6 lg:p-8">
-            <div className="container mx-auto max-w-5xl">
-                <main>
-                    <div className="bg-white p-8 rounded-xl shadow-md space-y-8">
-                        <header className="flex flex-col sm:flex-row items-start justify-between pb-4 border-b border-slate-200">
-                            <div>
-                                <h1 className="text-4xl font-extrabold text-slate-900 mb-2">{jobDetails.jobTitle}</h1>
-                                {/* Data from original StudentRefferalJobDetails logic */}
-                                <p className="text-lg text-slate-600 mb-4">{jobDetails?.candidatePosted?.experiences?.[0]?.company || 'Company Not Listed'}</p>
-                                <p className="text-sm text-slate-400 mb-4">Job ID: {jobDetails._id}</p>
-                                <div className="flex flex-wrap gap-x-6 gap-y-2">
-                                    <InfoPill
-                                        icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>}
-                                        // Use original logic for location display
-                                        text={Array.isArray(jobDetails.location) ? jobDetails.location.join(', ') : jobDetails.location}
-                                    />
-                                    <InfoPill
-                                        icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" /></svg>}
-                                        text={`${jobDetails.yearsOfExperience || 'N/A'} years experience`}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* --- Conditional Button Rendering --- */}
-                            {!isApplied ? (
-                                <div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
-                                    {!isSaved && (<button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>)}
-                                    <button onClick={handleApply} className="bg-blue-500 hover:bg-indigo-500 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">Apply</button>
-                                </div>
-                            ) : (
-                                <div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
-                                    <span className="bg-green-100 text-green-800 font-bold py-2 px-5 rounded-lg">Applied</span>
-                                </div>
-                            )}
-                            {/* --- End Conditional Buttons --- */}
-
-                        </header>
-
-                        <Section title="Job Description">
-                            <p>{jobDetails.description}</p>
-                        </Section>
-
-                        {/* Added Responsibilities from original file data */}
-                        {jobDetails.responsibilities && (
-                            <Section title="Responsibilities">
-                                <p>{jobDetails.responsibilities}</p>
-                            </Section>
-                        )}
-
-                        {jobDetails.eligibilityCriteria && (
-                            <Section title="Eligibility Criteria">
-                                <p>{jobDetails.eligibilityCriteria}</p>
-                            </Section>
-                        )}
-
-                        <Section title="Key Skills">
-                            <div className="flex flex-wrap gap-2">
-                                {jobDetails.skills?.map((skill) => (
-                                    <span key={skill} className="bg-indigo-100 text-indigo-800 px-3 py-1.5 rounded-full text-sm font-medium">{skill}</span>
-                                ))}
-                            </div>
-                        </Section>
-
-                        {/* Using packageDetails as per the form created in the previous step */}
-                        <Section title="Compensation & Benefits">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                                    <div className="text-sm font-medium text-slate-500">Total CTC</div>
-                                    <div className="text-xl font-bold text-slate-900">
-                                        {jobDetails?.packageDetails?.totalCTC
-                                            ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.totalCTC.toLocaleString()}`
-                                            : 'Not Specified'}
-                                    </div>
-                                </div>
-                                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                                    <div className="text-sm font-medium text-slate-500">Fixed Pay</div>
-                                    <div className="text-xl font-bold text-slate-900">
-                                        {jobDetails?.packageDetails?.fixedPay
-                                            ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.fixedPay.toLocaleString()}`
-                                            : 'N/A'}
-                                    </div>
-                                </div>
-                                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                                    <div className="text-sm font-medium text-slate-500">Joining Bonus</div>
-                                    <div className="text-xl font-bold text-slate-900">
-                                        {jobDetails?.packageDetails?.joiningBonus
-                                            ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.joiningBonus.toLocaleString()}`
-                                            : 'N/A'}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <h3 className="text-lg font-semibold text-slate-800 mb-3">Benefits Offered</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {jobDetails.benefits?.length > 0 ? jobDetails.benefits.map((benefit) => (
-                                    <span key={benefit} className="bg-green-100 text-green-800 px-3 py-1.5 rounded-full text-sm font-medium">{benefit}</span>
-                                )) : <p className="text-slate-500">No benefits specified.</p>}
-                            </div>
-                        </Section>
-
-                        <Section title="Education">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <p className="text-sm font-medium text-slate-500">Minimum Education</p>
-                                    <p className="text-slate-700 capitalize font-semibold">{jobDetails.minEducation || 'N/A'}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-slate-500">Preferred Field of Study</p>
-                                    <p className="text-slate-700 capitalize font-semibold">{jobDetails.studentStreams?.join(', ') || 'N/A'}</p>
-                                </div>
-                            </div>
-                        </Section>
-
-                        <Section title="Job Overview">
-                            <div className="flex flex-wrap gap-y-4 gap-x-8">
-                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm14 1a1 1 0 11-2 0 1 1 0 012 0zM2 13a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2zm14 1a1 1 0 11-2 0 1 1 0 012 0z" clipRule="evenodd" /></svg>} label="Work Mode" value={jobDetails.workMode} />
-                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg>} label="Openings" value={jobDetails.numberOfOpenings} />
-                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5a.997.997 0 01.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" /></svg>} label="Employment Type" value={jobDetails.employmentType} />
-                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 2a2 2 0 00-2 2v11a3 3 0 003 3h8a3 3 0 003-3V4a2 2 0 00-2-2H5zm0 2h10v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4z" clipRule="evenodd" /></svg>} label="Certificate Required" value={jobDetails.certifications?.join(", ") || "No certification required"} />
-                                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.72 7.97 5 10 5c2.03 0 3.488.72 4.756 1.321l.003.001c.624.305 1.135.688 1.536 1.106l-1.091.819C14.72 7.82 14.166 7.5 13 7.5c-1.276 0-2.221.48-2.638.895l-.068.071c-.693.732-.888 1.816-.949 2.887l-2.024.091a4.502 4.502 0 01-1.008-2.324zM10 15a4.5 4.5 0 100-9 4.5 4.5 0 000 9z" clipRule="evenodd" /></svg>} label="Work Authorization" value={jobDetails.workAuthorization} />
-                            </div>
-                        </Section>
-
-                        <Section title="About The Company">
-                            {/* Data from original StudentRefferalJobDetails logic */}
-                            <p className="text-slate-700 mb-4">{jobDetails.candidatePosted?.experiences?.[0]?.description || 'No company description available.'}</p>
-                            Services
-                            <p className="text-sm text-slate-500">
-                                <span className="font-semibold text-slate-600">Location:</span> {jobDetails.candidatePosted?.locations || 'N/A'}
-                            </p>
-                        </Section>
-                    </div>
-                </main>
-            </div>
-        </div>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#667eea]"></div>
+      </div>
     );
+  }
+
+  if (error || !jobDetails) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+        <div className="text-center p-4">
+          <p className="text-xl font-semibold text-red-500">{error || "Job not found"}</p>
+          <button
+            className="mt-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] hover:shadow-lg hover:shadow-[#667eea]/30 text-white px-4 py-2 rounded-lg transition-all duration-200"
+            onClick={loadJobDetails}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+      <div className="max-w-4xl mx-auto bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 p-6 my-8">
+        {/* Back Button - Top Left */}
+        <button 
+          onClick={handleBackToList} 
+          className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 mr-1" />
+          Back to Referral Jobs
+        </button>
+
+        {/* Header */}
+        <div className="flex justify-between items-start mb-6">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 mr-4 flex items-center justify-center rounded-full overflow-hidden">
+              {jobDetails.candidatePosted?.profileImage ? (
+                <img
+                  src={jobDetails.candidatePosted.profileImage}
+                  alt={jobDetails.candidatePosted?.name || "Candidate Logo"}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://placehold.co/48x48/cccccc/000000?text=C';
+                  }}
+                />
+              ) : (
+                <svg className="w-8 h-8 text-[#667eea]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+            <div>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                {jobDetails.jobTitle || 'Referral Opportunity'}
+              </h2>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] text-xs font-medium px-2.5 py-1 rounded-full border border-[#667eea]/20">
+                  Referral Job
+                </span>
+                <span className="text-sm text-gray-600">
+                  Posted by: {jobDetails.candidatePosted?.name || 'Anonymous'}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="flex space-x-2">
+            {!isApplied && (
+              <>
+                {/* Only show Save button if NOT saved */}
+                {!isSaved && (
+                  <button 
+                    onClick={handleSave} 
+                    className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 hover:from-[#667eea]/20 hover:to-[#764ba2]/20 text-[#667eea] font-bold py-2 px-5 rounded-lg transition-all duration-300 border border-gray-200"
+                  >
+                    Save
+                  </button>
+                )}
+                {/* Always show Apply button if not applied (regardless of save status) */}
+                <button 
+                  className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200" 
+                  onClick={handleApply}
+                >
+                  Apply
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* About Referrer */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            About the Referrer
+          </h3>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-full flex items-center justify-center overflow-hidden">
+              {jobDetails.candidatePosted?.profileImage ? (
+                <img
+                  src={jobDetails.candidatePosted.profileImage}
+                  alt={jobDetails.candidatePosted?.name || "Referrer"}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <svg className="w-10 h-10 text-[#667eea]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-900">{jobDetails.candidatePosted?.name || 'Anonymous Referrer'}</h4>
+              <p className="text-gray-700 text-sm">{jobDetails.candidatePosted?.experiences?.[0]?.company || 'Current company not listed'}</p>
+              <p className="text-gray-600 text-sm">{jobDetails.candidatePosted?.experiences?.[0]?.designation || 'Position not specified'}</p>
+            </div>
+          </div>
+          <p className="text-gray-700">{jobDetails.candidatePosted?.experiences?.[0]?.description || 'No description available about the referrer.'}</p>
+        </section>
+
+        {/* Job Details */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Job Details
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="flex items-start">
+              <Briefcase className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Job Title</div>
+                <div className="text-gray-700">{jobDetails.jobTitle || 'N/A'}</div>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <MapPin className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Location</div>
+                {renderTags(jobDetails.location)}
+              </div>
+            </div>
+            <div className="flex items-start">
+              <Clock className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Experience Required</div>
+                <div className="text-gray-700">{jobDetails.yearsOfExperience || '0'} years</div>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+              </svg>
+              <div>
+                <div className="font-medium text-[#667eea]">Work Mode</div>
+                <div className="text-gray-700 capitalize">{jobDetails.workMode || 'N/A'}</div>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <div>
+                <div className="font-medium text-[#667eea]">Employment Type</div>
+                <div className="text-gray-700 capitalize">{jobDetails.employmentType || 'N/A'}</div>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <Users className="w-5 h-5 mt-0.5 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Open Positions</div>
+                <div className="text-gray-700">{jobDetails.numberOfOpenings || 'N/A'}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Key Skills */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Key Skills Required
+          </h3>
+          {renderTags(jobDetails.skills)}
+        </section>
+
+        {/* Job Description */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Job Description
+          </h3>
+          <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-4 rounded-lg">
+            <p className="text-gray-700 whitespace-pre-wrap">{jobDetails.description || 'No description available.'}</p>
+          </div>
+        </section>
+
+        {/* Responsibilities */}
+        {jobDetails.responsibilities && (
+          <section className="mb-8">
+            <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              Responsibilities
+            </h3>
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-4 rounded-lg">
+              <p className="text-gray-700 whitespace-pre-wrap">{jobDetails.responsibilities}</p>
+            </div>
+          </section>
+        )}
+
+        {/* Eligibility Criteria */}
+        {jobDetails.eligibilityCriteria && (
+          <section className="mb-8">
+            <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              Eligibility Criteria
+            </h3>
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-4 rounded-lg">
+              <p className="text-gray-700 whitespace-pre-wrap">{jobDetails.eligibilityCriteria}</p>
+            </div>
+          </section>
+        )}
+
+        {/* Compensation & Benefits */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Compensation & Benefits
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg border border-gray-200">
+              <div className="text-sm font-medium text-[#667eea]">Total CTC</div>
+              <div className="text-lg font-bold text-gray-900">
+                {jobDetails?.packageDetails?.totalCTC
+                  ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.totalCTC.toLocaleString()}`
+                  : 'Not Specified'}
+              </div>
+            </div>
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg border border-gray-200">
+              <div className="text-sm font-medium text-[#667eea]">Fixed Pay</div>
+              <div className="text-lg font-bold text-gray-900">
+                {jobDetails?.packageDetails?.fixedPay
+                  ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.fixedPay.toLocaleString()}`
+                  : 'N/A'}
+              </div>
+            </div>
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg border border-gray-200">
+              <div className="text-sm font-medium text-[#667eea]">Joining Bonus</div>
+              <div className="text-lg font-bold text-gray-900">
+                {jobDetails?.packageDetails?.joiningBonus
+                  ? `${jobDetails.packageDetails.currency || ''} ${jobDetails.packageDetails.joiningBonus.toLocaleString()}`
+                  : 'N/A'}
+              </div>
+            </div>
+          </div>
+          
+          <h4 className="font-medium text-[#667eea] mb-2">Benefits Offered</h4>
+          {renderTags(jobDetails.benefits)}
+        </section>
+
+        {/* Education Requirements */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Education Requirements
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="flex items-start">
+              <GraduationCap className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Minimum Education</div>
+                <div className="text-gray-700 capitalize">{jobDetails.minEducation || 'N/A'}</div>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <BookOpen className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Preferred Streams</div>
+                {renderTags(jobDetails.studentStreams)}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Additional Requirements */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Additional Requirements
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="flex items-start">
+              <CheckCircle className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Certifications Required</div>
+                <div className="text-gray-700">{jobDetails.certifications?.join(", ") || "No certification required"}</div>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <Target className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Work Authorization</div>
+                <div className="text-gray-700">{jobDetails.workAuthorization || 'N/A'}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Referral Benefits */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Referral Benefits
+          </h3>
+          <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-4 rounded-lg">
+            <div className="flex items-center gap-3 mb-2">
+              <Star className="w-5 h-5 text-yellow-500" />
+              <span className="font-medium text-gray-900">Priority Consideration</span>
+            </div>
+            <p className="text-gray-700">
+              This is a referral opportunity which typically means:
+            </p>
+            <ul className="list-disc list-inside text-gray-700 mt-2 space-y-1">
+              <li>Direct connection to the hiring team</li>
+              <li>Priority review of your application</li>
+              <li>Potential for faster interview process</li>
+              <li>Higher visibility among candidates</li>
+            </ul>
+          </div>
+        </section>
+
+        {/* Action Buttons */}
+        <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+          <div className="text-sm text-gray-600">
+            Job ID: <span className="font-mono">{jobDetails._id?.substring(0, 8)}...</span>
+          </div>
+          <div className="flex space-x-2">
+            {!isApplied && (
+              <>
+                {/* Only show Save button if NOT saved */}
+                {!isSaved && (
+                  <button 
+                    onClick={handleSave} 
+                    className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 hover:from-[#667eea]/20 hover:to-[#764ba2]/20 text-[#667eea] font-bold py-3 px-6 rounded-lg transition-all duration-300 border border-gray-200"
+                  >
+                    Save Opportunity
+                  </button>
+                )}
+                {/* Always show Apply button if not applied (regardless of save status) */}
+                <button 
+                  className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 font-medium" 
+                  onClick={handleApply}
+                >
+                  Apply Now
+                </button>
+              </>
+            )}
+            {isApplied && (
+              <span className="bg-green-100 text-green-800 font-bold py-3 px-6 rounded-lg">
+                Applied Successfully
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default StudentRefferalJobDetails;

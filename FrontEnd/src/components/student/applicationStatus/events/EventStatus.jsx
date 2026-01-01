@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Search, MapPin, Clock, Filter, Calendar, Upload, Link as LinkIcon } from 'lucide-react';
+import { Search, MapPin, Clock, Calendar, Briefcase, Award, CheckCircle, ArrowRight, Filter, Users, Upload, Link as LinkIcon } from 'lucide-react';
 import { getEventApplicationStatus } from '@/lib/User_AxiosInstance';
-import { statusSteps } from '../../../../constants/data.js'
+import { statusSteps } from '../../../../constants/data.js';
 import axios from 'axios';
 
 const EventStatus = () => {
@@ -11,34 +11,121 @@ const EventStatus = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [formData, setFormData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchEventApplications = async () => {
     try {
       setIsLoading(true);
+      setError(null);
+      
       const response = await getEventApplicationStatus();
-      const firstEvent = response.data.data[0];
-      const participant = firstEvent.participant;
-      setEvents(response.data.data);
-      setSelectedEvent(firstEvent);
-
-      if (firstEvent?.participant) {
-        setFormData({
-          teamLeaderId: participant.teamLeaderId || '',
-          eventID: participant.eventID || '',
-          eventName: participant.eventName || '',
-          name: participant.name || '',
-          email: participant.email || '',
-          projectTitle: participant.projectTitle || '',
-          teamMembers: participant.teamMembers || [],
-          rounds: (participant.rounds || []).map(round => ({
-            roundNumber: round.roundNumber || '',
-            rountStatus: round.rountStatus || '',
-            inputType: round.inputType || '',
-          })),
-        });
+      console.log("🔍 Event applications response:", response);
+      
+      if (!response || !response.data) {
+        throw new Error("No response from API");
       }
+      
+      const eventsData = response.data.data || [];
+      console.log(`🔍 Found ${eventsData.length} event applications`);
+      
+      if (eventsData.length === 0) {
+        setEvents([]);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Transform event data to match our structure
+      const transformedEvents = eventsData.map(event => {
+        const participant = event.participant || {};
+        const firstHistory = Array.isArray(event?.statusHistory) && event.statusHistory.length > 0 
+          ? event.statusHistory[0] 
+          : null;
+        
+        // Format date
+        const date = firstHistory?.date 
+          ? new Date(firstHistory.date).toUTCString().slice(0, 16)
+          : event.createdAt 
+            ? new Date(event.createdAt).toLocaleDateString()
+            : "N/A";
+        
+        // Extract location
+        const location = event.venue || event.location || "Location not specified";
+        
+        // Extract event type
+        const eventType = event.type || "Event";
+        
+        // Team members
+        const teamMembers = participant.teamMembers || [];
+        const totalTeamMembers = teamMembers.length + 1; // +1 for team leader
+        
+        // Rounds
+        const rounds = (event.rounds || []).map(round => ({
+          roundNumber: round.roundNumber || '',
+          roundName: round.roundName || `Round ${round.roundNumber}`,
+          startDate: round.startDate || '',
+          endDate: round.endDate || '',
+          description: round.description || '',
+          inputType: round.inputType || 'link',
+          status: 'Pending'
+        }));
+        
+        // Participant rounds
+        const participantRounds = (participant.rounds || []).map(round => ({
+          roundNumber: round.roundNumber || '',
+          rountStatus: round.rountStatus || '',
+          inputType: round.inputType || '',
+        }));
+        
+        return {
+          ...event,
+          id: event._id,
+          status: event.currentStatus || "Applied",
+          date: date,
+          title: event.title || "Untitled Event",
+          subTitle: event.subTitle || "",
+          eventType: eventType,
+          location: location,
+          startDate: event.startDate,
+          endDate: event.endDate,
+          teamLeader: participant.name || "Team Leader",
+          teamMembers: teamMembers,
+          totalTeamMembers: totalTeamMembers,
+          projectTitle: participant.projectTitle || "Untitled Project",
+          rounds: rounds,
+          participantRounds: participantRounds,
+          participantData: participant,
+          _debug: {
+            hasParticipant: !!participant,
+            teamMembersCount: totalTeamMembers,
+            roundsCount: rounds.length
+          }
+        };
+      });
+      
+      console.log("✅ Final transformed events:", transformedEvents);
+      setEvents(transformedEvents);
+      
+      if (transformedEvents.length > 0) {
+        const firstEvent = transformedEvents[0];
+        setSelectedEvent(firstEvent);
+        
+        if (firstEvent.participantData) {
+          setFormData({
+            teamLeaderId: firstEvent.participantData.teamLeaderId || '',
+            eventID: firstEvent.participantData.eventID || '',
+            eventName: firstEvent.participantData.eventName || '',
+            name: firstEvent.participantData.name || '',
+            email: firstEvent.participantData.email || '',
+            projectTitle: firstEvent.participantData.projectTitle || '',
+            teamMembers: firstEvent.participantData.teamMembers || [],
+            rounds: firstEvent.participantRounds || [],
+          });
+        }
+      }
+      
     } catch (error) {
-      console.log("Error fetching event data: ", error);
+      console.error("❌ Error in fetchEventApplications:", error);
+      setError(error.message || "Failed to fetch event applications");
     } finally {
       setIsLoading(false);
     }
@@ -46,21 +133,16 @@ const EventStatus = () => {
 
   const onEventChange = (event) => {
     setSelectedEvent(event);
-    const participant = event.participant;
-    if (participant) {
+    if (event.participantData) {
       setFormData({
-        teamLeaderId: participant.teamLeaderId || '',
-        eventID: participant.eventID || '',
-        eventName: participant.eventName || '',
-        name: participant.name || '',
-        email: participant.email || '',
-        projectTitle: participant.projectTitle || '',
-        teamMembers: participant.teamMembers || [],
-        rounds: (participant.rounds || []).map(round => ({
-          roundNumber: round.roundNumber || '',
-          rountStatus: round.rountStatus || '',
-          inputType: round.inputType || '',
-        })),
+        teamLeaderId: event.participantData.teamLeaderId || '',
+        eventID: event.participantData.eventID || '',
+        eventName: event.participantData.eventName || '',
+        name: event.participantData.name || '',
+        email: event.participantData.email || '',
+        projectTitle: event.participantData.projectTitle || '',
+        teamMembers: event.participantData.teamMembers || [],
+        rounds: event.participantRounds || [],
       });
     }
   };
@@ -98,18 +180,20 @@ const EventStatus = () => {
     const form = new FormData(e.target);
     const link = form.get('submissionLink');
 
-    const updatedRounds = formData.rounds.map(round =>
-      round.roundNumber === roundNumber
-        ? { ...round, inputType: link }
-        : round
-    );
+    if (formData) {
+      const updatedRounds = formData.rounds.map(round =>
+        round.roundNumber === roundNumber
+          ? { ...round, inputType: link }
+          : round
+      );
 
-    setFormData(prev => ({
-      ...prev,
-      rounds: updatedRounds,
-    }));
-    const payload = { inputType: link, roundNumber, _id: id };
-    await saveData(payload);
+      setFormData(prev => ({
+        ...prev,
+        rounds: updatedRounds,
+      }));
+      const payload = { inputType: link, roundNumber, _id: id };
+      await saveData(payload);
+    }
   };
 
   const handleFileSubmit = async (e, roundNumber, id) => {
@@ -121,22 +205,47 @@ const EventStatus = () => {
       return;
     }
 
-    const updatedRounds = formData.rounds.map(round =>
-      round.roundNumber === roundNumber
-        ? { ...round, inputType: file.name }
-        : round
-    );
+    if (formData) {
+      const updatedRounds = formData.rounds.map(round =>
+        round.roundNumber === roundNumber
+          ? { ...round, inputType: file.name }
+          : round
+      );
 
-    setFormData(prev => ({
-      ...prev,
-      rounds: updatedRounds,
-    }));
-    const payload = { inputType: file.name, roundNumber, _id: id };
-    await saveData(payload);
+      setFormData(prev => ({
+        ...prev,
+        rounds: updatedRounds,
+      }));
+      const payload = { inputType: file.name, roundNumber, _id: id };
+      await saveData(payload);
+    }
   };
 
-  const getStatusIndex = (status) =>
-    statusSteps.findIndex(step => step === status);
+  const filteredEvents = events.filter(event =>
+    (event?.title?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+    (event?.eventType?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+    (event?.location?.toLowerCase() || "").includes(searchTerm.toLowerCase())
+  );
+
+  // Apply sorting
+  const sortedEvents = [...filteredEvents].sort((a, b) => {
+    switch (sortBy) {
+      case "newest":
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      case "oldest":
+        return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+      case "organizer":
+        return (a.title || "").localeCompare(b.title || "");
+      default:
+        return 0;
+    }
+  });
+
+  const getStatusIndex = (status) => {
+    if (!status) return 0;
+    const index = statusSteps.findIndex(step => step.toLowerCase() === status.toLowerCase());
+    return index >= 0 ? index : 0;
+  };
 
   const getEventTypeColor = (type) => {
     switch(type?.toLowerCase()) {
@@ -145,6 +254,13 @@ const EventStatus = () => {
       case 'casestudy': return 'bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30';
       default: return 'bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30';
     }
+  };
+
+  const getCompanyInitials = (title) => {
+    if (!title || title === "Untitled Event") return "EV";
+    const words = title.split(' ').filter(word => word.length > 0);
+    if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
+    return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
   };
 
   if (isLoading) {
@@ -163,6 +279,28 @@ const EventStatus = () => {
     );
   }
 
+  if (error && events.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center p-4">
+        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6 max-w-md">
+          <div className="text-red-500 mb-4 text-center">
+            <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">Error Loading Events</h3>
+          <p className="text-sm text-gray-600 mb-4 text-center">{error}</p>
+          <button
+            onClick={fetchEventApplications}
+            className="w-full px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/40 transition-all duration-300"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       {/* Pastel blur background elements */}
@@ -172,43 +310,21 @@ const EventStatus = () => {
         <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative z-10 flex flex-col h-screen">
+      <div className="relative z-10 container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="bg-white/90 backdrop-blur-sm border-b border-white/50 py-4 px-6 shadow-lg shadow-purple-50/50">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">Event Status</h1>
-              <p className="text-gray-600 mt-1">Track the status of events you've registered for.</p>
-            </div>
-            
-            {/* Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-500 mb-1">Total Events</span>
-                <span className="px-3 py-2 text-sm font-medium bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30 rounded-xl">
-                  {events?.length || 0}
-                </span>
+        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-5 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg">
+                <Award className="h-5 w-5 text-[#667eea]" />
               </div>
-              
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-500 mb-1">Status</span>
-                <span className="px-3 py-2 text-sm font-medium bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30 rounded-xl">
-                  Active
-                </span>
-              </div>
-              
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-500 mb-1">Updated</span>
-                <span className="px-3 py-2 text-sm font-medium bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30 rounded-xl">
-                  Today
-                </span>
-              </div>
-              
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-500 mb-1">Type</span>
-                <span className="px-3 py-2 text-sm font-medium bg-gradient-to-r from-[#fbcfe8]/20 to-[#f9a8d4]/20 text-[#9d174d] border border-[#fbcfe8]/30 rounded-xl">
-                  Events
-                </span>
+              <div>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                  Event Application Status
+                </h1>
+                <p className="text-sm text-gray-600">
+                  {events.length} event application(s) found
+                </p>
               </div>
             </div>
           </div>
@@ -222,17 +338,18 @@ const EventStatus = () => {
               <input
                 type="text"
                 placeholder="Search events..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl bg-white/50 focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] backdrop-blur-sm"
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea]"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
+            
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <Filter className="h-4 w-4 text-gray-400" />
               </div>
               <select
-                className="pl-10 pr-8 py-2 border border-gray-200 rounded-xl bg-white/50 appearance-none focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] backdrop-blur-sm"
+                className="pl-10 pr-8 py-2.5 border border-gray-200 rounded-xl bg-white/50 backdrop-blur-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea]"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
@@ -249,293 +366,333 @@ const EventStatus = () => {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex flex-1 overflow-hidden p-4 md:p-6">
-          {/* Sidebar */}
-          <div className="w-full md:w-72 bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 overflow-y-auto mr-0 md:mr-6">
-            {events?.length > 0 ? (
-              events.map((event) => (
-                <div
-                  key={event._id}
-                  onClick={() => onEventChange(event)}
-                  className={`p-4 cursor-pointer border-b border-gray-100 hover:bg-gradient-to-r hover:from-[#667eea]/5 hover:to-[#764ba2]/5 transition-all duration-200 ${selectedEvent?._id === event._id ? 'bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10' : ''
-                    }`}
-                >
-                  <span className={`text-xs px-2 py-1 rounded-lg ${getEventTypeColor(event.type)}`}>
-                    {event.type || 'Event'}
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {/* Events List - Now showing 2 per row */}
+          <div className="lg:col-span-1">
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 h-full flex flex-col">
+              <div className="p-4 border-b border-white/60">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-base font-semibold text-gray-900">Events</h2>
+                  <span className="text-xs font-medium px-2 py-1 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full">
+                    {sortedEvents.length}
                   </span>
-                  <h3 className="text-md font-semibold text-gray-900 mt-2">{event.title}</h3>
-                  <p className="text-sm text-gray-600">{event.participant?.eventName || 'Event'}</p>
-                  <div className="mt-2 flex items-center text-xs text-gray-500">
-                    <Calendar className="h-3 w-3 mr-1" />
-                    {new Date(event.startDate).toLocaleDateString()}
-                    <span className="mx-2">•</span>
-                    <MapPin className="h-3 w-3 mr-1" />
-                    {event.venue}
-                  </div>
                 </div>
-              ))
-            ) : (
-              <div className="text-gray-600 p-4 text-center">No events found!</div>
-            )}
+              </div>
+              
+              <div className="flex-1 overflow-y-auto p-2">
+                {sortedEvents.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    {sortedEvents.map(event => (
+                      <button
+                        key={event.id}
+                        onClick={() => onEventChange(event)}
+                        className={`text-left p-3 rounded-xl transition-all duration-200 ${
+                          selectedEvent?.id === event.id 
+                            ? 'bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 border border-[#667eea]/20' 
+                            : 'hover:bg-white/30 border border-transparent'
+                        }`}
+                      >
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                              selectedEvent?.id === event.id 
+                                ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
+                                : 'bg-white/50 border border-white/60 text-[#667eea]'
+                            }`}>
+                              <span className="text-xs font-bold">{getCompanyInitials(event.title)}</span>
+                            </div>
+                          </div>
+                          <div className="min-w-0">
+                            <h3 className="text-sm font-semibold text-gray-900 truncate">{event.title}</h3>
+                            <div className="mt-1.5 flex flex-col gap-1">
+                              <div className="flex items-center text-xs text-gray-500">
+                                <MapPin className="h-3 w-3 mr-1 text-[#667eea]" />
+                                <span className="truncate">{event.location}</span>
+                              </div>
+                              <span className={`text-xs px-1.5 py-0.5 rounded w-fit ${getEventTypeColor(event.eventType)}`}>
+                                {event.eventType}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-6 text-center">
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-white/50 to-white/30 border border-white/60 mb-3">
+                      <Search className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <p className="text-sm text-gray-500">No event applications found</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* Main Panel */}
-          <div className="flex-1 overflow-y-auto">
-            {selectedEvent && (
-              <div className="space-y-6">
-                {/* Status Progress Bar */}
-                <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Application Progress</h3>
-                  <div className="relative mb-2">
-                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div
-                        className="h-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] rounded-full"
-                        style={{
-                          width: `${(getStatusIndex("Application sent") / (statusSteps.length - 1)) * 100}%`
-                        }}
-                      ></div>
+          {/* Event Details */}
+          <div className="lg:col-span-2">
+            {selectedEvent ? (
+              <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 h-full flex flex-col">
+                {/* Status Progress */}
+                <div className="p-5 border-b border-white/60">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900">{selectedEvent.title}</h2>
+                      <p className="text-sm text-gray-600">{selectedEvent.subTitle}</p>
                     </div>
-                    <div className="flex justify-between mt-4">
-                      {statusSteps.map((step, idx) => {
-                        const currentIdx = getStatusIndex("Application sent");
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center border border-white/60">
+                      <span className="text-lg font-bold text-[#667eea]">
+                        {getCompanyInitials(selectedEvent.title)}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="relative">
+                    <div className="flex justify-between mb-1">
+                      {statusSteps?.slice(0, 4).map((step, idx) => {
+                        const currentIdx = getStatusIndex(selectedEvent.status);
                         const isActive = idx <= currentIdx;
-
                         return (
-                          <div key={idx} className="flex flex-col items-center text-xs" style={{ width: `${100 / statusSteps.length}%` }}>
-                            <div className={`w-6 h-6 rounded-full mb-1 flex items-center justify-center ${isActive ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white' : 'bg-gray-200 text-gray-500'}`}>
-                              {idx + 1}
+                          <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 4}%` }}>
+                            <div className={`w-6 h-6 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
+                              isActive 
+                                ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] border-transparent text-white' 
+                                : 'bg-white/50 border-white/60 text-gray-400'
+                            }`}>
+                              {isActive ? <CheckCircle className="h-3 w-3" /> : idx + 1}
                             </div>
-                            <span className={`text-center text-xs ${isActive ? 'text-[#667eea] font-medium' : 'text-gray-500'}`}>
-                              {step}
+                            <span className={`text-xs text-center ${isActive ? 'text-[#667eea] font-medium' : 'text-gray-500'}`}>
+                              {step.length > 10 ? step.substring(0, 10) + '...' : step}
                             </span>
-                            {idx === 0 && <span className="text-gray-400 text-xs mt-1">{selectedEvent.date}</span>}
                           </div>
                         );
                       })}
                     </div>
+                    <div className="h-1.5 bg-white/50 absolute left-6 right-6 top-3 -z-10">
+                      <div
+                        className="h-1.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 rounded-full"
+                        style={{
+                          width: `${(getStatusIndex(selectedEvent.status) / (statusSteps.length - 1)) * 100}%`
+                        }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Event Card */}
-                <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h2 className="text-2xl font-semibold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">{selectedEvent.title}</h2>
-                      <p className="text-gray-600">{selectedEvent.subTitle}</p>
-                      <div className="mt-3 text-sm text-gray-500 space-y-2">
-                        <p>Event ID: {selectedEvent._id}</p>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <div className="flex items-center px-2 py-1 bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30 rounded-lg">
-                            <Calendar className="h-4 w-4 mr-1" />
-                            {new Date(selectedEvent.startDate).toLocaleDateString()} - {new Date(selectedEvent.endDate).toLocaleDateString()}
-                          </div>
-                          <div className="flex items-center px-2 py-1 bg-gradient-to-r from-[#bae6fd]/20 to-[#7dd3fc]/20 text-[#0369a1] border border-[#bae6fd]/30 rounded-lg">
-                            <MapPin className="h-4 w-4 mr-1" />
-                            {selectedEvent.location}
-                          </div>
-                        </div>
+                {/* Event Details Grid */}
+                <div className="flex-1 p-5">
+                  {/* Row 1: Event Type and Location */}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Briefcase className="h-4 w-4 text-[#667eea]" />
+                        <span className="text-xs font-medium text-gray-700">Event Type</span>
                       </div>
+                      <p className="text-sm text-gray-900">{selectedEvent.eventType}</p>
                     </div>
-                    <div className="w-16 h-16 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 rounded-2xl flex items-center justify-center border border-[#667eea]/20">
-                      <span className="text-2xl font-bold text-[#667eea]">{selectedEvent.title?.charAt(0) || 'E'}</span>
+                    
+                    <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
+                      <div className="flex items-center gap-2 mb-1">
+                        <MapPin className="h-4 w-4 text-[#667eea]" />
+                        <span className="text-xs font-medium text-gray-700">Location</span>
+                      </div>
+                      <p className="text-sm text-gray-900">{selectedEvent.location}</p>
+                    </div>
+                  </div>
+
+                  {/* Row 2: Event Dates and Team Members */}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Calendar className="h-4 w-4 text-[#667eea]" />
+                        <span className="text-xs font-medium text-gray-700">Event Dates</span>
+                      </div>
+                      <p className="text-sm text-gray-900">
+                        {new Date(selectedEvent.startDate).toLocaleDateString()} - {new Date(selectedEvent.endDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                    
+                    <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Users className="h-4 w-4 text-[#667eea]" />
+                        <span className="text-xs font-medium text-gray-700">Team Members</span>
+                      </div>
+                      <p className="text-sm text-gray-900">{selectedEvent.totalTeamMembers} members</p>
+                    </div>
+                  </div>
+
+                  {/* Row 3: Project Title and Team Leader */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    {/* Project Title */}
+                    <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
+                      <div className="flex items-center gap-2 mb-1">
+                        <svg className="h-4 w-4 text-[#667eea]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span className="text-xs font-medium text-gray-700">Project Title</span>
+                      </div>
+                      <p className="text-sm text-gray-900">{selectedEvent.projectTitle}</p>
+                    </div>
+                    
+                    {/* Team Leader */}
+                    <div className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
+                      <div className="flex items-center gap-2 mb-1">
+                        <svg className="h-4 w-4 text-[#667eea]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span className="text-xs font-medium text-gray-700">Team Leader</span>
+                      </div>
+                      <p className="text-sm text-gray-900">{selectedEvent.teamLeader}</p>
                     </div>
                   </div>
 
                   {/* Event Rounds */}
-                  <div className="mt-8">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Event Rounds</h3>
-                    <div className="border-l-2 border-gray-200 pl-6 relative space-y-8">
-                      {selectedEvent.rounds?.map((round, index) => (
-                        <div key={index} className="relative">
-                          {/* Round Number Badge */}
-                          <div
-                            className="absolute w-8 h-8 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center -left-10 text-sm font-semibold"
-                            style={{ top: '-4px' }}
-                          >
-                            {round.roundNumber}
-                          </div>
-
-                          {/* Round Info */}
-                          <div className="text-sm text-gray-500 mb-1">
-                            {new Date(round.startDate).toLocaleDateString()} - {new Date(round.endDate).toLocaleDateString()}
-                          </div>
-                          <h4 className="text-md font-semibold text-gray-900">{round.roundName}</h4>
-                          <p className="text-gray-600 mb-4">{round.description}</p>
-
-                          {/* Submission Form */}
-                          {round.inputType === 'link' ? (
-                            <form onSubmit={(e) => handleSubmit(e, round.roundNumber, "link", selectedEvent.participant._id)} className="space-y-3">
-                              <div className="relative">
-                                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                  <LinkIcon className="h-4 w-4 text-gray-400" />
+                  {selectedEvent.rounds && selectedEvent.rounds.length > 0 && (
+                    <div className="mb-5">
+                      <h3 className="text-sm font-medium text-gray-700 mb-2">Event Rounds</h3>
+                      <div className="space-y-3">
+                        {selectedEvent.rounds.map((round, index) => (
+                          <div key={index} className="p-3 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-xl">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-full flex items-center justify-center text-xs font-semibold">
+                                  {round.roundNumber}
                                 </div>
-                                <input
-                                  name="submissionLink"
-                                  type="url"
-                                  placeholder="Enter submission link"
-                                  className="w-full pl-10 p-3 border border-gray-200 rounded-xl bg-white/50 focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] backdrop-blur-sm"
-                                  required
-                                />
+                                <span className="text-sm font-medium text-gray-900">{round.roundName}</span>
                               </div>
-                              <div className="flex justify-end">
-                                <button
-                                  type="submit"
-                                  className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-6 py-2 rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200"
-                                >
-                                  Submit Link
-                                </button>
-                              </div>
-                            </form>
-                          ) : (
-                            <form onSubmit={(e) => handleSubmit(e, round.roundNumber, "file", selectedEvent.participant._id)} className="space-y-3">
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
-                                <Upload className="inline h-4 w-4 mr-1" />
-                                Upload {round.inputType?.toUpperCase()} file
-                              </label>
-                              <div className="flex items-center gap-3">
-                                <input
-                                  name="submissionFile"
-                                  type="file"
-                                  accept={
-                                    round.inputType === 'doc'
-                                      ? '.doc,.docx'
-                                      : round.inputType === 'pdf'
-                                        ? '.pdf'
-                                        : round.inputType === 'ppt'
-                                          ? '.ppt,.pptx'
-                                          : '*'
-                                  }
-                                  className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:border-0 file:rounded-xl file:bg-gradient-to-r file:from-[#667eea] file:to-[#764ba2] file:text-white hover:file:from-[#764ba2] hover:file:to-[#667eea] transition-all duration-200"
-                                  required
-                                />
-                              </div>
-                              <div className="flex justify-end">
-                                <button
-                                  type="submit"
-                                  className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-6 py-2 rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200"
-                                >
-                                  Submit File
-                                </button>
-                              </div>
-                            </form>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Horizontal Split: Participation & Notifications */}
-                  <div className="flex flex-col md:flex-row gap-6 mt-8">
-                    {/* Team Participation */}
-                    <div className="bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 border border-[#bbf7d0]/30 rounded-2xl p-6 w-full md:w-1/2">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Participation Details</h3>
-                      <p className="text-gray-700 mb-3">
-                        <span className="font-medium text-gray-900">Team Name:</span> {selectedEvent.participant.projectTitle}
-                      </p>
-                      <p className="text-gray-900 font-medium mb-2">Participants:</p>
-                      <ul className="space-y-2">
-                        <li className="flex items-center">
-                          <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                          <span className="text-gray-700">{selectedEvent.participant.name} (Team Leader)</span>
-                        </li>
-                        {selectedEvent.participant.teamMembers.map((member, idx) => (
-                          <li key={idx} className="flex items-center ml-4">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                            <span className="text-gray-700">{member.name}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <button className="mt-4 bg-gradient-to-r from-[#10b981] to-[#059669] text-white px-4 py-2 rounded-xl hover:shadow-lg hover:shadow-green-500/30 transition-all duration-200">
-                        Accept Invitation
-                      </button>
-                    </div>
-
-                    {/* Notifications */}
-                    <div className="bg-gradient-to-r from-[#fef3c7]/10 to-[#fde68a]/10 border border-[#fde68a]/30 rounded-2xl p-6 w-full md:w-1/2">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Notifications</h3>
-                      {[1, 2].map((_, idx) => (
-                        <div
-                          key={idx}
-                          className="relative w-full p-4 mb-4 text-gray-600 bg-white/50 backdrop-blur-sm rounded-2xl border border-gray-100 shadow-sm"
-                        >
-                          <div className="flex items-start">
-                            {/* Icon */}
-                            <div className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20">
-                              <svg
-                                className="w-4 h-4 text-[#667eea]"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 18 20"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M16 1v5h-5M2 19v-5h5m10-4a8 8 0 0 1-14.947 3.97M1 10a8 8 0 0 1 14.947-3.97"
-                                />
-                              </svg>
-                            </div>
-
-                            {/* Content */}
-                            <div className="ms-3 text-sm flex-1">
-                              <span className="mb-1 block text-sm font-semibold text-gray-900">
-                                {idx === 0 ? 'Notification Title' : 'Final Reminder'}
+                              <span className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-lg border border-amber-200">
+                                Pending
                               </span>
-                              <div className="mb-2 text-sm">
-                                {idx === 0
-                                  ? 'This is the notification message with some relevant information for the user.'
-                                  : 'Reminder to check in before the event day. Make sure to complete all requirements.'}
-                              </div>
-                              <p className="text-xs text-gray-500">Date: {idx === 0 ? '2025-10-01' : '2025-09-25'}</p>
-
-                              {/* Buttons */}
-                              <div className="grid grid-cols-2 gap-2 mt-3">
-                                <button className="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-white bg-gradient-to-r from-[#667eea] to-[#764ba2] rounded-lg hover:shadow-md transition-all duration-200">
-                                  {idx === 0 ? 'Take Action' : 'View Details'}
-                                </button>
-                                <button className="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-all duration-200">
-                                  Dismiss
-                                </button>
-                              </div>
                             </div>
+                            
+                            <p className="text-sm text-gray-600 mb-3">{round.description}</p>
+                            
+                            {/* Submission Form */}
+                            {round.inputType === 'link' ? (
+                              <form onSubmit={(e) => handleSubmit(e, round.roundNumber, "link", selectedEvent.participantData?._id)} className="space-y-2">
+                                <div className="relative">
+                                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <LinkIcon className="h-4 w-4 text-gray-400" />
+                                  </div>
+                                  <input
+                                    name="submissionLink"
+                                    type="url"
+                                    placeholder="Enter submission link"
+                                    className="w-full pl-10 p-2 text-sm border border-gray-200 rounded-lg bg-white/50 focus:outline-none focus:ring-1 focus:ring-[#667eea]/30 focus:border-[#667eea] backdrop-blur-sm"
+                                    required
+                                  />
+                                </div>
+                                <div className="flex justify-end">
+                                  <button
+                                    type="submit"
+                                    className="px-3 py-1.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-xs rounded-lg hover:shadow-md hover:shadow-[#667eea]/30 transition-all duration-200"
+                                  >
+                                    Submit Link
+                                  </button>
+                                </div>
+                              </form>
+                            ) : (
+                              <form onSubmit={(e) => handleSubmit(e, round.roundNumber, "file", selectedEvent.participantData?._id)} className="space-y-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
+                                  <Upload className="inline h-3 w-3 mr-1" />
+                                  Upload {round.inputType?.toUpperCase()} file
+                                </label>
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    name="submissionFile"
+                                    type="file"
+                                    accept={
+                                      round.inputType === 'doc'
+                                        ? '.doc,.docx'
+                                        : round.inputType === 'pdf'
+                                          ? '.pdf'
+                                          : round.inputType === 'ppt'
+                                            ? '.ppt,.pptx'
+                                            : '*'
+                                    }
+                                    className="block w-full text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:border-0 file:rounded-lg file:bg-gradient-to-r file:from-[#667eea] file:to-[#764ba2] file:text-white hover:file:from-[#764ba2] hover:file:to-[#667eea] transition-all duration-200"
+                                    required
+                                  />
+                                </div>
+                                <div className="flex justify-end">
+                                  <button
+                                    type="submit"
+                                    className="px-3 py-1.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-xs rounded-lg hover:shadow-md hover:shadow-[#667eea]/30 transition-all duration-200"
+                                  >
+                                    Submit File
+                                  </button>
+                                </div>
+                              </form>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                            {/* Close Button */}
-                            <button
-                              type="button"
-                              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                              aria-label="Close"
-                            >
-                              <svg
-                                className="w-3 h-3"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 14 14"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                                />
-                              </svg>
-                            </button>
+                  {/* Team Members List */}
+                  {selectedEvent.teamMembers.length > 0 && (
+                    <div className="mb-5">
+                      <h3 className="text-sm font-medium text-gray-700 mb-2">Team Members</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div className="p-2 bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 border border-[#bbf7d0]/30 rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span className="text-sm text-gray-700">{selectedEvent.teamLeader} (Leader)</span>
                           </div>
                         </div>
-                      ))}
+                        {selectedEvent.teamMembers.slice(0, 3).map((member, idx) => (
+                          <div key={idx} className="p-2 bg-gradient-to-r from-[#dbeafe]/10 to-[#bfdbfe]/10 border border-[#dbeafe]/30 rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                              <span className="text-sm text-gray-700">{member.name}</span>
+                            </div>
+                          </div>
+                        ))}
+                        {selectedEvent.teamMembers.length > 3 && (
+                          <div className="p-2 bg-gradient-to-r from-white/30 to-white/10 border border-white/60 rounded-lg col-span-2">
+                            <span className="text-sm text-gray-700">
+                              +{selectedEvent.teamMembers.length - 3} more members
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
-                  <div className="mt-4">
-                    <button className="text-[#667eea] font-medium hover:text-[#764ba2] transition-colors duration-200">
-                      View full details
+                  {/* Action Button */}
+                  <div className="mt-auto">
+                    <button 
+                      onClick={() => alert('View full details clicked!')}
+                      className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#667eea]/40 transition-all duration-300 group"
+                    >
+                      View Full Details
+                      <ArrowRight className="h-3.5 w-3.5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
                     </button>
                   </div>
                 </div>
+              </div>
+            ) : events.length === 0 ? (
+              <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 h-full flex flex-col items-center justify-center p-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-white/50 to-white/30 border border-white/60 mb-4">
+                  <Award className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Event Applications</h3>
+                <p className="text-sm text-gray-600 text-center">
+                  You haven't applied to any events yet.
+                </p>
+              </div>
+            ) : (
+              <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 h-full flex flex-col items-center justify-center p-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-white/50 to-white/30 border border-white/60 mb-4">
+                  <Award className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Select an Event Application</h3>
+                <p className="text-sm text-gray-600 text-center">
+                  Choose an event application from the list to view detailed status
+                </p>
               </div>
             )}
           </div>

@@ -1,15 +1,85 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ChevronDown, ChevronUp, X, Filter, MapPin, Search, Briefcase, Calendar, TrendingUp, RefreshCw, AlertCircle, Building, DollarSign, Clock, Users, GraduationCap, BookOpen } from 'lucide-react';
 import JobCard from '@/components/student/studentDashboard/offCampusListing/JobCard';
 import { getRelaventOffcampusOpportunity } from '@/lib/User_AxiosInstance';
-import { FiSearch, FiFilter } from 'react-icons/fi';
 
 function OffCampusJobs() {
   const [offCampusJobs, setOffCampusJobs] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [filters, setFilters] = useState({
+    workMode: [],
+    degree: [],
+    courses: [],
+    employmentType: [],
+    location: '',
+    company: '',
+    internship: false,
+    fullTime: false
+  });
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [sortBy, setSortBy] = useState('newest');
+
+  // State for dropdown visibility
+  const [showMainFilter, setShowMainFilter] = useState(false);
+  const [openSubDropdowns, setOpenSubDropdowns] = useState({
+    workMode: false,
+    degree: false,
+    courses: false,
+    employmentType: false,
+    location: false,
+    company: false
+  });
+
+  const [filterOptions, setFilterOptions] = useState({
+    workMode: [
+      { label: 'Work from office', count: 28692 },
+      { label: 'Hybrid', count: 756 },
+      { label: 'Remote', count: 709 }
+    ],
+    degree: [
+      'Polytechnic',
+      'ITI',
+      'Diploma',
+      'Undergraduate',
+      'Postgraduate'
+    ],
+    courses: [
+      'Engineering',
+      'Pharmacy',
+      'Mechanical Engineering',
+      'Civil Engineering',
+      'Electrical',
+      'Fitter',
+      'Welding',
+      'Electronics',
+      'B.Tech',
+      'BBA',
+      'BSc',
+      'BCA',
+      'BE',
+      'BA',
+      'BBM',
+      'PUC Humanities Combinations',
+      'PUC Commerce Combinations',
+      'B.Pharma',
+      'D.Pharma',
+      'M.Tech',
+      'MBA',
+      'MA',
+      'MCA',
+      'ME',
+      'MSc',
+      'MCom',
+      'M.Pharma'
+    ],
+    employmentType: [
+      'Part-time',
+      'Contract'
+    ]
+  });
+
   const navigate = useNavigate();
 
   const handleJobClick = (jobId) => {
@@ -20,11 +90,19 @@ function OffCampusJobs() {
     try {
       setIsLoading(true);
       const response = await getRelaventOffcampusOpportunity();
-      setOffCampusJobs(response.data.data);
+      const fetchedJobs = response.data?.data || [];
+      setOffCampusJobs(fetchedJobs);
+      setFilteredJobs(fetchedJobs);
+      
+      if (fetchedJobs.length > 0) {
+        extractFilterOptions(fetchedJobs);
+      }
       setError(null);
     } catch (error) {
       setError('Failed to load jobs. Please try again later.')
       console.log(error);
+      setOffCampusJobs([]);
+      setFilteredJobs([]);
     } finally {
       setIsLoading(false);
     }
@@ -34,18 +112,253 @@ function OffCampusJobs() {
     fetchOffcampusOpportunity();
   }, []);
 
+  const extractFilterOptions = (jobsData) => {
+    const workModes = new Map();
+    const degrees = new Set();
+    const courses = new Set();
+    const employmentTypes = new Set();
+
+    jobsData.forEach(job => {
+      if (job.workMode) {
+        const mode = job.workMode;
+        workModes.set(mode, (workModes.get(mode) || 0) + 1);
+      }
+      
+      if (job.qualification) {
+        job.qualification.forEach(deg => {
+          if (deg) degrees.add(deg.trim());
+        });
+      }
+      
+      if (job.course) {
+        job.course.forEach(course => {
+          if (course) courses.add(course.trim());
+        });
+      }
+      
+      if (job.jobType) {
+        const type = job.jobType;
+        employmentTypes.add(type);
+      }
+    });
+
+    setFilterOptions(prev => ({
+      ...prev,
+      workMode: Array.from(workModes.entries()).map(([label, count]) => ({ label, count })),
+      degree: Array.from(degrees).filter(label => label).map(label => label),
+      courses: Array.from(courses).filter(label => label).map(label => label),
+      employmentType: Array.from(employmentTypes).filter(label => label).map(label => label)
+    }));
+  };
+
+  useEffect(() => {
+    if (!Array.isArray(offCampusJobs)) {
+      setFilteredJobs([]);
+      return;
+    }
+
+    let result = [...offCampusJobs];
+
+    if (filters.workMode.length > 0) {
+      result = result.filter(job =>
+        filters.workMode.some(mode => job.workMode === mode)
+      );
+    }
+
+    if (filters.degree.length > 0) {
+      result = result.filter(job =>
+        job.qualification &&
+        filters.degree.some(deg =>
+          job.qualification.some(jobDeg => {
+            const jobDegNormalized = jobDeg?.toLowerCase().replace(/[\s.\-]/g, "").trim();
+            const filterDegNormalized = deg?.toLowerCase().replace(/[\s.\-]/g, "").trim();
+            return jobDegNormalized === filterDegNormalized;
+          })
+        )
+      );
+    }
+
+    if (filters.courses.length > 0) {
+      result = result.filter(job =>
+        job.course &&
+        filters.courses.some(course => {
+          const normalizedCourse = course?.toLowerCase().replace(/[\s.\-]/g, "").trim();
+          return job.course.some(c => {
+            const normalizedC = c?.toLowerCase().replace(/[\s.\-]/g, "").trim();
+            return normalizedC === normalizedCourse;
+          });
+        })
+      );
+    }
+
+    if (filters.employmentType && filters.employmentType.length > 0) {
+      result = result.filter(job =>
+        filters.employmentType.some(filterValue =>
+          job.jobType?.toLowerCase() === filterValue.toLowerCase()
+        )
+      );
+    }
+
+    if (filters.location && filters.location !== 'Multi - Select') {
+      result = result.filter(job => {
+        const jobLocation = job.location || job.workLocation;
+        return jobLocation
+          ? jobLocation.toLowerCase().includes(filters.location.toLowerCase())
+          : false;
+      });
+    }
+
+    if (filters.company && filters.company !== 'Multi - Select') {
+      result = result.filter(job => {
+        const companyName = job.companyName;
+        return companyName
+          ? companyName.toLowerCase().includes(filters.company.toLowerCase())
+          : false;
+      });
+    }
+
+    if (filters.internship) {
+      result = result.filter(job => job.jobType === 'Internship');
+    }
+
+    if (filters.fullTime) {
+      result = result.filter(job => job.jobType === 'Full-time');
+    }
+
+    if (sortBy === 'newest') {
+      result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    } else if (sortBy === 'oldest') {
+      result.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    } else if (sortBy === 'company') {
+      result.sort((a, b) => {
+        const nameA = a.companyName || '';
+        const nameB = b.companyName || '';
+        return nameA.localeCompare(nameB);
+      });
+    } else if (sortBy === 'salary') {
+      result.sort((a, b) => (b.salaryRange?.max || 0) - (a.salaryRange?.max || 0));
+    }
+
+    setFilteredJobs(result);
+  }, [filters, offCampusJobs, sortBy]);
+
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => {
+      if (Array.isArray(prev[filterType])) {
+        if (prev[filterType].includes(value)) {
+          return {
+            ...prev,
+            [filterType]: prev[filterType].filter(item => item !== value)
+          };
+        } else {
+          return {
+            ...prev,
+            [filterType]: [...prev[filterType], value]
+          };
+        }
+      } else if (filterType === 'internship' || filterType === 'fullTime') {
+        return {
+          ...prev,
+          [filterType]: value
+        };
+      } else {
+        return {
+          ...prev,
+          [filterType]: value
+        };
+      }
+    });
+  };
+
+  const toggleSubDropdown = (dropdown) => {
+    setOpenSubDropdowns(prev => ({
+      ...prev,
+      [dropdown]: !prev[dropdown]
+    }));
+  };
+
+  const removeFilter = (filterType, value) => {
+    if (Array.isArray(filters[filterType])) {
+      setFilters(prev => ({
+        ...prev,
+        [filterType]: prev[filterType].filter(item => item !== value)
+      }));
+    } else if (filterType === 'internship' || filterType === 'fullTime') {
+      setFilters(prev => ({
+        ...prev,
+        [filterType]: false
+      }));
+    } else {
+      setFilters(prev => ({
+        ...prev,
+        [filterType]: ''
+      }));
+    }
+  };
+
+  const clearFilterSection = (filterType) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: []
+    }));
+  };
+
+  const clearAllFilters = () => {
+    setFilters({
+      workMode: [],
+      degree: [],
+      courses: [],
+      location: '',
+      company: '',
+      employmentType: [],
+      internship: false,
+      fullTime: false
+    });
+    setShowMainFilter(false);
+    setOpenSubDropdowns({
+      workMode: false,
+      degree: false,
+      courses: false,
+      employmentType: false,
+      location: false,
+      company: false
+    });
+  };
+
+  const getActiveFiltersCount = () => {
+    let count = 0;
+    Object.entries(filters).forEach(([key, value]) => {
+      if (key === 'internship' || key === 'fullTime') {
+        if (value) count++;
+      } else if (Array.isArray(value)) {
+        count += value.length;
+      } else if (value && value !== '' && value !== 'Multi - Select') {
+        count += 1;
+      }
+    });
+    return count;
+  };
+
+  const toggleInternshipFilter = () => {
+    setFilters(prev => ({
+      ...prev,
+      internship: !prev.internship
+    }));
+  };
+
+  const toggleFullTimeFilter = () => {
+    setFilters(prev => ({
+      ...prev,
+      fullTime: !prev.fullTime
+    }));
+  };
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
-        {/* Pastel blur background elements */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative z-10 flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#667eea]"></div>
+      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading jobs...</p>
         </div>
       </div>
     );
@@ -53,30 +366,18 @@ function OffCampusJobs() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
-        {/* Pastel blur background elements */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative z-10 flex justify-center items-center h-screen">
-          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 text-center max-w-md">
-            <div className="text-red-500 mb-4">
-              <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Oops! Something went wrong</h2>
-            <p className="text-gray-600 mb-6">{error}</p>
-            <button
-              className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium"
-              onClick={fetchOffcampusOpportunity}
-            >
-              Try Again
-            </button>
+      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center">
+        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 max-w-md text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#fca5a5]/30 to-[#ef4444]/20 rounded-full mb-4">
+            <AlertCircle className="w-8 h-8 text-[#ef4444]" />
           </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{error}</h3>
+          <button
+            onClick={fetchOffcampusOpportunity}
+            className="mt-4 px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/40 transition-all duration-200"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -89,132 +390,633 @@ function OffCampusJobs() {
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#667eea]/10 rounded-full blur-3xl"></div>
         <div className="absolute top-1/3 -left-20 w-60 h-60 bg-[#f093fb]/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-1/3 w-40 h-40 bg-[#764ba2]/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/4 right-1/4 w-48 h-48 bg-[#a5b4fc]/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/3 left-1/4 w-56 h-56 bg-[#fde68a]/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative z-10 p-6">
-        {/* Header with theme */}
-        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div className="relative z-10 container mx-auto px-4 py-8 pt-20">
+        {/* Header Section */}
+        <div className="mb-8 -mt-10">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/60 backdrop-blur-sm rounded-2xl"></div>
+            <div className="relative flex flex-col lg:flex-row lg:items-center justify-between py-6 px-6 gap-4">
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                  Off-Campus Jobs
+                </h1>
+                <p className="text-gray-600 mt-2">
+                  Based on your preferences and profile matching
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-purple-100/50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Jobs</p>
+                <p className="text-2xl font-bold text-[#667eea]">{offCampusJobs.length}</p>
+              </div>
+              <div className="p-2 bg-gradient-to-br from-[#a5b4fc]/30 to-[#667eea]/20 rounded-lg">
+                <Building className="w-5 h-5 text-[#667eea]" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-pink-100/50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Showing Results</p>
+                <p className="text-2xl font-bold text-[#ec4899]">{filteredJobs.length}</p>
+              </div>
+              <div className="p-2 bg-gradient-to-br from-[#f9a8d4]/30 to-[#ec4899]/20 rounded-lg">
+                <Filter className="w-5 h-5 text-[#ec4899]" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-amber-100/50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Active Filters</p>
+                <p className="text-2xl font-bold text-[#f59e0b]">
+                  {getActiveFiltersCount()}
+                </p>
+              </div>
+              <div className="p-2 bg-gradient-to-br from-[#fde68a]/30 to-[#f59e0b]/20 rounded-lg">
+                <TrendingUp className="w-5 h-5 text-[#f59e0b]" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-emerald-100/50 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Last Updated</p>
+                <p className="text-2xl font-bold text-[#10b981]">Today</p>
+              </div>
+              <div className="p-2 bg-gradient-to-br from-[#a7f3d0]/30 to-[#10b981]/20 rounded-lg">
+                <Calendar className="w-5 h-5 text-[#10b981]" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Filter Section with Dropdown System */}
+        <div className="mb-8">
+          {/* Active Filters Tags */}
+          {getActiveFiltersCount() > 0 && (
+            <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-4 mb-4">
+              <div className="flex items-center flex-wrap gap-2">
+                <span className="text-sm font-medium text-gray-700 mr-2">Active filters:</span>
+                
+                {filters.workMode.map(mode => (
+                  <span key={mode} className="inline-flex items-center bg-gradient-to-r from-[#a5b4fc]/20 to-[#667eea]/10 text-[#667eea] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
+                    {mode}
+                    <button 
+                      onClick={() => removeFilter('workMode', mode)}
+                      className="ml-2 text-[#667eea] hover:text-[#5b21b6]"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+                
+                {filters.degree.map(deg => (
+                  <span key={deg} className="inline-flex items-center bg-gradient-to-r from-[#f9a8d4]/20 to-[#ec4899]/10 text-[#ec4899] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
+                    {deg}
+                    <button 
+                      onClick={() => removeFilter('degree', deg)}
+                      className="ml-2 text-[#ec4899] hover:text-[#be185d]"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+                
+                {filters.courses.map(course => (
+                  <span key={course} className="inline-flex items-center bg-gradient-to-r from-[#fde68a]/20 to-[#f59e0b]/10 text-[#f59e0b] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
+                    {course}
+                    <button 
+                      onClick={() => removeFilter('courses', course)}
+                      className="ml-2 text-[#f59e0b] hover:text-[#d97706]"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+                
+                {filters.employmentType.map(type => (
+                  <span key={type} className="inline-flex items-center bg-gradient-to-r from-[#a7f3d0]/20 to-[#10b981]/10 text-[#10b981] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
+                    {type}
+                    <button 
+                      onClick={() => removeFilter('employmentType', type)}
+                      className="ml-2 text-[#10b981] hover:text-[#059669]"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+                
+                {filters.location && filters.location !== 'Multi - Select' && (
+                  <span className="inline-flex items-center bg-gradient-to-r from-[#c7d2fe]/20 to-[#818cf8]/10 text-[#818cf8] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
+                    Location: {filters.location}
+                    <button 
+                      onClick={() => removeFilter('location', filters.location)}
+                      className="ml-2 text-[#818cf8] hover:text-[#4f46e5]"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+                
+                {filters.company && filters.company !== 'Multi - Select' && (
+                  <span className="inline-flex items-center bg-gradient-to-r from-[#fbcfe8]/20 to-[#f472b6]/10 text-[#f472b6] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
+                    Company: {filters.company}
+                    <button 
+                      onClick={() => removeFilter('company', filters.company)}
+                      className="ml-2 text-[#f472b6] hover:text-[#db2777]"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+
+                {filters.internship && (
+                  <span className="inline-flex items-center bg-gradient-to-r from-[#fbcfe8]/20 to-[#f472b6]/10 text-[#f472b6] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
+                    Internship
+                    <button 
+                      onClick={() => removeFilter('internship', true)}
+                      className="ml-2 text-[#f472b6] hover:text-[#db2777]"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+
+                {filters.fullTime && (
+                  <span className="inline-flex items-center bg-gradient-to-r from-[#a7f3d0]/20 to-[#10b981]/10 text-[#10b981] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
+                    Full-time
+                    <button 
+                      onClick={() => removeFilter('fullTime', true)}
+                      className="ml-2 text-[#10b981] hover:text-[#059669]"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Filter Controls Row */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+            {/* Main Filter Button */}
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <button
+                  onClick={() => setShowMainFilter(!showMainFilter)}
+                  className={`flex items-center gap-2 px-5 py-3 bg-white/90 backdrop-blur-sm border ${showMainFilter ? 'border-[#a5b4fc] ring-2 ring-[#a5b4fc]/10' : 'border-white/50 hover:border-[#a5b4fc]/50'} rounded-xl transition-all duration-200 shadow-sm hover:shadow-md`}
+                >
+                  <Filter className="h-4 w-4 text-[#667eea]" />
+                  <span className="text-sm font-medium text-gray-700">Filter</span>
+                  {getActiveFiltersCount() > 0 && (
+                    <span className="px-2 py-0.5 bg-gradient-to-r from-[#a5b4fc] to-[#667eea] text-white text-xs rounded-full">
+                      {getActiveFiltersCount()}
+                    </span>
+                  )}
+                  <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${showMainFilter ? 'transform rotate-180' : ''}`} />
+                </button>
+              </div>
+
+              {/* Sort Dropdown */}
+              <div className="relative">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="flex items-center gap-2 px-5 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl hover:border-[#a5b4fc]/50 transition-all duration-200 appearance-none pr-10 text-sm font-medium text-gray-700 shadow-sm hover:shadow-md"
+                >
+                  <option value="newest">Sort: Newest First</option>
+                  <option value="oldest">Sort: Oldest First</option>
+                  <option value="company">Sort: Company Name (A-Z)</option>
+                  <option value="salary">Sort: Highest Salary</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Clear All Button */}
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
-                Off-Campus Jobs
-              </h1>
-              <p className="text-gray-600">
-                Based on your preferences and profile matching
-              </p>
-            </div>
-            
-            {/* Pastel color pills in grid layout */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-500 mb-1">Status</span>
-                <span className="px-3 py-2 text-sm font-medium bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30 rounded-xl">
-                  Active
-                </span>
-              </div>
-              
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-500 mb-1">Total Jobs</span>
-                <span className="px-3 py-2 text-sm font-medium bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30 rounded-xl">
-                  {offCampusJobs?.length || 0}
-                </span>
-              </div>
-              
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-500 mb-1">Updated</span>
-                <span className="px-3 py-2 text-sm font-medium bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30 rounded-xl">
-                  Today
-                </span>
-              </div>
-              
-              <div className="flex flex-col">
-                <span className="text-xs text-gray-500 mb-1">Type</span>
-                <span className="px-3 py-2 text-sm font-medium bg-gradient-to-r from-[#fbcfe8]/20 to-[#f9a8d4]/20 text-[#9d174d] border border-[#fbcfe8]/30 rounded-xl">
-                  Off-Campus
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Search and Filter Section */}
-          <div className="flex flex-col md:flex-row justify-between gap-4">
-            <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <FiSearch className="w-4 h-4 text-gray-400" />
-              </div>
-              <input
-                type="search"
-                className="block w-full p-3 pl-10 text-sm border border-gray-200 rounded-xl bg-white/50 focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] backdrop-blur-sm"
-                placeholder="Search jobs, companies, or keywords..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <FiFilter className="w-4 h-4 text-gray-400" />
-              </div>
-              <select
-                className="block w-full p-3 pl-10 pr-8 text-sm border border-gray-200 rounded-xl bg-white/50 focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] backdrop-blur-sm appearance-none"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+              <button
+                onClick={clearAllFilters}
+                disabled={getActiveFiltersCount() === 0}
+                className="flex items-center gap-2 px-5 py-3 bg-white/90 backdrop-blur-sm border border-white/50 text-gray-600 hover:text-gray-900 hover:border-gray-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md text-sm font-medium"
               >
-                <option value="">Sort by</option>
-                <option value="recent">Most Recent</option>
-                <option value="salary">Highest Salary</option>
-                <option value="company">Company Name</option>
-                <option value="deadline">Application Deadline</option>
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
+                <RefreshCw className="h-4 w-4" />
+                Clear all filters
+              </button>
+            </div>
+          </div>
+
+          {/* Main Filter Dropdown */}
+          {showMainFilter && (
+            <div className="mt-4 bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Work Mode Filter */}
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <Briefcase className="h-4 w-4 text-[#667eea] mr-2" />
+                      <span className="text-sm font-medium text-gray-700">Work Mode</span>
+                      {filters.workMode.length > 0 && (
+                        <span className="ml-2 px-2 py-0.5 bg-gradient-to-r from-[#a5b4fc] to-[#667eea] text-white text-xs rounded-full">
+                          {filters.workMode.length}
+                        </span>
+                      )}
+                    </div>
+                    {filters.workMode.length > 0 && (
+                      <button
+                        onClick={() => clearFilterSection('workMode')}
+                        className="text-xs text-[#667eea] hover:text-[#5b21b6] font-medium"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  
+                  <button
+                    onClick={() => toggleSubDropdown('workMode')}
+                    className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-white/50 to-white/30 border border-white/50 rounded-xl hover:border-[#a5b4fc]/50 transition-all duration-200 mb-2 backdrop-blur-sm"
+                  >
+                    <span className="text-sm text-gray-700">Select Work Mode</span>
+                    <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.workMode ? 'transform rotate-180' : ''}`} />
+                  </button>
+                  
+                  {openSubDropdowns.workMode && (
+                    <div className="mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
+                      <div className="space-y-2">
+                        {filterOptions.workMode.map((option, index) => (
+                          <div key={option.label + index} className="flex items-center justify-between p-2 hover:bg-white/30 rounded transition-all duration-200">
+                            <div className="flex items-center">
+                              <input
+                                type="checkbox"
+                                id={`workMode-${option.label}-${index}`}
+                                checked={filters.workMode.includes(option.label)}
+                                onChange={() => handleFilterChange('workMode', option.label)}
+                                className="h-4 w-4 text-[#667eea] focus:ring-[#a5b4fc]/50 border-gray-300 rounded"
+                              />
+                              <label 
+                                htmlFor={`workMode-${option.label}-${index}`}
+                                className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
+                              >
+                                {option.label}
+                              </label>
+                            </div>
+                            {option.count && (
+                              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                {option.count.toLocaleString()}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Degree Filter */}
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <GraduationCap className="h-4 w-4 text-[#ec4899] mr-2" />
+                      <span className="text-sm font-medium text-gray-700">Degree</span>
+                      {filters.degree.length > 0 && (
+                        <span className="ml-2 px-2 py-0.5 bg-[#ec4899] text-white text-xs rounded-full">
+                          {filters.degree.length}
+                        </span>
+                      )}
+                    </div>
+                    {filters.degree.length > 0 && (
+                      <button
+                        onClick={() => clearFilterSection('degree')}
+                        className="text-xs text-[#ec4899] hover:text-[#be185d] font-medium"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  
+                  <button
+                    onClick={() => toggleSubDropdown('degree')}
+                    className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-white/50 to-white/30 border border-white/50 rounded-xl hover:border-[#f9a8d4]/50 transition-all duration-200 mb-2 backdrop-blur-sm"
+                  >
+                    <span className="text-sm text-gray-700">Select Degree</span>
+                    <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.degree ? 'transform rotate-180' : ''}`} />
+                  </button>
+                  
+                  {openSubDropdowns.degree && (
+                    <div className="mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
+                      <div className="space-y-2">
+                        {filterOptions.degree.map((option, index) => (
+                          <div key={option + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
+                            <input
+                              type="checkbox"
+                              id={`degree-${option}-${index}`}
+                              checked={filters.degree.includes(option)}
+                              onChange={() => handleFilterChange('degree', option)}
+                              className="h-4 w-4 text-[#ec4899] focus:ring-[#f9a8d4]/50 border-gray-300 rounded"
+                            />
+                            <label 
+                              htmlFor={`degree-${option}-${index}`}
+                              className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
+                            >
+                              {option}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Courses Filter */}
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <BookOpen className="h-4 w-4 text-[#f59e0b] mr-2" />
+                      <span className="text-sm font-medium text-gray-700">Courses</span>
+                      {filters.courses.length > 0 && (
+                        <span className="ml-2 px-2 py-0.5 bg-[#f59e0b] text-white text-xs rounded-full">
+                          {filters.courses.length}
+                        </span>
+                      )}
+                    </div>
+                    {filters.courses.length > 0 && (
+                      <button
+                        onClick={() => clearFilterSection('courses')}
+                        className="text-xs text-[#f59e0b] hover:text-[#d97706] font-medium"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  
+                  <button
+                    onClick={() => toggleSubDropdown('courses')}
+                    className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-white/50 to-white/30 border border-white/50 rounded-xl hover:border-[#fde68a]/50 transition-all duration-200 mb-2 backdrop-blur-sm"
+                  >
+                    <span className="text-sm text-gray-700">Select Courses</span>
+                    <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.courses ? 'transform rotate-180' : ''}`} />
+                  </button>
+                  
+                  {openSubDropdowns.courses && (
+                    <div className="mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
+                      <div className="space-y-2">
+                        {filterOptions.courses.map((option, index) => (
+                          <div key={option + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
+                            <input
+                              type="checkbox"
+                              id={`course-${option}-${index}`}
+                              checked={filters.courses.includes(option)}
+                              onChange={() => handleFilterChange('courses', option)}
+                              className="h-4 w-4 text-[#f59e0b] focus:ring-[#fde68a]/50 border-gray-300 rounded"
+                            />
+                            <label 
+                              htmlFor={`course-${option}-${index}`}
+                              className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
+                            >
+                              {option}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Employment Type Filter */}
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <Briefcase className="h-4 w-4 text-[#10b981] mr-2" />
+                      <span className="text-sm font-medium text-gray-700">Employment Type</span>
+                      {filters.employmentType.length > 0 && (
+                        <span className="ml-2 px-2 py-0.5 bg-[#10b981] text-white text-xs rounded-full">
+                          {filters.employmentType.length}
+                        </span>
+                      )}
+                    </div>
+                    {filters.employmentType.length > 0 && (
+                      <button
+                        onClick={() => clearFilterSection('employmentType')}
+                        className="text-xs text-[#10b981] hover:text-[#059669] font-medium"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  
+                  <button
+                    onClick={() => toggleSubDropdown('employmentType')}
+                    className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-white/50 to-white/30 border border-white/50 rounded-xl hover:border-[#a7f3d0]/50 transition-all duration-200 mb-2 backdrop-blur-sm"
+                  >
+                    <span className="text-sm text-gray-700">Select Employment Type</span>
+                    <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.employmentType ? 'transform rotate-180' : ''}`} />
+                  </button>
+                  
+                  {openSubDropdowns.employmentType && (
+                    <div className="mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
+                      <div className="space-y-2">
+                        {filterOptions.employmentType.map((option, index) => (
+                          <div key={option + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
+                            <input
+                              type="checkbox"
+                              id={`employmentType-${option}-${index}`}
+                              checked={filters.employmentType.includes(option)}
+                              onChange={() => handleFilterChange('employmentType', option)}
+                              className="h-4 w-4 text-[#10b981] focus:ring-[#a7f3d0]/50 border-gray-300 rounded"
+                            />
+                            <label 
+                              htmlFor={`employmentType-${option}-${index}`}
+                              className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
+                            >
+                              {option}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Location Filter */}
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 text-[#818cf8] mr-2" />
+                      <span className="text-sm font-medium text-gray-700">Location</span>
+                      {filters.location && filters.location !== '' && filters.location !== 'Multi - Select' && (
+                        <span className="ml-2 px-2 py-0.5 bg-[#818cf8] text-white text-xs rounded-full">
+                          1
+                        </span>
+                      )}
+                    </div>
+                    {filters.location && filters.location !== '' && (
+                      <button
+                        onClick={() => handleFilterChange('location', '')}
+                        className="text-xs text-[#818cf8] hover:text-[#4f46e5] font-medium"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  
+                  <button
+                    onClick={() => toggleSubDropdown('location')}
+                    className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-white/50 to-white/30 border border-white/50 rounded-xl hover:border-[#c7d2fe]/50 transition-all duration-200 mb-2 backdrop-blur-sm"
+                  >
+                    <span className="text-sm text-gray-700">Select Location</span>
+                    <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.location ? 'transform rotate-180' : ''}`} />
+                  </button>
+                  
+                  {openSubDropdowns.location && (
+                    <div className="mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50">
+                      <select
+                        value={filters.location}
+                        onChange={(e) => handleFilterChange('location', e.target.value)}
+                        className="w-full p-3 bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-[#a5b4fc]/50 focus:border-transparent focus:outline-none transition-all duration-200 text-sm"
+                      >
+                        <option value="">Select Location</option>
+                        <option value="Multi - Select">Multi - Select</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+
+                {/* Company Filter */}
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <Search className="h-4 w-4 text-[#f472b6] mr-2" />
+                      <span className="text-sm font-medium text-gray-700">Company Name</span>
+                      {filters.company && filters.company !== '' && filters.company !== 'Multi - Select' && (
+                        <span className="ml-2 px-2 py-0.5 bg-[#f472b6] text-white text-xs rounded-full">
+                          1
+                        </span>
+                      )}
+                    </div>
+                    {filters.company && filters.company !== '' && (
+                      <button
+                        onClick={() => handleFilterChange('company', '')}
+                        className="text-xs text-[#f472b6] hover:text-[#db2777] font-medium"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  
+                  <button
+                    onClick={() => toggleSubDropdown('company')}
+                    className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-white/50 to-white/30 border border-white/50 rounded-xl hover:border-[#fbcfe8]/50 transition-all duration-200 mb-2 backdrop-blur-sm"
+                  >
+                    <span className="text-sm text-gray-700">Search Company Name</span>
+                    <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.company ? 'transform rotate-180' : ''}`} />
+                  </button>
+                  
+                  {openSubDropdowns.company && (
+                    <div className="mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50">
+                      <input
+                        type="text"
+                        value={filters.company}
+                        onChange={(e) => handleFilterChange('company', e.target.value)}
+                        placeholder="Type company name..."
+                        className="w-full p-3 bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-[#a5b4fc]/50 focus:border-transparent focus:outline-none transition-all duration-200 text-sm"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Results Header */}
+        <div className="mb-6">
+          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Showing {filteredJobs.length} of {offCampusJobs.length} Jobs
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Filtered results based on your preferences
+                </p>
+              </div>
+              
+              <div className="text-sm text-gray-600">
+                <span className="font-medium">Sort by:</span>{' '}
+                {sortBy === 'newest' ? 'Newest First' : 
+                 sortBy === 'oldest' ? 'Oldest First' : 
+                 sortBy === 'company' ? 'Company Name (A-Z)' : 
+                 'Highest Salary'}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Job Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          {offCampusJobs?.map(job => (
-            <div key={job._id} className="transform transition-all duration-200 hover:scale-[1.02] hover:shadow-xl">
-              <JobCard job={job} onClick={handleJobClick} />
+        {/* Job Cards */}
+        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6 min-h-[600px]">
+          {filteredJobs.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredJobs.map(job => (
+                  <div
+                    key={job._id}
+                    className="h-full flex transform transition-all duration-200 hover:scale-[1.02]"
+                  >
+                    <div className="w-full" onClick={() => handleJobClick(job._id)}>
+                      <JobCard job={job} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* View All Button */}
+              <div className="mt-10 text-center">
+                <button className="px-8 py-3.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/40 transition-all duration-200 text-base font-medium">
+                  View All Opportunities
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center py-12">
+              <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-[#fde68a]/30 to-[#f59e0b]/20 mb-6">
+                <Building className="h-12 w-12 text-[#f59e0b]" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">No Jobs Found</h3>
+              <p className="text-gray-600 mb-8 max-w-md mx-auto text-lg">
+                No jobs match your current filter criteria. Try adjusting your filters or search criteria to find more options.
+              </p>
+              <div className="flex flex-wrap gap-4 justify-center">
+                <button
+                  onClick={clearAllFilters}
+                  className="px-8 py-3.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/40 transition-all duration-200 text-base font-medium"
+                >
+                  Reset All Filters
+                </button>
+                <button
+                  onClick={fetchOffcampusOpportunity}
+                  className="px-8 py-3.5 bg-white/90 backdrop-blur-sm border border-white/50 text-gray-700 rounded-xl hover:shadow-lg hover:shadow-gray-100/40 transition-all duration-200 text-base font-medium"
+                >
+                  Refresh Page
+                </button>
+              </div>
             </div>
-          ))}
+          )}
         </div>
-
-        {/* No Jobs State */}
-        {offCampusJobs?.length === 0 && !isLoading && !error && (
-          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 text-center">
-            <div className="text-gray-400 mb-4">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Jobs Found</h3>
-            <p className="text-gray-600 mb-6">
-              We couldn't find any off-campus jobs matching your profile. Check back later or update your preferences.
-            </p>
-            <button
-              className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium"
-              onClick={fetchOffcampusOpportunity}
-            >
-              Refresh Jobs
-            </button>
-          </div>
-        )}
-
-        {/* View All Button */}
-        {offCampusJobs?.length > 0 && (
-          <div className="flex justify-end">
-            <button className="flex items-center px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium">
-              View all opportunities
-              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
