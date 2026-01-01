@@ -38,6 +38,8 @@ export async function saveJobByUser(req, res) {
   const userId = req.user._id;
   const userType = req.user?.userType;
 
+ 
+
   try {
     let user;
     switch (userType) {
@@ -57,7 +59,7 @@ export async function saveJobByUser(req, res) {
         user = await getCompanyService(userId);
         break;
       case "employer":
-        user = await getEmployerService(req.user);
+        user = await getEmployerService(userId);
         break;
       default:
         break;
@@ -85,6 +87,7 @@ export async function saveJobByUser(req, res) {
 // get saved opportunities
 export async function fetchSavedJobs(req, res) {
   // const { applicantType } = req.params;
+  
   const userId = req.user._id;
   const userType = req.user.userType;
 
@@ -102,6 +105,9 @@ export async function fetchSavedJobs(req, res) {
       case "company":
         user = await getCompanyService(userId);
         break;
+      case "employer":
+        user = await getEmployerService(userId);
+        break;
       default:
         break;
     }
@@ -117,9 +123,10 @@ export async function fetchSavedJobs(req, res) {
     }
 
     // ✅ company saved colleges
-    else if (userType === "company") {
-      result = await getSavedCollegesService(user.data[0]._id);
-    }
+    else if (["company", "employer"].includes(userType)) {
+  result = await getSavedCollegesService(user.data[0]._id, userType);
+}
+
 
     //const application = await getSavedJobsService(user?.data[0]._id);
     // if (application.success !== true) return res.status(403).json({ msg: application });

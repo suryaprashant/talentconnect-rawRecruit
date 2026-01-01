@@ -110,17 +110,21 @@ export async function getSavedJobsService(userId) {
 }
 
 //prathmesh-company
-export async function getSavedCollegesService(companyId) {
+export async function getSavedCollegesService(applicantId, applicantType) {
   try {
     const applications = await Application.find({
-      applicant: companyId,
-      applicantType: "company",
+      applicant: applicantId,
+      applicantType: { $in: ["company", "employer"] },
       currentStatus: "Saved",
     })
       .populate({
         path: "job",
         populate: {
           path: "collegePosted",
+          // OPTIONAL (recommended if name missing)
+          populate: {
+            path: "collegeUniversityDetails",
+          },
         },
       })
       .sort({ createdAt: -1 })

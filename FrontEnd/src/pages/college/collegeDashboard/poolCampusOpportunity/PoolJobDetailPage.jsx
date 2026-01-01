@@ -404,31 +404,39 @@ const PoolJobDetailsPage = () => {
                     </div>
 
                     <div className="px-6 py-6 border-t border-gray-200">
-                        <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
-                            Selection Process
-                        </h2>
-                        {jobDetails?.selectionProcess?.length > 0 ? (
-                            <div className="relative">
-                                <div className="absolute left-4 top-0 h-full w-0.5 bg-gradient-to-b from-[#667eea] to-[#764ba2]"></div>
-                                <div className="space-y-6 pl-10">
-                                    {jobDetails.selectionProcess.map((step, index) => (
-                                        <div key={index} className="relative flex items-start">
-                                            <div className="absolute -left-10 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold">
-                                                {index + 1}
-                                            </div>
-                                            <div className="min-w-0 flex-1 rounded-lg bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 border border-gray-200">
-                                                <p className="font-medium text-gray-900">{step}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg p-4 border border-gray-200">
-                                <p className="text-gray-500 text-center">Selection process details not provided.</p>
-                            </div>
-                        )}
-                    </div>
+  <div className="mb-6">
+    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-1">
+      Selection Process
+    </h2>
+    <div className="text-sm text-gray-500">
+      Number of rounds: {jobDetails?.selectionProcess?.length || jobDetails?.rounds || 0} 
+    </div>
+  </div>
+  
+  {jobDetails?.selectionProcess?.length > 0 ? (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {jobDetails.selectionProcess.map((step, index) => (
+        <div 
+          key={index}
+          className="group bg-white border border-gray-200 rounded-xl p-4 hover:border-[#667eea]/30 hover:shadow-md transition-all duration-200"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
+              <span className="text-sm font-bold text-white">{index + 1}</span>
+            </div>
+            <p className="font-medium text-gray-900">Round {index + 1}</p>
+          </div>
+          
+          <p className="text-sm text-gray-600 line-clamp-3">{step}</p>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg p-4 border border-gray-200">
+      <p className="text-gray-500 text-center">Selection process details not provided.</p>
+    </div>
+  )}
+</div>
 
                     {/* --- SECTION UPDATED WITH DYNAMIC DATA --- */}
                     <div className="px-6 py-6 border-t border-gray-200">

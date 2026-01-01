@@ -364,47 +364,43 @@ const JobDetailPage = () => {
             </ul>
           </div>
 
-          {/* Selection Process */}
-          <div className="px-6 py-6 border-t border-gray-200">
-            <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
-              Selection Process
-            </h2>
+          {/* Selection Process - Grid Style */}
+<div className="px-6 py-4 border-t border-gray-200">
+  <div className="mb-4">
+    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-1">
+      Selection Process
+    </h2>
+    <div className="text-md text-gray-500">
+      Number of rounds: {job?.rounds || job?.selectionProcess?.length || 0}
+    </div>
+  </div>
 
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg mb-5">
-              <div className="text-sm font-medium text-[#667eea]">Number of Round of Interview</div>
-              <div className="text-xl font-bold text-gray-900">
-                {job?.rounds || 'Not Specified'}
-              </div>
+  {job?.selectionProcess && job?.selectionProcess?.length > 0 ? (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {job.selectionProcess.map((step, index) => (
+        <div 
+          key={index}
+          className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#667eea]/30 hover:shadow-sm transition-all duration-200"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            {/* Round number badge */}
+            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
+              <span className="text-xs font-bold text-white">{index + 1}</span>
             </div>
-
-
-            {job?.selectionProcess && job?.selectionProcess?.length > 0 ? (
-              <div className="relative">
-                {/* Timeline line */}
-                <div className="absolute left-4 top-0 h-full w-0.5 bg-gradient-to-b from-[#667eea] to-[#764ba2]"></div>
-
-                <div className="space-y-6 pl-10">
-                  {job.selectionProcess.map((step, index) => (
-                    <div key={index} className="relative flex items-start">
-                      {/* Step number */}
-                      <div className="absolute -left-10 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold">
-                        {index + 1}
-                      </div>
-
-                      {/* Step content */}
-                      <div className="min-w-0 flex-1 rounded-lg bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 border border-gray-200">
-                        <p className="font-medium text-gray-900">{step}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg p-4 border border-gray-200">
-                <p className="text-gray-500 text-center">Selection process details not provided.</p>
-              </div>
-            )}
+            <p className="text-sm font-medium text-gray-900">Round {index + 1}</p>
           </div>
+          
+          {/* Step content */}
+          <p className="text-xs text-gray-600 line-clamp-3">{step}</p>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg p-4">
+      <p className="text-sm text-gray-500 text-center">Selection process details not provided.</p>
+    </div>
+  )}
+</div>
 
           {/* Important Dates */}
           <div className="px-6 py-6 border-t border-gray-200">

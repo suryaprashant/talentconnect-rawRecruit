@@ -302,37 +302,58 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, jobRole, onAcc
             </div>
 
             {/* Action Buttons - For Shortlisted drives */}
-            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
-                <button 
-                    onClick={() => handleAction(() => onAccept(applicationId))} 
-                    disabled={isSubmitting || currentStatus === 'Accepted'}
-                    className={`flex-1 justify-center py-2 font-medium rounded-md transition-colors duration-200 ${
-                        currentStatus === 'Accepted' 
-                            ? 'bg-green-100 text-green-700 cursor-not-allowed' 
-                            : 'bg-white text-green-500 hover:bg-gray-100 border border-green-500'
-                    } disabled:opacity-50`}
-                >
-                    {currentStatus === 'Accepted' ? 'Already Accepted' : (isSubmitting ? 'Processing...' : 'Accept Drive')}
-                </button>
-                <button 
-                    onClick={() => setToggleScheduleInterviewPopup(true)} 
-                    disabled={isSubmitting}
-                    className="flex-1 justify-center bg-white border border-gray-300 text-yellow-500 py-2 font-medium rounded-md hover:bg-gray-100 disabled:opacity-50 transition-colors duration-200"
-                >
-                    {isSubmitting ? 'Processing...' : 'Schedule Meet'}
-                </button>
-                <button 
-                    onClick={() => handleAction(() => onReject(applicationId))} 
-                    disabled={isSubmitting || currentStatus === 'Rejected'}
-                    className={`flex-1 justify-center py-2 font-medium rounded-md transition-colors duration-200 ${
-                        currentStatus === 'Rejected'
-                            ? 'bg-red-100 text-red-700 cursor-not-allowed'
-                            : 'bg-white border border-gray-300 text-red-500 hover:bg-gray-100'
-                    } disabled:opacity-50`}
-                >
-                    {currentStatus === 'Rejected' ? 'Already Rejected' : (isSubmitting ? 'Processing...' : 'Reject Drive')}
-                </button>
-            </div>
+<div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
+    <button 
+        onClick={() => handleAction(() => onAccept(applicationId))} 
+        disabled={isSubmitting || currentStatus === 'Accepted'}
+        className={`flex items-center justify-center flex-1 py-2 font-medium rounded-md transition-colors duration-200 ${
+            currentStatus === 'Accepted' 
+                ? 'bg-green-100 text-green-700 cursor-not-allowed' 
+                : 'bg-white text-green-500 hover:bg-gray-100 border border-green-500'
+        } disabled:opacity-50`}
+    >
+        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        {currentStatus === 'Accepted' ? 'Already Accepted' : (isSubmitting ? 'Processing...' : 'Accept Drive')}
+    </button>
+    
+    <button 
+        onClick={() => setToggleScheduleInterviewPopup(true)} 
+        disabled={isSubmitting}
+        className="flex items-center justify-center flex-1 py-2 font-medium bg-white border border-gray-300 text-yellow-500 rounded-md hover:bg-gray-100 disabled:opacity-50 transition-colors duration-200"
+    >
+        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        {isSubmitting ? 'Processing...' : 'Schedule Meet'}
+    </button>
+    
+    <button 
+        onClick={() => handleAction(() => onReject(applicationId))} 
+        disabled={isSubmitting || currentStatus === 'Rejected'}
+        className={`flex items-center justify-center flex-1 py-2 font-medium rounded-md transition-colors duration-200 ${
+            currentStatus === 'Rejected'
+                ? 'bg-red-100 text-red-700 cursor-not-allowed'
+                : 'bg-white border border-gray-300 text-red-500 hover:bg-gray-100'
+        } disabled:opacity-50`}
+    >
+        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        {currentStatus === 'Rejected' ? 'Already Rejected' : (isSubmitting ? 'Processing...' : 'Reject Drive')}
+    </button>
+    
+    <button 
+        onClick={() => window.location.href = '/chat-application'}
+        className="flex items-center justify-center flex-1 py-2 font-medium bg-white border border-gray-300 text-blue-500 rounded-md hover:bg-gray-100 transition-colors duration-200"
+    >
+        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+        </svg>
+        Message
+    </button>
+</div>
 
             {toggleScheduleInterviewPopup && (
                 <div>

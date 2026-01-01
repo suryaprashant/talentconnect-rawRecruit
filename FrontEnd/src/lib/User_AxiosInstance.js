@@ -228,9 +228,3 @@ export function resetPassword(token, newPassword) {
       throw error;
     });
 }
-
-
-
-
-
-
