@@ -124,13 +124,22 @@ export default function PoolCampusJobManagement() {
   const currentJobs = filteredJobs.slice(startIndex, startIndex + itemsPerPage);
 
   const handleViewColleges = (job) => {
-    if (job.applicationCount === 0) {
+    {/*if (job.applicationCount === 0) {
       alert("No colleges have applied for this drive yet.");
       return;
-    }
+    }*/}
     setSelectedJob(job);
     fetchCollegesForJob(job._id, job.jobType);
   };
+
+  const showNewApplication = async (job) => {
+    try {
+      setSelectedJob(job);
+      await fetchCollegesForJob(job._id, job.jobType, false);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const handleBackToList = () => {
     setSelectedJob(null);
@@ -282,10 +291,11 @@ export default function PoolCampusJobManagement() {
           {/* Table Header */}
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
             <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
-              <div className="col-span-4">Job Roles</div>
+              <div className="col-span-3">Job Roles</div>
               <div className="col-span-3">Work Locations</div>
               <div className="col-span-2">End Date</div>
-              <div className="col-span-1 text-center">Applications</div>
+              <div className="col-span-1 text-center">Views</div>
+              <div className="col-span-1 text-center">New Applications</div>
               <div className="col-span-2 text-center">Actions</div>
             </div>
           </div>
@@ -310,7 +320,7 @@ export default function PoolCampusJobManagement() {
                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                   <div className="grid grid-cols-12 gap-4 items-center">
                     {/* Job Roles - Clickable Link for Job Preview */}
-                    <div className="col-span-4">
+                    <div className="col-span-3">
                       <Link
                         to={`/company-dashboard/preview/Pool-campus/${job._id}?isApplied=true`}
                         className="group cursor-pointer block"
@@ -347,15 +357,21 @@ export default function PoolCampusJobManagement() {
                       </div>
                     </div>
 
-                    {/* Applications - Clickable to View Colleges */}
+                    {/* Views */}
                     <div className="col-span-1 text-center">
-                      <div
-                        onClick={() => handleViewColleges(job)}
-                        className="inline-flex items-center justify-center w-8 h-8 text-sm font-medium rounded-full transition-all duration-200 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 hover:bg-gradient-to-r hover:from-blue-200 hover:to-blue-100 hover:shadow-md hover:shadow-blue-100 cursor-pointer"
-                        title="View College Applications"
-                      >
+                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                        {job?.views || 0}
+                      </span>
+                    </div>
+
+                    {/* New Applications */}
+                    <div 
+                      className="col-span-1 text-center cursor-pointer group"
+                      onClick={() => showNewApplication(job)}
+                    >
+                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-orange-100 to-orange-50 text-orange-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
                         {job.applicationCount || 0}
-                      </div>
+                      </span>
                     </div>
 
                     {/* Actions */}
@@ -363,7 +379,7 @@ export default function PoolCampusJobManagement() {
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => handleViewColleges(job)}
-                          disabled={!job.applicationCount || job.applicationCount === 0}
+                          //disabled={!job.applicationCount || job.applicationCount === 0}
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                           title="View College Applications"
                         >

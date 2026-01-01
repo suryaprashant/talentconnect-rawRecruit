@@ -400,7 +400,7 @@ const CollegeDetailPage = () => {
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
-                    On-Campus Drive Request from: {collegeName}
+                    {/*On-Campus Drive Request from:*/} {collegeName}
                   </h2>
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
@@ -666,17 +666,31 @@ const CollegeDetailPage = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      {posting.studentStreams.map((stream, index) => (
+                      {posting.studentStreams
+                        .map((stream, index) => ({
+                          stream,
+                          students: posting.numberOfStudent?.[index],
+                          skills:
+                            posting.roundSkills?.[index] ??
+                            (Array.isArray(posting.skills) ? posting.skills[index] : null),
+                        }))
+                        .filter(item =>
+                          item.stream &&
+                          item.students &&
+                          item.skills
+                        )
+                        .map((item, index) => (
+                        
                         <tr key={index} className="hover:bg-gray-50/50 transition-colors">
                           <td className="px-4 py-3 text-sm font-medium text-gray-900">{index + 1}</td>
-                          <td className="px-4 py-3 text-sm text-gray-700">{stream || 'N/A'}</td>
+                          <td className="px-4 py-3 text-sm text-gray-700">{item.stream}</td>
                           <td className="px-4 py-3 text-sm text-gray-700">
-                            {posting.numberOfStudent?.[index] || 'N/A'}
+                            {item.students}
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-700">
-                            {posting.roundSkills?.[index] ||
-                              (Array.isArray(posting.skills) && posting.skills[index] ? posting.skills[index] : 'N/A')}
+                            {item.skills}
                           </td>
+
                         </tr>
                       ))}
                     </tbody>

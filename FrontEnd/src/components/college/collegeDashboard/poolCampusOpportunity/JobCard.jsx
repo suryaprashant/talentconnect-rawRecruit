@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Banknote, Calendar, Heart, Home, Monitor, Building2, Building, User } from 'lucide-react';
+import { SaveOppurtunity } from '@/lib/Company_AxiosInstance';
+import  toast  from 'react-hot-toast';
 
 const pastelColors = [
   // Purple/Indigo gradient variants (primary theme colors)
@@ -124,6 +126,36 @@ const JobCard = ({ job }) => {
     }
     return 'Package not specified';
   };
+  console.log("JOB IN CARD:", job);
+
+
+  const handleSave = async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const jobId = job?.id; // ✅ because card uses transformed data
+  const jobType = "Pool-campus"; // ✅ known from this listing
+
+  if (!jobId) {
+    console.error("Invalid job object in card:", job);
+    toast.error("Invalid job");
+    return;
+  }
+
+  try {
+    const res = await SaveOppurtunity(jobId, jobType);
+
+    if (res?.data?.success) {
+      setIsSaved(true);
+      toast.success("Saved");
+    } else {
+      toast.error(res?.response?.data?.msg || "Unable to save");
+    }
+  } catch (err) {
+    console.error("Save error:", err);
+    toast.error("Something went wrong");
+  }
+};
 
   // Format location
   const formatLocation = () => {
@@ -192,10 +224,8 @@ const JobCard = ({ job }) => {
           {!shouldDisplayWorkMode && <div className="h-6"></div>}
 
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              setIsSaved(!isSaved);
-            }}
+          type="button"
+            onClick={handleSave}
             className="bg-white p-2 rounded-full shadow"
           >
             <Heart
@@ -210,6 +240,7 @@ const JobCard = ({ job }) => {
           <div className="flex flex-col gap-1">
             <h3 className="text-black font-semibold text-lg truncate max-w-[200px]">
               {job.companyName}
+
             </h3>
 
             {/* Position */}
@@ -237,6 +268,16 @@ const JobCard = ({ job }) => {
                 </span>
               </div>
             )}
+            <img 
+              src={job.logo || ""}
+              alt={`${job.companyName} logo`}
+              className="w-12 h-12 object-cover"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "";
+                setImageError(true);
+              }}
+            />
           </div>
         </div>
 

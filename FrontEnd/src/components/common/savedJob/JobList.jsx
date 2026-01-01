@@ -6,7 +6,8 @@ const JobList = ({ jobs }) => {
   const [sortBy, setSortBy] = useState("date");
 
   const selectedRole = localStorage.getItem("selectedRole");
-  const isCompany = selectedRole === "company";
+  const isCompany = selectedRole === "company" || selectedRole === "employer";
+
 
   // Function to get initials from name
   const getInitials = (name) => {
@@ -82,18 +83,21 @@ const JobList = ({ jobs }) => {
   };
 
   const filteredJobs =
-    jobs?.filter((job) => {
-      const name = isCompany
-        ? job?.job?.collegePosted?.collegeUniversityDetails?.collegeName
-        : job?.job?.companyPosted?.companyDetails?.companyName;
+  jobs?.filter((job) => {
+    const name = isCompany
+      ? job?.job?.collegePosted?.collegeUniversityDetails?.collegeName
+      : job?.job?.companyPosted?.companyDetails?.companyName;
 
-      const role = job?.job?.jobRoles?.[0];
+    const role = job?.job?.jobRoles?.[0];
 
-      return (
-        name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        role?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }) || [];
+    // ✅ if name is missing (employer case), do NOT filter it out
+    if (!name && !role) return true;
+
+    return (
+      name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      role?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }) || [];
 
   const sortedJobs = [...filteredJobs].sort((a, b) => {
     if (sortBy === "date") {
