@@ -387,7 +387,7 @@ const PoolCampusEmployeeDash = () => {
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
-                    Pool-Campus Drive Request from: {collegeName}
+                    {collegeName}
                   </h2>
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">

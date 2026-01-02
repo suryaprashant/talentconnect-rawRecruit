@@ -3,6 +3,7 @@ import { FiPlus, FiSearch } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import { useEffect, useState } from 'react'
+import { getStudentDashboardMetrics } from '@/lib/User_AxiosInstance'
 
 function Dashboard() {
   const [authuser, setAuthUser] = useAuth();
@@ -32,54 +33,338 @@ function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       setDashboardData(prev => ({ ...prev, loading: true }))
-      
-      // TODO: Replace with actual API call
-      // const response = await getDashboardMetrics()
-      // if (response.data?.success) {
-      //   const data = response.data.data
-      //   setDashboardData({
-      //     stats: data.stats || {
-      //       'Applied': 0,
-      //       'Shortlisted': 0,
-      //       'Accepted': 0,
-      //       'Rejected': 0
-      //     },
-      //     byCategory: data.byCategory || {
-      //       'On-campus': 0,
-      //       'Pool-campus': 0,
-      //       'Off-campus': 0
-      //     },
-      //     recentApplications: data.recentApplications || [],
-      //     upcomingInterviews: data.upcomingInterviews || [],
-      //     loading: false
-      //   })
-      // } else {
-      //   throw new Error('Failed to fetch dashboard data')
-      // }
-      
-      // For now, set loading to false with empty data
-      setDashboardData({
-        stats: {
-          'Applied': 0,
-          'Shortlisted': 0,
-          'Accepted': 0,
-          'Rejected': 0
-        },
-        byCategory: {
-          'On-campus': 0,
-          'Pool-campus': 0,
-          'Off-campus': 0
-        },
-        recentApplications: [],
-        upcomingInterviews: [],
-        loading: false
-      })
-      
+
+      // Fetch student dashboard metrics - similar to company dashboard
+      const response = await getStudentDashboardMetrics()
+      console.log("Student dashboard metrics response:", response)
+
+      if (response.data?.success) {
+        const data = response.data.data
+
+        // Format dates for display
+        const formattedRecentApps = data.recentApplications?.map(app => ({
+          ...app,
+          date: new Date(app.date || app.createdAt).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+          })
+        })) || []
+
+        const formattedInterviews = data.upcomingInterviews?.map(interview => ({
+          ...interview,
+          date: new Date(interview.date || interview.interviewDate).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+          }),
+          time: interview.time || interview.interviewTime || '10:00 AM'
+        })) || []
+
+        setDashboardData({
+          stats: data.stats || {
+            'Applied': 0,
+            'Shortlisted': 0,
+            'Accepted': 0,
+            'Rejected': 0
+          },
+          byCategory: data.byCategory || {
+            'On-campus': 0,
+            'Pool-campus': 0,
+            'Off-campus': 0
+          },
+          recentApplications: formattedRecentApps,
+          upcomingInterviews: formattedInterviews,
+          loading: false
+        })
+      } else {
+        throw new Error('Failed to fetch dashboard data')
+      }
+
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
-      setDashboardData(prev => ({ ...prev, loading: false }))
+      
+      // Fallback: Use existing application APIs (similar to your OffcampusStatus component)
+      try {
+        const fallbackData = await fetchFallbackData()
+        setDashboardData({
+          ...fallbackData,
+          loading: false
+        })
+      } catch (fallbackError) {
+        console.error('Fallback also failed:', fallbackError)
+        setDashboardData(prev => ({ ...prev, loading: false }))
+      }
     }
   }
+
+  // Fallback function - aggregates data from your existing APIs
+const fetchFallbackData = async () => {
+  try {
+    // Import the individual API functions
+    const { getUserApplicationStatus, getJobDetails } = await import('@/lib/User_AxiosInstance')
+    
+    // Fetch all application types
+    const [onCampusRes, poolCampusRes, offCampusRes] = await Promise.all([
+      getUserApplicationStatus("On-campus").catch(() => ({ data: { data: [] } })),
+      getUserApplicationStatus("Pool-campus").catch(() => ({ data: { data: [] } })),
+      getUserApplicationStatus("Off-campus").catch(() => ({ data: { data: [] } }))
+    ])
+
+    const onCampusApps = onCampusRes.data?.data || []
+    const poolCampusApps = poolCampusRes.data?.data || []
+    const offCampusApps = offCampusRes.data?.data || []
+    
+    const allApplications = [...onCampusApps, ...poolCampusApps, ...offCampusApps]
+
+    // Calculate stats
+    const stats = { Applied: 0, Shortlisted: 0, Accepted: 0, Rejected: 0 }
+    const byCategory = {
+      'On-campus': onCampusApps.length,
+      'Pool-campus': poolCampusApps.length,
+      'Off-campus': offCampusApps.length
+    }
+
+    // Count statuses
+    allApplications.forEach(app => {
+      const status = app.currentStatus || app.status || 'Applied'
+      const normalized = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+      
+      if (stats[normalized] !== undefined) {
+        stats[normalized]++
+      } else {
+        stats.Applied++
+      }
+    })
+
+    // Get recent apps (last 5) - Fetch job details for each
+    const recentApplicationsPromises = allApplications
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 5)
+      .map(async (app) => {
+        try {
+          // Extract company and position from application
+          let company = "Company"
+          let position = "Position"
+          
+          // Try to get job details if jobId exists
+          const jobId = app.job || app.jobDetails?.[0]?._id || app._id
+          
+          if (jobId) {
+            try {
+              const jobResponse = await getJobDetails(jobId)
+              const jobDetails = jobResponse.data?.[0] || jobResponse.data
+              
+              if (jobDetails) {
+                // Extract company name (same logic as OffcampusStatus)
+                company = jobDetails.companyPosted?.companyDetails?.companyName || 
+                         jobDetails.company || 
+                         "Company"
+                
+                // Extract position (same logic as OffcampusStatus)
+                if (Array.isArray(jobDetails.jobRoles) && jobDetails.jobRoles.length > 0) {
+                  position = jobDetails.jobRoles[0]
+                } else if (jobDetails.jobTitle) {
+                  position = jobDetails.jobTitle
+                } else {
+                  position = "Position"
+                }
+              }
+            } catch (jobError) {
+              console.warn(`Could not fetch job details for ${jobId}:`, jobError)
+              // Use fallback extraction
+              company = extractCompanyName(app)
+              position = extractPosition(app)
+            }
+          } else {
+            // Use fallback extraction if no jobId
+            company = extractCompanyName(app)
+            position = extractPosition(app)
+          }
+          
+          return {
+            company,
+            position,
+            date: new Date(app.createdAt).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric'
+            }),
+            status: app.currentStatus || app.status || 'Applied',
+            _id: app._id,
+            jobId: jobId
+          }
+        } catch (error) {
+          console.error("Error processing application:", error)
+          // Return basic info if there's an error
+          return {
+            company: extractCompanyName(app),
+            position: extractPosition(app),
+            date: new Date(app.createdAt).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric'
+            }),
+            status: app.currentStatus || app.status || 'Applied',
+            _id: app._id
+          }
+        }
+      })
+
+    // Wait for all job details to be fetched
+    const recentApplications = await Promise.all(recentApplicationsPromises)
+
+    return {
+      stats,
+      byCategory,
+      recentApplications,
+      upcomingInterviews: [] // Need separate API for this
+    }
+
+  } catch (error) {
+    console.error("Fallback data error:", error)
+    throw error
+  }
+}
+
+// Improved helper functions to extract data from application objects
+const extractCompanyName = (app) => {
+  if (app.company) return app.company
+  if (app.job?.company) return app.job.company
+  if (app.jobDetails?.[0]?.company) return app.jobDetails[0].company
+  if (app.fullJobDetails?.companyPosted?.companyDetails?.companyName) 
+    return app.fullJobDetails.companyPosted.companyDetails.companyName
+  if (app.fullJobDetails?.company) return app.fullJobDetails.company
+  return "Company"
+}
+
+const extractPosition = (app) => {
+  if (app.jobTitle) return app.jobTitle
+  if (app.position) return app.position
+  if (app.job?.jobTitle) return app.job.jobTitle
+  if (app.jobDetails?.[0]?.jobTitle) return app.jobDetails[0].jobTitle
+  if (app.fullJobDetails?.jobRoles?.[0]) return app.fullJobDetails.jobRoles[0]
+  if (app.fullJobDetails?.jobTitle) return app.fullJobDetails.jobTitle
+  return "Position"
+}
+
+  const processOffcampusData = (applications) => {
+    // Process off-campus applications to get stats
+    const stats = {
+      'Applied': 0,
+      'Shortlisted': 0,
+      'Accepted': 0,
+      'Rejected': 0
+    }
+    
+    const byCategory = {
+      'On-campus': 0,
+      'Pool-campus': 0,
+      'Off-campus': applications.length
+    }
+    
+    applications.forEach(app => {
+      const status = app.currentStatus || app.status || 'Applied'
+      if (stats[status]) {
+        stats[status]++
+      } else {
+        stats['Applied']++ // Default to Applied if status not in our list
+      }
+    })
+    
+    return { stats, byCategory }
+  }
+
+  // Add this helper function to get status counts from your existing APIs
+  const getAllApplicationStats = async () => {
+    try {
+      // Fetch applications from all categories
+      const [onCampusRes, poolCampusRes, offCampusRes] = await Promise.all([
+        getUserApplicationStatus("On-campus").catch(() => ({ data: { data: [] } })),
+        getUserApplicationStatus("Pool-campus").catch(() => ({ data: { data: [] } })),
+        getUserApplicationStatus("Off-campus").catch(() => ({ data: { data: [] } }))
+      ])
+      
+      const allApplications = [
+        ...(onCampusRes.data?.data || []),
+        ...(poolCampusRes.data?.data || []),
+        ...(offCampusRes.data?.data || [])
+      ]
+      
+      // Calculate stats
+      const stats = {
+        'Applied': 0,
+        'Shortlisted': 0,
+        'Accepted': 0,
+        'Rejected': 0
+      }
+      
+      const byCategory = {
+        'On-campus': onCampusRes.data?.data?.length || 0,
+        'Pool-campus': poolCampusRes.data?.data?.length || 0,
+        'Off-campus': offCampusRes.data?.data?.length || 0
+      }
+      
+      allApplications.forEach(app => {
+        const status = app.currentStatus || app.status || 'Applied'
+        const normalizedStatus = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+        
+        if (stats[normalizedStatus] !== undefined) {
+          stats[normalizedStatus]++
+        } else {
+          stats['Applied']++
+        }
+      })
+      
+      // Get recent applications (last 5)
+      const recentApplications = allApplications
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5)
+        .map(app => ({
+          company: app.company || "Unknown",
+          position: app.jobTitle || "Position",
+          date: new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          status: app.currentStatus || app.status || 'Applied'
+        }))
+      
+      return {
+        stats,
+        byCategory,
+        recentApplications,
+        upcomingInterviews: [] // You'll need to fetch this separately
+      }
+      
+    } catch (error) {
+      console.error("Error fetching all application stats:", error)
+      return null
+    }
+  }
+
+  // Update the useEffect to use the new function
+  useEffect(() => {
+    const loadData = async () => {
+      setDashboardData(prev => ({ ...prev, loading: true }))
+      
+      try {
+        // Try to get all stats from existing APIs
+        const allStats = await getAllApplicationStats()
+        
+        if (allStats) {
+          setDashboardData({
+            stats: allStats.stats,
+            byCategory: allStats.byCategory,
+            recentApplications: allStats.recentApplications,
+            upcomingInterviews: allStats.upcomingInterviews,
+            loading: false
+          })
+        } else {
+          // Fallback to the original method
+          fetchDashboardData()
+        }
+      } catch (error) {
+        console.error("Error loading dashboard data:", error)
+        setDashboardData(prev => ({ ...prev, loading: false }))
+      }
+    }
+    
+    loadData()
+  }, [])
 
   if (dashboardData.loading) {
     return (
@@ -215,7 +500,7 @@ function Dashboard() {
 
               <div className="flex items-baseline space-x-1 mt-auto">
                 <p className="text-xl font-bold text-[#6d28d9]">{dashboardData.stats.Accepted}</p>
-                <span className="text-xs text-gray-500">offers</span>
+                <span className="text-xs text-gray-500">jobs</span>
               </div>
             </div>
           </div>
@@ -258,7 +543,7 @@ function Dashboard() {
           {/* Status Card - Showing only Off-Campus */}
           <div
             className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-            onClick={() => navigate('/profile')}
+            onClick={() => navigate('/application-status/Off-campus')}
           >
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4c1d95] to-[#3b0764] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95]/10 via-transparent to-[#3b0764]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
