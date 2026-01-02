@@ -228,3 +228,16 @@ export function resetPassword(token, newPassword) {
       throw error;
     });
 }
+
+export const getStudentDashboardMetrics = async () => {
+  try {
+    const response = await axios.get('/api/student/dashboard/metrics', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

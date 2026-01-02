@@ -14,14 +14,13 @@ function OffCampusJobDetail() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   
-  // Converted to state to handle immediate UI updates
   const [isSaved, setIsSaved] = useState((searchParams.get('isSaved') || '').toLowerCase() === 'true');
-  // keeping isApplied as is, or you can convert to state if you want immediate update on apply too
-  const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
-  
+  const [isApplied, setIsApplied] = useState((searchParams.get('isApplied') || '').toLowerCase() === 'true');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [jobDetail, setJobDetail] = useState(null);
+  const [isApplying, setIsApplying] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const loadJobDetails = async () => {
     try {
@@ -29,11 +28,10 @@ function OffCampusJobDetail() {
       const details = await getJobDetails(jobId);
       setJobDetail(details.data[0]);
       await viewed(details.data[0]._id);
-
       setError(null);
     } catch (err) {
+      console.error('Error fetching job details:', err);
       setError('Failed to load job details. Please try again later.');
-      // console.error('Error fetching job details:', err);
     } finally {
       setIsLoading(false);
     }
@@ -49,31 +47,58 @@ function OffCampusJobDetail() {
     window.history.back();
   };
 
-  const handleApply = async () => {
-    try {
-      const response = await ApplyForOppurtunity(jobId);
-      if (response?.data?.success === true) toast.success('Application submitted!');
-      else toast.error(response.response.data?.msg);
-    } catch (err) {
-      // console.error('Error applying for job:', err);
-      toast.error('Something went wrong!');
-    }
-  };
+  // In your non-working OffCampusJobDetail.jsx, update the handleApply and handleSave functions:
 
-  const handleSave = async () => {
-    try {
-      const response = await SaveOppurtunity(jobId, jobDetail?.jobType);
-      // console.log("Applicaiton: ", response);
-      if (response?.data?.success === true) {
-        toast.success('Job saved!');
-        setIsSaved(true); // Update UI immediately
-      } 
-      else toast.error(response.response.data?.msg);
-    } catch (err) {
-      // console.error('Error applying for job:', err);
-      toast.error('Something went wrong!');
+const handleApply = async () => {
+  try {
+    const response = await ApplyForOppurtunity(jobId);
+    console.log("Apply response:", response);
+    
+    if (response?.data?.success === true) {
+      toast.success('Application submitted!');
+    } else {
+      // Use response.response.data for error messages
+      const errorMsg = response?.response?.data?.msg || 
+                      response?.data?.msg || 
+                      'Failed to apply. Please try again.';
+      toast.error(errorMsg);
     }
-  };
+  } catch (err) {
+    console.error('Error applying for job:', err);
+    
+    // Handle different error structures
+    const errorMsg = err?.response?.data?.msg || 
+                    err?.message || 
+                    'Something went wrong!';
+    toast.error(errorMsg);
+  }
+};
+
+const handleSave = async () => {
+  try {
+    const response = await SaveOppurtunity(jobId, jobDetail?.jobType || 'offcampus');
+    console.log("Save response:", response);
+    
+    if (response?.data?.success === true) {
+      toast.success('Job saved!');
+      setIsSaved(true);
+    } else {
+      // Use response.response.data for error messages
+      const errorMsg = response?.response?.data?.msg || 
+                      response?.data?.msg || 
+                      'Failed to save job. Please try again.';
+      toast.error(errorMsg);
+    }
+  } catch (err) {
+    console.error('Error saving job:', err);
+    
+    // Handle different error structures
+    const errorMsg = err?.response?.data?.msg || 
+                    err?.message || 
+                    'Something went wrong!';
+    toast.error(errorMsg);
+  }
+};
 
   if (isLoading) {
     return (
@@ -93,6 +118,12 @@ function OffCampusJobDetail() {
             onClick={loadJobDetails}
           >
             Try Again
+          </button>
+          <button
+            className="mt-4 ml-4 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg transition-all duration-200"
+            onClick={handleBackToList}
+          >
+            Go Back
           </button>
         </div>
       </div>
@@ -174,23 +205,45 @@ function OffCampusJobDetail() {
           <div className="flex space-x-2">
             {!isApplied && (
               <>
-                {/* Only show Save button if NOT saved */}
-                {!isSaved && (
+                {/* Save Button */}
+                {!isSaved ? (
                   <button 
                     onClick={handleSave} 
-                    className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 hover:from-[#667eea]/20 hover:to-[#764ba2]/20 text-[#667eea] font-bold py-2 px-5 rounded-lg transition-all duration-300 border border-gray-200"
+                    disabled={isSaving}
+                    className={`bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 hover:from-[#667eea]/20 hover:to-[#764ba2]/20 text-[#667eea] font-bold py-2 px-5 rounded-lg transition-all duration-300 border border-gray-200 ${
+                      isSaving ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                   >
-                    Save
+                    {isSaving ? 'Saving...' : 'Save'}
+                  </button>
+                ) : (
+                  <button 
+                    className="bg-gradient-to-br from-green-500/10 to-green-600/10 text-green-600 font-bold py-2 px-5 rounded-lg border border-green-200 cursor-default"
+                    disabled
+                  >
+                    ✓ Saved
                   </button>
                 )}
-                {/* Always show Apply button if not applied (regardless of save status) */}
+                
+                {/* Apply Button */}
                 <button 
-                  className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200" 
                   onClick={handleApply}
+                  disabled={isApplying}
+                  className={`px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 ${
+                    isApplying ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                 >
-                  Apply
+                  {isApplying ? 'Applying...' : 'Apply'}
                 </button>
               </>
+            )}
+            {isApplied && (
+              <button 
+                className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-2 px-5 rounded-lg cursor-default"
+                disabled
+              >
+                ✓ Applied
+              </button>
             )}
           </div>
         </div>

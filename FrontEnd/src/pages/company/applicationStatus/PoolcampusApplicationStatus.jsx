@@ -276,7 +276,7 @@ export default function PoolcampusApplicationStatus() {
           if (degree && batch) {
             jobTitle = `${degree} ${batch} Recruitment`;
           } else if (degree) {
-            jobTitle = `${degree} Recruitment Drive`;
+            jobTitle = `${degree}`;
           } else if (batch) {
             jobTitle = `Batch ${batch} Campus Drive`;
           } else {
