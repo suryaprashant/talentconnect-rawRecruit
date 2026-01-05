@@ -617,8 +617,15 @@ const PoolCampusEmployeeDash = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {posting.roundDetails.map((round, index) => (
+                    {posting.roundDetails
+                       .filter(round=>
+                       round.branch &&
+                       round.students &&
+                       round.skills
+                    )
+                    .map((round, index) => (
                       <tr key={index} className="hover:bg-gray-50/50 transition-colors">
+                        
                         <td className="px-4 py-3 text-sm font-medium text-gray-900">{index + 1}</td>
                         <td className="px-4 py-3 text-sm text-gray-700">{round.branch || 'N/A'}</td>
                         <td className="px-4 py-3 text-sm text-gray-700">{round.students || 'N/A'}</td>
@@ -639,7 +646,13 @@ const PoolCampusEmployeeDash = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      {posting.studentStreams.map((stream, index) => (
+                      {posting.studentStreams
+                      .filter((stream, index) =>
+                        stream &&
+                        posting.numberOfStudent?.[index] &&
+                        (posting.roundSkills?.[index] || posting.skills?.[index])
+                      )
+                     .map((stream, index) => (
                         <tr key={index} className="hover:bg-gray-50/50 transition-colors">
                           <td className="px-4 py-3 text-sm font-medium text-gray-900">{index + 1}</td>
                           <td className="px-4 py-3 text-sm text-gray-700">{stream || 'N/A'}</td>

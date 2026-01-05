@@ -1,3 +1,5 @@
+
+// acceptedListing.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Search, Eye, ChevronLeft, ChevronRight, Trash, Filter, 
@@ -5,9 +7,11 @@ import {
   Building2, Calendar, FileText, User, AlertCircle, Users 
 } from 'lucide-react';
 import { acceptCandidate, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
-import { deleteCollegeJob } from '@/lib/College_AxiosIntance';
+import { deleteCollegeJob , conversationWithCollege } from '@/lib/College_AxiosIntance';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import useConversation from '@/statemanage/useConversation.js';
+
 
 export default function OnCampusJobManagement() {
   const [jobs, setJobs] = useState([]);
@@ -238,9 +242,52 @@ export default function OnCampusJobManagement() {
     if (!companyApplication || !companyApplication.applicant) {
       return null;
     }
+    ////////////////////////////////
+      const navigate = useNavigate();
+  const { setSelectedConversation } = useConversation();
 
-    const { _id: applicationId, applicant, createdAt } = companyApplication;
-    const { companyDetails, employerDetails, profileImageUrl } = applicant;
+ // const { applicant } = companyApplication;
+ const { _id: applicationId, applicant, createdAt } = companyApplication;
+  const { companyDetails, employerDetails, profileImageUrl, userId } = applicant;
+
+
+    const handleMessageClick = async (e) => {
+    e.stopPropagation();
+
+    if (!userId) {
+      toast.error("Company user not found");
+      return;
+    }
+ console.log("Chatting with company:", {
+  userId,
+  companyDetails
+});
+    try {
+      const response = await conversationWithCollege(userId);
+
+      if (response.data) {
+        const conversationUser = {
+          _id: userId, // 
+          name: companyDetails?.companyName || 'Unknown Company',
+          fullname: companyDetails?.companyName || 'Unknown Company',
+          email: employerDetails?.workEmail || '',
+          profileImage:
+            profileImageUrl ||
+            'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+          userType: 'company' // 
+        };
+
+        setSelectedConversation(conversationUser);
+        navigate('/chat-application');
+      } else {
+        toast.error('Failed to create conversation');
+      }
+    } catch (error) {
+      console.error('Chat error:', error);
+      toast.error('Error starting conversation');
+    }
+  };
+
 
     const handleReject = async (e) => {
       e.stopPropagation();
@@ -354,7 +401,7 @@ export default function OnCampusJobManagement() {
             <div className="mt-6 p-5 bg-gradient-to-r from-[#f0f9ff]/30 to-[#e0f2fe]/30 rounded-xl border border-blue-50">
               <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                 <User className="w-5 h-5 text-[#3b82f6]" />
-                Contact Person Details
+                Contact Person Details 
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center text-gray-700">
@@ -418,8 +465,9 @@ export default function OnCampusJobManagement() {
                   </>
                 )}
               </button>
+              
               <button
-                onClick={() => {/* Add message functionality here */}}
+                onClick={handleMessageClick}
                 disabled={isProcessing}
                 className={`group flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-gray-500/30 hover:-translate-y-0.5 transition-all duration-300 text-sm ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
               >

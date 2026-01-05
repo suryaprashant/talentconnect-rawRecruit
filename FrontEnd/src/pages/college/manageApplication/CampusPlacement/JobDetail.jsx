@@ -5,6 +5,69 @@ import useConversation from '@/statemanage/useConversation.js';
 import { ArrowLeft, Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+const CompanyDetailsModal = ({ isOpen, onClose, company }) => {
+  if (!isOpen || !company) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 relative">
+        
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-500 hover:text-black"
+        >
+          ✕
+        </button>
+
+        <h2 className="text-2xl font-bold mb-2">{company.companyName}</h2>
+        <p className="text-sm text-gray-600 mb-4">{company.description || 'No description available.'}</p>
+
+        <div className="grid grid-cols-2 gap-3 text-sm">
+          <div><b>Industry:</b> {company.industryType || 'N/A'}</div>
+          <div><b>Company Type:</b> {company.companyType || 'N/A'}</div>
+          <div><b>Founded:</b> {company.establishedYear || 'N/A'}</div>
+          <div><b>Employees:</b> {company.numberOfEmployees || 'N/A'}</div>
+          <div><b>Phone:</b> {company.phoneNumber || 'N/A'}</div>
+          <div><b>Alt Phone:</b> {company.alternatePhoneNumber || 'N/A'}</div>
+          <div><b>Email:</b> {company.workEmail || 'N/A'}</div>
+          <div><b>City:</b> {company.city || 'N/A'}</div>
+          <div><b>State:</b> {company.state || 'N/A'}</div>
+          <div><b>Country:</b> {company.country || 'N/A'}</div>
+          <div><b>Pincode:</b> {company.pincode || 'N/A'}</div>
+        </div>
+
+        {/* Links */}
+        <div className="mt-4 flex gap-4 text-sm">
+          {company.websiteUrl && (
+            <a
+              href={company.websiteUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              Website
+            </a>
+          )}
+          {company.companyLinkedin && (
+            <a
+              href={company.companyLinkedin}
+              target="_blank"
+              rel="noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              LinkedIn
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+export default JobDetailPage;
+
 const Spinner = () => (
   <div className="flex justify-center items-center h-full">
     <div className="w-12 h-12 border-4 border-[#93c5fd] border-t-[#3b82f6] rounded-full animate-spin"></div>
@@ -12,6 +75,8 @@ const Spinner = () => (
 );
 
 const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
+  const [showModal, setShowModal] = useState(false);
+
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
   const [currentStatus, setCurrentStatus] = useState(applicationData.currentStatus);
@@ -177,6 +242,8 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
     return currentStatus === status ? status : status;
   };
 
+  console.log('hello',companyDetails);
+
   return (
     <div className="bg-white p-5 rounded-lg border border-gray-200 transition-shadow hover:shadow-md">
       <div className="flex items-start space-x-4">
@@ -187,7 +254,12 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
         />
         <div className="flex-grow">
           <div className="flex justify-between items-start">
-            <h3 className="text-xl font-bold text-gray-800">{companyDetails?.companyName}</h3>
+          <h3
+          onClick={() => setShowModal(true)}
+          className="text-xl font-bold text-blue-600 hover:underline cursor-pointer">
+          {companyDetails?.companyName}
+          </h3>
+
             <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(currentStatus)}`}>
               {currentStatus}
             </span>
@@ -264,6 +336,11 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
           <Send size={14} className="mr-2" /> Message
         </button>
       </div>
+       <CompanyDetailsModal
+    isOpen={showModal}
+    onClose={() => setShowModal(false)}
+    company={companyDetails}
+  />
     </div>
   );
 };
@@ -380,4 +457,4 @@ function JobDetailPage(props) {
   );
 }
 
-export default JobDetailPage;
+

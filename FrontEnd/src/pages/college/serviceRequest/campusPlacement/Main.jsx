@@ -82,7 +82,7 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
                   </div>
 
                   <h3 className="text-base font-bold text-gray-900 mb-3">
-                    {service.title}
+                    {service.title} 
                   </h3>
 
                   <p className="text-gray-600 text-sm leading-relaxed flex-grow overflow-y-auto">

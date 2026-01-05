@@ -274,6 +274,7 @@ const JobCard = ({ job }) => {
             <h3 className="text-black font-semibold text-lg truncate max-w-[200px]">
               {companyName}
             </h3>
+          
 
             {/* Display Job Roles */}
             {job.jobRoles?.length > 0 && (
