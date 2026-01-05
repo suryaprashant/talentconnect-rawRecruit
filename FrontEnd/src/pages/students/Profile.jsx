@@ -2059,7 +2059,7 @@ function Profile() {
                 <div className="mb-4 p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 flex justify-between items-center">
                   <div>
                     <p className="text-sm font-medium text-gray-900">Current Resume</p>
-                    <a href={profileData.resumeUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-[#667eea] hover:underline">
+                    <a href={`/student-resume-preview?url=${encodeURIComponent(profileData.resumeUrl)}`} target="_blank" rel="noopener noreferrer" className="text-sm text-[#667eea] hover:underline">
                       View Resume
                     </a>
                   </div>

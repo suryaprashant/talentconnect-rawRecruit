@@ -253,6 +253,7 @@ import ResumePreview from "./pages/fresher/ResumePreview";
 import BlankLayout from "./components/layout/BlankLayout";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage" ;
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage" ;
+import StudentResumePreview from "./pages/students/StudentResumePreview";
 
 
 // Create query client
@@ -307,6 +308,15 @@ function AppRoutes() {
                 element={
                    
                      <ResumePreview />
+                    
+                  }
+              />
+
+      <Route
+                path="/student-resume-preview"
+                element={
+                   
+                     <StudentResumePreview />
                     
                   }
               />
@@ -369,6 +379,7 @@ function AppRoutes() {
               <Route path="settings" element={<Settings />} />
               <Route path="ContactUs" element={<ContactUs />} />
               <Route path="*" element={<NotFound />} />
+              
 
 
               {/* Fresher */}
