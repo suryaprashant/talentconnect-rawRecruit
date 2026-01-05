@@ -1,21 +1,24 @@
 import express from 'express';
 import multer from 'multer';
-// 1. Import the controller function
-import { uploadResume } from '../controllers/resumeController.js';
+import { 
+  uploadResume, 
+  resumeSearch,
+  viewResumeAsPdf,
+  serveResume  
+} from '../controllers/resumeController.js';
 
 const router = express.Router();
-
-// Configure multer (this can also be moved to a separate middleware file)
 const upload = multer({ 
-    storage: multer.memoryStorage(),
-    limits: { fileSize: 5 * 1024 * 1024 },
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype === 'application/pdf') cb(null, true);
-        else cb(new Error('Only PDF files are allowed'), false);
-    }
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-// 2. The route now just points to the controller function
+// Existing routes
 router.post('/resume', upload.single('resume'), uploadResume);
+router.get('/search', resumeSearch);
+
+router.get('/serve/:userId', serveResume);
+
+router.get('/view-pdf/:userId', viewResumeAsPdf);
 
 export default router;
