@@ -32,10 +32,100 @@ import {
   BriefcaseBusiness,
   Code,
   Send,
-  Download
+  Download,
+  Eye,
+  X,
+  Maximize2
 } from 'lucide-react';
 import { format, isValid } from 'date-fns';
 
+// Update the ResumeViewerModal component at the top of ApplicantDetails.js
+const ResumeViewerModal = ({ isOpen, onClose, resumeUrl, applicantName, onDownload }) => {
+  if (!isOpen || !resumeUrl) return null;
+
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-4">
+      <div className="bg-white rounded-2xl w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <FileText className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-bold text-lg text-gray-900">{applicantName}'s Resume</h3>
+              <p className="text-sm text-gray-500">View and download candidate's resume</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {onDownload && (
+              <button
+                onClick={onDownload}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all"
+                title="Download Resume"
+              >
+                <Download className="h-4 w-4" />
+                <span className="text-sm font-medium">Download</span>
+              </button>
+            )}
+            <button
+              onClick={() => window.open(resumeUrl, '_blank')}
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Open in new tab"
+            >
+              <Maximize2 className="h-5 w-5" />
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* PDF Viewer */}
+        <div className="flex-1 overflow-hidden bg-gray-50">
+          {resumeUrl.match(/\.(pdf|PDF)$/) || 
+           resumeUrl.includes('pdf') || 
+           resumeUrl.startsWith('data:application/pdf') ? (
+            <iframe
+              src={`${resumeUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+              title={`${applicantName} Resume`}
+              className="w-full h-full border-0"
+              style={{ backgroundColor: '#f8fafc' }}
+            />
+          ) : resumeUrl.includes('cloudinary.com') ? (
+            <div className="h-full flex items-center justify-center">
+              <iframe
+                src={`${resumeUrl}?fl_attachment`}
+                title={`${applicantName} Resume`}
+                className="w-full h-full border-0"
+              />
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center p-8">
+                <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h4 className="text-lg font-semibold text-gray-700 mb-2">Resume Preview</h4>
+                <p className="text-gray-500 mb-4">Opening resume in new window...</p>
+                <button
+                  onClick={() => window.open(resumeUrl, '_blank')}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Open Resume
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ==================== DetailRow Component ====================
 const DetailRow = ({ icon: Icon, label, value }) => {
     if (!value || (Array.isArray(value) && value.length === 0)) return null;
     
@@ -57,6 +147,7 @@ const DetailRow = ({ icon: Icon, label, value }) => {
     );
 };
 
+// ==================== Main Component ====================
 const ApplicantDetails = ({ job, isVisited, onClose }) => {
   const [jobId, setJobId] = useState(job._id);
   const jobType = job.jobType;
@@ -64,6 +155,13 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // const [selectedResume, setSelectedResume] = useState(null);
+  const [selectedResume, setSelectedResume] = useState({
+    url: null,
+    name: null,
+    applicantData: null
+  });
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
@@ -150,7 +248,301 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
       getApplicants(jobId, jobType);
     }
   }, [jobId]);
+// downloads directly
 
+//   const handleViewResume = async (applicant) => {
+//   const applicantData = applicant?.applicant || {};
+//   const applicantStr = JSON.stringify(applicantData);
+//   const urlMatch = applicantStr.match(/(https?:\/\/res\.cloudinary\.com\/[^"'\s]+)/);
+  
+//   if (!urlMatch) return toast.error("No resume found");
+  
+//   const cloudinaryUrl = urlMatch[0];
+  
+//   toast.loading("Converting resume to PDF...");
+  
+//   try {
+//     // Fetch the file
+//     const response = await fetch(cloudinaryUrl);
+//     const blob = await response.blob();
+    
+//     // Create a new blob with PDF type
+//     const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+//     const pdfUrl = URL.createObjectURL(pdfBlob);
+    
+//     // Create download link
+//     const link = document.createElement('a');
+//     link.href = pdfUrl;
+//     link.download = `${applicantData.name || 'resume'}.pdf`;
+//     link.style.display = 'none';
+    
+//     document.body.appendChild(link);
+//     link.click();
+    
+//     // Cleanup
+//     URL.revokeObjectURL(pdfUrl);
+//     document.body.removeChild(link);
+    
+//     toast.dismiss();
+//     toast.success("Resume downloaded as PDF!");
+    
+//   } catch (error) {
+//     toast.dismiss();
+//     toast.error("Failed to convert resume");
+//     console.error("Error:", error);
+//   }
+// };
+
+// opens in new tab
+const handleViewResume = async (applicant) => {
+  const applicantData = applicant?.applicant || {};
+  const applicantStr = JSON.stringify(applicantData);
+  const urlMatch = applicantStr.match(/(https?:\/\/res\.cloudinary\.com\/[^"'\s]+)/);
+  
+  if (!urlMatch) return toast.error("No resume found");
+  
+  const cloudinaryUrl = urlMatch[0];
+  
+  toast.loading("Loading resume...");
+  
+  try {
+    // Fetch the file
+    const response = await fetch(cloudinaryUrl);
+    const blob = await response.blob();
+    
+    // Create a new blob with PDF type
+    const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    
+    // ===== OPEN PDF IN NEW TAB =====
+    const newTab = window.open('', '_blank');
+    
+    // Write HTML with PDF viewer
+    newTab.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${applicantData.name || 'Applicant'} - Resume</title>
+        <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          body, html {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+          }
+          .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+          }
+          .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+          }
+          .controls {
+            display: flex;
+            gap: 10px;
+          }
+          .controls button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+          }
+          .controls button:hover {
+            background: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          }
+          .pdf-container {
+            width: 100%;
+            height: calc(100vh - 60px);
+          }
+          iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+          }
+          .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #666;
+          }
+          .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>📄 ${applicantData.name || 'Applicant'} - Resume</h1>
+          <div class="controls">
+            <button onclick="downloadPDF()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Download
+            </button>
+            
+            <button onclick="window.close()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Close
+            </button>
+          </div>
+        </div>
+        <div class="pdf-container">
+          <iframe src="${pdfUrl}" title="Resume PDF Viewer"></iframe>
+        </div>
+        <script>
+          // Store the PDF URL for download
+          const pdfBlobUrl = "${pdfUrl}";
+          
+          function downloadPDF() {
+            const link = document.createElement('a');
+            link.href = pdfBlobUrl;
+            link.download = '${applicantData.name || 'resume'}.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+          
+          // Clean up URL when tab closes
+          window.addEventListener('beforeunload', () => {
+            if (pdfBlobUrl.startsWith('blob:')) {
+              URL.revokeObjectURL(pdfBlobUrl);
+            }
+          });
+          
+          // Auto-cleanup after 10 minutes
+          setTimeout(() => {
+            if (pdfBlobUrl.startsWith('blob:')) {
+              URL.revokeObjectURL(pdfBlobUrl);
+            }
+          }, 10 * 60 * 1000);
+        </script>
+      </body>
+      </html>
+    `);
+    
+    newTab.document.close();
+    
+    toast.dismiss();
+    toast.success("Resume opened in new tab!");
+    
+  } catch (error) {
+    toast.dismiss();
+    toast.error("Failed to load resume");
+    console.error("Error:", error);
+  }
+};
+
+// ===== HELPER FUNCTIONS =====
+
+const processResumeUrl = (url) => {
+  if (!url) return url;
+  
+  console.log("Original URL:", url);
+  
+  // For Cloudinary raw uploads
+  if (url.includes('cloudinary.com') && url.includes('/raw/upload/')) {
+    // RAW uploads have different format than image uploads
+    // Don't add .pdf extension to the path - Cloudinary handles this
+    
+    // Option 1: Try as direct raw file (no transformations)
+    const directUrl = url;
+    
+    // Option 2: Try with .pdf at the end (some raw uploads need this)
+    const withPdfExtension = url + '.pdf';
+    
+    // Option 3: Try with force download flag
+    const withAttachment = url.replace('/upload/', '/upload/fl_attachment/');
+    
+    // Option 4: Try with both attachment and .pdf
+    const withBoth = url.replace('/upload/', '/upload/fl_attachment/') + '.pdf';
+    
+    console.log("Testing different URL formats:");
+    console.log("1. Direct:", directUrl);
+    console.log("2. With .pdf:", withPdfExtension);
+    console.log("3. With attachment:", withAttachment);
+    console.log("4. With both:", withBoth);
+    
+    // Return the simplest version first
+    return directUrl;
+  }
+  
+  return url;
+};
+
+// Open resume in optimal way
+const openResume = (url, applicantName) => {
+  console.log('Opening resume:', url);
+  
+  // Try to open in new tab
+  const newWindow = window.open('', '_blank');
+  
+  if (!newWindow) {
+    // If popup blocked, use iframe modal
+    toast('Please allow popups to view resume');
+    
+    // Create modal with iframe
+    const modalHtml = `
+      <div style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:9999;">
+        <div style="position:relative; width:90vw; height:90vh; margin:5vh auto; background:white; border-radius:10px;">
+          <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #ddd;">
+            <h3 style="margin:0;">${applicantName}'s Resume</h3>
+            <button onclick="this.parentElement.parentElement.parentElement.remove()" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
+          </div>
+          <iframe src="${url}" style="width:100%; height:calc(100% - 50px); border:none;"></iframe>
+        </div>
+      </div>
+    `;
+    
+    const modalDiv = document.createElement('div');
+    modalDiv.innerHTML = modalHtml;
+    document.body.appendChild(modalDiv);
+    
+  } else {
+    // Open in new tab
+    newWindow.location.href = url;
+    toast.success('Resume opened in new tab');
+  }
+};
+
+  // ==================== Handle Message Click ====================
   const handleMessageClick = async (applicant) => {
     if (!applicant?.applicant?._id) {
       toast.error("Applicant data is missing.");
@@ -203,6 +595,17 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Resume Viewer Modal */}
+      <ResumeViewerModal
+        isOpen={isResumeModalOpen}
+        onClose={() => {
+          setIsResumeModalOpen(false);
+          setSelectedResume(null);
+        }}
+        resumeUrl={selectedResume?.url}
+        applicantName={selectedResume?.name}
+      />
+
       <div className="container mx-auto px-4 py-8">
         {/* Header Section */}
         <div className="mb-6">
@@ -479,17 +882,33 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                      {/* Resume View Button */}
+<button
+  onClick={() => handleViewResume(applicant)}
+  disabled={false} 
+  className={`flex items-center justify-center flex-1 py-2.5 font-medium rounded-lg transition-all duration-200 ${
+    !applicantData.resume && !applicantData.resumeUrl && !applicantData.cv
+      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+      : 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-sm hover:shadow'
+  }`}
+  title={!applicantData.resume && !applicantData.resumeUrl && !applicantData.cv ? 'No resume available' : 'View Resume'}
+>
+  <Eye size={16} className="mr-2" />
+  View Resume
+</button>
+                      
+                      {/* Message Button */}
                       <button
                         onClick={() => handleMessageClick(applicant)}
                         disabled={isSubmitting}
                         className="flex items-center justify-center flex-1 py-2.5 font-medium bg-white border border-gray-300 text-blue-600 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50"
                       >
                         <MessageSquare size={16} className="mr-2" />
-                        Message Candidate
+                        Message
                       </button>
                       
+                      {/* Shortlist Button */}
                       <button
                         onClick={() => shortlistApplicant(applicant._id)}
                         disabled={isSubmitting || currentStatus === 'Shortlisted'}
@@ -500,9 +919,10 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
                         } disabled:opacity-50`}
                       >
                         <Star size={16} className="mr-2" />
-                        {currentStatus === 'Shortlisted' ? 'Already Shortlisted' : (isSubmitting ? 'Processing...' : 'Shortlist Candidate')}
+                        {currentStatus === 'Shortlisted' ? 'Shortlisted' : 'Shortlist'}
                       </button>
                       
+                      {/* Accept Button */}
                       <button
                         onClick={() => acceptApplicant(applicant._id)}
                         disabled={isSubmitting || currentStatus === 'Accepted'}
@@ -513,9 +933,10 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
                         } disabled:opacity-50`}
                       >
                         <CheckCircle size={16} className="mr-2" />
-                        {currentStatus === 'Accepted' ? 'Already Accepted' : (isSubmitting ? 'Processing...' : 'Accept Candidate')}
+                        {currentStatus === 'Accepted' ? 'Accepted' : 'Accept'}
                       </button>
                       
+                      {/* Reject Button */}
                       <button
                         onClick={() => rejectApplicant(applicant._id)}
                         disabled={isSubmitting || currentStatus === 'Rejected'}
@@ -526,7 +947,7 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
                         } disabled:opacity-50`}
                       >
                         <XCircle size={16} className="mr-2" />
-                        {currentStatus === 'Rejected' ? 'Already Rejected' : (isSubmitting ? 'Processing...' : 'Reject Candidate')}
+                        {currentStatus === 'Rejected' ? 'Rejected' : 'Reject'}
                       </button>
                     </div>
                   </div>

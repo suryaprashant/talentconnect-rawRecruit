@@ -1,3 +1,4 @@
+import Resume from "../models/resumeModel.js";
 import {
   fetchAllResumeService,
   saveParsedResumeService,
@@ -25,19 +26,28 @@ import cloudinary from "../../config/cloudinary.js";
   }
 };*/
 
+// In resumeController.js - Update Cloudinary upload
 export const uploadResume = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: "No resume uploaded" });
     }
 
-    const cloudinaryResult = await cloudinary.uploader.upload(
-      `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
-      {
-        folder: "rawrecruit/resumes",
-        resource_type: "raw",
-      }
-    );
+    const userId = req.user?._id;
+    
+    // Convert to base64
+    const base64Data = req.file.buffer.toString('base64');
+    const dataURI = `data:${req.file.mimetype};base64,${base64Data}`;
+
+    // Upload with CORRECT settings for PDF
+    const cloudinaryResult = await cloudinary.uploader.upload(dataURI, {
+      folder: "rawrecruit/resumes",
+      resource_type: "auto",  // ← CHANGE from "raw" to "auto"
+      public_id: `resume_${userId}_${Date.now()}.pdf`,  // ← ADD .pdf extension
+      transformation: [
+        { flags: "attachment" }  // Force download
+      ]
+    });
 
     const extractedData = await parseResume(req.file.buffer);
 
@@ -80,3 +90,130 @@ export async function resumeSearch(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+export const getUserResume = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    
+    console.log("Fetching resume for user:", userId);
+    
+    // Check Resume collection
+    const resume = await Resume.findOne({ userId: userId });
+    
+    if (!resume || !resume.resumeFile || !resume.resumeFile.url) {
+      return res.status(404).json({
+        success: false,
+        message: "Resume not found"
+      });
+    }
+    
+    let resumeUrl = resume.resumeFile.url;
+    
+    // Ensure URL ends with .pdf for Cloudinary
+    if (resumeUrl.includes("cloudinary.com") && !resumeUrl.includes(".pdf")) {
+      resumeUrl = resumeUrl + ".pdf";
+      console.log("Added .pdf extension to URL");
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        resumeUrl: resumeUrl,
+        fileName: resume.resumeFile.fileName || "resume.pdf",
+        userId: userId
+      }
+    });
+    
+  } catch (error) {
+    console.error("Get resume error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch resume"
+    });
+  }
+};
+
+export const serveResume = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    
+    console.log("Serving resume for user:", userId);
+    
+    // Find the resume
+    const resume = await Resume.findOne({ userId: userId });
+    
+    if (!resume) {
+      return res.status(404).json({ error: "Resume not found in database" });
+    }
+    
+    if (!resume.resumeFile || !resume.resumeFile.url) {
+      return res.status(404).json({ error: "No resume URL found" });
+    }
+    
+    const cloudinaryUrl = resume.resumeFile.url;
+    console.log("Fetching from Cloudinary:", cloudinaryUrl);
+    
+    // Fetch from Cloudinary
+    const response = await fetch(cloudinaryUrl);
+    
+    if (!response.ok) {
+      throw new Error(`Cloudinary returned ${response.status}`);
+    }
+    
+    // Get the PDF data
+    const pdfBuffer = await response.arrayBuffer();
+    
+    // Set headers for PDF
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${resume.resumeFile.fileName || 'resume.pdf'}"`);
+    res.setHeader('Content-Length', pdfBuffer.byteLength);
+    
+    // Send the PDF
+    res.end(Buffer.from(pdfBuffer));
+    
+  } catch (error) {
+    console.error("Serve error:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const viewResumeAsPdf = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    
+    console.log("Viewing resume as PDF for user:", userId);
+    
+    // Find resume
+    const resume = await Resume.findOne({ userId });
+    
+    if (!resume || !resume.resumeFile?.url) {
+      return res.status(404).json({ error: "Resume not found" });
+    }
+    
+    const cloudinaryUrl = resume.resumeFile.url;
+    console.log("Fetching from:", cloudinaryUrl);
+    
+    // Fetch from Cloudinary
+    const response = await fetch(cloudinaryUrl);
+    
+    if (!response.ok) {
+      throw new Error(`Cloudinary error: ${response.status}`);
+    }
+    
+    // Get the file data
+    const fileBuffer = await response.arrayBuffer();
+    
+    // Set PDF headers
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${resume.resumeFile.fileName || 'resume.pdf'}"`);
+    res.setHeader('Content-Length', fileBuffer.byteLength);
+    
+    // Send as PDF
+    res.send(Buffer.from(fileBuffer));
+    
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Failed to serve resume as PDF" });
+  }
+};
+
