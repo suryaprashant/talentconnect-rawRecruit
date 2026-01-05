@@ -33,12 +33,15 @@ export default function PoolCampusJobManagement() {
     }
   };
 
-  const fetchCollegesForJob = async (jobId, jobType) => {
+  const fetchCollegesForJob = async (jobId, jobType, isVisited) => {
     setCollegesLoading(true);
     setError(null);
     try {
-      const response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted");
-      console.log("Fetched colleges for job:", response.data);
+      let response;
+      if (isVisited === false) response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted", isVisited);
+      else {
+        response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted");
+      }
       setColleges(response.data || []);
     } catch (err) {
       console.error("Error fetching colleges:", err);

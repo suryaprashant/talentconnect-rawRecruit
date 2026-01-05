@@ -10,6 +10,7 @@ import {
   saveJobService,
   fetchCompanyDashboardMetrics,
   getSavedCollegesService,
+  fetchCollegeSideApplicationsByJobService,
   // getApplicationService,
   // getOffCampusApplicantsService, fetchShortlistedCandidates, fetchInternshipApplicationService, fetchApplicationStatusService
 } from "../services/applicationService.js";
@@ -445,14 +446,14 @@ export async function getApplicationsByJob(req, res) {
 }
 
 // oncampus and poolcampus
-export async function getCollegeApplicationsByJob(req, res) {
+{/*export async function getCollegeApplicationsByJob(req, res) {
   const { jobId, jobType, targetStatus, isVisited } = req.query;
   const userType = req.user.userType;
   if (!jobId || !jobType || !targetStatus)
     return res.status(404).json({ msg: "Job not found with given criteria!" });
 
   try {
-    const response = await fetchCollegeApplicationsByJobService(
+    const response = await fetchCollegeSideApplicationsByJobService(
       jobId,
       jobType,
       userType,
@@ -467,7 +468,45 @@ export async function getCollegeApplicationsByJob(req, res) {
     console.log("Error: ", error);
     res.status(500).json({ Error: "Internal server error" });
   }
-}
+}*/}
+
+{/*export async function getCollegeApplicationsByJob(req, res) {
+  const { jobId, jobType, targetStatus, isVisited } = req.query;
+
+  if (!jobId || !jobType || !targetStatus) {
+    return res.status(404).json({ msg: "Job not found with given criteria!" });
+  }
+
+  try {
+    const response = await fetchCollegeApplicationsByJobService(
+      jobId,
+      jobType,
+      targetStatus,   // ✅ FIXED
+      isVisited
+    );
+
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.log("Error: ", error);
+    res.status(500).json({ Error: "Internal server error" });
+  }
+}*/}
+
+//past new working for company prathmesh
+export async function getCollegeApplicationsByJob(req, res) { 
+  const { jobId, jobType, targetStatus, isVisited } = req.query; 
+  const userType = req.user.userType; if (!jobId || !jobType || !targetStatus) 
+    return res.status(404).json({ msg: "Job not found with given criteria!" }); 
+  
+  try { const response = await fetchCollegeApplicationsByJobService( jobId, jobType, userType, targetStatus, isVisited ); 
+    // to be implement -- sorting feature like ATS 
+      res.status(200).json(response.data); 
+    } catch (error) 
+    { 
+      console.log("Error: ", error); res.status(500).json({ Error: "Internal server error" }); 
+    } 
+  }
+
 
 // shortlist/accept candidate/college
 export async function shortlistApplicant(req, res) {

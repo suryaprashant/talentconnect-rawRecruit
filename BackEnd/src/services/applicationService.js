@@ -565,73 +565,149 @@ export async function fetchApplicationsByJobService(jobId, jobType, targetStatus
     }
 }
 
-// oncampus and poolcampus
-export async function fetchCollegeApplicationsByJobService(jobId, jobType, userType, targetStatus, isVisited) {
-    // console.log("...........\n", jobId, jobType, userType, targetStatus);
+// oncampus and poolcampus -> past new working for company employer Prathmesh
+export async function fetchCollegeApplicationsByJobService(
+  jobId,
+  jobType,
+  userType,
+  targetStatus,
+  isVisited
+) {
+  let applicantDB;
 
-    let applicantDB;
-    if (userType === 'college') {
-        applicantDB = "companyprofiles";
-    }
-    else if (userType === 'company') {
-        applicantDB = "collegeonboardings";
-    }
-    else if (userType === 'employer') {
-        applicantDB = "collegeonboardings";
-    }
-    try {
-        const matchConditions = {
-            job: new mongoose.Types.ObjectId(jobId),
-            jobType: jobType,
-            currentStatus: targetStatus
-        };
-        if (isVisited !== undefined) {
-            matchConditions.isVisited = isVisited === 'true' || isVisited === true ? true : false;
-        }
-        const response = await Application.aggregate([
-            {
-                $match: matchConditions
-            },
-            {
-                $lookup: {
-                    from: applicantDB,
-                    localField: "applicant",
-                    foreignField: "_id",
-                    as: "applicant"
-                }
-            },
-            {
-                $unwind: { path: "$applicant", preserveNullAndEmptyArrays: true }
-            },
-            {
-                $project: {
-                    "applicant": 1,
-                    "statusHistory": 1,
-                    "currentStatus": 1,
-                    "createdAt": 1
-                    // Don't include authInfo field at all
-                }
-            }
-        ]);
+  if (userType === "college") applicantDB = "companyprofiles";
+  else if (userType === "company" || userType === "employer")
+    applicantDB = "collegeonboardings";
 
-        //mark isvisited true
-        const idsToMarkVisited = response
-            .filter((doc) => !doc.isVisited)
-            .map((doc) => doc._id);
+  try {
+    const matchConditions = {
+      job: new mongoose.Types.ObjectId(jobId),
+      jobType,
+      currentStatus: targetStatus,
+    };
 
-        if (idsToMarkVisited.length > 0) {
-            await Application.updateMany(
-                { _id: { $in: idsToMarkVisited } },
-                { $set: { isVisited: true } }
-            );
-        }
-
-        return { success: true, data: response };
-    } catch (error) {
-        console.log("Error: ", error.message);
-        throw new Error("Failed to fetch");
+    // 🔑 VERY IMPORTANT FIX
+    if (isVisited === "false" || isVisited === false) {
+      // New Applications
+      matchConditions.isVisited = false;
+    } else if (isVisited === "true" || isVisited === true) {
+      // Explicit past fetch
+      matchConditions.isVisited = true;
+    } else {
+      // Action button (past applications)
+      matchConditions.isVisited = true;
     }
+
+    const response = await Application.aggregate([
+      { $match: matchConditions },
+      {
+        $lookup: {
+          from: applicantDB,
+          localField: "applicant",
+          foreignField: "_id",
+          as: "applicant",
+        },
+      },
+      {
+        $unwind: {
+          path: "$applicant",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          applicant: 1,
+          statusHistory: 1,
+          currentStatus: 1,
+          createdAt: 1,
+          isVisited: 1,
+        },
+      },
+    ]);
+
+    // ✅ Mark visited ONLY when opening New Applications
+    if (isVisited === "false" || isVisited === false) {
+      const idsToMarkVisited = response
+        .filter((doc) => doc.isVisited === false)
+        .map((doc) => doc._id);
+
+      if (idsToMarkVisited.length) {
+        await Application.updateMany(
+          { _id: { $in: idsToMarkVisited } },
+          { $set: { isVisited: true } }
+        );
+      }
+    }
+
+    return { success: true, data: response };
+  } catch (error) {
+    console.error("fetchCollegeApplicationsByJobService error:", error);
+    throw error;
+  }
 }
+
+// 🔥 NEW — used ONLY by college controller
+export async function fetchCollegeSideApplicationsByJobService(
+  jobId,
+  jobType,
+  targetStatus,
+  isVisited
+) {
+  const matchConditions = {
+    job: new mongoose.Types.ObjectId(jobId),
+    jobType,
+    currentStatus: targetStatus,
+  };
+
+  // College logic is SIMPLE
+  if (isVisited === "false" || isVisited === false) {
+    matchConditions.isVisited = false; // New
+  }
+
+  if (isVisited === "true" || isVisited === true) {
+    matchConditions.isVisited = true; // Past
+  }
+
+  const response = await Application.aggregate([
+    { $match: matchConditions },
+    {
+      $lookup: {
+        from: "companyprofiles",
+        localField: "applicant",
+        foreignField: "_id",
+        as: "applicant",
+      },
+    },
+    {
+      $unwind: {
+        path: "$applicant",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        applicant: 1,
+        statusHistory: 1,
+        currentStatus: 1,
+        createdAt: 1,
+        isVisited: 1,
+      },
+    },
+  ]);
+
+  // Mark visited ONLY for new applications
+  if (isVisited === "false" || isVisited === false) {
+    await Application.updateMany(
+      { _id: { $in: response.map(r => r._id) } },
+      { $set: { isVisited: true } }
+    );
+  }
+
+  return { success: true, data: response };
+}
+
+
+
 // count applications
 export async function countApplicationsService(jobId, jobType, targetStatus) {
     try {
