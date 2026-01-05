@@ -118,34 +118,24 @@ export function getApplicationsForJob(jobId, jobType, targetStatus, isVisited) {
     .catch((error) => error);
 }
 
+
+//past new working prathmesh 
 export function getCollegeApplicationsForJob(
   jobId,
   jobType,
   targetStatus,
   isVisited
 ) {
-  let customParam;
-  if (isVisited === undefined) {
-    customParam = {
-      jobId: jobId,
-      jobType: jobType,
-      targetStatus: targetStatus,
-    };
-  } else {
-    customParam = {
-      jobId: jobId,
-      jobType: jobType,
-      targetStatus: targetStatus,
-      isVisited: isVisited,
-    };
-  }
-  return axiosClient
-    .get(`application/manage/college`, {
-      params: customParam,
-    })
-    .then((response) => response)
-    .catch((error) => error);
+  return axiosClient.get(`application/manage/college`, {
+    params: {
+      jobId,
+      jobType,
+      targetStatus,
+      isVisited, // ✅ always passed (true / false / undefined)
+    },
+  });
 }
+
 
 // get shortlisted applicant
 export function getShorlistedCandidateByCompany(applicantType, jobType) {
