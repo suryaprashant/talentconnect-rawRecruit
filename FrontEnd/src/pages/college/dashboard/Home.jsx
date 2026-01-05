@@ -119,7 +119,7 @@ function Home() {
             <div className="relative flex items-center justify-between py-6 px-6">
               <div className="flex items-center">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
-                  College Dashboard
+                  College Dashboard  
                 </h1>
               </div>
               {/* <div className="w-full max-w-md">
@@ -142,7 +142,7 @@ function Home() {
   {/* Card 1 - On-Campus */}
   <div
     className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-    onClick={() => navigate('/application-status/oncampus')}
+    onClick={() => navigate('/manage-application/campus-placement')}
   >
     {/* Bottom accent border */}
     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4c1d95] to-[#5b21b6] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -182,7 +182,7 @@ function Home() {
   {/* Card 2 - Pool-Campus */}
   <div
     className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-    onClick={() => navigate('/application-status/poolcampus')}
+    onClick={() => navigate('/manage-application/poolCampus-placement')}
   >
     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#5b21b6] to-[#6d28d9] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
     <div className="absolute inset-0 bg-gradient-to-br from-[#5b21b6]/10 via-transparent to-[#6d28d9]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
@@ -215,7 +215,7 @@ function Home() {
   {/* Card 3 - Status */}
   <div
     className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-    onClick={() => navigate('/applications')}
+    onClick={() => navigate('/application-status/oncampus')}
   >
     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#6d28d9] to-[#7c3aed] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
     <div className="absolute inset-0 bg-gradient-to-br from-[#6d28d9]/10 via-transparent to-[#7c3aed]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>

@@ -82,6 +82,26 @@ const JobDetailPage = () => {
     }
   };
 
+//console.log(jo)
+const getJobStatus = () => {
+  if (!job?.startDate || !job?.endDate) {
+    return { status: 'Unknown', color: 'bg-gray-100 text-gray-700' };
+  }
+
+  const now = new Date();
+  const startDate = new Date(job.startDate);
+  const endDate = new Date(job.endDate);
+
+  if (now < startDate) {
+    return { status: 'Upcoming', color: 'bg-blue-100 text-blue-700' };
+  } else if (now >= startDate && now <= endDate) {
+    return { status: 'Active', color: 'bg-green-100 text-green-700' };
+  } else {
+    return { status: 'Completed', color: 'bg-gray-100 text-gray-700' };
+  }
+};
+
+
   const handleSave = async (jobId, jobType) => {
     if (!jobId || !jobType) return;
     try {
@@ -96,23 +116,25 @@ const JobDetailPage = () => {
       toast.error('Something went wrong');
     }
   };
+////////////////////////////////////////////////
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 flex items-center justify-center">
+
+if (error) {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 flex items-center justify-center">
         <div className="text-center">
           <p className="mt-4 text-red-600">{error}</p>
           <button
             onClick={loadJobDetail}
             className="mt-4 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200"
-          >
+            >
             Retry
           </button>
         </div>
       </div>
     );
   }
-
+  
   if (!job) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 flex items-center justify-center">
@@ -122,7 +144,10 @@ const JobDetailPage = () => {
         </div>
       </div>
     );
+    
   }
+const jobStatus = getJobStatus();
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
@@ -137,7 +162,19 @@ const JobDetailPage = () => {
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
           {/* Header Section */}
           <div className="border-b border-gray-200 bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4">
-            <div className="text-sm font-medium text-[#667eea]">Registrations Open</div>
+            {
+              jobStatus.status ==='Completed' && (
+
+                <div className="text-sm font-medium text-[#667eea]">Registrations Completed</div>
+              )
+            }
+  {
+              jobStatus.status !='Completed' && (
+
+                <div className="text-sm font-medium text-[#667eea]">Registration Open</div>
+              )
+            }
+
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-2">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
                 {job?.companyPosted?.companyDetails?.companyName || 'Not Specified'}

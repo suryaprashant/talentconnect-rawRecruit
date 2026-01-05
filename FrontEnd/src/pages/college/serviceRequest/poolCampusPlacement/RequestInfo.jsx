@@ -1871,15 +1871,15 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                         <div>
                             <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                 <List className="w-4 h-4 text-[#3b82f6]" />
-                                Rounds Details
+                                Student Details
                             </label>
                             <div className="overflow-x-auto">
                                 <table className="min-w-full divide-y divide-white/50 text-xs">
                                     <thead className="bg-white/50">
                                         <tr>
-                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Round</th>
+                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Student</th>
                                             <th className="px-2 py-1.5 text-left font-medium text-gray-500">Branch</th>
-                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Students</th>
+                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Count</th>
                                             <th className="px-2 py-1.5 text-left font-medium text-gray-500">Skills (comma separated)</th>
                                         </tr>
                                     </thead>
