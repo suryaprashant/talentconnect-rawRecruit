@@ -4,6 +4,7 @@ import { ApplyForOncampusOppurtunity, getCollegeDetail, SaveOppurtunity } from '
 import toast from 'react-hot-toast';
 import { conversationWithCollege} from '@/lib/College_AxiosIntance';
 import useConversation from '@/statemanage/useConversation';
+import { Send } from 'lucide-react';
 
 // Utility function to format dates
 const formatDate = (dateString) => {

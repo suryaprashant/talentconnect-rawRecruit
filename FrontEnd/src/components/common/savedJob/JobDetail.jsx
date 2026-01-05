@@ -1,20 +1,95 @@
-import { useParams, Link } from 'react-router-dom';
-import RelatedJobs from './RelatedJob';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
-const JobDetail = ({ jobs }) => {
+const normalizeJob = (job) => {
+  return {
+    // Header
+    title:
+      job?.jobRoles?.[0] ||
+      job?.jobType ||
+      "Opportunity",
+
+    company:
+      job?.companyPosted?.companyDetails?.companyName ||
+      job?.collegePosted?.collegeUniversityDetails?.collegeName ||
+      "N/A",
+
+    location:
+      job?.location?.[0] ||
+      job?.venue ||
+      "Not specified",
+
+    type:
+      job?.employmentType?.[0] || "N/A",
+
+    experience: null, // backend doesn’t provide this
+
+    // Content
+    aboutRole:
+      job?.description || "No description provided",
+
+    responsibilities:
+      job?.selectionProcess?.join(", ") || "Not specified",
+
+    skills: job?.skills || [],
+
+    // Company info
+    aboutCompany:
+      job?.companyPosted?.companyDetails?.about ||
+      job?.collegePosted?.collegeUniversityDetails?.collegeName ||
+      "",
+
+    companyInfo: null,
+
+    logo:
+      job?.companyPosted?.companyDetails?.logo ||
+      job?.collegePosted?.profileImage ||
+      null
+  };
+};
+
+
+const JobDetail = () => {
   const { id } = useParams();
-  const job = jobs.find(job => job.id === id);
+
+  const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJob = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/hiring-channels/view/${id}`
+        );
+
+        const apiJob = res.data?.[0]?.job;
+        setJob(apiJob ? normalizeJob(apiJob) : null);
+        // API returns array
+        //setJob(res.data?.[0]?.job || null);
+      } catch (err) {
+        console.error("Failed to fetch job detail", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJob();
+  }, [id]);
+
+  if (loading) return <div className="p-6">Loading...</div>;
+
 
   if (!job) {
     return <div className="container mx-auto px-4 py-8">Job not found</div>;
   }
 
   // Find related jobs based on similar skills or category
-  const relatedJobs = jobs
+  {/*const relatedJobs = jobs
     .filter(j => j.id !== job.id && 
       (j.category === job.category || 
        j.skills.some(skill => job.skills.includes(skill))))
-    .slice(0, 6);
+    .slice(0, 6);*/}
 
   return (
     <div className="container mx-auto px-4 py-8 bg-white">
