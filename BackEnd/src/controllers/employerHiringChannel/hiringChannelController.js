@@ -3,6 +3,7 @@ import Auth from '../../models/authModel.js';
 import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js';
 import { createPostingService } from '../../services/jobPostingService.js';
 import { getCompanyService } from "../../services/companyService.js";
+import { notifyCollegesOnOnCampusJob } from '../../services/notificationService.js';
 
 // Helper fuction to consistent response handling
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
@@ -100,7 +101,7 @@ export const createOffCampusJobPosting = async (req, res) => {
     }
 };
 
-export const createOnCampusPosting = async (req, res) => {
+{/*export const createOnCampusPosting = async (req, res) => {
     try {
         const userId = req.user.id;
         const { companyId, error } = await getCompanyIdToPostAs(userId);
@@ -108,6 +109,8 @@ export const createOnCampusPosting = async (req, res) => {
         if (error) {
             return sendError(res, 400, error);
         }
+
+        
 
         const postingData = {
             ...req.body,
@@ -122,14 +125,73 @@ export const createOnCampusPosting = async (req, res) => {
             return sendError(res, 500, "Failed to create on-campus posting");
         }
 
-        sendResponse(res, 201, { message: "On-campus posting created successfully!", data: newPosting });
+       
+
+    sendResponse(res, 201, {
+      message: "On-campus posting created successfully!",
+      data: newPosting
+    });
     } catch (error) {
         console.error("Error in createOnCampusPosting:", error.message);
         sendError(res, 500, "Internal server error");
     }
+};*/}
+
+//Prathmesh
+export const createOnCampusPosting = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // ✅ KEEP EXISTING LOGIC
+    const { companyId, error } = await getCompanyIdToPostAs(userId);
+    if (error) {
+      return sendError(res, 400, error);
+    }
+
+    // 🔹 Fetch company name USING companyId returned by service
+    let companyName = "Company";
+
+    const companyProfile = await CompanyProfile.findById(companyId)
+      .select("companyDetails.companyName");
+
+    if (companyProfile?.companyDetails?.companyName) {
+      companyName = companyProfile.companyDetails.companyName;
+    }
+
+    const postingData = {
+      ...req.body,
+      companyPosted: companyId,
+      jobType: "On-campus",
+      visibleTo: "College"
+    };
+
+    const newPosting = await createPostingService(postingData, userId);
+    if (!newPosting) {
+      return sendError(res, 500, "Failed to create on-campus posting");
+    }
+
+    // 🔔 ADD NOTIFICATION (NO STRUCTURE CHANGE)
+    notifyCollegesOnOnCampusJob({
+      companyId: userId, // sender = employer user
+      companyName,
+      jobTitle: newPosting.jobTitle || req.body.jobTitle || "new job",
+      jobId: newPosting._id
+    }).catch(err => {
+      console.error("Employer notification error:", err);
+    });
+
+    sendResponse(res, 201, {
+      message: "On-campus posting created successfully!",
+      data: newPosting
+    });
+
+  } catch (error) {
+    console.error("Error in createOnCampusPosting:", error);
+    sendError(res, 500, "Internal server error");
+  }
 };
 
-export const createPoolCampusPosting = async (req, res) => {
+{/*export const createPoolCampusPosting = async (req, res) => {
     try {
         const userId = req.user.id;
         const { companyId, error } = await getCompanyIdToPostAs(userId);
@@ -155,6 +217,60 @@ export const createPoolCampusPosting = async (req, res) => {
         console.error("Error in createPoolCampusPosting:", error.message);
         sendError(res, 500, "Internal server error");
     }
+};*/}
+
+ //prathmesh
+export const createPoolCampusPosting = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // ✅ KEEP EXISTING LOGIC
+    const { companyId, error } = await getCompanyIdToPostAs(userId);
+    if (error) {
+      return sendError(res, 400, error);
+    }
+
+    // 🔹 Resolve company name (same pattern as on-campus)
+    let companyName = "Company";
+
+    const companyProfile = await CompanyProfile.findById(companyId)
+      .select("companyDetails.companyName");
+
+    if (companyProfile?.companyDetails?.companyName) {
+      companyName = companyProfile.companyDetails.companyName;
+    }
+
+    const postingData = {
+      ...req.body,
+      companyPosted: companyId,
+      jobType: "Pool-campus",
+      visibleTo: "College"
+    };
+
+    const newPosting = await createPostingService(postingData, userId);
+    if (!newPosting) {
+      return sendError(res, 500, "Failed to create pool-campus posting");
+    }
+
+    // 🔔 NOTIFICATION (REUSED SERVICE)
+    notifyCollegesOnOnCampusJob({
+      companyId: userId,
+      companyName,
+      jobTitle: newPosting.jobTitle || req.body.jobTitle || "new job",
+      jobId: newPosting._id
+    }).catch(err => {
+      console.error("Pool-campus notification error:", err);
+    });
+
+    sendResponse(res, 201, {
+      message: "Pool-campus posting created successfully!",
+      data: newPosting
+    });
+
+  } catch (error) {
+    console.error("Error in createPoolCampusPosting:", error.message);
+    sendError(res, 500, "Internal server error");
+  }
 };
 
 export const createInternshipPosting = async (req, res) => {

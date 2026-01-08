@@ -36,6 +36,10 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
         if (notification.type === 'TEAM_INVITATION') {
             navigate('/invitations');
         }
+
+        if (notification.type === 'SYSTEM_UPDATE' && notification.referenceId) {
+            navigate(`/jobs/${notification.referenceId}`);
+        }
         
     };
 

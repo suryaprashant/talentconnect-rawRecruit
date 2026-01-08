@@ -18,7 +18,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
     const notificationRef = useRef(null);
 
     
-    useEffect(() => {
+    {/*useEffect(() => {
         if (authuser) {
             const fetchNotifications = async () => {
                 try {
@@ -31,8 +31,35 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
             };
             fetchNotifications();
         }
-    }, [authuser]);
+    }, [authuser]);*/}
 
+    useEffect(() => {
+  if (authuser) {
+    const fetchNotifications = async () => {
+      try {
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_Backend_URL}/api/notifications`,
+          { withCredentials: true }
+        );
+
+        const notificationsList = Array.isArray(data)
+          ? data
+          : data.notifications || [];
+
+        setNotifications(notificationsList);
+        setUnreadCount(notificationsList.filter(n => !n.read).length);
+
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+      }
+    };
+
+    fetchNotifications();
+  }
+}, [authuser]);
+
+    
+    
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -75,6 +102,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
                                         {unreadCount}
                                     </span>
                                 )}
+                                
                             </button>
                             {notificationsOpen && (
                                 <NotificationsDropdown
