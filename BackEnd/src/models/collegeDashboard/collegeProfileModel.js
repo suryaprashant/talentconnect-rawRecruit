@@ -19,7 +19,11 @@ const collegeProfileSchema = new mongoose.Schema({
     collegeImageUrl: String,
     backgroundImageUrl: String
   },
-   
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Auth",
+    required: true
+  },
   placementCoordinatorDetails: {
     para: String,
     coordinatorName: String,

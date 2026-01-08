@@ -23,11 +23,11 @@ const users = {};
 
 // used to listen events on server side.
 io.on("connection", (socket) => {
-  console.log("a user connected", socket.id);
+  //console.log("a user connected", socket.id);
   const userId = socket.handshake.query.userId;
   if (userId) {
     users[userId] = socket.id;
-    console.log("Hello ", users);
+    //console.log("Hello ", users);
   }
   // used to send the events to all connected users
   io.emit("getOnlineUsers", Object.keys(users));

@@ -3,9 +3,11 @@ import { getNotificationByIdService, getNotificationService } from '../services/
 
 // Get all notifications for the logged-in user
 export const getNotifications = async (req, res) => {
-    const id = req.user._id;
-    try {
+    
+     try {
+        const id = req.user._id;
         const notifications = await getNotificationService(id);
+        
 
         res.status(200).json(notifications);
     } catch (error) {

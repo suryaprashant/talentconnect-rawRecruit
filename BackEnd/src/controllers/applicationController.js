@@ -32,6 +32,11 @@ import sendStatusChangeEmail from "../utils/sendStatusChangeEmail.js";
 import sendScheduledInterviewEmail from "../utils/sendScheduledInterviewEmail.js";
 import { submitAlternateDatesService } from "../services/alternateDateService.js";
 // import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
+import { notifyOnApplicationStatusChange } from "../services/notificationService.js";
+import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
+import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel.js";
+
+
 
 // save opportunity
 export async function saveJobByUser(req, res) {
@@ -515,7 +520,10 @@ export async function shortlistApplicant(req, res) {
   if (!applicationId)
     return res.status(404).json({ msg: "Application not found!" });
   try {
+    
+
     const response = await ChangeStatusService(applicationId, "Shortlisted");
+   
 
     if (response.success === true) {
       // service -> send mail to candidate
@@ -541,9 +549,55 @@ export async function shortlistApplicant(req, res) {
           response.data.currentStatus,
           response.data._id,
           jobRole /*companyName*/
-        ); // should make this function async but nonblocking
+        ).catch(err => {
+            console.error("Email sending failed:", err.message);
+        });
       }
 
+      
+      // 🔔 SEND NOTIFICATION TO COLLEGE
+      if (response.data.applicantType === "college") {
+        try {
+          // get company name (keep your existing logic)
+          const companyResult = await getEmployerService(req.user);
+          if (!companyResult.success) return;
+        
+          const companyId = companyResult.data[0]._id;
+        
+          const companyProfile = await CompanyProfile.findById(companyId)
+            .select("companyDetails.companyName");
+        
+          const companyName =
+            companyProfile?.companyDetails?.companyName || "Company";
+        
+          // ✅ THIS IS THE KEY FIX
+          const collegeOnboarding = await CollegeOnboarding.findById(
+            response.data.applicant
+          ).select("userId");
+        
+          if (!collegeOnboarding?.userId) {
+            console.error(
+              "❌ College auth userId missing for onboardingId:",
+              response.data.applicant
+            );
+            return;
+          }
+        
+          const collegeAuthId = collegeOnboarding.userId;
+        
+          // ✅ Send notification using AUTH ID
+          notifyOnApplicationStatusChange({
+            recipientId: collegeAuthId,      // ✅ AUTH _id
+            senderId: req.user._id,          // company/employer AUTH _id
+            companyName,
+            status: response.data.currentStatus, // Shortlisted
+            applicationId: response.data._id
+          });
+        
+        } catch (err) {
+          console.error("Shortlist notification failed:", err);
+        }
+      }
       return res.status(200).json(response);
     }
     return res.status(404).json(response);
@@ -621,7 +675,49 @@ export async function rejectApplicant(req, res) {
           response.data.currentStatus,
           response.data._id,
           jobRole /*companyName*/
-        ); // should make this function async but nonblocking
+        ).catch(err => {
+          console.error("Email sending failed:", err.message);
+        });
+      }
+
+      // 🔔 SEND NOTIFICATION TO COLLEGE ON ACCEPT
+      if (response.data.applicantType === "college") {
+        try {
+          const companyResult = await getEmployerService(req.user);
+          if (!companyResult.success) return;
+        
+          const companyId = companyResult.data[0]._id;
+        
+          const companyProfile = await CompanyProfile.findById(companyId)
+            .select("companyDetails.companyName");
+        
+          const companyName =
+            companyProfile?.companyDetails?.companyName || "Company";
+        
+          // ✅ Convert CollegeOnboarding → Auth ID
+          const collegeOnboarding = await CollegeOnboarding.findById(
+            response.data.applicant
+          ).select("userId");
+        
+          if (!collegeOnboarding?.userId) {
+            console.error(
+              "❌ College auth userId missing for onboardingId:",
+              response.data.applicant
+            );
+            return;
+          }
+        
+          notifyOnApplicationStatusChange({
+            recipientId: collegeOnboarding.userId, // ✅ AUTH ID
+            senderId: req.user._id,                // company AUTH ID
+            companyName,
+            status: "Rejected",
+            applicationId: response.data._id
+          });
+        
+        } catch (err) {
+          console.error("Reject notification failed:", err);
+        }
       }
 
       return res.status(200).json(response);
@@ -702,8 +798,51 @@ export async function acceptApplicant(req, res) {
           response.data.currentStatus,
           response.data._id,
           jobRole /*companyName*/
-        ); // should make this function async but nonblocking
+        ).catch(err => {
+          console.error("Email sending failed:", err.message);
+        });
       }
+
+      // 🔔 SEND NOTIFICATION TO COLLEGE ON ACCEPT
+      if (response.data.applicantType === "college") {
+        try {
+          const companyResult = await getEmployerService(req.user);
+          if (!companyResult.success) return;
+        
+          const companyId = companyResult.data[0]._id;
+        
+          const companyProfile = await CompanyProfile.findById(companyId)
+            .select("companyDetails.companyName");
+        
+          const companyName =
+            companyProfile?.companyDetails?.companyName || "Company";
+        
+          // ✅ Convert CollegeOnboarding → Auth ID
+          const collegeOnboarding = await CollegeOnboarding.findById(
+            response.data.applicant
+          ).select("userId");
+        
+          if (!collegeOnboarding?.userId) {
+            console.error(
+              "❌ College auth userId missing for onboardingId:",
+              response.data.applicant
+            );
+            return;
+          }
+        
+          notifyOnApplicationStatusChange({
+            recipientId: collegeOnboarding.userId, // ✅ AUTH ID
+            senderId: req.user._id,                // company AUTH ID
+            companyName,
+            status: "Accepted",
+            applicationId: response.data._id
+          });
+        
+        } catch (err) {
+          console.error("Accept notification failed:", err);
+        }
+      }
+
 
       return res.status(200).json(response);
     }

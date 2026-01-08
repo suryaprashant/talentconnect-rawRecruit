@@ -5,6 +5,7 @@ import OnboardingModel from "../models/studentonboardingModel.js";
 import { getCompanyService } from "../services/companyService.js";
 import { getCollegeService } from "../services/collegeService.js";
 import { getStudentService } from "../services/studentService.js";
+import { notifyCollegesOnOnCampusJob, notifyCompaniesOnCollegeJobRequest } from "../services/notificationService.js";
 
 
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
@@ -46,6 +47,8 @@ export const createOnCampusPosting = async (req, res) => {
         const userId = req.user._id;
 
         const companyPostedId = await getCompanyService(userId);
+       
+
         if (!companyPostedId) {
             return res.status(404).json({ error: "Company profile not found" });
         }
@@ -63,7 +66,23 @@ export const createOnCampusPosting = async (req, res) => {
         if (!newPosting) {
             return sendError(res, 500, "Failed to create job posting");
         }
-        sendResponse(res, 201, { message: "On-campus posting created successfully!", data: newPosting });
+        
+        //🔔
+        notifyCollegesOnOnCampusJob({
+          companyId: userId, // senderId
+          companyName: companyPostedId.data[0].companyDetails.companyName,
+          jobTitle: newPosting.jobTitle || req.body.jobTitle || "new job",
+          jobId: newPosting._id
+        }).catch(err => {
+          console.error("Notification Error:", err.message);
+        });
+
+
+    // ✅ 3. Final Response
+    sendResponse(res, 201, {
+      message: "On-campus posting created successfully!",
+      data: newPosting
+    });
     }
     catch (error) {
         console.error("Error in createOnCampusPosting:", error.message);
@@ -81,6 +100,9 @@ export const createOnCampusCollegeRequest = async (req, res) => {
         if (!collegeProfile) {
             return res.status(404).json({ error: "College profile not found" });
         }
+
+        const college = collegeProfile.data[0];
+
         const postingData = {
             ...req.body,
             collegePosted: collegeProfile.data[0]._id,
@@ -89,10 +111,23 @@ export const createOnCampusCollegeRequest = async (req, res) => {
             // conditional - if paid user then don't put expiresAt
             expireAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
         };
+
         const newPosting = await createPostingService(postingData);
         if (!newPosting) {
             return sendError(res, 500, "Failed to create job posting");
         }
+
+        // 🔔 SEND NOTIFICATION (NON-BLOCKING)
+        notifyCompaniesOnCollegeJobRequest({
+          collegeId: userId,   // ✅ AUTH ID
+          collegeName:
+            college.collegeUniversityDetails?.collegeName || "A college",
+          jobTitle: newPosting.jobTitle || "job",
+          jobId: newPosting._id
+        }).catch(err => {
+          console.error("College job notification failed:", err);
+        });
+
         sendResponse(res, 201, { message: "On-campus college request created successfully!", data: newPosting });
 
     } catch (error) {
@@ -101,6 +136,8 @@ export const createOnCampusCollegeRequest = async (req, res) => {
     }
 
 }
+
+
 // colege Request for Pool Campus
 export const createPoolCampusCollegeRequest = async (req, res) => {
     try {
@@ -149,7 +186,23 @@ export const createPoolCampusPosting = async (req, res) => {
         if (!newPosting) {
             return sendError(res, 500, "Failed to create job posting");
         }
-        sendResponse(res, 201, { message: "Pool-campus posting created successfully!", data: newPosting });
+        
+        notifyCollegesOnOnCampusJob({
+          companyId: userId, // senderId
+          companyName: companyPostedId.data[0].companyDetails.companyName,
+          jobTitle: newPosting.jobTitle || req.body.jobTitle || "new job",
+          jobId: newPosting._id
+        }).catch(err => {
+          console.error("Notification Error:", err.message);
+        });
+
+
+    // ✅ 3. Final Response
+    sendResponse(res, 201, {
+      message: "Pool-campus posting created successfully!",
+      data: newPosting
+    });
+
     }
     catch (error) {
         console.error("Error in createPoolCampusPosting:", error.message);

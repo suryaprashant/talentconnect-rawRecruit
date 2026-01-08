@@ -1,5 +1,6 @@
 import CompanyProfile from '../models/companyDashboard/companyProfileModel.js';
 import Auth from "../models/authModel.js";
+import collegeProfileModel from "../models/collegeDashboard/collegeProfileModel.js"
 
 export async function createProfileService(profileData) {
     try {
@@ -19,7 +20,7 @@ export async function getCompanyService(userId) {
         if (!company) {
             return { success: false, msg: "Company profile not found" };
         }
-        console.log("Company profile found:", company);
+        
         return { success: true, data: company };
     } catch (error) {
         console.log("Error: ", error.message);
@@ -84,3 +85,14 @@ export const getEmployerService = async (user) => {
 
     return ownProfileResult;
 };
+
+
+//Prathmesh 
+{/*export async function getCollegeUserId(collegeProfileId) {
+  const college = await collegeProfileModel.findById(collegeProfileId)
+    .select("userId");
+
+  if (!college) return null;
+
+  return college.userId;
+}*/}

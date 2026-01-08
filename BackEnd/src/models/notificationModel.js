@@ -16,7 +16,17 @@ const notificationSchema = new mongoose.Schema({
     // Type of notification to handle different actions on the frontend
     type: {
         type: String,
-        enum: ['TEAM_INVITATION', 'MESSAGE', 'SYSTEM_UPDATE', 'FILE_SHARED', 'EVENT_UPDATE', 'SERVICE_REQUEST_UPDATE'],
+        enum: [
+    'TEAM_INVITATION',
+    'MESSAGE',
+    'SYSTEM_UPDATE',
+    'FILE_SHARED',
+    'EVENT_UPDATE',
+    'SERVICE_REQUEST_UPDATE',
+    'APPLICATION_SHORTLISTED',
+    'APPLICATION_ACCEPTED',
+    'APPLICATION_REJECTED'
+  ],
         required: true,
     },
     message: {

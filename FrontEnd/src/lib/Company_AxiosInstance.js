@@ -170,6 +170,7 @@ export function shortlistCandidate(applicationId, jobRole) {
     .then((response) => response)
     .catch((error) => error);
 }
+
 // reject
 export function rejectCandidate(applicationId, jobRole) {
   return axiosClient
