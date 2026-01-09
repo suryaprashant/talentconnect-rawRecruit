@@ -33,89 +33,54 @@ export const redirectToLinkedIn = (req, res) => {
   }
 };
 
+
+
+ 
+
 export const handleLinkedInCallback = async (req, res) => {
   try {
     const { code, state, error, error_description } = req.query;
+    const FRONTEND_URL = process.env.Frontend_URL || "http://localhost:5173";
 
-    // Validate state (should match a session value)
-    if (!req.session || req.session.state !== state) {
-      const errorMsg = encodeURIComponent("Invalid state parameter.");
-      return res.redirect(
-        `${process.env.Frontend_URL}/signup?error=${errorMsg}`
-      );
-    }
-
+    // Handle user cancellation or LinkedIn errors
     if (error) {
-      const errorMsg = encodeURIComponent(
-        `LinkedIn authentication failed: ${error_description || error}`
-      );
-      return res.redirect(
-        `${process.env.Frontend_URL}/signup?error=${errorMsg}`
-      );
+      return res.redirect(`${FRONTEND_URL}/signup?error=${encodeURIComponent(error_description || error)}`);
     }
 
-    if (!code || !state) {
-      const errorMsg = encodeURIComponent("Missing authentication parameters");
-      return res.redirect(
-        `${process.env.Frontend_URL}/signup?error=${errorMsg}`
-      );
-    }
-
+    // Call your handleLinkedInLogin service (which fetches profile & upserts user)
     const { user, isNewUser } = await handleLinkedInLogin({ code, state });
 
-    // Ensure user data is valid
-    if (!user || !user._id || !user.email || !user.userType) {
-      const errorMsg = encodeURIComponent("Invalid user data from LinkedIn.");
-      return res.redirect(
-        `${process.env.Frontend_URL}/signup?error=${errorMsg}`
-      );
-    }
-
+    // Generate JWT token using your service
     const token = generateToken({
       userId: user._id,
       email: user.email,
       userType: user.userType,
     });
 
-    const onboardingRoutes = {
-      candidate: "/student-form",
-      fresher: "/student-form",
-      professional: "/student-form",
-      company: "/company-form",
-      college: "/college-onboarding",
-      employer: "/onboardingflowForm",
-    };
+    // Set the JWT cookie (matches your Google Auth logic)
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
 
-    const dashboardRoutes = {
-      student: "/home",
-      fresher: "/fresherhome",
-      professional: "/Profhome",
-      company: "/home",
-      college: "/home",
-      employer: "/home",
-    };
-
-    const targetRoute = isNewUser
-      ? onboardingRoutes[user.userType] || "/onboarding"
-      : dashboardRoutes[user.userType] || "/home";
-
-    const redirectUrl = `${
-      process.env.Frontend_URL
-    }${targetRoute}?token=${token}&email=${encodeURIComponent(
-      user.email
-    )}&name=${encodeURIComponent(user.name || "")}&userType=${
-      user.userType
-    }&profileImage=${encodeURIComponent(user.profileImage || "")}`;
+    // Redirect to Frontend with query params so your React useEffect can save data
+    const redirectUrl = `${FRONTEND_URL}/signup?` + new URLSearchParams({
+      token: token,
+      userId: user._id.toString(),
+      email: user.email,
+      name: user.name || "",
+      userType: user.userType,
+      profileImage: user.profileImage || "",
+      onboardingCompleted: (!!user.onboardingCompleted).toString(),
+    }).toString();
 
     return res.redirect(redirectUrl);
+
   } catch (err) {
-    console.error(
-      "LinkedIn callback error:",
-      err.response?.data || err.message
-    );
-    const errorMsg = encodeURIComponent(
-      err.response?.data?.message || "LinkedIn auth failed on server."
-    );
+    console.error("LinkedIn Callback Controller Error:", err);
+    const errorMsg = encodeURIComponent("Authentication failed. Please try again.");
     return res.redirect(`${process.env.Frontend_URL}/signup?error=${errorMsg}`);
   }
 };

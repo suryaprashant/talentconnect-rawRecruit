@@ -79,33 +79,77 @@ function SignupPage() {
     };
   }, []);
 
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const linkedinError = queryParams.get('error');
-    const linkedinToken = queryParams.get('token');
+  // useEffect(() => {
+  //   const queryParams = new URLSearchParams(location.search);
+  //   const linkedinError = queryParams.get('error');
+  //   const linkedinToken = queryParams.get('token');
     
-    if (linkedinError) {
-      toast.error(decodeURIComponent(linkedinError));
-      navigate('/signup', { replace: true });
-    } else if (linkedinToken) {
-      toast.success('LinkedIn authentication successful!');
-      const user = {
-        _id: queryParams.get('userId'),
-        email: queryParams.get('email'),
-        name: queryParams.get('name'),
-        userType: queryParams.get('userType'),
-        profileImage: queryParams.get('profileImage'),
-        onboardingCompleted: queryParams.get('onboardingCompleted') === 'true',
-      };
+  //   if (linkedinError) {
+  //     toast.error(decodeURIComponent(linkedinError));
+  //     navigate('/signup', { replace: true });
+  //   } else if (linkedinToken) {
+  //     toast.success('LinkedIn authentication successful!');
+  //     const user = {
+  //       _id: queryParams.get('userId'),
+  //       email: queryParams.get('email'),
+  //       name: queryParams.get('name'),
+  //       userType: queryParams.get('userType'),
+  //       profileImage: queryParams.get('profileImage'),
+  //       onboardingCompleted: queryParams.get('onboardingCompleted') === 'true',
+  //     };
       
-      setAuthUser({ user });
-      localStorage.setItem('ChatAppUser', JSON.stringify(user));
-      localStorage.setItem('token', linkedinToken);
-      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${linkedinToken}`;
+  //     setAuthUser({ user });
+  //     localStorage.setItem('ChatAppUser', JSON.stringify(user));
+  //     localStorage.setItem('token', linkedinToken);
+  //     axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${linkedinToken}`;
       
-      handleAuthRedirect(user, navigate);
-    }
-  }, [location.search, navigate, setAuthUser]);
+  //     handleAuthRedirect(user, navigate);
+  //   }
+  // }, [location.search, navigate, setAuthUser]);
+
+  useEffect(() => {
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get('token');
+  const error = queryParams.get('error');
+
+  // 1. If no token or error, just stop. This prevents the loop!
+  if (!token && !error) return;
+
+  if (error) {
+    toast.error(decodeURIComponent(error));
+    // Clear the URL error so it doesn't trigger again
+    navigate('/signup', { replace: true });
+    return;
+  }
+
+  if (token) {
+    const user = {
+      _id: queryParams.get('userId'),
+      email: queryParams.get('email'),
+      name: decodeURIComponent(queryParams.get('name') || ''),
+      userType: queryParams.get('userType'),
+      profileImage: queryParams.get('profileImage'),
+      onboardingCompleted: queryParams.get('onboardingCompleted') === 'true',
+    };
+
+    // Save to local storage
+    setAuthUser({ user });
+    localStorage.setItem('ChatAppUser', JSON.stringify(user));
+    localStorage.setItem('token', token);
+    
+    // Set axios header
+    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+    toast.success("LinkedIn authentication successful!");
+
+    // 2. CRITICAL FIX: Clear the URL query params IMMEDIATELY 
+    // before the redirect logic starts.
+    navigate(location.pathname, { replace: true });
+
+    // 3. Now handle the actual redirection logic
+    handleAuthRedirect(user, navigate);
+  }
+}, [location.search, navigate]); // Dependencies are correct
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
