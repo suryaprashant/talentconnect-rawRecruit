@@ -99,13 +99,16 @@ export default function PoolCampusJobManagement() {
     }
   };
 
-  const fetchCompaniesForJob = async (jobId, jobType) => {
+  const fetchCompaniesForJob = async (jobId, jobType,isVisited) => {
     setCompaniesLoading(true);
     setError(null);
     try {
-      const response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted");
+      const response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted",isVisited);
       console.log("Fetched companies for job:", response.data);
       setCompanies(response.data || []);
+      if (isVisited === "false") {
+      fetchJobs(); 
+    }
     } catch (err) {
       console.error("Error fetching companies:", err);
       setError(err.response?.data?.message || err.message || "Failed to fetch companies.");
@@ -223,7 +226,14 @@ export default function PoolCampusJobManagement() {
   const handleViewCompanies = (job) => {
     // Disabled logic removed. Always fetches/displays now.
     setSelectedJob(job);
-    fetchCompaniesForJob(job._id, job.jobType);
+    fetchCompaniesForJob(job._id, job.jobType,"false");
+  };
+
+  const handleViewAllCompanies = (job) => {
+    // Disabled logic removed. Always fetches/displays now.
+    setSelectedJob(job);
+    
+    fetchCompaniesForJob(job._id, job.jobType,undefined);
   };
 
   const handleBackToList = () => {
@@ -733,7 +743,7 @@ export default function PoolCampusJobManagement() {
                               <button 
                                 onClick={(e) => { 
                                   e.stopPropagation(); 
-                                  handleViewCompanies(job); 
+                                  handleViewAllCompanies(job); 
                                 }} 
                                 className={viewButtonClass} 
                                 title="View Company Applications"

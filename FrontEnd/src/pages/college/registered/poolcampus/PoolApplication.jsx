@@ -130,10 +130,17 @@ function PoolApplicationsPage() {
   const handleNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
   const handlePageClick = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleView = (jobId) => {
-    // For registered opportunities, show shortlisted applications
-    navigate(`/registered/pool-campus-opportunities/${jobId}`);
-  };
+
+const handleView = (jobId) => {
+   
+    navigate(`/registered/pool-campus-opportunities/${jobId}?targetStatus=Shortlisted&isVisited=false`);
+};
+
+
+const handleViewAll = (jobId) => {
+   
+    navigate(`/registered/pool-campus-opportunities/${jobId}?targetStatus=Shortlisted`);
+};
 
   const handleDelete = async (jobId, e) => {
     e.stopPropagation();
@@ -343,7 +350,7 @@ function PoolApplicationsPage() {
                       const views = job.views || 0;
                       const applications = job.applicationCount || job.applications || 0;
 
-                      const isViewDisabled = applications === 0;
+                      const isViewDisabled = false;
                       const viewButtonClass = `transition-all duration-200 ${isViewDisabled ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-[#3b82f6]'}`;
 
                       return (
@@ -404,7 +411,7 @@ function PoolApplicationsPage() {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  if (!isViewDisabled) handleView(jobId);
+                                 handleViewAll(jobId);
                                 }}
                                 className={viewButtonClass}
                                 title={isViewDisabled ? "No applications to view" : "View Shortlisted"}

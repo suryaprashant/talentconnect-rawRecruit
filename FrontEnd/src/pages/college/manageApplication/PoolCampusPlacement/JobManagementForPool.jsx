@@ -615,27 +615,36 @@ function JobManagementApplicationForPool() {
   };
 
   // Function to navigate with query parameters
-  const navigateWithParams = (jobId, targetStatus, isVisited = false) => {
-    const customParam = buildQueryParams(jobId, targetStatus, isVisited);
-    const queryString = new URLSearchParams(customParam).toString();
+
+const navigateWithParams = (jobId, targetStatus, isVisited) => {
+    const customParam = {
+        jobId: jobId,
+        jobType: 'Pool-campus',
+        targetStatus: targetStatus,
+    };
     
-    // Navigate to Pool Campus job detail with query parameters
-    // This matches your route: /manage-application/PoolCampus-placement/:jobId
+    // Only send the flag if we specifically want to filter "New"
+    if (isVisited === "false" || isVisited === false) {
+        customParam.isVisited = "false";
+    }
+    
+    const queryString = new URLSearchParams(customParam).toString();
     navigate(`/manage-application/PoolCampus-placement/${jobId}?${queryString}`);
-  };
+};
 
   // Handle Applications count click (with isVisited = true)
   const handleApplicationsClick = (jobId, targetStatus, e) => {
     e.stopPropagation();
-    // Navigate with isVisited = true
-    navigateWithParams(jobId, targetStatus, true);
+    const isVisited = "false"
+    
+    navigateWithParams(jobId, targetStatus, isVisited);
   };
 
   // Handle Eye icon click (without isVisited)
   const handleViewJob = (jobId, targetStatus, e) => {
     e.stopPropagation();
     // Navigate without isVisited
-    navigateWithParams(jobId, targetStatus, false);
+    navigateWithParams(jobId, targetStatus,undefined);
   };
 
   // Handle row click for degree/location - goes to preview
@@ -842,7 +851,7 @@ function JobManagementApplicationForPool() {
                       const views = job?.views ?? 0;
                       const applications = job.applicationCount || job.applications || 0;
                       
-                      const isViewDisabled = applications === 0;
+                      const isViewDisabled = false;
                       const viewButtonClass = `transition-all duration-200 ${isViewDisabled ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-[#3b82f6]'}`;
                       
                       return (
@@ -896,7 +905,7 @@ function JobManagementApplicationForPool() {
                               <button 
                                 onClick={(e) => { 
                                   e.stopPropagation(); 
-                                  if (!isViewDisabled) handleViewJob(jobId, targetStatus, e); 
+                                 handleViewJob(jobId, targetStatus, e); 
                                 }} 
                                 className={viewButtonClass} 
                                 title={isViewDisabled ? "No applications to view" : "View Applicants"}

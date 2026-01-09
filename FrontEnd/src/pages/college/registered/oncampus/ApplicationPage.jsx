@@ -143,9 +143,18 @@ function ApplicationPage() {
   const handlePageClick = (pageNumber) => setCurrentPage(pageNumber);
 
   // Action handlers
-  const handleView = (jobId) => {
-    navigate(`${location.pathname}/${jobId}`);
-  };
+ // Add these two specific handlers
+const handleViewNewApplications = (jobId, e) => {
+    e.stopPropagation();
+    // This triggers the 'move' logic in the service
+    navigate(`/registered/on-campus-opportunities/${jobId}?targetStatus=Shortlisted&isVisited=false`);
+};
+
+const handleViewAllApplications = (jobId, e) => {
+    e.stopPropagation();
+    // This does NOT include isVisited, so the backend returns EVERYTHING
+    navigate(`/registered/on-campus-opportunities/${jobId}?targetStatus=Shortlisted`);
+};
 
   const handleDelete = async (jobId, e) => {
     e.stopPropagation();
@@ -406,23 +415,24 @@ function ApplicationPage() {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="flex items-center gap-1 text-gray-700">
+                          <div 
+                              className="flex items-center gap-1 text-gray-700 cursor-pointer hover:text-[#3b82f6]"
+                              onClick={(e) => handleViewNewApplications(jobId, e)} // ✅ VIEW NEW
+                          >
                               <Users className="w-4 h-4 text-[#3b82f6]" />
                               {applications}
-                            </div>
-                          </td>
+                          </div>
+                      </td>
+                         
                           <td className="px-6 py-4">
                             <div className="flex gap-3">
-                              <button 
-                                onClick={(e) => { 
-                                  e.stopPropagation(); 
-                                  handleView(jobId); 
-                                }} 
-                                className="text-gray-500 hover:text-[#3b82f6] transition-all duration-200" 
-                                title="View Job"
-                              >
-                                <Eye size={18} />
-                              </button>
+                             <button 
+                              onClick={(e) => handleViewAllApplications(jobId, e)} // ✅ VIEW ALL
+                              className="text-gray-500 hover:text-[#3b82f6] transition-all duration-200" 
+                              title="View All Applications"
+                          >
+                              <Eye size={18} />
+                          </button>
                               {/* <Link
                                 to={`/college-dashboard/preview/On-campus/${job._id}?isApplied=true`}
                                 disabled={job.applicationCount === 0}

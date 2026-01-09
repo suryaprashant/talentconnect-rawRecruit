@@ -573,6 +573,7 @@ export async function fetchCollegeApplicationsByJobService(
   targetStatus,
   isVisited
 ) {
+   
   let applicantDB;
 
   if (userType === "college") applicantDB = "companyprofiles";
@@ -586,7 +587,7 @@ export async function fetchCollegeApplicationsByJobService(
       currentStatus: targetStatus,
     };
 
-    // 🔑 VERY IMPORTANT FIX
+   
     if (isVisited === "false" || isVisited === false) {
       // New Applications
       matchConditions.isVisited = false;
@@ -625,7 +626,6 @@ export async function fetchCollegeApplicationsByJobService(
       },
     ]);
 
-    // ✅ Mark visited ONLY when opening New Applications
     if (isVisited === "false" || isVisited === false) {
       const idsToMarkVisited = response
         .filter((doc) => doc.isVisited === false)

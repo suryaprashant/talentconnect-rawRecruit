@@ -346,15 +346,17 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
 };
 
 function JobDetailPage(props) {
+ 
   const { jobId } = useParams();
   const navigate = useNavigate();
+  const isVisited = new URLSearchParams(location.search).get('isVisited');
   const pathParts = useLocation().pathname.split('/').filter(Boolean);
   const targetStatusKey = pathParts[pathParts.length - 2];
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [jobRole, setJobRole] = useState("On-campus");
-
+   
   const handleApplicantStatusChange = (applicationId, newStatus) => {
     setApplicants(prevApplicants =>
       prevApplicants.map(app =>
@@ -372,7 +374,7 @@ function JobDetailPage(props) {
 
     const fetchApplicants = async () => {
       try {
-        const response = await getApplicationByJobOfManagement(jobId, 'On-campus', props?.status);
+        const response = await getApplicationByJobOfManagement(jobId, 'On-campus', props?.status,isVisited);
         if (response.data && Array.isArray(response.data)) {
           setApplicants(response.data);
           if (response.data.length > 0 && response.data[0].job && response.data[0].job.jobTitle) {
@@ -390,7 +392,7 @@ function JobDetailPage(props) {
     };
 
     fetchApplicants();
-  }, [jobId, targetStatusKey]);
+  }, [jobId, targetStatusKey,isVisited]);
 
   if (loading) {
     return (

@@ -154,21 +154,14 @@ function JobManagementApplication() {
     };
 
     // Function to build query parameters
-    const buildQueryParams = (jobId, targetStatus, isVisited = false) => {
-        const customParam = {
-            jobId: jobId,
-            jobType: jobType,
-            targetStatus: targetStatus,
-        };
-        
-        // Only add isVisited if it's true
-        if (isVisited) {
-            customParam.isVisited = isVisited;
-        }
-        
-        return customParam;
-    };
-
+    
+const buildQueryParams = (jobId, targetStatus, isVisited) => {
+    const customParam = { jobId, jobType, targetStatus };
+    if (isVisited !== undefined && isVisited !== null) {
+        customParam.isVisited = isVisited;
+    }
+    return customParam;
+};
     // Function to navigate with query parameters
     const navigateWithParams = (jobId, targetStatus, isVisited = false) => {
         const customParam = buildQueryParams(jobId, targetStatus, isVisited);
@@ -180,16 +173,16 @@ function JobManagementApplication() {
 
     // Handle Applications count click (with isVisited = true)
     const handleApplicationsClick = (jobId, targetStatus, e) => {
-        e.stopPropagation();
-        // Navigate with isVisited = true
-        navigateWithParams(jobId, targetStatus, true);
+       e.stopPropagation();
+    navigateWithParams(jobId, targetStatus, false);
     };
 
     // Handle Eye icon click (without isVisited)
     const handleViewJob = (jobId, targetStatus, e) => {
+        //console.log('ok')
         e.stopPropagation();
         // Navigate without isVisited
-        navigateWithParams(jobId, targetStatus, false);
+        navigateWithParams(jobId, targetStatus, true);
     };
 
     // Handle row click for degree/location - goes to preview
@@ -390,7 +383,7 @@ function JobManagementApplication() {
                                             const views = job?.views ?? 0;
                                             const applications = job.applicationCount || job.applications || 0;
                                             
-                                            const isViewDisabled = applications === 0;
+                                            const isViewDisabled = false;
                                             const viewButtonClass = `transition-all duration-200 ${isViewDisabled ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-[#3b82f6]'}`;
                                             
                                             return (

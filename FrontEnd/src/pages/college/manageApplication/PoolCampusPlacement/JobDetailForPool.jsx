@@ -271,10 +271,11 @@ function JobDetailForPool(props) {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  
   // Get status from props (for routes) or URL params
   const statusFromProps = props?.status;
   const searchParams = new URLSearchParams(location.search);
+  const isVisited = searchParams.get('isVisited')
+  const targetStatusFromUrl = searchParams.get('targetStatus');
   const statusFromUrl = searchParams.get('status');
   
   // Determine which status to use
@@ -303,7 +304,7 @@ function JobDetailForPool(props) {
     const fetchApplicants = async () => {
       try {
         // Use the determined status for API call
-        const response = await getApplicationByJobOfManagement(jobId, 'Pool-campus', currentStatus);
+        const response = await getApplicationByJobOfManagement(jobId, 'Pool-campus', currentStatus,isVisited);
         
         if (response.data && Array.isArray(response.data)) {
           setApplicants(response.data);
@@ -322,7 +323,7 @@ function JobDetailForPool(props) {
     };
 
     fetchApplicants();
-  }, [jobId, currentStatus]);
+  }, [jobId, currentStatus,isVisited]);
 
   if (loading) {
     return (
