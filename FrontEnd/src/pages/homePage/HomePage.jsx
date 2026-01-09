@@ -103,6 +103,7 @@ const App = () => {
   };
 
   const handleRoleSelect = (role) => {
+    console.log('here')
     if (role) {
       localStorage.setItem('selectedRole', role);
       navigate('/signup');
@@ -110,7 +111,7 @@ const App = () => {
   };
 
   const handleServiceCardClick = (serviceType, serviceTitle) => {
-    localStorage.setItem('selectedServiceType', serviceType);
+    localStorage.setItem('selectedServiceType', serviceType); // company
     localStorage.setItem('selectedServiceTitle', serviceTitle);
     
     const companyRoutes = {
@@ -1032,11 +1033,12 @@ const App = () => {
                   </div>
                   
                   <h3 className="relative text-sm font-bold text-gray-800 mb-1 text-center group-hover:text-white transition-colors duration-300 z-10">
-                    {service.title}
+                    {service.title} 
                   </h3>
                   <p className="relative text-xs text-gray-600 leading-relaxed text-center group-hover:text-white/90 transition-colors duration-300 z-10">
                     {service.desc}
                   </p>
+                  
                 </div>
               </div>
             );

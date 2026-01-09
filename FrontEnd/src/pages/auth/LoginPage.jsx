@@ -105,17 +105,66 @@ function LoginPage() {
     };
   }, []);
 
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const token = queryParams.get('token');
+    const authError = queryParams.get('error');
+
+    if (!token && !authError) return;
+
+    if (authError) {
+      toast.error(decodeURIComponent(authError));
+      navigate('/login', { replace: true });
+      return;
+    }
+
+    if (token) {
+      const user = {
+        _id: queryParams.get('userId'),
+        email: queryParams.get('email'),
+        name: decodeURIComponent(queryParams.get('name') || ''),
+        userType: queryParams.get('userType'),
+        profileImage: queryParams.get('profileImage'),
+        onboardingCompleted: queryParams.get('onboardingCompleted') === 'true',
+      };
+
+      // 1. Save to Context & Storage
+      setAuthUser({ user });
+      localStorage.setItem('ChatAppUser', JSON.stringify(user));
+      localStorage.setItem('token', token);
+      localStorage.setItem('selectedRole', user.userType);
+      
+      // 2. Set Axios Header
+      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      toast.success("Welcome back!");
+
+      // 3. Clear URL to prevent loop
+      navigate(window.location.pathname, { replace: true });
+
+      // 4. Redirect based on onboarding status
+      handleAuthRedirect(user, navigate);
+    }
+  }, [navigate, setAuthUser]);
+
+  // const handleLinkedInLogin = () => {
+  //   const clientId = import.meta.env.VITE_LINKEDIN_CLIENT_ID;
+  //   const redirectUri = encodeURIComponent(`${window.location.origin}/auth/linkedin/callback`);
+  //   const state = Math.random().toString(36).substring(2);
+  //   const scope = encodeURIComponent('r_liteprofile r_emailaddress');
+
+  //   const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
+
+  //   sessionStorage.setItem('linkedin_oauth_state', state);
+  //   setLinkedinLoading(true);
+  //   window.location.href = linkedInAuthUrl;
+  // };
+
   const handleLinkedInLogin = () => {
-    const clientId = import.meta.env.VITE_LINKEDIN_CLIENT_ID;
-    const redirectUri = encodeURIComponent(`${window.location.origin}/auth/linkedin/callback`);
-    const state = Math.random().toString(36).substring(2);
-    const scope = encodeURIComponent('r_liteprofile r_emailaddress');
-
-    const linkedInAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}`;
-
-    sessionStorage.setItem('linkedin_oauth_state', state);
     setLinkedinLoading(true);
-    window.location.href = linkedInAuthUrl;
+    // Note: We pass a default userType. Backend will prioritize 
+    // the user's ACTUAL role found in the database.
+    window.location.href = `${import.meta.env.VITE_Backend_URL}/api/auth/linkedin?userType=candidate`;
   };
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });

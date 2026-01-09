@@ -1,5 +1,5 @@
 
-import { useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { FiHome, FiUser, FiBookmark, FiSearch, FiHelpCircle, FiSettings } from 'react-icons/fi'
 import SidebarNavItem from './SidebarNavItem'
 import CompanySidebar from './CompanySidebar'
@@ -11,12 +11,20 @@ import ProfessionalSidebar from './ProfessionalSidebar'
 import EmployerSidebar from './EmployerSidebar'
 
 function Sidebar({ open, setOpen }) {
+  const navigate = useNavigate();
   const location = useLocation()
- 
+  
   const selectedRole=localStorage.getItem('selectedRole')
   const isActive = (path) => location.pathname === path
-
-   const isAuthenticated = localStorage.getItem('token') && localStorage.getItem('ChatAppUser');
+  
+  const isAuthenticated = localStorage.getItem('token') && localStorage.getItem('ChatAppUser');
+  
+  const handleLogin =()=>{
+     const userType=localStorage.getItem('selectedServiceType')
+     localStorage.setItem('selectedRole',userType)
+     console.log(userType)
+     navigate('/login')
+  }
 
   return (
     <>
@@ -60,10 +68,37 @@ function Sidebar({ open, setOpen }) {
             {isAuthenticated && selectedRole === 'college' && <CollegeSidebar activePath={location.pathname} />}
 
             {!isAuthenticated && (
-              <div className="text-center text-gray-500 py-8">
-                Please login to access navigation
+              <div className='text-center'>
+
+                <div className="text-center text-gray-500 py-8 font-bold">
+                  Please login to access navigation
+                </div>
+             <button 
+                  className="
+                    relative group
+                    px-8 py-3 
+                    font-bold text-white 
+                    rounded-xl
+                    transition-all duration-500
+                    bg-[length:200%_auto]
+                    bg-gradient-to-r from-[#667eea] via-[#764ba2] to-[#667eea]
+                    hover:bg-right
+                    hover:shadow-[0_10px_20px_rgba(118,75,162,0.4)]
+                    hover:-translate-y-1
+                    active:scale-95
+                    overflow-hidden
+                  " 
+                  onClick={handleLogin}
+                >
+                  {/* The Text */}
+                  <span className="relative z-10">Login</span>
+
+                  {/* Inner Light Sweep Effect */}
+                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] transition-transform"></div>
+                </button>
+
               </div>
-            )}            
+              )}            
 
           </nav>
 
