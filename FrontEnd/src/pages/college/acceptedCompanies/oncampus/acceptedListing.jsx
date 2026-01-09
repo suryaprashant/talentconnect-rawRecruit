@@ -101,13 +101,20 @@ export default function OnCampusJobManagement() {
     }
   };
 
-  const fetchCompaniesForJob = async (jobId, jobType) => {
+  const fetchCompaniesForJob = async (jobId, jobType,isVisited) => {
     setCompaniesLoading(true);
     setError(null);
     try {
+      if(isVisited=='false'){
+      const response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted",isVisited);
+      console.log("Fetched companies for job:", response.data);
+      setCompanies(response.data || []);
+      }
+      else{
       const response = await getCollegeApplicationsForJob(jobId, jobType, "Accepted");
       console.log("Fetched companies for job:", response.data);
       setCompanies(response.data || []);
+      }
     } catch (err) {
       console.error("Error fetching companies:", err);
       setError(err.response?.data?.message || err.message || "Failed to fetch companies.");
@@ -227,6 +234,13 @@ export default function OnCampusJobManagement() {
     // It will now fetch and display the "No Applications Yet" view if empty.
     setSelectedJob(job);
     fetchCompaniesForJob(job._id, job.jobType);
+  };
+  const handleViewNewCompanies = (job) => {
+    // Logic to block 0 applications removed.
+    // It will now fetch and display the "No Applications Yet" view if empty.
+    setSelectedJob(job);
+    const isVisited='false';
+    fetchCompaniesForJob(job._id, job.jobType,isVisited);
   };
 
   const handleBackToList = () => {
@@ -724,7 +738,7 @@ export default function OnCampusJobManagement() {
                             className="px-6 py-4 cursor-pointer"
                             onClick={(e) => { 
                               e.stopPropagation(); 
-                              handleViewCompanies(job); 
+                              handleViewNewCompanies(job); 
                             }}
                           >
                             <div className="flex items-center gap-1 text-gray-700">

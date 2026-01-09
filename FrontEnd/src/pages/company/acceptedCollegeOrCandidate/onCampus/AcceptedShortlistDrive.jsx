@@ -391,6 +391,7 @@ export default function OnCampusJobManagement() {
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
                           title="View College Applications"
                         >
+                          
                           <Eye size={16} />
                         </button>
                         <button 

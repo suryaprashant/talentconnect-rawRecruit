@@ -92,12 +92,13 @@ export function getCollegePostedJobs(jobType,key) {
     .catch(error => error);
 }
 
-export function getApplicationByJobOfManagement(jobId, jobType, targetStatus) {
+export function getApplicationByJobOfManagement(jobId, jobType, targetStatus,isVisited) {
   return axiosClient.get(`application/manage/college`, {
     params: {
       jobId: jobId,
       jobType: jobType,
-      targetStatus: targetStatus
+      targetStatus: targetStatus,
+      isVisited: isVisited
     }
   })
     .then(response => response)

@@ -499,6 +499,7 @@ export async function getApplicationsByJob(req, res) {
 
 //past new working for company prathmesh
 export async function getCollegeApplicationsByJob(req, res) { 
+  
   const { jobId, jobType, targetStatus, isVisited } = req.query; 
   const userType = req.user.userType; if (!jobId || !jobType || !targetStatus) 
     return res.status(404).json({ msg: "Job not found with given criteria!" }); 

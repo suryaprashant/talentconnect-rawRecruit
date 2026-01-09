@@ -6,7 +6,7 @@ const JobContext = createContext(undefined);
 export const JobProvider = ({ children }) => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  console.log(' omk')
   // Simulate API fetch on mount
   React.useEffect(() => {
     setTimeout(() => {
