@@ -20,15 +20,26 @@
 // export default Logo
 
 
+import { useNavigate } from 'react-router-dom';
+
 function Logo() {
+  const navigate = useNavigate();
+
+  const handleLogoClick = () => {
+    navigate('/');
+  };
+
   return (
-    <div className="flex items-center gap-2">
+    <div 
+      className="flex items-center gap-2 cursor-pointer group"
+      onClick={handleLogoClick}
+    >
       <div className="relative">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="#667eea"
-          className="w-6 h-6"
+          className="w-6 h-6 group-hover:scale-110 transition-transform duration-300"
         >
           <path
             fillRule="evenodd"
@@ -42,7 +53,7 @@ function Logo() {
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="#f5576c"
-          className="w-3 h-3 absolute -top-0.5 -right-0.5"
+          className="w-3 h-3 absolute -top-0.5 -right-0.5 group-hover:rotate-180 transition-transform duration-500"
         >
           <path
             fillRule="evenodd"
@@ -52,7 +63,7 @@ function Logo() {
         </svg>
       </div>
 
-      <span className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+      <span className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent group-hover:from-[#764ba2] group-hover:to-[#667eea] transition-all duration-300">
         RawRecruit
       </span>
     </div>
