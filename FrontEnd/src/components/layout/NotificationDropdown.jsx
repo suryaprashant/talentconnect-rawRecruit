@@ -7,41 +7,94 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
     const navigate = useNavigate();
 
     const handleNotificationClick = async (notification) => {
-       
-        if (!notification.read) {
-            try {
+    const selectedRole = localStorage.getItem("selectedRole"); // company | employer
 
-                await axios.patch(
-                    `${import.meta.env.VITE_Backend_URL}/api/notifications/${notification._id}/read`,
-                    {},
-                    { withCredentials: true }
-                );
-              
-                setNotifications(prev => 
-                    prev.map(n => n._id === notification._id ? { ...n, read: true } : n)
-                );
-                setUnreadCount(prev => prev - 1);
-            } catch (error) {
-                console.error("Failed to mark notification as read:", error);
-            }
+    // 1️⃣ Mark as read
+    if (!notification.read) {
+        try {
+            await axios.patch(
+                `${import.meta.env.VITE_Backend_URL}/api/notifications/${notification._id}/read`,
+                {},
+                { withCredentials: true }
+            );
+
+            setNotifications(prev =>
+                prev.map(n =>
+                    n._id === notification._id ? { ...n, read: true } : n
+                )
+            );
+
+            setUnreadCount(prev => Math.max(prev - 1, 0));
+        } catch (error) {
+            console.error("Failed to mark notification as read:", error);
         }
+    }
 
-       
-        if (notification.type === 'FILE_SHARED' && notification.fileUrl) {
-            handleFileDownload(notification.fileUrl, notification.fileName);
+    // 2️⃣ FILE DOWNLOAD
+    if (notification.type === "FILE_SHARED" && notification.fileUrl) {
+        handleFileDownload(notification.fileUrl, notification.fileName);
+        return;
+    }
+
+    // 3️⃣ TEAM INVITATION
+    if (notification.type === "TEAM_INVITATION") {
+        navigate("/invitations");
+        return;
+    }
+
+    // 4️⃣ COLLEGE → COMPANY / EMPLOYER APPLICATION STATUS
+    if (
+        notification.type === "COLLEGE_APPLICATION_SHORTLISTED" ||
+        notification.type === "COLLEGE_APPLICATION_ACCEPTED" ||
+        notification.type === "COLLEGE_APPLICATION_REJECTED"
+    ) {
+        if (selectedRole === "company") {
+            navigate("/company/application-status/oncampus");
             return;
         }
 
-        
-        if (notification.type === 'TEAM_INVITATION') {
-            navigate('/invitations');
+        if (selectedRole === "employer") {
+            navigate("/employer/application-status/oncampus");
+            return;
+        }
+    }
+
+    // 🔔 SYSTEM UPDATE (job posted etc.)
+    if (notification.type === "SYSTEM_UPDATE") {
+        if (selectedRole === "company") {
+            navigate("/company-dashboard/On-campus");
+            return;
         }
 
-        if (notification.type === 'SYSTEM_UPDATE' && notification.referenceId) {
-            navigate(`/jobs/${notification.referenceId}`);
+        if (selectedRole === "employer") {
+            navigate("/employer-dashboard/On-campus");
+            return;
         }
-        
-    };
+
+        if (selectedRole === "college") {
+            navigate("/college-dashboard/On-campus");
+            return;
+        }
+    }
+
+    //company taking action on college application
+    if (
+        notification.type === "APPLICATION_SHORTLISTED" ||
+        notification.type === "APPLICATION_ACCEPTED" ||
+        notification.type === "APPLICATION_REJECTED"
+    ) {
+        if (selectedRole === "college") {
+            navigate("/application-status/oncampus");
+            return;
+        }
+
+    }
+
+
+    
+};
+
+
 
     const handleFileDownload = async (fileUrl, fileName) => {
         try {

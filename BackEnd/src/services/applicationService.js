@@ -280,8 +280,7 @@ export async function createApplicationService(userId, userType, jobId, jobType)
 
 export async function fetchApplicationStatusService(userId, jobType, userType) {
     try {
-        console.log("🔍 BACKEND DEBUG - Starting service");
-        console.log("🔍 Parameters:", { userId, jobType, userType });
+        
 
         const applicationData = await Application.aggregate([
             {
@@ -337,13 +336,13 @@ export async function fetchApplicationStatusService(userId, jobType, userType) {
         
         if (applicationData.length > 0) {
             const firstApp = applicationData[0];
-            console.log("🔍 FIRST APPLICATION DEBUG:");
-            console.log(JSON.stringify(firstApp, null, 2));
+            //console.log("🔍 FIRST APPLICATION DEBUG:");
+            //console.log(JSON.stringify(firstApp, null, 2));
             
-            console.log("🔍 KEY FIELDS:");
-            console.log("1. jobDetails count:", firstApp.debugJobDetailsCount);
-            console.log("2. collegeDetails count:", firstApp.debugCollegeDetailsCount);
-            console.log("3. jobDetails[0].collegePosted:", firstApp.debugJobDetailsCollegePosted);
+            //console.log("🔍 KEY FIELDS:");
+            //console.log("1. jobDetails count:", firstApp.debugJobDetailsCount);
+            //console.log("2. collegeDetails count:", firstApp.debugCollegeDetailsCount);
+            //console.log("3. jobDetails[0].collegePosted:", firstApp.debugJobDetailsCollegePosted);
             
             if (firstApp.collegeDetails && firstApp.collegeDetails.length > 0) {
                 const college = firstApp.collegeDetails[0];
@@ -928,15 +927,7 @@ export async function fetchCompanyDashboardMetrics(user) {
         const totalApplied = Object.values(formattedAppliedCounts).reduce((sum, count) => sum + count, 0);
 
         // For debugging
-        console.log('📊 Dashboard Metrics Debug:', {
-            allJobIds,
-            allApplicationsByType,
-            applicationsByStatusAndType,
-            statusCounts,
-            formattedAppliedCounts,
-            formattedCountsByStatusAndType,
-            totalApplied
-        });
+        
 
         return {
             appliedByCategory: formattedAppliedCounts,

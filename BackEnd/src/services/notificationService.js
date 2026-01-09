@@ -1,5 +1,8 @@
 import Notification from "../models/notificationModel.js";
 import Auth from "../models/authModel.js";
+import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
+import EmployerProfile from "../models/employerDashboard/employerProfileModel.js";
+import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel.js";
 
 export async function getNotificationService(Id) {
     try {
@@ -135,3 +138,74 @@ export const notifyOnApplicationStatusChange = async ({
     console.error("Application status notification error:", error);
   }
 };
+
+export async function notifyOnCollegeApplicationStatusChange({
+  application,
+  newStatus,
+  actorAuthId // college auth user id
+}) {
+  
+
+  try {
+    let recipientAuthIds = [];
+
+    // 1️⃣ Resolve recipient Auth ID(s)
+    switch (application.applicantType) {
+
+      case "company": {
+        const company = await CompanyProfile.findById(application.applicant)
+          .select("userId");
+        if (company?.userId) {
+          recipientAuthIds.push(company.userId);
+        }
+        break;
+      }
+
+      case "employer": {
+        const employer = await EmployerProfile.findById(application.applicant)
+          .select("userId");
+        if (employer?.userId) {
+          recipientAuthIds.push(employer.userId);
+        }
+        break;
+      }
+
+      default:
+        return; // safety
+    }
+
+    if (!recipientAuthIds.length) return;
+
+    // 2️⃣ Resolve college name
+    const college = await CollegeOnboarding.findOne({ userId: actorAuthId })
+      .select("collegeUniversityDetails.collegeName");
+
+    const collegeName =
+      college?.collegeUniversityDetails?.collegeName || "College";
+
+    // 3️⃣ Map status → notification type
+    const STATUS_TYPE_MAP = {
+      Shortlisted: "COLLEGE_APPLICATION_SHORTLISTED",
+      Accepted: "COLLEGE_APPLICATION_ACCEPTED",
+      Rejected: "COLLEGE_APPLICATION_REJECTED"
+    };
+
+    const notificationType = STATUS_TYPE_MAP[newStatus];
+    if (!notificationType) return;
+
+    // 4️⃣ Create notifications
+    const notifications = recipientAuthIds.map(recipientId => ({
+      recipientId,
+      senderId: actorAuthId,
+      type: notificationType,
+      message: `${collegeName} ${newStatus.toLowerCase()} your application`,
+      referenceId: application._id,
+      read: false
+    }));
+
+    await Notification.insertMany(notifications);
+
+  } catch (error) {
+    console.error("🔔 Application status notification failed:", error.message);
+  }
+}

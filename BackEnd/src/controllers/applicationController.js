@@ -32,7 +32,7 @@ import sendStatusChangeEmail from "../utils/sendStatusChangeEmail.js";
 import sendScheduledInterviewEmail from "../utils/sendScheduledInterviewEmail.js";
 import { submitAlternateDatesService } from "../services/alternateDateService.js";
 // import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
-import { notifyOnApplicationStatusChange } from "../services/notificationService.js";
+import { notifyOnApplicationStatusChange, notifyOnCollegeApplicationStatusChange } from "../services/notificationService.js";
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel.js";
 
@@ -615,25 +615,23 @@ export async function shortlistApplicantForCompany(req, res) {
   if (!applicationId)
     return res.status(404).json({ msg: "Application not found!" });
   try {
+    
     const response = await ChangeStatusService(applicationId, "Shortlisted");
 
-    if (response.success === true) {
-      // service -> send mail to company
-      const companyMail = await getCompanyService(response.data.applicant);
-      const companyData = companyMail.data ? companyMail.data[0] : null;
-      const workEmail = companyData?.employerDetails?.workEmail;
+   if (response.success === true) {
 
-      // if (companyMail.success && workEmail) {
-      //     sendStatusChangeEmail(
-      //         workEmail,
-      //         response.data.currentStatus,
-      //         response.data._id,
-      //         jobRole
-      //     );
-      // }
+      // 🔔 Notify company/employer (NON-BLOCKING)
+      
+      notifyOnCollegeApplicationStatusChange({
+        application: response.data,
+        newStatus: "Shortlisted",
+        actorAuthId: req.user._id
+      });
 
+      // ✅ ONLY NOW return response
       return res.status(200).json(response);
     }
+
     return res.status(404).json(response);
   } catch (error) {
     console.log("Error: ", error);
@@ -767,12 +765,15 @@ export async function rejectCompanyApplicationByCollege(req, res) {
   }
 }
 
-export async function acceptApplicant(req, res) {
+
+//incase below fails
+{/*export async function acceptApplicant(req, res) {
   const { applicationId } = req.params;
   const { jobRole } = req.body;
   if (!applicationId)
     return res.status(404).json({ msg: "Application not found!" });
   try {
+    console.log("hello")
     const response = await ChangeStatusService(applicationId, "Accepted");
 
     if (response.success === true) {
@@ -798,7 +799,7 @@ export async function acceptApplicant(req, res) {
           applicantMail.email,
           response.data.currentStatus,
           response.data._id,
-          jobRole /*companyName*/
+          jobRole 
         ).catch(err => {
           console.error("Email sending failed:", err.message);
         });
@@ -850,6 +851,87 @@ export async function acceptApplicant(req, res) {
     return res.status(404).json(response);
   } catch (error) {
     console.log("Error: ", error);
+    res.status(500).json({ Error: "Internal server error" });
+  }
+}*/}
+
+//important fixed
+export async function acceptApplicant(req, res) {
+  const { applicationId } = req.params;
+  const { jobRole } = req.body;
+
+  if (!applicationId) {
+    return res.status(404).json({ msg: "Application not found!" });
+  }
+
+  try {
+    console.log("🚀 acceptApplicant called for:", applicationId);
+
+    const response = await ChangeStatusService(applicationId, "Accepted");
+
+    if (!response.success) {
+      return res.status(404).json(response);
+    }
+
+    const application = response.data;
+    const actorAuthId = req.user._id;
+
+    /**
+     * 🔔 RULE:
+     * The APPLICANT always gets notified
+     */
+
+    // 👉 CASE 1: College is applicant → Company / Employer accepted college
+    if (application.applicantType === "college") {
+      try {
+        // Resolve college AUTH ID
+        const college = await CollegeOnboarding.findById(application.applicant)
+          .select("userId");
+
+        if (!college?.userId) {
+          console.error("❌ College authId not found for:", application.applicant);
+        } else {
+          // Resolve company name (actor side)
+          let companyName = "Company";
+
+          const companyProfile = await CompanyProfile.findOne({
+            userId: actorAuthId
+          }).select("companyDetails.companyName");
+
+          if (companyProfile?.companyDetails?.companyName) {
+            companyName = companyProfile.companyDetails.companyName;
+          }
+
+          // 🔔 Notify college
+          notifyOnApplicationStatusChange({
+            recipientId: college.userId,   // AUTH ID
+            senderId: actorAuthId,          // company/employer AUTH
+            companyName,
+            status: "Accepted",
+            applicationId: application._id
+          });
+        }
+      } catch (err) {
+        console.error("❌ Accept → College notification failed:", err);
+      }
+    }
+
+    // 👉 CASE 2: Company / Employer is applicant → College accepted them
+    if (
+      application.applicantType === "company" ||
+      application.applicantType === "employer"
+    ) {
+      notifyOnCollegeApplicationStatusChange({
+        application,
+        newStatus: "Accepted",
+        actorAuthId
+      });
+    }
+
+    return res.status(200).json(response);
+
+  } catch (error) {
+    console.error("❌ acceptApplicant error:", error);
     res.status(500).json({ Error: "Internal server error" });
   }
 }
