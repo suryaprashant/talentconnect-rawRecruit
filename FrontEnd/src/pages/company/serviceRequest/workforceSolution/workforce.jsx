@@ -72,6 +72,7 @@ export default function Workforce() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
+      
       {showRequestInfo ? (
         <RequestInfo onBackClick={handleBackClick} />
       ) : showRegistration ? (
@@ -84,6 +85,7 @@ export default function Workforce() {
           handleSubmit={handleSubmit}
         />
       ) : (
+        
         <MainPage
           onRegisterClick={handleRegisterClick}
           onRequestInfoClick={handleRequestInfoClick}

@@ -119,7 +119,7 @@ export default function RegisterPage({
                 className="flex items-center text-gray-600 hover:text-gray-800 font-medium"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
+                Back 
               </button>
 
               <button
