@@ -1,8 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect  } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronDown, X, Building2, Users, Target, Clock, Monitor, BookOpen } from 'lucide-react';
 import { createEmployeeTrainingRegistration } from '@/lib/Company_AxiosInstance';
 
+
 export default function RequesInfo({ onBackClick }) {
+  const navigate=useNavigate();
   // Define initial form state
   const initialFormState = {
     numberOfEmployees: '',
@@ -369,7 +372,7 @@ export default function RequesInfo({ onBackClick }) {
                 onClick={onBackClick}
                 className="px-6 py-3 text-[#667eea] hover:text-[#764ba2] font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200"
               >
-                ← Back to Home
+                ← Back
               </button>
               <button
                 type="button"

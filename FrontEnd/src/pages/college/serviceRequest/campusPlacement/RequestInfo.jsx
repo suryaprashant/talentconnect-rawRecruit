@@ -114,7 +114,7 @@ export default function RequestInfo({ onBackClick, formData, handleInputChange, 
                 className="flex items-center gap-2 text-[#3b82f6] hover:text-[#1d4ed8] font-medium"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Back to Home
+                Back 
               </button>
 
               <button

@@ -44,10 +44,11 @@ function Sidebar({ open, setOpen }) {
           {/* <div className="px-4 py-5 border-b border-gray-200">
             <Logo />
           </div> */}
-          <div className="h-16 flex items-center px-5 border-b shadow-grey">
+          <div onClick={()=>navigate('/')} className="h-16 flex items-center px-5 border-b shadow-grey cursor-pointer">
             <Logo />
+            
           </div>
-
+          
 
           <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
     
@@ -59,7 +60,7 @@ function Sidebar({ open, setOpen }) {
             {selectedRole === 'company' && <CompanySidebar activePath={location.pathname} />}
             {selectedRole === 'college' && <CollegeSidebar activePath={location.pathname} />}
              */}
-
+          
             {isAuthenticated && selectedRole === 'student' && <StudentSidebar activePath={location.pathname} />}
             {isAuthenticated && selectedRole === 'fresher' && <FresherSidebar activePath={location.pathname} />}
             {isAuthenticated && selectedRole === 'professional' && <ProfessionalSidebar activePath={location.pathname} />}
