@@ -247,6 +247,8 @@ import OncampusAcceptedListing from "./pages/college/acceptedCompanies/oncampus/
 import OncampusAcceptedDetailPage from "./pages/college/acceptedCompanies/oncampus/acceptedDetailPage"
 import PoolcampusAcceptedListing from "./pages/college/acceptedCompanies/poolcampus/AcceptedCompaniesListing"
 import PoolcampusAcceptedDetailPage from "./pages/college/acceptedCompanies/poolcampus/AcceptedDetailPage"
+import CompanyApplicantsPage from "./pages/college/registered/oncampus/CompanyApplicantsPage";
+import PoolCampusApplicantsPage from './pages/college/registered/poolcampus/PoolCampusApplicantsPage';
 
 import HomapPage from "./pages/homePage/HomePage"
 import ResumePreview from "./pages/fresher/ResumePreview";
@@ -632,6 +634,16 @@ function AppRoutes() {
               } />
               <Route path="/registered/on-campus-opportunities/:jobId"
                element={<JobProvider><JobDetail status="Shortlisted" /> </JobProvider>} />
+
+               <Route 
+          path="/registered/on-campus-opportunities/:jobId/applicants" 
+          element={<CompanyApplicantsPage />} 
+        />
+
+              <Route 
+  path="/registered/pool-campus-opportunities/:jobId/applicants" 
+  element={<PoolCampusApplicantsPage />} 
+/>
             
 
               <Route path="/registered/Internship" element={

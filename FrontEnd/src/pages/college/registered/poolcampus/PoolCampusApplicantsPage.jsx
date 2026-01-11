@@ -11,7 +11,6 @@ const CompanyDetailsModal = ({ isOpen, onClose, company }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 relative">
-        
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -65,9 +64,6 @@ const CompanyDetailsModal = ({ isOpen, onClose, company }) => {
   );
 };
 
-
-export default JobDetailPage;
-
 const Spinner = () => (
   <div className="flex justify-center items-center h-full">
     <div className="w-12 h-12 border-4 border-[#93c5fd] border-t-[#3b82f6] rounded-full animate-spin"></div>
@@ -76,7 +72,6 @@ const Spinner = () => (
 
 const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
   const [showModal, setShowModal] = useState(false);
-
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
   const [currentStatus, setCurrentStatus] = useState(applicationData.currentStatus);
@@ -104,13 +99,11 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
         };
 
         console.log("Setting conversation for direct chat:", conversationUser);
-
         setSelectedConversation(conversationUser);
 
         setTimeout(() => {
           navigate('/chat-application');
         }, 100);
-
       } else {
         toast.error('Failed to create conversation');
       }
@@ -242,8 +235,6 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
     return currentStatus === status ? status : status;
   };
 
-  console.log('hello',companyDetails);
-
   return (
     <div className="bg-white p-5 rounded-lg border border-gray-200 transition-shadow hover:shadow-md">
       <div className="flex items-start space-x-4">
@@ -254,11 +245,12 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
         />
         <div className="flex-grow">
           <div className="flex justify-between items-start">
-          <h3
-          onClick={() => setShowModal(true)}
-          className="text-xl font-bold text-blue-600 hover:underline cursor-pointer">
-          {companyDetails?.companyName}
-          </h3>
+            <h3
+              onClick={() => setShowModal(true)}
+              className="text-xl font-bold text-blue-600 hover:underline cursor-pointer"
+            >
+              {companyDetails?.companyName}
+            </h3>
 
             <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(currentStatus)}`}>
               {currentStatus}
@@ -306,14 +298,7 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
           </p>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mt-4 border-t pt-4">
-        <button
-          onClick={handleShortlist}
-          disabled={isProcessing}
-          className={getButtonClass('Shortlisted', currentStatus, isProcessing)}
-        >
-          {getButtonText('Shortlist', currentStatus, isProcessing)}
-        </button>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 border-t pt-4">
         <button
           onClick={handleReject}
           disabled={isProcessing}
@@ -336,27 +321,29 @@ const ApplicantCard = ({ applicationData, jobRole, onStatusChange }) => {
           <Send size={14} className="mr-2" /> Message
         </button>
       </div>
-       <CompanyDetailsModal
-    isOpen={showModal}
-    onClose={() => setShowModal(false)}
-    company={companyDetails}
-  />
+      <CompanyDetailsModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        company={companyDetails}
+      />
     </div>
   );
 };
 
-function JobDetailPage(props) {
- 
+const PoolCampusApplicantsPage = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
-  const isVisited = new URLSearchParams(location.search).get('isVisited');
-  const pathParts = useLocation().pathname.split('/').filter(Boolean);
-  const targetStatusKey = pathParts[pathParts.length - 2];
+  const location = useLocation();
+  
+  const queryParams = new URLSearchParams(location.search);
+  const targetStatus = queryParams.get('targetStatus');
+  const isVisited = queryParams.get('isVisited');
+  
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [jobRole, setJobRole] = useState("On-campus");
-   
+  const [jobRole, setJobRole] = useState("Pool-campus");
+
   const handleApplicantStatusChange = (applicationId, newStatus) => {
     setApplicants(prevApplicants =>
       prevApplicants.map(app =>
@@ -374,7 +361,13 @@ function JobDetailPage(props) {
 
     const fetchApplicants = async () => {
       try {
-        const response = await getApplicationByJobOfManagement(jobId, 'On-campus', props?.status,isVisited);
+        const response = await getApplicationByJobOfManagement(
+          jobId, 
+          'Pool-campus', // Changed from 'On-campus' to 'Pool-campus'
+          targetStatus,
+          isVisited
+        );
+        
         if (response.data && Array.isArray(response.data)) {
           setApplicants(response.data);
           if (response.data.length > 0 && response.data[0].job && response.data[0].job.jobTitle) {
@@ -392,7 +385,7 @@ function JobDetailPage(props) {
     };
 
     fetchApplicants();
-  }, [jobId, targetStatusKey,isVisited]);
+  }, [jobId, targetStatus, isVisited]);
 
   if (loading) {
     return (
@@ -424,16 +417,16 @@ function JobDetailPage(props) {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
-        <div className="mb-6 flex items-center gap-4">
-          {/* <button onClick={() => navigate(-1)} className="text-sm text-gray-600 hover:text-black font-semibold flex items-center">
-            <ArrowLeft size={16} className="mr-1" /> Back to Jobs
-          </button> */}
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-2">Applicant Companies ({applicants.length})</h1>
-        </div>
-        <div>
+        <div className="mb-6">
           <button onClick={() => navigate(-1)} className="text-sm text-gray-600 hover:text-black font-semibold flex items-center">
-            <ArrowLeft size={16} className="mr-1" /> Back to Jobs
+            <ArrowLeft size={16} className="mr-1" /> Back to Pool Campus Opportunities
           </button>
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-2 mt-4">
+            Pool Campus Applicants ({applicants.length})
+          </h1>
+          <p className="text-gray-600 text-sm mb-4">
+            Viewing {isVisited === 'false' ? 'new ' : ''}applications {targetStatus ? `with status: ${targetStatus}` : ''}
+          </p>
         </div>
         
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden p-6 mt-4">
@@ -449,7 +442,7 @@ function JobDetailPage(props) {
               ))
             ) : (
               <div className="text-center py-12 bg-white rounded-lg border">
-                <p className="text-gray-500">There are no college applications for this job yet.</p>
+                <p className="text-gray-500">There are no pool campus applications for this job yet.</p>
               </div>
             )}
           </div>
@@ -457,6 +450,6 @@ function JobDetailPage(props) {
       </div>
     </div>
   );
-}
+};
 
-
+export default PoolCampusApplicantsPage;
