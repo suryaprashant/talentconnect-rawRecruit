@@ -1,6 +1,6 @@
-
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route, Navigate, useLocation, BrowserRouter } from "react-router-dom";
+import ReactGA from "react-ga4";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
@@ -713,24 +713,55 @@ function AppRoutes() {
   );
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      {/*   
-    <Router> */}
-      <AppProvider>  {/* Global app state */}
-        <AdminProvider>  {/* Admin state */}
-          <FormProvider>  {/* Form-specific state */}
-            <AppRoutes />
-          </FormProvider>
-        </AdminProvider>
-      </AppProvider>
-      {/* </Router> */}
+// const App = () => (
+//   <QueryClientProvider client={queryClient}>
+//     <TooltipProvider>
+//       <Toaster />
+//       <Sonner />
+//       {/*   
+//     <Router> */}
+//       <AppProvider>  {/* Global app state */}
+//         <AdminProvider>  {/* Admin state */}
+//           <FormProvider>  {/* Form-specific state */}
+//             <AppRoutes />
+//           </FormProvider>
+//         </AdminProvider>
+//       </AppProvider>
+//       {/* </Router> */}
 
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+//     </TooltipProvider>
+//   </QueryClientProvider>
+// );
+
+const App = () => {
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Track page views for Google Analytics
+    if (import.meta.env.VITE_GA_MEASUREMENT_ID) {
+      ReactGA.send({
+        hitType: "pageview",
+        page: location.pathname + location.search,
+      });
+    }
+  }, [location]);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        {/* Do NOT add BrowserRouter here since it's already in main.jsx */}
+        <AppProvider>
+          <AdminProvider>
+            <FormProvider>
+              <AppRoutes />
+            </FormProvider>
+          </AdminProvider>
+        </AppProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

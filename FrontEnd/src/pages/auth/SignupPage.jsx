@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthProvider';
 import toast from 'react-hot-toast';
 import axiosInstance from '../../lib/axiosInstance';
+import ReactGA from "react-ga4";
 
 const ONBOARDING_ROUTES = {
   candidate: '/student-form',
@@ -23,6 +24,17 @@ const DASHBOARD_ROUTES = {
   company: '/home',
   college: '/home',
   employer: '/home'
+};
+
+// Helper function for GA events
+const trackGAEvent = (category, action, label) => {
+  if (import.meta.env.VITE_GA_MEASUREMENT_ID && window.ReactGA) {
+    ReactGA.event({
+      category,
+      action,
+      label
+    });
+  }
 };
 
 const handleAuthRedirect = (user, navigate) => {
@@ -123,32 +135,34 @@ function SignupPage() {
   }
 
   if (token) {
-    const user = {
-      _id: queryParams.get('userId'),
-      email: queryParams.get('email'),
-      name: decodeURIComponent(queryParams.get('name') || ''),
-      userType: queryParams.get('userType'),
-      profileImage: queryParams.get('profileImage'),
-      onboardingCompleted: queryParams.get('onboardingCompleted') === 'true',
-    };
+  const user = {
+    _id: queryParams.get('userId'),
+    email: queryParams.get('email'),
+    name: decodeURIComponent(queryParams.get('name') || ''),
+    userType: queryParams.get('userType'),
+    profileImage: queryParams.get('profileImage'),
+    onboardingCompleted: queryParams.get('onboardingCompleted') === 'true',
+  };
 
-    // Save to local storage
-    setAuthUser({ user });
-    localStorage.setItem('ChatAppUser', JSON.stringify(user));
-    localStorage.setItem('token', token);
-    
-    // Set axios header
-    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  // Save to local storage
+  setAuthUser({ user });
+  localStorage.setItem('ChatAppUser', JSON.stringify(user));
+  localStorage.setItem('token', token);
+  
+  // Set axios header
+  axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-    toast.success("LinkedIn authentication successful!");
+  toast.success("LinkedIn authentication successful!");
 
-    // 2. CRITICAL FIX: Clear the URL query params IMMEDIATELY 
-    // before the redirect logic starts.
-    navigate(location.pathname, { replace: true });
+  // Google Analytics event for LinkedIn signup
+  trackGAEvent("Auth", "Signup Success", "LinkedIn");
 
-    // 3. Now handle the actual redirection logic
-    handleAuthRedirect(user, navigate);
-  }
+  // Clear the URL query params
+  navigate(location.pathname, { replace: true });
+
+  // Handle redirection
+  handleAuthRedirect(user, navigate);
+}
 }, [location.search, navigate]); // Dependencies are correct
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -206,20 +220,23 @@ function SignupPage() {
       );
 
       if (response.status === 201) {
-        toast.success('Signup successful!');
-        const { user, token } = response.data;
+  toast.success('Signup successful!');
+  const { user, token } = response.data;
 
-        sessionStorage.removeItem('tempSelectedRole');
-        
-        setAuthUser({ user });
-        localStorage.setItem('ChatAppUser', JSON.stringify(user));
-        localStorage.setItem('token', token);
-        localStorage.setItem('selectedRole', user.userType);
-        
-        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  sessionStorage.removeItem('tempSelectedRole');
+  
+  setAuthUser({ user });
+  localStorage.setItem('ChatAppUser', JSON.stringify(user));
+  localStorage.setItem('token', token);
+  localStorage.setItem('selectedRole', user.userType);
+  
+  axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        handleAuthRedirect(user, navigate);
-      }
+  // Google Analytics event for email signup
+  trackGAEvent("Auth", "Signup Success", "Email/Password");
+
+  handleAuthRedirect(user, navigate);
+}
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Signup failed.';
       setError(errorMessage);
@@ -242,17 +259,20 @@ function SignupPage() {
       );
 
       if (response.data.success) {
-        toast.success('Google authentication successful!');
-        const { user, token } = response.data;
+  toast.success('Google authentication successful!');
+  const { user, token } = response.data;
 
-        setAuthUser({ user });
-        localStorage.setItem('ChatAppUser', JSON.stringify(user));
-        localStorage.setItem('token', token);
-        localStorage.setItem('selectedRole', user.userType);
-        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        
-        handleAuthRedirect(user, navigate);
-      }
+  setAuthUser({ user });
+  localStorage.setItem('ChatAppUser', JSON.stringify(user));
+  localStorage.setItem('token', token);
+  localStorage.setItem('selectedRole', user.userType);
+  axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  
+  // Google Analytics event for Google signup
+  trackGAEvent("Auth", "Signup Success", "Google");
+  
+  handleAuthRedirect(user, navigate);
+}
     } catch (error) {
       toast.error(error.response?.data?.message || 'Google authentication failed');
     } finally {
