@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthProvider';
 import toast from 'react-hot-toast';
 import axiosInstance from '../../lib/axiosInstance';
+import ReactGA from "react-ga4";
 
 // --- Reusable Onboarding/Dashboard Routes ---
 const ONBOARDING_ROUTES = {
@@ -39,6 +40,16 @@ const HIRING_CHANNEL_ROUTES = {
     'on-campus': '/hiring-channels/on-campus-hiring/employer',
     'pool-campus': '/hiring-channels/pool-campus-hiring/employer',
     'off-campus': '/hiring-channels/off-campus-hiring/employer'
+  }
+};
+
+const trackGAEvent = (category, action, label) => {
+  if (import.meta.env.VITE_GA_MEASUREMENT_ID && window.ReactGA) {
+    ReactGA.event({
+      category,
+      action,
+      label
+    });
   }
 };
 
@@ -119,32 +130,35 @@ function LoginPage() {
     }
 
     if (token) {
-      const user = {
-        _id: queryParams.get('userId'),
-        email: queryParams.get('email'),
-        name: decodeURIComponent(queryParams.get('name') || ''),
-        userType: queryParams.get('userType'),
-        profileImage: queryParams.get('profileImage'),
-        onboardingCompleted: queryParams.get('onboardingCompleted') === 'true',
-      };
+  const user = {
+    _id: queryParams.get('userId'),
+    email: queryParams.get('email'),
+    name: decodeURIComponent(queryParams.get('name') || ''),
+    userType: queryParams.get('userType'),
+    profileImage: queryParams.get('profileImage'),
+    onboardingCompleted: queryParams.get('onboardingCompleted') === 'true',
+  };
 
-      // 1. Save to Context & Storage
-      setAuthUser({ user });
-      localStorage.setItem('ChatAppUser', JSON.stringify(user));
-      localStorage.setItem('token', token);
-      localStorage.setItem('selectedRole', user.userType);
-      
-      // 2. Set Axios Header
-      axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  // 1. Save to Context & Storage
+  setAuthUser({ user });
+  localStorage.setItem('ChatAppUser', JSON.stringify(user));
+  localStorage.setItem('token', token);
+  localStorage.setItem('selectedRole', user.userType);
+  
+  // 2. Set Axios Header
+  axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      toast.success("Welcome back!");
+  toast.success("Welcome back!");
 
-      // 3. Clear URL to prevent loop
-      navigate(window.location.pathname, { replace: true });
+  // 3. Clear URL to prevent loop
+  navigate(window.location.pathname, { replace: true });
 
-      // 4. Redirect based on onboarding status
-      handleAuthRedirect(user, navigate);
-    }
+  // Google Analytics event
+  trackGAEvent("Auth", "Login Success", "LinkedIn");
+  
+  // 4. Redirect based on onboarding status
+  handleAuthRedirect(user, navigate);
+}
   }, [navigate, setAuthUser]);
 
   // const handleLinkedInLogin = () => {
@@ -184,28 +198,31 @@ function LoginPage() {
       });
 
       if (response.status === 200) {
-        const { token, user } = response.data;
-        sessionStorage.removeItem('tempSelectedRole');
+  const { token, user } = response.data;
+  sessionStorage.removeItem('tempSelectedRole');
 
-        setAuthUser({
-          user: {
-            _id: user._id,
-            email: user.email,
-            userType: user.userType,
-            name: user.basicDetails?.name,
-            profileImage: user.profileImage,
-            onboardingCompleted: user.onboardingCompleted
-          },
-          token: token
-        });
+  setAuthUser({
+    user: {
+      _id: user._id,
+      email: user.email,
+      userType: user.userType,
+      name: user.basicDetails?.name,
+      profileImage: user.profileImage,
+      onboardingCompleted: user.onboardingCompleted
+    },
+    token: token
+  });
 
-        localStorage.setItem('ChatAppUser', JSON.stringify(user));
-        localStorage.setItem('token', token);
-        localStorage.setItem('selectedRole', user.userType);
-        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  localStorage.setItem('ChatAppUser', JSON.stringify(user));
+  localStorage.setItem('token', token);
+  localStorage.setItem('selectedRole', user.userType);
+  axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        handleAuthRedirect(user, navigate);
-      }
+  // Google Analytics event
+  trackGAEvent("Auth", "Login Success", "Email/Password");
+
+  handleAuthRedirect(user, navigate);
+}
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'An unexpected error occurred during login.';
       setError(errorMessage);
@@ -225,35 +242,38 @@ function LoginPage() {
       );
 
       if (response.data.success) {
-        const { user, isNewUser, token } = response.data;
+  const { user, isNewUser, token } = response.data;
 
-        if (isNewUser) {
-          toast.error('Account not found. Please sign up first with Google.');
-          navigate('/signup');
-          return;
-        }
+  if (isNewUser) {
+    toast.error('Account not found. Please sign up first with Google.');
+    navigate('/signup');
+    return;
+  }
 
-        toast.success('Google login successful!');
+  toast.success('Google login successful!');
 
-        setAuthUser({
-          user: {
-            _id: user._id,
-            email: user.email,
-            userType: user.userType,
-            name: user.name,
-            profileImage: user.profileImage,
-            onboardingCompleted: user.onboardingCompleted
-          },
-          token: token
-        });
+  setAuthUser({
+    user: {
+      _id: user._id,
+      email: user.email,
+      userType: user.userType,
+      name: user.name,
+      profileImage: user.profileImage,
+      onboardingCompleted: user.onboardingCompleted
+    },
+    token: token
+  });
 
-        localStorage.setItem('ChatAppUser', JSON.stringify(user));
-        localStorage.setItem('token', token);
-        localStorage.setItem('selectedRole', user.userType);
-        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  localStorage.setItem('ChatAppUser', JSON.stringify(user));
+  localStorage.setItem('token', token);
+  localStorage.setItem('selectedRole', user.userType);
+  axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        handleAuthRedirect(user, navigate);
-      }
+  // Google Analytics event
+  trackGAEvent("Auth", "Login Success", "Google");
+
+  handleAuthRedirect(user, navigate);
+}
     } catch (error) {
       if (error.response?.status === 404) {
         toast.error('Account not found. Please sign up first.');
