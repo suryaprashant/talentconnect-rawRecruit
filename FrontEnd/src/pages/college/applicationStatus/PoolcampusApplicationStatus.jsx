@@ -417,7 +417,7 @@ export default function PoolCampusApplicationStatus() {
                                                     <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 4}%` }}>
                                                         <div className={`w-6 h-6 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
                                                             isActive 
-                                                                ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] border-transparent text-white' 
+                                                                ? 'bg-[#3b82f6] border-[#3b82f6] text-white' 
                                                                 : 'bg-white/50 border-white/60 text-gray-400'
                                                         }`}>
                                                             {isActive ? <CheckCircle className="h-3 w-3" /> : idx + 1}
@@ -429,7 +429,7 @@ export default function PoolCampusApplicationStatus() {
                                                 );
                                             })}
                                         </div>
-                                        <div className="h-1.5 bg-white/50 absolute left-6 right-6 top-3 -z-10">
+                                        <div className="h-1.5 bg-white/50 absolute left-[12.5%] right-[12.5%] top-3 -z-10">
                                             <div
                                                 className="h-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] transition-all duration-300 rounded-full"
                                                 style={{

@@ -595,19 +595,6 @@ export default function RecruitmentDetails({
           
           {/* Main Card - Same large size */}
           <div className="relative bg-white/95 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl shadow-blue-50/50 p-10">
-            {/* Progress Bar */}
-            <div className="mb-10">
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-base font-medium text-gray-600">Step {currentStep} of {totalSteps}</span>
-                <span className="text-base font-medium text-gray-600">{Math.round(progressPercentage)}% Complete</span>
-              </div>
-              <div className="h-2.5 bg-gray-200/50 backdrop-blur-sm rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] rounded-full transition-all duration-500"
-                  style={{ width: `${progressPercentage}%` }}
-                ></div>
-              </div>
-            </div>
 
             <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-6">
               Placement & Recruitment Details
@@ -667,21 +654,23 @@ export default function RecruitmentDetails({
 
               {/* Upload Section */}
               <div className="border-t border-gray-200/50 pt-8">
-                <h3 className="font-medium text-lg mb-6 text-gray-700">Upload College Brochure</h3>
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    onChange={handleFileUpload}
-                    className="block rounded-xl border border-gray-200/80 w-full text-lg text-gray-500 bg-white/70 backdrop-blur-sm 
-                             file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-lg file:font-medium 
-                             file:bg-gradient-to-r file:from-[#e0f2fe] file:to-[#dbeafe] file:text-[#1d4ed8] 
-                             hover:file:bg-gradient-to-r hover:file:from-[#dbeafe] hover:file:to-[#c7d2fe] 
-                             transition-all duration-300"
-                  />
-                  <p className="text-sm text-gray-500 mt-3 ml-2">Upload PDF format only</p>
-                </div>
-              </div>
+  <h3 className="font-medium text-lg mb-6 text-gray-700">Upload College Brochure</h3>
+  <div className="relative">
+    <input
+      type="file"
+      accept=".pdf"
+      onChange={handleFileUpload}
+      className="block rounded-xl border border-gray-200/80 w-full text-lg text-gray-500 bg-white/70 backdrop-blur-sm 
+               py-3 px-4 pr-32 cursor-pointer
+               file:absolute file:right-1 file:top-1 file:bottom-1
+               file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-lg file:font-medium 
+               file:bg-gradient-to-r file:from-[#e0f2fe] file:to-[#dbeafe] file:text-[#1d4ed8] 
+               hover:file:bg-gradient-to-r hover:file:from-[#dbeafe] hover:file:to-[#c7d2fe] 
+               transition-all duration-300"
+    />
+    <p className="text-sm text-gray-500 mt-3 ml-2">Upload PDF format only</p>
+  </div>
+</div>
             </div>
 
             {/* Navigation Buttons */}
