@@ -24,6 +24,37 @@ const formatDate = (dateString) => {
     }
 };
 
+// Split long paragraph into meaningful bullet points
+const splitIntoBullets = (text) => {
+  if (!text || typeof text !== "string") return [];
+
+  // Split by full stop, comma, newline, or +
+  return text
+    .split(/[\.\n,+]/)
+    .map(s => s.trim())
+    .filter(s => s.length > 3);
+};
+
+// Normalize selection rounds
+const normalizeSelectionProcess = (process) => {
+  if (!process) return [];
+
+  // Case 1: already an array of rounds
+  if (Array.isArray(process)) {
+    if (process.length === 1 && typeof process[0] === "string") {
+      return splitIntoBullets(process[0]);
+    }
+    return process;
+  }
+
+  // Case 2: single string
+  if (typeof process === "string") {
+    return splitIntoBullets(process);
+  }
+
+  return [];
+};
+
 const PoolJobDetailsPage = () => {
     const { id } = useParams();
     const [searchParams] = useSearchParams();
@@ -292,7 +323,15 @@ const PoolJobDetailsPage = () => {
                             Job Description
                         </h2>
                         <div className="prose max-w-none text-gray-700">
-                            <p className="mb-4">{jobDetails?.description || 'No job description provided.'}</p>
+                            {jobDetails?.description ? (
+  <ul className="list-disc pl-5 space-y-2">
+    {splitIntoBullets(jobDetails.description).map((point, idx) => (
+      <li key={idx}>{point}</li>
+    ))}
+  </ul>
+) : (
+  <p>No job description provided.</p>
+)}
                         </div>
                     </div>
 
@@ -390,7 +429,11 @@ const PoolJobDetailsPage = () => {
                         {(typeof jobDetails.eligibilityCriteria === 'string' && jobDetails.eligibilityCriteria) && (
                             <div>
                                 <div className="text-sm font-medium text-[#667eea]">Additional Criteria</div>
-                                <p className="mt-1 text-base text-gray-700">{jobDetails.eligibilityCriteria}</p>
+                                <ul className="list-disc pl-5 mt-1 space-y-2 text-gray-700">
+  {splitIntoBullets(jobDetails.eligibilityCriteria).map((point, idx) => (
+    <li key={idx}>{point}</li>
+  ))}
+</ul>
                             </div>
                         )}
                     </div>
@@ -440,13 +483,14 @@ const PoolJobDetailsPage = () => {
       Selection Process
     </h2>
     <div className="text-sm text-gray-500">
-      Number of rounds: {jobDetails?.selectionProcess?.length || jobDetails?.rounds || 0} 
-    </div>
+  Number of rounds: {normalizeSelectionProcess(jobDetails?.selectionProcess).length}
+</div>
+
   </div>
   
-  {jobDetails?.selectionProcess?.length > 0 ? (
+  {normalizeSelectionProcess(jobDetails?.selectionProcess).length > 0 ? (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {jobDetails.selectionProcess.map((step, index) => (
+      {normalizeSelectionProcess(jobDetails.selectionProcess).map((step, index) => (
         <div 
           key={index}
           className="group bg-white border border-gray-200 rounded-xl p-4 hover:border-[#667eea]/30 hover:shadow-md transition-all duration-200"

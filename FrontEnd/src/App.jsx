@@ -1,6 +1,6 @@
-
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route, Navigate, useLocation, BrowserRouter } from "react-router-dom";
+import ReactGA from "react-ga4";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
@@ -247,6 +247,8 @@ import OncampusAcceptedListing from "./pages/college/acceptedCompanies/oncampus/
 import OncampusAcceptedDetailPage from "./pages/college/acceptedCompanies/oncampus/acceptedDetailPage"
 import PoolcampusAcceptedListing from "./pages/college/acceptedCompanies/poolcampus/AcceptedCompaniesListing"
 import PoolcampusAcceptedDetailPage from "./pages/college/acceptedCompanies/poolcampus/AcceptedDetailPage"
+import CompanyApplicantsPage from "./pages/college/registered/oncampus/CompanyApplicantsPage";
+import PoolCampusApplicantsPage from './pages/college/registered/poolcampus/PoolCampusApplicantsPage';
 
 import HomapPage from "./pages/homePage/HomePage"
 import ResumePreview from "./pages/fresher/ResumePreview";
@@ -632,6 +634,16 @@ function AppRoutes() {
               } />
               <Route path="/registered/on-campus-opportunities/:jobId"
                element={<JobProvider><JobDetail status="Shortlisted" /> </JobProvider>} />
+
+               <Route 
+          path="/registered/on-campus-opportunities/:jobId/applicants" 
+          element={<CompanyApplicantsPage />} 
+        />
+
+              <Route 
+  path="/registered/pool-campus-opportunities/:jobId/applicants" 
+  element={<PoolCampusApplicantsPage />} 
+/>
             
 
               <Route path="/registered/Internship" element={
@@ -713,24 +725,55 @@ function AppRoutes() {
   );
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      {/*   
-    <Router> */}
-      <AppProvider>  {/* Global app state */}
-        <AdminProvider>  {/* Admin state */}
-          <FormProvider>  {/* Form-specific state */}
-            <AppRoutes />
-          </FormProvider>
-        </AdminProvider>
-      </AppProvider>
-      {/* </Router> */}
+// const App = () => (
+//   <QueryClientProvider client={queryClient}>
+//     <TooltipProvider>
+//       <Toaster />
+//       <Sonner />
+//       {/*   
+//     <Router> */}
+//       <AppProvider>  {/* Global app state */}
+//         <AdminProvider>  {/* Admin state */}
+//           <FormProvider>  {/* Form-specific state */}
+//             <AppRoutes />
+//           </FormProvider>
+//         </AdminProvider>
+//       </AppProvider>
+//       {/* </Router> */}
 
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+//     </TooltipProvider>
+//   </QueryClientProvider>
+// );
+
+const App = () => {
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Track page views for Google Analytics
+    if (import.meta.env.VITE_GA_MEASUREMENT_ID) {
+      ReactGA.send({
+        hitType: "pageview",
+        page: location.pathname + location.search,
+      });
+    }
+  }, [location]);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        {/* Do NOT add BrowserRouter here since it's already in main.jsx */}
+        <AppProvider>
+          <AdminProvider>
+            <FormProvider>
+              <AppRoutes />
+            </FormProvider>
+          </AdminProvider>
+        </AppProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

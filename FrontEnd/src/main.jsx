@@ -3,32 +3,36 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom"; // Keep this
 import { RoleProvider } from "./context/RoleContext/RoleContext";
 import { AuthProvider } from "./context/AuthProvider.jsx";
 import { SocketProvider } from "./context/SocketContext.jsx";
-import { GoogleOAuthProvider } from '@react-oauth/google'; // Import GoogleOAuthProvider
-import { Toaster } from 'react-hot-toast'; // Import Toaster for notifications
-
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { Toaster } from 'react-hot-toast';
+import ReactGA from "react-ga4";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
+
+if (GA_ID) {
+  ReactGA.initialize(GA_ID);
+}
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   // <StrictMode>
   <>
-    {/* Wrap the entire application with GoogleOAuthProvider */}
-    <GoogleOAuthProvider  clientId={GOOGLE_CLIENT_ID} >
-      <BrowserRouter>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <BrowserRouter> {/* Keep BrowserRouter here */}
         <RoleProvider>
           <AuthProvider>
             <SocketProvider>
               <App />
-              <Toaster /> {/* Add the Toaster component here */}
+              <Toaster />
             </SocketProvider>
           </AuthProvider>
         </RoleProvider>
       </BrowserRouter>
-    </GoogleOAuthProvider >
+    </GoogleOAuthProvider>
   </>
   // </StrictMode>
 );
