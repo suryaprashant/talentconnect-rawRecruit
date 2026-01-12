@@ -48,7 +48,7 @@ export const notifyCollegesOnOnCampusJob = async ({
   jobId
 }) => {
   try {
-    // ✅ FIXED QUERY
+    
     const colleges = await Auth.find({ userType: "college" }).select("_id");
 
     console.log("Colleges found for notification:", colleges.length);

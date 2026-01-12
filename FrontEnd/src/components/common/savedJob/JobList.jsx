@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Heart } from 'lucide-react';
+import { UnsaveOppurtunity } from '@/lib/Company_AxiosInstance';
+import toast from 'react-hot-toast';
 
 const JobList = ({ jobs }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -138,6 +141,7 @@ const JobList = ({ jobs }) => {
                   to={`/${selectedRole}-dashboard/${job?.jobType}/${job?.job?._id}?isSaved=true`}
                   className="group block"
                 >
+                  
                   <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
 
                     {/* Header */}
@@ -181,11 +185,33 @@ const JobList = ({ jobs }) => {
                           </div>
                         </div>
 
-                        <div className="p-2 bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 rounded-lg">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                        </div>
+                       <button
+  onClick={async (e) => {
+    e.preventDefault(); // Prevent Link navigation
+    e.stopPropagation(); // Prevent Link navigation
+    
+    try {
+      const response = await UnsaveOppurtunity(job?.job?._id);
+      if (response?.data?.success) {
+        toast.success("Opportunity Unsaved");
+        // Option 1: Refresh the whole page to update the list
+        window.location.reload(); 
+        
+        // Option 2: If you have a refresh function from props, use it:
+        // props.fetchJobs(); 
+      } else {
+        toast.error("Failed to unsave");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
+    }
+  }}
+  className="p-2 bg-red-50 hover:bg-red-100 rounded-lg transition-colors group/heart"
+  title="Unsave"
+>
+  <Heart className="h-5 w-5 text-red-500 fill-red-500 group-hover/heart:fill-none transition-all" />
+</button>
                       </div>
                     </div>
 

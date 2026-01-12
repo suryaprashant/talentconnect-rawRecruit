@@ -89,7 +89,7 @@ export const getOnCampusPostingsForCollege = async (req, res) => {
         const college = userId ? await getCollegeService(userId) : null;
 
         const postings = await getJobPostingsByJobTypeService("On-campus");
-
+       console.log('manav')
         const filteredPostings = postings.filter(
             (posting) => posting.visibleTo === "College"
         );

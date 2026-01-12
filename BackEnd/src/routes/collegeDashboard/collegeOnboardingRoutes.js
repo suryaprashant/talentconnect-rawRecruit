@@ -2,6 +2,10 @@ import express from 'express';
 import multer from 'multer';
 import { getCollegeOnboardingByUserId, submitCollegeOnboarding } from '../../controllers/collegeDashboard/collegeOnboardingController.js';
 import secureRoute from '../../middlewares/secureRouteMiddleware.js';
+//import  updateCollegeProfile  from '../../controllers/CollegeDashboard/collegeProfileController.js';
+import {
+  updateCollegeProfile
+} from '../../controllers/collegeDashboard/collegeProfileController.js';
 
 const router = express.Router();
 const storage = multer.memoryStorage();
@@ -17,6 +21,18 @@ router.post(
   ]),
   submitCollegeOnboarding
 );
+
+router.put(
+  '/updateInformation',
+  secureRoute,
+  upload.fields([
+    { name: 'collegeImage', maxCount: 1 },
+    { name: 'backgroundImage', maxCount: 1 },
+    { name: 'coordinatorImage', maxCount: 1 }
+  ]),
+  updateCollegeProfile
+);
+
 
 router.get('/profile-data', secureRoute , getCollegeOnboardingByUserId);
 

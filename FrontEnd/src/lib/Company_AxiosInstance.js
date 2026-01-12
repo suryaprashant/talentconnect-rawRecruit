@@ -208,6 +208,16 @@ export function SaveOppurtunity(jobId, jobType) {
     .catch((error) => error);
 }
 
+export function UnsaveOppurtunity(jobId) {
+  return axiosClient
+    .delete(`/application/saveopportunity/${jobId}`)
+    .then((response) => response)
+    .catch((error) => {
+      console.error("Unsave API error:", error);
+      return error;
+    });
+}
+
 // get save opportunity
 export function fetchSavedJobs() {
   return axiosClient

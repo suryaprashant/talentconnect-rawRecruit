@@ -67,7 +67,7 @@ export const createOnCampusPosting = async (req, res) => {
             return sendError(res, 500, "Failed to create job posting");
         }
         
-        //🔔
+        
         notifyCollegesOnOnCampusJob({
           companyId: userId, // senderId
           companyName: companyPostedId.data[0].companyDetails.companyName,

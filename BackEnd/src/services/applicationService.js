@@ -14,6 +14,30 @@ class AppError extends Error {
     }
 }
 
+//////////////////////////////////////
+/**
+ * Deletes the 'Saved' application record for a specific user and job.
+ */
+export async function unsaveJobService(applicantId, jobId) {
+    try {
+        // We only remove the record if the status is "Saved".
+        // This prevents deleting an actual "Applied" or "Shortlisted" application.
+        const result = await Application.findOneAndDelete({
+            applicant: applicantId,
+            job: jobId,
+            currentStatus: "Saved"
+        });
+
+        if (!result) {
+            return { success: false, message: "Save record not found or job already applied" };
+        }
+
+        return { success: true, message: "Job removed from saved successfully" };
+    } catch (error) {
+        console.error("Error in unsaveJobService:", error.message);
+        throw new Error("Failed to unsave job");
+    }
+}
 
 export const getAll = async () => {
     try {

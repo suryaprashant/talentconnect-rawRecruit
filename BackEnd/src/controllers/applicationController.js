@@ -35,17 +35,58 @@ import { submitAlternateDatesService } from "../services/alternateDateService.js
 import { notifyOnApplicationStatusChange, notifyOnCollegeApplicationStatusChange } from "../services/notificationService.js";
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel.js";
+import { unsaveJobService } from "../services/applicationService.js";
 
+export async function unsaveJobByUser(req, res) {
+    const { jobId } = req.params; // jobId passed in the URL
+    const userId = req.user._id;
+    const userType = req.user?.userType;
 
+    try {
+        let userProfile;
+        // Identify the profile ID (matches your saveJobByUser logic)
+        switch (userType) {
+            case "student":
+            case "fresher":
+            case "professional":
+                userProfile = await getStudentService(userId);
+                break;
+            case "college":
+                userProfile = await getCollegeService(userId);
+                break;
+            case "company":
+                userProfile = await getCompanyService(userId);
+                break;
+            case "employer":
+                userProfile = await getEmployerService(userId);
+                break;
+        }
+
+        if (!userProfile || !userProfile.data || userProfile.data.length === 0) {
+            return res.status(404).json({ msg: "User profile not found!" });
+        }
+
+        const applicantId = userProfile.data[0]._id;
+
+        // Call the unsave service
+        const result = await unsaveJobService(applicantId, jobId);
+
+        if (result.success) {
+            return res.status(200).json(result);
+        } else {
+            return res.status(400).json(result);
+        }
+    } catch (error) {
+        console.error("Unsave Controller Error:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
 
 // save opportunity
 export async function saveJobByUser(req, res) {
   const { jobId, jobType } = req.body;
   const userId = req.user._id;
   const userType = req.user?.userType;
-
- 
-
   try {
     let user;
     switch (userType) {

@@ -21,6 +21,53 @@ export default function CollegeProfile() {
 
   const profileInputRef = useRef(null);
   const backgroundInputRef = useRef(null);
+  const backendUrl = import.meta.env.VITE_Backend_URL;
+
+
+  //console.log('ok')
+ const handleCollegeImageUpload = async (event, imageType) => {
+   const file = event.target.files[0];
+   console.log(123)
+   if (!file) return;
+
+  // 1. Instant preview for UX
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    if (imageType === 'collegeImage') setProfileImageUrl(reader.result);
+    if (imageType === 'backgroundImage') setBackgroundImageUrl(reader.result);
+  };
+  reader.readAsDataURL(file);
+
+  // 2. Prepare Data
+  const formData = new FormData();
+  formData.append(imageType, file); // This matches the 'name' in Multer
+
+  try {
+    const response = await axios.put(
+      `${backendUrl}/api/college/update-profile`, 
+      formData,
+      { withCredentials: true }
+    );
+
+    
+    // 🔹 FIX: Map the backend structure to your local states
+   const updatedProfile = response.data.profile;
+   setOnboardingData(updatedProfile);   
+    
+   if (imageType === 'collegeImage') {
+  setProfileImageUrl(updatedProfile.profileImage); // Use profileImage from backend
+} else if (imageType === 'backgroundImage') {
+  setBackgroundImageUrl(updatedProfile.backgroundImage); // Use backgroundImage from backend
+}
+
+    alert("Image updated successfully!");
+  } catch (error) {
+    console.error('Upload failed:', error);
+  }
+
+ 
+};
+   
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,9 +81,10 @@ export default function CollegeProfile() {
         const data = response.data.data;
 
         if (data) {
-          setOnboardingData(data);
-          setProfileImageUrl(data.placementCoordinatorDetails?.profilePictureUrl || null);
-          setBackgroundImageUrl(data.profileAchievements?.backgroundImageUrl || null);
+            setOnboardingData(data);
+        // Match your Onboarding Schema field names
+        setProfileImageUrl(data.profileImage || null); 
+        setBackgroundImageUrl(data.backgroundImage || null);
         } else {
           setOnboardingData(null);
         }
@@ -80,17 +128,17 @@ export default function CollegeProfile() {
     backgroundInputRef.current.click();
   };
 
-  const handleImageChange = (e, setImageFileState, setImageUrlState) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFileState(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageUrlState(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // const handleImageChange = (e, setImageFileState, setImageUrlState) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     setImageFileState(file);
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setImageUrlState(reader.result);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
   const handleProfileUpdate = (updatedData) => {
     setOnboardingData(updatedData);
@@ -179,38 +227,39 @@ export default function CollegeProfile() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Banner */}
-      <div className="relative h-48">
-        {/* Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#93c5fd]/20 via-[#3b82f6]/10 to-[#8b5cf6]/20"></div>
+      {/* Header Banner */}
+<div className="relative h-48 cursor-pointer group" onClick={handleBackgroundImageClick}>
+  {/* Background Gradient */}
+  <div className="absolute inset-0 bg-gradient-to-br from-[#93c5fd]/20 via-[#3b82f6]/10 to-[#8b5cf6]/20"></div>
 
-        {backgroundImageUrl && (
-          <div className="absolute inset-0">
-            <img
-              src={backgroundImageUrl}
-              alt="Banner"
-              className="w-full h-full object-cover opacity-15"
-            />
-          </div>
-        )}
+  {backgroundImageUrl && (
+    <div className="absolute inset-0">
+      <img
+        src={backgroundImageUrl}
+        alt="Banner"
+        className="w-full h-full object-cover opacity-15"
+      />
+    </div>
+  )}
 
-        {/* Content Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#93c5fd]/15 via-[#3b82f6]/8 to-[#8b5cf6]/15 backdrop-blur-sm"></div>
+  {/* Content Overlay */}
+  <div className="absolute inset-0 bg-gradient-to-br from-[#93c5fd]/15 via-[#3b82f6]/8 to-[#8b5cf6]/15 backdrop-blur-sm"></div>
 
-        {/* Banner Upload Overlay */}
-        <label
-          className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 cursor-pointer hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md"
-          onClick={handleBackgroundImageClick}
-        >
-          <Upload className="h-4 w-4 text-gray-700" />
-        </label>
-        <input
-          type="file"
-          ref={backgroundInputRef}
-          onChange={(e) => handleImageChange(e, setBackgroundImageFile, setBackgroundImageUrl)}
-          accept="image/*"
-          className="hidden"
-        />
-      </div>
+  {/* Banner Upload Icon - Now clearly visible on hover */}
+  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+    <Upload className="h-4 w-4 text-gray-700" />
+  </div>
+
+  {/* Hidden Background Input */}
+  <input
+    type="file"
+    ref={backgroundInputRef}
+    onChange={(e) => handleCollegeImageUpload(e, 'backgroundImage')} 
+    accept="image/*"
+    className="hidden"
+  />
+</div>
+      
 
       {/* Main Container */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
@@ -241,13 +290,13 @@ export default function CollegeProfile() {
                     <Upload className="h-6 w-6 text-white" />
                   </div>
                 </div>
-                <input
-                  type="file"
-                  ref={profileInputRef}
-                  onChange={(e) => handleImageChange(e, setProfileImageFile, setProfileImageUrl)}
-                  accept="image/*"
-                  className="hidden"
-                />
+              <input
+    type="file"
+    ref={profileInputRef}
+    onChange={(e) => handleCollegeImageUpload(e, 'collegeImage')} // Changed from handleImageChange
+    accept="image/*"
+    className="hidden"
+  />
               </div>
 
               {/* College Info */}

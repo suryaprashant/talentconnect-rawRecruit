@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
-import { createCollegeProfile } from '../../controllers/collegeDashboard/collegeProfileController.js'
+import { createCollegeProfile , updateCollegeProfile} from '../../controllers/collegeDashboard/collegeProfileController.js'
+import secureRoute from '../../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
 const storage = multer.memoryStorage();
@@ -17,4 +18,16 @@ router.post(
   createCollegeProfile
 );
 
+router.put(
+  '/update-profile', 
+  secureRoute, 
+  upload.fields([
+    { name: 'collegeImage', maxCount: 1 },
+    { name: 'backgroundImage', maxCount: 1 },
+    { name: 'coordinatorImage', maxCount: 1 }
+  ]), 
+  updateCollegeProfile
+);
+
 export default router;
+
