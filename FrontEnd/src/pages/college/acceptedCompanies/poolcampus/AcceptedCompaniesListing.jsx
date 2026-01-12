@@ -2,13 +2,28 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Search, Eye, ChevronLeft, ChevronRight, Trash, Filter, 
   Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, 
-  Building2, Calendar, FileText, User, AlertCircle, Users 
+  Building2, Calendar, FileText, User, AlertCircle, Users ,X
 } from 'lucide-react';
+
 import { acceptCandidate, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 import { deleteCollegeJob ,conversationWithCollege} from '@/lib/College_AxiosIntance';
 import { useNavigate } from 'react-router-dom';
 import useConversation from '@/statemanage/useConversation.js';
+
+const InfoItem = ({ label, value, isLink }) => (
+  <div>
+    <p className="text-xs text-gray-500 font-medium mb-1">{label}</p>
+    {isLink && value ? (
+      <a href={value} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+        {String(value)}
+      </a>
+    ) : (
+      // Using String() ensures we don't try to render an object
+      <p className="text-gray-800 font-medium">{value ? String(value) : 'N/A'}</p>
+    )}
+  </div>
+);
 
 export default function PoolCampusJobManagement() {
   const [jobs, setJobs] = useState([]);
@@ -245,6 +260,7 @@ export default function PoolCampusJobManagement() {
   const CompanyCard = ({ companyApplication, driveDetails, onReject }) => {
     const [currentStatus, setCurrentStatus] = useState(companyApplication.currentStatus);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [isDetailsModalOpen, setIsDetailsModalOpen]=useState(false)
 
     if (!companyApplication || !companyApplication.applicant) {
       return null;
@@ -256,7 +272,8 @@ export default function PoolCampusJobManagement() {
      // const { applicant } = companyApplication;
      const { _id: applicationId, applicant, createdAt } = companyApplication;
       const { companyDetails, employerDetails, profileImageUrl, userId } = applicant;
-    
+     
+      ;
     
         const handleMessageClick = async (e) => {
         e.stopPropagation();
@@ -333,9 +350,75 @@ export default function PoolCampusJobManagement() {
 
     return (
       <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-white/50 shadow-sm hover:shadow-lg transition-all duration-300">
+        
+        {/* MODAL OVERLAY */}
+        {isDetailsModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative border border-white/20">
+              {/* Modal Header */}
+              <div className="sticky top-0 bg-white/80 backdrop-blur-md px-8 py-6 border-b border-gray-100 flex justify-between items-center z-10">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
+                  Company Profile
+                </h2>
+                <button 
+                  onClick={() => setIsDetailsModalOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X size={24} className="text-gray-500" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-8 space-y-8">
+                {/* Basic Info Section */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Basic Information</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InfoItem label="Company Name" value={companyDetails?.companyName} />
+                    <InfoItem label="Established" value={companyDetails?.establishedYear} />
+                    <InfoItem label="Industry" value={companyDetails?.industryType} />
+                    <InfoItem label="Company Type" value={companyDetails?.companyType} />
+                    <InfoItem label="Employees" value={companyDetails?.numberOfEmployees} />
+                  </div>
+                </div>
+
+                {/* Contact Section */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Contact Details</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InfoItem label="Phone Number" value={companyDetails?.phoneNumber} />
+                    <InfoItem label="Alt Phone Number" value={companyDetails?.alternatePhoneNumber || 'None'} />
+                    <InfoItem label="Website" value={companyDetails?.websiteUrl} isLink />
+                    <InfoItem label="LinkedIn" value={companyDetails?.companyLinkedin} isLink />
+                  </div>
+                </div>
+
+                {/* Location Section */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Location</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <InfoItem label="City" value={companyDetails?.city} />
+                    <InfoItem label="State" value={companyDetails?.state} />
+                    <InfoItem label="Country" value={companyDetails?.country} />
+                    <InfoItem label="Pincode" value={companyDetails?.pincode} />
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">About Company</h4>
+                  <p className="text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    {companyDetails?.description || "No description provided."}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0">
-            <img
+            <img onClick={() => setIsDetailsModalOpen(true)}
               src={profileImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}
               alt={`${companyDetails?.companyName} Logo`}
               className="w-24 h-24 rounded-xl object-cover border-2 border-white/50 shadow-sm"
@@ -345,9 +428,10 @@ export default function PoolCampusJobManagement() {
           <div className="flex-grow">
             <div className="flex flex-col md:flex-row justify-between items-start gap-4">
               <div>
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
+                <h3 onClick={() => setIsDetailsModalOpen(true)} className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent cursor-pointer">
                   {companyDetails?.companyName}
                 </h3>
+                
                 <div className="flex items-center gap-3 mt-2">
                   <span className={`px-3 py-1.5 text-sm font-medium rounded-full ${getStatusColor(currentStatus)}`}>
                     {currentStatus}

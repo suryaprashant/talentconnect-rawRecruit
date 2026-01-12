@@ -1,3 +1,4 @@
+import CollegeProfileModel from '../models/collegeDashboard/collegeProfileModel.js';
 import collegeOnboardingModel from "../models/collegeDashboard/collegeOnboardingModel.js";
 import Auth from "../models/authModel.js";
 
@@ -20,4 +21,20 @@ export async function getCollegeEmail(collegeId) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");
     }
+}
+
+
+export async function updateCollegeProfileService(userId, updates) {
+  const college = await collegeOnboardingModel.findOneAndUpdate(
+    { userId },
+    { $set: updates }, 
+    { 
+      new: true, 
+      runValidators: true, 
+      upsert: true // 🔹 This creates the profile if it doesn't exist!
+    }
+  );
+
+  // You can remove the "if (!college)" check now, because upsert will ensure one exists
+  return college;
 }

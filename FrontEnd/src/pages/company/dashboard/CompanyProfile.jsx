@@ -51,7 +51,7 @@ export default function CompanyProfile() {
       window.history.replaceState({}, '', newUrl);
     }
   }, []);
-
+ 
   const handleImageUpload = async (event, imageType) => {
     const file = event.target.files[0];
     if (!file) return;
