@@ -172,6 +172,10 @@ export const submitCollegeOnboarding = async (req, res) => {
 
     // console.log(`User ${updatedUser.email} updated: userType=college, onboardingCompleted=true`);
     // console.log('--- submitCollegeOnboarding END ---');
+    console.log(
+  "Affiliated University:",
+  parsedCollegeUniversityDetails.affiliatedUniversity
+);
 
     res.status(onboardingData.isNew ? 201 : 200).json({
       message: `College onboarding form ${onboardingData.isNew ? 'submitted' : 'updated'} successfully`,

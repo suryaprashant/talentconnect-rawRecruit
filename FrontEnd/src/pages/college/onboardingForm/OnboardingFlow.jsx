@@ -258,6 +258,7 @@ function OnboardingFlow() {
   const [formData, setFormData] = useState({
     collegeName: '',
     collegeLocation: '',
+    affiliatedUniversity: '',
     state: '',
     city: '',
     country: '',
@@ -367,6 +368,7 @@ function OnboardingFlow() {
       data.append('collegeUniversityDetails', JSON.stringify({
         collegeName: formData.collegeName,
         collegeLocation: formData.collegeLocation,
+        affiliatedUniversity: formData.affiliatedUniversity,
         state: formData.state,
         city: formData.city,
         country: formData.country,
