@@ -131,16 +131,16 @@ function PoolApplicationsPage() {
   const handlePageClick = (pageNumber) => setCurrentPage(pageNumber);
 
 
-const handleView = (jobId) => {
-   
-    navigate(`/registered/pool-campus-opportunities/${jobId}?targetStatus=Shortlisted&isVisited=false`);
-};
+const handleView = (jobId, e) => {
+    if (e) e.stopPropagation();
+    navigate(`/registered/pool-campus-opportunities/${jobId}/applicants?targetStatus=Shortlisted&isVisited=false`);
+  };
 
 
-const handleViewAll = (jobId) => {
-   
-    navigate(`/registered/pool-campus-opportunities/${jobId}?targetStatus=Shortlisted`);
-};
+const handleViewAll = (jobId, e) => {
+    if (e) e.stopPropagation();
+    navigate(`/registered/pool-campus-opportunities/${jobId}/applicants?targetStatus=Shortlisted`);
+  };
 
   const handleDelete = async (jobId, e) => {
     e.stopPropagation();

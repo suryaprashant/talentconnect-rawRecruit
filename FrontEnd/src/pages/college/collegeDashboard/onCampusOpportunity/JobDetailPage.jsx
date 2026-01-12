@@ -25,6 +25,40 @@ const formatDate = (dateString) => {
   }
 };
 
+// ---------- TEXT TO BULLETS ----------
+const splitIntoMeaningfulPoints = (text) => {
+  if (!text || typeof text !== 'string') return [];
+
+  return text
+    // split by full stop, newline, or semicolon
+    .split(/[\.\n;]+/)
+    .map(line => line.trim())
+    .filter(line => line.length > 5); // ignore junk
+};
+
+const normalizeSelectionProcess = (selectionProcess) => {
+  if (!selectionProcess) return [];
+
+  // Case 1: already an array → return clean
+  if (Array.isArray(selectionProcess)) {
+    return selectionProcess.flatMap(step =>
+      step.includes('+')
+        ? step.split('+').map(s => s.trim())
+        : splitIntoMeaningfulPoints(step)
+    );
+  }
+
+  // Case 2: string → split by + or sentences
+  if (typeof selectionProcess === 'string') {
+    if (selectionProcess.includes('+')) {
+      return selectionProcess.split('+').map(s => s.trim());
+    }
+    return splitIntoMeaningfulPoints(selectionProcess);
+  }
+
+  return [];
+};
+
 const JobDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -269,7 +303,17 @@ const jobStatus = getJobStatus();
               {job.lookingFor} Description
             </h2>
             <div className="prose max-w-none text-gray-700">
-              <p className="mb-4">{job?.description || 'No job description provided.'}</p>
+              <div className="prose max-w-none text-gray-700">
+  {job?.description ? (
+    <ul className="list-disc pl-5 space-y-1">
+      {splitIntoMeaningfulPoints(job.description).map((point, index) => (
+        <li key={index}>{point}</li>
+      ))}
+    </ul>
+  ) : (
+    <p>No job description provided.</p>
+  )}
+</div>
             </div>
           </div>
 
@@ -355,11 +399,16 @@ const jobStatus = getJobStatus();
               </div>
             </div>
             {job?.eligibilityCriteria && (
-              <div>
-                <div className="text-sm font-medium text-[#667eea]">Additional Criteria</div>
-                <p className="mt-1 text-base text-gray-700">{job.eligibilityCriteria}</p>
-              </div>
-            )}
+  <div>
+    <div className="text-sm font-medium text-[#667eea]">Additional Criteria</div>
+    <ul className="mt-1 list-disc pl-5 text-base text-gray-700 space-y-1">
+      {splitIntoMeaningfulPoints(job.eligibilityCriteria).map((point, index) => (
+        <li key={index}>{point}</li>
+      ))}
+    </ul>
+  </div>
+)}
+
           </div>
 
           {/* Compensation & Benefits */}
@@ -414,7 +463,7 @@ const jobStatus = getJobStatus();
 
   {job?.selectionProcess && job?.selectionProcess?.length > 0 ? (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      {job.selectionProcess.map((step, index) => (
+      {normalizeSelectionProcess(job.selectionProcess).map((step, index) => (
         <div 
           key={index}
           className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#667eea]/30 hover:shadow-sm transition-all duration-200"

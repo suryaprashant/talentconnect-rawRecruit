@@ -2,28 +2,13 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Search, Eye, ChevronLeft, ChevronRight, Trash, Filter, 
   Briefcase, Globe, MapPin, Send, Phone, Linkedin, Mail, 
-  Building2, Calendar, FileText, User, AlertCircle, Users ,X
+  Building2, Calendar, FileText, User, AlertCircle, Users 
 } from 'lucide-react';
-
 import { acceptCandidate, getCollegeApplicationsForJob, getPostedJobs, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 import { deleteCollegeJob ,conversationWithCollege} from '@/lib/College_AxiosIntance';
 import { useNavigate } from 'react-router-dom';
 import useConversation from '@/statemanage/useConversation.js';
-
-const InfoItem = ({ label, value, isLink }) => (
-  <div>
-    <p className="text-xs text-gray-500 font-medium mb-1">{label}</p>
-    {isLink && value ? (
-      <a href={value} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
-        {String(value)}
-      </a>
-    ) : (
-      // Using String() ensures we don't try to render an object
-      <p className="text-gray-800 font-medium">{value ? String(value) : 'N/A'}</p>
-    )}
-  </div>
-);
 
 export default function PoolCampusJobManagement() {
   const [jobs, setJobs] = useState([]);
@@ -260,7 +245,7 @@ export default function PoolCampusJobManagement() {
   const CompanyCard = ({ companyApplication, driveDetails, onReject }) => {
     const [currentStatus, setCurrentStatus] = useState(companyApplication.currentStatus);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [isDetailsModalOpen, setIsDetailsModalOpen]=useState(false)
+    const [showModal, setShowModal] = useState(false);
 
     if (!companyApplication || !companyApplication.applicant) {
       return null;
@@ -272,8 +257,7 @@ export default function PoolCampusJobManagement() {
      // const { applicant } = companyApplication;
      const { _id: applicationId, applicant, createdAt } = companyApplication;
       const { companyDetails, employerDetails, profileImageUrl, userId } = applicant;
-     
-      ;
+    
     
         const handleMessageClick = async (e) => {
         e.stopPropagation();
@@ -348,226 +332,245 @@ export default function PoolCampusJobManagement() {
       }
     };
 
-    return (
-      <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-white/50 shadow-sm hover:shadow-lg transition-all duration-300">
-        
-        {/* MODAL OVERLAY */}
-        {isDetailsModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-            <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative border border-white/20">
-              {/* Modal Header */}
-              <div className="sticky top-0 bg-white/80 backdrop-blur-md px-8 py-6 border-b border-gray-100 flex justify-between items-center z-10">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
-                  Company Profile
-                </h2>
-                <button 
-                  onClick={() => setIsDetailsModalOpen(false)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <X size={24} className="text-gray-500" />
-                </button>
-              </div>
-
-              {/* Modal Body */}
-              <div className="p-8 space-y-8">
-                {/* Basic Info Section */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Basic Information</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InfoItem label="Company Name" value={companyDetails?.companyName} />
-                    <InfoItem label="Established" value={companyDetails?.establishedYear} />
-                    <InfoItem label="Industry" value={companyDetails?.industryType} />
-                    <InfoItem label="Company Type" value={companyDetails?.companyType} />
-                    <InfoItem label="Employees" value={companyDetails?.numberOfEmployees} />
-                  </div>
-                </div>
-
-                {/* Contact Section */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Contact Details</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InfoItem label="Phone Number" value={companyDetails?.phoneNumber} />
-                    <InfoItem label="Alt Phone Number" value={companyDetails?.alternatePhoneNumber || 'None'} />
-                    <InfoItem label="Website" value={companyDetails?.websiteUrl} isLink />
-                    <InfoItem label="LinkedIn" value={companyDetails?.companyLinkedin} isLink />
-                  </div>
-                </div>
-
-                {/* Location Section */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Location</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InfoItem label="City" value={companyDetails?.city} />
-                    <InfoItem label="State" value={companyDetails?.state} />
-                    <InfoItem label="Country" value={companyDetails?.country} />
-                    <InfoItem label="Pincode" value={companyDetails?.pincode} />
-                  </div>
-                </div>
-
-                {/* Description */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">About Company</h4>
-                  <p className="text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-100">
-                    {companyDetails?.description || "No description provided."}
-                  </p>
-                </div>
-              </div>
+    const CompanyDetailsModal = () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          {/* Header */}
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">{companyDetails?.companyName}</h2>
+              <p className="text-gray-600 text-sm mt-1">{companyDetails?.description || 'No description available'}</p>
             </div>
+            <button
+              onClick={() => setShowModal(false)}
+              className="text-gray-500 hover:text-gray-700 text-xl p-1"
+            >
+              ✕
+            </button>
           </div>
-        )}
 
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="flex-shrink-0">
-            <img onClick={() => setIsDetailsModalOpen(true)}
-              src={profileImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}
-              alt={`${companyDetails?.companyName} Logo`}
-              className="w-24 h-24 rounded-xl object-cover border-2 border-white/50 shadow-sm"
-            />
-          </div>
-      
-          <div className="flex-grow">
-            <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-              <div>
-                <h3 onClick={() => setIsDetailsModalOpen(true)} className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent cursor-pointer">
-                  {companyDetails?.companyName}
-                </h3>
-                
-                <div className="flex items-center gap-3 mt-2">
-                  <span className={`px-3 py-1.5 text-sm font-medium rounded-full ${getStatusColor(currentStatus)}`}>
-                    {currentStatus}
-                  </span>
-                  <span className="text-sm text-gray-500 flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    Applied: {new Date(createdAt).toLocaleDateString()}
-                  </span>
-                </div>
+          {/* Company Details Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="space-y-3">
+              <div className="flex items-center text-gray-700">
+                <Briefcase className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                <span className="font-medium">Industry:</span>
+                <span className="ml-2">{companyDetails?.industryType || 'N/A'}</span>
+              </div>
+              <div className="flex items-center text-gray-700">
+                <Building2 className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                <span className="font-medium">Company Type:</span>
+                <span className="ml-2">{companyDetails?.companyType || 'N/A'}</span>
+              </div>
+              <div className="flex items-center text-gray-700">
+                <Users className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                <span className="font-medium">Employees:</span>
+                <span className="ml-2">{companyDetails?.numberOfEmployees || 'N/A'}</span>
+              </div>
+              <div className="flex items-center text-gray-700">
+                <Calendar className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                <span className="font-medium">Established:</span>
+                <span className="ml-2">{companyDetails?.establishedYear || 'N/A'}</span>
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-              <div className="space-y-3">
-                <div className="flex items-center text-gray-700">
-                  <Briefcase className="w-4 h-4 mr-3 text-[#3b82f6]" />
-                  <span className="font-medium">Industry:</span>
-                  <span className="ml-2">{companyDetails?.industryType || 'N/A'}</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <Building2 className="w-4 h-4 mr-3 text-[#3b82f6]" />
-                  <span className="font-medium">Company Type:</span>
-                  <span className="ml-2">{companyDetails?.companyType || 'N/A'}</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-[#3b82f6]" />
-                  <span className="font-medium">Location:</span>
-                  <span className="ml-2">{companyDetails?.city || 'N/A'}, {companyDetails?.state || 'N/A'}</span>
-                </div>
+            <div className="space-y-3">
+              <div className="flex items-center text-gray-700">
+                <MapPin className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                <span className="font-medium">Location:</span>
+                <span className="ml-2">
+                  {[companyDetails?.city, companyDetails?.state, companyDetails?.country]
+                    .filter(Boolean)
+                    .join(', ') || 'N/A'}
+                </span>
               </div>
-              
-              <div className="space-y-3">
-                <div className="flex items-center text-gray-700">
-                  <Globe className="w-4 h-4 mr-3 text-[#3b82f6]" />
-                  <span className="font-medium">Website:</span>
-                  <a href={companyDetails?.websiteUrl} target="_blank" rel="noopener noreferrer" 
-                     className="ml-2 text-[#3b82f6] hover:underline truncate">
-                    {companyDetails?.websiteUrl || 'Not provided'}
-                  </a>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <Phone className="w-4 h-4 mr-3 text-[#3b82f6]" />
-                  <span className="font-medium">Phone:</span>
-                  <span className="ml-2">{companyDetails?.phoneNumber || 'Not provided'}</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <Linkedin className="w-4 h-4 mr-3 text-[#3b82f6]" />
-                  <span className="font-medium">LinkedIn:</span>
-                  <a href={companyDetails?.companyLinkedin} target="_blank" rel="noopener noreferrer" 
-                     className="ml-2 text-[#3b82f6] hover:underline truncate">
-                    {companyDetails?.companyLinkedin ? 'View Profile' : 'Not provided'}
-                  </a>
-                </div>
+              <div className="flex items-center text-gray-700">
+                <Phone className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                <span className="font-medium">Phone:</span>
+                <span className="ml-2">{companyDetails?.phoneNumber || 'Not provided'}</span>
               </div>
-            </div>
-
-            {/* Contact Person Details */}
-            <div className="mt-6 p-5 bg-gradient-to-r from-[#f0f9ff]/30 to-[#e0f2fe]/30 rounded-xl border border-blue-50">
-              <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                <User className="w-5 h-5 text-[#3b82f6]" />
-                Contact Person Details
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center text-gray-700">
-                  <User className="w-4 h-4 mr-3 text-[#3b82f6]" />
-                  <div>
-                    <span className="font-medium">Name:</span>
-                    <span className="ml-2">{employerDetails?.name || 'N/A'}</span>
-                  </div>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <Briefcase className="w-4 h-4 mr-3 text-[#3b82f6]" />
-                  <div>
-                    <span className="font-medium">Designation:</span>
-                    <span className="ml-2">{employerDetails?.designation || 'N/A'}</span>
-                  </div>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <Mail className="w-4 h-4 mr-3 text-[#3b82f6]" />
-                  <div>
-                    <span className="font-medium">Email:</span>
-                    <a href={`mailto:${employerDetails?.workEmail}`} 
-                       className="ml-2 text-[#3b82f6] hover:underline">
-                      {employerDetails?.workEmail || 'N/A'}
-                    </a>
-                  </div>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <Phone className="w-4 h-4 mr-3 text-[#3b82f6]" />
-                  <div>
-                    <span className="font-medium">Mobile:</span>
-                    <span className="ml-2">{employerDetails?.mobile || 'N/A'}</span>
-                  </div>
-                </div>
+              <div className="flex items-center text-gray-700">
+                <Phone className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                <span className="font-medium">Alt Phone:</span>
+                <span className="ml-2">{companyDetails?.alternatePhoneNumber || 'Not provided'}</span>
               </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 pt-6 border-t border-white/50">
-              <button
-                onClick={handleReject}
-                disabled={isProcessing || currentStatus === 'Rejected'}
-                className={`group flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-sm ${
-                  currentStatus === 'Rejected'
-                    ? 'bg-gradient-to-r from-red-700 to-red-800 text-white cursor-not-allowed'
-                    : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-0.5'
-                } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                {isProcessing ? (
-                  <>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent"></div>
-                    Rejecting...
-                  </>
-                ) : currentStatus === 'Rejected' ? (
-                  'Already Rejected'
-                ) : (
-                  <>
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    Reject Application
-                  </>
-                )}
-              </button>
-              <button
-                onClick={handleMessageClick}
-                disabled={isProcessing}
-                className={`group flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-gray-500/30 hover:-translate-y-0.5 transition-all duration-300 text-sm ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                <Send className="w-4 h-4" />
-                Send Message
-              </button>
+              <div className="flex items-center text-gray-700">
+                <Mail className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                <span className="font-medium">Email:</span>
+                <span className="ml-2">{employerDetails?.workEmail || 'Not provided'}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  );
+
+    return (
+      <>
+        <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border border-white/50 shadow-sm hover:shadow-lg transition-all duration-300">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="flex-shrink-0">
+              <img
+                src={profileImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}
+                alt={`${companyDetails?.companyName} Logo`}
+                className="w-24 h-24 rounded-xl object-cover border-2 border-white/50 shadow-sm"
+              />
+            </div>
+        
+            <div className="flex-grow">
+              <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                <div>
+                  <h3
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowModal(true);
+                    }}
+                    className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent hover:underline cursor-pointer"
+                  >
+                    {companyDetails?.companyName}
+                  </h3>
+                  <div className="flex items-center gap-3 mt-2">
+                    <span className={`px-3 py-1.5 text-sm font-medium rounded-full ${getStatusColor(currentStatus)}`}>
+                      {currentStatus}
+                    </span>
+                    <span className="text-sm text-gray-500 flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      Applied: {new Date(createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                <div className="space-y-3">
+                  <div className="flex items-center text-gray-700">
+                    <Briefcase className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <span className="font-medium">Industry:</span>
+                    <span className="ml-2">{companyDetails?.industryType || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <Building2 className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <span className="font-medium">Company Type:</span>
+                    <span className="ml-2">{companyDetails?.companyType || 'N/A'}</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <MapPin className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <span className="font-medium">Location:</span>
+                    <span className="ml-2">{companyDetails?.city || 'N/A'}, {companyDetails?.state || 'N/A'}</span>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center text-gray-700">
+                    <Globe className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <span className="font-medium">Website:</span>
+                    <a href={companyDetails?.websiteUrl} target="_blank" rel="noopener noreferrer" 
+                       className="ml-2 text-[#3b82f6] hover:underline truncate">
+                      {companyDetails?.websiteUrl || 'Not provided'}
+                    </a>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <Phone className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <span className="font-medium">Phone:</span>
+                    <span className="ml-2">{companyDetails?.phoneNumber || 'Not provided'}</span>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <Linkedin className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <span className="font-medium">LinkedIn:</span>
+                    <a href={companyDetails?.companyLinkedin} target="_blank" rel="noopener noreferrer" 
+                       className="ml-2 text-[#3b82f6] hover:underline truncate">
+                      {companyDetails?.companyLinkedin ? 'View Profile' : 'Not provided'}
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact Person Details */}
+              <div className="mt-6 p-5 bg-gradient-to-r from-[#f0f9ff]/30 to-[#e0f2fe]/30 rounded-xl border border-blue-50">
+                <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                  <User className="w-5 h-5 text-[#3b82f6]" />
+                  Contact Person Details
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center text-gray-700">
+                    <User className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <div>
+                      <span className="font-medium">Name:</span>
+                      <span className="ml-2">{employerDetails?.name || 'N/A'}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <Briefcase className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <div>
+                      <span className="font-medium">Designation:</span>
+                      <span className="ml-2">{employerDetails?.designation || 'N/A'}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <Mail className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <div>
+                      <span className="font-medium">Email:</span>
+                      <a href={`mailto:${employerDetails?.workEmail}`} 
+                         className="ml-2 text-[#3b82f6] hover:underline">
+                        {employerDetails?.workEmail || 'N/A'}
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-gray-700">
+                    <Phone className="w-4 h-4 mr-3 text-[#3b82f6]" />
+                    <div>
+                      <span className="font-medium">Mobile:</span>
+                      <span className="ml-2">{employerDetails?.mobile || 'N/A'}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 pt-6 border-t border-white/50">
+                <button
+                  onClick={handleReject}
+                  disabled={isProcessing || currentStatus === 'Rejected'}
+                  className={`group flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-sm ${
+                    currentStatus === 'Rejected'
+                      ? 'bg-gradient-to-r from-red-700 to-red-800 text-white cursor-not-allowed'
+                      : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-0.5'
+                  } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  {isProcessing ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent"></div>
+                      Rejecting...
+                    </>
+                  ) : currentStatus === 'Rejected' ? (
+                    'Already Rejected'
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      Reject Application
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={handleMessageClick}
+                  disabled={isProcessing}
+                  className={`group flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-gray-500/30 hover:-translate-y-0.5 transition-all duration-300 text-sm ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <Send className="w-4 h-4" />
+                  Send Message
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Render the modal conditionally */}
+        {showModal && <CompanyDetailsModal />}
+      </>
     );
   };
 

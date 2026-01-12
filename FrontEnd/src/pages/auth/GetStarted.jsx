@@ -1,6 +1,19 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import BackButton from '@/components/layout/BackButton';
+import ReactGA from "react-ga4";
+
+// Helper function for GA events
+const trackGAEvent = (category, action, label) => {
+  if (import.meta.env.VITE_GA_MEASUREMENT_ID && window.ReactGA) {
+    ReactGA.event({
+      category,
+      action,
+      label
+    });
+  }
+};
+
 const RoleSelection = () => {
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState('');
@@ -61,12 +74,16 @@ const RoleSelection = () => {
   ];
 
   const handleContinue = () => {
-    if (selectedRole) {
-      sessionStorage.setItem('tempSelectedRole', selectedRole);
-      localStorage.setItem('selectedRole', selectedRole);
-      navigate('/signup');
-    }
-  };
+  if (selectedRole) {
+    sessionStorage.setItem('tempSelectedRole', selectedRole);
+    localStorage.setItem('selectedRole', selectedRole);
+    
+    // Track final selection confirmation
+    trackGAEvent("Role Selection", "Continue Clicked", selectedRole);
+    
+    navigate('/signup');
+  }
+};
 
   return (
     // <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
@@ -118,7 +135,11 @@ const RoleSelection = () => {
               {roles.map((role) => (
                 <div
                   key={role.key}
-                  onClick={() => setSelectedRole(role.key)}
+                  onClick={() => {
+    setSelectedRole(role.key);
+    // Track which role user is selecting
+    trackGAEvent("Role Selection", "Role Selected", role.key);
+  }}
                   onMouseEnter={() => setHoveredRole(role.key)}
                   onMouseLeave={() => setHoveredRole('')}
                   className={`

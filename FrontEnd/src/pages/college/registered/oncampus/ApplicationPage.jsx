@@ -145,15 +145,13 @@ function ApplicationPage() {
   // Action handlers
  // Add these two specific handlers
 const handleViewNewApplications = (jobId, e) => {
-    e.stopPropagation();
-    // This triggers the 'move' logic in the service
-    navigate(`/registered/on-campus-opportunities/${jobId}?targetStatus=Shortlisted&isVisited=false`);
+  e.stopPropagation();
+  navigate(`/registered/on-campus-opportunities/${jobId}/applicants?targetStatus=Shortlisted&isVisited=false`);
 };
 
 const handleViewAllApplications = (jobId, e) => {
-    e.stopPropagation();
-    // This does NOT include isVisited, so the backend returns EVERYTHING
-    navigate(`/registered/on-campus-opportunities/${jobId}?targetStatus=Shortlisted`);
+  e.stopPropagation();
+  navigate(`/registered/on-campus-opportunities/${jobId}/applicants?targetStatus=Shortlisted`);
 };
 
   const handleDelete = async (jobId, e) => {
