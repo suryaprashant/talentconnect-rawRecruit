@@ -5,8 +5,28 @@ const IntroduceYourself = ({ onNext, onBack, formData, updateFormData }) => {
   const [errors, setErrors] = useState({});
 
   const isValidLinkedIn = (url) => {
-    const pattern = /^https?:\/\/(www\.)?linkedin\.com(\/in\/[A-Za-z0-9-_]+\/?)?$/;
-    return pattern.test(url.trim());
+    if (!url.trim()) return true; // Optional field, empty is valid
+    
+    const cleanUrl = url
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\//, '')  // Remove http:// or https://
+      .replace(/^www\./, '')         // Remove www.
+      .replace(/^\/+|\/+$/g, '');    // Remove leading/trailing slashes
+
+    // Must be a LinkedIn URL
+    if (!cleanUrl.includes('linkedin.com')) {
+      return false;
+    }
+
+    // Accepts various LinkedIn URL formats:
+    // - linkedin.com/in/username
+    // - linkedin.com/username
+    // - linkedin.com/company/companyname
+    // - linkedin.com/school/schoolname
+    const linkedinPattern = /^linkedin\.com\/[A-Za-z0-9-_/]+\/?$/;
+    
+    return linkedinPattern.test(cleanUrl);
   };
 
   const isValidMobile = (mobile) => {
@@ -34,7 +54,7 @@ const IntroduceYourself = ({ onNext, onBack, formData, updateFormData }) => {
     }
 
     if (formData.linkedin?.trim() && !isValidLinkedIn(formData.linkedin)) {
-      newErrors.linkedin = 'Invalid LinkedIn URL';
+      newErrors.linkedin = 'Enter a valid LinkedIn URL (e.g., linkedin.com/in/username)';
     }
 
     setErrors(newErrors);
@@ -127,7 +147,7 @@ const IntroduceYourself = ({ onNext, onBack, formData, updateFormData }) => {
                   onChange={(e) => handleChange('designation', e.target.value)}
                   className={`block w-full px-3 py-2 border ${errors.designation ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80 appearance-none text-gray-800`}
                 >
-                  <option value="">Placeholder</option>
+                  <option value="">Select designation</option>
                   <option value="HR Manager">HR Manager</option>
                   <option value="Recruiter">Recruiter</option>
                   <option value="Hiring Manager">Hiring Manager</option>
@@ -172,7 +192,7 @@ const IntroduceYourself = ({ onNext, onBack, formData, updateFormData }) => {
               {errors.mobile && <p className="mt-1 text-sm text-red-600">{errors.mobile}</p>}
             </div>
 
-            {/* LINKEDIN */}
+            {/* LINKEDIN - Updated placeholder */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 LinkedIn Profile (Optional)
@@ -183,10 +203,19 @@ const IntroduceYourself = ({ onNext, onBack, formData, updateFormData }) => {
                   value={formData.linkedin || ''}
                   onChange={(e) => handleChange('linkedin', e.target.value)}
                   className={`block w-full pl-10 pr-3 py-2 border ${errors.linkedin ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] transition-all duration-300 bg-white/80 text-gray-800`}
-                  placeholder="https://www.linkedin.com"
+                  placeholder="linkedin.com/in/username or linkedin.com/company/name"
                 />
               </div>
-              {errors.linkedin && <p className="mt-1 text-sm text-red-600">{errors.linkedin}</p>}
+              {errors.linkedin && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.linkedin}
+                </p>
+              )}
+              {!errors.linkedin && formData.linkedin && (
+                <p className="mt-1 text-xs text-gray-500">
+                  {/* Accepted formats: linkedin.com/in/username, linkedin.com/company/name, linkedin.com/school/name */}
+                </p>
+              )}
             </div>
 
             <div className="flex justify-between mt-8">

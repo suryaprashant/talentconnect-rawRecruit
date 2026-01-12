@@ -200,7 +200,7 @@ const HiringPreferencesStep = ({ formData, handleChange, nextStep, prevStep }) =
                                                     }`}
                                                 onClick={() => handleLookingForClick(option)}
                                             >
-                                                {option === 'both' ? 'Both' : option.charAt(0).toUpperCase() + option.slice(1)}
+                                                {option === 'both' ? 'Both (Job+Internship)' : option.charAt(0).toUpperCase() + option.slice(1)}
                                             </button>
                                         ))}
                                     </div>

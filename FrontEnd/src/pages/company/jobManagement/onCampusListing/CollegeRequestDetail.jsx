@@ -127,11 +127,11 @@ const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShor
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+        {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
           <div className="text-center"><div className="font-bold text-lg">{placementRate}{placementRate !== 'Not Specified' && '%'}</div><div className="text-sm text-gray-600">Placement Rate</div></div>
           <div className="text-center"><div className="font-bold text-lg">{highestPackage}{highestPackage !== 'Not Specified' && ' LPA'}</div><div className="text-sm text-gray-600">Highest Package</div></div>
           <div className="text-center"><div className="font-bold text-lg">{averagePackage}{averagePackage !== 'Not Specified' && ' LPA'}</div><div className="text-sm text-gray-600">Average Package</div></div>
-        </div>
+        </div> */}
       </div>
 
       {/* 3. Use the corrected variables in the JSX */}

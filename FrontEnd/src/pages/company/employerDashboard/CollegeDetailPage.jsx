@@ -459,10 +459,45 @@ const CollegeDetailPage = () => {
           </div>
 
           {/* About This Opportunity */}
-          <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-6 mb-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">About This Opportunity</h3>
-            <p className="text-gray-700 leading-relaxed">{posting.description || 'No description provided.'}</p>
-          </div>
+<div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-6 mb-6">
+  <h3 className="text-xl font-semibold text-gray-900 mb-4">
+    About This Opportunity
+  </h3>
+
+  {posting.description ? (
+    <ul className="list-disc list-inside space-y-2 text-gray-700 leading-relaxed">
+      {(() => {
+        const sentences = posting.description
+          .replace(/\n+/g, ' ')
+          .split('.')
+          .map(s => s.trim())
+          .filter(Boolean);
+
+        const bullets = [];
+        let buffer = '';
+
+        sentences.forEach(sentence => {
+          if (sentence.length < 25) {
+            buffer += sentence + ' ';
+          } else {
+            bullets.push((buffer + sentence).trim());
+            buffer = '';
+          }
+        });
+
+        if (buffer.trim()) {
+          bullets.push(buffer.trim());
+        }
+
+        return bullets.map((point, idx) => (
+          <li key={idx}>{point}.</li>
+        ));
+      })()}
+    </ul>
+  ) : (
+    <p className="text-gray-500">No description provided.</p>
+  )}
+</div>
 
           {/* Statistics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">

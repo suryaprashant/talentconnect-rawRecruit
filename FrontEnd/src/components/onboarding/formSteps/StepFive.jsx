@@ -2,18 +2,62 @@ import React, { useState, useEffect } from "react";
 import { ChevronDownIcon, UploadIcon, XIcon, Award, Link, FileCode, Code } from "lucide-react";
 
 const isValidLinkedIn = (url) => {
-  const pattern = /^https?:\/\/(www\.)?linkedin\.com(\/in\/[A-Za-z0-9-_]+\/?)?$/;
-  return pattern.test(url.trim());
+  if (!url.trim()) return false;
+  
+  // Clean the URL
+  const cleanUrl = url
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')  // Remove http:// or https://
+    .replace(/^www\./, '')         // Remove www.
+    .replace(/^\/+|\/+$/g, '');    // Remove leading/trailing slashes
+
+  // Must be a LinkedIn URL
+  if (!cleanUrl.includes('linkedin.com')) {
+    return false;
+  }
+
+  // Accepts:
+  // - linkedin.com/in/username
+  // - linkedin.com/username
+  // - linkedin.com/company/companyname
+  // - linkedin.com/school/schoolname
+  // etc.
+  
+  const linkedinPattern = /^linkedin\.com\/[A-Za-z0-9-_/]+\/?$/;
+  
+  return linkedinPattern.test(cleanUrl);
 };
 
 const isValidGithub = (url) => {
-  const pattern = /^https?:\/\/(www\.)?github\.com\/[A-Za-z0-9-_]+\/?$/;
-  return pattern.test(url.trim());
+  if (!url.trim()) return false;
+  
+  // Clean the URL
+  const cleanUrl = url
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')
+    .replace(/^www\./, '')
+    .replace(/^\/+|\/+$/g, '');
+
+  // Must be a GitHub URL
+  if (!cleanUrl.includes('github.com')) {
+    return false;
+  }
+
+  const githubPattern = /^github\.com\/[A-Za-z0-9-_]+\/?$/;
+  
+  return githubPattern.test(cleanUrl);
 };
 
 const isValidPortfolio = (url) => {
   try {
     new URL(url);
+    // Reject if it's LinkedIn or GitHub (these should only go in their respective fields)
+    const lowerUrl = url.toLowerCase();
+    if (lowerUrl.includes('linkedin.com') || lowerUrl.includes('github.com')) {
+      return false;
+    }
     return true;
   } catch {
     return false;
@@ -100,41 +144,44 @@ export const StepFive = ({ onNext, onBack, formData, onChange }) => {
   };
 
   const handleNextClick = () => {
-    const newErrors = {};
+  const newErrors = {};
 
-    // LinkedIn validation (only if user entered something)
-    if (localFormData.linkedin) {
-      if (!isValidLinkedIn(localFormData.linkedin)) {
-        newErrors.linkedin =
-          "Enter a valid LinkedIn URL (linkedin.com/in/username)";
-      }
+  // LinkedIn validation
+  if (localFormData.linkedin) {
+    if (!isValidLinkedIn(localFormData.linkedin)) {
+      newErrors.linkedin = "Enter a valid LinkedIn URL (e.g., linkedin.com/username)";
     }
+  }
 
-    // GitHub validation
-    if (localFormData.github) {
-      if (!isValidGithub(localFormData.github)) {
-        newErrors.github =
-          "Enter a valid GitHub profile URL (github.com/username)";
-      }
+  // GitHub validation
+  if (localFormData.github) {
+    if (!isValidGithub(localFormData.github)) {
+      newErrors.github = "Enter a valid GitHub URL (e.g., github.com/username)";
     }
+  }
 
-    // Portfolio validation
-    if (localFormData.portfolio) {
-      if (!isValidPortfolio(localFormData.portfolio)) {
-        newErrors.portfolio = "Enter a valid portfolio URL";
-      }
+  // Portfolio validation - ensure it's not LinkedIn or GitHub
+  if (localFormData.portfolio) {
+    const lowerPortfolio = localFormData.portfolio.toLowerCase();
+    if (lowerPortfolio.includes('linkedin.com')) {
+      newErrors.portfolio = "LinkedIn URL should be entered in the LinkedIn field";
+    } else if (lowerPortfolio.includes('github.com')) {
+      newErrors.portfolio = "GitHub URL should be entered in the GitHub field";
+    } else if (!isValidPortfolio(localFormData.portfolio)) {
+      newErrors.portfolio = "Enter a valid portfolio website URL";
     }
+  }
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
 
-    // No errors → proceed
-    setErrors({});
-    onChange({ ...formData, ...localFormData });
-    onNext();
-  };
+  // No errors → proceed
+  setErrors({});
+  onChange({ ...formData, ...localFormData });
+  onNext();
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">

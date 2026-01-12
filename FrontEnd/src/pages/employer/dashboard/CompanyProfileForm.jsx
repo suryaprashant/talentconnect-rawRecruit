@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Mail, Phone, Globe, Linkedin, Save, Edit } from 'lucide-react';
+import { Mail, Phone, Globe, Linkedin, Save, Edit, ChevronDown } from 'lucide-react';
+import Select from 'react-select';
 
 // Helper function to convert form data to JSON and FormData for files
 const buildFormData = (data, files) => {
@@ -20,6 +21,80 @@ const buildFormData = (data, files) => {
   return formData;
 };
 
+// Country, State, City data (you can expand this list or fetch from an API)
+const countryData = [
+  {
+    name: 'United States',
+    states: [
+      { name: 'California', cities: ['Los Angeles', 'San Francisco', 'San Diego'] },
+      { name: 'New York', cities: ['New York City', 'Buffalo', 'Rochester'] },
+      { name: 'Texas', cities: ['Houston', 'Dallas', 'Austin'] },
+    ]
+  },
+  {
+    name: 'India',
+    states: [
+      { name: 'Maharashtra', cities: ['Mumbai', 'Pune', 'Nagpur'] },
+      { name: 'Delhi', cities: ['New Delhi', 'North Delhi', 'South Delhi'] },
+      { name: 'Karnataka', cities: ['Bangalore', 'Mysore', 'Hubli'] },
+    ]
+  },
+  {
+    name: 'United Kingdom',
+    states: [
+      { name: 'England', cities: ['London', 'Manchester', 'Birmingham'] },
+      { name: 'Scotland', cities: ['Edinburgh', 'Glasgow', 'Aberdeen'] },
+      { name: 'Wales', cities: ['Cardiff', 'Swansea', 'Newport'] },
+    ]
+  },
+  {
+    name: 'Canada',
+    states: [
+      { name: 'Ontario', cities: ['Toronto', 'Ottawa', 'Mississauga'] },
+      { name: 'British Columbia', cities: ['Vancouver', 'Victoria', 'Surrey'] },
+      { name: 'Quebec', cities: ['Montreal', 'Quebec City', 'Laval'] },
+    ]
+  },
+  {
+    name: 'Australia',
+    states: [
+      { name: 'New South Wales', cities: ['Sydney', 'Newcastle', 'Wollongong'] },
+      { name: 'Victoria', cities: ['Melbourne', 'Geelong', 'Ballarat'] },
+      { name: 'Queensland', cities: ['Brisbane', 'Gold Coast', 'Cairns'] },
+    ]
+  }
+];
+
+// Helper function to get country options for react-select
+const getCountryOptions = () => {
+  return countryData.map(country => ({
+    value: country.name,
+    label: country.name
+  }));
+};
+
+// Helper function to get state options for selected country
+const getStateOptions = (countryName) => {
+  const country = countryData.find(c => c.name === countryName);
+  if (!country) return [];
+  return country.states.map(state => ({
+    value: state.name,
+    label: state.name
+  }));
+};
+
+// Helper function to get city options for selected state and country
+const getCityOptions = (countryName, stateName) => {
+  const country = countryData.find(c => c.name === countryName);
+  if (!country) return [];
+  const state = country.states.find(s => s.name === stateName);
+  if (!state) return [];
+  return state.cities.map(city => ({
+    value: city,
+    label: city
+  }));
+};
+
 export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
   const [formData, setFormData] = useState({
     employerDetails: {
@@ -31,7 +106,6 @@ export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
     },
     companyDetails: {
       companyName: '',
-      location: '',
       state: '',
       city: '',
       country: '',
@@ -46,7 +120,7 @@ export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
     hiringPreferences: {
       jobRoles: [],
       hiringLocations: [],
-      lookingFor: [], // Changed to empty array initialization
+      lookingFor: [],
       employmentType: [],
     },
     profileImageUrl: '', 
@@ -63,45 +137,46 @@ export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
   const [success, setSuccess] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
+  // State for dropdown options
+  const [stateOptions, setStateOptions] = useState([]);
+  const [cityOptions, setCityOptions] = useState([]);
+
   useEffect(() => {
     if (profileData) {
       setFormData({
-  employerDetails: {
-    name: profileData.employerDetails?.name || '',
-    designation: profileData.employerDetails?.designation || '',
-    workEmail: profileData.employerDetails?.workEmail || '',
-    mobile: profileData.employerDetails?.mobile || '',
-    linkedIn: profileData.employerDetails?.linkedIn || '' // future safe
-  },
+        employerDetails: {
+          name: profileData.employerDetails?.name || '',
+          designation: profileData.employerDetails?.designation || '',
+          workEmail: profileData.employerDetails?.workEmail || '',
+          mobile: profileData.employerDetails?.mobile || '',
+          linkedIn: profileData.employerDetails?.linkedIn || ''
+        },
 
-  companyDetails: {
-    companyName: profileData.companyDetails?.companyName || '',
-    location: profileData.companyDetails
-      ? `${profileData.companyDetails.city || ''}${profileData.companyDetails.state ? ', ' + profileData.companyDetails.state : ''}`
-      : '',
-    state: profileData.companyDetails?.state || '',
-    city: profileData.companyDetails?.city || '',
-    country: profileData.companyDetails?.country || '',
-    pincode: profileData.companyDetails?.pincode || '',
-    companyType: profileData.companyDetails?.companyType || '',
-    industryType: profileData.companyDetails?.industryType || '',
-    establishedYear: profileData.companyDetails?.establishedYear || '',
-    contactNumber: profileData.companyDetails?.contactNumber || '',
-    description: profileData.companyDetails?.description || '',
-    companyWebsite: profileData.companyDetails?.companyWebsite || ''
-  },
+        companyDetails: {
+          companyName: profileData.companyDetails?.companyName || '',
+          state: profileData.companyDetails?.state || '',
+          city: profileData.companyDetails?.city || '',
+          country: profileData.companyDetails?.country || '',
+          pincode: profileData.companyDetails?.pincode || '',
+          companyType: profileData.companyDetails?.companyType || '',
+          industryType: profileData.companyDetails?.industryType || '',
+          establishedYear: profileData.companyDetails?.establishedYear || '',
+          contactNumber: profileData.companyDetails?.contactNumber || '',
+          description: profileData.companyDetails?.description || '',
+          companyWebsite: profileData.companyDetails?.companyWebsite || ''
+        },
 
-  hiringPreferences: {
-    jobRoles: profileData.hiringPreferences?.jobRoles || [],
-    hiringLocations: profileData.hiringPreferences?.hiringLocations || [],
-    lookingFor: Array.isArray(profileData.hiringPreferences?.lookingFor)
-      ? profileData.hiringPreferences.lookingFor
-      : profileData.hiringPreferences?.lookingFor
-        ? [profileData.hiringPreferences.lookingFor]
-        : [],
-    employmentType: profileData.hiringPreferences?.employmentType || []
-  }
-});
+        hiringPreferences: {
+          jobRoles: profileData.hiringPreferences?.jobRoles || [],
+          hiringLocations: profileData.hiringPreferences?.hiringLocations || [],
+          lookingFor: Array.isArray(profileData.hiringPreferences?.lookingFor)
+            ? profileData.hiringPreferences.lookingFor
+            : profileData.hiringPreferences?.lookingFor
+              ? [profileData.hiringPreferences.lookingFor]
+              : [],
+          employmentType: profileData.hiringPreferences?.employmentType || []
+        }
+      });
 
       setIsEditing(false);
     } else {
@@ -109,13 +184,50 @@ export default function EmployerProfileForm({ profileData, onProfileUpdated }) {
     }
   }, [profileData]);
 
+  // Update state dropdown when country changes
   useEffect(() => {
-  console.log("API PROFILE:", profileData);
-}, [profileData]);
+    if (formData.companyDetails.country) {
+      const options = getStateOptions(formData.companyDetails.country);
+      setStateOptions(options);
+      
+      // Reset state and city when country changes
+      if (!options.find(opt => opt.value === formData.companyDetails.state)) {
+        setFormData(prev => ({
+          ...prev,
+          companyDetails: {
+            ...prev.companyDetails,
+            state: '',
+            city: ''
+          }
+        }));
+        setCityOptions([]);
+      }
+    } else {
+      setStateOptions([]);
+      setCityOptions([]);
+    }
+  }, [formData.companyDetails.country]);
 
-useEffect(() => {
-  console.log("FORM DATA STATE:", formData);
-}, [formData]);
+  // Update city dropdown when state changes
+  useEffect(() => {
+    if (formData.companyDetails.country && formData.companyDetails.state) {
+      const options = getCityOptions(formData.companyDetails.country, formData.companyDetails.state);
+      setCityOptions(options);
+      
+      // Reset city when state changes
+      if (!options.find(opt => opt.value === formData.companyDetails.city)) {
+        setFormData(prev => ({
+          ...prev,
+          companyDetails: {
+            ...prev.companyDetails,
+            city: ''
+          }
+        }));
+      }
+    } else {
+      setCityOptions([]);
+    }
+  }, [formData.companyDetails.country, formData.companyDetails.state]);
 
   const handleEmployerDetailsChange = (e) => {
     const { name, value } = e.target;
@@ -136,6 +248,40 @@ useEffect(() => {
         ...prev.companyDetails,
         [name]: value,
       },
+    }));
+  };
+
+  // Handle dropdown changes
+  const handleCountryChange = (selectedOption) => {
+    setFormData(prev => ({
+      ...prev,
+      companyDetails: {
+        ...prev.companyDetails,
+        country: selectedOption ? selectedOption.value : '',
+        state: '',
+        city: ''
+      }
+    }));
+  };
+
+  const handleStateChange = (selectedOption) => {
+    setFormData(prev => ({
+      ...prev,
+      companyDetails: {
+        ...prev.companyDetails,
+        state: selectedOption ? selectedOption.value : '',
+        city: ''
+      }
+    }));
+  };
+
+  const handleCityChange = (selectedOption) => {
+    setFormData(prev => ({
+      ...prev,
+      companyDetails: {
+        ...prev.companyDetails,
+        city: selectedOption ? selectedOption.value : ''
+      }
     }));
   };
 
@@ -161,7 +307,6 @@ useEffect(() => {
 
   const handleHiringPreferencesChange = (e) => {
     const { name, value } = e.target;
-    // lookingFor is handled separately now
     if (name === 'jobRoles' || name === 'hiringLocations' || name === 'employmentType') {
       setFormData((prev) => ({
         ...prev,
@@ -240,11 +385,11 @@ useEffect(() => {
         hiringPreferences: profileData.hiringPreferences || {},
       });
     } else {
-        setFormData({
-            employerDetails: { name: '', designation: '', workEmail: '', mobile: '', linkedIn: '' },
-            companyDetails: { companyName: '', location: '', state: '', city: '', country: '', pincode: '', companyType: '', industryType: '', establishedYear: '', contactNumber: '', description: '', companyWebsite: '' },
-            hiringPreferences: { jobRoles: [], hiringLocations: [], lookingFor: [], employmentType: [] },
-        });
+      setFormData({
+        employerDetails: { name: '', designation: '', workEmail: '', mobile: '', linkedIn: '' },
+        companyDetails: { companyName: '', state: '', city: '', country: '', pincode: '', companyType: '', industryType: '', establishedYear: '', contactNumber: '', description: '', companyWebsite: '' },
+        hiringPreferences: { jobRoles: [], hiringLocations: [], lookingFor: [], employmentType: [] },
+      });
     }
     setFiles({ profileImage: null, backgroundImage: null });
     setError(null);
@@ -266,6 +411,35 @@ useEffect(() => {
   const selectClass = `mt-1 block w-full border border-gray-200 p-2.5 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 ${
     isEditing ? 'bg-white' : 'bg-gradient-to-r from-gray-50 to-white text-gray-700'
   }`;
+
+  // Custom styles for react-select
+  const customSelectStyles = {
+    control: (base, state) => ({
+      ...base,
+      borderRadius: '0.75rem',
+      borderWidth: '1px',
+      borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+      padding: '2px 4px',
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(102, 126, 234, 0.5)' : 'none',
+      backgroundColor: isEditing ? 'white' : 'linear-gradient(to right, #f9fafb, white)',
+      '&:hover': {
+        borderColor: '#667eea'
+      }
+    }),
+    menu: (base) => ({
+      ...base,
+      borderRadius: '0.75rem',
+      marginTop: '4px'
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected ? '#667eea' : state.isFocused ? '#f3f4f6' : 'white',
+      color: state.isSelected ? 'white' : '#374151',
+      '&:hover': {
+        backgroundColor: '#f3f4f6'
+      }
+    })
+  };
 
   return (
     <div className="flex flex-col w-full bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 min-h-screen">
@@ -431,59 +605,64 @@ useEffect(() => {
                       value={formData.companyDetails.companyName || ''}
                       onChange={handleCompanyDetailsChange}
                       className={inputClass}
-                      //required
                       readOnly={!isEditing}
                     />
                   </div>
+                  
+                  {/* Country Dropdown */}
                   <div>
-                    <label htmlFor="location" className="block mb-1 text-sm font-medium text-gray-700">Company Location</label>
-                    <input
-                      type="text"
-                      id="location"
-                      name="location"
-                      value={formData.companyDetails.location || ''}
-                      onChange={handleCompanyDetailsChange}
-                      className={inputClass}
-                     // required
-                      readOnly={!isEditing}
+                    <label className="block mb-1 text-sm font-medium text-gray-700">Country</label>
+                    <Select
+                      options={getCountryOptions()}
+                      value={formData.companyDetails.country ? { 
+                        value: formData.companyDetails.country, 
+                        label: formData.companyDetails.country 
+                      } : null}
+                      onChange={handleCountryChange}
+                      placeholder="Select Country"
+                      isDisabled={!isEditing}
+                      styles={customSelectStyles}
+                      className="react-select-container"
+                      classNamePrefix="react-select"
                     />
                   </div>
+                  
+                  {/* State Dropdown */}
                   <div>
-                    <label htmlFor="state" className="block mb-1 text-sm font-medium text-gray-700">State</label>
-                    <input
-                      type="text"
-                      id="state"
-                      name="state"
-                      value={formData.companyDetails.state || ''}
-                      onChange={handleCompanyDetailsChange}
-                      className={inputClass}
-                      readOnly={!isEditing}
+                    <label className="block mb-1 text-sm font-medium text-gray-700">State</label>
+                    <Select
+                      options={stateOptions}
+                      value={formData.companyDetails.state ? { 
+                        value: formData.companyDetails.state, 
+                        label: formData.companyDetails.state 
+                      } : null}
+                      onChange={handleStateChange}
+                      placeholder="Select State"
+                      isDisabled={!isEditing || !formData.companyDetails.country}
+                      styles={customSelectStyles}
+                      className="react-select-container"
+                      classNamePrefix="react-select"
                     />
                   </div>
+                  
+                  {/* City Dropdown */}
                   <div>
-                    <label htmlFor="city" className="block mb-1 text-sm font-medium text-gray-700">City</label>
-                    <input
-                      type="text"
-                      id="city"
-                      name="city"
-                      value={formData.companyDetails.city || ''}
-                      onChange={handleCompanyDetailsChange}
-                      className={inputClass}
-                      readOnly={!isEditing}
+                    <label className="block mb-1 text-sm font-medium text-gray-700">City</label>
+                    <Select
+                      options={cityOptions}
+                      value={formData.companyDetails.city ? { 
+                        value: formData.companyDetails.city, 
+                        label: formData.companyDetails.city 
+                      } : null}
+                      onChange={handleCityChange}
+                      placeholder="Select City"
+                      isDisabled={!isEditing || !formData.companyDetails.state}
+                      styles={customSelectStyles}
+                      className="react-select-container"
+                      classNamePrefix="react-select"
                     />
                   </div>
-                  <div>
-                    <label htmlFor="country" className="block mb-1 text-sm font-medium text-gray-700">Country</label>
-                    <input
-                      type="text"
-                      id="country"
-                      name="country"
-                      value={formData.companyDetails.country || ''}
-                      onChange={handleCompanyDetailsChange}
-                      className={inputClass}
-                      readOnly={!isEditing}
-                    />
-                  </div>
+                  
                   <div>
                     <label htmlFor="pincode" className="block mb-1 text-sm font-medium text-gray-700">Pincode</label>
                     <input
@@ -496,6 +675,7 @@ useEffect(() => {
                       readOnly={!isEditing}
                     />
                   </div>
+                  
                   <div>
                     <label htmlFor="companyType" className="block mb-1 text-sm font-medium text-gray-700">Company Type</label>
                     <input
@@ -508,6 +688,7 @@ useEffect(() => {
                       readOnly={!isEditing}
                     />
                   </div>
+                  
                   <div>
                     <label htmlFor="industryType" className="block mb-1 text-sm font-medium text-gray-700">Industry Type</label>
                     <input
@@ -520,6 +701,7 @@ useEffect(() => {
                       readOnly={!isEditing}
                     />
                   </div>
+                  
                   <div>
                     <label htmlFor="establishedYear" className="block mb-1 text-sm font-medium text-gray-700">Established Year</label>
                     <input
@@ -532,6 +714,7 @@ useEffect(() => {
                       readOnly={!isEditing}
                     />
                   </div>
+                  
                   <div>
                     <label htmlFor="contactNumber" className="block mb-1 text-sm font-medium text-gray-700">Contact Number</label>
                     <div className="relative">
@@ -549,6 +732,7 @@ useEffect(() => {
                       />
                     </div>
                   </div>
+                  
                   <div className="md:col-span-2">
                     <label htmlFor="companyWebsite" className="block mb-1 text-sm font-medium text-gray-700">Company Website URL</label>
                     <div className="relative">
@@ -566,6 +750,7 @@ useEffect(() => {
                       />
                     </div>
                   </div>
+                  
                   <div className="md:col-span-2">
                     <label htmlFor="description" className="block mb-1 text-sm font-medium text-gray-700">Company Description</label>
                     <textarea
@@ -638,9 +823,7 @@ useEffect(() => {
                         <option value="both">Both</option>
                       </select>
                       <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-gray-400">
-                          <path fillRule="evenodd" d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" clipRule="evenodd" />
-                        </svg>
+                        <ChevronDown size={16} className="text-gray-400" />
                       </div>
                     </div>
                   </div>
