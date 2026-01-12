@@ -6,6 +6,7 @@ import CompanyProfileForm from './CompanyProfileForm';
 import UserManagement from './UserManagement';
 
 export default function EmployerProfile() {
+
   const [activeTab, setActiveTab] = useState('Overview');
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -69,15 +70,8 @@ export default function EmployerProfile() {
         withCredentials: true,
       });
 
-      const newImageUrl = response.data.imageUrl;
-
-      setProfileData((prevData) => ({
-        ...prevData,
-        ...(imageType === 'profile' && { profileImageUrl: newImageUrl }),
-        ...(imageType === 'background' && { backgroundImageUrl: newImageUrl }),
-        employerDetails: prevData?.employerDetails || {},
-        companyDetails: prevData?.companyDetails || {},
-      }));
+    const updatedProfile = response.data.profile;
+    setProfileData(updatedProfile);
 
       alert(`${imageType === 'profile' ? 'Profile' : 'Background'} image updated successfully!`);
     } catch (err) {
@@ -151,16 +145,16 @@ export default function EmployerProfile() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Banner */}
-      <div className="relative h-48">
+    <div className="relative h-48 cursor-pointer" onClick={() => backgroundImageInputRef.current.click()}>
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#667eea]/20 via-[#f093fb]/10 to-[#764ba2]/20"></div>
         
         {profileData?.backgroundImageUrl && (
           <div className="absolute inset-0">
             <img 
-              src={profileData.backgroundImageUrl} 
+              src={profileData?.backgroundImageUrl} 
               alt="Banner" 
-              className="w-full h-full object-cover opacity-15"
+              className="w-full h-full object-cover opacity-100"
             />
           </div>
         )}
@@ -207,7 +201,7 @@ export default function EmployerProfile() {
                   <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
                     {profileData?.profileImageUrl ? (
                       <img 
-                        src={profileData.profileImageUrl} 
+                        src={profileData?.profileImageUrl} 
                         alt="Profile" 
                         className="w-full h-full object-cover"
                       />

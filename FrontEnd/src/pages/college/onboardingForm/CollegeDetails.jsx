@@ -231,12 +231,27 @@ export default function CollegeDetails({
                       }}
                     >
                       <span className="text-[#3b82f6] hover:text-[#2563eb]">
-                        Select Existing College
+                        Select Existing College 
                       </span>
                     </p>
                   </div>
                 )}
               </div>
+
+              <div>
+            <label className="block font-medium mb-3 text-gray-700 text-lg">
+              Affiliated University
+            </label>
+            <input
+              type="text"
+              value={formData.affiliatedUniversity || ""}
+              onChange={(e) =>
+                updateFormData("affiliatedUniversity", e.target.value)
+              }
+              placeholder="Enter affiliated university name"
+              className="w-full p-4 bg-white/70 border rounded-xl"
+            />
+          </div>
 
               {/* College Location with CreatableSelect */}
               <div>

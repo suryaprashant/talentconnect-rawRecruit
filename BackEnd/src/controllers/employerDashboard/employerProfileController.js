@@ -1,5 +1,6 @@
 
-// import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js';
+//import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js';
+import employerOnboardingModel from '../../models/employerDashboard/employerOnboardingModel.js';
 import cloudinary from '../../../config/cloudinary.js';
 import streamifier from 'streamifier';
 import Auth from '../../models/authModel.js'
@@ -211,39 +212,34 @@ export const updateEmployerOnboarding = async (req, res) => {
     }
 };
 
-// POST: Upload a single image (profile or background)
+// employerProfileController.js
 export const uploadSingleImage = async (req, res) => {
     try {
         const userId = req.user._id;
         const { imageType } = req.body;
         const file = req.file;
 
-        if (!file) {
-            return res.status(400).json({ message: 'No image file provided.' });
-        }
-        if (!imageType || (imageType !== 'profile' && imageType !== 'background')) {
-            return res.status(400).json({ message: 'Invalid imageType. Must be "profile" or "background".' });
-        }
+        if (!file) return res.status(400).json({ message: 'No image file provided.' });
 
+        // 1. Upload to Cloudinary
         const folder = imageType === 'profile' ? 'employerProfileImages' : 'employerBackgroundImages';
-        const imageUrl = (await streamUpload(file.buffer, folder)).secure_url;
+        const result = await streamUpload(file.buffer, folder);
 
-        // FIX: Determine the correct root-level field name
-        const updateField = imageType === 'profile' ? 'profileImageUrl' : 'backgroundImageUrl';
+        // 2. Map to the nested schema path using dot notation
+        // Based on your EmployerOnboarding schema, these are inside employerDetails
+       // In employerProfileController.js
+       const updatePath = imageType === 'profile' ? 'profileImageUrl' : 'backgroundImageUrl'; //
+      const updates = { [updatePath]: result.secure_url }; //
 
-        const updatedProfile = await CompanyProfile.findOneAndUpdate(
-            { userId: userId },
-            { $set: { [updateField]: imageUrl } },
-            { new: true, runValidators: true } // Removed upsert to prevent creating a doc with just an image
-        );
+      const updatedProfile = await updateCompanyProfileService(userId, updates); //
 
         if (!updatedProfile) {
-            return res.status(404).json({ message: 'Employer profile not found. Please complete onboarding first.' });
+            return res.status(404).json({ message: 'Employer profile not found.' });
         }
 
         res.status(200).json({
             message: `${imageType} image uploaded successfully!`,
-            imageUrl: imageUrl,
+            imageUrl: result.secure_url,
             profile: updatedProfile
         });
     } catch (error) {

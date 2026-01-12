@@ -10,6 +10,7 @@ const onboardingSchema = new mongoose.Schema({
   collegeUniversityDetails: {
     collegeName: String,
     collegeLocation: String ,
+    affiliatedUniversity:String,
     state: String,
     city: String,
     country: String,
@@ -17,6 +18,7 @@ const onboardingSchema = new mongoose.Schema({
     establishedYear: { type: String }, // or Number if you prefer
     phoneNumber: { type: String },
     alternatePhoneNumber: { type: String }
+
   },
   placementCoordinatorDetails: {
     coordinatorName: String,
