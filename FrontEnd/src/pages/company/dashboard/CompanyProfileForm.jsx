@@ -362,7 +362,7 @@ export default function CompanyProfileForm({ profileData, onProfileUpdate }) {
   const establishedYearOptions = Array.from({ length: 70 }, (_, i) => ({ value: String(new Date().getFullYear() - i), label: String(new Date().getFullYear() - i) }));
   const staticLocationOptions = [ { value: 'delhi', label: 'Delhi' }, { value: 'mumbai', label: 'Mumbai' }, { value: 'bangalore', label: 'Bangalore' }];
   const jobRoleOptions = [ { value: 'software_engineer', label: 'Software Engineer' }, { value: 'data_scientist', label: 'Data Scientist' }, { value: 'product_manager', label: 'Product Manager' }, { value: 'hr_manager', label: 'HR Manager' }, { value: 'marketing_specialist', label: 'Marketing Specialist' }];
-  const lookingForOptions = [ { value: 'job', label: 'Job' }, { value: 'internship', label: 'Internship' }, { value: 'both', label: 'Both' }];
+  const lookingForOptions = [ { value: 'job', label: 'Job' }, { value: 'internship', label: 'Internship' }, { value: 'both', label: 'Both (Job+Internship)' }];
   const employmentTypeOptions = [ { value: 'part-time', label: 'Part-time' }, { value: 'full-time', label: 'Full-time' }, { value: 'contract', label: 'Contract' }];
 
   return (

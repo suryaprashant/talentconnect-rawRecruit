@@ -1,15 +1,30 @@
 import React from 'react';
-import { User, Briefcase, Mail, Phone, Linkedin, MapPin, Calendar, Users, Globe, Building2 } from 'lucide-react';
+import { User, Briefcase, Mail, Phone, Linkedin, MapPin, Calendar, Users, Globe, Building2, ExternalLink } from 'lucide-react';
 
 export default function Overview({profileData}) {
   if (!profileData) return null;
 
-    const { employerDetails, companyDetails, hiringPreferences } = profileData;
+  const { employerDetails, companyDetails, hiringPreferences } = profileData;
 
-    const location = [
+  // Helper function to get lookingFor display text
+  const getLookingForText = () => {
+    if (!hiringPreferences?.lookingFor) return "Not specified";
+    
+    const lookingFor = hiringPreferences.lookingFor;
+    if (Array.isArray(lookingFor)) {
+      if (lookingFor.includes('job') && lookingFor.includes('internship')) return "Both Job and Internship";
+      if (lookingFor.includes('job')) return "Job";
+      if (lookingFor.includes('internship')) return "Internship";
+      return lookingFor.join(', ');
+    }
+    return lookingFor;
+  };
+
+  // Build location from available fields
+  const location = [
     companyDetails?.city,
     companyDetails?.state,
-    companyDetails?.country,
+    companyDetails?.country
   ]
     .filter(Boolean)
     .join(", ");
@@ -23,7 +38,7 @@ export default function Overview({profileData}) {
             Company Description
           </h2>
           <p className="text-gray-700 leading-relaxed p-4 bg-gradient-to-r from-[#667eea]/5 to-transparent rounded-xl">
-            No company description available. You can add one in the Profile section.
+            {companyDetails?.description || "No company description available. You can add one in the Profile section."}
           </p>
         </div>
 
@@ -54,14 +69,12 @@ export default function Overview({profileData}) {
                 <div className="font-medium text-gray-600">Designation:</div>
                 <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#f093fb]/5 to-transparent px-3 py-2 rounded">
                   {employerDetails?.designation || "Not specified"}
-
                 </div>
 
                 <div className="font-medium text-gray-600">Email:</div>
                 <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#4facfe]/5 to-transparent px-3 py-2 rounded flex items-center">
                   <Mail size={14} className="mr-2" />
                   {employerDetails?.workEmail || "Not specified"}
-
                 </div>
 
                 <div className="font-medium text-gray-600">Phone:</div>
@@ -72,7 +85,20 @@ export default function Overview({profileData}) {
 
                 <div className="font-medium text-gray-600">LinkedIn:</div>
                 <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-blue-50 to-white px-3 py-2 rounded">
-                  <div className="text-gray-400">Not provided</div>
+                  {employerDetails?.linkedIn ? (
+                    <a 
+                      href={employerDetails.linkedIn.startsWith('http') ? employerDetails.linkedIn : `https://${employerDetails.linkedIn}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline flex items-center"
+                    >
+                      <Linkedin size={14} className="mr-2" />
+                      View Profile
+                      <ExternalLink size={12} className="ml-1" />
+                    </a>
+                  ) : (
+                    <div className="text-gray-400">Not provided</div>
+                  )}
                 </div>
               </div>
             </div>
@@ -100,15 +126,14 @@ export default function Overview({profileData}) {
                   {companyDetails?.companyName || "—"}
                 </div>
 
-                <div className="font-medium text-gray-600">Location:</div>
+                {/* <div className="font-medium text-gray-600">Location:</div>
                 <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#f093fb]/5 to-transparent px-3 py-2 rounded flex items-center">
                   <MapPin size={14} className="mr-2" />
-                  {companyDetails?.location || "—"}
-                </div>
+                  {location || companyDetails?.location || "—"}
+                </div> */}
 
                 <div className="font-medium text-gray-600">State:</div>
                 <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#4facfe]/5 to-transparent px-3 py-2 rounded">
-                  
                   {companyDetails?.state || "—"}
                 </div>
 
@@ -134,8 +159,7 @@ export default function Overview({profileData}) {
 
                 <div className="font-medium text-gray-600">Industry:</div>
                 <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#f093fb]/5 to-transparent px-3 py-2 rounded">
-                   {companyDetails?.industryType || "—"}
-
+                  {companyDetails?.industryType || "—"}
                 </div>
 
                 <div className="font-medium text-gray-600">Established:</div>
@@ -148,6 +172,24 @@ export default function Overview({profileData}) {
                 <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded flex items-center">
                   <Phone size={14} className="mr-2" />
                   {companyDetails?.contactNumber || "—"}
+                </div>
+
+                <div className="font-medium text-gray-600">Website:</div>
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#f093fb]/5 to-transparent px-3 py-2 rounded">
+                  {companyDetails?.companyWebsite ? (
+                    <a 
+                      href={companyDetails.companyWebsite.startsWith('http') ? companyDetails.companyWebsite : `https://${companyDetails.companyWebsite}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline flex items-center"
+                    >
+                      <Globe size={14} className="mr-2" />
+                      Visit Website
+                      <ExternalLink size={12} className="ml-1" />
+                    </a>
+                  ) : (
+                    "—"
+                  )}
                 </div>
               </div>
             </div>
@@ -176,44 +218,56 @@ export default function Overview({profileData}) {
                 <div className="font-medium text-gray-600">Job Roles:</div>
                 <div className="col-span-2 flex flex-wrap gap-2">
                   {hiringPreferences?.jobRoles?.length ? (
-          hiringPreferences.jobRoles.map((role, idx) => (
-            <span
-              key={idx}
-              className="inline-flex bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] px-2 py-1 rounded text-xs"
-            >
-              {role.replace(/_/g, " ")}
-            </span>
-          ))
-        ) : (
-          <span className="text-gray-400">Not specified</span>
-        )}
+                    hiringPreferences.jobRoles.map((role, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] px-2 py-1 rounded text-xs"
+                      >
+                        {role.replace(/_/g, " ")}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-400">Not specified</span>
+                  )}
                 </div>
 
                 <div className="font-medium text-gray-600">Locations:</div>
                 <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#f093fb]/5 to-transparent px-3 py-2 rounded">
-                  <span className="inline-flex bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 text-[#f093fb] px-2 py-1 rounded text-xs">
-                    {hiringPreferences?.hiringLocations?.length
-                      ? hiringPreferences.hiringLocations.join(", ")
-                      : "Not specified"}
-
-                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {hiringPreferences?.hiringLocations?.length ? (
+                      hiringPreferences.hiringLocations.map((location, idx) => (
+                        <span
+                          key={idx}
+                          className="inline-flex bg-gradient-to-r from-[#f093fb]/10 to-[#f5576c]/10 text-[#f093fb] px-2 py-1 rounded text-xs"
+                        >
+                          {location}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-gray-400">Not specified</span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="font-medium text-gray-600">Looking for:</div>
                 <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#4facfe]/5 to-transparent px-3 py-2 rounded">
-                  {hiringPreferences?.jobRoles?.length
-                    ? hiringPreferences.jobRoles.join(", ")
-                    : "Not specified"}
-
+                  {getLookingForText()}
                 </div>
 
                 <div className="font-medium text-gray-600">Employment type:</div>
-                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
-                  <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded">
-        {hiringPreferences?.employmentType?.length
-          ? hiringPreferences.employmentType.join(", ")
-          : "Not specified"}
-      </div>
+                <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#667eea]/5 to-transparent px-3 py-2 rounded flex flex-wrap gap-2">
+                  {hiringPreferences?.employmentType?.length ? (
+                    hiringPreferences.employmentType.map((type, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] px-2 py-1 rounded text-xs"
+                      >
+                        {type}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-400">Not specified</span>
+                  )}
                 </div>
               </div>
             </div>

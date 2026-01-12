@@ -28,6 +28,21 @@ export async function getCompanyService(userId) {
     }
 }
 
+// export async function getCompanyService(userId) {
+//     try {
+//         const company = await CompanyProfile.find({ userId }).lean();
+
+//         if (company.length === 0) {
+//             return { success: false, data: [] };
+//         }
+
+//         return { success: true, data: company };
+//     } catch (error) {
+//         console.log("Error: ", error.message);
+//         throw new Error("Failed to fetch");
+//     }
+// }
+
 export async function updateCompanyProfileService(userId, data) {
     try {
         const company = await CompanyProfile.findOneAndUpdate(

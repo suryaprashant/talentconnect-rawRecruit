@@ -72,6 +72,79 @@ export const createEmployerOnboarding = async (req, res) => {
     }
 };
 
+// export const createEmployerOnboarding = async (req, res) => {
+//     try {
+//         if (!req.user || !req.user._id) {
+//             return res.status(401).json({ message: "Unauthorized" });
+//         }
+
+//         const userId = req.user._id;
+
+//         const company = await getCompanyService(userId);
+
+// if (company.success && company.data.length > 0) {
+//     return res.status(400).json({
+//         message: 'Onboarding already exists for this user.'
+//     });
+// }
+
+
+//         const employerDetails = req.body.employerDetails
+//             ? JSON.parse(req.body.employerDetails)
+//             : {};
+
+//         const companyDetails = req.body.companyDetails
+//             ? JSON.parse(req.body.companyDetails)
+//             : {};
+
+//         const hiringPreferences = req.body.hiringPreferences
+//             ? JSON.parse(req.body.hiringPreferences)
+//             : {};
+
+//         const uploads = {};
+//         const files = req.files;
+
+//         if (files?.profileImage?.[0]) {
+//             uploads.profileImageUrl = (
+//                 await streamUpload(files.profileImage[0].buffer, 'employerProfileImages')
+//             ).secure_url;
+//         }
+
+//         if (files?.backgroundImage?.[0]) {
+//             uploads.backgroundImageUrl = (
+//                 await streamUpload(files.backgroundImage[0].buffer, 'employerBackgroundImages')
+//             ).secure_url;
+//         }
+
+//         const onboardingData = await createProfileService({
+//             userId,
+//             ...uploads,
+//             employerDetails,
+//             companyDetails,
+//             hiringPreferences
+//         });
+
+//         const updatedUser = await updateAuthUserService(userId, {
+//             userType: "employer",
+//             onboardingCompleted: true,
+//             onboardingStep: 6
+//         });
+
+//         res.status(201).json({
+//             message: "Onboarding created successfully",
+//             profile: onboardingData,
+//             user: updatedUser
+//         });
+
+//     } catch (error) {
+//         console.error("Error in createEmployerOnboarding:", error);
+//         res.status(500).json({
+//             message: "Failed to create onboarding",
+//             error: error.message
+//         });
+//     }
+// };
+
 // GET: Fetch onboarding profile
 export const getEmployerOnboarding = async (req, res) => {
 

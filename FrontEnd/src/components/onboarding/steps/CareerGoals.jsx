@@ -156,7 +156,7 @@ function CareerGoals({ formData, isEditable, handleInputChange, toggleEdit }) {
                     : 'bg-white text-black border-gray-300 hover:bg-gray-100'
                 }`}
               >
-                Both
+                Both (Job+Internship)
               </button>
             </div>
           ) : (

@@ -604,7 +604,7 @@ export default function RequestInfo() {
               <div>
                 <label className="block mb-2 font-medium text-sm text-gray-700">Looking for</label>
                 <div className="flex gap-2">
-                  {['Job', 'Internship', 'Both'].map(type => (
+                  {['Job', 'Internship', 'Both (Job+Internship)'].map(type => (
                     <button 
                       key={type} 
                       type="button" 

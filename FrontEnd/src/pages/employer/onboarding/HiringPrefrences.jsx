@@ -304,7 +304,7 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                                 Looking for
                             </label>
                             <div className="flex space-x-2">
-                                {['job', 'internship', 'both'].map((option) => (
+                                {['job', 'internship', 'both (Job+Internship)'].map((option) => (
                                     <button
                                         key={option}
                                         type="button"

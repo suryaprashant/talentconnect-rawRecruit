@@ -141,7 +141,7 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onSh
                         </div>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
                     <div className="text-center">
                         <div className="font-bold text-lg">{placementRate}{placementRate !== 'Not Specified' && '%'}</div>
                         <div className="text-sm text-gray-600">Placement Rate</div>
@@ -154,7 +154,7 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onSh
                         <div className="font-bold text-lg">{averagePackage}{averagePackage !== 'Not Specified' && ' LPA'}</div>
                         <div className="text-sm text-gray-600">Average Package</div>
                     </div>
-                </div>
+                </div> */}
             </div>
 
             {/* Main Drive Details Section */}

@@ -4,13 +4,15 @@ import { acceptCandidate, getApplicationsForJob, rejectCandidate, shortlistCandi
 import toast from 'react-hot-toast';
 import useConversation from '@/statemanage/useConversation';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
-import { Send } from 'lucide-react';
+import { Send, Mail, Phone, MapPin, Briefcase, GraduationCap, DollarSign, Globe } from 'lucide-react';
 
 const OffCampusDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => {
   const jobId = job._id;
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applications, setApplications] = useState();
+  const [selectedApplicant, setSelectedApplicant] = useState(null);
+  const [showApplicantModal, setShowApplicantModal] = useState(false);
 
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
@@ -19,7 +21,6 @@ const OffCampusDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
     setIsSubmitting(true);
     try {
       const response = await getApplicationsForJob(jobId, jobType, "Applied");
-      // console.log("ye wala response: ", response.data);
       setApplications(response.data);
     } catch (error) {
       console.log("Error: ", error);
@@ -30,8 +31,7 @@ const OffCampusDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
   const acceptApplicant = async (applicantionId) => {
     try {
       const response = await acceptCandidate(applicantionId, job?.jobRoles);
-      // console.log("shortlist: ", response)
-      if (response?.data?.success === true) toast.success("Accpeted!");
+      if (response?.data?.success === true) toast.success("Accepted!");
       else toast.error(response.response?.data?.msg);
     } catch (error) {
       console.log("Error: ", error);
@@ -42,7 +42,6 @@ const OffCampusDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
   const shortlistApplicant = async (applicantionId) => {
     try {
       const response = await shortlistCandidate(applicantionId, job?.jobRoles);
-      // console.log("shortlist: ", response)
       if (response?.data?.success === true) toast.success("Shortlisted!");
       else toast.error(response.response?.data?.msg);
     } catch (error) {
@@ -100,6 +99,91 @@ const OffCampusDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
     }
   };
 
+  const openApplicantModal = (applicant) => {
+    setSelectedApplicant(applicant);
+    setShowApplicantModal(true);
+  };
+
+  // Applicant Modal Component
+  const ApplicantModal = () => {
+    if (!selectedApplicant) return null;
+    
+    const applicant = selectedApplicant.applicant;
+    
+    return (
+      <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="p-6">
+            {/* Header */}
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">{applicant.name}</h2>
+                <p className="text-gray-600 text-sm mt-1">
+                  {applicant.degree} ({applicant.specialization})
+                </p>
+              </div>
+              <button
+                onClick={() => setShowApplicantModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-xl p-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Applicant Details Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="space-y-3">
+                <div className="flex items-center text-gray-700">
+                  <Mail className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">Email:</span>
+                  <span className="ml-2">{applicant.email || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Phone className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">Phone:</span>
+                  <span className="ml-2">{applicant.phone || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">Location:</span>
+                  <span className="ml-2">{applicant.locations || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Briefcase className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">Industry:</span>
+                  <span className="ml-2">{applicant.industry || 'N/A'}</span>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex items-center text-gray-700">
+                  <GraduationCap className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">Degree:</span>
+                  <span className="ml-2">{applicant.degree || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <GraduationCap className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">Specialization:</span>
+                  <span className="ml-2">{applicant.specialization || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <DollarSign className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">Current Salary:</span>
+                  <span className="ml-2">{applicant.currentSalaryCurrency} {applicant.currentSalaryAmount || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <DollarSign className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">Expected Salary:</span>
+                  <span className="ml-2">{applicant.expectedSalaryCurrency} {applicant.expectedSalaryAmount || 'N/A'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <button onClick={() => onClose()}>Back</button>
@@ -140,15 +224,41 @@ const OffCampusDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
           <h1 className=''>{job?.jobRoles[0]}</h1>
           {
             applications?.map((applicant) => (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200" key={applicant._id}>
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6" key={applicant._id}>
                 {/* Header Section */}
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-6">
                     <div className="flex items-center">
-                      <div className="w-20 h-20 bg-gray-200 rounded-full mr-6"></div>
+                      <div 
+                        className="w-20 h-20 bg-gray-200 rounded-full mr-6 cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => openApplicantModal(applicant)}
+                      >
+                        {applicant?.applicant.profileImageUrl ? (
+                          <img 
+                            src={applicant.applicant.profileImageUrl} 
+                            alt={applicant.applicant.name}
+                            className="w-full h-full rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full rounded-full flex items-center justify-center text-gray-500">
+                            No Image
+                          </div>
+                        )}
+                      </div>
                       <div>
-                        <h1 className="text-3xl font-bold">{applicant?.applicant.name}</h1>
-                        <p className="text-sm text-gray-600 mt-1">{applicant?.applicant.locations}</p>
+                        <h1 
+                          className="text-3xl font-bold hover:text-blue-600 cursor-pointer transition-colors"
+                          onClick={() => openApplicantModal(applicant)}
+                        >
+                          {applicant?.applicant.name}
+                        </h1>
+                        <div 
+                          className="flex items-center text-gray-600 text-sm mt-1 cursor-pointer hover:text-blue-600 transition-colors"
+                          onClick={() => openApplicantModal(applicant)}
+                        >
+                          <MapPin size={14} className="mr-1" />
+                          <span>{applicant?.applicant.locations}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -158,7 +268,7 @@ const OffCampusDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                       <p className="font-bold mr-2">Current Salary:</p> <span>{applicant?.applicant.currentSalaryCurrency} {applicant?.applicant.currentSalaryAmount}</span>
                     </div>
                     <div className="flex items-center">
-                      <p className="font-bold mr-2">Current Salary:</p> <span>{applicant?.applicant.expectedSalaryCurrency} {applicant?.applicant.expectedSalaryAmount}</span>
+                      <p className="font-bold mr-2">Expected Salary:</p> <span>{applicant?.applicant.expectedSalaryCurrency} {applicant?.applicant.expectedSalaryAmount}</span>
                     </div>
                     <div className="flex items-center">
                       <p className="font-bold mr-2">Email:</p> <span className="underline">{applicant?.applicant.email}</span>
@@ -169,31 +279,55 @@ const OffCampusDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                   </div>
 
                   <div className="flex space-x-4 mb-8">
-                    <button className="px-6 py-2 border rounded-md">
-                      {applicant?.applicant.linkedIn}
-                      {/* <LinkedInLogo className="w-5 h-5" /> */}
-                      <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 30 30">
-                        <path d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051 c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526 c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769 c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098 c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9 c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594 c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734 c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z"></path>
-                      </svg>
-                    </button>
-                    <button className="px-6 py-2 border rounded-md">
-                      {applicant?.applicant.github}
-                      <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 48 48">
-                        <path fill="#0288D1" d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z"></path><path fill="#FFF" d="M12 19H17V36H12zM14.485 17h-.028C12.965 17 12 15.888 12 14.499 12 13.08 12.995 12 14.514 12c1.521 0 2.458 1.08 2.486 2.499C17 15.887 16.035 17 14.485 17zM36 36h-5v-9.099c0-2.198-1.225-3.698-3.192-3.698-1.501 0-2.313 1.012-2.707 1.99C24.957 25.543 25 26.511 25 27v9h-5V19h5v2.616C25.721 20.5 26.85 19 29.738 19c3.578 0 6.261 2.25 6.261 7.274L36 36 36 36z"></path>
-                      </svg>
-                    </button>
-                    <button className="px-6 py-2 border rounded-md">{applicant?.applicant.portfolio}
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-                      </svg>
-
-                    </button>
-                    <button className="px-6 py-2 border rounded-md">{applicant?.applicant.cv}
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
-                      </svg>
-
-                    </button>
+                    {applicant?.applicant.linkedIn && (
+                      <a 
+                        href={applicant.applicant.linkedIn.startsWith('http') ? applicant.applicant.linkedIn : `https://${applicant.applicant.linkedIn}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-2 border rounded-md hover:bg-gray-50 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 30 30">
+                          <path d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051 c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526 c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769 c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098 c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9 c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594 c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734 c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z"></path>
+                        </svg>
+                      </a>
+                    )}
+                    {applicant?.applicant.github && (
+                      <a 
+                        href={applicant.applicant.github.startsWith('http') ? applicant.applicant.github : `https://${applicant.applicant.github}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-2 border rounded-md hover:bg-gray-50 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 48 48">
+                          <path fill="#0288D1" d="M42,37c0,2.762-2.238,5-5,5H11c-2.761,0-5-2.238-5-5V11c0-2.762,2.239-5,5-5h26c2.762,0,5,2.238,5,5V37z"></path>
+                          <path fill="#FFF" d="M12 19H17V36H12zM14.485 17h-.028C12.965 17 12 15.888 12 14.499 12 13.08 12.995 12 14.514 12c1.521 0 2.458 1.08 2.486 2.499C17 15.887 16.035 17 14.485 17zM36 36h-5v-9.099c0-2.198-1.225-3.698-3.192-3.698-1.501 0-2.313 1.012-2.707 1.99C24.957 25.543 25 26.511 25 27v9h-5V19h5v2.616C25.721 20.5 26.85 19 29.738 19c3.578 0 6.261 2.25 6.261 7.274L36 36 36 36z"></path>
+                        </svg>
+                      </a>
+                    )}
+                    {applicant?.applicant.portfolio && (
+                      <a 
+                        href={applicant.applicant.portfolio.startsWith('http') ? applicant.applicant.portfolio : `https://${applicant.applicant.portfolio}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-2 border rounded-md hover:bg-gray-50 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                        </svg>
+                      </a>
+                    )}
+                    {applicant?.applicant.cv && (
+                      <a 
+                        href={applicant.applicant.cv}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-2 border rounded-md hover:bg-gray-50 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                        </svg>
+                      </a>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-2 gap-y-4 text-sm text-gray-700">
@@ -235,7 +369,6 @@ const OffCampusDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                   >
                     <Send size={14} className="mr-2" /> Chat
                   </button>
-                  {/* <button className="px-6 py-2 shadow hover:shadow-md border rounded-md text-gray-700">View Details</button> */}
                   <button
                     onClick={() => acceptApplicant(applicant?._id)}
                     disabled={isSubmitting}
@@ -264,6 +397,9 @@ const OffCampusDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
           }
         </div>
       </div>
+
+      {/* Render the applicant modal */}
+      {showApplicantModal && <ApplicantModal />}
     </>
   );
 };

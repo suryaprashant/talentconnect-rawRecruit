@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { ChevronDownIcon, X, Target, MapPin, Briefcase, Building, DollarSign, Calendar, Plus } from "lucide-react";
+import { ChevronDownIcon, X, Target, MapPin, Briefcase, Building, IndianRupee, DollarSign, Euro, Calendar, Plus } from "lucide-react";
 import { useRole } from "@/context/RoleContext/RoleContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -39,6 +39,13 @@ const roleOptions = [
     "Data Analyst",
     "Marketing Specialist"
 ];
+
+// Currency icon mapping
+const currencyIcons = {
+    "INR": IndianRupee,
+    "USD": DollarSign,
+    "EUR": Euro,
+};
 
 const SelectedTag = ({ item, onRemove }) => (
     <div className="flex items-center bg-gradient-to-r from-[#e0e7ff]/20 to-[#c7d2fe]/20 border border-[#e0e7ff]/30 text-gray-700 text-sm px-3 py-1.5 rounded-full">
@@ -390,37 +397,42 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                         </div>
 
                         {/* Expected Salary */}
-                        <div>
-                            <label className="block text-gray-700 font-medium text-sm mb-2">Expected Salary</label>
-                            <div className="flex items-center gap-3">
-                                <div className="relative flex-1">
-                                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        id="expectedSalaryAmount"
-                                        name="expectedSalaryAmount"
-                                        type="text"
-                                        value={formData.expectedSalaryAmount || ""}
-                                        onChange={handleChange}
-                                        placeholder="e.g., 50000"
-                                        className="w-full p-4 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
-                                    />
-                                </div>
-                                <div className="relative w-32">
-                                    <select
-                                        id="expectedSalaryCurrency"
-                                        name="expectedSalaryCurrency"
-                                        value={formData.expectedSalaryCurrency || "INR"}
-                                        onChange={handleChange}
-                                        className="appearance-none w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
-                                    >
-                                        <option value="INR">INR</option>
-                                        <option value="USD">USD</option>
-                                        <option value="EUR">EUR</option>
-                                    </select>
-                                    <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                                </div>
-                            </div>
-                        </div>
+<div>
+    <label className="block text-gray-700 font-medium text-sm mb-2">Expected Salary</label>
+    <div className="flex items-center gap-3">
+        <div className="relative flex-1">
+            {(() => {
+                const CurrencyIcon = currencyIcons[formData.expectedSalaryCurrency || "INR"] || DollarSign;
+                return <CurrencyIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />;
+            })()}
+            <input
+                id="expectedSalaryAmount"
+                name="expectedSalaryAmount"
+                type="text"
+                value={formData.expectedSalaryAmount || ""}
+                onChange={handleChange}
+                placeholder={formData.expectedSalaryCurrency === "INR" ? "e.g., 50000" : 
+                            formData.expectedSalaryCurrency === "USD" ? "e.g., 50000" :
+                            "e.g., 50000"}
+                className="w-full p-4 pl-10 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
+            />
+        </div>
+        <div className="relative w-32">
+            <select
+                id="expectedSalaryCurrency"
+                name="expectedSalaryCurrency"
+                value={formData.expectedSalaryCurrency || "INR"}
+                onChange={handleChange}
+                className="appearance-none w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
+            >
+                <option value="INR">INR</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+            </select>
+            <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+        </div>
+    </div>
+</div>
 
                         {/* Looking For */}
                         <div>
