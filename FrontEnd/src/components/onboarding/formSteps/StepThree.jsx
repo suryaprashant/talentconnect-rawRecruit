@@ -393,7 +393,7 @@ export const StepThree = ({
 import React, { useState, useEffect } from "react";
 import CreatableSelect from "react-select/creatable";
 import { UploadIcon, GraduationCap } from "lucide-react";
-
+import colleges from "../../../assets/colleges.json";
 const degreeOptions = [
   { value: "bachelors", label: "Bachelor's" },
   { value: "masters", label: "Master's" },
