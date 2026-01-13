@@ -1477,6 +1477,14 @@ export async function scheduleInterview(req, res) {
       applicantAuthId,
       applicantProfileId: applicantId,
       coordinator: coordinatorSnapshot,
+      companySnapshot: {
+        companyName,
+            scheduledBy: {
+              name: req.user.name,
+              email: req.user.email,
+              designation: req.user.designation || "Recruiter",
+            }
+      },
       jobRole,
       date,
       time,

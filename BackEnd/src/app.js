@@ -112,8 +112,7 @@ import hackathonHostingRoute from './routes/hostingManagement/hackathonHostingRo
 import casestudyHostingRoute from './routes/hostingManagement/casestudyHostingRoute.js';
 import workshopHostingRoute from './routes/hostingManagement/workshopHostingRoute.js';
 import serviceRequests from "./routes/serviceRequestsRoute.js"
-
-
+import interviewRoutes from "./routes/interviewRoutes.js";
 app.use("/api/auth", authRoutes);
 
 // admin related auths
@@ -142,6 +141,8 @@ app.use("/api/company" , poolCampusRoute);
 app.use("/api/company/jobmanagement", OncampusJobmanagement);
 app.use("/api/team-member" , TeamMemberRoute) ;
 app.use("/api/notifications" , notificationRoute )
+app.use("/interviews", interviewRoutes);
+
 app.use("/dropdown" , dropDownItems) ;
 
 

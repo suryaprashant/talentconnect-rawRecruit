@@ -48,6 +48,16 @@ const interviewScheduleSchema = new mongoose.Schema(
       designation: String,
       collegeName: String,
     },
+    companySnapshot: {
+    companyName: { type: String, required: true },
+
+    scheduledBy: {
+      name: { type: String },        // HR / Recruiter name
+      email: { type: String },       // Official contact
+      designation: { type: String }, // HR / TA / Recruiter
+    }
+  },
+
 
     jobRole: {
       type: [String],
