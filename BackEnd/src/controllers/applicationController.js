@@ -1571,10 +1571,7 @@ export async function scheduleInterview(req, res) {
 // In controllers/applicationController.js
 export const getCompanyDashboardMetrics = async (req, res) => {
   try {
-    console.log('🚀 getCompanyDashboardMetrics called');
-    console.log('User ID:', req.user._id);
-    console.log('User Type:', req.user.userType);
-    console.log('User Email:', req.user.email);
+    
     
     const user = req.user;
     const metricsData = await fetchCompanyDashboardMetrics(user);

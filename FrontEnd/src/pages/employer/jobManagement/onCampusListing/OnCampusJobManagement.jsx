@@ -125,6 +125,15 @@ export default function OnCampusJobManagement() {
 
   const showNewApplication = async (job) => {
     try {
+      // 1️⃣ Optimistically update UI
+      setJobs(prevJobs =>
+        prevJobs.map(j =>
+          j._id === job._id
+            ? { ...j, applicationCount: 0 }
+            : j
+        )
+      );
+
       setSelectedJob(job);
       await fetchCollegesForJob(job._id, job.jobType, false);
     } catch (error) {

@@ -70,7 +70,7 @@ export const notifyCollegesOnOnCampusJob = async ({
 
     await Notification.insertMany(notifications);
 
-    console.log("Notifications created:", notifications.length);
+    
   } catch (error) {
     console.error("Notification Service Error:", error);
   }
