@@ -98,14 +98,14 @@ export default function MainPage({ onRegisterClick, onRequestInfoClick }) {
         {/* CTA - EXACT SAME buttons with swapped positions */}
         <section className="flex justify-center gap-4 pt-2 pb-3">
           {/* Blue gradient Register Now button on LEFT - EXACT SAME */}
-          <button
+          {/* <button
             onClick={onRegisterClick}
             className="group flex items-center gap-2 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white px-8 py-3.5 rounded-lg font-medium hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all text-base"
           >
             <FileText className="w-5 h-5" />
             Register Now
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
+          </button> */}
           
           {/* White Request Info button on RIGHT - EXACT SAME */}
           <button

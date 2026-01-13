@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import BackButton from '@/components/layout/BackButton';
 import ReactGA from "react-ga4";
+import { TermsModal } from '@/components/onboarding/Terms&conditionModal';
 
 // Helper function for GA events
 const trackGAEvent = (category, action, label) => {
@@ -18,6 +19,32 @@ const RoleSelection = () => {
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState('');
   const [hoveredRole, setHoveredRole] = useState('');
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState({
+    title: '',
+    content: ''
+  });
+
+  // Move handleFooterLinkClick inside the component
+  const handleFooterLinkClick = (type) => {
+    const contentMap = {
+      privacy: {
+        title: 'Privacy Policy',
+        content: 'This is the privacy policy content...' // Add your actual content
+      },
+      terms: {
+        title: 'Terms of Service',
+        content: 'This is the terms of service content...' // Add your actual content
+      },
+      contact: {
+        title: 'Contact Us',
+        content: 'This is the contact information...' // Add your actual content
+      }
+    };
+    
+    setModalContent(contentMap[type]);
+    setIsLegalModalOpen(true);
+  };
 
   const roles = [
     {
@@ -123,7 +150,7 @@ const RoleSelection = () => {
                 Get Started
               </span>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-                Get Started with <span className="text-[#667eea]">TalentConnects</span>
+                Get Started with <span className="text-[#667eea]">TalentConnect</span>
               </h1>
               <p className="text-gray-600 max-w-2xl mx-auto mb-2">
                 Get started by selecting the user type that best describes you. This helps us personalize your experience.
@@ -242,12 +269,33 @@ const RoleSelection = () => {
         <footer className="mt-auto py-8 px-4 text-center text-gray-500 text-sm border-t border-gray-200">
           <p className="mb-2">© 2025 TalentConnects. All rights reserved.</p>
           <div className="flex justify-center gap-6 text-xs">
-            <a href="#" className="hover:text-gray-700 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-gray-700 transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-gray-700 transition-colors">Contact</a>
+            <button 
+              onClick={() => handleFooterLinkClick('privacy')}
+              className="hover:text-gray-700 transition-colors"
+            >
+              Privacy Policy
+            </button>
+            <button 
+              onClick={() => handleFooterLinkClick('terms')}
+              className="hover:text-gray-700 transition-colors"
+            >
+              Terms of Service
+            </button>
+            <button 
+              onClick={() => handleFooterLinkClick('contact')}
+              className="hover:text-gray-700 transition-colors"
+            >
+              Contact
+            </button>
           </div>
         </footer>
       </div>
+
+      {/* Terms Modal */}
+            <TermsModal
+              isOpen={isLegalModalOpen}
+              onClose={() => setIsLegalModalOpen(false)}
+            />
     </div>
   );
 };

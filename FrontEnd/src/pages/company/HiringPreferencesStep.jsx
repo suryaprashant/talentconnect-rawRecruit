@@ -187,7 +187,7 @@ const HiringPreferencesStep = ({ formData, handleChange, nextStep, prevStep }) =
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-3">
-                                        Looking for
+                                        Offering
                                     </label>
                                     <div className="flex flex-wrap gap-3">
                                         {['job', 'internship', 'both'].map((option) => (

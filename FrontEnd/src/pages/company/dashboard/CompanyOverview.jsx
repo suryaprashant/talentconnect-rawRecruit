@@ -141,7 +141,7 @@ export default function CompanyOverview({ profileData }) {
                   {profileData.hiringPreferences.hiringLocations?.join(', ') || '-'}
                 </div>
 
-                <div className="font-medium text-gray-600">Looking for:</div>
+                <div className="font-medium text-gray-600">Offering:</div>
                 <div className="col-span-2 font-medium text-gray-800 bg-gradient-to-r from-[#4facfe]/5 to-transparent px-3 py-2 rounded">
                   {Array.isArray(profileData.hiringPreferences.lookingFor)
                     ? profileData.hiringPreferences.lookingFor.join(', ')

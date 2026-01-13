@@ -89,12 +89,13 @@ const CollegeCard = ({ college }) => {
 
   return (
     <div className={`
-      w-full max-w-[350px] min-h-[430px] mx-auto rounded-2xl 
-      shadow-sm hover:shadow-lg transition overflow-hidden
-      flex flex-col ${stableColor}
+      w-full max-w-[350px] mx-auto rounded-2xl 
+shadow-sm hover:shadow-lg transition overflow-hidden
+flex flex-col h-full
+ ${stableColor}
     `}>
       {/* FULL PASTEL CARD */}
-      <div className="p-5 flex-grow flex flex-col h-full">
+      <div className="p-5 flex flex-col flex-1">
 
         {/* College Type + Save */}
         <div className="flex justify-between items-start">
@@ -155,7 +156,7 @@ const CollegeCard = ({ college }) => {
         </div>
 
         {/* Description */}
-        <div className="mt-8 flex-grow">
+        <div className="mt-8 flex-1 flex items-center">
           <p className="text-sm text-white/90 text-center line-clamp-3">
             {college.description 
               ? college.description.split(' ').slice(0, 20).join(' ') + (college.description.split(' ').length > 20 ? '...' : '')

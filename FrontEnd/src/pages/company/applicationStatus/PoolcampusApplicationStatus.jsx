@@ -478,25 +478,44 @@ export default function PoolcampusApplicationStatus() {
                         }`}
                       >
                         <div className="flex items-start gap-3">
-                          {/* Logo/Initials with matched styling */}
+                          {/* Logo/Initials - FIXED: Only show initials when logo is not present */}
                           {job.companyLogo ? (
-                            <img 
-                              src={job.companyLogo} 
-                              alt={job.company}
-                              className="w-9 h-9 rounded-lg object-cover border border-gray-200"
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextSibling.style.display = 'flex';
-                              }}
-                            />
-                          ) : null}
-                          <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                            selectedJob?.id === job.id 
-                              ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
-                              : 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700'
-                          }`}>
-                            <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
-                          </div>
+                            <div className="relative w-9 h-9">
+                              <img 
+                                src={job.companyLogo} 
+                                alt={job.company}
+                                className="w-full h-full rounded-lg object-cover border border-gray-200"
+                                onError={(e) => {
+                                  // Hide the image and show initials on error
+                                  e.target.style.display = 'none';
+                                  // Create initials div if it doesn't exist
+                                  const initialsDiv = e.target.nextElementSibling;
+                                  if (initialsDiv && initialsDiv.classList.contains('initials-fallback')) {
+                                    initialsDiv.style.display = 'flex';
+                                  }
+                                }}
+                              />
+                              {/* Fallback initials - hidden by default, shown on image error */}
+                              <div 
+                                className={`initials-fallback absolute inset-0 rounded-lg flex items-center justify-center ${
+                                  selectedJob?.id === job.id 
+                                    ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
+                                    : 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700'
+                                }`}
+                                style={{ display: 'none' }}
+                              >
+                                <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                              selectedJob?.id === job.id 
+                                ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
+                                : 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700'
+                            }`}>
+                              <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
+                            </div>
+                          )}
                           <div className="flex-1 min-w-0">
                             <h3 className="text-sm font-semibold text-gray-900 truncate">{job.company}</h3>
                             <p className="text-xs text-gray-600 truncate">{job.jobTitle}</p>
@@ -537,11 +556,38 @@ export default function PoolcampusApplicationStatus() {
                       <h2 className="text-lg font-bold text-gray-900">{selectedJob.company}</h2>
                       <p className="text-sm text-gray-600">{selectedJob.jobTitle}</p>
                     </div>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center">
-                      <span className="text-lg font-bold text-[#667eea]">
-                        {getCompanyInitials(selectedJob.company)}
-                      </span>
-                    </div>
+                    {/* FIXED: Right side logo - Only show initials when logo is not present */}
+                    {selectedJob.companyLogo ? (
+                      <div className="relative w-12 h-12">
+                        <img 
+                          src={selectedJob.companyLogo} 
+                          alt={selectedJob.company}
+                          className="w-full h-full rounded-xl object-cover border border-gray-200"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            const initialsDiv = e.target.nextElementSibling;
+                            if (initialsDiv) {
+                              initialsDiv.style.display = 'flex';
+                            }
+                          }}
+                        />
+                        {/* Fallback initials */}
+                        <div 
+                          className="initials-fallback absolute inset-0 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center"
+                          style={{ display: 'none' }}
+                        >
+                          <span className="text-lg font-bold text-[#667eea]">
+                            {getCompanyInitials(selectedJob.company)}
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center">
+                        <span className="text-lg font-bold text-[#667eea]">
+                          {getCompanyInitials(selectedJob.company)}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="relative">
@@ -565,9 +611,9 @@ export default function PoolcampusApplicationStatus() {
                         );
                       })}
                     </div>
-                    <div className="h-1.5 bg-gray-200 absolute left-6 right-6 top-3 -z-10">
+                    <div className="h-1.5 bg-gray-200 absolute left-[12.5%] right-[12.5%] top-3 -z-10 rounded-full">
                       <div
-                        className="h-1.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300"
+                        className="h-1.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 rounded-full"
                         style={{
                           width: `${(getStatusIndex(selectedJob.status) / (statusSteps.length - 1)) * 100}%`
                         }}
@@ -630,16 +676,6 @@ export default function PoolcampusApplicationStatus() {
                       </div>
                     </div>
                   )}
-
-                  {/* Description - Compact - Matched styling */}
-                  {/* <div className="mb-5">
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
-                    <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
-                      <p className="text-sm text-gray-700 line-clamp-3">
-                        {selectedJob.description}
-                      </p>
-                    </div>
-                  </div> */}
 
                   {/* Action Button - Matched styling */}
                   <div className="mt-auto">

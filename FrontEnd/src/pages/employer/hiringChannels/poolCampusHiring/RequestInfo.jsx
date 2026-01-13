@@ -2107,105 +2107,113 @@ export default function PoolCampusHiringForm() {
             </div>
 
             {/* Tenth Row: Placement Dates */}
-            <div>
-              <label className="block mb-2 font-medium text-sm text-gray-700">Tentative Date of Placement/Hiring <span className="text-red-500">*</span></label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="relative">
-                  <label className="block mb-1 text-xs text-gray-600">Start Date</label>
-                  <DatePicker
-                    selected={formData.placementStartDate ? new Date(formData.placementStartDate) : null}
-                    onChange={(date) => handleDateChange(date, 'placementStartDate')}
-                    dateFormat="dd-MM-yyyy"
-                    placeholderText="Start date"
-                    className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                    required
-                    wrapperClassName="w-full"
-                  />
-                  <Calendar className="absolute left-3 top-[30px] transform -translate-y-1/2 text-gray-400" size={14} />
-                </div>
-                <div className="relative">
-                  <label className="block mb-1 text-xs text-gray-600">End Date</label>
-                  <DatePicker
-                    selected={formData.placementEndDate ? new Date(formData.placementEndDate) : null}
-                    onChange={(date) => handleDateChange(date, 'placementEndDate')}
-                    dateFormat="dd-MM-yyyy"
-                    placeholderText="End date"
-                    className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                    required
-                    wrapperClassName="w-full"
-                  />
-                  <Calendar className="absolute left-3 top-[30px] transform -translate-y-1/2 text-gray-400" size={14} />
-                </div>
-              </div>
-            </div>
+<div>
+  <label className="block mb-2 font-medium text-sm text-gray-700">Tentative Date of Placement/Hiring <span className="text-red-500">*</span></label>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="relative">
+      <label className="block mb-1 text-xs text-gray-600">Start Date</label>
+      <div className="relative">
+        <DatePicker
+          selected={formData.placementStartDate ? new Date(formData.placementStartDate) : null}
+          onChange={(date) => handleDateChange(date, 'placementStartDate')}
+          dateFormat="dd-MM-yyyy"
+          placeholderText="Start date"
+          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+          required
+          wrapperClassName="w-full"
+        />
+        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+      </div>
+    </div>
+    <div className="relative">
+      <label className="block mb-1 text-xs text-gray-600">End Date</label>
+      <div className="relative">
+        <DatePicker
+          selected={formData.placementEndDate ? new Date(formData.placementEndDate) : null}
+          onChange={(date) => handleDateChange(date, 'placementEndDate')}
+          dateFormat="dd-MM-yyyy"
+          placeholderText="End date"
+          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+          required
+          wrapperClassName="w-full"
+        />
+        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+      </div>
+    </div>
+  </div>
+</div>
 
-            {/* Eleventh Row: Online Test Date and Interview Window */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Online Test Date */}
-              <div className="relative">
-                <label className="block mb-2 font-medium text-sm text-gray-700">Online Test Date</label>
-                <div className="relative">
-                  <DatePicker
-                    selected={formData.onlineTestDate ? new Date(formData.onlineTestDate) : null}
-                    onChange={(date) => handleDateChange(date, 'onlineTestDate')}
-                    dateFormat="dd-MM-yyyy"
-                    placeholderText="Select date"
-                    className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                    wrapperClassName="w-full"
-                  />
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                </div>
-              </div>
+{/* Eleventh Row: Online Test Date and Interview Window */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {/* Online Test Date */}
+  <div className="relative">
+    <label className="block mb-2 font-medium text-sm text-gray-700">Online Test Date</label>
+    <div className="relative">
+      <DatePicker
+        selected={formData.onlineTestDate ? new Date(formData.onlineTestDate) : null}
+        onChange={(date) => handleDateChange(date, 'onlineTestDate')}
+        dateFormat="dd-MM-yyyy"
+        placeholderText="Select date"
+        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+        wrapperClassName="w-full"
+      />
+      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+    </div>
+  </div>
 
-              {/* Interview Window */}
-              <div>
-                <label className="block mb-2 font-medium text-sm text-gray-700">Interview Window</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div className="relative">
-                    <label className="block mb-1 text-xs text-gray-600">Start</label>
-                    <DatePicker
-                      selected={formData.interviewWindow.start ? new Date(formData.interviewWindow.start) : null}
-                      onChange={(date) => handleInterviewDateChange(date, 'start')}
-                      dateFormat="dd-MM-yyyy"
-                      placeholderText="Start date"
-                      className="w-full p-2 pl-8 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                      wrapperClassName="w-full"
-                    />
-                    <Calendar className="absolute left-2 top-[26px] transform -translate-y-1/2 text-gray-400" size={12} />
-                  </div>
-                  <div className="relative">
-                    <label className="block mb-1 text-xs text-gray-600">End</label>
-                    <DatePicker
-                      selected={formData.interviewWindow.end ? new Date(formData.interviewWindow.end) : null}
-                      onChange={(date) => handleInterviewDateChange(date, 'end')}
-                      dateFormat="dd-MM-yyyy"
-                      placeholderText="End date"
-                      className="w-full p-2 pl-8 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                      wrapperClassName="w-full"
-                    />
-                    <Calendar className="absolute left-2 top-[26px] transform -translate-y-1/2 text-gray-400" size={12} />
-                  </div>
-                </div>
-              </div>
-            </div>
+  {/* Interview Window */}
+  <div>
+    <label className="block mb-2 font-medium text-sm text-gray-700">Interview Window</label>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="relative">
+        <label className="block mb-1 text-xs text-gray-600">Start</label>
+        <div className="relative">
+          <DatePicker
+            selected={formData.interviewWindow.start ? new Date(formData.interviewWindow.start) : null}
+            onChange={(date) => handleInterviewDateChange(date, 'start')}
+            dateFormat="dd-MM-yyyy"
+            placeholderText="Start date"
+            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+            wrapperClassName="w-full"
+          />
+          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+        </div>
+      </div>
+      <div className="relative">
+        <label className="block mb-1 text-xs text-gray-600">End</label>
+        <div className="relative">
+          <DatePicker
+            selected={formData.interviewWindow.end ? new Date(formData.interviewWindow.end) : null}
+            onChange={(date) => handleInterviewDateChange(date, 'end')}
+            dateFormat="dd-MM-yyyy"
+            placeholderText="End date"
+            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+            wrapperClassName="w-full"
+          />
+          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-            {/* Twelfth Row: Offer Rollout Date and Number of Rounds */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Offer Rollout Date */}
-              <div className="relative">
-                <label className="block mb-2 font-medium text-sm text-gray-700">Offer Rollout Date</label>
-                <div className="relative">
-                  <DatePicker
-                    selected={formData.offerRolloutDate ? new Date(formData.offerRolloutDate) : null}
-                    onChange={(date) => handleDateChange(date, 'offerRolloutDate')}
-                    dateFormat="dd-MM-yyyy"
-                    placeholderText="Select date"
-                    className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                    wrapperClassName="w-full"
-                  />
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                </div>
-              </div>
+{/* Twelfth Row: Offer Rollout Date and Number of Rounds */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {/* Offer Rollout Date */}
+  <div className="relative">
+    <label className="block mb-2 font-medium text-sm text-gray-700">Offer Rollout Date</label>
+    <div className="relative">
+      <DatePicker
+        selected={formData.offerRolloutDate ? new Date(formData.offerRolloutDate) : null}
+        onChange={(date) => handleDateChange(date, 'offerRolloutDate')}
+        dateFormat="dd-MM-yyyy"
+        placeholderText="Select date"
+        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+        wrapperClassName="w-full"
+      />
+      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+    </div>
+  </div>
 
               {/* Number of Rounds */}
               <div>

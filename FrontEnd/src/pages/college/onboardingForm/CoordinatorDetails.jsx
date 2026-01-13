@@ -189,16 +189,46 @@
 
 import { useState } from "react";
 
-// pages/CoordinatorDetails.jsx
-const isValidLinkedIn = (url) => {
-  const pattern = /(https?:\/\/)?(www\.)?linkedin\.com\/in\/[A-Za-z0-9-_]+\/?$/;
-  return pattern.test(url.trim());
+// Validation functions
+const validateLinkedInURL = (url) => {
+  if (!url || !url.trim()) return ""; // Return empty string if no URL (not required field)
+  
+  const trimmedUrl = url.trim();
+  
+  // Test various LinkedIn URL patterns
+  const patterns = [
+    // Full URL formats
+    /^https?:\/\/(www\.)?linkedin\.com\/(in\/|company\/)?[a-zA-Z0-9\-_]+\/?$/,
+    /^(www\.)?linkedin\.com\/(in\/|company\/)?[a-zA-Z0-9\-_]+\/?$/,
+    /^linkedin\.com\/(in\/|company\/)?[a-zA-Z0-9\-_]+\/?$/,
+    
+    // Just the username
+    /^[a-zA-Z0-9\-_]+$/,
+    
+    // With slash prefix
+    /^\/[a-zA-Z0-9\-_]+$/,
+    /^\/(in\/|company\/)?[a-zA-Z0-9\-_]+\/?$/
+  ];
+  
+  // Check if any pattern matches
+  const isValid = patterns.some(pattern => pattern.test(trimmedUrl));
+  
+  if (!isValid) {
+    return "Please enter a valid LinkedIn URL (e.g., linkedin.com/in/username)";
+  }
+  
+  return "";
 };
 
 const isValidPhone = (phone) => {
   // Checks for exactly 10 digits
   const pattern = /^\d{10}$/;
   return pattern.test(phone.trim());
+};
+
+const isValidEmail = (email) => {
+  const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return pattern.test(email.trim());
 };
 
 export default function CoordinatorDetails({
@@ -209,6 +239,8 @@ export default function CoordinatorDetails({
   currentStep,
   totalSteps,
 }) {
+  const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     updateFormData(name, value);
@@ -217,7 +249,6 @@ export default function CoordinatorDetails({
       setErrors({ ...errors, [name]: "" });
     }
   };
-  const [errors, setErrors] = useState({});
 
   // Designation options
   const designations = [
@@ -240,6 +271,53 @@ export default function CoordinatorDetails({
 
   // Calculate progress percentage
   const progressPercentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
+
+  // LinkedIn validation helper function
+  const isValidLinkedIn = (url) => {
+    return validateLinkedInURL(url) === "";
+  };
+
+  const handleNext = () => {
+    const newErrors = {};
+
+    // Validate Required Fields
+    if (!formData.coordinatorName?.trim()) {
+      newErrors.coordinatorName = "Name is required";
+    }
+
+    if (!formData.designation?.trim()) {
+      newErrors.designation = "Designation is required";
+    }
+
+    // Validate Email
+    if (!formData.officialEmail?.trim()) {
+      newErrors.officialEmail = "Email is required";
+    } else if (!isValidEmail(formData.officialEmail)) {
+      newErrors.officialEmail = "Enter a valid email address";
+    }
+
+    // Validate Phone
+    if (!formData.officialMobile?.trim()) {
+      newErrors.officialMobile = "Phone number is required";
+    } else if (!isValidPhone(formData.officialMobile)) {
+      newErrors.officialMobile = "Enter a valid 10-digit phone number";
+    }
+
+    // Validate LinkedIn (only if user entered something)
+    if (formData.linkedinProfile?.trim()) {
+      const linkedinError = validateLinkedInURL(formData.linkedinProfile);
+      if (linkedinError) {
+        newErrors.linkedinProfile = linkedinError;
+      }
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    nextStep();
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7] via-[#d4e8f9] to-[#cff7ea]">
@@ -380,7 +458,7 @@ export default function CoordinatorDetails({
                   name="linkedinProfile"
                   value={formData.linkedinProfile || ""}
                   onChange={handleChange}
-                  placeholder="www.linkedin.com/in/username"
+                  placeholder="e.g., linkedin.com/in/username or www.linkedin.com/in/username"
                   className={`w-full p-4 bg-white/70 backdrop-blur-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg ${
                     errors.linkedinProfile 
                       ? 'border-red-300 focus:ring-red-300' 
@@ -404,44 +482,7 @@ export default function CoordinatorDetails({
                 Back
               </button>
               <button
-                onClick={() => {
-                  const newErrors = {};
-
-                  // Validate Required Fields
-                  if (!formData.coordinatorName?.trim()) {
-                    newErrors.coordinatorName = "Name is required";
-                  }
-
-                  if (!formData.designation?.trim()) {
-                    newErrors.designation = "Designation is required";
-                  }
-
-                  if (!formData.officialEmail?.trim()) {
-                    newErrors.officialEmail = "Email is required";
-                  }
-
-                  // Validate Phone
-                  if (!formData.officialMobile?.trim()) {
-                    newErrors.officialMobile = "Phone number is required";
-                  } else if (!isValidPhone(formData.officialMobile)) {
-                    newErrors.officialMobile = "Enter a valid 10-digit phone number";
-                  }
-
-                  // Validate LinkedIn (only if user entered something)
-                  if (formData.linkedinProfile?.trim()) {
-                    if (!isValidLinkedIn(formData.linkedinProfile)) {
-                      newErrors.linkedinProfile =
-                        "Enter a valid LinkedIn URL (e.g. linkedin.com/in/username)";
-                    }
-                  }
-
-                  if (Object.keys(newErrors).length > 0) {
-                    setErrors(newErrors);
-                    return;
-                  }
-
-                  nextStep();
-                }}
+                onClick={handleNext}
                 className="px-10 py-4 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 font-medium text-lg"
               >
                 Next

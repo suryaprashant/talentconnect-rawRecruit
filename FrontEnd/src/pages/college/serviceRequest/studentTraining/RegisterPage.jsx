@@ -83,7 +83,7 @@ export default function RequestInfo({ onBackClick }) {
         {/* Form Card */}
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent text-center mb-1">
-            Request Info for Student Training Programs
+            Register for Student Training Programs
           </h2>
           <p className="text-gray-600 text-center text-sm mb-6">
             Fill out the form below and our team will get back to you with detailed information.
@@ -312,7 +312,7 @@ export default function RequestInfo({ onBackClick }) {
                 className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-lg hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 text-sm font-medium"
               >
                 <Send className="w-4 h-4" />
-                Submit Request
+                Register
               </button>
             </div>
           </div>

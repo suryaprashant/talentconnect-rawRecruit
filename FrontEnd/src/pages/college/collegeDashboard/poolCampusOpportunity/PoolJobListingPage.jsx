@@ -23,7 +23,6 @@ const PoolJobListingPage = () => {
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('relevance');
 
-
   // State for dropdown visibility
   const [showMainFilter, setShowMainFilter] = useState(false);
   const [openSubDropdowns, setOpenSubDropdowns] = useState({
@@ -89,7 +88,18 @@ const PoolJobListingPage = () => {
           placementStartDate: backendJob.startDate,
           placementEndDate: backendJob.endDate,
           tags: backendJob?.tags || [],
-          createdAt: backendJob.createdAt
+          createdAt: backendJob.createdAt,
+          // Add these fields to match JobCard props
+          _id: backendJob._id,
+          companyPosted: backendJob.companyPosted,
+          jobRoles: backendJob.jobRoles,
+          studentStreams: streams,
+          workLocation: backendJob.workLocation,
+          startDate: backendJob.startDate,
+          endDate: backendJob.endDate,
+          selectionProcess: backendJob.selectionProcess,
+          packageDetails: backendJob.packageDetails,
+          jobType: "Pool-campus"
         };
       });
       
@@ -401,18 +411,6 @@ const PoolJobListingPage = () => {
                   Explore pool campus opportunities from various companies. Apply filters to find your perfect career match.
                 </p>
               </div>
-              {/* <div className="w-full lg:w-96">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="Search companies, positions, venues..."
-                    value={filters.search}
-                    onChange={(e) => handleFilterChange('search', e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none shadow-sm"
-                  />
-                </div>
-              </div> */}
             </div>
           </div>
         </div>
@@ -535,22 +533,6 @@ const PoolJobListingPage = () => {
                   <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${showMainFilter ? 'transform rotate-180' : ''}`} />
                 </button>
               </div>
-
-              {/* Sort Dropdown */}
-              {/* <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="flex items-center gap-2 px-5 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl hover:border-[#93c5fd]/50 transition-all duration-200 appearance-none pr-10 text-sm font-medium text-gray-700 shadow-sm hover:shadow-md"
-                >
-                  <option value="relevance">Sort: Relevance</option>
-                  <option value="date">Sort: Date Posted</option>
-                  <option value="package-high">Sort: Package (High to Low)</option>
-                  <option value="package-low">Sort: Package (Low to High)</option>
-                  <option value="company">Sort: Company Name (A-Z)</option>
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              </div> */}
             </div>
 
             {/* Clear All Button */}
@@ -924,10 +906,10 @@ const PoolJobListingPage = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {filteredJobs.length} Pool Campus Opportunities
+                  Showing {filteredJobs.length} of {allJobs.length} Opportunities
                 </h3>
                 <p className="text-sm text-gray-600 mt-1">
-                  Filtered from {allJobs.length} total opportunities
+                  Filtered results based on your preferences
                 </p>
               </div>
               
@@ -943,59 +925,57 @@ const PoolJobListingPage = () => {
           </div>
         </div>
 
-        {/* Job Cards - 3 per row */}
-<div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">
-  {filteredJobs.length > 0 ? (
-    <>
-      {/* Changed from lg:grid-cols-2 to lg:grid-cols-3 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredJobs.map((job) => (
-          <div
-            key={job.id}
-            className="h-full"
-          >
-            <div className="w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 flex flex-col h-full">
-              <div className="p-6 flex flex-col h-full">
-                <JobCard job={job} />
+        {/* Job Cards - Exact same structure as On Campus */}
+        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">
+          {filteredJobs.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredJobs.map(job => (
+                  <div
+                    key={job._id || job.id}
+                    className="h-full flex"
+                  >
+                    {/* Same card wrapper structure as On Campus */}
+                    <div className="w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 flex flex-col h-full">
+                      <JobCard job={job} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Load More Button */}
+              <div className="mt-10 text-center">
+                <button className="px-8 py-3.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 text-base font-medium">
+                  View All Opportunities
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center py-12">
+              <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-[#fde68a]/30 to-[#f59e0b]/20 mb-6">
+                <Briefcase className="h-12 w-12 text-[#f59e0b]" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">No Opportunities Found</h3>
+              <p className="text-gray-600 mb-8 max-w-md mx-auto text-lg">
+                No job postings match your current filters. Try adjusting your filters or search terms.
+              </p>
+              <div className="flex flex-wrap gap-4 justify-center">
+                <button
+                  onClick={clearAllFilters}
+                  className="px-8 py-3.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 text-base font-medium"
+                >
+                  Reset All Filters
+                </button>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-8 py-3.5 bg-white/90 backdrop-blur-sm border border-white/50 text-gray-700 rounded-xl hover:shadow-lg hover:shadow-gray-100/40 transition-all duration-200 text-base font-medium"
+                >
+                  Refresh Page
+                </button>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Load More Button */}
-      <div className="mt-10 text-center">
-        <button className="px-8 py-3 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200">
-          View All Opportunities
-        </button>
-      </div>
-    </>
-  ) : (
-    <div className="flex flex-col items-center justify-center h-full text-center py-12">
-      <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-[#fde68a]/30 to-[#f59e0b]/20 mb-6">
-        <MapPin className="h-12 w-12 text-[#f59e0b]" />
-      </div>
-      <h3 className="text-2xl font-bold text-gray-900 mb-3">No Opportunities Found</h3>
-      <p className="text-gray-600 mb-6 max-w-md mx-auto">
-        No pool campus jobs match your current filters. Try adjusting your filters or search terms.
-      </p>
-      <div className="flex flex-wrap gap-4 justify-center">
-        <button
-          onClick={clearAllFilters}
-          className="px-8 py-3.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 text-base font-medium"
-        >
-          Reset All Filters
-        </button>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-8 py-3.5 bg-white/90 backdrop-blur-sm border border-white/50 text-gray-700 rounded-xl hover:shadow-lg hover:shadow-gray-100/40 transition-all duration-200 text-base font-medium"
-        >
-          Refresh Page
-        </button>
-      </div>
-    </div>
-  )}
-</div>
+          )}
+        </div>
       </div>
     </div>
   );

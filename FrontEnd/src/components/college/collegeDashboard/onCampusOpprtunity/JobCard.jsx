@@ -244,12 +244,13 @@ const JobCard = ({ job }) => {
 
   return (
     <div className="
-      w-full max-w-[350px] min-h-[430px] mx-auto rounded-2xl 
-      border shadow-sm hover:shadow-lg transition overflow-hidden
-      flex flex-col
-    ">
+  w-full max-w-[350px] mx-auto rounded-2xl 
+  border shadow-sm hover:shadow-lg transition overflow-hidden
+  flex flex-col h-full
+">
       {/* TOP SECTION */}
-      <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-grow`}>
+      <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-1 flex flex-col`}>
+
 
         {/* Status + Save */}
         <div className="flex justify-between items-start">

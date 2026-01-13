@@ -469,12 +469,23 @@ const PoolJobDetailsPage = () => {
                                 </div>
                             </div>
                         </div>
-                        <h3 className="font-medium text-[#667eea] mt-6 mb-2">Benefits Offered</h3>
-                        <ul className="list-disc pl-5 space-y-1 text-gray-700">
-                            {jobDetails?.benefits?.length > 0 ? jobDetails.benefits.map((benefit, index) => (
-                                <li key={index}>{benefit}</li>
-                            )) : <li>No benefits specified.</li>}
-                        </ul>
+                        <h3 className="font-medium text-[#667eea] mt-6 mb-3">Benefits Offered</h3>
+<div className="flex flex-wrap gap-2">
+  {jobDetails?.benefits?.length > 0 ? (
+    jobDetails.benefits.map((benefit, index) => (
+      <span
+        key={index}
+        className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
+      >
+        {benefit}
+      </span>
+    ))
+  ) : (
+    <span className="px-3 py-1.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-full text-sm">
+      No benefits specified
+    </span>
+  )}
+</div>
                     </div>
 
                     <div className="px-6 py-6 border-t border-gray-200">
