@@ -135,10 +135,23 @@ export default function OnCampusJobManagement() {
     fetchJobs();
   };
 
-  const displayLocations = (locations) => {
+  {/*const displayLocations = (locations) => {
     if (!locations || locations.length === 0) return 'N/A';
     return Array.isArray(locations) ? locations.join(', ') : String(locations);
-  };
+  };*/}
+
+  const displayLocations = (location, workLocation) => {
+  const finalLocation =
+    Array.isArray(location) && location.length > 0
+      ? location
+      : Array.isArray(workLocation) && workLocation.length > 0
+        ? workLocation
+        : null;
+
+  if (!finalLocation) return 'N/A';
+  return finalLocation.join(', ');
+};
+
 
   if (selectedJob) {
     return (
@@ -167,7 +180,8 @@ export default function OnCampusJobManagement() {
                   <div className="flex flex-wrap items-center gap-3 mt-2">
                     <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                       <MapPin className="h-3 w-3 mr-1.5" />
-                      {displayLocations(selectedJob?.location)}
+                      {displayLocations(selectedJob?.location, selectedJob?.workLocation)}
+
                     </span>
                     <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                       <FileText className="h-3 w-3 mr-1.5" />
@@ -325,7 +339,8 @@ export default function OnCampusJobManagement() {
                       <div className="flex items-center gap-2">
                         <MapPin className="h-3 w-3 text-gray-400 flex-shrink-0" />
                         <span className="text-gray-700 text-sm capitalize truncate">
-                          {displayLocations(job.location)}
+                          {displayLocations(job.location, job.workLocation)}
+
                         </span>
                       </div>
                     </div>

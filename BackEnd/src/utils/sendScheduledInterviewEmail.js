@@ -5,6 +5,9 @@ dotenv.config();
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendScheduledInterviewEmail = async (to, date, time, message, meetLink, jobRole, companyName) => {
+    try {
+
+   
     const sender = process.env.SENDGRID_SENDER || "no-reply@yourdomain.com";
     const msg = {
         to,
@@ -28,6 +31,10 @@ const sendScheduledInterviewEmail = async (to, date, time, message, meetLink, jo
         `
     };
     await sgMail.send(msg);
+} catch (error) {
+    console.error("❌ SendGrid Error:", error.response?.body || error.message);
+    throw error; // let controller handle
+}
 };
 
 export default sendScheduledInterviewEmail;

@@ -29,6 +29,7 @@ import {
   Save,
   CheckCircle
 } from 'lucide-react';
+import CollegeInfoModal from '@/components/college/collegeDashboard/collegeInfoModal';
 
 const formatDateSafe = (dateString) => {
   if (!dateString) return 'N/A';
@@ -73,6 +74,10 @@ const CollegeDetailPage = () => {
   const [dateError, setDateError] = useState('');
   const [originalStartDate, setOriginalStartDate] = useState('');
   const [originalEndDate, setOriginalEndDate] = useState('');
+  const [modalPos, setModalPos] = useState(null);
+  const [showCollegeModal, setShowCollegeModal] = useState(false);
+  const [selectedCollege, setSelectedCollege] = useState(null);
+
 
   const { setSelectedConversation } = useConversation();  
 
@@ -228,6 +233,10 @@ const CollegeDetailPage = () => {
     setDateError('');
     return true;
   };
+
+  const college = posting?.collegePosted;
+
+
 
   const handleDateSubmit = async () => {
     if (!validateDates()) return;
@@ -399,9 +408,29 @@ const CollegeDetailPage = () => {
                   <Building2 className="h-6 w-6 text-[#667eea]" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
-                    {/*On-Campus Drive Request from:*/} {collegeName}
+                  <h2
+                    className="relative z-50 cursor-pointer text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2"
+                    onClick={(e) => {
+                      e.stopPropagation();      // ⬅️ THIS is the fix
+                      e.preventDefault();       // ⬅️ extra safety
+                    
+                      const rect = e.currentTarget.getBoundingClientRect();
+                    
+                      setModalPos({
+                        top: rect.top + window.scrollY,
+                        left: rect.left + window.scrollX,
+                        right: rect.right + window.scrollX,
+                        height: rect.height
+                      });
+                    
+                      setSelectedCollege(college);
+                      setShowCollegeModal(true);
+                    }}
+                  >
+                    {college?.collegeUniversityDetails?.collegeName}
                   </h2>
+
+
                   <div className="flex flex-wrap items-center gap-3">
                     <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                       <Calendar className="h-3 w-3 mr-1.5" />
@@ -789,6 +818,22 @@ const CollegeDetailPage = () => {
 
         <AlternateDateModal />
       </div>
+      {showCollegeModal && (
+  
+
+    <CollegeInfoModal
+      college={selectedCollege}
+      position={modalPos}
+      onClose={() => {
+        setShowCollegeModal(false);
+        setSelectedCollege(null);
+        setModalPos(null);
+      }}
+    />
+ 
+)}
+
+
     </div>
   );
 };

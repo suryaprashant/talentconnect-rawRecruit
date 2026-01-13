@@ -3,6 +3,8 @@ import Auth from "../models/authModel.js";
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import EmployerProfile from "../models/employerDashboard/employerProfileModel.js";
 import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel.js";
+import { JobPostingTable } from "../models/jobPostingsModel.js";
+
 
 export async function getNotificationService(Id) {
     try {
@@ -45,7 +47,8 @@ export const notifyCollegesOnOnCampusJob = async ({
   companyId,
   companyName,
   jobTitle,
-  jobId
+  jobId,
+  jobType,
 }) => {
   try {
     
@@ -59,8 +62,9 @@ export const notifyCollegesOnOnCampusJob = async ({
       recipientId: college._id,
       senderId: companyId,
       type: "SYSTEM_UPDATE",
-      message: `${companyName} posted a ${jobTitle} job`,
+      message: `${companyName} posted a ${jobType} job`,
       referenceId: jobId,
+       jobType,
       read: false
     }));
 
@@ -77,7 +81,8 @@ export const notifyCompaniesOnCollegeJobRequest = async ({
   collegeId,
   collegeName,
   jobTitle,
-  jobId
+  jobId, 
+  jobType
 }) => {
   try {
     // 🎯 Fetch ALL company + employer users
@@ -93,8 +98,9 @@ export const notifyCompaniesOnCollegeJobRequest = async ({
       recipientId: user._id,     // ✅ AUTH ID
       senderId: collegeId,       // ✅ college AUTH ID
       type: "SYSTEM_UPDATE",
-      message: `${collegeName} posted an on-campus job request`,
+      message: `${collegeName} posted a ${jobType} job request`,
       referenceId: jobId,
+        jobType,
       read: false
     }));
 
@@ -209,3 +215,119 @@ export async function notifyOnCollegeApplicationStatusChange({
     console.error("🔔 Application status notification failed:", error.message);
   }
 }
+
+
+
+export async function createNotification({
+  recipientId,
+  senderId,
+  type,
+  message,
+  referenceId,
+  jobType
+}) {
+  try {
+    console.log("🔔 Creating notification:", {
+      recipientId,
+      senderId,
+      type,
+      referenceId,
+      jobType
+    });
+
+    await Notification.create({
+      recipientId,
+      senderId,
+      type,
+      message,
+      referenceId,
+      jobType,
+      read: false
+    });
+  } catch (err) {
+    console.error("❌ Notification create failed:", err.message);
+  }
+}
+
+/**
+ * 🔔 College applied to Company/Employer job
+ */
+export const notifyCompanyOnCollegeApply = async ({
+  companyAuthId,
+  collegeAuthId,
+  collegeName,
+  jobTitle,
+  jobId,
+  jobType,
+}) => {
+  try {
+    await Notification.create({
+      recipientId: companyAuthId,
+      senderId: collegeAuthId,
+      type: "JOB_REGISTRATION",
+      message: `${collegeName} applied for your job: ${jobTitle}`,
+      referenceId: jobId,
+      jobType,
+      read: false,
+    });
+  } catch (err) {
+    console.error("notifyCompanyOnCollegeApply error:", err);
+  }
+};
+
+/**
+ * 🔔 Company/Employer applied to College job request
+ */
+export const notifyCollegeOnCompanyApply = async ({
+  collegeAuthId,
+  companyAuthId,
+  companyName,
+  jobTitle,
+  jobId,
+   jobType,
+}) => {
+  try {
+    
+    await Notification.create({
+      recipientId: collegeAuthId,
+      senderId: companyAuthId,
+      type: "JOB_REGISTRATION",
+      message: `${companyName} applied to your campus job request: ${jobTitle}`,
+      referenceId: jobId,
+       jobType,
+      read: false,
+    });
+  } catch (err) {
+    console.error("notifyCollegeOnCompanyApply error:", err);
+  }
+};
+
+export const notifyCollegeOnInterviewScheduled = async ({
+  collegeAuthId,
+  companyAuthId,
+  companyName,
+  applicationId,
+  jobId,
+  jobType,
+  date,
+  time,
+}) => {
+  try {
+    await Notification.create({
+      recipientId: collegeAuthId,
+      senderId: companyAuthId,
+      type: "INTERVIEW_SCHEDULED",
+      message: `${companyName} scheduled an interview with you`,
+      referenceId: applicationId,
+      jobId,
+      jobType,
+      meta: {
+        date,
+        time,
+      },
+      read: false,
+    });
+  } catch (error) {
+    console.error("Interview notification error:", error.message);
+  }
+};

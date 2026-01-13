@@ -85,6 +85,33 @@ const JobList = ({ jobs }) => {
     }
   };
 
+  const resolveLocation = (job) => {
+  const jobData = job?.job;
+
+  // 1. Company-posted jobs
+  if (Array.isArray(jobData?.workLocation) && jobData.workLocation.length > 0) {
+    return jobData.workLocation.join(", ");
+  }
+
+  // 2. Explicit job location
+  if (Array.isArray(jobData?.location) && jobData.location.length > 0) {
+    return jobData.location.join(", ");
+  }
+
+  // 3. College city (college-posted jobs like BITS)
+  if (jobData?.collegePosted?.collegeUniversityDetails?.city) {
+    return jobData.collegePosted.collegeUniversityDetails.city;
+  }
+
+  // 4. Final fallback
+  if (jobData?.collegePosted?.collegeUniversityDetails?.collegeLocation) {
+    return jobData.collegePosted.collegeUniversityDetails.collegeLocation;
+  }
+
+  return "Not specified";
+};
+
+
   const filteredJobs =
   jobs?.filter((job) => {
     const name = isCompany
@@ -129,9 +156,12 @@ const JobList = ({ jobs }) => {
                 ? job?.job?.collegePosted?.collegeUniversityDetails?.collegeName
                 : job?.job?.companyPosted?.companyDetails?.companyName;
 
-              const locationText = isCompany
+              {/*const locationText = isCompany
                 ? job?.job?.venue
-                : job?.job?.location?.[0];
+                : job?.job?.location?.[0];*/}
+
+                const locationText = resolveLocation(job);
+
 
               const roles = isCompany ? [] : job?.job?.jobRoles || [];
 

@@ -1,4 +1,38 @@
 const JobCard = ({ job }) => {
+
+  const normalizeArrayField = (value) => {
+  if (Array.isArray(value)) return value.join(', ');
+  if (typeof value === 'string' && value.trim()) return value;
+  return 'N/A';
+};
+
+  const jobData = job?.job || job;
+
+  const resolveLocation = () => {
+  // 1. Work location (company-posted jobs)
+  if (Array.isArray(jobData?.workLocation) && jobData.workLocation.length > 0) {
+    return jobData.workLocation.join(', ');
+  }
+
+  // 2. Explicit job location
+  if (Array.isArray(jobData?.location) && jobData.location.length > 0) {
+    return jobData.location.join(', ');
+  }
+
+  // 3. College city (college-posted jobs)
+  if (jobData?.collegePosted?.collegeUniversityDetails?.city) {
+    return jobData.collegePosted.collegeUniversityDetails.city;
+  }
+
+  // 4. College full location (final fallback)
+  if (jobData?.collegePosted?.collegeUniversityDetails?.collegeLocation) {
+    return jobData.collegePosted.collegeUniversityDetails.collegeLocation;
+  }
+
+  return 'N/A';
+};
+
+
   return (
     <div className="border rounded-md p-4 hover:shadow-md transition-shadow">
       <div className="flex">
@@ -15,14 +49,24 @@ const JobCard = ({ job }) => {
         </div>
 
         <div className="ml-4 flex-1">
-          <h2 className="text-xl font-bold">{job?.collegeUniversityDetails?.collegeName}</h2>
-          <div className="flex text-sm text-gray-500 mb-1">
+          <h2 className="text-xl font-bold">{job?.collegeUniversityDetails?.collegeName}ll</h2>
+          {/*<div className="flex text-sm text-gray-500 mb-1">
             <span>{job?.jobDetails[0].location}</span>
             <span className="mx-2">•</span>
             <span>{job?.jobDetails[0].employmentType}</span>
             <span className="mx-2">•</span>
             <span>{job?.jobDetails[0].workMode}</span>
-          </div>
+          </div>*/}
+
+          <div className="flex text-sm text-gray-500 mb-1">
+ <span>{resolveLocation()}</span>
+  <span className="mx-2">•</span>
+  <span>{normalizeArrayField(jobData?.employmentType)}</span>
+  <span className="mx-2">•</span>
+  <span>{normalizeArrayField(jobData?.workMode)}</span>
+</div>
+
+
 
           <h3 className="font-bold text-xl capitalize">{job?.jobDetails[0]?.jobTitle || job?.jobDetails[0]?.jobRoles}</h3>
          
