@@ -42,6 +42,7 @@ export const createOffCampusJobPosting = async (req, res) => {
     }
 };
 
+//company post job for on campus
 export const createOnCampusPosting = async (req, res) => {
     try {
         const userId = req.user._id;
@@ -72,7 +73,8 @@ export const createOnCampusPosting = async (req, res) => {
           companyId: userId, // senderId
           companyName: companyPostedId.data[0].companyDetails.companyName,
           jobTitle: newPosting.jobTitle || req.body.jobTitle || "new job",
-          jobId: newPosting._id
+          jobId: newPosting._id,
+          jobType: newPosting.jobType,
         }).catch(err => {
           console.error("Notification Error:", err.message);
         });
@@ -123,7 +125,8 @@ export const createOnCampusCollegeRequest = async (req, res) => {
           collegeName:
             college.collegeUniversityDetails?.collegeName || "A college",
           jobTitle: newPosting.jobTitle || "job",
-          jobId: newPosting._id
+          jobId: newPosting._id,
+          jobType: newPosting.jobType,
         }).catch(err => {
           console.error("College job notification failed:", err);
         });
@@ -146,6 +149,8 @@ export const createPoolCampusCollegeRequest = async (req, res) => {
         if (!collegePostedId) {
             return res.status(404).json({ error: "College profile not found" });
         }
+
+        const college = collegePostedId.data[0]; 
         const postingData = {
             ...req.body,
             collegePosted: collegePostedId.data[0]._id,
@@ -158,6 +163,19 @@ export const createPoolCampusCollegeRequest = async (req, res) => {
         if (!newPosting) {
             return sendError(res, 500, "Failed to create job posting");
         }
+
+        // 🔔 SEND NOTIFICATION (NON-BLOCKING)
+        notifyCompaniesOnCollegeJobRequest({
+          collegeId: userId,   // ✅ AUTH ID
+          collegeName:
+            college.collegeUniversityDetails?.collegeName || "A college",
+          jobTitle: newPosting.jobTitle || "job",
+          jobId: newPosting._id,
+          jobType: newPosting.jobType,
+        }).catch(err => {
+          console.error("College job notification failed:", err);
+        });
+
         sendResponse(res, 201, { message: "Pool-campus college request created successfully!", data: newPosting });
     } catch (error) {
         console.error("Error in createPoolCampusCollegeRequest:", error.message);
@@ -165,6 +183,7 @@ export const createPoolCampusCollegeRequest = async (req, res) => {
     }
 }
 
+// company post pool campus job
 export const createPoolCampusPosting = async (req, res) => {
     try {
         const userId = req.user._id;
@@ -191,7 +210,8 @@ export const createPoolCampusPosting = async (req, res) => {
           companyId: userId, // senderId
           companyName: companyPostedId.data[0].companyDetails.companyName,
           jobTitle: newPosting.jobTitle || req.body.jobTitle || "new job",
-          jobId: newPosting._id
+          jobId: newPosting._id, 
+          jobType: newPosting.jobType,
         }).catch(err => {
           console.error("Notification Error:", err.message);
         });

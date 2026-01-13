@@ -6,6 +6,37 @@ import axios from 'axios';
 function NotificationsDropdown({ notifications, setNotifications, setUnreadCount }) {
     const navigate = useNavigate();
 
+    const JOB_REGISTRATION_ROUTE_MAP = {
+      college: {
+        "On-campus": "/manage-application/campus-placement",
+        "Pool-campus": "/manage-application/poolCampus-placement",
+      },
+      company: {
+        "On-campus": "/job-management/On-campus",
+        "Pool-campus": "/job-management/Pool-campus",
+      },
+      employer: {
+        "On-campus": "/job-management/On-campus",
+        "Pool-campus": "/job-management/Pool-campus",
+      },
+    };
+
+    const SYSTEM_UPDATE_ROUTE_MAP = {
+      company: {
+        "On-campus": "/company-dashboard/On-campus",
+        "Pool-campus": "/company-dashboard/Pool-campus",
+      },
+      employer: {
+        "On-campus": "/company-dashboard/On-campus",
+        "Pool-campus": "/company-dashboard/Pool-campus",
+      },
+      college: {
+        "On-campus": "/college-dashboard/On-campus",
+        "Pool-campus": "/college-dashboard/Pool-campus",
+      },
+    };
+
+
     const handleNotificationClick = async (notification) => {
     const selectedRole = localStorage.getItem("selectedRole"); // company | employer
 
@@ -59,23 +90,49 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
         }
     }
 
-    // 🔔 SYSTEM UPDATE (job posted etc.)
-    if (notification.type === "SYSTEM_UPDATE") {
-        if (selectedRole === "company") {
-            navigate("/company-dashboard/On-campus");
-            return;
-        }
-
-        if (selectedRole === "employer") {
-            navigate("/employer-dashboard/On-campus");
-            return;
-        }
-
-        if (selectedRole === "college") {
-            navigate("/college-dashboard/On-campus");
-            return;
-        }
+    // 🔔 JOB REGISTRATION (application related)
+    if (notification.type === "JOB_REGISTRATION") {
+      const role = selectedRole; // college | company | employer
+      const jobType = notification.jobType;
+    
+      const targetRoute =
+        JOB_REGISTRATION_ROUTE_MAP?.[role]?.[jobType];
+    
+      if (targetRoute) {
+        navigate(targetRoute);
+        return;
+      }
+    
+      console.warn("No route found for JOB_REGISTRATION", {
+        role,
+        jobType,
+      });
+    
+      return;
     }
+
+
+  
+    // 🔔 SYSTEM UPDATE (Company / Employer posted job)
+    if (notification.type === "SYSTEM_UPDATE") {
+        const role = selectedRole; // company | employer | college
+        const jobType = notification.jobType; // On-campus | Pool-campus
+    
+        const targetRoute =
+            SYSTEM_UPDATE_ROUTE_MAP?.[role]?.[jobType];
+    
+        if (targetRoute) {
+            navigate(targetRoute);
+            return;
+        }
+    
+        console.warn("No route found for SYSTEM_UPDATE", {
+            role,
+            jobType,
+        });
+        return;
+    }
+
 
     //company taking action on college application
     if (

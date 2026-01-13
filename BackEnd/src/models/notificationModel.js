@@ -28,7 +28,9 @@ const notificationSchema = new mongoose.Schema({
     'APPLICATION_REJECTED',
     'COLLEGE_APPLICATION_SHORTLISTED',
     'COLLEGE_APPLICATION_ACCEPTED',
-    'COLLEGE_APPLICATION_REJECTED'
+    'COLLEGE_APPLICATION_REJECTED',
+    "JOB_REGISTRATION",
+    "INTERVIEW_SCHEDULED"
   ],
         required: true,
     },
@@ -46,6 +48,12 @@ const notificationSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    jobType: {
+        type: String,
+        enum: ["On-campus", "Off-campus", "Pool-campus"],
+        required: false,
+    },
+
     fileName: {
         type: String,
         required: false,
@@ -63,6 +71,15 @@ const notificationSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    jobId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "JobPostingTable",
+    },
+    
+    meta: {
+      type: mongoose.Schema.Types.Mixed,
+    },
+
 }, { timestamps: true });
 
 const Notification = mongoose.model('Notification', notificationSchema);

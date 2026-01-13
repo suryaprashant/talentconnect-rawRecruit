@@ -32,10 +32,12 @@ import sendStatusChangeEmail from "../utils/sendStatusChangeEmail.js";
 import sendScheduledInterviewEmail from "../utils/sendScheduledInterviewEmail.js";
 import { submitAlternateDatesService } from "../services/alternateDateService.js";
 // import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
-import { notifyOnApplicationStatusChange, notifyOnCollegeApplicationStatusChange } from "../services/notificationService.js";
+import { notifyCollegeOnCompanyApply, notifyCollegeOnInterviewScheduled, notifyCompanyOnCollegeApply, notifyOnApplicationStatusChange, notifyOnCollegeApplicationStatusChange } from "../services/notificationService.js";
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel.js";
 import { unsaveJobService } from "../services/applicationService.js";
+import { JobPostingTable } from "../models/jobPostingsModel.js";
+import  InterviewSchedule  from "../models/InterviewSchedule.Model.js";
 
 export async function unsaveJobByUser(req, res) {
     const { jobId } = req.params; // jobId passed in the URL
@@ -305,11 +307,18 @@ export async function createReferralApplication(req, res) {
   }
 }
 
-// oncampus
-export async function createOncampusApplication(req, res) {
+// oncampus 
+{/*export async function createOncampusApplication(req, res) {
   const { jobId } = req.body;
   const userId = req.user._id;
   const userType = req.user?.userType;
+
+  console.log("🔥 createOncampusApplication HIT", {
+  userType: req.user.userType,
+  userId: req.user._id,
+  jobId: req.body.jobId,
+});
+
 
   try {
     let user;
@@ -329,6 +338,23 @@ export async function createOncampusApplication(req, res) {
     if (user.data.length == 0 || !user || !jobId)
       return res.status(404).json({ msg: "User or job not found!" });
 
+    const job = await JobPostingTable.findById(jobId)
+      .populate("companyPosted")
+      .populate("collegePosted");
+
+      console.log("🧾 JOB FOUND:", {
+  jobId: job?._id,
+  jobType: job?.jobType,
+  collegePosted: job?.collegePosted,
+  postedByUser: job?.postedByUser?._id,
+});
+
+    if (!job) return res.status(404).json({ msg: "Job not found" });
+
+    const jobType = job.jobType; // "On-campus" | "Off-campus" | "Pool-campus"
+
+
+
     const application = await createApplicationService(
       user.data[0]._id,
       req.user.userType,
@@ -338,15 +364,168 @@ export async function createOncampusApplication(req, res) {
     if (application.success === false)
       return res.status(403).json({ msg: application.message });
 
+     // 🔔 NOTIFICATIONS
+    if (userType === "college" && job.companyPosted) {
+
+      console.log("🧠 NOTIFICATION CHECK:", {
+  userType,
+  hasCollegePosted: !!job.collegePosted,
+});
+
+      // College → Company
+      await notifyCompanyOnCollegeApply({
+        companyAuthId: job.companyPosted.authId,
+        collegeAuthId: userId,
+        collegeName:
+          user.data[0]?.collegeUniversityDetails?.collegeName ||
+          "A college",
+        jobTitle: job.jobTitle || "Job",
+        jobId: job._id,
+        jobType,
+      });
+    }
+
+    if (
+      (userType === "company" || userType === "employer") &&
+      job.collegePosted
+    ) {
+      // Company → College
+      await notifyCollegeOnCompanyApply({
+        collegeAuthId: job.collegePosted.authId,
+        companyAuthId: userId,
+        companyName: user.data[0]?.companyName || "A company",
+        jobTitle: job.jobTitle || "Campus job",
+        jobId: job._id,
+        jobType,
+      });
+    }
+
     res.status(201).json(application);
   } catch (error) {
     console.log("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
+}*/}
+
+// oncampus -> notification done
+export async function createOncampusApplication(req, res) {
+  const { jobId } = req.body;
+  const userId = req.user._id;
+  const userType = req.user.userType;
+
+  
+  try {
+    let user;
+    switch (userType) {
+      case "college":
+        user = await getCollegeService(userId);
+        break;
+      case "company":
+        user = await getCompanyService(userId);
+        break;
+      case "employer":
+        user = await getEmployerService(req.user);
+        break;
+      default:
+        return res.status(400).json({ msg: "Invalid user type" });
+    }
+
+    if (!user || !user.data || user.data.length === 0 || !jobId) {
+      return res.status(404).json({ msg: "User or job not found!" });
+    }
+
+    const actorProfile = user.data[0];
+
+    const job = await JobPostingTable.findById(jobId)
+      .populate("companyPosted")
+      .populate("collegePosted");
+
+    if (!job) return res.status(404).json({ msg: "Job not found" });
+
+    
+
+    const jobType = job.jobType;
+
+    const application = await createApplicationService(
+      actorProfile._id,
+      userType,
+      jobId,
+      "On-campus"
+    );
+
+    if (application.success === false) {
+      return res.status(403).json({ msg: application.message });
+    }
+
+   
+       //🔔 NOTIFICATIONS (ISOLATED – NEVER BREAK API)
+    
+    try {
+      // 🟢 College → Company
+      if (userType === "college" && job.companyPosted?.userId) {
+        
+
+        const collegeName =
+          actorProfile?.collegeUniversityDetails?.collegeName ||
+          actorProfile?.collegeName ||
+          "A college";
+
+        const jobTitle =
+          job.jobTitle ||
+          `${job.jobType} ${job.lookingFor || "Job"}`;
+
+        
+
+        await notifyCompanyOnCollegeApply({
+          companyAuthId: job.companyPosted.userId, // ✅ FIXED
+          collegeAuthId: userId,
+          collegeName,
+          jobTitle,
+          jobId: job._id,
+          jobType,
+        });
+      }
+
+      // 🟢 Company / Employer → College
+      if (
+        (userType === "company" || userType === "employer") &&
+        job.collegePosted?.userId
+      ) {
+        
+        const companyName =
+          actorProfile?.companyName ||
+          actorProfile?.companyDetails?.companyName ||
+          actorProfile?.companyBasicDetails?.companyName ||
+          actorProfile?.organizationName ||
+          "A company";
+              
+        const jobTitle =
+          job.jobTitle ||
+          `${job.jobType} ${job.lookingFor || "Job"}`;
+
+        await notifyCollegeOnCompanyApply({
+          collegeAuthId: job.collegePosted.userId, // ✅ FIXED
+          companyAuthId: userId,
+          companyName,
+          jobTitle,
+          jobId: job._id,
+          jobType,
+        });
+      }
+    } catch (notifyErr) {
+      console.error("🔕 Notification failed (non-blocking):", notifyErr);
+    }
+
+    return res.status(201).json(application);
+  } catch (error) {
+    console.error("❌ createOncampusApplication error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 }
 
+
 // poolcampus
-export async function createPoolcampusApplication(req, res) {
+{/*export async function createPoolcampusApplication(req, res) {
   const { jobId } = req.body;
   const userId = req.user._id;
   const userType = req.user?.userType;
@@ -385,7 +564,112 @@ export async function createPoolcampusApplication(req, res) {
     console.log("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
+}*/}
+
+//pool campus notification done
+export async function createPoolcampusApplication(req, res) {
+  const { jobId } = req.body;
+  const userId = req.user._id;
+  const userType = req.user.userType;
+
+  try {
+    let user;
+    switch (userType) {
+      case "college":
+        user = await getCollegeService(userId);
+        break;
+      case "company":
+        user = await getCompanyService(userId);
+        break;
+      case "employer":
+        user = await getEmployerService(req.user);
+        break;
+      default:
+        return res.status(400).json({ msg: "Invalid user type" });
+    }
+
+    if (!user || !user.data || user.data.length === 0 || !jobId) {
+      return res.status(404).json({ msg: "User or job not found!" });
+    }
+
+    const actorProfile = user.data[0];
+
+    const job = await JobPostingTable.findById(jobId)
+      .populate("companyPosted")
+      .populate("collegePosted");
+
+    if (!job) return res.status(404).json({ msg: "Job not found" });
+
+    const jobType = job.jobType; // should be "Pool-campus"
+
+    const application = await createApplicationService(
+      actorProfile._id,
+      userType,
+      jobId,
+      "Pool-campus"
+    );
+
+    if (application.success === false) {
+      return res.status(403).json({ msg: application.message });
+    }
+
+    
+       //🔔 NOTIFICATIONS (NON-BLOCKING)
+   
+    try {
+      const jobTitle =
+        job.jobTitle ||
+        `${job.jobType} ${job.lookingFor || "Job"}`;
+
+      // 🟢 College → Company
+      if (userType === "college" && job.companyPosted?.userId) {
+        const collegeName =
+          actorProfile?.collegeUniversityDetails?.collegeName ||
+          actorProfile?.collegeName ||
+          "A college";
+
+        await notifyCompanyOnCollegeApply({
+          companyAuthId: job.companyPosted.userId,
+          collegeAuthId: userId,
+          collegeName,
+          jobTitle,
+          jobId: job._id,
+          jobType,
+        });
+      }
+
+      // 🟢 Company / Employer → College
+      if (
+        (userType === "company" || userType === "employer") &&
+        job.collegePosted?.userId
+      ) {
+        const companyName =
+          actorProfile?.companyName ||
+          actorProfile?.companyDetails?.companyName ||
+          actorProfile?.companyBasicDetails?.companyName ||
+          actorProfile?.organizationName ||
+          "A company";
+
+        await notifyCollegeOnCompanyApply({
+          collegeAuthId: job.collegePosted.userId,
+          companyAuthId: userId,
+          companyName,
+          jobTitle,
+          jobId: job._id,
+          jobType,
+        });
+      }
+    } catch (notifyErr) {
+      console.error("🔕 Pool-campus notification failed:", notifyErr);
+    }
+
+    return res.status(201).json(application);
+  } catch (error) {
+    console.error("❌ createPoolcampusApplication error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 }
+
 
 // campus-internship
 export async function createCampusInternshipApplication(req, res) {
@@ -1076,7 +1360,7 @@ export async function getAcceptedCandidatesByCompany(req, res) {
 }
 
 // schdule Interview
-export async function scheduleInterview(req, res) {
+{/*export async function scheduleInterview(req, res) {
   const companyId = req.user._id;
   const { applicantId, applicantType, jobRole } = req.body;
   const { date, time, meetLink, message } = req.body.data;
@@ -1121,7 +1405,161 @@ export async function scheduleInterview(req, res) {
     console.log("Error: ", error);
     res.status(500).json({ Error: "Internal server error" });
   }
+}*/}
+
+//prathmesh interview schedule fix
+export async function scheduleInterview(req, res) {
+  try {
+    console.log("📩 Schedule Interview Payload:", req.body);
+
+    const companyAuthId = req.user._id;
+
+    const {
+      applicationId,
+      jobId,
+      jobType,
+      applicantId,        // profile id (college / student / etc)
+      applicantAuthId,    // auth id (already provided)
+      applicantType,
+      jobRole = [],
+      coordinator,
+      data,
+    } = req.body;
+
+    if (!data) {
+      return res.status(400).json({ msg: "Interview data missing" });
+    }
+
+    const { date, time, meetLink, message } = data;
+
+    if (
+      !applicationId ||
+      !jobId ||
+      !jobType ||
+      !applicantId ||
+      !applicantAuthId
+    ) {
+      return res.status(400).json({ msg: "Required fields missing" });
+    }
+
+    if (!date || !time || !meetLink) {
+      return res.status(400).json({ msg: "Date, time and meet link required" });
+    }
+
+    // 🔹 COMPANY
+    const company = await getCompanyService(companyAuthId);
+    if (!company || !company.data?.length) {
+      return res.status(404).json({ msg: "Company not found" });
+    }
+
+    const companyName = company.data[0].companyDetails.companyName;
+
+    // 🔹 Coordinator snapshot (safe)
+    const coordinatorSnapshot = {
+      name: coordinator?.name || "",
+      designation: coordinator?.designation || "",
+      collegeName: coordinator?.collegeName || "",
+    };
+
+    console.log("🧠 Interview Save Check:", {
+  collegeProfileId: applicantId,
+  collegeAuthId: applicantAuthId,
+});
+
+
+    // 1️⃣ SAVE INTERVIEW (SOURCE OF TRUTH)
+    const interview = await InterviewSchedule.create({
+      jobId,
+      jobType,
+      applicationId,
+      companyAuthId,
+      applicantType,
+      applicantAuthId,
+      applicantProfileId: applicantId,
+      coordinator: coordinatorSnapshot,
+      jobRole,
+      date,
+      time,
+      meetLink,
+      message,
+      status: "Scheduled",
+      emailStatus: "PENDING",
+    });
+
+    // 2️⃣ NOTIFICATION (must succeed)
+    await notifyCollegeOnInterviewScheduled({
+      collegeAuthId: applicantAuthId,
+      companyAuthId,
+      companyName,
+      applicationId,
+      jobId,
+      jobType,
+      interviewId: interview._id,
+      date,
+      time,
+    });
+
+    // 3️⃣ EMAIL RESOLUTION (DO NOT BREAK FLOW)
+    let applicantEmail;
+
+    switch (applicantType) {
+      case "student":
+      case "fresher":
+      case "professional": {
+        const res = await getCandidatEmail(applicantId);
+        applicantEmail = res?.email;
+        break;
+      }
+      case "college": {
+        const res = await getCollegeEmail(applicantId);
+        applicantEmail = res?.email;
+        break;
+      }
+      case "company": {
+        const res = await getCompanyEmail(applicantId);
+        applicantEmail = res?.email;
+        break;
+      }
+      default:
+        return res.status(400).json({ msg: "Invalid applicant type" });
+    }
+
+    // 4️⃣ EMAIL (NON-BLOCKING)
+    if (applicantEmail) {
+      try {
+        await sendScheduledInterviewEmail(
+          applicantEmail,
+          date,
+          time,
+          message,
+          meetLink,
+          jobRole,
+          companyName
+        );
+
+        interview.emailStatus = "SENT";
+        await interview.save();
+      } catch (emailErr) {
+        console.error("❌ Email failed:", emailErr.message);
+        interview.emailStatus = "FAILED";
+        await interview.save();
+      }
+    }
+
+    // 5️⃣ FINAL RESPONSE
+    return res.status(200).json({
+      success: true,
+      msg: "Interview scheduled successfully",
+      data: interview,
+    });
+
+  } catch (error) {
+    console.error("❌ scheduleInterview error:", error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
 }
+
+
 // In controllers/applicationController.js
 export const getCompanyDashboardMetrics = async (req, res) => {
   try {
@@ -1133,7 +1571,7 @@ export const getCompanyDashboardMetrics = async (req, res) => {
     const user = req.user;
     const metricsData = await fetchCompanyDashboardMetrics(user);
     
-    console.log('📈 Metrics data:', JSON.stringify(metricsData, null, 2));
+    
 
     res.status(200).json({
       success: true,
@@ -1150,6 +1588,8 @@ export const getCompanyDashboardMetrics = async (req, res) => {
   }
 };
 
+
+//alternate date controller
 export async function submitAlternateDates(req, res) {
   const { jobId } = req.params;
 

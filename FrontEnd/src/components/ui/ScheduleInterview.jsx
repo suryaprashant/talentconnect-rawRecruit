@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { scheduleInterview } from '../../lib/Company_AxiosInstance';
 
-const InterviewSchedulerPopup = ({ setToggleScheduleInterviewPopup, applicantId, applicantType, jobRole }) => {
+const InterviewSchedulerPopup = ({ setToggleScheduleInterviewPopup, application, job}) => {
   const [form, setForm] = useState({
     date: '',
     time: '',
@@ -16,19 +16,47 @@ const InterviewSchedulerPopup = ({ setToggleScheduleInterviewPopup, applicantId,
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await scheduleInterview(applicantId, applicantType, jobRole, form);
-      if (response?.data?.success === true) toast.success("Interview Scheduled!");
-      else toast.error(response.response?.data?.msg);
-    } catch (error) {
-      toast.error('Something went wrong!')
-    }
+  e.preventDefault();
 
-    setTimeout(() => {
-      setToggleScheduleInterviewPopup(false);
-    }, 2000);
-  };
+  try {
+    const payload = {
+      applicationId: application._id,
+      jobId: job._id,
+      jobType: job.jobType,
+
+      applicantId: application.applicant._id,
+      applicantAuthId: application.applicant.userId,
+      applicantType: "college",
+
+      jobRole: job.jobRoles || [],
+
+      coordinator: {
+        name: application.applicant.placementCoordinatorDetails?.coordinatorName,
+        designation: application.applicant.placementCoordinatorDetails?.designation,
+        collegeName: application.applicant.collegeUniversityDetails?.collegeName,
+      },
+
+      date: form.date,
+      time: form.time,
+      meetLink: form.meetLink,
+      message: form.message,
+    };
+
+    const response = await scheduleInterview(payload);
+
+    if (response?.data?.success) {
+      toast.success("Interview Scheduled!");
+      setTimeout(() => {
+        setToggleScheduleInterviewPopup(false);
+      }, 1500);
+    } else {
+      toast.error(response?.data?.msg || "Failed to schedule interview");
+    }
+  } catch (error) {
+    toast.error("Something went wrong!");
+  }
+};
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">

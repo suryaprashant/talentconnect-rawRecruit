@@ -14,6 +14,8 @@ export default function OnCampusJobManagement() {
   const [colleges, setColleges] = useState([]);
   const [collegesLoading, setCollegesLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedJobContext, setSelectedJobContext] = useState(null);
+
   const navigate = useNavigate();
 
   const itemsPerPage = 10;
@@ -130,6 +132,11 @@ export default function OnCampusJobManagement() {
   const currentJobs = filteredJobs.slice(startIndex, startIndex + itemsPerPage);
 
   const handleViewColleges = (job) => {
+    setSelectedJobContext({
+    jobId: job._id,
+    jobType: job.jobType,
+    jobRoles: job.jobRoles || [],
+  });
     setSelectedJob(job);
     fetchCollegesForJob(job._id, job.jobType);
   };
