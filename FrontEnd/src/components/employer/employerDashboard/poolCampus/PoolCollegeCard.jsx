@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Users } from 'lucide-react';
+import { Heart, Users, MapPin } from 'lucide-react';
 
 const pastelColors = [
   // Purple/Indigo gradient variants (primary theme colors)
@@ -79,26 +79,18 @@ const PoolCollegeCard = ({ college }) => {
   const degreeType = college.degreeType || 'Degree';
   const stableColor = getStableColor(college.id || collegeName);
 
-  // Get initials for fallback
-  const getInitials = (name = '') => {
-    if (!name) return '?';
-    const words = name.trim().split(' ');
-    if (words.length === 1) return words[0][0].toUpperCase();
-    return (words[0][0] + words[1][0]).toUpperCase();
-  };
-
   return (
-    <div className={`
-      w-full max-w-[350px] min-h-[430px] mx-auto rounded-2xl 
-      shadow-sm hover:shadow-lg transition overflow-hidden
-      flex flex-col ${stableColor}
-    `}>
-      {/* FULL PASTEL CARD */}
-      <div className="p-5 flex-grow flex flex-col h-full">
+    <div className="
+      w-full max-w-[350px] mx-auto rounded-2xl 
+      border shadow-sm hover:shadow-lg transition overflow-hidden
+      flex flex-col h-full
+    ">
+      {/* TOP SECTION - Gradient */}
+      <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-1 flex flex-col`}>
 
         {/* Pool Campus Type + Save */}
         <div className="flex justify-between items-start">
-          <span className="text-xs bg-white/90 text-blue-700 px-3 py-1 rounded-full font-medium">
+          <span className="text-xs bg-white/90 text-gray-700 px-3 py-1 rounded-full font-medium">
             POOL CAMPUS
           </span>
 
@@ -107,7 +99,7 @@ const PoolCollegeCard = ({ college }) => {
               e.preventDefault();
               setIsSaved(!isSaved);
             }}
-            className="bg-white p-2 rounded-full shadow hover:shadow-md transition"
+            className="bg-white p-2 rounded-full shadow"
           >
             <Heart
               className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
@@ -117,75 +109,82 @@ const PoolCollegeCard = ({ college }) => {
         </div>
 
         {/* College Name + Logo */}
-        <div className="mt-10 flex flex-col items-center gap-3">
-          {/* Logo/Icon - Different icon for Pool Campus */}
-          <div className="w-20 h-20 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
-              <Users className="h-8 w-8 text-white" />
-            </div>
-          </div>
-
-          {/* College Name */}
-          <div className="flex flex-col items-center gap-1">
-            <h3 className="text-white font-semibold text-xl text-center">
+        <div className="mt-3 flex justify-between items-start gap-2">
+          <div className="flex flex-col gap-1">
+            <h3 className="text-black font-semibold text-lg truncate max-w-[200px]">
               {collegeName}
             </h3>
 
             {/* College Type Badge */}
-            <span className="text-sm font-medium text-white/90 bg-white/20 px-3 py-1 rounded-full border border-white/30">
-              {degreeType}
-            </span>
+            <div className="flex flex-wrap gap-1 mt-1">
+              <span className="text-sm font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded border border-black/5">
+                {degreeType}
+              </span>
+              <span className="text-sm font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded border border-black/5">
+                Pool Campus
+              </span>
+            </div>
+          </div>
+
+          {/* Logo/Icon */}
+          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+              <Users className="h-6 w-6 text-white" />
+            </div>
           </div>
         </div>
 
-        {/* Stats/Info Section - Different metrics for Pool Campus */}
-        <div className="mt-8 flex justify-center gap-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-white">20+</div>
-            <div className="text-xs text-white/90 mt-1">Colleges</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-white">5000+</div>
-            <div className="text-xs text-white/90 mt-1">Students</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-white">₹8L+</div>
-            <div className="text-xs text-white/90 mt-1">Avg Package</div>
-          </div>
+        {/* Stats/Info Section */}
+        <div className="flex flex-wrap gap-2 mt-3">
+          <span className="px-3 py-1 bg-blue-100 text-blue-800 border border-blue-300 rounded-full text-xs">
+            50+ Colleges
+          </span>
+          <span className="px-3 py-1 bg-green-100 text-green-800 border border-green-300 rounded-full text-xs">
+            5000+ Students
+          </span>
+          <span className="px-3 py-1 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-full text-xs">
+            ₹8L+ Avg Package
+          </span>
         </div>
 
         {/* Description */}
-        <div className="mt-8 flex-grow">
-          <p className="text-sm text-white/90 text-center line-clamp-3">
+        <div className="mt-3">
+          <p className="text-sm text-gray-700 line-clamp-3">
             {college.description 
               ? college.description.split(' ').slice(0, 20).join(' ') + (college.description.split(' ').length > 20 ? '...' : '')
               : 'Pool campus connecting multiple colleges with shared placement drives and recruitment opportunities.'}
           </p>
         </div>
 
-        {/* Location Info */}
-        <div className="mt-6">
-          <div className="flex items-center justify-center gap-2 text-white/90">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-            </svg>
-            <span className="text-sm">
+      </div>
+
+      {/* BOTTOM SECTION - White */}
+      <div className="p-4 bg-white flex justify-between items-center border-t">
+
+        <div>
+          {/* Location */}
+          <div className="flex items-center gap-1 text-gray-700 text-xs">
+            <MapPin className="h-4 w-4 text-gray-500" />
+            <span className="line-clamp-1 max-w-[120px]">
               {college.location || 'Multiple Locations'}
             </span>
           </div>
+          
+          {/* Contact Info */}
+          <p className="font-semibold text-gray-900 text-sm mt-1">
+            Contact Pool Campus
+          </p>
         </div>
 
-        {/* Contact Button */}
-        <div className="mt-8 pt-4 border-t border-white/30">
-          <Link
-            to={`/employer-dashboard/Pool-campus/${college.id}`}
-            className="block w-full px-4 py-3 bg-white text-black rounded-xl text-sm font-medium hover:bg-gray-100 transition shadow hover:shadow-md text-center"
-          >
-            Contact Pool Campus
-          </Link>
-        </div>
+        <Link
+          to={`/employer-dashboard/Pool-campus/${college.id}`}
+          className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
+        >
+          Details
+        </Link>
 
       </div>
+
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { ChevronDown, X, Calendar, Clock, Users, Target, GraduationCap, Building, DollarSign, List, MapPin, User, Mail, Phone, Linkedin, ArrowLeft, Send, CheckSquare, Briefcase, MessageSquare, Trash2, Plus } from 'lucide-react';
+import { ChevronDown, X, Calendar, Clock, Users, Target, GraduationCap, Building, DollarSign, IndianRupee, Euro, List, MapPin, User, Mail, Phone, Linkedin, ArrowLeft, Send, CheckSquare, Briefcase, MessageSquare, Trash2, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
@@ -58,7 +58,7 @@ export default function RegisterPage({ onBackClick }) {
         stream: [],
         lookingFor: ['job'],
         employmentType: ['Full-time'],
-        salaryRange: 'USD',
+        salaryRange: 'INR',
         salaryValue: '',
         tentativeStartDate: '',
         tentativeEndDate: '',
@@ -782,31 +782,73 @@ export default function RegisterPage({ onBackClick }) {
                         </div>
 
                         {/* Row 5: Salary and Company Type */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <DollarSign className="w-4 h-4 text-[#3b82f6]" />
-                                    Minimum Salary
-                                </label>
-                                <div className="flex rounded-lg overflow-hidden">
-                                    <select 
-                                        className="bg-white/50 backdrop-blur-sm border border-white/50 px-2.5 py-2 w-20 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
-                                        value={formData.salaryRange} 
-                                        onChange={(e) => handleChange('salaryRange', e.target.value)}
-                                    >
-                                        <option>USD</option>
-                                        <option>INR</option>
-                                        <option>EUR</option>
-                                    </select>
-                                    <input 
-                                        type="number" 
-                                        className="bg-white/50 backdrop-blur-sm border border-white/50 flex-1 px-2.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
-                                        placeholder="Amount" 
-                                        value={formData.salaryValue} 
-                                        onChange={(e) => handleChange('salaryValue', e.target.value)} 
-                                    />
-                                </div>
-                            </div>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+        <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+            <DollarSign className="w-4 h-4 text-[#3b82f6]" />
+            Minimum Salary
+        </label>
+        <div className="flex rounded-lg overflow-hidden border border-gray-200/80 focus-within:ring-2 focus-within:ring-[#93c5fd] focus-within:border-transparent transition-all duration-200">
+            <div className="relative bg-white/50 backdrop-blur-sm flex items-center">
+                <div className="px-3 py-2 w-24 text-sm flex items-center gap-2">
+                    {formData.salaryRange === 'INR' || !formData.salaryRange ? (
+                        <>
+                            <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
+                            <span>INR</span>
+                        </>
+                    ) : formData.salaryRange === 'USD' ? (
+                        <>
+                            <DollarSign className="w-3.5 h-3.5 text-gray-600" />
+                            <span>USD</span>
+                        </>
+                    ) : formData.salaryRange === 'EUR' ? (
+                        <>
+                            <Euro className="w-3.5 h-3.5 text-gray-600" />
+                            <span>EUR</span>
+                        </>
+                    ) : (
+                        <>
+                            <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
+                            <span>INR</span>
+                        </>
+                    )}
+                </div>
+                <select 
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    value={formData.salaryRange || 'INR'} 
+                    onChange={(e) => handleChange('salaryRange', e.target.value)}
+                >
+                    <option value="INR">INR</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
+                <ChevronDown className="absolute right-2 w-3 h-3 text-gray-400 pointer-events-none" />
+            </div>
+            <div className="relative flex-1">
+                <input 
+                    type="number" 
+                    className="bg-white/50 backdrop-blur-sm w-full px-3 py-2 text-sm focus:outline-none" 
+                    placeholder="Amount" 
+                    value={formData.salaryValue || ''} 
+                    onChange={(e) => handleChange('salaryValue', e.target.value)}
+                    min="0"
+                    step="1000"
+                />
+                {/* Currency icon in input field */}
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    {formData.salaryRange === 'INR' || !formData.salaryRange ? (
+                        <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
+                    ) : formData.salaryRange === 'USD' ? (
+                        <DollarSign className="w-3.5 h-3.5 text-gray-500" />
+                    ) : formData.salaryRange === 'EUR' ? (
+                        <Euro className="w-3.5 h-3.5 text-gray-500" />
+                    ) : (
+                        <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
+                    )}
+                </div>
+            </div>
+        </div>
+    </div>
 
                             <div ref={companyTypeRef} className="relative">
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
@@ -883,7 +925,7 @@ export default function RegisterPage({ onBackClick }) {
 
                         {/* Row 6: Coordinator Designation and Email */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
+                            {/* <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                     <User className="w-4 h-4 text-[#3b82f6]" />
                                     Designation <span className="text-red-500">*</span>
@@ -903,7 +945,7 @@ export default function RegisterPage({ onBackClick }) {
                                         <p className="mt-1 text-xs text-red-600">{errors.coordinatorDesignation}</p>
                                     )}
                                 </div>
-                            </div>
+                            </div> */}
 
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
@@ -982,31 +1024,33 @@ export default function RegisterPage({ onBackClick }) {
                             </div>
 
                             <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Calendar className="w-4 h-4 text-[#3b82f6]" />
-                                    Application Dates
-                                </label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div className="relative">
-                                        <DatePicker
-                                            selected={formData.tentativeStartDate ? new Date(formData.tentativeStartDate) : null}
-                                            onChange={(date) => handleDateChange(date, 'tentativeStartDate')}
-                                            dateFormat="dd-MM-yyyy"
-                                            placeholderText="Start"
-                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent"
-                                        />
-                                    </div>
-                                    <div className="relative">
-                                        <DatePicker
-                                            selected={formData.tentativeEndDate ? new Date(formData.tentativeEndDate) : null}
-                                            onChange={(date) => handleDateChange(date, 'tentativeEndDate')}
-                                            dateFormat="dd-MM-yyyy"
-                                            placeholderText="End"
-                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
+  <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+    <Calendar className="w-4 h-4 text-[#3b82f6]" />
+    Application Dates
+  </label>
+  <div className="grid grid-cols-2 gap-2">
+    <div className="relative">
+      <DatePicker
+        selected={formData.tentativeStartDate ? new Date(formData.tentativeStartDate) : null}
+        onChange={(date) => handleDateChange(date, 'tentativeStartDate')}
+        dateFormat="dd-MM-yyyy"
+        placeholderText="Start"
+        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
+      />
+      <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+    </div>
+    <div className="relative">
+      <DatePicker
+        selected={formData.tentativeEndDate ? new Date(formData.tentativeEndDate) : null}
+        onChange={(date) => handleDateChange(date, 'tentativeEndDate')}
+        dateFormat="dd-MM-yyyy"
+        placeholderText="End"
+        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
+      />
+      <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+    </div>
+  </div>
+</div>
                         </div>
 
                         {/* Row 9: Rounds Table - Full Width */}
@@ -1022,7 +1066,7 @@ export default function RegisterPage({ onBackClick }) {
                                     className="flex items-center gap-1.5 text-xs bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white px-2.5 py-1.5 rounded hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200"
                                 >
                                     <Plus size={12} />
-                                    Add Round
+                                    Add Student
                                 </button>
                             </div>
                             

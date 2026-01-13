@@ -216,54 +216,55 @@ export default function OncampusApplicationStatus() {
           </div>
 
           {/* Compact Status and Details */}
-          <div className="lg:col-span-2">
-            {selectedJob ? (
-              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg h-full flex flex-col">
-                {/* Status Progress - Compact */}
-                <div className="p-5 border-b border-gray-100">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h2 className="text-lg font-bold text-gray-900">{selectedJob.company}</h2>
-                      <p className="text-sm text-gray-600">{selectedJob.jobTitle}</p>
-                    </div>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center">
-                      <span className="text-lg font-bold text-[#667eea]">
-                        {getCompanyInitials(selectedJob.company)}
-                      </span>
-                    </div>
+<div className="lg:col-span-2">
+  {selectedJob ? (
+    <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg h-full flex flex-col">
+      {/* Status Progress - Compact */}
+      <div className="p-5 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">{selectedJob.company}</h2>
+            <p className="text-sm text-gray-600">{selectedJob.jobTitle}</p>
+          </div>
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center">
+            <span className="text-lg font-bold text-[#667eea]">
+              {getCompanyInitials(selectedJob.company)}
+            </span>
+          </div>
+        </div>
+        
+        <div className="relative">
+          <div className="flex justify-between mb-1">
+            {statusSteps?.slice(0, 4).map((step, idx) => {
+              const currentIdx = getStatusIndex(selectedJob.status);
+              const isActive = idx <= currentIdx;
+              return (
+                <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 4}%` }}>
+                  <div className={`w-6 h-6 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
+                    isActive 
+                      ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] border-[#667eea] text-white'
+                      : 'bg-white border-gray-300 text-gray-400'
+                  }`}>
+                    {isActive ? <CheckCircle className="h-3 w-3" /> : idx + 1}
                   </div>
-                  
-                  <div className="relative">
-                    <div className="flex justify-between mb-1">
-                      {statusSteps?.slice(0, 4).map((step, idx) => {
-                        const currentIdx = getStatusIndex(selectedJob.status);
-                        const isActive = idx <= currentIdx;
-                        return (
-                          <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 4}%` }}>
-                            <div className={`w-6 h-6 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
-                              isActive 
-                                ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] border-[#667eea] text-white' 
-                                : 'bg-white border-gray-300 text-gray-400'
-                            }`}>
-                              {isActive ? <CheckCircle className="h-3 w-3" /> : idx + 1}
-                            </div>
-                            <span className={`text-xs text-center ${isActive ? 'text-[#667eea] font-medium' : 'text-gray-500'}`}>
-                              {step.length > 10 ? step.substring(0, 10) + '...' : step}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    <div className="h-1.5 bg-gray-200 absolute left-6 right-6 top-3 -z-10">
-                      <div
-                        className="h-1.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300"
-                        style={{
-                          width: `${(getStatusIndex(selectedJob.status) / (statusSteps.length - 1)) * 100}%`
-                        }}
-                      ></div>
-                    </div>
-                  </div>
+                  <span className={`text-xs text-center ${isActive ? 'text-[#667eea] font-medium' : 'text-gray-500'}`}>
+                    {step.length > 10 ? step.substring(0, 10) + '...' : step}
+                  </span>
                 </div>
+              );
+            })}
+          </div>
+          {/* Progress bar track and fill */}
+          <div className="h-1.5 bg-gray-200 absolute left-[12.5%] right-[12.5%] top-3 -z-10 rounded-full">
+            <div
+              className="h-1.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 rounded-full"
+              style={{
+                width: `${(getStatusIndex(selectedJob.status) / (statusSteps.length - 1)) * 100}%`
+              }}
+            ></div>
+          </div>
+        </div>
+      </div>
 
                 {/* Job Details - Compact Grid */}
                 <div className="flex-1 p-5">

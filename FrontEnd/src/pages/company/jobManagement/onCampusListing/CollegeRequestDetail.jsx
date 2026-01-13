@@ -139,7 +139,7 @@ const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShor
         <h3 className="text-lg font-bold mb-4 text-gray-800">Drive Details</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
           <DetailRow icon={Target} label="Role(s)" value={jobRoles} />
-          <DetailRow icon={Briefcase} label="Looking For" value={lookingFor} />
+          <DetailRow icon={Briefcase} label="Offering" value={lookingFor} />
           <DetailRow icon={Briefcase} label="Employment Type" value={employmentType} />
           <DetailRow icon={MapPin} label="Work Locations" value={preferredLocations} />
           <DetailRow icon={DollarSign} label="Salary (LPA)" value={minimumSalary || 'Not Specified'} />

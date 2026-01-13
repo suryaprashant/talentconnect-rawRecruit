@@ -74,6 +74,9 @@ const PoolCampusEmployeeDash = () => {
   const [selectedEndDate, setSelectedEndDate] = useState('');
   const [dateError, setDateError] = useState('');
 
+  // College Details Modal State
+  const [showCollegeModal, setShowCollegeModal] = useState(false);
+
   const { setSelectedConversation } = useConversation();
 
   const fetchPostingDetails = async () => {
@@ -326,6 +329,165 @@ const PoolCampusEmployeeDash = () => {
   };
   // --- END ALTERNATE DATE LOGIC ---
 
+  // --- COLLEGE DETAILS MODAL ---
+  const CollegeDetailsModal = () => {
+    if (!showCollegeModal || !posting?.collegePosted) return null;
+
+    const collegeDetails = posting.collegePosted;
+    const collegeUniDetails = collegeDetails.collegeUniversityDetails || {};
+    const collegeName = collegeUniDetails.collegeName || 'College';
+    const collegeType = collegeUniDetails.collegeType || 'Not Specified';
+    const universityName = collegeUniDetails.universityName || 'Not Specified';
+    const city = collegeUniDetails.city || 'Not Specified';
+    const state = collegeUniDetails.state || 'Not Specified';
+    const country = collegeUniDetails.country || 'Not Specified';
+    const pincode = collegeUniDetails.pincode || 'Not Specified';
+    const establishedYear = collegeUniDetails.establishedYear;
+    const collegeWebsite = collegeDetails.profileAchievements?.collegeWebsite;
+
+    return (
+      <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="p-6">
+            {/* Header */}
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">{collegeName}</h2>
+                {/* <p className="text-gray-600 text-sm mt-1">
+                  {collegeType ? `${collegeType} College` : 'Educational Institution'}
+                </p> */}
+              </div>
+              <button
+                onClick={() => setShowCollegeModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-xl p-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* College Details Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="space-y-3">
+                <div className="flex items-center text-gray-700">
+                  <Building2 className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">College Type:</span>
+                  <span className="ml-2">{collegeType || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Calendar className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">Established:</span>
+                  <span className="ml-2">{establishedYear || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Building2 className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">University:</span>
+                  <span className="ml-2">{universityName || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">City:</span>
+                  <span className="ml-2">{city || 'N/A'}</span>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex items-center text-gray-700">
+                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">State:</span>
+                  <span className="ml-2">{state || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">Country:</span>
+                  <span className="ml-2">{country || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">Pincode:</span>
+                  <span className="ml-2">{pincode || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <Globe className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">Website:</span>
+                  {collegeWebsite ? (
+                    <a 
+                      href={collegeWebsite.startsWith('http') ? collegeWebsite : `https://${collegeWebsite}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="ml-2 text-blue-600 hover:underline"
+                    >
+                      Visit Website
+                    </a>
+                  ) : (
+                    <span className="ml-2">Not provided</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Placement Coordinator Details */}
+            {/* <div className="border-t border-gray-100 pt-6">
+              <h3 className="font-bold text-gray-800 mb-4">Placement Coordinator</h3>
+              <div className="space-y-3">
+                {collegeDetails.placementCoordinatorDetails?.coordinatorName && (
+                  <div className="flex items-center text-gray-700">
+                    <Users className="w-4 h-4 mr-3 text-blue-500" />
+                    <span className="font-medium">Name:</span>
+                    <span className="ml-2">{collegeDetails.placementCoordinatorDetails.coordinatorName}</span>
+                    {collegeDetails.placementCoordinatorDetails.designation && (
+                      <span className="ml-2 text-gray-500">({collegeDetails.placementCoordinatorDetails.designation})</span>
+                    )}
+                  </div>
+                )}
+                {collegeDetails.placementCoordinatorDetails?.officialEmail && (
+                  <div className="flex items-center text-gray-700">
+                    <Mail className="w-4 h-4 mr-3 text-blue-500" />
+                    <span className="font-medium">Email:</span>
+                    <a 
+                      href={`mailto:${collegeDetails.placementCoordinatorDetails.officialEmail}`}
+                      className="ml-2 text-blue-600 hover:underline"
+                    >
+                      {collegeDetails.placementCoordinatorDetails.officialEmail}
+                    </a>
+                  </div>
+                )}
+                {collegeDetails.placementCoordinatorDetails?.officialMobile && (
+                  <div className="flex items-center text-gray-700">
+                    <Phone className="w-4 h-4 mr-3 text-blue-500" />
+                    <span className="font-medium">Phone:</span>
+                    <a 
+                      href={`tel:${collegeDetails.placementCoordinatorDetails.officialMobile}`}
+                      className="ml-2 text-blue-600 hover:underline"
+                    >
+                      {collegeDetails.placementCoordinatorDetails.officialMobile}
+                    </a>
+                  </div>
+                )}
+                {collegeDetails.placementCoordinatorDetails?.linkedInUrl && (
+                  <div className="flex items-center text-gray-700">
+                    <Linkedin className="w-4 h-4 mr-3 text-blue-500" />
+                    <span className="font-medium">LinkedIn:</span>
+                    <a 
+                      href={collegeDetails.placementCoordinatorDetails.linkedInUrl.startsWith('http') 
+                        ? collegeDetails.placementCoordinatorDetails.linkedInUrl 
+                        : `https://${collegeDetails.placementCoordinatorDetails.linkedInUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 text-blue-600 hover:underline"
+                    >
+                      View Profile
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div> */}
+          </div>
+        </div>
+      </div>
+    );
+  };
+  // --- END COLLEGE DETAILS MODAL ---
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
@@ -382,19 +544,28 @@ const PoolCampusEmployeeDash = () => {
           <div className="mb-8">
             <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-6">
               <div className="flex items-start gap-4">
-                <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl">
+                <div 
+                  className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
+                  onClick={() => setShowCollegeModal(true)}
+                >
                   <Building2 className="h-6 w-6 text-[#667eea]" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2">
+                  <h2 
+                    className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2 hover:text-blue-600 cursor-pointer transition-colors"
+                    onClick={() => setShowCollegeModal(true)}
+                  >
                     {collegeName}
                   </h2>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
+                  <div 
+                    className="flex flex-wrap items-center gap-3 cursor-pointer hover:text-blue-600 transition-colors"
+                    onClick={() => setShowCollegeModal(true)}
+                  >
+                    <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg hover:from-blue-50 hover:to-blue-100">
                       <Calendar className="h-3 w-3 mr-1.5" />
                       {formatDateSafe(posting.startDate)} - {formatDateSafe(posting.endDate)}
                     </span>
-                    <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
+                    <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg hover:from-blue-50 hover:to-blue-100">
                       <MapPin className="h-3 w-3 mr-1.5" />
                       {posting.location?.join(', ') || 'Location not specified'}
                     </span>
@@ -403,6 +574,7 @@ const PoolCampusEmployeeDash = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg hover:from-[#667eea]/10 hover:to-[#764ba2]/10 transition-all duration-200"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <Globe className="h-3 w-3 mr-1.5" />
                       College Website
@@ -412,7 +584,10 @@ const PoolCampusEmployeeDash = () => {
               </div>
 
               <div className="flex flex-col items-center gap-4">
-                <div className="w-24 h-24 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl flex items-center justify-center overflow-hidden">
+                <div 
+                  className="w-24 h-24 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                  onClick={() => setShowCollegeModal(true)}
+                >
                   {collegeDetails?.profileImage ? (
                     <img 
                       src={collegeDetails?.profileImage} 
@@ -446,47 +621,46 @@ const PoolCampusEmployeeDash = () => {
           </div>
 
           {/* About This Opportunity */}
-<div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-6 mb-6">
-  <h3 className="text-xl font-semibold text-gray-900 mb-4">
-    About This Opportunity
-  </h3>
+          <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              About This Opportunity
+            </h3>
 
-  {posting.description ? (
-    <ul className="list-disc list-inside space-y-2 text-gray-700 leading-relaxed">
-      {(() => {
-        const sentences = posting.description
-          .replace(/\n+/g, ' ')
-          .split('.')
-          .map(s => s.trim())
-          .filter(Boolean);
+            {posting.description ? (
+              <ul className="list-disc list-inside space-y-2 text-gray-700 leading-relaxed">
+                {(() => {
+                  const sentences = posting.description
+                    .replace(/\n+/g, ' ')
+                    .split('.')
+                    .map(s => s.trim())
+                    .filter(Boolean);
 
-        const bullets = [];
-        let buffer = '';
+                  const bullets = [];
+                  let buffer = '';
 
-        sentences.forEach(sentence => {
-          if (sentence.length < 25) {
-            // too short → merge with next
-            buffer += sentence + ' ';
-          } else {
-            bullets.push((buffer + sentence).trim());
-            buffer = '';
-          }
-        });
+                  sentences.forEach(sentence => {
+                    if (sentence.length < 25) {
+                      // too short → merge with next
+                      buffer += sentence + ' ';
+                    } else {
+                      bullets.push((buffer + sentence).trim());
+                      buffer = '';
+                    }
+                  });
 
-        if (buffer.trim()) {
-          bullets.push(buffer.trim());
-        }
+                  if (buffer.trim()) {
+                    bullets.push(buffer.trim());
+                  }
 
-        return bullets.map((point, idx) => (
-          <li key={idx}>{point}.</li>
-        ));
-      })()}
-    </ul>
-  ) : (
-    <p className="text-gray-500">No description provided.</p>
-  )}
-</div>
-
+                  return bullets.map((point, idx) => (
+                    <li key={idx}>{point}.</li>
+                  ));
+                })()}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No description provided.</p>
+            )}
+          </div>
 
           {/* Statistics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -759,6 +933,7 @@ const PoolCampusEmployeeDash = () => {
         </div>
 
         <AlternateDateModal />
+        <CollegeDetailsModal />
       </div>
     </div>
   );

@@ -574,7 +574,7 @@ function Home() {
             <div className="relative flex items-center justify-between py-6 px-6">
               <div className="flex items-center">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                  Company Dashboarda
+                  Company Dashboard
                 </h1>
               </div>
               <div className="w-full max-w-md">

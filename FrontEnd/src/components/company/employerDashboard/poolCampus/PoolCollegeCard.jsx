@@ -51,7 +51,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, User, Banknote, Heart } from 'lucide-react';
+import { MapPin, Heart } from 'lucide-react';
 import { SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 
@@ -122,10 +122,6 @@ function getStableColor(id = "") {
   return pastelColors[hash];
 }
 
-
-
-
-
 const PoolCollegeCard = ({ college }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -156,42 +152,32 @@ const PoolCollegeCard = ({ college }) => {
   };
 
   const handleSave = async (e) => {
-  e.preventDefault();
-  e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
 
-  try {
-    const response = await SaveOppurtunity(
-      college._id,        // ✅ jobId
-      college.jobType     // ✅ jobType = "Pool-campus"
-    );
+    try {
+      const response = await SaveOppurtunity(
+        college._id,        // ✅ jobId
+        college.jobType     // ✅ jobType = "Pool-campus"
+      );
 
-    if (response?.data?.success === true) {
-      setIsSaved(true);
-      toast.success("Saved");
-    } else {
-      toast.error(response?.response?.data?.msg || "Unable to save");
+      if (response?.data?.success === true) {
+        setIsSaved(true);
+        toast.success("Saved");
+      } else {
+        toast.error(response?.response?.data?.msg || "Unable to save");
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+      toast.error("Something went wrong!");
     }
-  } catch (error) {
-    console.error("Save error:", error);
-    toast.error("Something went wrong!");
-  }
-};
+  };
 
   // Format venue/location
   const formatVenue = () => {
     if (college.venue) return college.venue;
     if (college.location?.length) return college.location.join(', ');
     return 'Venue not specified';
-  };
-
-  // Format package details
-  const formatPackage = () => {
-    if (college.packageDetails?.totalCTC) {
-      const currency = college.packageDetails.currency || 'INR';
-      const amount = college.packageDetails.totalCTC.toLocaleString();
-      return `${currency === 'INR' ? '₹' : currency} ${amount}`;
-    }
-    return 'Package not specified';
   };
 
   const getInitials = (name) => {
@@ -208,12 +194,12 @@ const PoolCollegeCard = ({ college }) => {
 
   return (
     <div className="
-      w-full max-w-[350px] min-h-[430px] mx-auto rounded-2xl 
+      w-full max-w-[350px] mx-auto rounded-2xl 
       border shadow-sm hover:shadow-lg transition overflow-hidden
-      flex flex-col
+      flex flex-col h-full
     ">
       {/* TOP SECTION */}
-      <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-grow`}>
+      <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-1 flex flex-col`}>
 
         {/* Status + Save */}
         <div className="flex justify-between items-start">
@@ -222,9 +208,7 @@ const PoolCollegeCard = ({ college }) => {
           </span>
 
           <button
-            
-  onClick={handleSave}
-
+            onClick={handleSave}
             className="bg-white p-2 rounded-full shadow"
           >
             <Heart
@@ -277,7 +261,7 @@ const PoolCollegeCard = ({ college }) => {
           </div>
         </div>
 
-        {/* Employment Type */}
+        {/* Employment Type Badge */}
         <div className="mt-3">
           <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
             {college.employmentType?.length > 0 
@@ -289,7 +273,7 @@ const PoolCollegeCard = ({ college }) => {
         {/* College Types */}
         {college.collegeTypes?.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
-            {college.collegeTypes.slice(0, 2).map((type, index) => (
+            {college.collegeTypes.slice(0, 3).map((type, index) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-orange-100 text-orange-800 border border-orange-300 rounded-full text-xs"
@@ -297,6 +281,9 @@ const PoolCollegeCard = ({ college }) => {
                 {type}
               </span>
             ))}
+            {college.collegeTypes.length > 3 && (
+              <span className="px-2 py-1 text-xs text-gray-600">+{college.collegeTypes.length - 3}</span>
+            )}
           </div>
         )}
 
@@ -320,7 +307,7 @@ const PoolCollegeCard = ({ college }) => {
         {/* Company Types */}
         {college.companyType?.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
-            {college.companyType.slice(0, 2).map((type, index) => (
+            {college.companyType.slice(0, 3).map((type, index) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs"
@@ -328,6 +315,9 @@ const PoolCollegeCard = ({ college }) => {
                 {type}
               </span>
             ))}
+            {college.companyType.length > 3 && (
+              <span className="px-2 py-1 text-xs text-gray-600">+{college.companyType.length - 3}</span>
+            )}
           </div>
         )}
 
@@ -348,7 +338,7 @@ const PoolCollegeCard = ({ college }) => {
           </div>
         )}
 
-        {/* Description - Fixed height */}
+        {/* Description */}
         <div className="mt-3">
           <p className="text-sm text-gray-700 line-clamp-3">
             {college.description 

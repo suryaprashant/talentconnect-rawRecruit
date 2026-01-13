@@ -163,7 +163,7 @@ export default function RequesInfo({ onBackClick }) {
           {/* Form heading */}
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-              Request Information for On-Demand Training
+              Register for On-Demand Training
             </h2>
             <p className="text-gray-500 mt-2">Fill in your training requirements to get started</p>
           </div>

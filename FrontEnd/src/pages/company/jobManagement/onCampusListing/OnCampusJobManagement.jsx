@@ -290,7 +290,7 @@ export default function OnCampusJobManagement() {
           {/* Table Header */}
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
             <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
-              <div className="col-span-3">Looking For</div>
+              <div className="col-span-3">Offering</div>
               <div className="col-span-3">Locations</div>
               <div className="col-span-2">End Date</div>
               <div className="col-span-1 text-center">Views</div>
