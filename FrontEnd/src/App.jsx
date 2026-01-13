@@ -524,7 +524,7 @@ function AppRoutes() {
               <Route path="/employer-profile" element={<EmployerProfile />} />
               <Route path="/employer/saved-jobs/*" element={<JobRoutes />} />
 
-              <Route path="/interviews" element={<EmployerInterviewScheduler />} />
+              <Route path="/employer-interviews" element={<EmployerInterviewScheduler />} />
               <Route path="/employer-dashboard/resume-search" element={<EmployerResumeApp />} />
               <Route path="/employer-dashboard/On-campus" element={<EmployerListingPage />} />
               <Route path="/employer-dashboard/On-campus/:id" element={<EmployerDetailsPage />} />
@@ -626,6 +626,7 @@ function AppRoutes() {
               <Route path="/accepted/on-campus-request/:driveId" element={<OncampusAcceptedDetailPage />} />
               <Route path="/accepted/pool-campus-request" element={<PoolcampusAcceptedListing />} />
               <Route path="/accepted/pool-campus-request/:driveId" element={<PoolcampusAcceptedDetailPage />} />
+              <Route path="/college-interviews" element={<InterviewScheduler />} />
 
               <Route path="/registered/on-campus-opportunities" element={
                 <ApplicationProvider>
