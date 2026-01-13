@@ -36,6 +36,12 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
       },
     };
 
+    const INTERVIEW_SCHEDULE_ROUTE_MAP = {
+        college: "/college-interviews",
+        employer: "/employer-interviews",
+        company: "/interviews",
+    }
+
 
     const handleNotificationClick = async (notification) => {
     const selectedRole = localStorage.getItem("selectedRole"); // company | employer
@@ -111,6 +117,21 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
       return;
     }
 
+    //interviews schedulede
+    if (notification.type === "INTERVIEW_SCHEDULED" ) {
+        const role = selectedRole; // college | company | employer
+        const targetRoute = INTERVIEW_SCHEDULE_ROUTE_MAP?.[role];
+    
+        if (targetRoute) {
+            navigate(targetRoute);
+            return;
+        }
+
+        console.warn("No route found for INTERVIEW_SCHEDULED", {
+            role,
+        });
+        return;
+    }
 
   
     // 🔔 SYSTEM UPDATE (Company / Employer posted job)

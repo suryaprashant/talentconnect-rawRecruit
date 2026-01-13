@@ -31,6 +31,9 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, jobRole, onAcc
     const [modalPos, setModalPos] = useState(null);
     const [showCollegeModal, setShowCollegeModal] = useState(false);
 
+    const jobId = driveDetails?._id;
+    const jobType = driveDetails?.jobType;
+
     // Debug logging to see what data we're receiving
     console.log("College Application:", collegeApplication);
     console.log("Drive Details:", driveDetails);
@@ -115,10 +118,12 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, jobRole, onAcc
     const collegeTypes = driveDetails?.collegeTypes || [];
     const tags = driveDetails?.tags || [];
 
-    // College statistics
-    const placementRate = 'Not Specified';
-    const highestPackage = 'Not Specified';
-    const averagePackage = 'Not Specified';
+   
+
+    const job = {
+      _id: jobId,
+      jobType: jobType,
+    };
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-sm mb-6 border border-gray-200">
@@ -355,16 +360,14 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, jobRole, onAcc
     </button>
 </div>
 
-            {toggleScheduleInterviewPopup && (
-                <div>
-                    <InterviewSchedulerPopup
-                        setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
-                        applicantId={collegeApplication.applicant._id}
-                        applicantType={'college'}
-                        jobRole={jobRole}
-                    />
-                </div>
+            {toggleScheduleInterviewPopup && collegeApplication && job && (
+              <InterviewSchedulerPopup
+                setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
+                application={collegeApplication}
+                job={job}
+              />
             )}
+
             {showCollegeModal && modalPos && (
                     <CollegeInfoModal
                       college={collegeApplication.applicant}

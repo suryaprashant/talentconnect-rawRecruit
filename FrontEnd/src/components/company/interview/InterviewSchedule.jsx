@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { MoreHorizontal, Calendar, List, Building2 } from 'lucide-react';
 import { getCompanyInterviews, getInterviews } from "../../../lib/interview_AxiosClient.js";
+import { useAuth } from '@/context/AuthProvider';
 
 export default function InterviewScheduler() {
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dateSort, setDateSort] = useState("desc"); // default newest first
-
+  
+  const selectedRole = localStorage.getItem("selectedRole");
 
   useEffect(() => {
     const fetchInterviews = async () => {
@@ -22,16 +24,20 @@ export default function InterviewScheduler() {
     };
 
     fetchInterviews();
+
   }, []);
 
-  const sortedInterviews = [...interviews].sort((a, b) => {
-  const dateA = new Date(`${a.date} ${a.time}`);
-  const dateB = new Date(`${b.date} ${b.time}`);
+  const isCompanyView = selectedRole === "company";
+  const isCollegeView = selectedRole === "college";
 
-  return dateSort === "asc"
-    ? dateA - dateB
-    : dateB - dateA;
-});
+  const sortedInterviews = [...interviews].sort((a, b) => {
+    const dateA = new Date(`${a.date} ${a.time}`);
+    const dateB = new Date(`${b.date} ${b.time}`);
+
+    return dateSort === "asc"
+      ? dateA - dateB
+      : dateB - dateA;
+  });
 
 
   return (
@@ -79,8 +85,10 @@ export default function InterviewScheduler() {
             <div className="space-y-6">
               {sortedInterviews.map(interview => {
                 const formattedDateTime = `${interview.date} ${interview.time}`;
+                console.log("Interview companyAuthId:", interview.companyAuthId);
 
                 return (
+                  
                   <div
                     key={interview._id}
                     className="border border-gray-200 rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
@@ -95,15 +103,22 @@ export default function InterviewScheduler() {
 
                         <div>
                           <h3 className="font-bold text-xl text-gray-900">
-                            {interview.coordinator?.name}
+                            {isCompanyView
+                              ? interview.coordinator?.name
+                              : interview.companySnapshot?.scheduledBy?.name}
+
                           </h3>
                           <p className="text-gray-700 font-medium">
-                            {interview.coordinator?.designation}
+                            {isCompanyView
+                              ? interview.coordinator?.designation
+                              : interview.companySnapshot?.scheduledBy?.designation}
                           </p>
                           <div className="mt-3">
                             <div className="text-sm text-gray-500 font-medium">College</div>
                             <div className="text-gray-800">
-                              {interview.coordinator?.collegeName}
+                              {isCompanyView
+                                ? interview.coordinator?.collegeName
+                                : interview.companySnapshot?.companyName}
                             </div>
                           </div>
                         </div>

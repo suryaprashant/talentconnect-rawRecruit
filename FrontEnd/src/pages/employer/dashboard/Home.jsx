@@ -574,7 +574,7 @@ function Home() {
             <div className="relative flex items-center justify-between py-6 px-6">
               <div className="flex items-center">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                  Company Dashboard
+                  Company Dashboarda
                 </h1>
               </div>
               <div className="w-full max-w-md">
@@ -1126,7 +1126,7 @@ function Home() {
               variant="outline"
               size="md"
               className="border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
-              onClick={() => navigate('/interviews')}
+              onClick={() => navigate('/employer-interviews')}
             >
               Schedule Interviews
             </Button>
