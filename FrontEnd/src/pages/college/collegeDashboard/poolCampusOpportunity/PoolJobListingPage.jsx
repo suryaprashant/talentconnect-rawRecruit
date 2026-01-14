@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
 
-const PoolJobListingPage = () => {
+const PoolJobListingPage = ({ compact = false }) => {
   const [filters, setFilters] = useState({
     search: '',
     streams: [],
@@ -385,7 +385,17 @@ const PoolJobListingPage = () => {
       </div>
     );
   }
-
+if (compact) {
+    return (
+      <div className="p-3 space-y-4">
+        {filteredJobs.map((job) => (
+          <div key={job.id} className="w-full">
+            <JobCard job={job} />
+          </div>
+        ))}
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
       {/* Pastel blur background elements */}
@@ -924,6 +934,7 @@ const PoolJobListingPage = () => {
             </div>
           </div>
         </div>
+       
 
         {/* Job Cards - Exact same structure as On Campus */}
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">

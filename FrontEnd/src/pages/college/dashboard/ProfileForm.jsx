@@ -21,6 +21,7 @@ export default function ProfileForm({
 
     const [collegeUniversityDetails, setCollegeUniversityDetails] = useState({
         collegeName: '',
+        affiliatedUniversity: '',
         establishedYear: '',
         phoneNumber: '',
         alternatePhoneNumber: '',
@@ -516,6 +517,29 @@ export default function ProfileForm({
                                     readOnly={!isEditing}
                                 />
                             </div>
+
+                          <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Affiliated University
+                        </label>
+                        <input
+                            type="text"
+                            value={collegeUniversityDetails.affiliatedUniversity || ''}
+                            onChange={(e) =>
+                            handleDetailChange(
+                                'collegeUniversityDetails',
+                                'affiliatedUniversity',
+                                e.target.value
+                            )
+                            }
+                            placeholder="e.g., Guru Gobind Singh Indraprastha University (GGSIPU)"
+                            className={`w-full p-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none transition-all duration-200 ${
+                            !isEditing ? 'text-gray-900' : ''
+                            }`}
+                            readOnly={!isEditing}
+                        />
+                        </div>
+
 
                             <div className="md:col-span-2">
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Established Year *</label>

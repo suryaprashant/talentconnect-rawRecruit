@@ -3,7 +3,7 @@ import JobCard from '@/components/college/collegeDashboard/onCampusOpprtunity/Jo
 import { Filter, ChevronDown, ChevronUp, X, Search, Briefcase, Calendar, Users, MapPin, TrendingUp, RefreshCw, AlertCircle, Building, GraduationCap, BookOpen } from 'lucide-react';
 import { getCompanyPostingForOncampus } from '@/lib/College_AxiosIntance';
 
-const JobsListingPage = () => {
+const JobsListingPage = ({ compact = false }) => {
   const [jobPosted, setjobPosted] = useState([]);
   const [filteredjobPosted, setFilteredjobPosted] = useState([]);
   const [filters, setFilters] = useState({
@@ -323,6 +323,15 @@ const JobsListingPage = () => {
             Try Again
           </button>
         </div>
+      </div>
+    );
+  }
+if (compact) {
+    return (
+      <div className="p-3 space-y-4">
+        {filteredjobPosted.map(job => (
+          <JobCard key={job._id} job={job} />
+        ))}
       </div>
     );
   }
