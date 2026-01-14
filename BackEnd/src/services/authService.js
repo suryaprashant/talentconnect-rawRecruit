@@ -165,6 +165,7 @@ export const registerUser = async ({ email, password, userType }) => {
     email,
     password: hashedPassword,
     userType,
+    authProvider: 'manual',
   });
 
   return newUser;

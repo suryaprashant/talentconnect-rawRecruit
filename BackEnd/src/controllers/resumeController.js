@@ -6,6 +6,7 @@ import {
 import { calculateMatchScore } from "../utils/weightedResumeSearch.js";
 import { parseResume } from "../services/resumeParserService.js";
 import cloudinary from "../../config/cloudinary.js";
+import OnboardingModel from "../models/studentonboardingModel.js"
 /*export const uploadResume = async (req, res) => {
   try {
     // --- All Pre-checks are here in the controller ---
@@ -29,6 +30,11 @@ import cloudinary from "../../config/cloudinary.js";
 // In resumeController.js - Update Cloudinary upload
 export const uploadResume = async (req, res) => {
   try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({
+        message: "Unauthorized: user not authenticated"
+      });
+    }
     if (!req.file) {
       return res.status(400).json({ message: "No resume uploaded" });
     }
@@ -42,14 +48,40 @@ export const uploadResume = async (req, res) => {
     // Upload with CORRECT settings for PDF
     const cloudinaryResult = await cloudinary.uploader.upload(dataURI, {
       folder: "rawrecruit/resumes",
-      resource_type: "auto",  // ← CHANGE from "raw" to "auto"
-      public_id: `resume_${userId}_${Date.now()}.pdf`,  // ← ADD .pdf extension
+      resource_type: "raw", 
+      allowed_formats: [
+      "pdf",
+      "doc",
+      "docx",
+      "ppt",
+      "pptx",
+      "xls",
+      "xlsx",
+      "txt",
+      "zip",
+    ], // ← CHANGE from "raw" to "auto"
+      public_id: `resume_${userId}_${Date.now()}`,  // ← ADD .pdf extension
       transformation: [
         { flags: "attachment" }  // Force download
       ]
     });
 
     const extractedData = await parseResume(req.file.buffer);
+
+    //save DB 
+     await OnboardingModel.findOneAndUpdate(
+      { userId },
+      {
+        $set: {
+          resume: cloudinaryResult.secure_url
+        }
+      },
+      { upsert: true, new: true }
+    );
+    const onboardingDoc = await OnboardingModel.findOne({ userId }).select("resume");
+
+    console.log("✅ Resume stored in DB:", onboardingDoc?.resume);
+
 
     res.status(200).json({
       resumeUrl: cloudinaryResult.secure_url,

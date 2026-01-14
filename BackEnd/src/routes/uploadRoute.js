@@ -6,6 +6,7 @@ import {
   viewResumeAsPdf,
   serveResume  
 } from '../controllers/resumeController.js';
+import secureRoute from '../middlewares/secureRouteMiddleware.js';
 
 const router = express.Router();
 const upload = multer({ 
@@ -14,7 +15,7 @@ const upload = multer({
 });
 
 // Existing routes
-router.post('/resume', upload.single('resume'), uploadResume);
+router.post('/resume', secureRoute, upload.single('resume'), uploadResume);
 router.get('/search', resumeSearch);
 
 router.get('/serve/:userId', serveResume);

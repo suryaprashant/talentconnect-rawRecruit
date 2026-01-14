@@ -42,6 +42,47 @@ export async function markAsReadService(Id) {
     }
 }
 
+//notify candidate about job off-campus posting
+const getRecipientFilterByJobType = (jobType) => {
+  switch (jobType) {
+    case "Off-campus":
+      return { userType: { $in: ["student", "fresher"] } };
+    default:
+      return null;
+  }
+};
+
+export const notifyUsersOnJobPost = async ({
+  companyId,
+  companyName,
+  jobTitle,
+  jobId,
+  jobType,
+}) => {
+  try {
+    const recipientFilter = getRecipientFilterByJobType(jobType);
+    if (!recipientFilter) return;
+
+    const users = await Auth.find(recipientFilter).select("_id");
+    if (!users.length) return;
+
+    const notifications = users.map(user => ({
+      recipientId: user._id,
+      senderId: companyId,
+      type: "SYSTEM_UPDATE",
+      message: `${companyName} posted a ${jobType} job`,
+      referenceId: jobId,
+      jobType,
+      read: false,
+    }));
+
+    await Notification.insertMany(notifications);
+  } catch (error) {
+    console.error("Notification Service Error:", error);
+  }
+};
+
+
 //notify college about compony/employer job posting 
 export const notifyCollegesOnOnCampusJob = async ({
   companyId,
@@ -274,6 +315,32 @@ export const notifyCompanyOnCollegeApply = async ({
     console.error("notifyCompanyOnCollegeApply error:", err);
   }
 };
+
+
+/*candidate apply to company off posted job*/ 
+export const notifyCompanyOnStudentApply = async ({
+  companyAuthId,
+  studentAuthId,
+  studentName,
+  jobTitle,
+  jobId,
+  jobType,
+}) => {
+  try {
+    await Notification.create({
+      recipientId: companyAuthId,
+      senderId: studentAuthId,
+      type: "JOB_REGISTRATION",
+      message: `${studentName} applied for your job: ${jobTitle}`,
+      referenceId: jobId,
+      jobType,
+      read: false,
+    });
+  } catch (err) {
+    console.error("notifyCompanyOnStudentApply error:", err);
+  }
+};
+
 
 /**
  * 🔔 Company/Employer applied to College job request

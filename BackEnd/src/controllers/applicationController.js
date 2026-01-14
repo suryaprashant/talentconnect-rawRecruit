@@ -32,12 +32,13 @@ import sendStatusChangeEmail from "../utils/sendStatusChangeEmail.js";
 import sendScheduledInterviewEmail from "../utils/sendScheduledInterviewEmail.js";
 import { submitAlternateDatesService } from "../services/alternateDateService.js";
 // import { getCompanyProfile } from "./CompanyDashboard/companyProfileController.js";
-import { notifyCollegeOnCompanyApply, notifyCollegeOnInterviewScheduled, notifyCompanyOnCollegeApply, notifyOnApplicationStatusChange, notifyOnCollegeApplicationStatusChange } from "../services/notificationService.js";
+import { notifyCollegeOnCompanyApply, notifyCollegeOnInterviewScheduled, notifyCompanyOnCollegeApply, notifyCompanyOnStudentApply, notifyOnApplicationStatusChange, notifyOnCollegeApplicationStatusChange } from "../services/notificationService.js";
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel.js";
 import { unsaveJobService } from "../services/applicationService.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import  InterviewSchedule  from "../models/InterviewSchedule.Model.js";
+import { resolveStudentAuthId } from "../utils/resolveStudentAuthId.js";
 
 export async function unsaveJobByUser(req, res) {
     const { jobId } = req.params; // jobId passed in the URL
@@ -197,7 +198,7 @@ export async function fetchSavedJobs(req, res) {
 // apply for opportunity
 
 // offcampus
-export async function createOffcampusApplication(req, res) {
+{/*export async function createOffcampusApplication(req, res) {
   const { jobId } = req.body;
   const userId = req.user._id;
 
@@ -222,7 +223,71 @@ export async function createOffcampusApplication(req, res) {
     console.log("Error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
+}*/}
+
+export async function createOffcampusApplication(req, res) {
+  const { jobId } = req.body;
+  const userId = req.user._id;
+  const userType = req.user.userType; // student | fresher
+
+  try {
+    const user = await getStudentService(userId);
+    if (!jobId || !user || !user.data?.length) {
+      return res.status(404).json({ msg: "User or Job not found!" });
+    }
+
+    const actorProfile = user.data[0];
+
+    const job = await JobPostingTable.findById(jobId)
+      .populate("companyPosted");
+
+    if (!job) {
+      return res.status(404).json({ msg: "Job not found" });
+    }
+
+    const application = await createApplicationService(
+      actorProfile._id,
+      userType,
+      jobId,
+      "Off-campus"
+    );
+
+    if (application.success === false) {
+      return res.status(403).json({ msg: application.message });
+    }
+
+    // 🔔 NOTIFICATION (NON-BLOCKING)
+    try {
+      if (job.companyPosted?.userId) {
+        const studentName =
+          actorProfile?.fullName ||
+          actorProfile?.name ||
+          "A candidate";
+
+        const jobTitle =
+          job.jobTitle ||
+          `${job.jobType} ${job.lookingFor || "Job"}`;
+
+        await notifyCompanyOnStudentApply({
+          companyAuthId: job.companyPosted.userId,
+          studentAuthId: userId,
+          studentName,
+          jobTitle,
+          jobId: job._id,
+          jobType: job.jobType,
+        });
+      }
+    } catch (notifyErr) {
+      console.error("🔕 Off-campus notification failed:", notifyErr);
+    }
+
+    return res.status(201).json(application);
+  } catch (error) {
+    console.log("❌ createOffcampusApplication error:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 }
+
 
 // joblisting
 export async function createJobListingApplication(req, res) {
@@ -708,11 +773,21 @@ export async function createCampusInternshipApplication(req, res) {
 
 // get application details by candidate
 export async function getUserApplicationStatus(req, res) {
+  ////
+  try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    ///
+
   const userId = req.user._id;
   const userType = req.user.userType;
   const { jobType } = req.params;
 
-  try {
+  if (!jobType) {
+      return res.status(400).json({ error: "jobType is required" });
+    }
+    
     let user;
     switch (userType) {
       case "college":
@@ -733,8 +808,9 @@ export async function getUserApplicationStatus(req, res) {
         break;
     }
 
-    if (!user || !jobType)
-      return res.status(404).json({ error: "invalid user or job" });
+    if (!user?.data || !user.data.length) {
+      return res.status(404).json({ error: "User profile not found" });
+    }
 
     const response = await fetchApplicationStatusService(
       user.data[0]._id,
@@ -839,7 +915,7 @@ export async function getCollegeApplicationsByJob(req, res) {
   }
 
 
-// shortlist/accept candidate/college
+// shortlist candidate/college
 export async function shortlistApplicant(req, res) {
   const { applicationId } = req.params;
   const { jobRole } = req.body;
@@ -924,6 +1000,45 @@ export async function shortlistApplicant(req, res) {
           console.error("Shortlist notification failed:", err);
         }
       }
+
+      // 🔔 SEND NOTIFICATION TO STUDENT / FRESHER
+      if (
+        response.data.applicantType === "student" ||
+        response.data.applicantType === "fresher"
+      ) {
+        try {
+          const companyResult = await getEmployerService(req.user);
+          if (!companyResult.success) return;
+        
+          const companyId = companyResult.data[0]._id;
+        
+          const companyProfile = await CompanyProfile.findById(companyId)
+            .select("companyDetails.companyName");
+        
+          const companyName =
+            companyProfile?.companyDetails?.companyName || "Company";
+        
+          const studentAuthId = await resolveStudentAuthId(
+            response.data.applicant
+          );
+        
+          if (!studentAuthId) {
+            console.error("❌ Student authId not found:", response.data.applicant);
+            return;
+          }
+        
+          notifyOnApplicationStatusChange({
+            recipientId: studentAuthId,
+            senderId: req.user._id,
+            companyName,
+            status: "Shortlisted",
+            applicationId: response.data._id
+          });
+        } catch (err) {
+          console.error("Student shortlist notification failed:", err);
+        }
+      }
+
       return res.status(200).json(response);
     }
     return res.status(404).json(response);
@@ -1004,7 +1119,7 @@ export async function rejectApplicant(req, res) {
         });
       }
 
-      // 🔔 SEND NOTIFICATION TO COLLEGE ON ACCEPT
+      // 🔔 SEND NOTIFICATION TO COLLEGE ON REJECT
       if (response.data.applicantType === "college") {
         try {
           const companyResult = await getEmployerService(req.user);
@@ -1041,6 +1156,41 @@ export async function rejectApplicant(req, res) {
         
         } catch (err) {
           console.error("Reject notification failed:", err);
+        }
+      }
+
+      // 🔔 SEND NOTIFICATION TO student/fresher ON REJECT
+      if (
+        response.data.applicantType === "student" ||
+        response.data.applicantType === "fresher"
+      ) {
+        try {
+          const companyResult = await getEmployerService(req.user);
+          if (!companyResult.success) return;
+        
+          const companyId = companyResult.data[0]._id;
+        
+          const companyProfile = await CompanyProfile.findById(companyId)
+            .select("companyDetails.companyName");
+        
+          const companyName =
+            companyProfile?.companyDetails?.companyName || "Company";
+        
+          const studentAuthId = await resolveStudentAuthId(
+            response.data.applicant
+          );
+        
+          if (!studentAuthId) return;
+        
+          notifyOnApplicationStatusChange({
+            recipientId: studentAuthId,
+            senderId: req.user._id,
+            companyName,
+            status: "Rejected",
+            applicationId: response.data._id
+          });
+        } catch (err) {
+          console.error("Student reject notification failed:", err);
         }
       }
 
@@ -1252,6 +1402,38 @@ export async function acceptApplicant(req, res) {
         actorAuthId
       });
     }
+
+    // 👉 CASE 3: Student / Fresher is applicant → Company accepted them
+    if (
+      application.applicantType === "student" ||
+      application.applicantType === "fresher"
+    ) {
+      try {
+        const studentAuthId = await resolveStudentAuthId(application.applicant);
+        if (!studentAuthId) return;
+      
+        let companyName = "Company";
+      
+        const companyProfile = await CompanyProfile.findOne({
+          userId: actorAuthId
+        }).select("companyDetails.companyName");
+      
+        if (companyProfile?.companyDetails?.companyName) {
+          companyName = companyProfile.companyDetails.companyName;
+        }
+      
+        notifyOnApplicationStatusChange({
+          recipientId: studentAuthId,
+          senderId: actorAuthId,
+          companyName,
+          status: "Accepted",
+          applicationId: application._id
+        });
+      } catch (err) {
+        console.error("Accept → Student notification failed:", err);
+      }
+    }
+
 
     return res.status(200).json(response);
 

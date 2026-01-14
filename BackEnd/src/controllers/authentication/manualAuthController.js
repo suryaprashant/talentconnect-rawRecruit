@@ -56,7 +56,7 @@ export const signup = async (req, res) => {
 };
 
 export const sendSignupOtp = async (req, res) => {
-    try {
+    try {  
         const { email } = req.body;
 
         const response = await sendSignupOtpService({ email });
