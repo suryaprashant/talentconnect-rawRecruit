@@ -70,18 +70,24 @@ const JobDetailPage = () => {
   const [error, setError] = useState(null);
 
   const loadJobDetail = async () => {
-    try {
-      const response = await getCompanyPostingForOncampusDetail(id);
+  try {
+    const response = await getCompanyPostingForOncampusDetail(id);
+    
+    // Check if response and response.data exist before using them
+    if (response && response.data) {
       setJob(response.data);
-      await viewed(response.data._id);
+      // Use optional chaining (?.) to prevent crashes
+      await viewed(response.data?._id);
       setError(null);
-    } catch (error) {
-      console.error("Error loading job detail: ", error);
-      setError("Failed to load job details. Please try again later.");
-      setJob(null);
+    } else {
+      setError("Job details not found.");
     }
-  };
-
+  } catch (error) {
+    console.error("Error loading job detail: ", error);
+    setError("Failed to load job details. Please try again later.");
+    setJob(null); // Clear previous job state on error
+  }
+};
   useEffect(() => {
     loadJobDetail();
   }, [id]);
@@ -185,7 +191,7 @@ const jobStatus = getJobStatus();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+     <main className="px-6 py-6">
         <button onClick={() => handleGoBack()} className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />

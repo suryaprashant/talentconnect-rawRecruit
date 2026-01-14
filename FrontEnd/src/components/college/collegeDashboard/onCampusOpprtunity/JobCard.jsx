@@ -408,7 +408,7 @@ const JobCard = ({ job }) => {
         </div>
 
         <Link
-          to={`/college-dashboard/On-campus/${job._id || job.id}`}
+        to={`/college-dashboard/On-campus/${job._id || job.id}`}
           className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
         >
           Details

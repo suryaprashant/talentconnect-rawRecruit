@@ -256,8 +256,9 @@ import BlankLayout from "./components/layout/BlankLayout";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage" ;
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage" ;
 import StudentResumePreview from "./pages/students/StudentResumePreview";
-
-
+import OnCampusLayout from "@/components/college/collegeDashboard/onCampusOpprtunity/OnCampusLayout";
+//import JobDetailPage from "@/components/college/collegeDashboard/onCampusOpprtunity/JobDetailPage";
+import PoolCampusLayout from "./components/college/collegeDashboard/poolCampusOpportunity/PoolCampusLayout";
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -593,14 +594,29 @@ function AppRoutes() {
               {/* college Dashboard  */}
               <Route path="/college/saved-jobs/*" element={<JobRoutes />} />
 
-              <Route path="/college-dashboard/On-campus" element={<JobsListingPage />} />
-              <Route path="/college-dashboard/On-campus/:id" element={<JobDetailPage />} />
+              {/* College Dashboard Routes */}
+              <Route path="/college-dashboard/On-campus">
+                {/* Full Page: No ID in URL */}
+                <Route index element={<JobsListingPage />} />
+
+                {/* Split View: ID exists in URL */}
+                <Route path=":id" element={<OnCampusLayout />}>
+                  <Route index element={<JobDetailPage />} />
+                </Route>
+              </Route>
 
               <Route path="/college-dashboard/Internship" element={<InternJobsListingPage />} />
               <Route path="/college-dashboard/Internship/:id" element={<InternJobDetailPage />} />
 
-              <Route path="/college-dashboard/Pool-campus" element={<PoolJobListingPage />} />
-              <Route path="/college-dashboard/Pool-campus/:id" element={<PoolJobDetailsPage />} />
+              {/* <Route path="/college-dashboard/Pool-campus" element={<PoolJobListingPage />} />
+              <Route path="/college-dashboard/Pool-campus/:id" element={<PoolJobDetailsPage />} /> */}
+
+              <Route path="/college-dashboard/Pool-campus">
+              <Route index element={<PoolJobListingPage />} />
+              <Route path=":id" element={<PoolCampusLayout />}>
+                <Route index element={<PoolJobDetailsPage />} />
+              </Route>
+            </Route>
 
               {/* service request  */}
               <Route path='service-request/campus-placement' element={<CampusPlacement />} />

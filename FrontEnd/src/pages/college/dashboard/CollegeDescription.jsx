@@ -19,6 +19,8 @@ export default function CollegeDescription({ onboardingData }) {
     return services && services.length > 0 ? services.join(', ') : 'Not Set';
   };
 
+  console.log('okokok',collegeUniversityDetails)
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
       {/* Pastel blur background elements */}
@@ -93,6 +95,16 @@ export default function CollegeDescription({ onboardingData }) {
                       new Date(collegeUniversityDetails.establishedYear).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Not Set'}
                   </div>
                 </div>
+
+                <div className="flex items-center justify-between p-3 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-100">
+                <div className="text-sm font-semibold text-gray-700">
+                  Affiliated University :
+                </div>
+                <div className="text-sm text-gray-900">
+                  {collegeUniversityDetails.affiliatedUniversity || 'Not Set'}
+                </div>
+              </div>
+
 
                 <div className="flex items-center justify-between p-3 bg-white/50 backdrop-blur-sm rounded-xl border border-gray-100">
                   <div className="text-sm font-semibold text-gray-700">College Website URL :</div>
