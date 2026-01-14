@@ -1012,7 +1012,7 @@ const handleRemoveRound = (id) => {
     const collegeTypeOptions = ['Engineering', 'Medical', 'Management', 'Arts & Science', 'Law', 'Pharmacy', 'Architecture'];
     const workModeOptions = ['On-site', 'Remote', 'Hybrid'];
     const branchOptions = ['Computer Science', 'Mechanical', 'Civil', 'Electrical', 'Electronics', 'Bio-medical'];
-    const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
+    const designationOptions = ['Professor', 'HOD', 'Placement Officer', 'Dean', 'Coordinator'];
     const minStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '200+'];
     const amenitiesOptions = ['Auditorium', 'Seminar Hall', 'Interview Rooms', 'Computer Labs', 'Wi-Fi Access', 'Projector'];
     const companyTypeOptions = ["MNC", "Startup", "SME", "Public Sector"];
@@ -1772,7 +1772,7 @@ const handleRemoveRound = (id) => {
                         {/* Row 6: Contact Designation and Email */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             {/* Designation */}
-                            {/* <div>
+                            <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                     <User className="w-4 h-4 text-[#3b82f6]" />
                                     Designation <span className="text-red-500">*</span>
@@ -1793,7 +1793,7 @@ const handleRemoveRound = (id) => {
                                         <p className="mt-1 text-xs text-red-600">{errors.contactPersonDesignation}</p>
                                     )}
                                 </div>
-                            </div> */}
+                            </div>
 
                             {/* Contact Email */}
                             <div>
