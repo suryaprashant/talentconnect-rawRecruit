@@ -41,7 +41,7 @@ function OffCampusJobDetail() {
   }, [jobId]);
 
   const handleBackToList = () => {
-    window.history.back();
+    navigate('/student-dashboard/Off-campus');
   };
 
   const handleApply = async () => {
@@ -318,7 +318,7 @@ function OffCampusJobDetail() {
         {/* Compensation & Benefits */}
         <section className="mb-8">
           <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-            Compensation & Benefits
+            Compensation & Benefits 
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg border border-gray-200">
