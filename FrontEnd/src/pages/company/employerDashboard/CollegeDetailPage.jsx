@@ -114,7 +114,7 @@ const CollegeDetailPage = () => {
   }, [posting]);
 
   const handleBack = () => {
-    navigate(-1);
+    navigate('/company-dashboard/On-campus');
   };
 
   const handleShare = () => {
@@ -541,7 +541,7 @@ const CollegeDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
-      <div className="container mx-auto px-4 py-8 pt-22">
+      <div className="px-6 py-6">
         {/* Main Container */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
           {/* Back Button */}
@@ -735,7 +735,9 @@ const CollegeDetailPage = () => {
 
           {/* Contact Information */}
           <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-6 mb-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Point of Contact - Campus Placement</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Point of Contact - Campus Placement 
+
+            </h3>
             <div className="space-y-4">
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg">

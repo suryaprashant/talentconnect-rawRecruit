@@ -6,7 +6,7 @@ import CreatableSelect from 'react-select/creatable';
 import { useMemo } from 'react';
 import { City } from 'country-state-city';
 
-const PoolEmployeeListing = () => {
+const PoolEmployeeListing = ({ compact = false }) => {
     const [postings, setPostings] = useState([]);
     const [filteredPostings, setFilteredPostings] = useState([]);
     const [filters, setFilters] = useState({
@@ -333,6 +333,21 @@ const PoolEmployeeListing = () => {
             </div>
         );
     }
+    if (compact) {
+        return (
+            <div className="p-3 space-y-4">
+                {filteredPostings.length > 0 ? (
+                    filteredPostings.map(posting => (
+                        <div key={posting._id || posting.id} className="w-full">
+                            <PoolCollegeCard college={posting} />
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-center text-gray-500 py-10">No postings found</p>
+                )}
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
@@ -350,7 +365,7 @@ const PoolEmployeeListing = () => {
                                 </h1>
                             </div>
                             <p className="text-gray-600">
-                                Explore pool-campus drives posted by various colleges.
+                                Explore pool-campus drives posted by various colleges. 
                             </p>
                         </div>
                         <div className="flex items-center gap-3">

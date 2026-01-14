@@ -6,7 +6,7 @@ import CreatableSelect from 'react-select/creatable';
 import { useMemo } from 'react';
 import { City } from 'country-state-city';
 
-const CollegeListingPage = () => {
+const CollegeListingPage = ({ compact = false }) => {
   const [colleges, setColleges] = useState([]);
   const [filteredColleges, setFilteredColleges] = useState([]);
   const [filters, setFilters] = useState({
@@ -335,6 +335,21 @@ const CollegeListingPage = () => {
     );
   }
 
+   if (compact) {
+    return (
+      <div className="p-3 space-y-4">
+        {filteredColleges.length > 0 ? (
+          filteredColleges.map((college) => (
+            <div key={college._id || college.id} className="w-full">
+               <CollegeCard college={college} />
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-500 py-10">No colleges found</p>
+        )}
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       <div className="container mx-auto px-4 py-8 pt-22">
@@ -351,7 +366,7 @@ const CollegeListingPage = () => {
                 </h1>
               </div>
               <p className="text-gray-600">
-                Discover and connect with colleges posting for on-campus opportunities
+                Discover and connect with colleges posting for on-campus opportunities 
               </p>
             </div>
             <div className="flex items-center gap-3">
