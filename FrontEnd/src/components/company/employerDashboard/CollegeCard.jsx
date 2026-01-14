@@ -332,7 +332,7 @@ const CollegeCard = ({ college }) => {
           to={`/company-dashboard/On-campus/${college._id || college.id}`}
           className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
         >
-          Contact
+          Contact 
         </Link>
 
       </div>

@@ -104,7 +104,7 @@ const PoolCampusEmployeeDash = () => {
   }, [id]);
 
   const handleBack = () => {
-    navigate(-1);
+    navigate('/company-dashboard/pool-campus');
   };
 
   const handleSave = async (jobId) => {
@@ -623,7 +623,7 @@ const PoolCampusEmployeeDash = () => {
           {/* About This Opportunity */}
           <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-6 mb-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-4">
-              About This Opportunity
+              About This Opportunity 
             </h3>
 
             {posting.description ? (

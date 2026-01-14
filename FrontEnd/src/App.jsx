@@ -259,6 +259,10 @@ import StudentResumePreview from "./pages/students/StudentResumePreview";
 import OnCampusLayout from "@/components/college/collegeDashboard/onCampusOpprtunity/OnCampusLayout";
 //import JobDetailPage from "@/components/college/collegeDashboard/onCampusOpprtunity/JobDetailPage";
 import PoolCampusLayout from "./components/college/collegeDashboard/poolCampusOpportunity/PoolCampusLayout";
+import CompanyOnCampusLayout from "./components/company/CompanyOnCampusLayout";
+import CollegeDetailPage from "./pages/company/employerDashboard/CollegeDetailPage";
+import CompanyPoolCampusLayout from "./components/company/CompanyPoolCampusLayout";
+
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -449,10 +453,29 @@ function AppRoutes() {
               <Route path="/company-dashboard/resume-search" element={<ResumeApp />} />
               <Route path="/interviews" element={<InterviewScheduler />} />
 
-              <Route path="/company-dashboard/On-campus" element={<CollegeListingPage />} />
-              <Route path="/company-dashboard/On-campus/:id" element={<CollegeDetailsPage />} />
-              <Route path="/company-dashboard/pool-campus" element={<PoolEmployeeListing />} />
-              <Route path="/company-dashboard/pool-campus/:id" element={<PoolCampusEmployeeDash />} />
+              {/* Find your Company On-campus routes and update them to this: */}
+              <Route path="/company-dashboard/On-campus">
+                {/* The full-screen gallery view (Initial state) */}
+                <Route index element={<CollegeListingPage />} />
+
+                {/* The split-view: activated when an ID is present in the URL */}
+                <Route path=":id" element={<CompanyOnCampusLayout />}>
+                  <Route index element={<CollegeDetailPage />} />
+                </Route>
+              </Route>
+
+
+
+              <Route path="/company-dashboard/pool-campus">
+                {/* The main full-screen list */}
+                <Route index element={<PoolEmployeeListing />} />
+
+                {/* The split-view: activated when an ID exists in the URL */}
+                <Route path=":id" element={<CompanyPoolCampusLayout />}>
+                  <Route index element={<PoolCampusEmployeeDash />} />
+                </Route>
+              </Route>
+
               <Route path="/company-dashboard/Off-campus/:jobId" element={<OffCampusJobDetail />} />
               <Route path="/company-dashboard/Job-listing/:jobId" element={<JobDetails />} />
               <Route path="/company-dashboard/Internship/:jobId" element={<InternJobDetails />} />
