@@ -262,6 +262,8 @@ import PoolCampusLayout from "./components/college/collegeDashboard/poolCampusOp
 import CompanyOnCampusLayout from "./components/company/CompanyOnCampusLayout";
 import CollegeDetailPage from "./pages/company/employerDashboard/CollegeDetailPage";
 import CompanyPoolCampusLayout from "./components/company/CompanyPoolCampusLayout";
+import OffCampusJobs from "./pages/students/studentDashboard/offCampusListing/offCampusJobListing";
+import OffCampusLayout from "./components/student/studentDashboard/offCampusListing/OffCampusLayout";
 
 // Create query client
 const queryClient = new QueryClient();
@@ -353,8 +355,21 @@ function AppRoutes() {
               <Route path="/student-dashboard/Job-listing/:jobId" element={<JobDetails />} />
               <Route path="/student-dashboard/Internship" element={<InternJobListings />} />
               <Route path="/student-dashboard/Internship/:jobId" element={<InternJobDetails />} />
-              <Route path="/student-dashboard/Off-campus" element={<OffCampusJobListings />} />
-              <Route path="/student-dashboard/Off-campus/:jobId" element={<OffCampusJobDetail />} />
+
+              
+
+
+
+<Route path="/student-dashboard/Off-campus">
+  {/* The main full-screen list view */}
+  <Route index element={<OffCampusJobs />} />
+
+  {/* The split-view: layout wraps the detail page */}
+  <Route path=":jobId" element={<OffCampusLayout />}>
+    <Route index element={<OffCampusJobDetail />} />
+  </Route>
+</Route>
+
               <Route path="/student-dashboard/hackathon" element={<Hackathon />} />
               <Route path="/student-dashboard/hackathon/:id" element={<Detail />} />
               <Route path="/student-dashboard/hackathon/register/:event_ID" element={<HackathonRegistration />} />

@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp, X, Filter, MapPin, Search, Briefcase, Calendar,
 import JobCard from '@/components/student/studentDashboard/offCampusListing/JobCard';
 import { getRelaventOffcampusOpportunity } from '@/lib/User_AxiosInstance';
 
-function OffCampusJobs() {
+function OffCampusJobs({ compact = false }) {
   const [offCampusJobs, setOffCampusJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [filters, setFilters] = useState({
@@ -382,7 +382,22 @@ function OffCampusJobs() {
       </div>
     );
   }
-
+if (compact) {
+        return (
+            <div className="p-3 space-y-4">
+                {filteredJobs.length > 0 ? (
+                    filteredJobs.map(job => (
+                        <div key={job._id} className="w-full">
+                            {/* Reuse your existing JobCard */}
+                            <JobCard job={job} />
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-center text-gray-500 py-10">No jobs found</p>
+                )}
+            </div>
+        );
+    }
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       {/* Pastel blur background elements */}
