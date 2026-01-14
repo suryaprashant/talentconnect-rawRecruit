@@ -24,6 +24,7 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
       const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/upload/resume`, {
         method: 'POST',
         body: data,
+        credentials: "include",
       });
 
       if (!response.ok) {

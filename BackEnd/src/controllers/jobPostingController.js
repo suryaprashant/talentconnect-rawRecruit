@@ -5,7 +5,7 @@ import OnboardingModel from "../models/studentonboardingModel.js";
 import { getCompanyService } from "../services/companyService.js";
 import { getCollegeService } from "../services/collegeService.js";
 import { getStudentService } from "../services/studentService.js";
-import { notifyCollegesOnOnCampusJob, notifyCompaniesOnCollegeJobRequest } from "../services/notificationService.js";
+import { notifyCollegesOnOnCampusJob, notifyCompaniesOnCollegeJobRequest, notifyUsersOnJobPost } from "../services/notificationService.js";
 
 
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
@@ -34,6 +34,17 @@ export const createOffCampusJobPosting = async (req, res) => {
         if (!newPosting) {
             return sendError(res, 500, "Failed to create job posting");
         }
+
+        await notifyUsersOnJobPost({
+            companyId: userId,
+            companyName: companyPostedId.data[0].companyDetails.companyName,
+            jobTitle: newPosting.jobTitle || req.body.jobTitle || "new job",
+            jobId: newPosting._id,
+            jobType: newPosting.jobType,
+        }).catch(err => {
+          console.error("Notification Error:", err.message);
+        });
+        
         sendResponse(res, 201, { message: "Off-campus posting created successfully!", data: newPosting });
     }
     catch (error) {

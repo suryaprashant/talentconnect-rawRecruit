@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPinIcon, HeartIcon } from "@heroicons/react/24/outline";
+import { MapPin, User, Banknote, Heart, Briefcase, Calendar } from 'lucide-react';
+import { SaveOppurtunity } from '@/lib/Company_AxiosInstance';
+import  toast  from 'react-hot-toast';
 
 const pastelColors = [
   // Purple/Indigo gradient variants (primary theme colors)
@@ -83,6 +85,28 @@ const JobCard = ({ job }) => {
 
   const stableColor = getStableColor(job._id || companyName);
 
+  const handleSave = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  
+    try {
+      const response = await SaveOppurtunity(
+        job._id,        // ✅ jobId
+        job.jobType     // ✅ jobType = "Pool-campus"
+      );
+  
+      if (response?.data?.success === true) {
+        setIsSaved(true);
+        toast.success("Saved");
+      } else {
+        toast.error(response?.response?.data?.msg || "Unable to save");
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+      toast.error("Something went wrong!");
+    }
+  };
+
   return (
     <div className="
       w-full max-w-[350px] min-h-[430px] mx-auto rounded-2xl 
@@ -100,14 +124,12 @@ const JobCard = ({ job }) => {
           </span>
 
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              setIsSaved(!isSaved);
-            }}
+            onClick={handleSave}
             className="bg-white p-2 rounded-full shadow"
           >
-            <HeartIcon
-              className={`h-5 w-5 ${isSaved ? "text-red-500" : "text-gray-600"}`}
+            <Heart
+              className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
+              fill={isSaved ? "currentColor" : "none"}
             />
           </button>
         </div>
@@ -180,7 +202,7 @@ const JobCard = ({ job }) => {
           </p>
 
           <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
-            <MapPinIcon className="h-4 w-4 text-gray-500" />
+            <MapPin className="h-4 w-4 text-gray-500" />
             <span className="line-clamp-1 max-w-[120px]">
               {Array.isArray(job.location)
                 ? job.location.join(", ")
