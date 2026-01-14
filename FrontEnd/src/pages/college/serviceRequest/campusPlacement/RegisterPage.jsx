@@ -925,7 +925,7 @@ export default function RegisterPage({ onBackClick }) {
 
                         {/* Row 6: Coordinator Designation and Email */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* <div>
+                            <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                     <User className="w-4 h-4 text-[#3b82f6]" />
                                     Designation <span className="text-red-500">*</span>
@@ -945,7 +945,7 @@ export default function RegisterPage({ onBackClick }) {
                                         <p className="mt-1 text-xs text-red-600">{errors.coordinatorDesignation}</p>
                                     )}
                                 </div>
-                            </div> */}
+                            </div>
 
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
