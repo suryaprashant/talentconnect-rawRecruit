@@ -613,7 +613,7 @@ function FresherDashboard() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Upcoming Interviews</h2>
               <button
-                onClick={() => navigate('/interviews')}
+                onClick={() => navigate('/fresher-interviews')}
                 className="text-sm text-[#667eea] hover:text-[#764ba2] font-medium"
               >
                 View All →
@@ -749,7 +749,7 @@ function FresherDashboard() {
               variant="outline"
               size="md"
               className="border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
-              onClick={() => navigate('/interviews')}
+              onClick={() => navigate('/fresher-interviews')}
             >
               Schedule Interview
             </Button>

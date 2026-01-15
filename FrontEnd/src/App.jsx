@@ -381,6 +381,7 @@ function AppRoutes() {
               <Route path="/student-events/casestudy" element={<EventList event_name="casestudy" />} />
               <Route path="/student-events/:event_name/:id" element={<EventDetail />} />
               <Route path="/student-events/:event_name/register/:event_ID" element={<EventRegistration />} />
+              <Route path="/student-interviews" element={<InterviewScheduler />} />
               {/* service request  */}
               <Route path='service-request/career-craft' element={<CareerCraft />} />
               <Route path='service-request/mock-interview' element={<MockInterview />} />
@@ -428,6 +429,7 @@ function AppRoutes() {
               <Route path="/fresher-events/:event_name/:id" element={<EventDetail />} />
               <Route path="/fresher-events/:event_name/:EventId/:regId" element={<EventDetail />} />
               <Route path="/fresher-events/:event_name/register/:event_ID" element={<EventRegistration />} />
+              <Route path="/fresher-interviews" element={<InterviewScheduler />} />
               {/* service request  */}
               <Route path='/fresher-dashboard/service-request/career-craft' element={<FresherCareerCraft />} />
               <Route path='/fresher-dashboard/service-request/mock-interview' element={<FresherMockInterview />} />
