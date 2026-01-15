@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { acceptCandidate, getApplicationsForJob, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
+import { acceptCandidate, getApplicationsForJob, rejectCandidate, shortlistCandidate,getCollegeApplicationsForJob } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 import useConversation from '@/statemanage/useConversation';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
+
+
 import { 
   Calendar, 
   MapPin, 
@@ -166,17 +168,21 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
 
-  const getApplicants = async (jobId, jobType, isVisited) => {
+  const getApplicants = async (targetId, targetType, targetVisited) => {
     setLoading(true);
     setError(null);
     try {
-      let response;
-      if (isVisited === false) {
-        response = await getApplicationsForJob(jobId, jobType, "Applied", isVisited);
-      } else {
-        response = await getApplicationsForJob(jobId, jobType, "Applied");
-      }
+     const response = await getCollegeApplicationsForJob(
+       targetId, 
+        targetType, 
+        "Applied", 
+        targetVisited
+      );
       setApplications(response.data || []);
+      // tell the backend to mark them all as visited now.
+        if (targetVisited === "true" && response.data?.length > 0) {
+            await markApplicationsVisited(targetId, targetType, "Applied");
+        }
     } catch (error) {
       console.log("Error: ", error);
       setError('Failed to load applicants');
@@ -186,14 +192,14 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
       setIsSubmitting(false);
     }
   };
-
+const refreshList = () => getApplicants(jobId, jobType, isVisited);
   const acceptApplicant = async (applicationId) => {
     setIsSubmitting(true);
     try {
       const response = await acceptCandidate(applicationId, job?.jobRoles);
       if (response?.data?.success === true) {
         toast.success("Candidate Accepted!");
-        getApplicants(jobId, jobType, isVisited);
+        refreshList();
       } else {
         toast.error(response.response?.data?.msg || 'Failed to accept candidate');
       }
@@ -242,12 +248,10 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
   };
 
   useEffect(() => {
-    if (isVisited === false) {
-      getApplicants(jobId, jobType, false);
-    } else {
-      getApplicants(jobId, jobType);
+    if (jobId) {
+      getApplicants(jobId, jobType, isVisited);
     }
-  }, [jobId]);
+  }, [jobId,isVisited]);
 // downloads directly
 
 //   const handleViewResume = async (applicant) => {
