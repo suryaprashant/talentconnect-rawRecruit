@@ -1648,6 +1648,26 @@ export async function scheduleInterview(req, res) {
   collegeAuthId: applicantAuthId,
 });
 
+  // 🔹 Applicant snapshot (for display purpose only)
+  let applicantSnapshot = {};
+
+  if (applicantType === "college") {
+    // College → use coordinator info
+    applicantSnapshot = {
+      name: coordinator?.name || "",
+      designation: coordinator?.designation || "",
+      collegeName: coordinator?.collegeName || "",
+      profileType: "college",
+    };
+  } else {
+    // Student / Fresher / Professional
+    applicantSnapshot = {
+      name: req.body?.applicantName || "",        // frontend will pass this
+      collegeName: req.body?.applicantCollege || "",
+      profileType: applicantType,
+    };
+  }
+
 
     // 1️⃣ SAVE INTERVIEW (SOURCE OF TRUTH)
     const interview = await InterviewSchedule.create({
@@ -1658,6 +1678,7 @@ export async function scheduleInterview(req, res) {
       applicantType,
       applicantAuthId,
       applicantProfileId: applicantId,
+      applicantSnapshot,
       coordinator: coordinatorSnapshot,
       companySnapshot: {
         companyName,

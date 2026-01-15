@@ -204,7 +204,7 @@ export function acceptCandidate(applicationId, jobRole) {
     .catch((error) => error);
 }*/}
 
-export function scheduleInterview(payload) {
+{/*export function scheduleInterview(payload) {
   return axiosClient.post("/application/manage/schedule", {
     applicationId: payload.applicationId,
     jobId: payload.jobId,
@@ -229,7 +229,34 @@ export function scheduleInterview(payload) {
       message: payload.message,
     },
   });
+}}*/}
+
+export function scheduleInterview(payload) {
+  return axiosClient.post("/application/manage/schedule", {
+    applicationId: payload.applicationId,
+    jobId: payload.jobId,
+    jobType: payload.jobType,
+
+    applicantId: payload.applicantId,
+    applicantAuthId: payload.applicantAuthId,
+    applicantType: payload.applicantType,
+
+    applicantName: payload.applicantName,
+    applicantCollege: payload.applicantCollege,
+
+    jobRole: payload.jobRole || [],
+
+    coordinator: payload.coordinator || {},
+
+    data: {
+      date: payload.data.date,
+      time: payload.data.time,
+      meetLink: payload.data.meetLink,
+      message: payload.data.message,
+    },
+  });
 }
+
 
 
 

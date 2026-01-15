@@ -15,6 +15,10 @@ const InterviewSchedulerPopup = ({ setToggleScheduleInterviewPopup, application,
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
+  const applicantType =
+  application?.applicant?.profileType ||  // student / fresher (off-campus)
+  application?.applicantType;   
+
   const handleSubmit = async (e) => {
   e.preventDefault();
 
@@ -26,21 +30,35 @@ const InterviewSchedulerPopup = ({ setToggleScheduleInterviewPopup, application,
 
       applicantId: application.applicant._id,
       applicantAuthId: application.applicant.userId,
-      applicantType: "college",
+      applicantType, // ✅ dynamic
+
+      // ✅ USED FOR applicantSnapshot (student/fresher)
+      applicantName: application.applicant.name || "",
+      applicantCollege: application.applicant.college || "",
 
       jobRole: job.jobRoles || [],
 
-      coordinator: {
-        name: application.applicant.placementCoordinatorDetails?.coordinatorName,
-        designation: application.applicant.placementCoordinatorDetails?.designation,
-        collegeName: application.applicant.collegeUniversityDetails?.collegeName,
+      coordinator:
+        applicantType === "college"
+          ? {
+              name:
+                application.applicant.placementCoordinatorDetails?.coordinatorName || "",
+              designation:
+                application.applicant.placementCoordinatorDetails?.designation || "",
+              collegeName:
+                application.applicant.collegeUniversityDetails?.collegeName || "",
+            }
+          : {},
+          
+      data: {
+        date: form.date,
+        time: form.time,
+        meetLink: form.meetLink,
+        message: form.message,
       },
+  };
 
-      date: form.date,
-      time: form.time,
-      meetLink: form.meetLink,
-      message: form.message,
-    };
+  console.log("📦 FINAL PAYLOAD:", payload);
 
     const response = await scheduleInterview(payload);
 

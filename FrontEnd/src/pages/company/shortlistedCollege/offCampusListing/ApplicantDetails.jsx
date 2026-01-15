@@ -168,6 +168,8 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
   };
 
   const handleScheduleInterview = (applicant) => {
+    
+
     setSelectedApplicant(applicant);
     setToggleScheduleInterviewPopup(true);
   };
@@ -520,15 +522,14 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
       </div>
 
       {/* Interview Scheduler Popup */}
-      {toggleScheduleInterviewPopup && selectedApplicant && (
+      {toggleScheduleInterviewPopup && selectedApplicant && job && (
         <InterviewSchedulerPopup
           setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
-          applicantId={selectedApplicant.applicant._id}
-          applicantType={selectedApplicant.applicant.profileType}
-          jobRole={job?.jobRoles[0]}
-          applicantName={selectedApplicant.applicant.name}
+          application={selectedApplicant}
+          job={job}
         />
       )}
+
     </div>
   );
 };

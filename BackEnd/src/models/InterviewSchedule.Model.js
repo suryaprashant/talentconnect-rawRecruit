@@ -37,6 +37,13 @@ const interviewScheduleSchema = new mongoose.Schema(
       ref: "Auth",
       required: true,
     },
+    applicantSnapshot: {
+      name: String,
+      collegeName: String,
+      designation: String,
+      profileType: String,
+    },
+
 
     applicantProfileId: {
       type: mongoose.Schema.Types.ObjectId,
