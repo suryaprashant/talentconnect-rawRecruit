@@ -193,6 +193,7 @@ export const sendSignupOtpService = async ({ email }) => {
     { upsert: true, new: true, setDefaultsOnInsert: true }  
   );
   await sendOtpEmail(email, otpCode);
+  //console.log("OTP (DEV ONLY):", otpCode);
 
   return { success: true, msg: "OTP sent successfully" };
 }

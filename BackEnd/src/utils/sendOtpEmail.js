@@ -1,6 +1,6 @@
 import sgMail from "@sendgrid/mail";
 import dotenv from 'dotenv';
-dotenv.config();
+
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -9,7 +9,7 @@ const sender = process.env.SENDGRID_SENDER || "no-reply@yourdomain.com";
 export const sendOtpEmail = async (to, otp) => {
   const msg = {
     to,
-    from: `Rawrecruit Security <${sender}>`,
+    from: sender,
     subject: "Your One-time Verification Code",
     html: `
       <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
