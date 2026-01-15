@@ -8,6 +8,7 @@ import ApplicantDetails from './ApplicantDetails';
 import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
 import { Link, useNavigate } from 'react-router-dom';
 
+
 export default function OffCampusJobManagement() {
   // State variables
   const [jobs, setJobs] = useState();
@@ -76,20 +77,30 @@ export default function OffCampusJobManagement() {
     setCurrentPage(pageNumber);
   };
 
-  const handleView = (job) => {
+const handleView = async (job) => {
+  try {
+    // 1. Mark as read on the backend first
+    await markApplicationsVisited(job._id, "Off-campus", "Applied");
+    
+    // 2. Refresh dashboard to update counts
+    await fetchJobs(); 
+    
+    // 3. Open details and show everyone (isVisited="false" means "do not filter by unvisited")
     setSelectedJob(job);
+    setIsVisited("false"); 
     setShowJobDetail(true);
-  };
-
-  const showNewApplication = async (job) => {
-    try {
-      setSelectedJob(job);
-      setShowJobDetail(true);
-      setIsVisited(false);
-    } catch (error) {
-      console.log(error);
-    }
+  } catch (error) {
+    setSelectedJob(job);
+    setIsVisited("false");
+    setShowJobDetail(true);
   }
+};
+
+const showNewApplication = (job) => {
+  setSelectedJob(job);
+  setIsVisited("true"); // Show ONLY unvisited
+  setShowJobDetail(true);
+};
 
   const handleEdit = (jobId) => {
     console.log(`Edit job with ID: ${jobId}`);
@@ -126,6 +137,7 @@ export default function OffCampusJobManagement() {
   const onClose = () => {
     setShowJobDetail(false);
     setIsVisited('');
+    fetchJobs();
   }
 
   // If showing job detail, render the detail view
@@ -319,7 +331,7 @@ export default function OffCampusJobManagement() {
                     {/* Applications */}
                     <div 
                       className="col-span-1 text-center cursor-pointer group"
-                      onClick={() => showNewApplication(job)}
+                      onClick={() => handleView(job)}
                     >
                       <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
                         {job?.applicationCount || 0}
@@ -330,11 +342,12 @@ export default function OffCampusJobManagement() {
                     <div className="col-span-3">
                       <div className="flex items-center justify-center gap-2">
                         <button
-                          onClick={() => handleView(job)}
+                          onClick={() =>showNewApplication(job)}
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
                           title="View Job"
                         >
                           <Eye size={16} />
+                          
                         </button>
                         {/* <button
                           onClick={() => handleEdit(job._id)}
