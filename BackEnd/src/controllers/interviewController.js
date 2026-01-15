@@ -1,6 +1,6 @@
 import InterviewSchedule from "../models/InterviewSchedule.Model.js";
 
-export const getInterviews = async (req, res) => {
+{/*export const getInterviews = async (req, res) => {
   try {
     const authId = req.user._id;
     const userType = req.user.userType;
@@ -28,7 +28,60 @@ export const getInterviews = async (req, res) => {
     console.error("getInterviews error:", error);
     return res.status(500).json({ success: false });
   }
+};*/}
+
+export const getInterviews = async (req, res) => {
+  try {
+    const authId = req.user._id;
+    const userType = req.user.userType;
+
+    let query = {};
+
+    /**
+     * WHO CAN SEE WHICH INTERVIEWS
+     */
+
+    // 🏢 Company / Employer → interviews THEY scheduled
+    if (userType === "company" || userType === "employer") {
+      query.companyAuthId = authId;
+    }
+
+    // 🎓 College → interviews scheduled WITH that college
+    else if (userType === "college") {
+      query.applicantAuthId = authId;
+      query.applicantType = "college";
+    }
+
+    // 👨‍🎓 Student / Fresher / Professional → only THEIR interviews
+    else if (
+      userType === "student" ||
+      userType === "fresher" ||
+      userType === "professional"
+    ) {
+      query.applicantAuthId = authId;
+      query.applicantType = userType;
+    }
+
+    /**
+     * FETCH INTERVIEWS
+     */
+    const interviews = await InterviewSchedule
+      .find(query)
+      .populate("jobId", "jobType title companyName") // safe
+      .sort({ date: 1, time: 1 }); // upcoming first
+
+    return res.status(200).json({
+      success: true,
+      data: interviews,
+    });
+
+  } catch (error) {
+    console.error("getInterviews error:", error);
+    return res.status(500).json({ success: false });
+  }
 };
+
+
 
 export async function getCompanyInterviews(req, res) {
   try {
