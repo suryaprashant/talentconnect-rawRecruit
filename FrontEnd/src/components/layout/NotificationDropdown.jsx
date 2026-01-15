@@ -34,12 +34,20 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
         "On-campus": "/college-dashboard/On-campus",
         "Pool-campus": "/college-dashboard/Pool-campus",
       },
+      student: {
+        "Off-campus": "/student-dashboard/Off-campus",
+      },
+      fresher: {
+        "Off-campus": "/fresher-dashboard/Off-campus",
+      }
     };
 
     const INTERVIEW_SCHEDULE_ROUTE_MAP = {
         college: "/college-interviews",
         employer: "/employer-interviews",
         company: "/interviews",
+        student: "/student-interviews",
+        fresher: "/fresher-interviews",
     }
 
 
