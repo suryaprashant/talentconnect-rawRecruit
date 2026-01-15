@@ -1,7 +1,19 @@
 import SidebarNavItem from './SidebarNavItem';
 import SidebarNavGroup from './SidebarNavGroup';
+import SidebarHelpModal from "@/components/ui/SidebarHelpModal";
+import  {sidebarHelpContent}  from "@/constants/sidebarHelpContent";
 
+import { useState } from "react";
 function CollegeSidebar({ activePath }) {
+  const [openHelp, setOpenHelp] = useState(false);
+ const [helpContent, setHelpContent] = useState(null);
+ const handleOpenHelp = (key) => {
+    const content = sidebarHelpContent[key];
+    if (content) {
+      setHelpContent(content);
+      setOpenHelp(true);
+    }
+  };
   return (
     <div className="h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white">
       <div className="flex-1 flex flex-col min-h-0">
@@ -17,8 +29,10 @@ function CollegeSidebar({ activePath }) {
             } 
             label="Home" 
             active={activePath === '/home'} 
+            onHelp={() => handleOpenHelp("home")}
+          
           />
-
+          
           {/* Saved Opportunities */}
           <SidebarNavItem 
             to="/college/saved-jobs" 
@@ -29,6 +43,7 @@ function CollegeSidebar({ activePath }) {
             } 
             label="Saved Opportunities" 
             active={activePath === '/college/saved-jobs'} 
+           onHelp={() => handleOpenHelp("saved")}
           />
 
           {/* College Dashboard */}
@@ -40,6 +55,8 @@ function CollegeSidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/college-dashboard')}
+            onHelp={() => handleOpenHelp("collegeDashboard")}
+          
           >
             <SidebarNavItem
               to="/college-dashboard/On-campus"
@@ -72,6 +89,7 @@ function CollegeSidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/service-request')}
+            onHelp={() => handleOpenHelp("serviceRequest")}
           >
             <SidebarNavItem
               to="/service-request/campus-placement"
@@ -137,6 +155,7 @@ function CollegeSidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/manage-application')}
+            onHelp={() => handleOpenHelp("manageApplication")}
           >
             <SidebarNavItem
               to="/manage-application/campus-placement"
@@ -170,6 +189,7 @@ function CollegeSidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/application-status')}
+            onHelp={() => handleOpenHelp("applicationStatus")}
           >
             <SidebarNavItem
               to="/application-status/oncampus"
@@ -202,6 +222,7 @@ function CollegeSidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/registered')}
+            onHelp={() => handleOpenHelp("registered")}
           >
             <SidebarNavItem
               to="/registered/on-campus-opportunities"
@@ -234,6 +255,7 @@ function CollegeSidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/accepted')}
+            onHelp={() => handleOpenHelp("accepted")}
           >
             <SidebarNavItem
               to="/accepted/on-campus-request"
@@ -267,9 +289,16 @@ function CollegeSidebar({ activePath }) {
             }
             label="Chats"
             active={activePath === '/chats'}
+            onHelp={() => handleOpenHelp("chats")}
           />
         </div>
       </div>
+      <SidebarHelpModal 
+        open={openHelp} 
+        onClose={() => setOpenHelp(false)} 
+        title={helpContent?.title} 
+        description={helpContent?.description}
+      />
     </div>
   );
 }
