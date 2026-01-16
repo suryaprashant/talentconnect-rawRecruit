@@ -14,6 +14,11 @@ axiosClient.defaults.timeout = 10000;
 // in case of tokens
 axiosClient.defaults.withCredentials = true;
 
+// Add this to your API library
+// lib/College_AxiosInstance.js
+// Inside your lib/College_AxiosInstance.js
+
+
 export function getCompanyPostingForOncampus() {
   return axiosClient.get(`/api/student-dashboard/on-campus/college`)
     .then(response => response)

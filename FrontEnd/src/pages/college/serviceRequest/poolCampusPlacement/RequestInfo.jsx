@@ -1962,7 +1962,7 @@ const handleRemoveRound = (id) => {
           <th className="px-2 py-1.5 text-left font-medium text-gray-500">Branch</th>
           <th className="px-2 py-1.5 text-left font-medium text-gray-500">Count</th>
           <th className="px-2 py-1.5 text-left font-medium text-gray-500">Skills (comma separated)</th>
-          <th className="px-2 py-1.5 text-left font-medium text-gray-500">Action</th>
+          <th className="px-2 py-1.5 text-left font-medium text-gray-500">Action </th>
         </tr>
       </thead>
       <tbody className="bg-white/30 divide-y divide-white/50">

@@ -160,7 +160,7 @@ export const createPoolCampusCollegeRequest = async (req, res) => {
         if (!collegePostedId) {
             return res.status(404).json({ error: "College profile not found" });
         }
-
+       
         const college = collegePostedId.data[0]; 
         const postingData = {
             ...req.body,

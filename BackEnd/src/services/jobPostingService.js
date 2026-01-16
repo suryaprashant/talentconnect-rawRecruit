@@ -81,7 +81,7 @@ export const createPostingService = async (postingData , authUserId) => {
             ...postingData,
             postedByUser: authUserId 
         };
-
+      
         const newPosting = new JobPostingTable(enhancedPostingData);
        
         const savedPosting = await newPosting.save();

@@ -726,7 +726,7 @@ const navigateWithParams = (jobId, targetStatus, isVisited) => {
                 Manage Pool-Campus Applications
               </h1>
               <p className="text-gray-600 text-lg md:text-xl max-w-2xl">
-                Track Your Pool Campus Drives and Streamline Applications
+                Track Your Pool Campus Drives and Streamline Applications 
               </p>
             </div>
           </div>
@@ -842,15 +842,14 @@ const navigateWithParams = (jobId, targetStatus, isVisited) => {
                     currentJobs.map(job => {
                       const jobId = job._id || job.id;
                       const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : 'N/A';
-                      const jobLocation = Array.isArray(job.location) ?
-                        job.location.join(', ') :
-                        job.location || 'N/A';
+                      const jobLocation = job.venue
+                       
                       const jobStatus = job.jobStatus || 'Unknown';
                       const targetStatus = jobStatus; // Using jobStatus as targetStatus
                       const deadline = job.endDate || job.deadline;
                       const views = job?.views ?? 0;
                       const applications = job.applicationCount || job.applications || 0;
-                      
+                    console.log(job.venue)
                       const isViewDisabled = false;
                       const viewButtonClass = `transition-all duration-200 ${isViewDisabled ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-[#3b82f6]'}`;
                       

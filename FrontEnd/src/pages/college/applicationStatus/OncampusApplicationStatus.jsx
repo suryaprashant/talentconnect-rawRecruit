@@ -3,6 +3,7 @@ import { Search, MapPin, Clock, Calendar, Briefcase, Award, CheckCircle, ArrowRi
 import { statusSteps } from '../../../constants/data.js';
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
 import { getCompanyPostingForOncampusDetail } from '@/lib/College_AxiosIntance';
+import { getCompanyImageUrl } from '@/lib/Company_AxiosInstance';
 import { Link } from 'react-router-dom';
 
 export default function OncampusApplicationStatus() {
@@ -38,21 +39,29 @@ export default function OncampusApplicationStatus() {
         rawData.map(async (item) => {
           try {
             const jobId = item.job || item.jobDetails?.[0]?._id || item._id;
-            console.log(`🔍 Fetching on-campus job details for jobId: ${jobId}`);
+           // console.log(`🔍 Fetching on-campus job details for jobId: ${jobId}`);
             
-            const jobResponse = await getCompanyPostingForOncampusDetail(jobId);
+        const jobResponse = await getCompanyPostingForOncampusDetail(jobId);
             const jobDetails = jobResponse.data;
-            
-            console.log(`✅ Successfully fetched on-campus job ${jobId}:`, {
-              companyName: jobDetails.companyPosted?.companyDetails?.companyName,
-              jobRoles: jobDetails.jobRoles, // This is what we want!
-              lookingFor: jobDetails.lookingFor
-            });
-            
-            // Extract company name (from JobDetailPage)
-            const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company";
-            const companyLogo = jobDetails.companyPosted?.profileImageUrl || null;
-            
+
+           const companyUserId = jobDetails.postedByUser || jobDetails.companyPosted?.userId;
+           let companyLogo = null;
+      if (companyUserId) {
+              try {
+                const profileResponse = await getCompanyImageUrl(companyUserId); 
+                console.log('profile',profileResponse)
+                // Adjust this line based on your exact API response structure
+                companyLogo = profileResponse?.data?.profile?.profileImageUrl || null;
+                console.log('images',companyLogo)
+              } catch (logoErr) {
+                console.error("Logo fetch failed:", logoErr);
+              }
+            }
+
+      const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company";
+            console.log('image url',companyLogo)
+
+          
             // Extract job roles (this is what you want to show)
             // jobRoles is an array like ["Software Developer", "Data Analyst", "Aerospace Engineer"]
             let jobRolesText = "Position";
@@ -194,6 +203,8 @@ export default function OncampusApplicationStatus() {
     return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
   };
 
+
+  
   const retryFetchJob = async (jobId) => {
     try {
       console.log(`🔄 Retrying fetch for on-campus job ${jobId}`);
