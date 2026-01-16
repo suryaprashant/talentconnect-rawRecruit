@@ -50,13 +50,14 @@ function StudentSidebar({ activePath }) {
           label="Internship Opportunities" 
           active={activePath === '/student-dashboard/Internship'} 
         /> */}
-        <SidebarNavItem 
+        {/* <SidebarNavItem 
           to="/student-dashboard/Referral" 
           icon={<FiUsers />} 
           label="Referral Jobs" 
           active={activePath === '/student-dashboard/Referral'} 
-        />
+        /> */}
       </SidebarNavGroup>
+
       <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>
         <SidebarNavItem 
           to="/student-events/casestudy" 
@@ -64,12 +65,12 @@ function StudentSidebar({ activePath }) {
           label="Case Studies" 
           active={activePath === '/student-events/casestudy'} 
         />
-        <SidebarNavItem 
+        {/* <SidebarNavItem 
           to="/student-events/hackathon" 
           icon={<FiAward />} 
           label="Hackathon" 
           active={activePath === '/student-events/hackathon'} 
-        />
+        /> */}
         <SidebarNavItem 
           to="/student-events/workshop" 
           icon={<FiTool/>} 
@@ -118,7 +119,7 @@ function StudentSidebar({ activePath }) {
           label="Internship Opportunities" 
           active={activePath === '/application-status/Internship'} 
         /> */}
-        <SidebarNavItem 
+        {/* <SidebarNavItem 
           to="/application-status/Referral" 
           icon={<FiUsers />} 
           label="Referral Jobs" 
@@ -129,15 +130,16 @@ function StudentSidebar({ activePath }) {
           icon={<FiAward />} 
           label="Event Management" 
           active={activePath === '/application-status/event-status'} 
-        />
+        /> */}
       </SidebarNavGroup>
 
-      <SidebarNavItem 
+      {/* <SidebarNavItem 
         to="/ai-driven-job-search" 
         icon={<FiSearch />} 
         label="AI-Driven Job Search" 
         active={activePath === '/ai-driven-job-search'} 
-      />
+      /> */}
+      
       <SidebarNavItem 
         to="/chat-application" 
         icon={<FiMessageCircle />} 

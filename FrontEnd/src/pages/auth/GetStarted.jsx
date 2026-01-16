@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import BackButton from '@/components/layout/BackButton';
 import ReactGA from "react-ga4";
-import { TermsModal } from '@/components/onboarding/Terms&conditionModal';
+import { TermsModal } from '@/components/onboarding/Terms&conditionModal'; 
+import heroImage from "../../assets/RR-Tagline.png";
 
 // Helper function for GA events
 const trackGAEvent = (category, action, label) => {
@@ -51,7 +51,7 @@ const RoleSelection = () => {
       key: 'candidate',
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-10 h-10">
-          <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z" />
+          <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 a4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z" />
         </svg>
       ),
       title: 'Candidate',
@@ -90,7 +90,7 @@ const RoleSelection = () => {
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-10 h-10">
           <path fillRule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clipRule="evenodd" />
-          <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
+          <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 a3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
         </svg>
       ),
       title: 'Employer',
@@ -101,54 +101,78 @@ const RoleSelection = () => {
   ];
 
   const handleContinue = () => {
-  if (selectedRole) {
-    sessionStorage.setItem('tempSelectedRole', selectedRole);
-    localStorage.setItem('selectedRole', selectedRole);
-    
-    // Track final selection confirmation
-    trackGAEvent("Role Selection", "Continue Clicked", selectedRole);
-    
-    navigate('/signup');
-  }
-};
+    if (selectedRole) {
+      sessionStorage.setItem('tempSelectedRole', selectedRole);
+      localStorage.setItem('selectedRole', selectedRole);
+      
+      // Track final selection confirmation
+      trackGAEvent("Role Selection", "Continue Clicked", selectedRole);
+      
+      navigate('/signup');
+    }
+  };
 
   return (
-    // <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       <div className="flex-1 flex flex-col">
-        <div className="flex-1 flex flex-col justify-center py-8 px-4 sm:px-6">
+        {/* Header in your format */}
+        <header className="absolute top-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-6xl bg-white/70 backdrop-blur-xl rounded-2xl border border-white/40 shadow-2xl z-50">
+          <div className="px-8 py-3 flex justify-between items-center">
+            {/* RawRecruit Logo on left */}
+            <button 
+              onClick={() => navigate('/')}
+              className="focus:outline-none"
+            >
+              <img 
+                src={heroImage} 
+                alt="RawRecruit Logo" 
+                className="h-16 w-auto object-contain"
+              />
+            </button>
+
+            {/* Empty middle and right side since we only want the logo */}
+            <div></div>
+            <div></div>
+          </div>
+        </header>
+
+        {/* Main content area with proper padding for fixed header */}
+        <div className="pt-24 flex-1 flex flex-col px-4 sm:px-6">
           <div className="max-w-7xl mx-auto w-full">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-              <div onClick={()=>navigate('/')} className="flex items-center gap-2 cursor-pointer">
-                <div className="relative">
-                  {/* Rocket Icon */}
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#667eea" className="w-8 h-8">
-                    <path fillRule="evenodd" d="M9.315 7.584C12.195 3.883 16.695 1.5 21.75 1.5a.75.75 0 01.75.75c0 5.056-2.383 9.555-6.084 12.436A6.75 6.75 0 019.75 22.5a.75.75 0 01-.75-.75v-4.131A15.838 15.838 0 016.382 15H2.25a.75.75 0 01-.75-.75 6.75 6.75 0 017.815-6.666zM15 6.75a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" clipRule="evenodd" />
-                    <path d="M5.26 17.242a.75.75 0 10-.897-1.203 5.243 5.243 0 00-2.05 5.022.75.75 0 00.625.627 5.243 5.243 0 005.022-2.051.75.75 0 10-1.202-.897 3.744 3.744 0 01-3.008 1.51c0-1.23.592-2.323 1.51-3.008z" />
+            {/* Back Button and Get Started badge in same container */}
+            <div className="relative mb-12 mt-12">
+              {/* Back Button on left */}
+              <div className="absolute left-0 top-0">
+                <button
+                  onClick={() => navigate(-1)}
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-5 py-2 rounded-full text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                >
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 24 24" 
+                    fill="currentColor" 
+                    className="w-4 h-4"
+                  >
+                    <path fillRule="evenodd" d="M11.03 3.97a.75.75 0 010 1.06l-6.22 6.22H21a.75.75 0 010 1.5H4.81l6.22 6.22a.75.75 0 11-1.06 1.06l-7.5-7.5a.75.75 0 010-1.06l7.5-7.5a.75.75 0 011.06 0z" clipRule="evenodd" />
                   </svg>
+                  Back
+                </button>
+              </div>
+
+              {/* Get Started badge centered */}
+              <div className="flex justify-center">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-5 py-2 rounded-full text-sm font-semibold shadow-md">
                   {/* Sparkles Icon */}
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#f5576c" className="w-4 h-4 absolute -top-1 -right-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                     <path fillRule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5zM16.5 15a.75.75 0 01.712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 010 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 01-1.422 0l-.395-1.183a1.5 1.5 0 00-.948-.948l-1.183-.395a.75.75 0 010-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0116.5 15z" clipRule="evenodd" />
                   </svg>
+                  Get Started
                 </div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                  RawRecruit
-                </span>
               </div>
             </div>
 
-            <div><BackButton></BackButton></div>
-
-            {/* Main Content */}
+            {/* Main title and description */}
             <div className="text-center mb-12">
-              <span className="inline-flex items-center gap-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-5 py-2 rounded-full text-sm font-semibold mb-4 shadow-md">
-                {/* Sparkles Icon */}
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5zM16.5 15a.75.75 0 01.712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 010 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 01-1.422 0l-.395-1.183a1.5 1.5 0 00-.948-.948l-1.183-.395a.75.75 0 010-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0116.5 15z" clipRule="evenodd" />
-                </svg>
-                Get Started
-              </span>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
                 Get Started with <span className="text-[#667eea]">TalentConnect</span>
               </h1>
@@ -163,10 +187,10 @@ const RoleSelection = () => {
                 <div
                   key={role.key}
                   onClick={() => {
-    setSelectedRole(role.key);
-    // Track which role user is selecting
-    trackGAEvent("Role Selection", "Role Selected", role.key);
-  }}
+                    setSelectedRole(role.key);
+                    // Track which role user is selecting
+                    trackGAEvent("Role Selection", "Role Selected", role.key);
+                  }}
                   onMouseEnter={() => setHoveredRole(role.key)}
                   onMouseLeave={() => setHoveredRole('')}
                   className={`
@@ -292,10 +316,10 @@ const RoleSelection = () => {
       </div>
 
       {/* Terms Modal */}
-            <TermsModal
-              isOpen={isLegalModalOpen}
-              onClose={() => setIsLegalModalOpen(false)}
-            />
+      <TermsModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+      />
     </div>
   );
 };
