@@ -15,14 +15,32 @@ const InterviewSchedulerPopup = ({ setToggleScheduleInterviewPopup, application,
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const applicantType =
+  {/*const applicantType =
   application?.applicant?.profileType ||  // student / fresher (off-campus)
-  application?.applicantType;   
+  application?.applicantType; */}  
 
   const handleSubmit = async (e) => {
   e.preventDefault();
 
   try {
+
+     //  Base applicant type (from application)
+    const applicantType =
+      application?.applicant?.profileType ||
+      application?.applicantType;
+
+    // Final resolved applicant type (job-type aware)
+    const resolvedApplicantType =
+      job.jobType === "On-campus" || job.jobType === "Pool-campus"
+        ? "college"
+        : applicantType;
+
+      console.log({
+        jobType: job.jobType,
+        applicantType,
+        resolvedApplicantType,
+      });
+
     const payload = {
       applicationId: application._id,
       jobId: job._id,
@@ -30,7 +48,10 @@ const InterviewSchedulerPopup = ({ setToggleScheduleInterviewPopup, application,
 
       applicantId: application.applicant._id,
       applicantAuthId: application.applicant.userId,
-      applicantType, // ✅ dynamic
+      applicantType:
+        job.jobType === "On-campus" || job.jobType === "Pool-campus"
+          ? "college"
+          : applicantType,
 
       // ✅ USED FOR applicantSnapshot (student/fresher)
       applicantName: application.applicant.name || "",
@@ -39,7 +60,7 @@ const InterviewSchedulerPopup = ({ setToggleScheduleInterviewPopup, application,
       jobRole: job.jobRoles || [],
 
       coordinator:
-        applicantType === "college"
+        resolvedApplicantType === "college"
           ? {
               name:
                 application.applicant.placementCoordinatorDetails?.coordinatorName || "",

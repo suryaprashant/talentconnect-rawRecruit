@@ -14,11 +14,14 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
       company: {
         "On-campus": "/job-management/On-campus",
         "Pool-campus": "/job-management/Pool-campus",
+        "Off-campus": "/job-management/Off-campus",
       },
       employer: {
         "On-campus": "/job-management/On-campus",
         "Pool-campus": "/job-management/Pool-campus",
+        "Off-campus": "/job-management/Off-campus",
       },
+      
     };
 
     const SYSTEM_UPDATE_ROUTE_MAP = {

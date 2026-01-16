@@ -1608,6 +1608,19 @@ export async function scheduleInterview(req, res) {
       data,
     } = req.body;
 
+    let finalApplicantType = applicantType;
+
+    if (
+      (jobType === "On-campus" || jobType === "Pool-campus") &&
+      !finalApplicantType
+    ) {
+      finalApplicantType = "college";
+    }
+
+    if (!finalApplicantType) {
+      return res.status(400).json({ msg: "Applicant type missing" });
+    }
+
     if (!data) {
       return res.status(400).json({ msg: "Interview data missing" });
     }
@@ -1651,7 +1664,7 @@ export async function scheduleInterview(req, res) {
   // 🔹 Applicant snapshot (for display purpose only)
   let applicantSnapshot = {};
 
-  if (applicantType === "college") {
+  if (finalApplicantType === "college") {
     // College → use coordinator info
     applicantSnapshot = {
       name: coordinator?.name || "",
@@ -1664,7 +1677,7 @@ export async function scheduleInterview(req, res) {
     applicantSnapshot = {
       name: req.body?.applicantName || "",        // frontend will pass this
       collegeName: req.body?.applicantCollege || "",
-      profileType: applicantType,
+      profileType: finalApplicantType,
     };
   }
 
@@ -1675,7 +1688,7 @@ export async function scheduleInterview(req, res) {
       jobType,
       applicationId,
       companyAuthId,
-      applicantType,
+      applicantType: finalApplicantType,
       applicantAuthId,
       applicantProfileId: applicantId,
       applicantSnapshot,

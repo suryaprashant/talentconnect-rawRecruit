@@ -172,7 +172,7 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
     setLoading(true);
     setError(null);
     try {
-     const response = await getCollegeApplicationsForJob(
+     const response = await getApplicationsForJob(
        targetId, 
         targetType, 
         "Applied", 
@@ -185,8 +185,8 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
         }
     } catch (error) {
       console.log("Error: ", error);
-      setError('Failed to load applicants');
-      toast.error('Failed to load applicants');
+      //setError('Failed to load applicants');
+      //toast.error('Failed to load applicants');
     } finally {
       setLoading(false);
       setIsSubmitting(false);
