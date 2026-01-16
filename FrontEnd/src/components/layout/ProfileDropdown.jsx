@@ -47,14 +47,14 @@ function StandardProfileDropdown() {
           <FiUser className="mr-3 text-gray-400" />
           Profile
         </Link>
-        <Link to="/settings" className="dropdown-item">
+        {/*<Link to="/settings" className="dropdown-item">
           <FiSettings className="mr-3 text-gray-400" />
           Settings
         </Link>
         <Link to="/notifications" className="dropdown-item">
           <FiBell className="mr-3 text-gray-400" />
           Notifications
-        </Link>
+        </Link>*/}
         <Link to="/faq" className="dropdown-item">
           <FiHelpCircle className="mr-3 text-gray-400" />
           FAQs
