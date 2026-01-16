@@ -158,14 +158,14 @@ function ProfileSwitchDropdown() {
                     <div className="border-t border-gray-100">
                         <div className="py-1">
                             <Link to="/employer-profile?editProfile=true" className="dropdown-item"><FiUser className="mr-3 text-gray-400" /> Edit Profile</Link>
-                              <Link to="/settings" className="dropdown-item">
+                              {/*<Link to="/settings" className="dropdown-item">
                                       <FiSettings className="mr-3 text-gray-400" />
                                       Settings
                                     </Link>
                                     <Link to="/notifications" className="dropdown-item">
                                       <FiBell className="mr-3 text-gray-400" />
                                       Notifications
-                                    </Link>
+                                    </Link>*/}
                                     <Link to="/faq" className="dropdown-item">
                                       <FiHelpCircle className="mr-3 text-gray-400" />
                                       FAQs
