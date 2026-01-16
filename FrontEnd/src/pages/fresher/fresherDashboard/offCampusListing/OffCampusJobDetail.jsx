@@ -435,20 +435,48 @@ const handleSave = async () => {
         </section>
 
         {/* About the role */}
-        <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-            About the Role
-          </h3>
-          <p className="text-gray-700 whitespace-pre-wrap">{jobDetail.description || 'No description available.'}</p>
-        </section>
+<section className="mb-8">
+  <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+    About the Role
+  </h3>
+  {jobDetail.description ? (
+    <ul className="space-y-2 text-gray-700">
+      {jobDetail.description
+        .split(/\n|\.\s+|;\s+/)
+        .filter(point => point.trim().length > 0)
+        .map((point, index) => (
+          <li key={index} className="flex items-start gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] mt-2 flex-shrink-0"></div>
+            <span>{point.trim()}</span>
+          </li>
+        ))}
+    </ul>
+  ) : (
+    <p className="text-gray-700">No description available.</p>
+  )}
+</section>
 
         {/* Eligibility Criteria */}
-        <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-            Eligibility Criteria
-          </h3>
-          <p className="text-gray-700 whitespace-pre-wrap">{jobDetail.eligibilityCriteria || 'No criteria specified.'}</p>
-        </section>
+<section className="mb-8">
+  <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+    Eligibility Criteria
+  </h3>
+  {jobDetail.eligibilityCriteria ? (
+    <ul className="space-y-2 text-gray-700">
+      {jobDetail.eligibilityCriteria
+        .split(/\n|\.\s+|;\s+/)
+        .filter(point => point.trim().length > 0)
+        .map((point, index) => (
+          <li key={index} className="flex items-start gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] mt-2 flex-shrink-0"></div>
+            <span>{point.trim()}</span>
+          </li>
+        ))}
+    </ul>
+  ) : (
+    <p className="text-gray-700">No criteria specified.</p>
+  )}
+</section>
 
         {/* Important Dates */}
         <section>

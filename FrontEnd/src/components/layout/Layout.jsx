@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Sidebar from './Sidebar'
 import Header from './Header'
-import bgImage from "../../assets/bg_image.webp";
+// import bgImage from "../../assets/bg_image.webp";
 
 function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true)

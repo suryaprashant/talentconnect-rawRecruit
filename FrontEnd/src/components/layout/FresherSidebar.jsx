@@ -51,7 +51,7 @@ function FresherSidebar({ activePath }) {
               label="Off-Campus Listings"
               active={activePath === '/fresher-dashboard/Off-campus'}
             />
-            <SidebarNavItem
+            {/* <SidebarNavItem
               to="/fresher-dashboard/Referral"
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -71,7 +71,7 @@ function FresherSidebar({ activePath }) {
               }
               label="Hackathon"
               active={activePath === '/fresher-dashboard/hackathon'}
-            />
+            /> */}
           </SidebarNavGroup>
 
           {/* Service Request */}
@@ -138,7 +138,7 @@ function FresherSidebar({ activePath }) {
               label="Off-Campus Listing"
               active={activePath === '/application-status/Off-campus'}
             />
-            <SidebarNavItem
+            {/* <SidebarNavItem
               to="/application-status/Referral"
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -148,11 +148,11 @@ function FresherSidebar({ activePath }) {
               }
               label="Referral Jobs"
               active={activePath === '/application-status/Referral'}
-            />
+            /> */}
           </SidebarNavGroup>
 
           {/* AI-Driven Job Search */}
-          <SidebarNavItem
+          {/* <SidebarNavItem
             to="/ai-driven-job-search"
             icon={
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -161,7 +161,7 @@ function FresherSidebar({ activePath }) {
             }
             label="AI-Driven Job Search"
             active={activePath === '/ai-driven-job-search'}
-          />
+          /> */}
 
           {/* Chats */}
           <SidebarNavItem
