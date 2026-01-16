@@ -563,8 +563,8 @@ function FresherDashboard() {
         </div>
 
         {/* Main Content Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Recent Applications */}
+        {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          Recent Applications
           <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Recent Applications</h2>
@@ -608,7 +608,7 @@ function FresherDashboard() {
             )}
           </div>
 
-          {/* Upcoming Interviews */}
+          Upcoming Interviews
           <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Upcoming Interviews</h2>
@@ -645,62 +645,65 @@ function FresherDashboard() {
               </div>
             )}
           </div>
-        </div>
+        </div> */}
 
         {/* Applications by Type */}
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Applications by Type</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-sm">
-              <thead>
-                <tr className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5">
-                  <th className="px-4 py-3 text-left font-medium text-gray-600">Job Type</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-600">Applied</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-600">Shortlisted</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-600">Accepted</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-600">Rejected</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {/* On-Campus Row */}
-                <tr className="hover:bg-gradient-to-r from-[#667eea]/5 to-transparent">
-                  <td className="px-4 py-3 font-medium text-gray-800">On-Campus</td>
-                  <td className="px-4 py-3 text-[#667eea] font-semibold">{dashboardData.byCategory['On-campus']}</td>
-                  <td className="px-4 py-3 text-yellow-600 font-semibold">0</td>
-                  <td className="px-4 py-3 text-green-600 font-semibold">0</td>
-                  <td className="px-4 py-3 text-red-600 font-semibold">0</td>
-                </tr>
-                {/* Pool-Campus Row */}
-                <tr className="hover:bg-gradient-to-r from-[#f093fb]/5 to-transparent">
-                  <td className="px-4 py-3 font-medium text-gray-800">Pool-Campus</td>
-                  <td className="px-4 py-3 text-[#f093fb] font-semibold">{dashboardData.byCategory['Pool-campus']}</td>
-                  <td className="px-4 py-3 text-yellow-600 font-semibold">0</td>
-                  <td className="px-4 py-3 text-green-600 font-semibold">0</td>
-                  <td className="px-4 py-3 text-red-600 font-semibold">0</td>
-                </tr>
-                {/* Off-Campus Row */}
-                <tr className="hover:bg-gradient-to-r from-[#4facfe]/5 to-transparent">
-                  <td className="px-4 py-3 font-medium text-gray-800">Off-Campus</td>
-                  <td className="px-4 py-3 text-[#4facfe] font-semibold">{dashboardData.byCategory['Off-campus']}</td>
-                  <td className="px-4 py-3 text-yellow-600 font-semibold">0</td>
-                  <td className="px-4 py-3 text-green-600 font-semibold">0</td>
-                  <td className="px-4 py-3 text-red-600 font-semibold">0</td>
-                </tr>
-                {/* Totals Row */}
-                <tr className="hover:bg-gradient-to-r from-gray-100 to-transparent font-semibold bg-gray-50/50">
-                  <td className="px-4 py-3 font-medium text-gray-900">Total</td>
-                  <td className="px-4 py-3 text-[#667eea]">{dashboardData.stats.Applied}</td>
-                  <td className="px-4 py-3 text-yellow-600">{dashboardData.stats.Shortlisted}</td>
-                  <td className="px-4 py-3 text-green-600">{dashboardData.stats.Accepted}</td>
-                  <td className="px-4 py-3 text-red-600">{dashboardData.stats.Rejected}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="mt-4 text-xs text-gray-500">
-            Applications are categorized by campus type and status.
-          </div>
-        </div>
+<div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
+  <h2 className="mb-4 text-lg font-semibold text-gray-900">Applications by Type</h2>
+  <div className="overflow-x-auto">
+    <table className="min-w-full divide-y divide-gray-200 text-sm">
+      <thead>
+        <tr className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5">
+          <th className="px-4 py-3 text-left font-medium text-gray-600">Job Type</th>
+          <th className="px-4 py-3 text-left font-medium text-gray-600">Applied</th>
+          <th className="px-4 py-3 text-left font-medium text-gray-600">Shortlisted</th>
+          <th className="px-4 py-3 text-left font-medium text-gray-600">Accepted</th>
+          <th className="px-4 py-3 text-left font-medium text-gray-600">Rejected</th>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-gray-100">
+        {/* On-Campus Row - Commented */}
+        {/* <tr className="hover:bg-gradient-to-r from-[#667eea]/5 to-transparent">
+          <td className="px-4 py-3 font-medium text-gray-800">On-Campus</td>
+          <td className="px-4 py-3 text-[#667eea] font-semibold">{dashboardData.byCategory['On-campus']}</td>
+          <td className="px-4 py-3 text-yellow-600 font-semibold">0</td>
+          <td className="px-4 py-3 text-green-600 font-semibold">0</td>
+          <td className="px-4 py-3 text-red-600 font-semibold">0</td>
+        </tr> */}
+        
+        {/* Pool-Campus Row - Commented */}
+        {/* <tr className="hover:bg-gradient-to-r from-[#f093fb]/5 to-transparent">
+          <td className="px-4 py-3 font-medium text-gray-800">Pool-Campus</td>
+          <td className="px-4 py-3 text-[#f093fb] font-semibold">{dashboardData.byCategory['Pool-campus']}</td>
+          <td className="px-4 py-3 text-yellow-600 font-semibold">0</td>
+          <td className="px-4 py-3 text-green-600 font-semibold">0</td>
+          <td className="px-4 py-3 text-red-600 font-semibold">0</td>
+        </tr> */}
+        
+        {/* Off-Campus Row - Keep only this one */}
+        <tr className="hover:bg-gradient-to-r from-[#4facfe]/5 to-transparent">
+          <td className="px-4 py-3 font-medium text-gray-800">Off-Campus</td>
+          <td className="px-4 py-3 text-[#4facfe] font-semibold">{dashboardData.byCategory['Off-campus']}</td>
+          <td className="px-4 py-3 text-yellow-600 font-semibold">0</td>
+          <td className="px-4 py-3 text-green-600 font-semibold">0</td>
+          <td className="px-4 py-3 text-red-600 font-semibold">0</td>
+        </tr>
+        
+        {/* Totals Row - Keep this for total calculations */}
+        <tr className="hover:bg-gradient-to-r from-gray-100 to-transparent font-semibold bg-gray-50/50">
+          <td className="px-4 py-3 font-medium text-gray-900">Total</td>
+          <td className="px-4 py-3 text-[#667eea]">{dashboardData.stats.Applied}</td>
+          <td className="px-4 py-3 text-yellow-600">{dashboardData.stats.Shortlisted}</td>
+          <td className="px-4 py-3 text-green-600">{dashboardData.stats.Accepted}</td>
+          <td className="px-4 py-3 text-red-600">{dashboardData.stats.Rejected}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div className="mt-4 text-xs text-gray-500">
+    Applications are categorized by campus type and status.
+  </div>
+</div>
 
         {/* Quick Actions */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">

@@ -1222,15 +1222,22 @@ export default function PoolCampusHiringForm() {
             </div>
 
             {/* Register Button */}
-            <div className="flex justify-end pt-4">
-              <button 
-                type="submit" 
-                disabled={isSubmitting} 
-                className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50"
-              >
-                {isSubmitting ? 'Submitting...' : 'Register'}
-              </button>
-            </div>
+            <div className="flex justify-between pt-6 border-t border-gray-200">
+  <button
+    type="button"
+    onClick={() => window.history.back()}
+    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium transition-colors flex items-center"
+  >
+    ← Back
+  </button>
+  <button 
+    type="submit" 
+    disabled={isSubmitting} 
+    className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    {isSubmitting ? 'Submitting...' : 'Register'}
+  </button>
+</div>
           </form>
         </div>
       </div>
