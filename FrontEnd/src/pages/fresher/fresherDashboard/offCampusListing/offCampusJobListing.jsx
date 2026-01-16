@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, X, Filter, MapPin, Search, Briefcase, Calendar, TrendingUp, RefreshCw, AlertCircle, Building, DollarSign, Clock, Users, GraduationCap, BookOpen } from 'lucide-react';
 import JobCard from '@/components/student/studentDashboard/offCampusListing/JobCard';
 import { getRelaventOffcampusOpportunity } from '@/lib/User_AxiosInstance';
+import { City } from 'country-state-city';
+import CreatableSelect from 'react-select/creatable';
 
 function FOffCampusListings() {
   const [offCampusJobs, setOffCampusJobs] = useState([]);
@@ -12,7 +14,7 @@ function FOffCampusListings() {
     degree: [],
     courses: [],
     employmentType: [],
-    location: '',
+    location: [],
     company: '',
     internship: false,
     fullTime: false
@@ -36,49 +38,64 @@ function FOffCampusListings() {
     workMode: [
       { label: 'Work from office', count: 28692 },
       { label: 'Hybrid', count: 756 },
-      { label: 'Remote', count: 709 }
+      { label: 'Remote', count: 709 },
+      { label: 'On-site', count: 10 }
     ],
     degree: [
-      'Polytechnic',
-      'ITI',
-      'Diploma',
-      'Undergraduate',
-      'Postgraduate'
+      { label: 'Polytechnic' },
+      { label: 'Associate Degree' },
+      { label: 'ITI' },
+      { label: 'Diploma' },
+      { label: 'Undergraduate' },
+      { label: 'Postgraduate' }
     ],
     courses: [
-      'Engineering',
-      'Pharmacy',
-      'Mechanical Engineering',
-      'Civil Engineering',
-      'Electrical',
-      'Fitter',
-      'Welding',
-      'Electronics',
-      'B.Tech',
-      'BBA',
-      'BSc',
-      'BCA',
-      'BE',
-      'BA',
-      'BBM',
-      'PUC Humanities Combinations',
-      'PUC Commerce Combinations',
-      'B.Pharma',
-      'D.Pharma',
-      'M.Tech',
-      'MBA',
-      'MA',
-      'MCA',
-      'ME',
-      'MSc',
-      'MCom',
-      'M.Pharma'
+      { label: 'Engineering' },
+      { label: 'Pharmacy' },
+      { label: 'Mechanical Engineering' },
+      { label: 'Civil Engineering' },
+      { label: 'Electrical' },
+      { label: 'Fitter' },
+      { label: 'Welding' },
+      { label: 'Electronics' },
+      { label: 'B.Tech' },
+      { label: 'BBA' },
+      { label: 'BSc' },
+      { label: 'BCA' },
+      { label: 'BE' },
+      { label: 'BA' },
+      { label: 'BBM' },
+      { label: 'PUC Humanities Combinations' },
+      { label: 'PUC Commerce Combinations' },
+      { label: 'B.Pharma' },
+      { label: 'D.Pharma' },
+      { label: 'M.Tech' },
+      { label: 'MBA' },
+      { label: 'MA' },
+      { label: 'MCA' },
+      { label: 'ME' },
+      { label: 'MSc' },
+      { label: 'MCom' },
+      { label: 'M.Pharma' }
     ],
     employmentType: [
-      'Part-time',
-      'Contract'
+      { label: 'Part-time' },
+      { label: 'Contract' }
     ]
   });
+
+  const cityOptions = useMemo(
+    () =>
+      City.getCitiesOfCountry('IN').map(city => ({
+        value: city.name,
+        label: city.name,
+      })),
+    []
+  );
+
+  const safeLocation = Array.isArray(filters.location)
+    ? filters.location
+    : [];
 
   const navigate = useNavigate();
 
@@ -112,44 +129,97 @@ function FOffCampusListings() {
     fetchOffcampusOpportunity();
   }, []);
 
-  const extractFilterOptions = (jobsData) => {
-    const workModes = new Map();
-    const degrees = new Set();
-    const courses = new Set();
-    const employmentTypes = new Set();
+ 
 
-    jobsData.forEach(job => {
-      if (job.workMode) {
-        const mode = job.workMode;
-        workModes.set(mode, (workModes.get(mode) || 0) + 1);
-      }
-      
-      if (job.qualification) {
-        job.qualification.forEach(deg => {
-          if (deg) degrees.add(deg.trim());
-        });
-      }
-      
-      if (job.course) {
-        job.course.forEach(course => {
-          if (course) courses.add(course.trim());
-        });
-      }
-      
-      if (job.jobType) {
-        const type = job.jobType;
-        employmentTypes.add(type);
-      }
-    });
+{/*const extractFilterOptions = (jobsData) => {
+  const degrees = new Set();
+  const courses = new Set();
+  const employmentTypes = new Set();
 
-    setFilterOptions(prev => ({
-      ...prev,
-      workMode: Array.from(workModes.entries()).map(([label, count]) => ({ label, count })),
-      degree: Array.from(degrees).filter(label => label).map(label => label),
-      courses: Array.from(courses).filter(label => label).map(label => label),
-      employmentType: Array.from(employmentTypes).filter(label => label).map(label => label)
-    }));
-  };
+  jobsData.forEach(job => {
+    // DEGREE
+    if (Array.isArray(job.education?.degree)) {
+      job.education.degree.forEach(deg => {
+        if (typeof deg === "string") {
+          degrees.add(deg.trim());
+        }
+      });
+    } else if (typeof job.education?.degree === "string") {
+      degrees.add(job.education.degree.trim());
+    }
+
+    // COURSE
+    if (job.education?.course) {
+      courses.add(job.education.course.trim());
+    }
+
+    // EMPLOYMENT TYPE
+    if (Array.isArray(job.employmentType)) {
+      job.employmentType.forEach(type => {
+        if (typeof type === "string") {
+          employmentTypes.add(type.trim());
+        }
+      });
+    } else if (typeof job.employmentType === "string") {
+      employmentTypes.add(job.employmentType.trim());
+    }
+  });
+
+  setFilterOptions(prev => ({
+    ...prev,
+    // Only update if we found degrees, otherwise keep default
+    degree: degrees.size > 0 
+      ? Array.from(degrees).map(label => ({ label }))
+      : prev.degree,  // ✅ Keep default values if no data found
+    // Uncomment this if you want to extract courses from API
+    // courses: Array.from(courses).map(label => ({ label })),
+    employmentType: employmentTypes.size > 0
+      ? Array.from(employmentTypes).map(label => ({ label }))
+      : prev.employmentType,  // ✅ Keep default values if no data found
+  }));
+};*/}
+
+const extractFilterOptions = (jobsData) => {
+  const degrees = new Set();
+  const courses = new Set();
+  const employmentTypes = new Set();
+
+  jobsData.forEach(job => {
+    // Extract courses from API's "degree" field
+    if (Array.isArray(job.degree)) {
+      job.degree.forEach(deg => {
+        if (typeof deg === "string") {
+          courses.add(deg.trim()); // ✅ Add to courses, not degrees
+        }
+      });
+    }
+
+    // EMPLOYMENT TYPE
+    if (Array.isArray(job.employmentType)) {
+      job.employmentType.forEach(type => {
+        if (typeof type === "string") {
+          employmentTypes.add(type.trim());
+        }
+      });
+    } else if (typeof job.employmentType === "string") {
+      employmentTypes.add(job.employmentType.trim());
+    }
+  });
+
+  setFilterOptions(prev => ({
+    ...prev,
+    // Keep static degree types
+    degree: prev.degree, // Polytechnic, ITI, Diploma, Undergraduate, Postgraduate
+    // Update courses dynamically from API
+    courses: courses.size > 0
+      ? Array.from(courses).map(label => ({ label }))
+      : prev.courses,
+    employmentType: employmentTypes.size > 0
+      ? Array.from(employmentTypes).map(label => ({ label }))
+      : prev.employmentType,
+  }));
+};
+
 
   useEffect(() => {
     if (!Array.isArray(offCampusJobs)) {
@@ -159,62 +229,58 @@ function FOffCampusListings() {
 
     let result = [...offCampusJobs];
 
+    // Apply degree filters
+    if (filters.degree.length > 0) {
+  result = result.filter(job =>
+    filters.degree.includes(job.education?.degree)
+  );
+}
+
+    // Apply course filters - FILTER BY API's "degree" field
+    if (filters.courses.length > 0) {
+      result = result.filter(job =>
+        Array.isArray(job.degree) &&
+        filters.courses.some(selectedCourse =>
+          job.degree.some(apiDegree => 
+            apiDegree.toLowerCase().includes(selectedCourse.toLowerCase()) ||
+            selectedCourse.toLowerCase().includes(apiDegree.toLowerCase())
+          )
+        )
+      );
+    }
+
+
+
+    // Apply employment type filter
+    if (filters.employmentType.length > 0) {
+      result = result.filter(job => {
+        if (Array.isArray(job.employmentType)) {
+          return filters.employmentType.some(type =>
+            job.employmentType.includes(type)
+          );
+        }
+        return filters.employmentType.includes(job.employmentType);
+      });
+    }
+
+
+
+    // Apply location filter
+    if (Array.isArray(filters.location) && filters.location.length > 0) {
+      result = result.filter(college =>
+        Array.isArray(college.location) &&
+        filters.location.some(filterLoc =>
+          college.location.some(
+            loc => loc.toLowerCase() === filterLoc.toLowerCase()
+          )
+        )
+      );
+    }
+
     if (filters.workMode.length > 0) {
       result = result.filter(job =>
         filters.workMode.some(mode => job.workMode === mode)
       );
-    }
-
-    if (filters.degree.length > 0) {
-      result = result.filter(job =>
-        job.qualification &&
-        filters.degree.some(deg =>
-          job.qualification.some(jobDeg => {
-            const jobDegNormalized = jobDeg?.toLowerCase().replace(/[\s.\-]/g, "").trim();
-            const filterDegNormalized = deg?.toLowerCase().replace(/[\s.\-]/g, "").trim();
-            return jobDegNormalized === filterDegNormalized;
-          })
-        )
-      );
-    }
-
-    if (filters.courses.length > 0) {
-      result = result.filter(job =>
-        job.course &&
-        filters.courses.some(course => {
-          const normalizedCourse = course?.toLowerCase().replace(/[\s.\-]/g, "").trim();
-          return job.course.some(c => {
-            const normalizedC = c?.toLowerCase().replace(/[\s.\-]/g, "").trim();
-            return normalizedC === normalizedCourse;
-          });
-        })
-      );
-    }
-
-    if (filters.employmentType && filters.employmentType.length > 0) {
-      result = result.filter(job =>
-        filters.employmentType.some(filterValue =>
-          job.jobType?.toLowerCase() === filterValue.toLowerCase()
-        )
-      );
-    }
-
-    if (filters.location && filters.location !== 'Multi - Select') {
-      result = result.filter(job => {
-        const jobLocation = job.location || job.workLocation;
-        return jobLocation
-          ? jobLocation.toLowerCase().includes(filters.location.toLowerCase())
-          : false;
-      });
-    }
-
-    if (filters.company && filters.company !== 'Multi - Select') {
-      result = result.filter(job => {
-        const companyName = job.companyName;
-        return companyName
-          ? companyName.toLowerCase().includes(filters.company.toLowerCase())
-          : false;
-      });
     }
 
     if (filters.internship) {
@@ -310,7 +376,7 @@ function FOffCampusListings() {
       workMode: [],
       degree: [],
       courses: [],
-      location: '',
+      location: [],
       company: '',
       employmentType: [],
       internship: false,
@@ -325,6 +391,15 @@ function FOffCampusListings() {
       location: false,
       company: false
     });
+  };
+
+  const handleLocationMultiChange = (selectedOptions) => {
+    setFilters(prev => ({
+      ...prev,
+      location: selectedOptions
+        ? selectedOptions.map(opt => opt.value)
+        : []
+    }));
   };
 
   const getActiveFiltersCount = () => {
@@ -471,12 +546,12 @@ function FOffCampusListings() {
                   </span>
                 ))}
                 
-                {filters.degree.map(deg => (
-                  <span key={deg} className="inline-flex items-center bg-gradient-to-r from-[#f9a8d4]/20 to-[#ec4899]/10 text-[#ec4899] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
-                    {deg}
+                {filters.degree.map(degree => (
+                  <span key={degree} className="inline-flex items-center bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 px-3 py-1.5 rounded-lg text-sm">
+                    {degree}
                     <button 
-                      onClick={() => removeFilter('degree', deg)}
-                      className="ml-2 text-[#ec4899] hover:text-[#be185d]"
+                      onClick={() => removeFilter('degree', degree)}
+                      className="ml-2 text-purple-600 hover:text-purple-800"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -507,17 +582,21 @@ function FOffCampusListings() {
                   </span>
                 ))}
                 
-                {filters.location && filters.location !== 'Multi - Select' && (
-                  <span className="inline-flex items-center bg-gradient-to-r from-[#c7d2fe]/20 to-[#818cf8]/10 text-[#818cf8] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
-                    Location: {filters.location}
-                    <button 
-                      onClick={() => removeFilter('location', filters.location)}
-                      className="ml-2 text-[#818cf8] hover:text-[#4f46e5]"
+                {Array.isArray(filters.location) &&
+                  filters.location.map(loc => (
+                    <span
+                      key={loc}
+                      className="inline-flex items-center bg-gradient-to-r from-red-100 to-red-50 text-red-700 px-3 py-1.5 rounded-lg text-sm"
                     >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                )}
+                      Location: {loc}
+                      <button
+                        onClick={() => removeFilter('location', loc)}
+                        className="ml-2 text-red-600 hover:text-red-800"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
                 
                 {filters.company && filters.company !== 'Multi - Select' && (
                   <span className="inline-flex items-center bg-gradient-to-r from-[#fbcfe8]/20 to-[#f472b6]/10 text-[#f472b6] px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm">
@@ -610,8 +689,8 @@ function FOffCampusListings() {
 
           {/* Main Filter Dropdown */}
           {showMainFilter && (
-            <div className="mt-4 bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="mt-4 bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 relative p-6 z-50">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
                 {/* Work Mode Filter */}
                 <div className="relative">
                   <div className="flex items-center justify-between mb-3">
@@ -705,22 +784,22 @@ function FOffCampusListings() {
                   </button>
                   
                   {openSubDropdowns.degree && (
-                    <div className="mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
+                    <div className="absolute z-[100] w-full mt-2 p-3 bg-white backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto"  >
                       <div className="space-y-2">
                         {filterOptions.degree.map((option, index) => (
-                          <div key={option + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
+                          <div key={option.label + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
                             <input
                               type="checkbox"
-                              id={`degree-${option}-${index}`}
-                              checked={filters.degree.includes(option)}
-                              onChange={() => handleFilterChange('degree', option)}
+                              id={`degree-${option.label}-${index}`}
+                              checked={filters.degree.includes(option.label)}
+                              onChange={() => handleFilterChange('degree', option.label)}
                               className="h-4 w-4 text-[#ec4899] focus:ring-[#f9a8d4]/50 border-gray-300 rounded"
                             />
                             <label 
-                              htmlFor={`degree-${option}-${index}`}
+                              htmlFor={`degree-${option.label}-${index}`}
                               className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
                             >
-                              {option}
+                              {option.label}
                             </label>
                           </div>
                         ))}
@@ -760,22 +839,22 @@ function FOffCampusListings() {
                   </button>
                   
                   {openSubDropdowns.courses && (
-                    <div className="mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
+                    <div className="absolute z-[100] w-full mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
                       <div className="space-y-2">
                         {filterOptions.courses.map((option, index) => (
-                          <div key={option + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
+                          <div key={option.label + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
                             <input
                               type="checkbox"
-                              id={`course-${option}-${index}`}
-                              checked={filters.courses.includes(option)}
-                              onChange={() => handleFilterChange('courses', option)}
+                              id={`course-${option.label}-${index}`}
+                              checked={filters.courses.includes(option.label)}
+                              onChange={() => handleFilterChange('courses', option.label)}
                               className="h-4 w-4 text-[#f59e0b] focus:ring-[#fde68a]/50 border-gray-300 rounded"
                             />
                             <label 
-                              htmlFor={`course-${option}-${index}`}
+                              htmlFor={`course-${option.label}-${index}`}
                               className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
                             >
-                              {option}
+                              {option.label}
                             </label>
                           </div>
                         ))}
@@ -815,22 +894,22 @@ function FOffCampusListings() {
                   </button>
                   
                   {openSubDropdowns.employmentType && (
-                    <div className="mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
+                    <div className="absolute z-[100] w-full mt-2 p-3 bg-white backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
                       <div className="space-y-2">
                         {filterOptions.employmentType.map((option, index) => (
-                          <div key={option + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
+                          <div key={option.label + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
                             <input
                               type="checkbox"
-                              id={`employmentType-${option}-${index}`}
-                              checked={filters.employmentType.includes(option)}
-                              onChange={() => handleFilterChange('employmentType', option)}
+                              id={`employmentType-${option.label}-${index}`}
+                              checked={filters.employmentType.includes(option.label)}
+                              onChange={() => handleFilterChange('employmentType', option.label)}
                               className="h-4 w-4 text-[#10b981] focus:ring-[#a7f3d0]/50 border-gray-300 rounded"
                             />
                             <label 
-                              htmlFor={`employmentType-${option}-${index}`}
+                              htmlFor={`employmentType-${option.label}-${index}`}
                               className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
                             >
-                              {option}
+                              {option.label}
                             </label>
                           </div>
                         ))}
@@ -841,47 +920,85 @@ function FOffCampusListings() {
 
                 {/* Location Filter */}
                 <div className="relative">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 text-[#818cf8] mr-2" />
-                      <span className="text-sm font-medium text-gray-700">Location</span>
-                      {filters.location && filters.location !== '' && filters.location !== 'Multi - Select' && (
-                        <span className="ml-2 px-2 py-0.5 bg-[#818cf8] text-white text-xs rounded-full">
-                          1
-                        </span>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center">
+                        <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                        <span className="text-sm font-medium text-gray-700">Location</span>
+                        {Array.isArray(filters.location) && filters.location.length > 0 && (
+                          <span className="ml-2 px-2 py-0.5 bg-[#667eea] text-white text-xs rounded-full">
+                            {filters.location.length}
+                          </span>
+                        )}
+                      </div>
+                      {Array.isArray(filters.location) && filters.location.length > 0 && (
+                        <button
+                          onClick={() => handleFilterChange('location', [])}
+                          className="text-xs text-[#667eea] hover:text-[#764ba2]"
+                        >
+                          Clear
+                        </button>
                       )}
                     </div>
-                    {filters.location && filters.location !== '' && (
-                      <button
-                        onClick={() => handleFilterChange('location', '')}
-                        className="text-xs text-[#818cf8] hover:text-[#4f46e5] font-medium"
-                      >
-                        Clear
-                      </button>
+                    
+                    <button
+                      onClick={() => toggleSubDropdown('location')}
+                      className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all duration-200 mb-2"
+                    >
+                      <span className="text-sm text-gray-700">Select Location</span>
+                      <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.location ? 'transform rotate-180' : ''}`} />
+                    </button>
+                    
+                    {openSubDropdowns.location && (
+                      <div className="absolute z-[100] w-full mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        <CreatableSelect
+                          isMulti
+                          options={cityOptions}
+                          value={safeLocation.map(loc => ({ value: loc, label: loc }))}
+                          onChange={handleLocationMultiChange}
+                          placeholder="Select or type locations..."
+                          menuPortalTarget={document.body}
+                          menuPosition="fixed"
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              borderColor: '#e5e7eb',
+                              minHeight: '38px',
+                              fontSize: '14px',
+                              borderRadius: '0.75rem',
+                              backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
+                              backgroundImage:
+                                'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
+                            }),
+                            menu: (base) => ({
+                              ...base,
+                              borderRadius: '0.5rem',
+                              fontSize: '14px',
+                              border: '1px solid #e5e7eb',
+                            }),
+                            menuPortal: (base) => ({
+                              ...base,
+                              zIndex: 9999,
+                            }),
+                            multiValue: (base) => ({
+                              ...base,
+                              fontSize: '12px',
+                              backgroundColor: '#f3f4f6',
+                              borderRadius: '9999px',
+                            }),
+                            multiValueRemove: (base) => ({
+                              ...base,
+                              fontSize: '12px',
+                              color: '#6b7280',
+                              ':hover': {
+                                backgroundColor: '#e5e7eb',
+                                color: '#374151',
+                              },
+                            }),
+                          }}
+                        />                         
+                      </div>
                     )}
                   </div>
-                  
-                  <button
-                    onClick={() => toggleSubDropdown('location')}
-                    className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-white/50 to-white/30 border border-white/50 rounded-xl hover:border-[#c7d2fe]/50 transition-all duration-200 mb-2 backdrop-blur-sm"
-                  >
-                    <span className="text-sm text-gray-700">Select Location</span>
-                    <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.location ? 'transform rotate-180' : ''}`} />
-                  </button>
-                  
-                  {openSubDropdowns.location && (
-                    <div className="mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50">
-                      <select
-                        value={filters.location}
-                        onChange={(e) => handleFilterChange('location', e.target.value)}
-                        className="w-full p-3 bg-white/80 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-[#a5b4fc]/50 focus:border-transparent focus:outline-none transition-all duration-200 text-sm"
-                      >
-                        <option value="">Select Location</option>
-                        <option value="Multi - Select">Multi - Select</option>
-                      </select>
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           )}
