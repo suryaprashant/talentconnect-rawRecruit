@@ -943,7 +943,31 @@ export default function PoolCampusHiringForm({ onBackClick }) {
         proposedSchedule: { startDate: '', endDate: '', preferredMode: '' },
     };
 
-    const [formData, setFormData] = useState(initialFormState);
+  const [formData, setFormData] = useState(() => {
+        const savedData = localStorage.getItem('pendingPoolCampusRegistration');
+        if (!savedData) return initialFormState;
+
+        try {
+            const parsed = JSON.parse(savedData);
+
+            // 1. Revive Application Dates
+            if (parsed.tentativeStartDate) parsed.tentativeStartDate = new Date(parsed.tentativeStartDate);
+            if (parsed.tentativeEndDate) parsed.tentativeEndDate = new Date(parsed.tentativeEndDate);
+
+            // 2. Revive Proposed Schedule Dates
+            if (parsed.proposedSchedule?.startDate) {
+                parsed.proposedSchedule.startDate = new Date(parsed.proposedSchedule.startDate);
+            }
+            if (parsed.proposedSchedule?.endDate) {
+                parsed.proposedSchedule.endDate = new Date(parsed.proposedSchedule.endDate);
+            }
+
+            return parsed;
+        } catch (e) {
+            console.error("Error parsing saved pool campus data:", e);
+            return initialFormState;
+        }
+    });
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [alert, setAlert] = useState({ show: false, message: '', type: '' });
@@ -1018,7 +1042,13 @@ const handleRemoveRound = (id) => {
     const companyTypeOptions = ["MNC", "Startup", "SME", "Public Sector"];
     const proposedModeOptions = ["Online", "Offline", "Hybrid"];
 
+
     useEffect(() => {
+        localStorage.setItem('pendingPoolCampusRegistration', JSON.stringify(formData));
+    }, [formData]);
+
+    useEffect(() => {
+      
         const handleClickOutside = (event) => {
             const refs = {
                 amenities: amenitiesRef,
@@ -1034,7 +1064,7 @@ const handleRemoveRound = (id) => {
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    }, [formData]);
     
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -1186,6 +1216,7 @@ const handleRemoveRound = (id) => {
         setFormData(initialFormState);
         setErrors({});
         setDescriptionError("");
+        localStorage.removeItem('pendingPoolCampusRegistration');
     };
 
     const validateForm = () => {
@@ -1243,21 +1274,23 @@ const handleRemoveRound = (id) => {
             isValid = false;
         }
 
-        if (!formData.proposedSchedule.startDate.trim()) {
-            newErrors.proposedStartDate = 'Please select proposed start date';
-            isValid = false;
-        }
+     // Replace the old startDate.trim() check with this:
+if (!formData.proposedSchedule.startDate) {
+    newErrors.proposedStartDate = 'Please select proposed start date';
+    isValid = false;
+}
 
-        if (!formData.proposedSchedule.endDate.trim()) {
-            newErrors.proposedEndDate = 'Please select proposed end date';
-            isValid = false;
-        }
+// Replace the old endDate.trim() check with this:
+if (!formData.proposedSchedule.endDate) {
+    newErrors.proposedEndDate = 'Please select proposed end date';
+    isValid = false;
+}
 
-        if (!formData.proposedSchedule.preferredMode.trim()) {
-            newErrors.proposedMode = 'Please select preferred mode';
-            isValid = false;
-        }
-
+// Replace the old preferredMode.trim() check with this:
+if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.preferredMode.trim()) {
+    newErrors.proposedMode = 'Please select preferred mode';
+    isValid = false;
+}
         if (formData.description.length > 500) {
             setDescriptionError("Description cannot exceed 500 characters.");
             isValid = false;
@@ -1278,9 +1311,11 @@ const handleRemoveRound = (id) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+        console.log("Submit Clicked!");
         if (!validateForm()) {
+            console.log("Validation Failed:", errors); //
             showAlert('Please fill all required fields correctly', 'error');
+
             return;
         }
 
@@ -1369,7 +1404,7 @@ const handleRemoveRound = (id) => {
                 <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-50/50 p-4 mb-6">
                     <div className="text-center">
                         <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-1">
-                            Pool Campus Connect: Hire Bigger
+                            Pool Campus Connect: Hire Bigger 
                         </h1>
                         <p className="text-gray-600 text-sm max-w-2xl mx-auto">
                             Tap into diverse talent from multiple institutions through one powerful drive.

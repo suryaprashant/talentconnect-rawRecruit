@@ -21,7 +21,7 @@ export default function RegisterPage({
         {/* Header (compressed) */}
         <header className="mb-6 text-center">
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent">
-            Pool Campus Connect: Hire Bigger
+            Pool Campus Connect: Hire Bigger 
           </h1>
 
           <p className="text-gray-600 text-base md:text-lg max-w-xl mx-auto mt-3">
