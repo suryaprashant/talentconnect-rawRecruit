@@ -192,6 +192,7 @@ export default function OncampusApplicationStatus() {
                             <div className="mt-1.5 flex items-center text-xs text-gray-500 gap-2">
                               <span className="inline-flex items-center">
                                 <MapPin className="h-3 w-3 mr-1" />
+                              
                                 {job.location}
                               </span>
                               <span className="text-xs px-1.5 py-0.5 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-600 rounded">
@@ -275,6 +276,7 @@ export default function OncampusApplicationStatus() {
                         <span className="text-xs font-medium text-gray-700">Type</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.employmentType}</p>
+                      <h1></h1>
                     </div>
                     
                     <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">

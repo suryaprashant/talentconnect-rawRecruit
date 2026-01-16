@@ -408,7 +408,7 @@ export async function fetchApplicationStatusService(userId, jobType, userType) {
                 });
             }
         }
-
+          console.log(applicationData)
         return { success: true, data: applicationData };
     } catch (error) {
         console.log("Error: ", error.message);
