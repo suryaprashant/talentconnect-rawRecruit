@@ -476,7 +476,7 @@ const extractFilterOptions = (jobsData) => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-purple-100/50 p-4">
             <div className="flex items-center justify-between">
               <div>
@@ -524,7 +524,7 @@ const extractFilterOptions = (jobsData) => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Main Filter Section with Dropdown System */}
         <div className="mb-8">

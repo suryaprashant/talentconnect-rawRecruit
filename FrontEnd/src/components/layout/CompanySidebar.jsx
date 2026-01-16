@@ -79,7 +79,7 @@ function CompanySidebar({ activePath }) {
               label="Pool Campus Requests"
               active={activePath === '/company-dashboard/Pool-campus'}
             />
-            <SidebarNavItem
+            {/* <SidebarNavItem
               to="/company-dashboard/resume-search"
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -88,7 +88,7 @@ function CompanySidebar({ activePath }) {
               }
               label="Resume Search"
               active={activePath === '/company-dashboard/resume-search'}
-            />
+            /> */}
           </SidebarNavGroup>
 
           {/* Service Request */}

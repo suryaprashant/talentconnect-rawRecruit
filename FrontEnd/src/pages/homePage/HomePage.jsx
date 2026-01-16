@@ -11,7 +11,8 @@ import {
   Layers, Palette, Code, Zap as Lightning
 } from 'lucide-react';
 import { TermsModal } from '@/components/onboarding/Terms&conditionModal';
-import heroImage from "../../assets/image.jpg";
+import heroImage from "../../assets/RR-Tagline.png";
+import bgImage from "../../assets/bgImage.png";
 
 const App = () => {
   const navigate = useNavigate();
@@ -184,31 +185,46 @@ const closeModal = () => {
   };
 
   const heroCards = [
-    {
-      title: 'On-Campus',
-      description: 'Direct recruitment at college campus',
-      icon: <GraduationCap className="w-8 h-8" />,
-      gradient: 'from-[#8B5CF6] via-[#7C3AED] to-[#6D28D9]',
-      accentColor: 'bg-[#7C3AED]',
-      features: ['Direct access', 'Live interactions', 'Customized tests']
-    },
-    {
-      title: 'Pool-Campus',
-      description: 'Multi-college recruitment opportunities',
-      icon: <Users2 className="w-8 h-8" />,
-      gradient: 'from-[#F472B6] via-[#EC4899] to-[#DB2777]',
-      accentColor: 'bg-[#EC4899]',
-      features: ['Multiple colleges', 'Centralized process', 'Cost-effective']
-    },
-    {
-      title: 'Off-Campus',
-      description: 'Flexible hiring solutions',
-      icon: <Globe className="w-8 h-8" />,
-      gradient: 'from-[#60A5FA] via-[#3B82F6] to-[#1D4ED8]',
-      accentColor: 'bg-[#3B82F6]',
-      features: ['Wide reach', 'Flexible timing', 'Diverse talent pool']
-    }
-  ];
+  {
+    title: 'On-Campus Recruitment',
+    description: '', // Empty description
+    icon: <GraduationCap className="w-8 h-8" />,
+    gradient: 'from-[#8B5CF6] via-[#7C3AED] to-[#6D28D9]',
+    accentColor: 'bg-[#7C3AED]',
+    features: [
+      'Targeted hiring within a single college',
+      'Posted by colleges and companies',
+      'Structured placement drives',
+      'Ideal for focused fresher recruitment'
+    ]
+  },
+  {
+    title: 'Pool-Campus Recruitment',
+    description: '', // Empty description
+    icon: <Users2 className="w-8 h-8" />,
+    gradient: 'from-[#F472B6] via-[#EC4899] to-[#DB2777]',
+    accentColor: 'bg-[#EC4899]',
+    features: [
+      'Multi-college hiring through shared drives',
+      'Posted by colleges and companies',
+      'Wider talent reach',
+      'Cost-effective fresher hiring'
+    ]
+  },
+  {
+    title: 'Off-Campus Recruitment',
+    description: '', // Empty description
+    icon: <Globe className="w-8 h-8" />,
+    gradient: 'from-[#60A5FA] via-[#3B82F6] to-[#1D4ED8]',
+    accentColor: 'bg-[#3B82F6]',
+    features: [
+      'Open hiring beyond campus boundaries',
+      'Posted only by companies',
+      'Nationwide fresher jobs',
+      'Flexible entry-level recruitment'
+    ]
+  }
+];
 
   const services = {
     company: {
@@ -398,158 +414,172 @@ const closeModal = () => {
       {/* Main Content */}
       <div className="relative z-20">
         {/* Modern Glass Navigation */}
-        <header className="fixed top-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-6xl bg-white/70 backdrop-blur-xl rounded-2xl border border-white/40 shadow-2xl z-50">
-          <div className="px-8 py-4 flex justify-between items-center">
-            <button 
-  onClick={handleLogoClick}
-  className="flex items-center gap-3 group"
->
-  <div className="relative">
-    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
-    <div className="relative bg-gradient-to-br from-white to-gray-50 p-2 rounded-xl shadow-lg border border-white/60 group-hover:shadow-xl transition-shadow duration-300">
-      {/* Using fill with gradient colors */}
-      <Rocket className="w-6 h-6 text-transparent fill-[url(#gradient)] group-hover:fill-[url(#gradient-hover)]" />
-      {/* Define SVG gradients for the icon */}
-      <svg className="absolute w-0 h-0">
-        <defs>
-          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#9333ea" /> {/* purple-600 */}
-            <stop offset="100%" stopColor="#db2777" /> {/* pink-600 */}
-          </linearGradient>
-          <linearGradient id="gradient-hover" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#2563eb" /> {/* blue-600 */}
-            <stop offset="100%" stopColor="#7c3aed" /> {/* purple-700 */}
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-  </div>
-  <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 group-hover:from-blue-600 group-hover:via-purple-700 group-hover:to-indigo-600 bg-clip-text text-transparent transition-all duration-300">
-    RawRecruit
-  </span>
-</button>
+        <header className="absolute top-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-6xl bg-white/70 backdrop-blur-xl rounded-2xl border border-white/40 shadow-2xl z-50">
+  <div className="px-8 py-3 flex justify-between items-center">
+    {/* Simple logo without any effects */}
+    <button 
+      onClick={handleLogoClick}
+      className="focus:outline-none"
+    >
+      <img 
+        src={heroImage} 
+        alt="RawRecruit Logo" 
+        className="h-16 w-auto object-contain"
+      />
+    </button>
 
-            <nav className="hidden md:flex items-center gap-8">
-              {['Services', 'How It Works', 'Features', 'About'].map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
-                  className="relative text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium group py-2"
-                >
-                  {item}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 group-hover:w-full transition-all duration-300"></span>
-                </a>
-              ))}
-              
-              <button
-  onClick={handleGetStarted}
-  className="relative group"
->
-  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
-  <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 shadow-lg">
-    <span className="flex items-center gap-2">
-      Get Started
-      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-    </span>
-  </div>
-</button>
-            </nav>
+    <nav className="hidden md:flex items-center gap-8">
+      {['Services', 'How It Works', 'Features', 'About'].map((item) => (
+        <a
+          key={item}
+          href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+          className="relative text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium group py-2"
+        >
+          {item}
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 group-hover:w-full transition-all duration-300"></span>
+        </a>
+      ))}
+      
+      <button
+        onClick={handleGetStarted}
+        className="relative group"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
+        <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 shadow-lg">
+          <span className="flex items-center gap-2">
+            Get Started
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </span>
+        </div>
+      </button>
+    </nav>
 
-            <button
-              className="md:hidden p-3 rounded-xl bg-white/80 backdrop-blur-sm border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-300"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+    <button
+      className="md:hidden p-3 rounded-xl bg-white/80 backdrop-blur-sm border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-300"
+      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+    >
+      {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+    </button>
+  </div>
+
+  {mobileMenuOpen && (
+    <div className="md:hidden px-8 pb-6 animate-slideDown">
+      <div className="bg-white/90 backdrop-blur-lg rounded-2xl p-6 border border-white/40 shadow-xl">
+        <div className="flex flex-col gap-4">
+          {['Services', 'How It Works', 'Features', 'About'].map((item) => (
+            <a
+              key={item}
+              href={`#${item.toLowerCase().replace(' ', '-')}`}
+              className="text-gray-700 hover:text-purple-600 transition-all duration-300 py-3 px-4 rounded-lg hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50"
+              onClick={() => setMobileMenuOpen(false)}
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-
-          {mobileMenuOpen && (
-            <div className="md:hidden px-8 pb-6 animate-slideDown">
-              <div className="bg-white/90 backdrop-blur-lg rounded-2xl p-6 border border-white/40 shadow-xl">
-                <div className="flex flex-col gap-4">
-                  {['Services', 'How It Works', 'Features', 'About'].map((item) => (
-                    <a
-                      key={item}
-                      href={`#${item.toLowerCase().replace(' ', '-')}`}
-                      className="text-gray-700 hover:text-purple-600 transition-all duration-300 py-3 px-4 rounded-lg hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {item}
-                    </a>
-                  ))}
-                  <button
-                    onClick={handleGetStarted}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300 mt-2"
-                  >
-                    Get Started
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </header>
+              {item}
+            </a>
+          ))}
+          <button
+            onClick={handleGetStarted}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300 mt-2"
+          >
+            Get Started
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+</header>
 
         {/* Hero Section */}
-        <div className="pt-32">
-          <section 
-            ref={heroRef}
-            id="hero" 
-            className="relative px-6 py-20"
-          >
-            {/* Hero Background Elements */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
-              <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl"></div>
-            </div>
-
-            <div className="max-w-7xl mx-auto relative">
-              <div className="text-center mb-20">
-                {/* Interactive Tag */}
-                <div className="inline-flex items-center gap-2 mb-8">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur opacity-30 animate-pulse"></div>
-                    <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2.5 rounded-full text-sm font-medium shadow-lg">
-                      <span className="flex items-center gap-2">
-                        <Lightning className="w-4 h-4" />
-                        Recruitment Revolutionized
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Main Headline */}
-                <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
-                  <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent animate-gradient">
-                    Campus Recruitment
-                  </span>
-                  <br />
-                  <span className="text-gray-800">At Affordable Excellence</span>
-                </h1>
-                
-                <p className="text-gray-600 text-xl max-w-3xl mx-auto mb-12 leading-relaxed">
-                  Connecting colleges and companies for fresher recruitment through 
-                  innovative, technology-driven hiring solutions
-                </p>
-
-                {/* Interactive CTA */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                  <button
-  onClick={handleGetStarted}
-  className="group relative"
->
-  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
-  <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-10 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 shadow-xl">
-    <span className="flex items-center gap-3">
-      Start Your Journey
-      <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-    </span>
+        <div className="pt-20"> {/* Reduced from pt-32 to pt-20 */}
+          <section ref={heroRef} id="hero" className="relative px-6">
+            {/* Wrapper for hero + stats only */}
+<div className="relative">
+  {/* Background for the top portion only - INSIDE the wrapper */}
+  <div className="absolute inset-0 -z-10 overflow-hidden">
+    {/* Your background image with proper sizing - adjusted to start higher */}
+    <div 
+      className="absolute inset-0"
+      style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'contain',
+        backgroundPosition: 'center top', /* Changed from 'center center' to 'center top' */
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: 'white',
+      }}
+    />
+    {/* Gradient overlay for better text readability */}
+    <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-transparent" />
+    {/* Subtle colored tint */}
+    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-blue-500/10" />
+    
+    {/* Hero Background Elements - keep these */}
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl"></div>
+    </div>
   </div>
-</button>
-                  
-                  
-                </div>
 
-                {/* Stats Preview - Compact Continuous Scroller */}
+  <div className="max-w-7xl mx-auto relative">
+    <div className="text-center mb-20 pt-12 pb-24"> {/* Reduced top padding */}
+      {/* Interactive Tag */}
+<div className="inline-flex items-center gap-2 mb-8 mt-8"> {/* Added mt-8 */}
+  <div className="relative">
+    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur opacity-30 animate-pulse"></div>
+    <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2.5 rounded-full text-sm font-medium shadow-lg">
+      <span className="flex items-center gap-2">
+        <Lightning className="w-4 h-4" />
+        Recruitment Revolutionized
+      </span>
+    </div>
+  </div>
+</div>
+
+      {/* Main Headline */}
+<h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
+  <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent animate-gradient">
+    Next-Generation Campus
+  </span>
+  <br />
+  <span className="text-gray-800">
+    Recruitment Platform
+  </span>
+</h1>
+
+{/* SEO H2 – hidden visually but readable by search engines */}
+<h2 className="sr-only">
+  Connecting companies and colleges through data-driven recruitment and
+  career-building solutions for freshers
+</h2>
+
+<p 
+  className="text-black text-xl max-w-3xl mx-auto mb-12 leading-relaxed"
+  style={{
+    WebkitTextStroke: '0.3px #FFFFFF',
+    paintOrder: 'stroke fill'
+  }}
+>
+  RawRecruit connects colleges, companies, and freshers through a modern
+  campus recruitment platform focused on efficient entry-level hiring,
+  seamless fresher recruitment, and sustainable career growth powered
+  by technology.
+</p>
+
+      {/* Interactive CTA */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <button
+          onClick={handleGetStarted}
+          className="group relative"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+          <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-10 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 shadow-xl">
+            <span className="flex items-center gap-3">
+              Start Your Journey
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+            </span>
+          </div>
+        </button>
+      </div>
+
+      {/* Stats Preview - Black Text Only */}
 <div className="mt-16 overflow-hidden relative max-w-md mx-auto">
   {/* Container with fixed width */}
   <div className="flex items-center justify-center h-8">
@@ -557,47 +587,33 @@ const closeModal = () => {
     <div className="flex animate-compact-scroll whitespace-nowrap">
       {/* First set - always visible initially */}
       <div className="flex items-center gap-2 px-4">
-        <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex-shrink-0"></div>
-        <span className="text-gray-600 font-medium">500+ Colleges</span>
+        <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
+        <span className="text-black font-semibold">500+ Colleges</span>
       </div>
       
       <div className="flex items-center gap-2 px-4">
-        <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex-shrink-0"></div>
-        <span className="text-gray-600 font-medium">1K+ Companies</span>
+        <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
+        <span className="text-black font-semibold">1K+ Companies</span>
       </div>
       
       <div className="flex items-center gap-2 px-4">
-        <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex-shrink-0"></div>
-        <span className="text-gray-600 font-medium">95% Satisfaction</span>
+        <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
+        <span className="text-black font-semibold">95% Satisfaction</span>
       </div>
       
       {/* Repeat for seamless loop */}
       <div className="flex items-center gap-2 px-4">
-        <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex-shrink-0"></div>
-        <span className="text-gray-600 font-medium">500+ Colleges</span>
+        <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
+        <span className="text-black font-semibold">500+ Colleges</span>
       </div>
     </div>
   </div>
 </div>
+    </div>
+  </div>
+</div>
 
-<style jsx>{`
-  @keyframes compact-scroll {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-33.333%);
-    }
-  }
-  
-  .animate-compact-scroll {
-    animation: compact-scroll 15s linear infinite;
-    display: flex;
-  }
-`}</style>
-              </div>
-
-              {/* Hero Cards - Modern Dashboard Style */}
+    {/* Hero Cards - Modern Dashboard Style - This part doesn't have the background image */}
 <div id="services" className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto relative">
   {heroCards.map((card, idx) => {
     // Create unique gradient colors for each card
@@ -656,7 +672,7 @@ const closeModal = () => {
             glowElement.style.animation = '';
           }
         }}
-        className="relative group cursor-pointer perspective-1000"
+        className="relative group cursor-pointer perspective-1000 h-full"
         style={{
           animationDelay: `${idx * 150}ms`,
           animation: `slideUp 0.6s ease-out forwards ${idx * 150}ms, floatCard${idx + 1} 4s ease-in-out infinite ${idx * 0.3}s`,
@@ -703,29 +719,29 @@ const closeModal = () => {
           ))}
         </div>
         
-        {/* Card Container with Glass Morphism - CHANGED: Darker shade on hover */}
-        <div className="relative bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl overflow-hidden z-10 transition-all duration-500 group-hover:bg-gradient-to-br group-hover:from-gray-900 group-hover:to-gray-800 group-hover:border-gray-700/40">
-          {/* Top Accent Bar */}
+        {/* Card Container with Glass Morphism - FLEX COLUMN */}
+        <div className="relative bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl overflow-hidden z-10 transition-all duration-500 group-hover:bg-gradient-to-br group-hover:from-gray-900 group-hover:to-gray-800 group-hover:border-gray-700/40 h-full flex flex-col">
+          {/* Top Accent Bar - Only visible normally, hidden on hover */}
           <div 
-            className="h-1.5 w-full rounded-t-3xl transition-all duration-500 group-hover:h-2.5"
+            className="h-1.5 w-full rounded-t-3xl transition-all duration-500 group-hover:h-0 group-hover:opacity-0 flex-shrink-0"
             style={{
               background: `linear-gradient(90deg, ${colors.from}, ${colors.via}, ${colors.to})`,
             }}
           />
           
-          {/* Card Content - CHANGED: Dark background overlay on hover */}
-          <div className="relative p-8">
-            {/* Color overlay on hover - CHANGED to darker shade */}
+          {/* Card Content - FLEXIBLE HEIGHT */}
+          <div className="relative p-8 flex-grow flex flex-col">
+            {/* Color overlay on hover - Takes full card */}
             <div 
               className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
               style={{
-                background: `linear-gradient(135deg, ${colors.dark}, ${colors.dark})`,
+                background: `linear-gradient(135deg, ${colors.dark}ee, ${colors.dark}cc)`,
               }}
             />
             
-            <div className="relative">
+            <div className="relative flex-grow flex flex-col">
               {/* Icon Container with Floating Effect */}
-              <div className="relative mb-8">
+              <div className="relative mb-8 flex-shrink-0">
                 {/* Icon Background Glow */}
                 <div 
                   className="absolute -inset-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
@@ -735,11 +751,11 @@ const closeModal = () => {
                   }}
                 />
                 
-                {/* Icon Container - REMOVED ROTATING OUTER RING */}
+                {/* Icon Container */}
                 <div className="relative">
-                  {/* Icon Background - KEEP SAME ON HOVER (no change) */}
-                  <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-white to-gray-50 p-4 shadow-lg border border-white/60 flex items-center justify-center group-hover:from-white group-hover:to-gray-50">
-                    {/* Inner Glow - KEEP SAME ON HOVER */}
+                  {/* Icon Background - White normally, stays white on hover */}
+                  <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-white to-gray-50 p-4 shadow-lg border border-white/60 flex items-center justify-center group-hover:border-white/80">
+                    {/* Inner Glow */}
                     <div 
                       className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
                       style={{
@@ -747,7 +763,7 @@ const closeModal = () => {
                       }}
                     />
                     
-                    {/* Icon - REMOVED ROTATION, KEEP SAME COLOR on hover */}
+                    {/* Icon */}
                     <div 
                       className="relative transform transition-transform duration-500 group-hover:scale-110"
                       style={{ color: colors.from }}
@@ -758,34 +774,32 @@ const closeModal = () => {
                 </div>
               </div>
               
-              {/* Title with Gradient - CHANGED: White text on hover */}
-              <h3 className="text-2xl font-bold mb-4">
-                <span className="bg-gradient-to-r from-gray-800 via-gray-900 to-black bg-clip-text text-transparent group-hover:bg-gradient-to-r group-hover:from-white group-hover:via-gray-100 group-hover:to-gray-200 transition-all duration-500">
-                  {card.title}
-                </span>
-                <div 
-                  className="h-0.5 w-0 group-hover:w-full transition-all duration-700 mt-1"
-                  style={{
-                    background: `linear-gradient(90deg, ${colors.from}, ${colors.to})`,
-                  }}
-                />
-              </h3>
+              {/* Title with Gradient - White text on hover */}
+              <div className="mb-4 flex-shrink-0">
+                <h3 className="text-2xl font-bold">
+                  <span className="bg-gradient-to-r from-gray-800 via-gray-900 to-black bg-clip-text text-transparent group-hover:text-white transition-all duration-500">
+                    {card.title}
+                  </span>
+                  {/* Animated underline - Only appears on hover */}
+                  <div 
+                    className="h-0.5 w-0 group-hover:w-full transition-all duration-700 mt-1"
+                    style={{
+                      background: `linear-gradient(90deg, ${colors.from}, ${colors.to})`,
+                    }}
+                  />
+                </h3>
+              </div>
               
-              {/* Description - CHANGED: White text on hover */}
-              <p className="text-gray-600 mb-8 leading-relaxed group-hover:text-gray-200 transition-colors duration-500">
-                {card.description}
-              </p>
-              
-              {/* Features List with Animated Indicators */}
-              <ul className="space-y-4 mb-8">
+              {/* Features List with Animated Indicators - FLEXIBLE CONTENT */}
+              <ul className="space-y-4 mb-8 flex-grow">
                 {card.features.map((feature, fIdx) => (
                   <li 
                     key={fIdx}
-                    className="flex items-center gap-3 group/item"
+                    className="flex items-start gap-3 group/item"
                     style={{ animationDelay: `${fIdx * 100}ms` }}
                   >
                     {/* Animated Check Circle */}
-                    <div className="relative flex-shrink-0">
+                    <div className="relative flex-shrink-0 mt-1">
                       {/* Pulse Ring */}
                       <div 
                         className="absolute -inset-1 rounded-full opacity-0 group-hover/item:opacity-30 transition-opacity duration-300"
@@ -795,31 +809,31 @@ const closeModal = () => {
                         }}
                       />
                       
-                      {/* Check Circle - KEEP SAME STYLE on hover */}
+                      {/* Check Circle - White on hover */}
                       <div 
-                        className="relative w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-0.5"
+                        className="relative w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-0.5 group-hover:bg-white group-hover:border group-hover:border-white/60"
                         style={{
                           background: `linear-gradient(135deg, ${colors.from}, ${colors.via})`,
                           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
                         }}
                       >
-                        <CheckCircle className="w-3.5 h-3.5 text-white" />
+                        <CheckCircle className="w-3.5 h-3.5 text-white group-hover:text-gray-700 transition-colors duration-300" />
                       </div>
                     </div>
                     
-                    {/* Feature Text - CHANGED: White text on hover */}
-                    <span className="text-sm text-gray-600 group-hover:text-gray-200 transition-colors duration-300">
+                    {/* Feature Text - White text on hover */}
+                    <span className="text-sm text-gray-600 group-hover:text-gray-200 transition-colors duration-300 leading-relaxed">
                       {feature}
                     </span>
                   </li>
                 ))}
               </ul>
               
-              {/* Interactive Bottom Section */}
-              <div className="pt-6 border-t border-gray-100/50 group-hover:border-gray-700/50 transition-colors duration-500">
+              {/* Interactive Bottom Section - FIXED AT BOTTOM */}
+              <div className="pt-6 border-t border-gray-100/50 group-hover:border-gray-700/50 transition-colors duration-500 flex-shrink-0">
                 {/* Progress Indicator */}
                 <div className="flex items-center justify-between mb-3">
-                  {/* CHANGED: White text on hover */}
+                  {/* White text on hover */}
                   <span className="text-xs text-gray-500 group-hover:text-gray-300 transition-colors duration-500">Explore</span>
                   <div className="flex items-center gap-1">
                     {[...Array(3)].map((_, dotIdx) => (
@@ -845,9 +859,9 @@ const closeModal = () => {
                       }}
                     />
                     
-                    {/* Arrow - CHANGED: Dark background, white icon on hover */}
-                    <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-gray-50 to-white border border-gray-100/60 flex items-center justify-center shadow-sm group-hover:from-gray-800 group-hover:to-gray-700 group-hover:border-gray-600/60 group-hover:shadow-md transition-all duration-300 group-hover:translate-x-2">
-                      <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-300 transition-colors duration-300" />
+                    {/* Arrow - White on hover */}
+                    <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-gray-50 to-white border border-gray-100/60 flex items-center justify-center shadow-sm group-hover:bg-white group-hover:border-white/80 group-hover:shadow-md transition-all duration-300 group-hover:translate-x-2">
+                      <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-700 transition-colors duration-300" />
                     </div>
                   </div>
                 </div>
@@ -855,9 +869,9 @@ const closeModal = () => {
             </div>
           </div>
           
-          {/* Edge Highlights for 3D Effect - CHANGED: Darker on hover */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover:via-gray-700/50" />
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:via-gray-700/30" />
+          {/* Edge Highlights for 3D Effect - Darker on hover */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover:via-gray-700/50 flex-shrink-0" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:via-gray-700/30 flex-shrink-0" />
         </div>
         
         {/* Floating Shadow */}
@@ -872,8 +886,23 @@ const closeModal = () => {
     );
   })}
 </div>
-            </div>
-          </section>
+</section>
+
+<style jsx>{`
+  @keyframes compact-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-33.333%);
+    }
+  }
+  
+  .animate-compact-scroll {
+    animation: compact-scroll 15s linear infinite;
+    display: flex;
+  }
+`}</style>
 
           {/* How It Works - Modern Dashboard Layout */}
 <section 
@@ -892,8 +921,9 @@ const closeModal = () => {
       <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
         How <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">RawRecruit</span> Works
       </h2>
-      <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-        Simple, efficient workflow designed for modern recruitment
+      <p className="text-gray-600 text-lg max-w-3xl mx-auto">
+        A unified campus recruitment platform designed for colleges, companies, and employers. 
+        Streamline your fresher hiring process with our comprehensive campus recruitment solutions.
       </p>
     </div>
 
@@ -903,40 +933,43 @@ const closeModal = () => {
         {
           type: 'colleges',
           icon: <GraduationCap className="w-8 h-8" />,
-          title: 'For Colleges',
+          title: 'For Colleges (TPOs)',
           steps: [
-            'Register your college and create a profile',
-            'View hiring requests from companies',
-            'Post your own hiring opportunities',
-            'Request training and branding services'
+            'Register your college on a centralized campus recruitment platform',
+            'Discover on-campus and pool-campus hiring requests from companies',
+            'Publish on-campus and pool-campus recruitment opportunities',
+            'Access student training, seminars, and institutional branding services'
           ],
           color: '#8B5CF6',
+          seoValue: 'Targets campus recruitment for colleges, TPO placement platform, on-campus recruitment',
           description: 'Colleges can connect directly with companies, post hiring requests, and access training services.'
         },
         {
           type: 'companies',
           icon: <Building2 className="w-8 h-8" />,
-          title: 'For Companies',
+          title: 'For Companies (HR & Hiring Managers)',
           steps: [
-            'Register your company and set up profile',
-            'Browse college hiring requests',
-            'Post on-campus and pool campus opportunities',
-            'Access workforce and training solutions'
+            'Create a company profile to manage fresher hiring at scale',
+            'Explore college-led on-campus and pool-campus recruitment opportunities',
+            'Post on-campus, pool-campus, and off-campus hiring requirements',
+            'Access workforce solutions and employee training programs'
           ],
           color: '#EC4899',
+          seoValue: 'Targets fresher recruitment platform, campus hiring solutions, entry-level hiring',
           description: 'Companies can find qualified candidates from colleges and post various campus recruitment opportunities.'
         },
         {
           type: 'employers',
           icon: <Briefcase className="w-8 h-8" />,
-          title: 'For Employers',
+          title: 'For Employers (Staffing & Hiring Partners)',
           steps: [
-            'Create employer profile independently',
-            'Manage all recruitment activities',
-            'Work on behalf of companies',
-            'Handle company acceptance and coordination'
+            'Set up an independent employer profile',
+            'Manage end-to-end campus and off-campus recruitment activities',
+            'Coordinate hiring on behalf of multiple companies',
+            'Handle company approvals, scheduling, and recruitment operations'
           ],
           color: '#3B82F6',
+          seoValue: 'Targets recruitment management, employer hiring solutions, campus hiring coordination',
           description: 'Employers can work independently or on behalf of companies to manage recruitment processes.'
         }
       ].map((section, idx) => (
@@ -974,7 +1007,7 @@ const closeModal = () => {
               {section.title}
             </h3>
             
-            <ul className="space-y-4">
+            <ul className="space-y-4 mb-6">
               {section.steps.map((step, stepIdx) => (
                 <li 
                   key={stepIdx} 
@@ -994,8 +1027,16 @@ const closeModal = () => {
               ))}
             </ul>
             
+            {/* SEO Value Section - Hidden by default, shows on hover */}
+            {/* <div className="mt-6 pt-4 border-t border-gray-100/30">
+              <div className="text-xs text-gray-500 mb-2">SEO Keywords</div>
+              <div className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300 italic leading-relaxed">
+                {section.seoValue}
+              </div>
+            </div> */}
+            
             {/* Enhanced interactive footer with clickable Learn More */}
-            <div className="mt-8 pt-6 border-t border-gray-100/50 group-hover:border-gray-200/70 transition-colors duration-300 flex items-center justify-between">
+            <div className="mt-6 pt-6 border-t border-gray-100/50 group-hover:border-gray-200/70 transition-colors duration-300 flex items-center justify-between">
               {/* Learn More button - Clickable for modal */}
               <button 
                 onClick={(e) => {
