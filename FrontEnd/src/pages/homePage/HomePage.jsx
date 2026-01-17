@@ -1450,6 +1450,7 @@ const closeModal = () => {
             {services.college.desc}
           </p>
           <button
+<<<<<<< Updated upstream
   onClick={() => handleRoleSelect('college')}
   className="group relative text-white px-8 py-4 rounded-full font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
 >
@@ -1467,6 +1468,125 @@ const closeModal = () => {
     <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
   </span>
 </button>
+=======
+            onClick={() => handleRoleSelect('college')}
+            className="group relative bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-8 py-4 rounded-full font-bold hover:shadow-xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
+          >
+            <div 
+              className="absolute inset-0 bg-gradient-to-r from-[#764ba2] to-[#667eea] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              style={{
+                animation: 'buttonPulse 2s ease-in-out infinite',
+                background: `linear-gradient(45deg, #667eea, #764ba2, #667eea)`,
+                backgroundSize: '200% 200%'
+              }}
+            />
+            <span className="relative flex items-center gap-3">
+              Explore College Features
+              <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300 animate-moveRight" />
+            </span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 relative">
+          {services.college.cards.map((service, idx) => {
+            // Function to get darker shade of a color
+            const getDarkerColor = (color) => {
+              if (!color) return '#5c3a7d';
+              
+              // For hex colors, make them darker by 20%
+              if (color.startsWith('#')) {
+                // Simple darkening function
+                const hex = color.replace('#', '');
+                const r = parseInt(hex.substr(0, 2), 16);
+                const g = parseInt(hex.substr(2, 2), 16);
+                const b = parseInt(hex.substr(4, 2), 16);
+                
+                // Darken by 20%
+                const darken = 0.8;
+                const dr = Math.floor(r * darken);
+                const dg = Math.floor(g * darken);
+                const db = Math.floor(b * darken);
+                
+                return `#${dr.toString(16).padStart(2, '0')}${dg.toString(16).padStart(2, '0')}${db.toString(16).padStart(2, '0')}`;
+              }
+              
+              return color;
+            };
+
+            const darkerColor = getDarkerColor(service.color);
+
+            return (
+              <div
+                key={idx}
+                onClick={() => handleServiceCardClick('college', service.title)}
+                onMouseEnter={(e) => {
+                  // Change card background to darker color (unique for each card)
+                  e.currentTarget.style.backgroundColor = darkerColor;
+                  // Change icon box to white
+                  const iconBox = e.currentTarget.querySelector('.service-icon-box');
+                  if (iconBox) {
+                    iconBox.style.background = '#ffffff';
+                    // Change icon color to darker color
+                    const iconSvg = iconBox.querySelector('svg');
+                    if (iconSvg) {
+                      iconSvg.style.color = darkerColor;
+                      iconSvg.style.fill = darkerColor;
+                    }
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  // Reset card background
+                  e.currentTarget.style.backgroundColor = 'white';
+                  // Reset icon box
+                  const iconBox = e.currentTarget.querySelector('.service-icon-box');
+                  if (iconBox) {
+                    iconBox.style.background = `linear-gradient(135deg, ${service.color}, ${service.color}dd)`;
+                    // Reset icon color to white
+                    const iconSvg = iconBox.querySelector('svg');
+                    if (iconSvg) {
+                      iconSvg.style.color = '#ffffff';
+                      iconSvg.style.fill = '#ffffff';
+                    }
+                  }
+                }}
+                className="relative bg-white p-4 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group cursor-pointer overflow-hidden"
+                style={{ transition: 'all 0.4s ease' }}
+              >
+                <div 
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${service.color}20, transparent)`
+                  }}
+                />
+                
+                <div className="relative z-10">
+                  <div 
+                    className="service-icon-box w-12 h-12 rounded-xl p-3 mb-3 text-white shadow-md mx-auto flex items-center justify-center transition-all duration-300"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${service.color}, ${service.color}dd)`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'background 0.4s ease'
+                    }}
+                  >
+                    <div className="flex items-center justify-center">
+                      {service.icon}
+                    </div>
+                  </div>
+                  
+                  <h3 className="relative text-sm font-bold text-gray-800 mb-1 text-center group-hover:text-white transition-colors duration-300 z-10">
+                    {service.title}
+                  </h3>
+                  <p className="relative text-xs text-gray-600 leading-relaxed text-center group-hover:text-white/90 transition-colors duration-300 z-10">
+                    {service.desc}
+                  </p>
+             
+                </div>
+              </div>
+            );
+          })}
+>>>>>>> Stashed changes
         </div>
       </div>
     </div>

@@ -34,7 +34,7 @@ export default function RegisterPage({
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg p-6">
 
           <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent text-center mb-1">
-            Request Info for On-Campus Hiring
+            Request Info for On-Campus Hiring 
           </h2>
 
           <p className="text-gray-600 text-center text-sm mb-5">
@@ -119,7 +119,7 @@ export default function RegisterPage({
                 className="flex items-center gap-2 text-[#3b82f6] hover:text-[#1d4ed8] font-medium"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Back to Home
+                Back 
               </button>
 
               <button
