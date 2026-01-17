@@ -377,6 +377,7 @@ function JobDetailPage(props) {
         const response = await getApplicationByJobOfManagement(jobId, 'On-campus', props?.status,isVisited);
         if (response.data && Array.isArray(response.data)) {
           setApplicants(response.data);
+          console.log(response.data)
           if (response.data.length > 0 && response.data[0].job && response.data[0].job.jobTitle) {
             setJobRole(response.data[0].job.jobTitle);
           }
