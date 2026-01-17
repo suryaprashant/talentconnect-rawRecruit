@@ -50,8 +50,7 @@
 // export default PoolCollegeCard;
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { MapPin, Heart } from 'lucide-react';
+import { MapPin, Heart, ExternalLink } from 'lucide-react';
 import { SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 
@@ -102,18 +101,6 @@ const pastelColors = [
   "bg-gradient-to-r from-[#fcd34d]/20 to-[#fbbf24]/20 text-[#d97706] border border-[#fcd34d]/30",
 ];
 
-// Helper function to get a random theme color
-const getRandomThemeColor = () => {
-  const themeColors = [
-    "bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30", // Purple
-    "bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30", // Green
-    "bg-gradient-to-r from-[#fbcfe8]/20 to-[#f9a8d4]/20 text-[#9d174d] border border-[#fbcfe8]/30", // Pink
-    "bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30", // Yellow
-    "bg-gradient-to-r from-[#bae6fd]/20 to-[#7dd3fc]/20 text-[#0369a1] border border-[#bae6fd]/30", // Blue
-  ];
-  return themeColors[Math.floor(Math.random() * themeColors.length)];
-};
-
 function getStableColor(id = "") {
   let hash = 0;
   for (let i = 0; i < id.length; i++) {
@@ -122,7 +109,7 @@ function getStableColor(id = "") {
   return pastelColors[hash];
 }
 
-const PoolCollegeCard = ({ college }) => {
+const PoolCollegeCard = ({ college, onClick, compact = false }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -173,11 +160,13 @@ const PoolCollegeCard = ({ college }) => {
     }
   };
 
-  // Format venue/location
-  const formatVenue = () => {
+  // Format location
+  const formatLocation = () => {
+    if (college.location && college.location.length > 0) {
+      return college.location.join(', ');
+    }
     if (college.venue) return college.venue;
-    if (college.location?.length) return college.location.join(', ');
-    return 'Venue not specified';
+    return 'Location not specified';
   };
 
   const getInitials = (name) => {
@@ -192,194 +181,216 @@ const PoolCollegeCard = ({ college }) => {
   const collegeStatus = getCollegeStatus();
   const stableColor = getStableColor(college._id || collegeName);
 
-  return (
-    <div className="
-      w-full max-w-[350px] mx-auto rounded-2xl 
-      border shadow-sm hover:shadow-lg transition overflow-hidden
-      flex flex-col h-full
-    ">
-      {/* TOP SECTION */}
-      <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-1 flex flex-col`}>
+  // Handle card click to open modal
+  const handleContactClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (onClick && typeof onClick === 'function') {
+      onClick(college);
+    } else {
+      console.error('onClick handler is not available');
+    }
+  };
 
-        {/* Status + Save */}
-        <div className="flex justify-between items-start">
-          <span className={`text-xs ${collegeStatus.color} px-3 py-1 rounded-full font-medium`}>
-            {collegeStatus.status}
-          </span>
+  // Render the card - same for both compact and normal
+  const renderCard = (isCompact) => {
+    const containerClass = isCompact 
+      ? "w-full mx-auto rounded-2xl border shadow-sm hover:shadow-lg transition overflow-hidden flex flex-col cursor-pointer"
+      : "w-full max-w-[350px] min-h-[430px] mx-auto rounded-2xl border shadow-sm hover:shadow-lg transition overflow-hidden flex flex-col cursor-pointer";
+    
+    const logoSize = isCompact ? "w-14 h-14" : "w-14 h-14";
+    const logoImageSize = isCompact ? "w-12 h-12" : "w-12 h-12";
+    const logoInitialsSize = isCompact ? "w-12 h-12 text-lg" : "w-12 h-12 text-lg";
+    const titleMaxWidth = isCompact ? "max-w-[200px]" : "max-w-[200px]";
 
-          <button
-            onClick={handleSave}
-            className="bg-white p-2 rounded-full shadow"
-          >
-            <Heart
-              className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
-              fill={isSaved ? "currentColor" : "none"}
-            />
-          </button>
-        </div>
+    return (
+      <div className={containerClass}>
+        {/* TOP SECTION */}
+        <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-grow`}>
 
-        {/* College Name + Degree Types */}
-        <div className="mt-3 flex justify-between items-start gap-2">
-          <div className="flex flex-col gap-1">
-            <h3 className="text-black font-semibold text-lg truncate max-w-[200px]">
-              {collegeName}
-            </h3>
+          {/* Status + Save */}
+          <div className="flex justify-between items-start">
+            <span className={`text-xs ${collegeStatus.color} px-3 py-1 rounded-full font-medium`}>
+              {collegeStatus.status}
+            </span>
 
-            {/* Display Degree Types */}
-            {college.degree?.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-1">
-                {college.degree.slice(0, 3).map((degree, index) => (
-                  <span 
-                    key={index} 
-                    className="text-sm font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded border border-black/5"
-                  >
-                    {degree}
-                  </span>
-                ))}
-                {college.degree.length > 3 && (
-                  <span className="text-sm font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded border border-black/5">
-                    +{college.degree.length - 3}
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
-            {logo && !imageError ? (
-              <img 
-                src={logo} 
-                alt={`${collegeName} logo`}
-                className="w-12 h-12 object-cover"
-                onError={() => setImageError(true)}
+            <button
+              onClick={handleSave}
+              className="bg-white p-2 rounded-full shadow hover:bg-gray-50 transition"
+            >
+              <Heart
+                className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
+                fill={isSaved ? "currentColor" : "none"}
               />
-            ) : (
-              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                {getInitials(collegeName)}
-              </div>
-            )}
+            </button>
           </div>
-        </div>
 
-        {/* Employment Type Badge */}
-        <div className="mt-3">
-          <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
-            {college.employmentType?.length > 0 
-              ? college.employmentType.join(', ')
-              : 'Employment type not specified'}
-          </span>
-        </div>
+          {/* College Name + Degree Types */}
+          <div className="mt-3 flex justify-between items-start gap-2">
+            <div className="flex flex-col gap-1">
+              <h3 className={`text-black font-semibold text-lg truncate ${titleMaxWidth}`}>
+                {collegeName}
+              </h3>
 
-        {/* College Types */}
-        {college.collegeTypes?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {college.collegeTypes.slice(0, 3).map((type, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-orange-100 text-orange-800 border border-orange-300 rounded-full text-xs"
-              >
-                {type}
-              </span>
-            ))}
-            {college.collegeTypes.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{college.collegeTypes.length - 3}</span>
-            )}
+              {/* Display Degree Types */}
+              {college.degree?.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {college.degree.slice(0, 3).map((degree, index) => (
+                    <span 
+                      key={index} 
+                      className="text-sm font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded border border-black/5"
+                    >
+                      {degree}
+                    </span>
+                  ))}
+                  {college.degree.length > 3 && (
+                    <span className="text-sm font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded border border-black/5">
+                      +{college.degree.length - 3}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className={`${logoSize} bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0`}>
+              {logo && !imageError ? (
+                <img 
+                  src={logo} 
+                  alt={`${collegeName} logo`}
+                  className={`${logoImageSize} object-cover`}
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <div className={`${logoInitialsSize} bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold`}>
+                  {getInitials(collegeName)}
+                </div>
+              )}
+            </div>
           </div>
-        )}
 
-        {/* Work Modes */}
-        {college.workMode?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {college.workMode.slice(0, 3).map((mode, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
-              >
-                {mode}
-              </span>
-            ))}
-            {college.workMode.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{college.workMode.length - 3}</span>
-            )}
-          </div>
-        )}
-
-        {/* Company Types */}
-        {college.companyType?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {college.companyType.slice(0, 3).map((type, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs"
-              >
-                {type}
-              </span>
-            ))}
-            {college.companyType.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{college.companyType.length - 3}</span>
-            )}
-          </div>
-        )}
-
-        {/* Amenities as Skills */}
-        {college.amenitiesRequired?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {college.amenitiesRequired.slice(0, 3).map((amenity, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
-              >
-                {amenity}
-              </span>
-            ))}
-            {college.amenitiesRequired.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{college.amenitiesRequired.length - 3}</span>
-            )}
-          </div>
-        )}
-
-        {/* Description */}
-        <div className="mt-3">
-          <p className="text-sm text-gray-700 line-clamp-3">
-            {college.description 
-              ? college.description.split(' ').slice(0, 20).join(' ') + (college.description.split(' ').length > 20 ? '...' : '')
-              : 'No description provided.'}
-          </p>
-        </div>
-
-      </div>
-
-      {/* BOTTOM SECTION */}
-      <div className="p-4 bg-white flex justify-between items-center border-t">
-
-        <div>
-          {/* Package */}
-          <p className="font-semibold text-gray-900 text-sm">
-            {college.packageDetails?.totalCTC 
-              ? `₹${college.packageDetails.totalCTC.toLocaleString()}`
-              : "Not Disclosed"}
-          </p>
-
-          {/* Location/Venue */}
-          <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
-            <MapPin className="h-4 w-4 text-gray-500" />
-            <span className="line-clamp-1 max-w-[120px]">
-              {formatVenue()}
+          {/* Employment Type Badge */}
+          <div className="mt-3">
+            <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
+              {college.employmentType?.length > 0 
+                ? college.employmentType.join(', ')
+                : 'Employment type not specified'}
             </span>
           </div>
+
+          {/* College Types */}
+          {college.collegeTypes?.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {college.collegeTypes.slice(0, 3).map((type, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-orange-100 text-orange-800 border border-orange-300 rounded-full text-xs"
+                >
+                  {type}
+                </span>
+              ))}
+              {college.collegeTypes.length > 3 && (
+                <span className="px-2 py-1 text-xs text-gray-600">+{college.collegeTypes.length - 3}</span>
+              )}
+            </div>
+          )}
+
+          {/* Work Modes */}
+          {college.workMode?.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {college.workMode.slice(0, 3).map((mode, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
+                >
+                  {mode}
+                </span>
+              ))}
+              {college.workMode.length > 3 && (
+                <span className="px-2 py-1 text-xs text-gray-600">+{college.workMode.length - 3}</span>
+              )}
+            </div>
+          )}
+
+          {/* Company Types */}
+          {college.companyType?.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {college.companyType.slice(0, 3).map((type, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs"
+                >
+                  {type}
+                </span>
+              ))}
+              {college.companyType.length > 3 && (
+                <span className="px-2 py-1 text-xs text-gray-600">+{college.companyType.length - 3}</span>
+              )}
+            </div>
+          )}
+
+          {/* Amenities as Skills */}
+          {college.amenitiesRequired?.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {college.amenitiesRequired.slice(0, 3).map((amenity, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
+                >
+                  {amenity}
+                </span>
+              ))}
+              {college.amenitiesRequired.length > 3 && (
+                <span className="px-2 py-1 text-xs text-gray-600">+{college.amenitiesRequired.length - 3}</span>
+              )}
+            </div>
+          )}
+
+          {/* Description */}
+          <div className="mt-3">
+            <p className="text-sm text-gray-700 line-clamp-3">
+              {college.description 
+                ? college.description.split(' ').slice(0, 20).join(' ') + (college.description.split(' ').length > 20 ? '...' : '')
+                : 'No description provided.'}
+            </p>
+          </div>
+
         </div>
 
-        <Link
-          to={`/company-dashboard/Pool-campus/${college._id || college.id}`}
-          className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
-        >
-          Contact 
-        </Link>
+        {/* BOTTOM SECTION */}
+        <div className="p-4 bg-white flex justify-between items-center border-t">
+          <div>
+            {/* Package */}
+            <p className="font-semibold text-gray-900 text-sm">
+              {college.packageDetails?.totalCTC 
+                ? `₹${college.packageDetails.totalCTC.toLocaleString()}`
+                : "Not Disclosed"}
+            </p>
 
+            {/* Location */}
+            <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
+              <MapPin className="h-4 w-4 text-gray-500" />
+              <span className="line-clamp-1 max-w-[120px]">
+                {formatLocation()}
+              </span>
+            </div>
+          </div>
+
+          {/* Contact Button */}
+          <button
+            onClick={handleContactClick}
+            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition flex items-center gap-1"
+          >
+            <ExternalLink className="h-4 w-4" />
+            Contact 
+          </button>
+        </div>
       </div>
+    );
+  };
 
-    </div>
-  );
+  // Return either compact or normal version
+  return renderCard(compact);
 };
 
 export default PoolCollegeCard;
