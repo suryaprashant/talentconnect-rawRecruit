@@ -301,120 +301,128 @@ export async function createApplicationService(userId, userType, jobId, jobType)
 //     }
 // }
 
+////////////MANAV//////////////
+// export async function fetchApplicationStatusService(userId, jobType, userType) {
 
-export async function fetchApplicationStatusService(userId, jobType, userType) {
-    try {
+
+//     try {
         
 
-        const applicationData = await Application.aggregate([
-            {
-                $match: {
-                    applicant: new mongoose.Types.ObjectId(userId),
-                    jobType: jobType,
-                    currentStatus: { $ne: 'Saved' }
-                }
-            },
-            {
-                $lookup: {
-                    from: 'jobpostingtables',
-                    localField: 'job',
-                    foreignField: '_id',
-                    as: 'jobDetails'
-                }
-            },
-            {
-                $lookup: {
-                    from: 'collegeonboardings',
-                    localField: 'jobDetails.collegePosted',
-                    foreignField: '_id',
-                    as: 'collegeDetails'
-                }
-            },
-            {
-                $lookup: {
-                    from: userType === 'company' || userType === 'employer' 
-                        ? 'collegeonboardings' 
-                        : 'companyprofiles',
-                    localField: 'jobDetails.postedBy',
-                    foreignField: '_id',
-                    as: 'postedByDetails'
-                }
-            },
-            // Add debug fields
-            {
-                $addFields: {
-                    debugCollegeDetailsCount: { $size: "$collegeDetails" },
-                    debugJobDetailsCount: { $size: "$jobDetails" },
-                    debugJobDetailsCollegePosted: { 
-                        $ifNull: [
-                            { $arrayElemAt: ["$jobDetails.collegePosted", 0] }, 
-                            "NOT_FOUND"
-                        ] 
-                    }
-                }
-            }
-        ]);
+//         const applicationData = await Application.aggregate([
+//             {
+//                 $match: {
+//                     applicant: new mongoose.Types.ObjectId(userId),
+//                     jobType: jobType,
+//                     currentStatus: { $ne: 'Saved' }
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'jobpostingtables',
+//                     localField: 'job',
+//                     foreignField: '_id',
+//                     as: 'jobDetails'
+//                 }
+//             },
+//             { $unwind: { path: "$jobDetails", preserveNullAndEmptyArrays: true } },
+//             {
+//                 $lookup: {
+//                     from: 'companyprofiles', // Ensure this matches your DB collection name
+//                     localField: 'jobDetails.companyPosted',
+//                     foreignField: '_id',
+//                     as: 'companyProfile'
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'collegeonboardings',
+//                     localField: 'jobDetails.collegePosted',
+//                     foreignField: '_id',
+//                     as: 'collegeDetails'
+//                 }
+//             },
+//             {
+//                 $lookup: {
+//                     from: userType === 'company' || userType === 'employer' 
+//                         ? 'collegeonboardings' 
+//                         : 'companyprofiles',
+//                     localField: 'jobDetails.postedBy',
+//                     foreignField: '_id',
+//                     as: 'postedByDetails'
+//                 }
+//             },
+//             // Add debug fields
+//             {
+//                $addFields: {
+//                     // This ensures jobDetails is an object, not an array
+//                     jobDetails: { $arrayElemAt: ["$jobDetails", 0] },
+//                     // This attaches the company profile (with the logo)
+//                     companyProfile: { $arrayElemAt: ["$companyProfileDetails", 0] },
+//                     collegeDetails: { $arrayElemAt: ["$collegeDetails", 0] }
+//                 }
+//             }
+//         ]);
 
-        // 🔍 COMPREHENSIVE DEBUGGING
-        console.log("🔍 Total applications found:", applicationData.length);
+//         // 🔍 COMPREHENSIVE DEBUGGING
+//         console.log("🔍 Total applications found:", applicationData.length);
         
-        if (applicationData.length > 0) {
-            const firstApp = applicationData[0];
-            //console.log("🔍 FIRST APPLICATION DEBUG:");
-            //console.log(JSON.stringify(firstApp, null, 2));
+//         if (applicationData.length > 0) {
+//             const firstApp = applicationData[0];
+//             //console.log("🔍 FIRST APPLICATION DEBUG:");
+//             //console.log(JSON.stringify(firstApp, null, 2));
             
-            //console.log("🔍 KEY FIELDS:");
-            //console.log("1. jobDetails count:", firstApp.debugJobDetailsCount);
-            //console.log("2. collegeDetails count:", firstApp.debugCollegeDetailsCount);
-            //console.log("3. jobDetails[0].collegePosted:", firstApp.debugJobDetailsCollegePosted);
+//             //console.log("🔍 KEY FIELDS:");
+//             //console.log("1. jobDetails count:", firstApp.debugJobDetailsCount);
+//             //console.log("2. collegeDetails count:", firstApp.debugCollegeDetailsCount);
+//             //console.log("3. jobDetails[0].collegePosted:", firstApp.debugJobDetailsCollegePosted);
             
-            if (firstApp.collegeDetails && firstApp.collegeDetails.length > 0) {
-                const college = firstApp.collegeDetails[0];
-                console.log("4. collegeDetails[0] keys:", Object.keys(college));
+//             if (firstApp.collegeDetails && firstApp.collegeDetails.length > 0) {
+//                 const college = firstApp.collegeDetails[0];
+//                 console.log("4. collegeDetails[0] keys:", Object.keys(college));
                 
-                // Check EVERY field for possible college name
-                Object.keys(college).forEach(key => {
-                    const value = college[key];
-                    if (typeof value === 'string' && value.length < 100) {
-                        console.log(`   "${key}": "${value}"`);
-                    } else if (key === 'collegeUniversityDetails') {
-                        console.log(`   "${key}":`, value);
-                        if (value && typeof value === 'object') {
-                            console.log(`   "${key}" keys:`, Object.keys(value));
-                            Object.keys(value).forEach(subKey => {
-                                if (typeof value[subKey] === 'string') {
-                                    console.log(`     "${subKey}": "${value[subKey]}"`);
-                                }
-                            });
-                        }
-                    }
-                });
+//                 // Check EVERY field for possible college name
+//                 Object.keys(college).forEach(key => {
+//                     const value = college[key];
+//                     if (typeof value === 'string' && value.length < 100) {
+//                         console.log(`   "${key}": "${value}"`);
+//                     } else if (key === 'collegeUniversityDetails') {
+//                         console.log(`   "${key}":`, value);
+//                         if (value && typeof value === 'object') {
+//                             console.log(`   "${key}" keys:`, Object.keys(value));
+//                             Object.keys(value).forEach(subKey => {
+//                                 if (typeof value[subKey] === 'string') {
+//                                     console.log(`     "${subKey}": "${value[subKey]}"`);
+//                                 }
+//                             });
+//                         }
+//                     }
+//                 });
                 
-                // Try to find college name
-                console.log("5. Searching for college name...");
-                const possiblePaths = [
-                    () => college.collegeUniversityDetails?.collegeName,
-                    () => college.collegeUniversityDetails?.name,
-                    () => college.collegeName,
-                    () => college.name,
-                    () => college.institutionName,
-                    () => college.universityName,
-                    () => college.collegeDetails?.collegeName
-                ];
+//                 // Try to find college name
+//                 console.log("5. Searching for college name...");
+//                 const possiblePaths = [
+//                     () => college.collegeUniversityDetails?.collegeName,
+//                     () => college.collegeUniversityDetails?.name,
+//                     () => college.collegeName,
+//                     () => college.name,
+//                     () => college.institutionName,
+//                     () => college.universityName,
+//                     () => college.collegeDetails?.collegeName
+//                 ];
                 
-                possiblePaths.forEach((path, i) => {
-                    const result = path();
-                    console.log(`   Path ${i + 1}: ${path.toString().match(/college\.([^}]+)/)?.[1] || 'unknown'} = "${result}"`);
-                });
-            }
-        }
-          console.log(applicationData)
-        return { success: true, data: applicationData };
-    } catch (error) {
-        console.log("Error: ", error.message);
-        throw new Error("Failed to fetch");
-    }
-}
+//                 possiblePaths.forEach((path, i) => {
+//                     const result = path();
+//                     console.log(`   Path ${i + 1}: ${path.toString().match(/college\.([^}]+)/)?.[1] || 'unknown'} = "${result}"`);
+//                 });
+//             }
+//         }
+//           console.log(applicationData)
+//         return { success: true, data: applicationData };
+//     } catch (error) {
+//         console.log("Error: ", error.message);
+//         throw new Error("Failed to fetch");
+//     }
+// }
 
 // export async function fetchApplicationStatusService(userId, jobType, userType) {
 //     try {
@@ -529,6 +537,63 @@ export async function fetchApplicationStatusService(userId, jobType, userType) {
 
 // job management
 // joblisting and offcampus
+
+export async function fetchApplicationStatusService(userId, jobType, userType) {
+    try {
+        const applicationData = await Application.aggregate([
+            {
+                $match: {
+                    applicant: new mongoose.Types.ObjectId(userId),
+                    jobType: jobType,
+                    currentStatus: { $ne: 'Saved' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'jobpostingtables',
+                    localField: 'job',
+                    foreignField: '_id',
+                    as: 'jobDetails'
+                }
+            },
+            // ✅ We unwind jobDetails so it's an object. 
+            // DO NOT use $arrayElemAt on jobDetails after this!
+            { $unwind: { path: "$jobDetails", preserveNullAndEmptyArrays: true } },
+            
+            {
+                $lookup: {
+                    from: 'companyprofiles',
+                    localField: 'jobDetails.companyPosted',
+                    foreignField: '_id',
+                    as: 'companyProfile' 
+                }
+            },
+            {
+                $lookup: {
+                    from: 'collegeonboardings',
+                    localField: 'jobDetails.collegePosted',
+                    foreignField: '_id',
+                    as: 'collegeDetails'
+                }
+            },
+            {
+                $addFields: {
+                    // ✅ FIXED: We only use arrayElemAt for the fields that are still arrays
+                    // We DO NOT touch jobDetails here because $unwind already handled it.
+                    companyProfile: { $arrayElemAt: ["$companyProfile", 0] },
+                    collegeDetails: { $arrayElemAt: ["$collegeDetails", 0] }
+                }
+            }
+        ]);
+
+        console.log("🔍 Total applications found:", applicationData.length);
+        return { success: true, data: applicationData };
+    } catch (error) {
+        console.error("Aggregation Error:", error.message);
+        throw new Error("Failed to fetch");
+    }
+}
+
 export async function fetchApplicationsByJobService(jobId, jobType, targetStatus, isVisited) {
     // console.log("...........\n", jobId, jobType, targetStatus, isVisited);
     try {

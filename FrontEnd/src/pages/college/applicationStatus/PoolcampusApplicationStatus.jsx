@@ -54,8 +54,13 @@ export default function PoolCampusApplicationStatus() {
                         });
                         
                         // Extract data using the SAME logic as PoolJobDetailsPage
-                        const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company/College";
-                        const companyLogo = jobDetails.companyPosted?.profileImageUrl || null;
+                    const companyName = item.companyProfile?.companyDetails?.companyName || 
+                              jobDetails.companyPosted?.companyDetails?.companyName || "Company/College";
+            
+            // ✅ Correctly map the logo from the backend profile
+            const companyLogo = item.companyProfile?.profileImage || 
+                              item.companyProfile?.profileImageUrl || 
+                              jobDetails.companyPosted?.profileImageUrl || null;
                         const location = jobDetails?.venue || "Location not specified";
                         const jobTitle = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0 
                             ? jobDetails.jobRoles[0] 
@@ -305,36 +310,35 @@ export default function PoolCampusApplicationStatus() {
                                 {filteredJobs.length > 0 ? (
                                     <div className="space-y-2">
                                         {filteredJobs.map(job => (
-                                            <button
-                                                key={job.id}
-                                                onClick={() => setSelectedJob(job)}
-                                                className={`w-full text-left p-3 rounded-xl transition-all duration-200 ${
-                                                    selectedJob?.id === job.id 
-                                                        ? 'bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 border border-[#3b82f6]/20' 
-                                                        : 'hover:bg-white/30 border border-transparent'
-                                                }`}
-                                            >
-                                                <div className="flex items-start gap-3">
-                                                    {job.companyLogo ? (
-                                                        <img 
-                                                            src={job.companyLogo} 
-                                                            alt={job.company}
-                                                            className="w-9 h-9 rounded-lg object-cover border border-white/60"
-                                                            onError={(e) => {
-                                                                e.target.style.display = 'none';
-                                                                if (e.target.nextSibling) {
-                                                                    e.target.nextSibling.style.display = 'flex';
-                                                                }
-                                                            }}
-                                                        />
-                                                    ) : null}
-                                                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                                                        selectedJob?.id === job.id 
-                                                            ? 'bg-gradient-to-br from-[#93c5fd] to-[#3b82f6] text-white' 
-                                                            : 'bg-white/50 border border-white/60 text-[#3b82f6]'
-                                                    }`}>
-                                                        <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
-                                                    </div>
+                                            //////
+                                           <div
+    key={job.id}
+    onClick={() => setSelectedJob(job)}
+    className={`w-full text-left p-3 rounded-xl transition-all duration-200 cursor-pointer ${
+        selectedJob?.id === job.id 
+            ? 'bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 border border-[#3b82f6]/20' 
+            : 'hover:bg-white/30 border border-transparent'
+    }`}
+>
+    <div className="flex items-start gap-3">
+        {/* Logo Container */}
+        <div className="w-9 h-9 flex-shrink-0 relative">
+            {job.companyLogo ? (
+                <img 
+                    src={job.companyLogo} 
+                    alt={job.company}
+                    className="w-9 h-9 rounded-lg object-cover border border-white/60 absolute inset-0 z-10"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                />
+            ) : null}
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs ${
+                selectedJob?.id === job.id 
+                    ? 'bg-gradient-to-br from-[#93c5fd] to-[#3b82f6] text-white' 
+                    : 'bg-white/50 border border-white/60 text-[#3b82f6]'
+            }`}>
+                {getCompanyInitials(job.company)}
+            </div>
+        </div>
                                                     <div className="flex-1 min-w-0">
                                                         <h3 className="text-sm font-semibold text-gray-900 truncate">
                                                             {job.company}
@@ -375,7 +379,7 @@ export default function PoolCampusApplicationStatus() {
                                                         </button>
                                                     </div>
                                                 )}
-                                            </button>
+                                           </div>
                                         ))}
                                     </div>
                                 ) : (
@@ -401,11 +405,19 @@ export default function PoolCampusApplicationStatus() {
                                             <h2 className="text-lg font-bold text-gray-900">{selectedJob.company}</h2>
                                             <p className="text-sm text-gray-600">{selectedJob.jobTitle}</p>
                                         </div>
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#93c5fd]/20 to-[#3b82f6]/20 flex items-center justify-center border border-white/60">
-                                            <span className="text-lg font-bold text-[#3b82f6]">
-                                                {getCompanyInitials(selectedJob.company)}
-                                            </span>
-                                        </div>
+                                       <div className="w-12 h-12 flex-shrink-0 relative">
+    {selectedJob.companyLogo ? (
+        <img 
+            src={selectedJob.companyLogo} 
+            alt={selectedJob.company}
+            className="w-12 h-12 rounded-xl object-cover border border-white/60 absolute inset-0 z-10"
+            onError={(e) => { e.target.style.display = 'none'; }}
+        />
+    ) : null}
+    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#93c5fd]/20 to-[#3b82f6]/20 flex items-center justify-center border border-white/60 font-bold text-lg text-[#3b82f6]">
+        {getCompanyInitials(selectedJob.company)}
+    </div>
+</div>
                                     </div>
                                     
                                     <div className="relative">
