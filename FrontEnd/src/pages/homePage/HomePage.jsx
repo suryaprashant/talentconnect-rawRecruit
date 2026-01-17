@@ -11,6 +11,14 @@ import {
   Layers, Palette, Code, Zap as Lightning
 } from 'lucide-react';
 import { TermsModal } from '@/components/onboarding/Terms&conditionModal';
+import { PrivacyModal } from '@/components/onboarding/PrivacyModal';
+import { ContactModal } from '@/components/onboarding/ContactModal';
+import { HelpCenterModal } from '@/components/onboarding/HelpModal';
+import { CareersModal } from '@/components/onboarding/CareerModal';
+import { AboutModal } from '@/components/onboarding/AboutModal';
+import { DemoModal } from '@/components/onboarding/DemoModal';
+import { SolutionsModal } from '@/components/onboarding/SolutionModal';
+import { FeaturesModal } from '@/components/onboarding/FeatureModal';
 import heroImage from "../../assets/RR-Tagline.png";
 import bgImage from "../../assets/bgImage.png";
 
@@ -18,7 +26,6 @@ const App = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hoveredCard, setHoveredCard] = useState(null);
-  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [activeSection, setActiveSection] = useState(null);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
@@ -34,17 +41,26 @@ const App = () => {
   const footerRef = useRef(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-const [selectedSection, setSelectedSection] = useState(null);
+  const [isFeaturesModalOpen, setIsFeaturesModalOpen] = useState(false);
+  const [isSolutionsModalOpen, setIsSolutionsModalOpen] = useState(false);
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+  const [isCareersModalOpen, setIsCareersModalOpen] = useState(false);
+  const [isHelpCenterModalOpen, setIsHelpCenterModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
+  const [selectedSection, setSelectedSection] = useState(null);
 
-const openModal = (section) => {
-  setSelectedSection(section);
-  setIsModalOpen(true);
-};
+  const openModal = (section) => {
+    setSelectedSection(section);
+    setIsModalOpen(true);
+  };
 
-const closeModal = () => {
-  setIsModalOpen(false);
-  setSelectedSection(null);
-};
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedSection(null);
+  };
 
   // Track mouse position for interactive effects
   useEffect(() => {
@@ -185,46 +201,46 @@ const closeModal = () => {
   };
 
   const heroCards = [
-  {
-    title: 'On-Campus Recruitment',
-    description: '', // Empty description
-    icon: <GraduationCap className="w-8 h-8" />,
-    gradient: 'from-[#8B5CF6] via-[#7C3AED] to-[#6D28D9]',
-    accentColor: 'bg-[#7C3AED]',
-    features: [
-      'Targeted hiring within a single college',
-      'Posted by colleges and companies',
-      'Structured placement drives',
-      'Ideal for focused fresher recruitment'
-    ]
-  },
-  {
-    title: 'Pool-Campus Recruitment',
-    description: '', // Empty description
-    icon: <Users2 className="w-8 h-8" />,
-    gradient: 'from-[#F472B6] via-[#EC4899] to-[#DB2777]',
-    accentColor: 'bg-[#EC4899]',
-    features: [
-      'Multi-college hiring through shared drives',
-      'Posted by colleges and companies',
-      'Wider talent reach',
-      'Cost-effective fresher hiring'
-    ]
-  },
-  {
-    title: 'Off-Campus Recruitment',
-    description: '', // Empty description
-    icon: <Globe className="w-8 h-8" />,
-    gradient: 'from-[#60A5FA] via-[#3B82F6] to-[#1D4ED8]',
-    accentColor: 'bg-[#3B82F6]',
-    features: [
-      'Open hiring beyond campus boundaries',
-      'Posted only by companies',
-      'Nationwide fresher jobs',
-      'Flexible entry-level recruitment'
-    ]
-  }
-];
+    {
+      title: 'On-Campus Recruitment',
+      description: '', // Empty description
+      icon: <GraduationCap className="w-8 h-8" />,
+      gradient: 'from-[#8B5CF6] via-[#7C3AED] to-[#6D28D9]',
+      accentColor: 'bg-[#7C3AED]',
+      features: [
+        'Targeted hiring within a single college',
+        'Posted by colleges and companies',
+        'Structured placement drives',
+        'Ideal for focused fresher recruitment'
+      ]
+    },
+    {
+      title: 'Pool-Campus Recruitment',
+      description: '', // Empty description
+      icon: <Users2 className="w-8 h-8" />,
+      gradient: 'from-[#F472B6] via-[#EC4899] to-[#DB2777]',
+      accentColor: 'bg-[#EC4899]',
+      features: [
+        'Multi-college hiring through shared drives',
+        'Posted by colleges and companies',
+        'Wider talent reach',
+        'Cost-effective fresher hiring'
+      ]
+    },
+    {
+      title: 'Off-Campus Recruitment',
+      description: '', // Empty description
+      icon: <Globe className="w-8 h-8" />,
+      gradient: 'from-[#60A5FA] via-[#3B82F6] to-[#1D4ED8]',
+      accentColor: 'bg-[#3B82F6]',
+      features: [
+        'Open hiring beyond campus boundaries',
+        'Posted only by companies',
+        'Nationwide fresher jobs',
+        'Flexible entry-level recruitment'
+      ]
+    }
+  ];
 
   const services = {
     company: {
@@ -361,6 +377,13 @@ const closeModal = () => {
     top: `${cursorPosition.y}px`,
   };
 
+  // Twitter icon component
+  const Twitter = ({ className }) => (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.213c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+    </svg>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden">
       {/* Animated background gradients */}
@@ -376,1491 +399,1333 @@ const closeModal = () => {
         style={cursorStyle}
       />
 
-      {/* Floating UI Elements - Dashboard Components */}
-      {/* <div className="fixed top-20 left-10 z-10">
-        <div className="relative">
-          <div className="absolute -inset-4 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-2xl blur-xl"></div>
-          <div className="relative bg-white/80 backdrop-blur-xl rounded-xl p-4 shadow-2xl border border-white/40">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100">
-                <Grid className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <div className="h-2 w-16 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full mb-1"></div>
-                <div className="h-1 w-12 bg-gradient-to-r from-gray-300 to-gray-200 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
-
-      {/* <div className="fixed bottom-20 right-10 z-10">
-        <div className="relative">
-          <div className="absolute -inset-4 bg-gradient-to-r from-blue-400/10 to-cyan-400/10 rounded-2xl blur-xl"></div>
-          <div className="relative bg-white/80 backdrop-blur-xl rounded-xl p-4 shadow-2xl border border-white/40">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-blue-100 to-cyan-100">
-                <Settings className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <div className="h-2 w-20 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full mb-1"></div>
-                <div className="h-1 w-14 bg-gradient-to-r from-gray-300 to-gray-200 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
-
       {/* Main Content */}
       <div className="relative z-20">
         {/* Modern Glass Navigation */}
         <header className="absolute top-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-6xl bg-white/70 backdrop-blur-xl rounded-2xl border border-white/40 shadow-2xl z-50">
-  <div className="px-8 py-3 flex justify-between items-center">
-    {/* Simple logo without any effects */}
-    <button 
-      onClick={handleLogoClick}
-      className="focus:outline-none"
-    >
-      <img 
-        src={heroImage} 
-        alt="RawRecruit Logo" 
-        className="h-16 w-auto object-contain"
-      />
-    </button>
-
-    <nav className="hidden md:flex items-center gap-8">
-      {['Services', 'How It Works', 'Features', 'About'].map((item) => (
-        <a
-          key={item}
-          href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
-          className="relative text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium group py-2"
-        >
-          {item}
-          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 group-hover:w-full transition-all duration-300"></span>
-        </a>
-      ))}
-      
-      <button
-        onClick={handleGetStarted}
-        className="relative group"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
-        <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 shadow-lg">
-          <span className="flex items-center gap-2">
-            Get Started
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </span>
-        </div>
-      </button>
-    </nav>
-
-    <button
-      className="md:hidden p-3 rounded-xl bg-white/80 backdrop-blur-sm border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-300"
-      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-    >
-      {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-    </button>
-  </div>
-
-  {mobileMenuOpen && (
-    <div className="md:hidden px-8 pb-6 animate-slideDown">
-      <div className="bg-white/90 backdrop-blur-lg rounded-2xl p-6 border border-white/40 shadow-xl">
-        <div className="flex flex-col gap-4">
-          {['Services', 'How It Works', 'Features', 'About'].map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase().replace(' ', '-')}`}
-              className="text-gray-700 hover:text-purple-600 transition-all duration-300 py-3 px-4 rounded-lg hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50"
-              onClick={() => setMobileMenuOpen(false)}
+          <div className="px-8 py-3 flex justify-between items-center">
+            {/* Simple logo without any effects */}
+            <button 
+              onClick={handleLogoClick}
+              className="focus:outline-none"
             >
-              {item}
-            </a>
-          ))}
-          <button
-            onClick={handleGetStarted}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300 mt-2"
-          >
-            Get Started
-          </button>
-        </div>
-      </div>
-    </div>
-  )}
-</header>
+              <img 
+                src={heroImage} 
+                alt="RawRecruit Logo" 
+                className="h-16 w-auto object-contain"
+              />
+            </button>
+
+            <nav className="hidden md:flex items-center gap-8">
+              {['Services', 'How It Works', 'Features', 'About'].map((item) => (
+                <a
+                  key={item}
+                  href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="relative text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium group py-2"
+                >
+                  {item}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 group-hover:w-full transition-all duration-300"></span>
+                </a>
+              ))}
+              
+              <button
+                onClick={handleGetStarted}
+                className="relative group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
+                <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 shadow-lg">
+                  <span className="flex items-center gap-2">
+                    Get Started
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </div>
+              </button>
+            </nav>
+
+            <button
+              className="md:hidden p-3 rounded-xl bg-white/80 backdrop-blur-sm border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-300"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+
+          {mobileMenuOpen && (
+            <div className="md:hidden px-8 pb-6 animate-slideDown">
+              <div className="bg-white/90 backdrop-blur-lg rounded-2xl p-6 border border-white/40 shadow-xl">
+                <div className="flex flex-col gap-4">
+                  {['Services', 'How It Works', 'Features', 'About'].map((item) => (
+                    <a
+                      key={item}
+                      href={`#${item.toLowerCase().replace(' ', '-')}`}
+                      className="text-gray-700 hover:text-purple-600 transition-all duration-300 py-3 px-4 rounded-lg hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {item}
+                    </a>
+                  ))}
+                  <button
+                    onClick={handleGetStarted}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300 mt-2"
+                  >
+                    Get Started
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </header>
 
         {/* Hero Section */}
-        <div className="pt-20"> {/* Reduced from pt-32 to pt-20 */}
+        <div className="pt-20">
           <section ref={heroRef} id="hero" className="relative px-6">
             {/* Wrapper for hero + stats only */}
-<div className="relative">
-  {/* Background for the top portion only - INSIDE the wrapper */}
-  <div className="absolute inset-0 -z-10 overflow-hidden">
-    {/* Your background image with proper sizing - adjusted to start higher */}
-    <div 
-      className="absolute inset-0"
-      style={{
-        backgroundImage: `url(${bgImage})`,
-        backgroundSize: 'contain',
-        backgroundPosition: 'center top', /* Changed from 'center center' to 'center top' */
-        backgroundRepeat: 'no-repeat',
-        backgroundColor: 'white',
-      }}
-    />
-    {/* Gradient overlay for better text readability */}
-    <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-transparent" />
-    {/* Subtle colored tint */}
-    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-blue-500/10" />
-    
-    {/* Hero Background Elements - keep these */}
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl"></div>
-    </div>
-  </div>
-
-  <div className="max-w-7xl mx-auto relative">
-    <div className="text-center mb-20 pt-12 pb-24"> {/* Reduced top padding */}
-      {/* Interactive Tag */}
-<div className="inline-flex items-center gap-2 mb-8 mt-8"> {/* Added mt-8 */}
-  <div className="relative">
-    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur opacity-30 animate-pulse"></div>
-    <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2.5 rounded-full text-sm font-medium shadow-lg">
-      <span className="flex items-center gap-2">
-        <Lightning className="w-4 h-4" />
-        Recruitment Revolutionized
-      </span>
-    </div>
-  </div>
-</div>
-
-      {/* Main Headline */}
-<h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
-  <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent animate-gradient">
-    Next-Generation Campus
-  </span>
-  <br />
-  <span className="text-gray-800">
-    Recruitment Platform
-  </span>
-</h1>
-
-{/* SEO H2 – hidden visually but readable by search engines */}
-<h2 className="sr-only">
-  Connecting companies and colleges through data-driven recruitment and
-  career-building solutions for freshers
-</h2>
-
-<p 
-  className="text-black text-xl max-w-3xl mx-auto mb-12 leading-relaxed"
-  style={{
-    WebkitTextStroke: '0.3px #FFFFFF',
-    paintOrder: 'stroke fill'
-  }}
->
-  RawRecruit connects colleges, companies, and freshers through a modern
-  campus recruitment platform focused on efficient entry-level hiring,
-  seamless fresher recruitment, and sustainable career growth powered
-  by technology.
-</p>
-
-      {/* Interactive CTA */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        <button
-          onClick={handleGetStarted}
-          className="group relative"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
-          <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-10 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 shadow-xl">
-            <span className="flex items-center gap-3">
-              Start Your Journey
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-            </span>
-          </div>
-        </button>
-      </div>
-
-      {/* Stats Preview - Black Text Only */}
-<div className="mt-16 overflow-hidden relative max-w-md mx-auto">
-  {/* Container with fixed width */}
-  <div className="flex items-center justify-center h-8">
-    {/* Scrolling wrapper */}
-    <div className="flex animate-compact-scroll whitespace-nowrap">
-      {/* First set - always visible initially */}
-      <div className="flex items-center gap-2 px-4">
-        <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
-        <span className="text-black font-semibold">500+ Colleges</span>
-      </div>
-      
-      <div className="flex items-center gap-2 px-4">
-        <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
-        <span className="text-black font-semibold">1K+ Companies</span>
-      </div>
-      
-      <div className="flex items-center gap-2 px-4">
-        <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
-        <span className="text-black font-semibold">95% Satisfaction</span>
-      </div>
-      
-      {/* Repeat for seamless loop */}
-      <div className="flex items-center gap-2 px-4">
-        <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
-        <span className="text-black font-semibold">500+ Colleges</span>
-      </div>
-    </div>
-  </div>
-</div>
-    </div>
-  </div>
-</div>
-
-    {/* Hero Cards - Modern Dashboard Style - This part doesn't have the background image */}
-<div id="services" className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto relative">
-  {heroCards.map((card, idx) => {
-    // Create unique gradient colors for each card
-    const gradientColors = [
-      { from: '#8B5CF6', via: '#7C3AED', to: '#6D28D9', bg: '#8B5CF6', dark: '#4C1D95' }, // Purple
-      { from: '#C026D3', via: '#952e8f', to: '#6D28D9', bg: '#952e8f', dark: '#952e8f' }, // Magenta/Purple
-      { from: '#60A5FA', via: '#3B82F6', to: '#1D4ED8', bg: '#60A5FA', dark: '#1E3A8A' }  // Blue
-    ];
-    
-    const colors = gradientColors[idx];
-    
-    return (
-      <div
-        key={idx}
-        onClick={() => handleCardClick(card.title)}
-        onMouseEnter={(e) => {
-          setHoveredCard(idx);
-          // Enhanced hover animations
-          const cardElement = e.currentTarget;
-          cardElement.style.transform = 'translateY(-12px) translateZ(30px)';
-          cardElement.style.boxShadow = `
-            0 25px 50px -12px ${colors.from}40,
-            0 10px 30px -5px rgba(0, 0, 0, 0.1),
-            inset 0 1px 0 0 rgba(255, 255, 255, 0.2)
-          `;
-          
-          // Animate floating elements
-          const floatingElements = cardElement.querySelectorAll('.floating-element');
-          floatingElements.forEach((el, i) => {
-            el.style.animation = `floatElement 2s ease-in-out ${i * 0.2}s infinite`;
-          });
-          
-          // Pulse glow effect
-          const glowElement = cardElement.querySelector('.card-glow');
-          if (glowElement) {
-            glowElement.style.opacity = '0.6';
-            glowElement.style.animation = 'pulseGlow 1.5s ease-in-out infinite';
-          }
-        }}
-        onMouseLeave={(e) => {
-          setHoveredCard(null);
-          const cardElement = e.currentTarget;
-          cardElement.style.transform = 'translateY(0) translateZ(0)';
-          cardElement.style.boxShadow = '';
-          
-          // Reset floating elements
-          const floatingElements = cardElement.querySelectorAll('.floating-element');
-          floatingElements.forEach(el => {
-            el.style.animation = '';
-          });
-          
-          // Reset glow
-          const glowElement = cardElement.querySelector('.card-glow');
-          if (glowElement) {
-            glowElement.style.opacity = '0';
-            glowElement.style.animation = '';
-          }
-        }}
-        className="relative group cursor-pointer perspective-1000 h-full"
-        style={{
-          animationDelay: `${idx * 150}ms`,
-          animation: `slideUp 0.6s ease-out forwards ${idx * 150}ms, floatCard${idx + 1} 4s ease-in-out infinite ${idx * 0.3}s`,
-          opacity: 0,
-          transformStyle: 'preserve-3d',
-          willChange: 'transform, box-shadow',
-          transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-        }}
-      >
-        {/* Card Glow Effect */}
-        <div 
-          className="card-glow absolute -inset-4 rounded-3xl opacity-0 transition-opacity duration-500"
-          style={{
-            background: `radial-gradient(circle at 50% 0%, ${colors.from}30 0%, transparent 70%)`,
-            filter: 'blur(20px)',
-            zIndex: 0,
-          }}
-        />
-        
-        {/* Floating Background Elements */}
-        <div className="absolute inset-0 overflow-hidden rounded-3xl">
-          {/* Subtle grid pattern */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute inset-0" style={{
-              backgroundImage: `linear-gradient(to right, ${colors.from}20 1px, transparent 1px),
-                                linear-gradient(to bottom, ${colors.from}20 1px, transparent 1px)`,
-              backgroundSize: '20px 20px',
-            }} />
-          </div>
-          
-          {/* Floating particles */}
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className="floating-element absolute w-2 h-2 rounded-full"
-              style={{
-                background: colors.from,
-                left: `${15 + i * 10}%`,
-                top: `${20 + i * 8}%`,
-                opacity: 0.1,
-                animation: `floatParticle 3s ease-in-out ${i * 0.4}s infinite`,
-              }}
-            />
-          ))}
-        </div>
-        
-        {/* Card Container with Glass Morphism - FLEX COLUMN */}
-        <div className="relative bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl overflow-hidden z-10 transition-all duration-500 group-hover:bg-gradient-to-br group-hover:from-gray-900 group-hover:to-gray-800 group-hover:border-gray-700/40 h-full flex flex-col">
-          {/* Top Accent Bar - Only visible normally, hidden on hover */}
-          <div 
-            className="h-1.5 w-full rounded-t-3xl transition-all duration-500 group-hover:h-0 group-hover:opacity-0 flex-shrink-0"
-            style={{
-              background: `linear-gradient(90deg, ${colors.from}, ${colors.via}, ${colors.to})`,
-            }}
-          />
-          
-          {/* Card Content - FLEXIBLE HEIGHT */}
-          <div className="relative p-8 flex-grow flex flex-col">
-            {/* Color overlay on hover - Takes full card */}
-            <div 
-              className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-              style={{
-                background: `linear-gradient(135deg, ${colors.dark}ee, ${colors.dark}cc)`,
-              }}
-            />
-            
-            <div className="relative flex-grow flex flex-col">
-              {/* Icon Container with Floating Effect */}
-              <div className="relative mb-8 flex-shrink-0">
-                {/* Icon Background Glow */}
+            <div className="relative">
+              {/* Background for the top portion only - INSIDE the wrapper */}
+              <div className="absolute inset-0 -z-10 overflow-hidden">
+                {/* Your background image with proper sizing - adjusted to start higher */}
                 <div 
-                  className="absolute -inset-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                  className="absolute inset-0"
                   style={{
-                    background: `radial-gradient(circle at center, ${colors.from}40 0%, transparent 70%)`,
-                    filter: 'blur(15px)',
+                    backgroundImage: `url(${bgImage})`,
+                    backgroundSize: 'contain',
+                    backgroundPosition: 'center top',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundColor: 'white',
                   }}
                 />
+                {/* Gradient overlay for better text readability */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-transparent" />
+                {/* Subtle colored tint */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-blue-500/10" />
                 
-                {/* Icon Container */}
-                <div className="relative">
-                  {/* Icon Background - White normally, stays white on hover */}
-                  <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-white to-gray-50 p-4 shadow-lg border border-white/60 flex items-center justify-center group-hover:border-white/80">
-                    {/* Inner Glow */}
-                    <div 
-                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
-                      style={{
-                        background: `linear-gradient(135deg, ${colors.from}30, ${colors.to}30)`,
-                      }}
-                    />
-                    
-                    {/* Icon */}
-                    <div 
-                      className="relative transform transition-transform duration-500 group-hover:scale-110"
-                      style={{ color: colors.from }}
-                    >
-                      {card.icon}
-                    </div>
-                  </div>
+                {/* Hero Background Elements - keep these */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                  <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
+                  <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl"></div>
                 </div>
               </div>
-              
-              {/* Title with Gradient - White text on hover */}
-              <div className="mb-4 flex-shrink-0">
-                <h3 className="text-2xl font-bold">
-                  <span className="bg-gradient-to-r from-gray-800 via-gray-900 to-black bg-clip-text text-transparent group-hover:text-white transition-all duration-500">
-                    {card.title}
-                  </span>
-                  {/* Animated underline - Only appears on hover */}
-                  <div 
-                    className="h-0.5 w-0 group-hover:w-full transition-all duration-700 mt-1"
-                    style={{
-                      background: `linear-gradient(90deg, ${colors.from}, ${colors.to})`,
-                    }}
-                  />
-                </h3>
-              </div>
-              
-              {/* Features List with Animated Indicators - FLEXIBLE CONTENT */}
-              <ul className="space-y-4 mb-8 flex-grow">
-                {card.features.map((feature, fIdx) => (
-                  <li 
-                    key={fIdx}
-                    className="flex items-start gap-3 group/item"
-                    style={{ animationDelay: `${fIdx * 100}ms` }}
-                  >
-                    {/* Animated Check Circle */}
-                    <div className="relative flex-shrink-0 mt-1">
-                      {/* Pulse Ring */}
-                      <div 
-                        className="absolute -inset-1 rounded-full opacity-0 group-hover/item:opacity-30 transition-opacity duration-300"
-                        style={{
-                          background: colors.from,
-                          animation: 'pulseRing 2s ease-in-out infinite',
-                        }}
-                      />
-                      
-                      {/* Check Circle - White on hover */}
-                      <div 
-                        className="relative w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-0.5 group-hover:bg-white group-hover:border group-hover:border-white/60"
-                        style={{
-                          background: `linear-gradient(135deg, ${colors.from}, ${colors.via})`,
-                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                        }}
-                      >
-                        <CheckCircle className="w-3.5 h-3.5 text-white group-hover:text-gray-700 transition-colors duration-300" />
+
+              <div className="max-w-7xl mx-auto relative">
+                <div className="text-center mb-20 pt-12 pb-24">
+                  {/* Interactive Tag */}
+                  <div className="inline-flex items-center gap-2 mb-8 mt-8">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur opacity-30 animate-pulse"></div>
+                      <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2.5 rounded-full text-sm font-medium shadow-lg">
+                        <span className="flex items-center gap-2">
+                          <Lightning className="w-4 h-4" />
+                          Recruitment Revolutionized
+                        </span>
                       </div>
                     </div>
-                    
-                    {/* Feature Text - White text on hover */}
-                    <span className="text-sm text-gray-600 group-hover:text-gray-200 transition-colors duration-300 leading-relaxed">
-                      {feature}
+                  </div>
+
+                  {/* Main Headline */}
+                  <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
+                    <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent animate-gradient">
+                      Next-Generation Campus
                     </span>
-                  </li>
-                ))}
-              </ul>
-              
-              {/* Interactive Bottom Section - FIXED AT BOTTOM */}
-              <div className="pt-6 border-t border-gray-100/50 group-hover:border-gray-700/50 transition-colors duration-500 flex-shrink-0">
-                {/* Progress Indicator */}
-                <div className="flex items-center justify-between mb-3">
-                  {/* White text on hover */}
-                  <span className="text-xs text-gray-500 group-hover:text-gray-300 transition-colors duration-500">Explore</span>
-                  <div className="flex items-center gap-1">
-                    {[...Array(3)].map((_, dotIdx) => (
-                      <div
-                        key={dotIdx}
-                        className="w-1.5 h-1.5 rounded-full transition-all duration-300 group-hover:scale-125"
-                        style={{
-                          background: dotIdx === idx % 3 ? colors.from : '#E5E7EB',
-                          animation: dotIdx === idx % 3 ? `pulseDot 1.5s ease-in-out ${dotIdx * 0.2}s infinite` : 'none',
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Animated Arrow */}
-                <div className="flex items-center justify-end">
-                  <div className="relative">
-                    {/* Arrow Trail */}
-                    <div className="absolute -left-8 w-0 h-0.5 rounded-full group-hover:w-8 transition-all duration-500"
-                      style={{
-                        background: `linear-gradient(90deg, transparent, ${colors.from})`,
-                      }}
-                    />
-                    
-                    {/* Arrow - White on hover */}
-                    <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-gray-50 to-white border border-gray-100/60 flex items-center justify-center shadow-sm group-hover:bg-white group-hover:border-white/80 group-hover:shadow-md transition-all duration-300 group-hover:translate-x-2">
-                      <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-700 transition-colors duration-300" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Edge Highlights for 3D Effect - Darker on hover */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover:via-gray-700/50 flex-shrink-0" />
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:via-gray-700/30 flex-shrink-0" />
-        </div>
-        
-        {/* Floating Shadow */}
-        <div className="absolute -bottom-4 left-4 right-4 h-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
-          style={{
-            background: colors.from,
-            filter: 'blur(15px)',
-            transform: 'translateZ(-20px)',
-          }}
-        />
-      </div>
-    );
-  })}
-</div>
-</section>
+                    <br />
+                    <span className="text-gray-800">
+                      Recruitment Platform
+                    </span>
+                  </h1>
 
-<style jsx>{`
-  @keyframes compact-scroll {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-33.333%);
-    }
-  }
-  
-  .animate-compact-scroll {
-    animation: compact-scroll 15s linear infinite;
-    display: flex;
-  }
-`}</style>
+                  {/* SEO H2 – hidden visually but readable by search engines */}
+                  <h2 className="sr-only">
+                    Connecting companies and colleges through data-driven recruitment and
+                    career-building solutions for freshers
+                  </h2>
 
-          {/* How It Works - Modern Dashboard Layout */}
-<section 
-  ref={howItWorksRef}
-  id="how-it-works" 
-  className="relative px-6 py-20"
->
-  <div className="max-w-7xl mx-auto">
-    <div className="text-center mb-16">
-      <div className="inline-flex items-center gap-3 mb-6">
-        <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100">
-          <Layout className="w-6 h-6 text-purple-600" />
-        </div>
-        <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">Workflow</span>
-      </div>
-      <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-        How <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">RawRecruit</span> Works
-      </h2>
-      <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-        A unified campus recruitment platform designed for colleges, companies, and employers. 
-        Streamline your fresher hiring process with our comprehensive campus recruitment solutions.
-      </p>
-    </div>
-
-    {/* Dashboard Style Cards */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {[
-        {
-          type: 'colleges',
-          icon: <GraduationCap className="w-8 h-8" />,
-          title: 'For Colleges (TPOs)',
-          steps: [
-            'Register your college on a centralized campus recruitment platform',
-            'Discover on-campus and pool-campus hiring requests from companies',
-            'Publish on-campus and pool-campus recruitment opportunities',
-            'Access student training, seminars, and institutional branding services'
-          ],
-          color: '#8B5CF6',
-          seoValue: 'Targets campus recruitment for colleges, TPO placement platform, on-campus recruitment',
-          description: 'Colleges can connect directly with companies, post hiring requests, and access training services.'
-        },
-        {
-          type: 'companies',
-          icon: <Building2 className="w-8 h-8" />,
-          title: 'For Companies (HR & Hiring Managers)',
-          steps: [
-            'Create a company profile to manage fresher hiring at scale',
-            'Explore college-led on-campus and pool-campus recruitment opportunities',
-            'Post on-campus, pool-campus, and off-campus hiring requirements',
-            'Access workforce solutions and employee training programs'
-          ],
-          color: '#EC4899',
-          seoValue: 'Targets fresher recruitment platform, campus hiring solutions, entry-level hiring',
-          description: 'Companies can find qualified candidates from colleges and post various campus recruitment opportunities.'
-        },
-        {
-          type: 'employers',
-          icon: <Briefcase className="w-8 h-8" />,
-          title: 'For Employers (Staffing & Hiring Partners)',
-          steps: [
-            'Set up an independent employer profile',
-            'Manage end-to-end campus and off-campus recruitment activities',
-            'Coordinate hiring on behalf of multiple companies',
-            'Handle company approvals, scheduling, and recruitment operations'
-          ],
-          color: '#3B82F6',
-          seoValue: 'Targets recruitment management, employer hiring solutions, campus hiring coordination',
-          description: 'Employers can work independently or on behalf of companies to manage recruitment processes.'
-        }
-      ].map((section, idx) => (
-        <div
-          key={idx}
-          onClick={() => handleRoleSelect(section.type)}
-          className="relative group cursor-pointer perspective-1000"
-        >
-          {/* Card with Glass Morphism - More expressive gradient on hover */}
-          <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl p-8 h-full transform transition-all duration-500 group-hover:-translate-y-3 group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:border-white/60 group-hover:bg-gradient-to-br group-hover:from-purple-500/10 group-hover:via-pink-500/10 group-hover:to-blue-500/10">
-            {/* Animated Top Accent - More expressive */}
-            <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-500 group-hover:h-2 group-hover:shadow-[0_0_15px_rgba(139,92,246,0.3)]"></div>
-            
-            {/* Icon with enhanced hover effect */}
-            <div className="relative mb-6">
-              {/* Glow effect on hover */}
-              <div className="absolute -inset-3 rounded-xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
-                style={{
-                  background: `radial-gradient(circle at center, ${section.color}30 0%, transparent 70%)`,
-                  filter: 'blur(10px)',
-                }}
-              />
-              <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-white to-gray-50 p-3 shadow-lg border border-white/60 transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
-                <div 
-                  className="transition-transform duration-300 group-hover:scale-110"
-                  style={{ color: section.color }}
-                >
-                  {section.icon}
-                </div>
-              </div>
-            </div>
-            
-            {/* Enhanced title hover effect */}
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 transform transition-all duration-300 group-hover:translate-x-2 group-hover:text-gray-900">
-              {section.title}
-            </h3>
-            
-            <ul className="space-y-4 mb-6">
-              {section.steps.map((step, stepIdx) => (
-                <li 
-                  key={stepIdx} 
-                  className="flex items-start gap-3 group/item transform transition-all duration-300 hover:translate-x-1"
-                >
-                  {/* Enhanced number badge */}
-                  <div 
-                    className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center text-sm font-semibold shadow-sm border border-white/40 transform transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-1 group-hover/item:shadow-md"
-                    style={{ color: section.color }}
-                  >
-                    {stepIdx + 1}
-                  </div>
-                  <span className="text-gray-600 leading-relaxed pt-0.5 group-hover/text-gray-800 transition-colors duration-300">
-                    {step}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            
-            {/* SEO Value Section - Hidden by default, shows on hover */}
-            {/* <div className="mt-6 pt-4 border-t border-gray-100/30">
-              <div className="text-xs text-gray-500 mb-2">SEO Keywords</div>
-              <div className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300 italic leading-relaxed">
-                {section.seoValue}
-              </div>
-            </div> */}
-            
-            {/* Enhanced interactive footer with clickable Learn More */}
-            <div className="mt-6 pt-6 border-t border-gray-100/50 group-hover:border-gray-200/70 transition-colors duration-300 flex items-center justify-between">
-              {/* Learn More button - Clickable for modal */}
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent card click
-                  openModal(section); // Function to open modal
-                }}
-                className="text-sm text-gray-500 group-hover:text-gray-700 group-hover:font-bold transition-all duration-300 hover:scale-105 hover:text-gray-900"
-              >
-                Learn more
-              </button>
-              {/* Enhanced arrow container */}
-              <div className="relative overflow-hidden">
-                {/* Animated slide trail */}
-                <div 
-                  className="absolute -left-4 w-0 h-0.5 rounded-full group-hover:w-6 transition-all duration-500"
-                  style={{
-                    background: `linear-gradient(90deg, transparent, ${section.color})`,
-                  }}
-                />
-                {/* Arrow button */}
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent card click
-                    openModal(section); // Function to open modal
-                  }}
-                  className="w-8 h-8 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-sm border border-gray-100/60 transform transition-all duration-300 hover:scale-110 hover:translate-x-2 hover:shadow-md"
-                >
-                  <ChevronRight className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors duration-300" />
-                </button>
-              </div>
-            </div>
-            
-            {/* Edge highlights for 3D effect */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-          </div>
-          
-          {/* Enhanced floating shadow */}
-          <div className="absolute -bottom-3 left-3 right-3 h-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
-            style={{
-              background: `linear-gradient(90deg, ${section.color}40, ${section.type === 'colleges' ? '#C084FC' : section.type === 'companies' ? '#F472B6' : '#60A5FA'}40)`,
-              filter: 'blur(15px)',
-            }}
-          ></div>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
-
-{/* Modal */}
-{/* Modal Component - Add this after the section */}
-{isModalOpen && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-    <div className="relative bg-white rounded-2xl max-w-lg w-full p-8 shadow-2xl">
-      {/* Close button */}
-      <button 
-        onClick={closeModal}
-        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-      >
-        ✕
-      </button>
-      
-      {/* Modal content */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div 
-            className="w-12 h-12 rounded-xl flex items-center justify-center"
-            style={{ backgroundColor: `${selectedSection?.color}20` }}
-          >
-            <div style={{ color: selectedSection?.color }}>
-              {selectedSection?.icon}
-            </div>
-          </div>
-          <h3 className="text-2xl font-bold text-gray-800">
-            {selectedSection?.title}
-          </h3>
-        </div>
-        
-        <p className="text-gray-600 mb-6">
-          {selectedSection?.description}
-        </p>
-        
-        <ul className="space-y-3">
-          {selectedSection?.steps.map((step, idx) => (
-            <li key={idx} className="flex items-start gap-3">
-              <div 
-                className="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-sm font-semibold"
-                style={{ 
-                  backgroundColor: `${selectedSection?.color}20`,
-                  color: selectedSection?.color
-                }}
-              >
-                {idx + 1}
-              </div>
-              <span className="text-gray-700">{step}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-      
-      <button 
-        onClick={closeModal}
-        className="w-full py-3 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
-        style={{ 
-          background: `linear-gradient(90deg, ${selectedSection?.color}, ${selectedSection?.type === 'colleges' ? '#C084FC' : selectedSection?.type === 'companies' ? '#F472B6' : '#60A5FA'})` 
-        }}
-      >
-        Got it
-      </button>
-    </div>
-  </div>
-)}
-
-          {/* Services Dashboard */}
-<section id="features" className="relative">
-  {/* Companies Section */}
-  <div 
-    ref={companyServicesRef}
-    className={`relative w-full py-20 transition-all duration-1000 ${activeSection === 'companies' ? '' : ''}`}
-  >
-    {/* Enhanced Background with curved corners - Brighter colors */}
-    <div 
-      className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-        activeSection === 'companies' 
-          ? 'bg-gradient-to-b from-purple-500/15 via-indigo-500/15 to-purple-500/10 opacity-100' 
-          : 'opacity-0'
-      }`}
-    />
-    
-    {/* Subtle border highlight for active section */}
-    <div 
-      className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-        activeSection === 'companies' 
-          ? 'border-2 border-purple-400/20 opacity-100' 
-          : 'opacity-0 border-0'
-      }`}
-    />
-    
-    <div className="relative max-w-7xl mx-auto px-6 z-10">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
-        <div>
-          <div className="inline-flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100">
-              <Building2 className="w-6 h-6 text-purple-600" />
-            </div>
-            <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">For Companies</span>
-          </div>
-          <h2 className="text-4xl font-bold text-gray-800 mb-6">
-            Tailored Recruitment Solutions
-          </h2>
-          <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-            {services.company.desc}
-          </p>
-          <button
-  onClick={() => handleRoleSelect('company')}
-  className="group relative text-white px-8 py-4 rounded-full font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
->
-  {/* Base layer */}
-  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 transition-all duration-300" />
-  
-  {/* Hover color layer */}
-  <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-  
-  {/* Glow effect */}
-  <div className="absolute inset-0 bg-gradient-to-r from-purple-400/30 to-indigo-400/30 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
-  
-  <span className="relative flex items-center gap-3">
-    Explore Company Features
-    <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
-  </span>
-</button>
-        </div>
-
-        {/* Dashboard Grid - Fixed uniform card sizes */}
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 rounded-3xl blur-3xl"></div>
-          <div className="relative grid grid-cols-2 md:grid-cols-3 gap-4">
-            {services.company.cards.map((service, idx) => {
-              // Function to generate darker pastel shade of icon color
-              const getDarkerPastelColor = (hexColor) => {
-                // Convert hex to RGB
-                const hex = hexColor.replace('#', '');
-                const r = parseInt(hex.substr(0, 2), 16);
-                const g = parseInt(hex.substr(2, 2), 16);
-                const b = parseInt(hex.substr(4, 2), 16);
-                
-                // Create darker pastel version (reduce lightness)
-                const darkenFactor = 0.7; // Make it 30% darker
-                const dr = Math.floor(r * darkenFactor);
-                const dg = Math.floor(g * darkenFactor);
-                const db = Math.floor(b * darkenFactor);
-                
-                // Increase saturation slightly for pastel effect
-                const sr = Math.min(255, dr + 40);
-                const sg = Math.min(255, dg + 40);
-                const sb = Math.min(255, db + 40);
-                
-                return `rgb(${sr}, ${sg}, ${sb})`;
-              };
-              
-              const darkerPastelColor = getDarkerPastelColor(service.color);
-              
-              return (
-                <div
-                  key={idx}
-                  onClick={() => handleServiceCardClick('company', service.title)}
-                  className="relative group cursor-pointer min-h-[180px]"
-                >
-                  {/* Card with darker pastel hover color change */}
-                  <div 
-                    className="relative bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-white/40 shadow-lg transform group-hover:-translate-y-2 transition-all duration-300 h-full group-hover:shadow-2xl overflow-hidden"
+                  <p 
+                    className="text-black text-xl max-w-3xl mx-auto mb-12 leading-relaxed"
                     style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.9)'
+                      WebkitTextStroke: '0.3px #FFFFFF',
+                      paintOrder: 'stroke fill'
                     }}
                   >
-                    {/* Darker pastel color overlay on hover - using service.color */}
-                    <div 
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      style={{
-                        background: `linear-gradient(135deg, ${darkerPastelColor}, ${darkerPastelColor})`,
-                      }}
-                    />
-                    
-                    {/* Icon - Centered in box */}
-                    <div className="relative z-10 w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 p-2.5 mb-3 shadow-sm border border-white/60 flex items-center justify-center group-hover:bg-white/20">
-                      <div className="flex items-center justify-center w-full h-full">
-                        <div 
-                          className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
-                          style={{ color: service.color }}
-                        >
-                          {service.icon}
+                    RawRecruit connects colleges, companies, and freshers through a modern
+                    campus recruitment platform focused on efficient entry-level hiring,
+                    seamless fresher recruitment, and sustainable career growth powered
+                    by technology.
+                  </p>
+
+                  {/* Interactive CTA */}
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <button
+                      onClick={handleGetStarted}
+                      className="group relative"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                      <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-10 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 shadow-xl">
+                        <span className="flex items-center gap-3">
+                          Start Your Journey
+                          <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                        </span>
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Stats Preview - Black Text Only */}
+                  <div className="mt-16 overflow-hidden relative max-w-md mx-auto">
+                    {/* Container with fixed width */}
+                    <div className="flex items-center justify-center h-8">
+                      {/* Scrolling wrapper */}
+                      <div className="flex animate-compact-scroll whitespace-nowrap">
+                        {/* First set - always visible initially */}
+                        <div className="flex items-center gap-2 px-4">
+                          <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
+                          <span className="text-black font-semibold">50+ Colleges</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 px-4">
+                          <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
+                          <span className="text-black font-semibold">100+ Companies</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 px-4">
+                          <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
+                          <span className="text-black font-semibold">95% Satisfaction</span>
+                        </div>
+                        
+                        {/* Repeat for seamless loop */}
+                        <div className="flex items-center gap-2 px-4">
+                          <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
+                          <span className="text-black font-semibold">50+ Colleges</span>
                         </div>
                       </div>
                     </div>
-                    
-                    {/* Content - Text changes to SHARP WHITE on hover */}
-                    <div className="relative z-10">
-                      <h3 
-                        className="text-sm font-bold text-gray-800 mb-1 transition-all duration-300 group-hover:text-white group-hover:font-bold"
-                      >
-                        {service.title}
-                      </h3>
-                      <p 
-                        className="text-xs leading-relaxed text-gray-600 transition-all duration-300 group-hover:text-white"
-                      >
-                        {service.desc}
-                      </p>
-                    </div>
-                    
-                    {/* Hover Indicator - Color matched */}
-                    <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                      <div className="w-6 h-6 rounded-lg bg-white/90 flex items-center justify-center border border-white/60 shadow-lg backdrop-blur-sm group-hover:bg-white/20">
-                        <ChevronRight 
-                          className="w-3 h-3 transition-all duration-300 group-hover:scale-110 group-hover:text-white"
-                          style={{ color: service.color }}
-                        />
-                      </div>
-                    </div>
                   </div>
-                  
-                  {/* Glow Effect - Enhanced on hover */}
-                  <div 
-                    className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
-                    style={{
-                      background: `radial-gradient(circle at center, ${service.color}40 0%, transparent 70%)`,
-                    }}
-                  ></div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+              </div>
+            </div>
 
-  {/* Colleges Section */}
-  <div 
-    ref={collegeServicesRef}
-    className={`relative w-full py-20 transition-all duration-1000 ${activeSection === 'colleges' ? '' : ''}`}
-  >
-    {/* Enhanced Background with curved corners - Brighter colors */}
-    <div 
-      className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-        activeSection === 'colleges' 
-          ? 'bg-gradient-to-b from-pink-500/15 via-rose-500/15 to-pink-500/10 opacity-100' 
-          : 'opacity-0'
-      }`}
-    />
-    
-    {/* Subtle border highlight for active section */}
-    <div 
-      className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-        activeSection === 'colleges' 
-          ? 'border-2 border-pink-400/20 opacity-100' 
-          : 'opacity-0 border-0'
-      }`}
-    />
-    
-    <div className="relative max-w-7xl mx-auto px-6 z-10">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
-        <div className="order-2 lg:order-1">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-rose-500/5 rounded-3xl blur-3xl"></div>
-            <div className="relative grid grid-cols-2 md:grid-cols-3 gap-4">
-              {services.college.cards.map((service, idx) => {
-                // Function to generate darker pastel shade of icon color
-                const getDarkerPastelColor = (hexColor) => {
-                  const hex = hexColor.replace('#', '');
-                  const r = parseInt(hex.substr(0, 2), 16);
-                  const g = parseInt(hex.substr(2, 2), 16);
-                  const b = parseInt(hex.substr(4, 2), 16);
-                  
-                  const darkenFactor = 0.7;
-                  const dr = Math.floor(r * darkenFactor);
-                  const dg = Math.floor(g * darkenFactor);
-                  const db = Math.floor(b * darkenFactor);
-                  
-                  const sr = Math.min(255, dr + 40);
-                  const sg = Math.min(255, dg + 40);
-                  const sb = Math.min(255, db + 40);
-                  
-                  return `rgb(${sr}, ${sg}, ${sb})`;
-                };
+            {/* Hero Cards - Modern Dashboard Style */}
+            <div id="services" className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto relative">
+              {heroCards.map((card, idx) => {
+                // Create unique gradient colors for each card
+                const gradientColors = [
+                  { from: '#8B5CF6', via: '#7C3AED', to: '#6D28D9', bg: '#8B5CF6', dark: '#4C1D95' }, // Purple
+                  { from: '#C026D3', via: '#952e8f', to: '#6D28D9', bg: '#952e8f', dark: '#952e8f' }, // Magenta/Purple
+                  { from: '#60A5FA', via: '#3B82F6', to: '#1D4ED8', bg: '#60A5FA', dark: '#1E3A8A' }  // Blue
+                ];
                 
-                const darkerPastelColor = getDarkerPastelColor(service.color);
+                const colors = gradientColors[idx];
                 
                 return (
                   <div
                     key={idx}
-                    onClick={() => handleServiceCardClick('college', service.title)}
-                    className="relative group cursor-pointer min-h-[180px]"
+                    onClick={() => handleCardClick(card.title)}
+                    onMouseEnter={(e) => {
+                      setHoveredCard(idx);
+                      // Enhanced hover animations
+                      const cardElement = e.currentTarget;
+                      cardElement.style.transform = 'translateY(-12px) translateZ(30px)';
+                      cardElement.style.boxShadow = `
+                        0 25px 50px -12px ${colors.from}40,
+                        0 10px 30px -5px rgba(0, 0, 0, 0.1),
+                        inset 0 1px 0 0 rgba(255, 255, 255, 0.2)
+                      `;
+                      
+                      // Animate floating elements
+                      const floatingElements = cardElement.querySelectorAll('.floating-element');
+                      floatingElements.forEach((el, i) => {
+                        el.style.animation = `floatElement 2s ease-in-out ${i * 0.2}s infinite`;
+                      });
+                      
+                      // Pulse glow effect
+                      const glowElement = cardElement.querySelector('.card-glow');
+                      if (glowElement) {
+                        glowElement.style.opacity = '0.6';
+                        glowElement.style.animation = 'pulseGlow 1.5s ease-in-out infinite';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      setHoveredCard(null);
+                      const cardElement = e.currentTarget;
+                      cardElement.style.transform = 'translateY(0) translateZ(0)';
+                      cardElement.style.boxShadow = '';
+                      
+                      // Reset floating elements
+                      const floatingElements = cardElement.querySelectorAll('.floating-element');
+                      floatingElements.forEach(el => {
+                        el.style.animation = '';
+                      });
+                      
+                      // Reset glow
+                      const glowElement = cardElement.querySelector('.card-glow');
+                      if (glowElement) {
+                        glowElement.style.opacity = '0';
+                        glowElement.style.animation = '';
+                      }
+                    }}
+                    className="relative group cursor-pointer perspective-1000 h-full"
+                    style={{
+                      animationDelay: `${idx * 150}ms`,
+                      animation: `slideUp 0.6s ease-out forwards ${idx * 150}ms, floatCard${idx + 1} 4s ease-in-out infinite ${idx * 0.3}s`,
+                      opacity: 0,
+                      transformStyle: 'preserve-3d',
+                      willChange: 'transform, box-shadow',
+                      transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                    }}
                   >
+                    {/* Card Glow Effect */}
                     <div 
-                      className="relative bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-white/40 shadow-lg transform group-hover:-translate-y-2 transition-all duration-300 h-full group-hover:shadow-2xl overflow-hidden"
+                      className="card-glow absolute -inset-4 rounded-3xl opacity-0 transition-opacity duration-500"
                       style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)'
+                        background: `radial-gradient(circle at 50% 0%, ${colors.from}30 0%, transparent 70%)`,
+                        filter: 'blur(20px)',
+                        zIndex: 0,
                       }}
-                    >
-                      {/* Darker pastel color overlay on hover */}
+                    />
+                    
+                    {/* Floating Background Elements */}
+                    <div className="absolute inset-0 overflow-hidden rounded-3xl">
+                      {/* Subtle grid pattern */}
+                      <div className="absolute inset-0 opacity-5">
+                        <div className="absolute inset-0" style={{
+                          backgroundImage: `linear-gradient(to right, ${colors.from}20 1px, transparent 1px),
+                                            linear-gradient(to bottom, ${colors.from}20 1px, transparent 1px)`,
+                          backgroundSize: '20px 20px',
+                        }} />
+                      </div>
+                      
+                      {/* Floating particles */}
+                      {[...Array(8)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="floating-element absolute w-2 h-2 rounded-full"
+                          style={{
+                            background: colors.from,
+                            left: `${15 + i * 10}%`,
+                            top: `${20 + i * 8}%`,
+                            opacity: 0.1,
+                            animation: `floatParticle 3s ease-in-out ${i * 0.4}s infinite`,
+                          }}
+                        />
+                      ))}
+                    </div>
+                    
+                    {/* Card Container with Glass Morphism - FLEX COLUMN */}
+                    <div className="relative bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl overflow-hidden z-10 transition-all duration-500 group-hover:bg-gradient-to-br group-hover:from-gray-900 group-hover:to-gray-800 group-hover:border-gray-700/40 h-full flex flex-col">
+                      {/* Top Accent Bar - Only visible normally, hidden on hover */}
                       <div 
-                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        className="h-1.5 w-full rounded-t-3xl transition-all duration-500 group-hover:h-0 group-hover:opacity-0 flex-shrink-0"
                         style={{
-                          background: `linear-gradient(135deg, ${darkerPastelColor}, ${darkerPastelColor})`,
+                          background: `linear-gradient(90deg, ${colors.from}, ${colors.via}, ${colors.to})`,
                         }}
                       />
                       
-                      {/* Icon container - unchanged */}
-                      <div className="relative z-10 w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 p-2.5 mb-3 shadow-sm border border-white/60 flex items-center justify-center group-hover:bg-white/20">
-                        <div className="flex items-center justify-center w-full h-full">
-                          <div 
-                            className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
-                            style={{ color: service.color }}
-                          >
-                            {service.icon}
+                      {/* Card Content - FLEXIBLE HEIGHT */}
+                      <div className="relative p-8 flex-grow flex flex-col">
+                        {/* Color overlay on hover - Takes full card */}
+                        <div 
+                          className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                          style={{
+                            background: `linear-gradient(135deg, ${colors.dark}ee, ${colors.dark}cc)`,
+                          }}
+                        />
+                        
+                        <div className="relative flex-grow flex flex-col">
+                          {/* Icon Container with Floating Effect */}
+                          <div className="relative mb-8 flex-shrink-0">
+                            {/* Icon Background Glow */}
+                            <div 
+                              className="absolute -inset-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                              style={{
+                                background: `radial-gradient(circle at center, ${colors.from}40 0%, transparent 70%)`,
+                                filter: 'blur(15px)',
+                              }}
+                            />
+                            
+                            {/* Icon Container */}
+                            <div className="relative">
+                              {/* Icon Background - White normally, stays white on hover */}
+                              <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-white to-gray-50 p-4 shadow-lg border border-white/60 flex items-center justify-center group-hover:border-white/80">
+                                {/* Inner Glow */}
+                                <div 
+                                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                                  style={{
+                                    background: `linear-gradient(135deg, ${colors.from}30, ${colors.to}30)`,
+                                  }}
+                                />
+                                
+                                {/* Icon */}
+                                <div 
+                                  className="relative transform transition-transform duration-500 group-hover:scale-110"
+                                  style={{ color: colors.from }}
+                                >
+                                  {card.icon}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Title with Gradient - White text on hover */}
+                          <div className="mb-4 flex-shrink-0">
+                            <h3 className="text-2xl font-bold">
+                              <span className="bg-gradient-to-r from-gray-800 via-gray-900 to-black bg-clip-text text-transparent group-hover:text-white transition-all duration-500">
+                                {card.title}
+                              </span>
+                              {/* Animated underline - Only appears on hover */}
+                              <div 
+                                className="h-0.5 w-0 group-hover:w-full transition-all duration-700 mt-1"
+                                style={{
+                                  background: `linear-gradient(90deg, ${colors.from}, ${colors.to})`,
+                                }}
+                              />
+                            </h3>
+                          </div>
+                          
+                          {/* Features List with Animated Indicators - FLEXIBLE CONTENT */}
+                          <ul className="space-y-4 mb-8 flex-grow">
+                            {card.features.map((feature, fIdx) => (
+                              <li 
+                                key={fIdx}
+                                className="flex items-start gap-3 group/item"
+                                style={{ animationDelay: `${fIdx * 100}ms` }}
+                              >
+                                {/* Animated Check Circle */}
+                                <div className="relative flex-shrink-0 mt-1">
+                                  {/* Pulse Ring */}
+                                  <div 
+                                    className="absolute -inset-1 rounded-full opacity-0 group-hover/item:opacity-30 transition-opacity duration-300"
+                                    style={{
+                                      background: colors.from,
+                                      animation: 'pulseRing 2s ease-in-out infinite',
+                                    }}
+                                  />
+                                  
+                                  {/* Check Circle - White on hover */}
+                                  <div 
+                                    className="relative w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-0.5 group-hover:bg-white group-hover:border group-hover:border-white/60"
+                                    style={{
+                                      background: `linear-gradient(135deg, ${colors.from}, ${colors.via})`,
+                                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                                    }}
+                                  >
+                                    <CheckCircle className="w-3.5 h-3.5 text-white group-hover:text-gray-700 transition-colors duration-300" />
+                                  </div>
+                                </div>
+                                
+                                {/* Feature Text - White text on hover */}
+                                <span className="text-sm text-gray-600 group-hover:text-gray-200 transition-colors duration-300 leading-relaxed">
+                                  {feature}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                          
+                          {/* Interactive Bottom Section - FIXED AT BOTTOM */}
+                          <div className="pt-6 border-t border-gray-100/50 group-hover:border-gray-700/50 transition-colors duration-500 flex-shrink-0">
+                            {/* Progress Indicator */}
+                            {/* <div className="flex items-center justify-between mb-3">
+                              
+                              <span className="text-xs text-gray-500 group-hover:text-gray-300 transition-colors duration-500">Explore</span>
+                              <div className="flex items-center gap-1">
+                                {[...Array(3)].map((_, dotIdx) => (
+                                  <div
+                                    key={dotIdx}
+                                    className="w-1.5 h-1.5 rounded-full transition-all duration-300 group-hover:scale-125"
+                                    style={{
+                                      background: dotIdx === idx % 3 ? colors.from : '#E5E7EB',
+                                      animation: dotIdx === idx % 3 ? `pulseDot 1.5s ease-in-out ${dotIdx * 0.2}s infinite` : 'none',
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                            </div> */}
+                            
+                            {/* Animated Arrow */}
+                            <div className="flex items-center justify-end">
+                              <div className="relative">
+                                {/* Arrow Trail */}
+                                <div className="absolute -left-8 w-0 h-0.5 rounded-full group-hover:w-8 transition-all duration-500"
+                                  style={{
+                                    background: `linear-gradient(90deg, transparent, ${colors.from})`,
+                                  }}
+                                />
+                                
+                                {/* Arrow - White on hover */}
+                                <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-gray-50 to-white border border-gray-100/60 flex items-center justify-center shadow-sm group-hover:bg-white group-hover:border-white/80 group-hover:shadow-md transition-all duration-300 group-hover:translate-x-2">
+                                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-700 transition-colors duration-300" />
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                       
-                      {/* Content with SHARP WHITE text on hover */}
-                      <div className="relative z-10">
-                        <h3 
-                          className="text-sm font-bold text-gray-800 mb-1 transition-all duration-300 group-hover:text-white group-hover:font-bold"
-                        >
-                          {service.title}
-                        </h3>
-                        <p 
-                          className="text-xs leading-relaxed text-gray-600 transition-all duration-300 group-hover:text-white"
-                        >
-                          {service.desc}
-                        </p>
-                      </div>
-                      
-                      {/* Hover Indicator */}
-                      <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                        <div className="w-6 h-6 rounded-lg bg-white/90 flex items-center justify-center border border-white/60 shadow-lg backdrop-blur-sm group-hover:bg-white/20">
-                          <ChevronRight 
-                            className="w-3 h-3 transition-all duration-300 group-hover:scale-110 group-hover:text-white"
-                            style={{ color: service.color }}
-                          />
-                        </div>
-                      </div>
+                      {/* Edge Highlights for 3D Effect - Darker on hover */}
+                      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover:via-gray-700/50 flex-shrink-0" />
+                      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:via-gray-700/30 flex-shrink-0" />
                     </div>
                     
-                    {/* Glow Effect */}
-                    <div 
-                      className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
+                    {/* Floating Shadow */}
+                    <div className="absolute -bottom-4 left-4 right-4 h-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
                       style={{
-                        background: `radial-gradient(circle at center, ${service.color}50 0%, transparent 70%)`,
+                        background: colors.from,
+                        filter: 'blur(15px)',
+                        transform: 'translateZ(-20px)',
                       }}
-                    ></div>
+                    />
                   </div>
                 );
               })}
             </div>
-          </div>
-        </div>
-        
-        <div className="order-1 lg:order-2">
-          <div className="inline-flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-pink-100 to-rose-100">
-              <GraduationCap className="w-6 h-6 text-pink-600" />
-            </div>
-            <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">For Colleges</span>
-          </div>
-          <h2 className="text-4xl font-bold text-gray-800 mb-6">
-            Student Placement Excellence
-          </h2>
-          <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-            {services.college.desc}
-          </p>
-          <button
-            onClick={() => handleRoleSelect('college')}
-            className="group relative bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-8 py-4 rounded-full font-bold hover:shadow-xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
-          >
-            <div 
-              className="absolute inset-0 bg-gradient-to-r from-[#764ba2] to-[#667eea] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              style={{
-                animation: 'buttonPulse 2s ease-in-out infinite',
-                background: `linear-gradient(45deg, #667eea, #764ba2, #667eea)`,
-                backgroundSize: '200% 200%'
-              }}
-            />
-            <span className="relative flex items-center gap-3">
-              Explore College Features
-              <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300 animate-moveRight" />
-            </span>
-          </button>
-        </div>
+          </section>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 relative">
-          {services.college.cards.map((service, idx) => {
-            // Function to get darker shade of a color
-            const getDarkerColor = (color) => {
-              if (!color) return '#5c3a7d';
-              
-              // For hex colors, make them darker by 20%
-              if (color.startsWith('#')) {
-                // Simple darkening function
-                const hex = color.replace('#', '');
-                const r = parseInt(hex.substr(0, 2), 16);
-                const g = parseInt(hex.substr(2, 2), 16);
-                const b = parseInt(hex.substr(4, 2), 16);
-                
-                // Darken by 20%
-                const darken = 0.8;
-                const dr = Math.floor(r * darken);
-                const dg = Math.floor(g * darken);
-                const db = Math.floor(b * darken);
-                
-                return `#${dr.toString(16).padStart(2, '0')}${dg.toString(16).padStart(2, '0')}${db.toString(16).padStart(2, '0')}`;
+          <style jsx>{`
+            @keyframes compact-scroll {
+              0% {
+                transform: translateX(0);
               }
-              
-              return color;
-            };
+              100% {
+                transform: translateX(-33.333%);
+              }
+            }
+            
+            .animate-compact-scroll {
+              animation: compact-scroll 15s linear infinite;
+              display: flex;
+            }
+          `}</style>
+        </div>
 
-            const darkerColor = getDarkerColor(service.color);
-
-            return (
-              <div
-                key={idx}
-                onClick={() => handleServiceCardClick('college', service.title)}
-                onMouseEnter={(e) => {
-                  // Change card background to darker color (unique for each card)
-                  e.currentTarget.style.backgroundColor = darkerColor;
-                  // Change icon box to white
-                  const iconBox = e.currentTarget.querySelector('.service-icon-box');
-                  if (iconBox) {
-                    iconBox.style.background = '#ffffff';
-                    // Change icon color to darker color
-                    const iconSvg = iconBox.querySelector('svg');
-                    if (iconSvg) {
-                      iconSvg.style.color = darkerColor;
-                      iconSvg.style.fill = darkerColor;
-                    }
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  // Reset card background
-                  e.currentTarget.style.backgroundColor = 'white';
-                  // Reset icon box
-                  const iconBox = e.currentTarget.querySelector('.service-icon-box');
-                  if (iconBox) {
-                    iconBox.style.background = `linear-gradient(135deg, ${service.color}, ${service.color}dd)`;
-                    // Reset icon color to white
-                    const iconSvg = iconBox.querySelector('svg');
-                    if (iconSvg) {
-                      iconSvg.style.color = '#ffffff';
-                      iconSvg.style.fill = '#ffffff';
-                    }
-                  }
-                }}
-                className="relative bg-white p-4 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group cursor-pointer overflow-hidden"
-                style={{ transition: 'all 0.4s ease' }}
-              >
-                <div 
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{ 
-                    background: `linear-gradient(135deg, ${service.color}20, transparent)`
-                  }}
-                />
-                
-                <div className="relative z-10">
-                  <div 
-                    className="service-icon-box w-12 h-12 rounded-xl p-3 mb-3 text-white shadow-md mx-auto flex items-center justify-center transition-all duration-300"
-                    style={{ 
-                      background: `linear-gradient(135deg, ${service.color}, ${service.color}dd)`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'background 0.4s ease'
-                    }}
-                  >
-                    <div className="flex items-center justify-center">
-                      {service.icon}
-                    </div>
-                  </div>
-                  
-                  <h3 className="relative text-sm font-bold text-gray-800 mb-1 text-center group-hover:text-white transition-colors duration-300 z-10">
-                    {service.title}
-                  </h3>
-                  <p className="relative text-xs text-gray-600 leading-relaxed text-center group-hover:text-white/90 transition-colors duration-300 z-10">
-                    {service.desc}
-                  </p>
-             
+        {/* How It Works - Modern Dashboard Layout */}
+        <section 
+          ref={howItWorksRef}
+          id="how-it-works" 
+          className="relative px-6 py-20"
+        >
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100">
+                  <Layout className="w-6 h-6 text-purple-600" />
                 </div>
+                <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">Workflow</span>
               </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {/* Employers Section */}
-  <div 
-    ref={employerServicesRef}
-    className={`relative w-full py-20 transition-all duration-1000 ${activeSection === 'employers' ? '' : ''}`}
-  >
-    {/* Enhanced Background with curved corners - Brighter colors */}
-    <div 
-      className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-        activeSection === 'employers' 
-          ? 'bg-gradient-to-b from-blue-500/15 via-cyan-500/15 to-blue-500/10 opacity-100' 
-          : 'opacity-0'
-      }`}
-    />
-    
-    {/* Subtle border highlight for active section */}
-    <div 
-      className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-        activeSection === 'employers' 
-          ? 'border-2 border-blue-400/20 opacity-100' 
-          : 'opacity-0 border-0'
-      }`}
-    />
-    
-    <div className="relative max-w-7xl mx-auto px-6 z-10">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div>
-          <div className="inline-flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-blue-100 to-cyan-100">
-              <Briefcase className="w-6 h-6 text-blue-600" />
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                How <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">RawRecruit</span> Works
+              </h2>
+              <p className="text-gray-600 text-lg max-w-3xl mx-auto">
+                A unified campus recruitment platform designed for colleges, companies, and employers. 
+                Streamline your fresher hiring process with our comprehensive campus recruitment solutions.
+              </p>
             </div>
-            <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">For Employers</span>
-          </div>
-          <h2 className="text-4xl font-bold text-gray-800 mb-6">
-            Recruitment Management Suite
-          </h2>
-          <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-            {services.employer.desc}
-          </p>
-          <button
-  onClick={() => handleRoleSelect('employer')}
-  className="group relative text-white px-8 py-4 rounded-full font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
->
-  {/* Base layer */}
-  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 transition-all duration-300" />
-  
-  {/* Hover color layer */}
-  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-  
-  {/* Glow effect */}
-  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/30 to-cyan-400/30 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
-  
-  <span className="relative flex items-center gap-3">
-    Explore Employer Features
-    <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
-  </span>
-</button>
-        </div>
 
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 rounded-3xl blur-3xl"></div>
-          <div className="relative grid grid-cols-2 md:grid-cols-3 gap-4">
-            {services.employer.cards.map((service, idx) => {
-              // Function to generate darker pastel shade of icon color
-              const getDarkerPastelColor = (hexColor) => {
-                const hex = hexColor.replace('#', '');
-                const r = parseInt(hex.substr(0, 2), 16);
-                const g = parseInt(hex.substr(2, 2), 16);
-                const b = parseInt(hex.substr(4, 2), 16);
-                
-                const darkenFactor = 0.7;
-                const dr = Math.floor(r * darkenFactor);
-                const dg = Math.floor(g * darkenFactor);
-                const db = Math.floor(b * darkenFactor);
-                
-                const sr = Math.min(255, dr + 40);
-                const sg = Math.min(255, dg + 40);
-                const sb = Math.min(255, db + 40);
-                
-                return `rgb(${sr}, ${sg}, ${sb})`;
-              };
-              
-              const darkerPastelColor = getDarkerPastelColor(service.color);
-              
-              return (
+            {/* Dashboard Style Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                {
+                  type: 'colleges',
+                  icon: <GraduationCap className="w-8 h-8" />,
+                  title: 'For Colleges (TPOs)',
+                  steps: [
+                    'Register your college on a centralized campus recruitment platform',
+                    'Discover on-campus and pool-campus hiring requests from companies',
+                    'Publish on-campus and pool-campus recruitment opportunities',
+                    'Access student training, seminars, and institutional branding services'
+                  ],
+                  color: '#8B5CF6',
+                  seoValue: 'Targets campus recruitment for colleges, TPO placement platform, on-campus recruitment',
+                  description: 'Colleges can connect directly with companies, post hiring requests, and access training services.'
+                },
+                {
+                  type: 'companies',
+                  icon: <Building2 className="w-8 h-8" />,
+                  title: 'For Companies (HR & Hiring Managers)',
+                  steps: [
+                    'Create a company profile to manage fresher hiring at scale',
+                    'Explore college-led on-campus and pool-campus recruitment opportunities',
+                    'Post on-campus, pool-campus, and off-campus hiring requirements',
+                    'Access workforce solutions and employee training programs'
+                  ],
+                  color: '#EC4899',
+                  seoValue: 'Targets fresher recruitment platform, campus hiring solutions, entry-level hiring',
+                  description: 'Companies can find qualified candidates from colleges and post various campus recruitment opportunities.'
+                },
+                {
+                  type: 'employers',
+                  icon: <Briefcase className="w-8 h-8" />,
+                  title: 'For Employers (Staffing & Hiring Partners)',
+                  steps: [
+                    'Set up an independent employer profile',
+                    'Manage end-to-end campus and off-campus recruitment activities',
+                    'Coordinate hiring on behalf of multiple companies',
+                    'Handle company approvals, scheduling, and recruitment operations'
+                  ],
+                  color: '#3B82F6',
+                  seoValue: 'Targets recruitment management, employer hiring solutions, campus hiring coordination',
+                  description: 'Employers can work independently or on behalf of companies to manage recruitment processes.'
+                }
+              ].map((section, idx) => (
                 <div
                   key={idx}
-                  onClick={() => handleServiceCardClick('employer', service.title)}
-                  className="relative group cursor-pointer min-h-[180px]"
+                  onClick={() => handleRoleSelect(section.type)}
+                  className="relative group cursor-pointer perspective-1000"
                 >
-                  <div 
-                    className="relative bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-white/40 shadow-lg transform group-hover:-translate-y-2 transition-all duration-300 h-full group-hover:shadow-2xl overflow-hidden"
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.9)'
-                    }}
-                  >
-                    {/* Darker pastel color overlay on hover */}
-                    <div 
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      style={{
-                        background: `linear-gradient(135deg, ${darkerPastelColor}, ${darkerPastelColor})`,
-                      }}
-                    />
+                  {/* Card with Glass Morphism - More expressive gradient on hover */}
+                  <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl p-8 h-full transform transition-all duration-500 group-hover:-translate-y-3 group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:border-white/60 group-hover:bg-gradient-to-br group-hover:from-purple-500/10 group-hover:via-pink-500/10 group-hover:to-blue-500/10">
+                    {/* Animated Top Accent - More expressive */}
+                    <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-500 group-hover:h-2 group-hover:shadow-[0_0_15px_rgba(139,92,246,0.3)]"></div>
                     
-                    {/* Icon container - unchanged */}
-                    <div className="relative z-10 w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 p-2.5 mb-3 shadow-sm border border-white/60 flex items-center justify-center group-hover:bg-white/20">
-                      <div className="flex items-center justify-center w-full h-full">
+                    {/* Icon with enhanced hover effect */}
+                    <div className="relative mb-6">
+                      {/* Glow effect on hover */}
+                      <div className="absolute -inset-3 rounded-xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                        style={{
+                          background: `radial-gradient(circle at center, ${section.color}30 0%, transparent 70%)`,
+                          filter: 'blur(10px)',
+                        }}
+                      />
+                      <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-white to-gray-50 p-3 shadow-lg border border-white/60 transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
                         <div 
-                          className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
-                          style={{ color: service.color }}
+                          className="transition-transform duration-300 group-hover:scale-110"
+                          style={{ color: section.color }}
                         >
-                          {service.icon}
+                          {section.icon}
                         </div>
                       </div>
                     </div>
                     
-                    {/* Content with SHARP WHITE text on hover */}
-                    <div className="relative z-10">
-                      <h3 
-                        className="text-sm font-bold text-gray-800 mb-1 transition-all duration-300 group-hover:text-white group-hover:font-bold"
+                    {/* Enhanced title hover effect */}
+                    <h3 className="text-2xl font-bold text-gray-800 mb-6 transform transition-all duration-300 group-hover:translate-x-2 group-hover:text-gray-900">
+                      {section.title}
+                    </h3>
+                    
+                    <ul className="space-y-4 mb-6">
+                      {section.steps.map((step, stepIdx) => (
+                        <li 
+                          key={stepIdx} 
+                          className="flex items-start gap-3 group/item transform transition-all duration-300 hover:translate-x-1"
+                        >
+                          {/* Enhanced number badge */}
+                          <div 
+                            className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center text-sm font-semibold shadow-sm border border-white/40 transform transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-1 group-hover/item:shadow-md"
+                            style={{ color: section.color }}
+                          >
+                            {stepIdx + 1}
+                          </div>
+                          <span className="text-gray-600 leading-relaxed pt-0.5 group-hover/text-gray-800 transition-colors duration-300">
+                            {step}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    {/* Enhanced interactive footer with clickable Learn More */}
+                    <div className="mt-6 pt-6 border-t border-gray-100/50 group-hover:border-gray-200/70 transition-colors duration-300 flex items-center justify-between">
+                      {/* Learn More button - Clickable for modal */}
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent card click
+                          openModal(section); // Function to open modal
+                        }}
+                        className="text-sm text-gray-500 group-hover:text-gray-700 group-hover:font-bold transition-all duration-300 hover:scale-105 hover:text-gray-900"
                       >
-                        {service.title}
-                      </h3>
-                      <p 
-                        className="text-xs leading-relaxed text-gray-600 transition-all duration-300 group-hover:text-white"
-                      >
-                        {service.desc}
-                      </p>
+                        Learn more
+                      </button>
+                      {/* Enhanced arrow container */}
+                      <div className="relative overflow-hidden">
+                        {/* Animated slide trail */}
+                        <div 
+                          className="absolute -left-4 w-0 h-0.5 rounded-full group-hover:w-6 transition-all duration-500"
+                          style={{
+                            background: `linear-gradient(90deg, transparent, ${section.color})`,
+                          }}
+                        />
+                        {/* Arrow button */}
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent card click
+                            openModal(section); // Function to open modal
+                          }}
+                          className="w-8 h-8 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-sm border border-gray-100/60 transform transition-all duration-300 hover:scale-110 hover:translate-x-2 hover:shadow-md"
+                        >
+                          <ChevronRight className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors duration-300" />
+                        </button>
+                      </div>
                     </div>
                     
-                    {/* Hover Indicator */}
-                    <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                      <div className="w-6 h-6 rounded-lg bg-white/90 flex items-center justify-center border border-white/60 shadow-lg backdrop-blur-sm group-hover:bg-white/20">
-                        <ChevronRight 
-                          className="w-3 h-3 transition-all duration-300 group-hover:scale-110 group-hover:text-white"
-                          style={{ color: service.color }}
+                    {/* Edge highlights for 3D effect */}
+                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                  </div>
+                  
+                  {/* Enhanced floating shadow */}
+                  <div className="absolute -bottom-3 left-3 right-3 h-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                    style={{
+                      background: `linear-gradient(90deg, ${section.color}40, ${section.type === 'colleges' ? '#C084FC' : section.type === 'companies' ? '#F472B6' : '#60A5FA'}40)`,
+                      filter: 'blur(15px)',
+                    }}
+                  ></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="relative bg-white rounded-2xl max-w-lg w-full p-8 shadow-2xl">
+              {/* Close button */}
+              <button 
+                onClick={closeModal}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+              
+              {/* Modal content */}
+              <div className="mb-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div 
+                    className="w-12 h-12 rounded-xl flex items-center justify-center"
+                    style={{ backgroundColor: `${selectedSection?.color}20` }}
+                  >
+                    <div style={{ color: selectedSection?.color }}>
+                      {selectedSection?.icon}
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-800">
+                    {selectedSection?.title}
+                  </h3>
+                </div>
+                
+                <p className="text-gray-600 mb-6">
+                  {selectedSection?.description}
+                </p>
+                
+                <ul className="space-y-3">
+                  {selectedSection?.steps.map((step, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <div 
+                        className="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-sm font-semibold"
+                        style={{ 
+                          backgroundColor: `${selectedSection?.color}20`,
+                          color: selectedSection?.color
+                        }}
+                      >
+                        {idx + 1}
+                      </div>
+                      <span className="text-gray-700">{step}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              <button 
+                onClick={closeModal}
+                className="w-full py-3 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
+                style={{ 
+                  background: `linear-gradient(90deg, ${selectedSection?.color}, ${selectedSection?.type === 'colleges' ? '#C084FC' : selectedSection?.type === 'companies' ? '#F472B6' : '#60A5FA'})` 
+                }}
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Services Dashboard */}
+        <section id="features" className="relative">
+          {/* Companies Section */}
+          <div 
+            ref={companyServicesRef}
+            className={`relative w-full py-20 transition-all duration-1000 ${activeSection === 'companies' ? '' : ''}`}
+          >
+            {/* Enhanced Background with curved corners - Brighter colors */}
+            <div 
+              className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
+                activeSection === 'companies' 
+                  ? 'bg-gradient-to-b from-purple-500/15 via-indigo-500/15 to-purple-500/10 opacity-100' 
+                  : 'opacity-0'
+              }`}
+            />
+            
+            {/* Subtle border highlight for active section */}
+            <div 
+              className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
+                activeSection === 'companies' 
+                  ? 'border-2 border-purple-400/20 opacity-100' 
+                  : 'opacity-0 border-0'
+              }`}
+            />
+            
+            <div className="relative max-w-7xl mx-auto px-6 z-10">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
+                <div>
+                  <div className="inline-flex items-center gap-3 mb-6">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100">
+                      <Building2 className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">For Companies</span>
+                  </div>
+                  <h2 className="text-4xl font-bold text-gray-800 mb-6">
+                    Tailored Recruitment Solutions
+                  </h2>
+                  <p className="text-gray-600 text-lg mb-8 leading-relaxed">
+                    {services.company.desc}
+                  </p>
+                  <button
+                    onClick={() => handleRoleSelect('company')}
+                    className="group relative text-white px-8 py-4 rounded-full font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
+                  >
+                    {/* Base layer */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 transition-all duration-300" />
+                    
+                    {/* Hover color layer */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    {/* Glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400/30 to-indigo-400/30 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
+                    
+                    <span className="relative flex items-center gap-3">
+                      Explore Company Features
+                      <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+                    </span>
+                  </button>
+                </div>
+
+                {/* Dashboard Grid - Fixed uniform card sizes */}
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 rounded-3xl blur-3xl"></div>
+                  <div className="relative grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {services.company.cards.map((service, idx) => {
+                      // Function to generate darker pastel shade of icon color
+                      const getDarkerPastelColor = (hexColor) => {
+                        // Convert hex to RGB
+                        const hex = hexColor.replace('#', '');
+                        const r = parseInt(hex.substr(0, 2), 16);
+                        const g = parseInt(hex.substr(2, 2), 16);
+                        const b = parseInt(hex.substr(4, 2), 16);
+                        
+                        // Create darker pastel version (reduce lightness)
+                        const darkenFactor = 0.7; // Make it 30% darker
+                        const dr = Math.floor(r * darkenFactor);
+                        const dg = Math.floor(g * darkenFactor);
+                        const db = Math.floor(b * darkenFactor);
+                        
+                        // Increase saturation slightly for pastel effect
+                        const sr = Math.min(255, dr + 40);
+                        const sg = Math.min(255, dg + 40);
+                        const sb = Math.min(255, db + 40);
+                        
+                        return `rgb(${sr}, ${sg}, ${sb})`;
+                      };
+                      
+                      const darkerPastelColor = getDarkerPastelColor(service.color);
+                      
+                      return (
+                        <div
+                          key={idx}
+                          onClick={() => handleServiceCardClick('company', service.title)}
+                          className="relative group cursor-pointer min-h-[180px]"
+                        >
+                          {/* Card with darker pastel hover color change */}
+                          <div 
+                            className="relative bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-white/40 shadow-lg transform group-hover:-translate-y-2 transition-all duration-300 h-full group-hover:shadow-2xl overflow-hidden"
+                            style={{
+                              backgroundColor: 'rgba(255, 255, 255, 0.9)'
+                            }}
+                          >
+                            {/* Darker pastel color overlay on hover - using service.color */}
+                            <div 
+                              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                              style={{
+                                background: `linear-gradient(135deg, ${darkerPastelColor}, ${darkerPastelColor})`,
+                              }}
+                            />
+                            
+                            {/* Icon - Centered in box */}
+                            <div className="relative z-10 w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 p-2.5 mb-3 shadow-sm border border-white/60 flex items-center justify-center group-hover:bg-white/20">
+                              <div className="flex items-center justify-center w-full h-full">
+                                <div 
+                                  className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
+                                  style={{ color: service.color }}
+                                >
+                                  {service.icon}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Content - Text changes to SHARP WHITE on hover */}
+                            <div className="relative z-10">
+                              <h3 
+                                className="text-sm font-bold text-gray-800 mb-1 transition-all duration-300 group-hover:text-white group-hover:font-bold"
+                              >
+                                {service.title}
+                              </h3>
+                              <p 
+                                className="text-xs leading-relaxed text-gray-600 transition-all duration-300 group-hover:text-white"
+                              >
+                                {service.desc}
+                              </p>
+                            </div>
+                            
+                            {/* Hover Indicator - Color matched */}
+                            <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
+                              <div className="w-6 h-6 rounded-lg bg-white/90 flex items-center justify-center border border-white/60 shadow-lg backdrop-blur-sm group-hover:bg-white/20">
+                                <ChevronRight 
+                                  className="w-3 h-3 transition-all duration-300 group-hover:scale-110 group-hover:text-white"
+                                  style={{ color: service.color }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Glow Effect - Enhanced on hover */}
+                          <div 
+                            className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
+                            style={{
+                              background: `radial-gradient(circle at center, ${service.color}40 0%, transparent 70%)`,
+                            }}
+                          ></div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Colleges Section */}
+          <div 
+            ref={collegeServicesRef}
+            className={`relative w-full py-20 transition-all duration-1000 ${activeSection === 'colleges' ? '' : ''}`}
+          >
+            {/* Enhanced Background with curved corners - Brighter colors */}
+            <div 
+              className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
+                activeSection === 'colleges' 
+                  ? 'bg-gradient-to-b from-pink-500/15 via-rose-500/15 to-pink-500/10 opacity-100' 
+                  : 'opacity-0'
+              }`}
+            />
+            
+            {/* Subtle border highlight for active section */}
+            <div 
+              className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
+                activeSection === 'colleges' 
+                  ? 'border-2 border-pink-400/20 opacity-100' 
+                  : 'opacity-0 border-0'
+              }`}
+            />
+            
+            <div className="relative max-w-7xl mx-auto px-6 z-10">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
+                <div className="order-2 lg:order-1">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-rose-500/5 rounded-3xl blur-3xl"></div>
+                    <div className="relative grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {services.college.cards.map((service, idx) => {
+                        // Function to generate darker pastel shade of icon color
+                        const getDarkerPastelColor = (hexColor) => {
+                          const hex = hexColor.replace('#', '');
+                          const r = parseInt(hex.substr(0, 2), 16);
+                          const g = parseInt(hex.substr(2, 2), 16);
+                          const b = parseInt(hex.substr(4, 2), 16);
+                          
+                          const darkenFactor = 0.7;
+                          const dr = Math.floor(r * darkenFactor);
+                          const dg = Math.floor(g * darkenFactor);
+                          const db = Math.floor(b * darkenFactor);
+                          
+                          const sr = Math.min(255, dr + 40);
+                          const sg = Math.min(255, dg + 40);
+                          const sb = Math.min(255, db + 40);
+                          
+                          return `rgb(${sr}, ${sg}, ${sb})`;
+                        };
+                        
+                        const darkerPastelColor = getDarkerPastelColor(service.color);
+                        
+                        return (
+                          <div
+                            key={idx}
+                            onClick={() => handleServiceCardClick('college', service.title)}
+                            className="relative group cursor-pointer min-h-[180px]"
+                          >
+                            <div 
+                              className="relative bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-white/40 shadow-lg transform group-hover:-translate-y-2 transition-all duration-300 h-full group-hover:shadow-2xl overflow-hidden"
+                              style={{
+                                backgroundColor: 'rgba(255, 255, 255, 0.9)'
+                              }}
+                            >
+                              {/* Darker pastel color overlay on hover */}
+                              <div 
+                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                style={{
+                                  background: `linear-gradient(135deg, ${darkerPastelColor}, ${darkerPastelColor})`,
+                                }}
+                              />
+                              
+                              {/* Icon container - unchanged */}
+                              <div className="relative z-10 w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 p-2.5 mb-3 shadow-sm border border-white/60 flex items-center justify-center group-hover:bg-white/20">
+                                <div className="flex items-center justify-center w-full h-full">
+                                  <div 
+                                    className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
+                                    style={{ color: service.color }}
+                                  >
+                                    {service.icon}
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Content with SHARP WHITE text on hover */}
+                              <div className="relative z-10">
+                                <h3 
+                                  className="text-sm font-bold text-gray-800 mb-1 transition-all duration-300 group-hover:text-white group-hover:font-bold"
+                                >
+                                  {service.title}
+                                </h3>
+                                <p 
+                                  className="text-xs leading-relaxed text-gray-600 transition-all duration-300 group-hover:text-white"
+                                >
+                                  {service.desc}
+                                </p>
+                              </div>
+                              
+                              {/* Hover Indicator */}
+                              <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
+                                <div className="w-6 h-6 rounded-lg bg-white/90 flex items-center justify-center border border-white/60 shadow-lg backdrop-blur-sm group-hover:bg-white/20">
+                                  <ChevronRight 
+                                    className="w-3 h-3 transition-all duration-300 group-hover:scale-110 group-hover:text-white"
+                                    style={{ color: service.color }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Glow Effect */}
+                            <div 
+                              className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
+                              style={{
+                                background: `radial-gradient(circle at center, ${service.color}50 0%, transparent 70%)`,
+                              }}
+                            ></div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="order-1 lg:order-2">
+                  <div className="inline-flex items-center gap-3 mb-6">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-pink-100 to-rose-100">
+                      <GraduationCap className="w-6 h-6 text-pink-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">For Colleges</span>
+                  </div>
+                  <h2 className="text-4xl font-bold text-gray-800 mb-6">
+                    Student Placement Excellence
+                  </h2>
+                  <p className="text-gray-600 text-lg mb-8 leading-relaxed">
+                    {services.college.desc}
+                  </p>
+                  <button
+                    onClick={() => handleRoleSelect('college')}
+                    className="group relative text-white px-8 py-4 rounded-full font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
+                  >
+                    {/* Base layer - Pink to Magenta */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-fuchsia-600 transition-all duration-300" />
+                    
+                    {/* Hover color layer - Brighter pink/magenta */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-fuchsia-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    {/* Glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-400/30 to-fuchsia-400/30 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
+                    
+                    <span className="relative flex items-center gap-3">
+                      Explore College Features
+                      <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Employers Section */}
+          <div 
+            ref={employerServicesRef}
+            className={`relative w-full py-20 transition-all duration-1000 ${activeSection === 'employers' ? '' : ''}`}
+          >
+            {/* Enhanced Background with curved corners - Brighter colors */}
+            <div 
+              className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
+                activeSection === 'employers' 
+                  ? 'bg-gradient-to-b from-blue-500/15 via-cyan-500/15 to-blue-500/10 opacity-100' 
+                  : 'opacity-0'
+              }`}
+            />
+            
+            {/* Subtle border highlight for active section */}
+            <div 
+              className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
+                activeSection === 'employers' 
+                  ? 'border-2 border-blue-400/20 opacity-100' 
+                  : 'opacity-0 border-0'
+              }`}
+            />
+            
+            <div className="relative max-w-7xl mx-auto px-6 z-10">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                  <div className="inline-flex items-center gap-3 mb-6">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-blue-100 to-cyan-100">
+                      <Briefcase className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">For Employers</span>
+                  </div>
+                  <h2 className="text-4xl font-bold text-gray-800 mb-6">
+                    Recruitment Management Suite
+                  </h2>
+                  <p className="text-gray-600 text-lg mb-8 leading-relaxed">
+                    {services.employer.desc}
+                  </p>
+                  <button
+                    onClick={() => handleRoleSelect('employer')}
+                    className="group relative text-white px-8 py-4 rounded-full font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
+                  >
+                    {/* Base layer */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 transition-all duration-300" />
+                    
+                    {/* Hover color layer */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    {/* Glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400/30 to-cyan-400/30 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
+                    
+                    <span className="relative flex items-center gap-3">
+                      Explore Employer Features
+                      <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+                    </span>
+                  </button>
+                </div>
+
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 rounded-3xl blur-3xl"></div>
+                  <div className="relative grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {services.employer.cards.map((service, idx) => {
+                      // Function to generate darker pastel shade of icon color
+                      const getDarkerPastelColor = (hexColor) => {
+                        const hex = hexColor.replace('#', '');
+                        const r = parseInt(hex.substr(0, 2), 16);
+                        const g = parseInt(hex.substr(2, 2), 16);
+                        const b = parseInt(hex.substr(4, 2), 16);
+                        
+                        const darkenFactor = 0.7;
+                        const dr = Math.floor(r * darkenFactor);
+                        const dg = Math.floor(g * darkenFactor);
+                        const db = Math.floor(b * darkenFactor);
+                        
+                        const sr = Math.min(255, dr + 40);
+                        const sg = Math.min(255, dg + 40);
+                        const sb = Math.min(255, db + 40);
+                        
+                        return `rgb(${sr}, ${sg}, ${sb})`;
+                      };
+                      
+                      const darkerPastelColor = getDarkerPastelColor(service.color);
+                      
+                      return (
+                        <div
+                          key={idx}
+                          onClick={() => handleServiceCardClick('employer', service.title)}
+                          className="relative group cursor-pointer min-h-[180px]"
+                        >
+                          <div 
+                            className="relative bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-white/40 shadow-lg transform group-hover:-translate-y-2 transition-all duration-300 h-full group-hover:shadow-2xl overflow-hidden"
+                            style={{
+                              backgroundColor: 'rgba(255, 255, 255, 0.9)'
+                            }}
+                          >
+                            {/* Darker pastel color overlay on hover */}
+                            <div 
+                              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                              style={{
+                                background: `linear-gradient(135deg, ${darkerPastelColor}, ${darkerPastelColor})`,
+                              }}
+                            />
+                            
+                            {/* Icon container - unchanged */}
+                            <div className="relative z-10 w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 p-2.5 mb-3 shadow-sm border border-white/60 flex items-center justify-center group-hover:bg-white/20">
+                              <div className="flex items-center justify-center w-full h-full">
+                                <div 
+                                  className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
+                                  style={{ color: service.color }}
+                                >
+                                  {service.icon}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Content with SHARP WHITE text on hover */}
+                            <div className="relative z-10">
+                              <h3 
+                                className="text-sm font-bold text-gray-800 mb-1 transition-all duration-300 group-hover:text-white group-hover:font-bold"
+                              >
+                                {service.title}
+                              </h3>
+                              <p 
+                                className="text-xs leading-relaxed text-gray-600 transition-all duration-300 group-hover:text-white"
+                              >
+                                {service.desc}
+                              </p>
+                            </div>
+                            
+                            {/* Hover Indicator */}
+                            <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
+                              <div className="w-6 h-6 rounded-lg bg-white/90 flex items-center justify-center border border-white/60 shadow-lg backdrop-blur-sm group-hover:bg-white/20">
+                                <ChevronRight 
+                                  className="w-3 h-3 transition-all duration-300 group-hover:scale-110 group-hover:text-white"
+                                  style={{ color: service.color }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Glow Effect */}
+                          <div 
+                            className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
+                            style={{
+                              background: `radial-gradient(circle at center, ${service.color}50 0%, transparent 70%)`,
+                            }}
+                          ></div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Dashboard */}
+        <section 
+          ref={statsRef}
+          id="about" 
+          className="relative px-6 py-20"
+        >
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100">
+                  <Trophy className="w-6 h-6 text-purple-600" />
+                </div>
+                <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">Our Impact</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                Driving Excellence in <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Campus Recruitment</span>
+              </h2>
+              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+                Building a strong network to empower the next generation of talent
+              </p>
+            </div>
+
+            {/* Stats Dashboard */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20">
+              {[
+                { 
+                  number: '50+', 
+                  label: 'Partner Colleges', 
+                  color: '#8B5CF6', // Purple
+                  pastelColor: '#DDD6FE', // Purple pastel
+                  icon: <GraduationCap className="w-8 h-8" />
+                },
+                { 
+                  number: '100+', 
+                  label: 'Companies', 
+                  color: '#EC4899', // Pink
+                  pastelColor: '#FBCFE8', // Pink pastel
+                  icon: <Building2 className="w-8 h-8" />
+                },
+                { 
+                  number: '3K+', 
+                  label: 'Students Placed', 
+                  color: '#3B82F6', // Blue
+                  pastelColor: '#BFDBFE', // Blue pastel
+                  icon: <Users className="w-8 h-8" />
+                },
+                { 
+                  number: '95%', 
+                  label: 'Satisfaction Rate', 
+                  color: '#10B981', // Emerald
+                  pastelColor: '#A7F3D0', // Emerald pastel
+                  icon: <Star className="w-8 h-8" />
+                }
+              ].map((stat, idx) => (
+                <div
+                  key={idx}
+                  className="relative group cursor-pointer"
+                >
+                  {/* Glass Card - White normally, pastel on hover */}
+                  <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl p-8 border border-white/60 shadow-2xl transform group-hover:-translate-y-2 transition-all duration-500 group-hover:shadow-3xl overflow-hidden">
+                    {/* Pastel color overlay on hover */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{ 
+                        backgroundColor: stat.pastelColor,
+                      }}
+                    />
+                    
+                    {/* Content */}
+                    <div className="relative z-10">
+                      {/* Icon with hover effect */}
+                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-white to-gray-50 p-3 mb-4 shadow-sm border border-white/60 flex items-center justify-center transition-all duration-300 group-hover:bg-white group-hover:scale-110 group-hover:shadow-lg group-hover:border-white/80">
+                        <div 
+                          className="transition-all duration-300 group-hover:scale-110"
+                          style={{ color: stat.color }}
+                        >
+                          {stat.icon}
+                        </div>
+                      </div>
+                      
+                      {/* Number - changes to darker shade on hover */}
+                      <div className="text-3xl font-bold mb-2 transition-colors duration-300"
+                        style={{ color: stat.color }}
+                      >
+                        <span className="group-hover:text-gray-800 transition-colors duration-300">
+                          {stat.number}
+                        </span>
+                      </div>
+                      
+                      {/* Label - changes to darker on hover */}
+                      <div className="text-lg font-semibold mb-2 transition-colors duration-300 text-gray-700 group-hover:text-gray-900">
+                        {stat.label}
+                      </div>
+                      
+                      {/* Progress Indicator with hover animation */}
+                      <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden group-hover:bg-white/50 transition-colors duration-300">
+                        <div className="h-full rounded-full transition-all duration-700 group-hover:w-full group-hover:bg-gradient-to-r group-hover:from-gray-800 group-hover:to-gray-600"
+                          style={{ 
+                            width: idx === 3 ? '95%' : '85%',
+                            background: `linear-gradient(90deg, ${stat.color}, ${stat.color}80)`,
+                            transition: 'all 0.7s ease'
+                          }}
                         />
                       </div>
                     </div>
                   </div>
                   
-                  {/* Glow Effect */}
-                  <div 
-                    className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
-                    style={{
-                      background: `radial-gradient(circle at center, ${service.color}50 0%, transparent 70%)`,
+                  {/* Glow Effect - Subtler on hover */}
+                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-500"
+                    style={{ 
+                      background: `radial-gradient(circle at center, ${stat.color}20 0%, transparent 70%)`
                     }}
-                  ></div>
+                  />
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-{/* Add CSS animation for gradient shift */}
-<style jsx>{`
-  @keyframes gradient-shift {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-`}</style>
-
-          {/* Stats Dashboard */}
-          <section 
-            ref={statsRef}
-            id="about" 
-            className="relative px-6 py-20"
-          >
-            <div className="max-w-7xl mx-auto">
-              <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-3 mb-6">
-                  <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100">
-                    <Trophy className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">Our Impact</span>
-                </div>
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                  Driving Excellence in <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Campus Recruitment</span>
-                </h2>
-                <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                  Building a strong network to empower the next generation of talent
-                </p>
-              </div>
-
-              {/* Stats Dashboard */}
-<div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20">
-  {[
-    { 
-      number: '500+', 
-      label: 'Partner Colleges', 
-      color: '#8B5CF6', // Purple
-      pastelColor: '#DDD6FE', // Purple pastel
-      icon: <GraduationCap className="w-8 h-8" />
-    },
-    { 
-      number: '1000+', 
-      label: 'Companies', 
-      color: '#EC4899', // Pink
-      pastelColor: '#FBCFE8', // Pink pastel
-      icon: <Building2 className="w-8 h-8" />
-    },
-    { 
-      number: '50K+', 
-      label: 'Students Placed', 
-      color: '#3B82F6', // Blue
-      pastelColor: '#BFDBFE', // Blue pastel
-      icon: <Users className="w-8 h-8" />
-    },
-    { 
-      number: '95%', 
-      label: 'Satisfaction Rate', 
-      color: '#10B981', // Emerald
-      pastelColor: '#A7F3D0', // Emerald pastel
-      icon: <Star className="w-8 h-8" />
-    }
-  ].map((stat, idx) => (
-    <div
-      key={idx}
-      className="relative group cursor-pointer"
-    >
-      {/* Glass Card - White normally, pastel on hover */}
-      <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl p-8 border border-white/60 shadow-2xl transform group-hover:-translate-y-2 transition-all duration-500 group-hover:shadow-3xl overflow-hidden">
-        {/* Pastel color overlay on hover */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          style={{ 
-            backgroundColor: stat.pastelColor,
-          }}
-        />
-        
-        {/* Content */}
-        <div className="relative z-10">
-          {/* Icon with hover effect */}
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-white to-gray-50 p-3 mb-4 shadow-sm border border-white/60 flex items-center justify-center transition-all duration-300 group-hover:bg-white group-hover:scale-110 group-hover:shadow-lg group-hover:border-white/80">
-            <div 
-              className="transition-all duration-300 group-hover:scale-110"
-              style={{ color: stat.color }}
-            >
-              {stat.icon}
+              ))}
             </div>
-          </div>
-          
-          {/* Number - changes to darker shade on hover */}
-          <div className="text-3xl font-bold mb-2 transition-colors duration-300"
-            style={{ color: stat.color }}
-          >
-            <span className="group-hover:text-gray-800 transition-colors duration-300">
-              {stat.number}
-            </span>
-          </div>
-          
-          {/* Label - changes to darker on hover */}
-          <div className="text-lg font-semibold mb-2 transition-colors duration-300 text-gray-700 group-hover:text-gray-900">
-            {stat.label}
-          </div>
-          
-          {/* Progress Indicator with hover animation */}
-          <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden group-hover:bg-white/50 transition-colors duration-300">
-            <div className="h-full rounded-full transition-all duration-700 group-hover:w-full group-hover:bg-gradient-to-r group-hover:from-gray-800 group-hover:to-gray-600"
-              style={{ 
-                width: idx === 3 ? '95%' : '85%',
-                background: `linear-gradient(90deg, ${stat.color}, ${stat.color}80)`,
-                transition: 'all 0.7s ease'
-              }}
-            />
-          </div>
-        </div>
-      </div>
-      
-      {/* Glow Effect - Subtler on hover */}
-      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-500"
-        style={{ 
-          background: `radial-gradient(circle at center, ${stat.color}20 0%, transparent 70%)`
-        }}
-      />
-    </div>
-  ))}
-</div>
 
-              {/* Partners Dashboard */}
+            {/* Partners Dashboard */}
 <div className="relative py-12">
   <div className="text-center mb-12">
     <div className="inline-flex items-center gap-3 mb-4">
@@ -2218,119 +2083,203 @@ const closeModal = () => {
     }
   `}</style>
 </div>
-            </div>
-          </section>
+          </div>
+        </section>
 
-          {/* Footer */}
-          <footer 
-            ref={footerRef}
-            className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-16 px-6"
-          >
-            <div className="max-w-7xl mx-auto">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-                <div>
-                  <button 
-  onClick={handleLogoClick}
-  className="flex items-center gap-3 mb-6 group"
->
-  <div className="relative">
-    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
-    <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 p-2 rounded-xl shadow-lg border border-gray-700/60 group-hover:shadow-xl transition-shadow duration-300">
-      {/* Using fill with gradient colors */}
-      <Rocket className="w-6 h-6 text-transparent fill-[url(#gradient)] group-hover:fill-[url(#gradient-hover)]" />
-      {/* Define SVG gradients for the icon */}
-      <svg className="absolute w-0 h-0">
-        <defs>
-          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#a855f7" /> {/* purple-500 */}
-            <stop offset="100%" stopColor="#ec4899" /> {/* pink-500 */}
-          </linearGradient>
-          <linearGradient id="gradient-hover" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#60a5fa" /> {/* blue-400 */}
-            <stop offset="100%" stopColor="#c084fc" /> {/* purple-400 */}
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-  </div>
-  <span className="text-2xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 group-hover:from-blue-500 group-hover:via-purple-600 group-hover:to-indigo-500 bg-clip-text text-transparent transition-all duration-300">
-    RawRecruit
-  </span>
-</button>
-                  <p className="text-gray-400 mb-6">
-                    Transforming campus recruitment through innovation and excellence.
-                  </p>
-                  <div className="flex gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 flex items-center justify-center">
-                      <Linkedin className="w-4 h-4 text-gray-400" />
-                    </div>
-                    <div className="w-8 h-8 rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 flex items-center justify-center">
-                      <Twitter className="w-4 h-4 text-gray-400" />
+        {/* Footer */}
+        <footer 
+          ref={footerRef}
+          className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-16 px-6"
+        >
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+              <div>
+                <button 
+                  onClick={handleLogoClick}
+                  className="flex items-center gap-3 mb-6 group"
+                >
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                    <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 p-2 rounded-xl shadow-lg border border-gray-700/60 group-hover:shadow-xl transition-shadow duration-300">
+                      <Rocket className="w-6 h-6 text-transparent fill-[url(#gradient)] group-hover:fill-[url(#gradient-hover)]" />
+                      <svg className="absolute w-0 h-0">
+                        <defs>
+                          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#a855f7" />
+                            <stop offset="100%" stopColor="#ec4899" />
+                          </linearGradient>
+                          <linearGradient id="gradient-hover" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#60a5fa" />
+                            <stop offset="100%" stopColor="#c084fc" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
                     </div>
                   </div>
-                </div>
-
-                {[
-                  { title: 'Product', links: ['Features', 'Solutions', 'Demo'] },
-                  { title: 'Company', links: ['About', 'Careers'] },
-                  { title: 'Support', links: ['Help Center', 'Contact', 'Privacy & Terms'] }
-                ].map((column, idx) => (
-                  <div key={idx}>
-                    <h3 className="text-lg font-bold mb-6 text-gray-200">{column.title}</h3>
-                    <ul className="space-y-3">
-                      {column.links.map((link) => (
-                        <li key={link}>
-                          <button
-                            onClick={() => setIsLegalModalOpen(true)}
-                            className="text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 text-left"
-                          >
-                            {link}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-
-              <div className="border-t border-gray-800/50 pt-8 text-center text-gray-400">
-                <p>© {new Date().getFullYear()} RawRecruit. All rights reserved.</p>
-              </div>
-            </div>
-          </footer>
-        </div>
-      </div>
-
-      {/* Floating Action Menu */}
-      {isEditing && (
-        <div className="fixed bottom-8 right-8 z-50">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl"></div>
-            <div className="relative bg-white/90 backdrop-blur-xl rounded-2xl p-6 border border-white/40 shadow-2xl">
-              <div className="flex items-center gap-4 mb-6">
-                <Palette className="w-5 h-5 text-purple-600" />
-                <span className="font-medium text-gray-800">Customize Layout</span>
-              </div>
-              <div className="space-y-3">
-                {['Grid View', 'Compact', 'Spacious', 'Dashboard'].map((option) => (
-                  <button
-                    key={option}
-                    className="w-full text-left px-4 py-2 rounded-lg hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-300 text-gray-700"
-                  >
-                    {option}
+                  <span className="text-2xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 group-hover:from-blue-500 group-hover:via-purple-600 group-hover:to-indigo-500 bg-clip-text text-transparent transition-all duration-300">
+                    RawRecruit
+                  </span>
+                </button>
+                <p className="text-gray-400 mb-6">
+                  Transforming campus recruitment through innovation and excellence.
+                </p>
+                <div className="flex gap-3">
+                  <button className="w-8 h-8 rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 flex items-center justify-center hover:bg-gray-700/50 transition-colors">
+                    <Linkedin className="w-4 h-4 text-gray-400" />
                   </button>
-                ))}
+                  <button className="w-8 h-8 rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 flex items-center justify-center hover:bg-gray-700/50 transition-colors">
+                    <Twitter className="w-4 h-4 text-gray-400" />
+                  </button>
+                </div>
               </div>
+
+              {/* Product Links */}
+              <div>
+                <h3 className="text-lg font-bold mb-6 text-gray-200">Product</h3>
+                <ul className="space-y-3">
+                  <li>
+                    <button
+                      onClick={() => setIsFeaturesModalOpen(true)}
+                      className="text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 text-left"
+                    >
+                      Features
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => setIsSolutionsModalOpen(true)}
+                      className="text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 text-left"
+                    >
+                      Solutions
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => setIsDemoModalOpen(true)}
+                      className="text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 text-left"
+                    >
+                      Demo
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Company Links */}
+              <div>
+                <h3 className="text-lg font-bold mb-6 text-gray-200">Company</h3>
+                <ul className="space-y-3">
+                  <li>
+                    <button
+                      onClick={() => setIsAboutModalOpen(true)}
+                      className="text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 text-left"
+                    >
+                      About
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => setIsCareersModalOpen(true)}
+                      className="text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 text-left"
+                    >
+                      Careers
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Support Links */}
+              <div>
+                <h3 className="text-lg font-bold mb-6 text-gray-200">Support</h3>
+                <ul className="space-y-3">
+                  <li>
+                    <button
+                      onClick={() => setIsHelpCenterModalOpen(true)}
+                      className="text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 text-left"
+                    >
+                      Help Center
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => setIsContactModalOpen(true)}
+                      className="text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 text-left"
+                    >
+                      Contact
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => setIsTermsModalOpen(true)}
+                      className="text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 text-left"
+                    >
+                      Terms
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => setIsPrivacyModalOpen(true)}
+                      className="text-gray-400 hover:text-white transition-all duration-300 transform hover:translate-x-1 text-left"
+                    >
+                      Privacy
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-800/50 pt-8 text-center text-gray-400">
+              <p>© {new Date().getFullYear()} RawRecruit. All rights reserved.</p>
             </div>
           </div>
-        </div>
-      )}
+        </footer>
 
-      {/* Terms Modal */}
-      <TermsModal
-        isOpen={isLegalModalOpen}
-        onClose={() => setIsLegalModalOpen(false)}
-      />
+        {/* Modals for each footer link */}
+        <FeaturesModal
+          isOpen={isFeaturesModalOpen}
+          onClose={() => setIsFeaturesModalOpen(false)}
+        />
+
+        <SolutionsModal
+          isOpen={isSolutionsModalOpen}
+          onClose={() => setIsSolutionsModalOpen(false)}
+        />
+
+        <DemoModal
+          isOpen={isDemoModalOpen}
+          onClose={() => setIsDemoModalOpen(false)}
+        />
+
+        <AboutModal
+          isOpen={isAboutModalOpen}
+          onClose={() => setIsAboutModalOpen(false)}
+        />
+
+        <CareersModal
+          isOpen={isCareersModalOpen}
+          onClose={() => setIsCareersModalOpen(false)}
+        />
+
+        <HelpCenterModal
+          isOpen={isHelpCenterModalOpen}
+          onClose={() => setIsHelpCenterModalOpen(false)}
+        />
+
+        <ContactModal
+          isOpen={isContactModalOpen}
+          onClose={() => setIsContactModalOpen(false)}
+        />
+
+        <PrivacyModal
+          isOpen={isPrivacyModalOpen}
+          onClose={() => setIsPrivacyModalOpen(false)}
+        />
+
+        {/* Keep existing Terms Modal for "Privacy & Terms" link */}
+        <TermsModal
+          isOpen={isTermsModalOpen}
+          onClose={() => setIsTermsModalOpen(false)}
+        />
+      </div>
 
       <style jsx>{`
         @keyframes blob {
@@ -2464,12 +2413,5 @@ const closeModal = () => {
     </div>
   );
 };
-
-// Add missing Twitter icon component
-const Twitter = ({ className }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.213c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-  </svg>
-);
 
 export default App;
