@@ -27,7 +27,7 @@ export const createOffCampusJobPosting = async (req, res) => {
             ...req.body,
             companyPosted: companyPostedId.data[0]._id,
             jobType: "Off-campus",
-            expireAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+            expireAt: new Date(Date.now() + 29 * 24 * 60 * 60 * 1000),
         }
 
         const newPosting = await createPostingService(postingData);
@@ -71,7 +71,7 @@ export const createOnCampusPosting = async (req, res) => {
             jobType: "On-campus",
             visibleTo: "College", // Default visibility, can be changed based on requirements
             // conditional - if paid user then don't put expiresAt
-            expireAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
+            expireAt: new Date(Date.now() + 29 * 24 * 60 * 60 * 1000)
         };
 
         const newPosting = await createPostingService(postingData);
@@ -122,7 +122,7 @@ export const createOnCampusCollegeRequest = async (req, res) => {
             jobType: "On-campus",
             visibleTo: "Company", // Default visibility for college requests
             // conditional - if paid user then don't put expiresAt
-            expireAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
+            expireAt: new Date(Date.now() + 29 * 24 * 60 * 60 * 1000)
         };
 
         const newPosting = await createPostingService(postingData);
@@ -168,7 +168,7 @@ export const createPoolCampusCollegeRequest = async (req, res) => {
             jobType: "Pool-campus",
             visibleTo: "Company", // Default visibility for college requests
             // conditional - if paid user then don't put expiresAt
-            expireAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
+            expireAt: new Date(Date.now() + 29 * 24 * 60 * 60 * 1000)
         };
         const newPosting = await createPostingService(postingData);
         if (!newPosting) {
@@ -209,7 +209,7 @@ export const createPoolCampusPosting = async (req, res) => {
             jobType: "Pool-campus",
             visibleTo: "College",
             // conditional - if paid user then don't put expiresAt
-            expireAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
+            expireAt: new Date(Date.now() + 29 * 24 * 60 * 60 * 1000)
 
         };
         const newPosting = await createPostingService(postingData);
@@ -254,7 +254,7 @@ export const createJobPosting = async (req, res) => {
             companyPosted: companyPostedId.data[0]._id,
             jobType: "Job-listing",
             // conditional - if paid user then don't put expiresAt
-            expireAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
+            expireAt: new Date(Date.now() +295 * 24 * 60 * 60 * 1000)
         };
         const newPosting = await createPostingService(postingData);
         if (!newPosting) {
@@ -281,7 +281,7 @@ export const createInternshipPosting = async (req, res) => {
             ...req.body,
             companyPosted: companyPostedId.data[0]._id,
             jobType: "Internship",
-            expireAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
+            expireAt: new Date(Date.now() +29 * 24 * 60 * 60 * 1000)
         };
         const newPosting = await createPostingService(postingData);
         if (!newPosting) {
@@ -308,7 +308,7 @@ export const createRefferralPosting = async (req, res) => {
             candidatePosted: user.data[0]._id,
             jobType: "Referral",
             // conditional - if paid user then don't put expiresAt
-            expireAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
+            expireAt: new Date(Date.now() + 29 * 24 * 60 * 60 * 1000)
         };
         const newPosting = await createPostingService(postingData);
         if (!newPosting) {
