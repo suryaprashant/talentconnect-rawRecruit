@@ -1450,25 +1450,6 @@ const closeModal = () => {
             {services.college.desc}
           </p>
           <button
-<<<<<<< Updated upstream
-  onClick={() => handleRoleSelect('college')}
-  className="group relative text-white px-8 py-4 rounded-full font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
->
-  {/* Base layer - Pink to Magenta */}
-  <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-fuchsia-600 transition-all duration-300" />
-  
-  {/* Hover color layer - Brighter pink/magenta */}
-  <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-fuchsia-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-  
-  {/* Glow effect */}
-  <div className="absolute inset-0 bg-gradient-to-r from-pink-400/30 to-fuchsia-400/30 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
-  
-  <span className="relative flex items-center gap-3">
-    Explore College Features
-    <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
-  </span>
-</button>
-=======
             onClick={() => handleRoleSelect('college')}
             className="group relative bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-8 py-4 rounded-full font-bold hover:shadow-xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
           >
@@ -1586,7 +1567,6 @@ const closeModal = () => {
               </div>
             );
           })}
->>>>>>> Stashed changes
         </div>
       </div>
     </div>

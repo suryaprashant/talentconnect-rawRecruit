@@ -251,6 +251,7 @@ if (companyUserId) {
     }
   };
 
+  console.log('job',filteredJobs)
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex items-center justify-center">
