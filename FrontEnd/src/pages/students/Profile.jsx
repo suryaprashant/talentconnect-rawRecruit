@@ -2088,7 +2088,7 @@ function Profile() {
         return null;
     }
   };
-
+  //console.log(profileData)
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       {/* Pastel blur background elements */}

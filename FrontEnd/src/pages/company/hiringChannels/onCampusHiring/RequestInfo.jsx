@@ -6,7 +6,7 @@ import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-
+import BackButton from '@/components/layout/BackButton';
 export default function RequestInfo() {
   const degreeStreamMapping = {
     'B.E': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'],
@@ -1299,6 +1299,7 @@ const [formData, setFormData] = useState(() => {
             </div>
 
             {/* Register Button */}
+<<<<<<< Updated upstream
             <div className="flex justify-between pt-6 border-t border-gray-200">
   <button
     type="button"
@@ -1315,6 +1316,20 @@ const [formData, setFormData] = useState(() => {
     Register
   </button>
 </div>
+=======
+            <div className="flex justify-end pt-4">
+              
+             
+
+              <button 
+                type="button" 
+                onClick={handleSubmit} 
+                className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
+              >
+                Register
+              </button>
+            </div>
+>>>>>>> Stashed changes
           </div>
         </div>
       </div>

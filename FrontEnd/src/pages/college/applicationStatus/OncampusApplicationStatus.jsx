@@ -43,22 +43,21 @@ export default function OncampusApplicationStatus() {
             
         const jobResponse = await getCompanyPostingForOncampusDetail(jobId);
             const jobDetails = jobResponse.data;
+            const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company";
 
            const companyUserId = jobDetails.postedByUser || jobDetails.companyPosted?.userId;
-           let companyLogo = null;
-      if (companyUserId) {
-              try {
-                const profileResponse = await getCompanyImageUrl(companyUserId); 
-                console.log('profile',profileResponse)
-                // Adjust this line based on your exact API response structure
-                companyLogo = profileResponse?.data?.profile?.profileImageUrl || null;
-                console.log('images',companyLogo)
-              } catch (logoErr) {
-                console.error("Logo fetch failed:", logoErr);
-              }
-            }
-
-      const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company";
+           let companyLogo=null ;
+ 
+if (companyUserId) {
+        try {
+            const profileResponse = await getCompanyImageUrl(companyUserId); 
+            // Look into the 'profile' object returned by your controller
+            companyLogo = profileResponse?.data?.profile?.profileImageUrl || null;
+        } catch (logoErr) {
+            // companyName is now defined, so this won't crash anymore
+            console.error(`Logo fetch failed for ${companyName}:`, logoErr);
+        }
+    }
             console.log('image url',companyLogo)
 
           

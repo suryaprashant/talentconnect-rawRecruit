@@ -419,6 +419,7 @@ const buildQueryParams = (jobId, targetStatus, isVisited) => {
                                                             <Eye className="w-4 h-4 text-[#3b82f6]" />
                                                             {views}
                                                         </div>
+                                                        
                                                     </td>
                                                     <td className="px-6 py-4">
                                                         <div 
