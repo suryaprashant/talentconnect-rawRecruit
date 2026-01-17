@@ -80,8 +80,17 @@ export default function RegisterPage({ onBackClick }) {
         companyType: [],
         proposedSchedule: { startDate: '', endDate: '', preferredMode: '' },
     };
-
-    const [formData, setFormData] = useState(initialFormState);
+const [formData, setFormData] = useState(() => {
+    const savedData = localStorage.getItem('pendingRegistration');
+    if (savedData) {
+        try {
+            return JSON.parse(savedData);
+        } catch (e) {
+            return initialFormState;
+        }
+    }
+    return initialFormState;
+});
     const [errors, setErrors] = useState({});
     const [alert, setAlert] = useState({ show: false, message: '', type: '' });
     const [descriptionError, setDescriptionError] = useState("");
@@ -111,6 +120,7 @@ export default function RegisterPage({ onBackClick }) {
     []);
 
     useEffect(() => {
+        localStorage.setItem('pendingRegistration', JSON.stringify(formData));
         const handleClickOutside = (event) => {
             if (amenitiesRef.current && !amenitiesRef.current.contains(event.target)) {
                 setDropdownOpen(prev => ({ ...prev, amenities: false }));
@@ -127,7 +137,7 @@ export default function RegisterPage({ onBackClick }) {
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => { document.removeEventListener('mousedown', handleClickOutside); };
-    }, []);
+    }, [formData]);
 
     useEffect(() => {
         setFormData(prev => ({ ...prev, stream: [] }));
@@ -270,6 +280,7 @@ export default function RegisterPage({ onBackClick }) {
         setFormData(initialFormState);
         setErrors({});
         setDescriptionError("");
+        localStorage.removeItem('pendingRegistration');
     };
 
     const validateForm = () => {
@@ -440,7 +451,7 @@ export default function RegisterPage({ onBackClick }) {
                 <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-50/50 p-4 mb-6">
                     <div className="text-center">
                         <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-1">
-                            Revolutionizing Campus Recruitment
+                            Revolutionizing Campus Recruitment 
                         </h1>
                         <p className="text-gray-600 text-sm max-w-2xl mx-auto">
                             Our platform connects colleges with skilled employers, offering tools for targeted training and data-driven insights to refine recruitment strategies.

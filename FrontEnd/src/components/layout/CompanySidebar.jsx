@@ -1,7 +1,20 @@
+import { useState } from "react";
 import SidebarNavItem from './SidebarNavItem';
 import SidebarNavGroup from './SidebarNavGroup';
+import SidebarHelpModal from "@/components/ui/SidebarHelpModal";
+import { companyHelpContent } from "@/constants/companyHelpContent";
 
 function CompanySidebar({ activePath }) {
+  const [openHelp, setOpenHelp] = useState(false);
+  const [helpContent, setHelpContent] = useState(null);
+
+  const handleOpenHelp = (key) => {
+    const content = companyHelpContent[key];
+    if (content) {
+      setHelpContent(content);
+      setOpenHelp(true);
+    }
+  };
   return (
     <div className="h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white">
       {/* Removed border-r border-gray-200 */}
@@ -20,6 +33,7 @@ function CompanySidebar({ activePath }) {
             } 
             label="Home" 
             active={activePath === '/home'} 
+            onHelp={() => handleOpenHelp("home")}
           />
 
           <SidebarNavItem 
@@ -31,6 +45,7 @@ function CompanySidebar({ activePath }) {
             } 
             label="Saved Opportunities" 
             active={activePath === '/company/saved-jobs/'} 
+            onHelp={() => handleOpenHelp("saved")}
           />
 
           {/* Company Dashboard */}
@@ -42,6 +57,7 @@ function CompanySidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/company-dashboard')}
+            onHelp={() => handleOpenHelp("companyDashboard")}
           >
             <SidebarNavItem
               to="/company-dashboard/On-campus"
@@ -84,6 +100,8 @@ function CompanySidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/service-request')}
+           onHelp={() => handleOpenHelp("serviceRequest")}
+            
           >
             <SidebarNavItem
               to="/service-request/workforce-solution"
@@ -130,6 +148,7 @@ function CompanySidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/company/application-status')}
+            onHelp={() => handleOpenHelp("applicationStatus")}
           >
             <SidebarNavItem
               to="/company/application-status/oncampus"
@@ -163,6 +182,7 @@ function CompanySidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/hiring-channels')}
+            onHelp={() => handleOpenHelp("hiringChannels")}
           >
             <SidebarNavItem
               to="/hiring-channels/on-campus-hiring"
@@ -206,6 +226,7 @@ function CompanySidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/job-management')}
+            onHelp={() => handleOpenHelp("jobManagement")}
           >
             <SidebarNavItem
               to="/job-management/On-campus"
@@ -248,7 +269,9 @@ function CompanySidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/shortlisted')}
+            onHelp={() => handleOpenHelp("shortlisted")}
           >
+
             <SidebarNavItem
               to="/shortlisted/on-campus-listings"
               icon={
@@ -290,6 +313,7 @@ function CompanySidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/accepted')}
+            onHelp={() => handleOpenHelp("accepted")}
           >
             <SidebarNavItem
               to="/accepted/on-campus-listings"
@@ -335,10 +359,17 @@ function CompanySidebar({ activePath }) {
               }
               label="Chats"
               active={activePath === '/chats'}
+              onHelp={() => handleOpenHelp("chats")}
             />
           </div>
         </div>
       </div>
+      <SidebarHelpModal 
+        open={openHelp} 
+        onClose={() => setOpenHelp(false)} 
+        title={helpContent?.title} 
+        description={helpContent?.description}
+      />
     </div>
   );
 }

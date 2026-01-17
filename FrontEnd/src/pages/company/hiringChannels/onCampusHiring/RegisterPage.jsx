@@ -18,7 +18,7 @@ export default function RegisterPage({
             </div>
 
             <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-              OnCampus Connect: Hire Smarter
+              OnCampus Connect: Hire Smarter 
             </h1>
           </div>
 
@@ -31,7 +31,7 @@ export default function RegisterPage({
         {/* Registration Form */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent text-center">
-            Request Info for On-Campus Hiring
+            Request Info for On-Campus Hiring 
           </h2>
 
           <p className="text-gray-600 mb-10 text-center">

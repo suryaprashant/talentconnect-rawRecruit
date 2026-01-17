@@ -6,7 +6,7 @@ import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-
+import BackButton from '@/components/layout/BackButton';
 export default function RequestInfo() {
   const degreeStreamMapping = {
     'B.E': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'],
@@ -72,7 +72,33 @@ export default function RequestInfo() {
     broadcastType: 'Everyone',
   };
 
-  const [formData, setFormData] = useState(initialData);
+const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem('pendingOnCampusRequest');
+    if (!saved) return initialData;
+
+    try {
+      const parsed = JSON.parse(saved);
+
+      // Revive simple date fields
+      if (parsed.startDate) parsed.startDate = new Date(parsed.startDate);
+      if (parsed.endDate) parsed.endDate = new Date(parsed.endDate);
+      if (parsed.onlineTestDate) parsed.onlineTestDate = new Date(parsed.onlineTestDate);
+      if (parsed.offerRolloutDate) parsed.offerRolloutDate = new Date(parsed.offerRolloutDate);
+
+      // Revive nested interview window dates
+      if (parsed.interviewWindow?.start) {
+        parsed.interviewWindow.start = new Date(parsed.interviewWindow.start);
+      }
+      if (parsed.interviewWindow?.end) {
+        parsed.interviewWindow.end = new Date(parsed.interviewWindow.end);
+      }
+
+      return parsed;
+    } catch (e) {
+      console.error("Error reviving OnCampus data:", e);
+      return initialData;
+    }
+  });
   const [descriptionError, setDescriptionError] = useState("");
 
   const cityOptions = useMemo(() =>
@@ -112,6 +138,11 @@ export default function RequestInfo() {
   const benefitsRef = useRef(null);
   const tagsRef = useRef(null);
   const workLocationRef = useRef(null);
+
+// Save to LocalStorage whenever formData changes
+  useEffect(() => {
+    localStorage.setItem('pendingOnCampusRequest', JSON.stringify(formData));
+  }, [formData]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -312,6 +343,7 @@ export default function RequestInfo() {
         setTimeout(() => {
           toast.success('This job will expire after 15 days');
         }, 2000);
+        localStorage.removeItem('pendingOnCampusRequest'); 
         setFormData(initialData);
       }
     } catch (err) {

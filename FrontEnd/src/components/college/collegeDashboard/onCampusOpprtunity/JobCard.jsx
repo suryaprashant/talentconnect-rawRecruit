@@ -406,6 +406,8 @@ const JobCard = ({ job }) => {
             </span>
           </div>
         </div>
+        
+
 
         <Link
         to={`/college-dashboard/On-campus/${job._id || job.id}`}
