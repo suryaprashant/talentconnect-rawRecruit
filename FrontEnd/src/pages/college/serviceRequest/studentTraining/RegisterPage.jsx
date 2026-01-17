@@ -303,7 +303,7 @@ export default function RequestInfo({ onBackClick }) {
                 className="flex items-center gap-1.5 text-gray-600 hover:text-gray-800 font-medium transition-colors duration-200 text-sm"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                Back to Home
+                Back 
               </button>
 
               <button
