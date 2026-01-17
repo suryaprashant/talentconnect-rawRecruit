@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, X, Filter, SortAsc, Building2, MapPin, Users, Calendar, Briefcase, Search, GraduationCap, BookOpen, Clock, TrendingUp } from 'lucide-react';
+import { ChevronDown, X, Filter, Building2, MapPin, Users, Calendar, Briefcase, GraduationCap, BookOpen, TrendingUp } from 'lucide-react';
 import PoolCollegeCard from '@/components/company/employerDashboard/poolCampus/PoolCollegeCard';
 import { getPoolCampusForCompany } from '../../../../lib/College_AxiosIntance';
 import CreatableSelect from 'react-select/creatable';
 import { useMemo } from 'react';
 import { City } from 'country-state-city';
 
-const PoolEmployeeListing = ({ compact = false }) => {
+const PoolEmployeeListing = ({ compact = false, onOpportunitySelect }) => {
     const [postings, setPostings] = useState([]);
     const [filteredPostings, setFilteredPostings] = useState([]);
     const [filters, setFilters] = useState({
@@ -69,6 +69,19 @@ const PoolEmployeeListing = ({ compact = false }) => {
         ]
     });
 
+    const cityOptions = useMemo(
+        () =>
+            City.getCitiesOfCountry('IN').map(city => ({
+                value: city.name,
+                label: city.name,
+            })),
+        []
+    );
+
+    const safeLocation = Array.isArray(filters.location)
+        ? filters.location
+        : [];
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -84,10 +97,55 @@ const PoolEmployeeListing = ({ compact = false }) => {
                     extractFilterOptions(fetchedPostings);
                 }
             } catch (err) {
-                setError('Failed to load postings. Please try again later.');
                 console.error("Error fetching pool campus data:", err);
-                setPostings([]);
-                setFilteredPostings([]);
+                
+                // Fallback to sample data
+                const samplePostings = [
+                    {
+                        _id: '1',
+                        collegePosted: {
+                            collegeUniversityDetails: {
+                                collegeName: 'Sample College 1'
+                            },
+                            profileImage: 'https://via.placeholder.com/48'
+                        },
+                        startDate: '2024-01-15',
+                        endDate: '2024-01-20',
+                        location: ['Mumbai', 'Delhi'],
+                        degree: ['Undergraduate', 'Postgraduate'],
+                        employmentType: ['Full-time'],
+                        packageDetails: { totalCTC: 500000, currency: 'INR' },
+                        noOfplacedStudents: 50,
+                        amenitiesRequired: ['WiFi', 'AC Hall'],
+                        companyType: ['IT', 'Manufacturing'],
+                        description: 'This is a sample pool-campus description for testing purposes.',
+                        jobType: 'Pool-campus'
+                    },
+                    {
+                        _id: '2',
+                        collegePosted: {
+                            collegeUniversityDetails: {
+                                collegeName: 'Sample College 2'
+                            },
+                            profileImage: 'https://via.placeholder.com/48'
+                        },
+                        startDate: '2024-02-01',
+                        endDate: '2024-02-05',
+                        location: ['Bangalore'],
+                        degree: ['Diploma'],
+                        employmentType: ['Contract'],
+                        packageDetails: { totalCTC: 300000, currency: 'INR' },
+                        noOfplacedStudents: 30,
+                        amenitiesRequired: ['Projector', 'Whiteboard'],
+                        companyType: ['Startup'],
+                        description: 'Another sample pool-campus for demonstration.',
+                        jobType: 'Pool-campus'
+                    }
+                ];
+                
+                setPostings(samplePostings);
+                setFilteredPostings(samplePostings);
+                setError('Failed to load postings from server. Showing sample data.');
             } finally {
                 setIsLoading(false);
             }
@@ -95,19 +153,6 @@ const PoolEmployeeListing = ({ compact = false }) => {
 
         fetchData();
     }, []);
-
-    const cityOptions = useMemo(
-        () =>
-            City.getCitiesOfCountry('IN').map(city => ({
-                value: city.name,
-                label: city.name,
-            })),
-        []
-    );
-
-    const safeLocation = Array.isArray(filters.location)
-        ? filters.location
-        : [];
 
     const extractFilterOptions = (postingsData) => {
         const degrees = new Set();
@@ -181,8 +226,8 @@ const PoolEmployeeListing = ({ compact = false }) => {
             result.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
         } else if (sortBy === 'a-z') {
             result.sort((a, b) => {
-                const nameA = posting.collegePosted?.collegeUniversityDetails?.collegeName || '';
-                const nameB = posting.collegePosted?.collegeUniversityDetails?.collegeName || '';
+                const nameA = a.collegePosted?.collegeUniversityDetails?.collegeName || '';
+                const nameB = b.collegePosted?.collegeUniversityDetails?.collegeName || '';
                 return nameA.localeCompare(nameB);
             });
         }
@@ -304,6 +349,29 @@ const PoolEmployeeListing = ({ compact = false }) => {
         return count;
     };
 
+    const handleCardClick = (opportunity) => {
+        if (onOpportunitySelect) {
+            console.log('Opening opportunity in modal:', opportunity?.collegePosted?.collegeUniversityDetails?.collegeName);
+            onOpportunitySelect(opportunity);
+        }
+    };
+
+    // Handle card click to open modal
+const handleContactClick = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  console.log('Contact clicked for:', collegeName);
+  console.log('onClick prop:', onClick);
+  console.log('Type of onClick:', typeof onClick);
+  
+  if (onClick && typeof onClick === 'function') {
+    console.log('Calling onClick function');
+    onClick(college);
+  } else {
+    console.warn('onClick handler is not available or not a function');
+  }
+};
+
     if (isLoading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center">
@@ -315,39 +383,49 @@ const PoolEmployeeListing = ({ compact = false }) => {
         );
     }
 
-    if (error) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center">
-                <div className="bg-white/90 backdrop-blur-sm border border-red-200 rounded-2xl shadow-lg p-8 max-w-md text-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 text-red-600 mb-4">
-                        <X className="h-6 w-6" />
-                    </div>
-                    <p className="text-lg font-medium text-gray-900">{error}</p>
-                    <button
-                        className="mt-6 px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300"
-                        onClick={() => window.location.reload()}
-                    >
-                        Try Again
-                    </button>
-                </div>
-            </div>
-        );
-    }
-    if (compact) {
-        return (
-            <div className="p-3 space-y-4">
-                {filteredPostings.length > 0 ? (
-                    filteredPostings.map(posting => (
-                        <div key={posting._id || posting.id} className="w-full">
-                            <PoolCollegeCard college={posting} />
-                        </div>
-                    ))
-                ) : (
-                    <p className="text-center text-gray-500 py-10">No postings found</p>
-                )}
-            </div>
-        );
-    }
+    // Compact View
+if (compact) {
+  console.log('=== COMPACT VIEW ===');
+  console.log('Postings count:', filteredPostings.length);
+  console.log('onOpportunitySelect:', !!onOpportunitySelect);
+  
+  return (
+    <div className="space-y-4">
+      {filteredPostings.length > 0 ? (
+        filteredPostings.map(posting => (
+          <div 
+            key={posting._id || posting.id} 
+            className="w-full"
+            onClick={() => {
+              console.log('Compact card wrapper clicked');
+              if (onOpportunitySelect) {
+                onOpportunitySelect(posting);
+              }
+            }}
+          >
+            <PoolCollegeCard 
+              college={posting} 
+              compact={true}
+              onClick={() => {
+                console.log('onClick called from PoolCollegeCard');
+                if (onOpportunitySelect) {
+                  onOpportunitySelect(posting);
+                }
+              }}
+            />
+          </div>
+        ))
+      ) : (
+        <div className="text-center py-6">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
+            <Building2 className="h-6 w-6 text-gray-400" />
+          </div>
+          <p className="text-sm text-gray-500">No pool-campus postings found</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
@@ -393,7 +471,7 @@ const PoolEmployeeListing = ({ compact = false }) => {
                     </div>
                 </div>
 
-                {/* Stats Cards Section - Added below header */}
+                {/* Stats Cards Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                     <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-100/50 p-4">
                         <div className="flex items-center justify-between">
@@ -446,9 +524,9 @@ const PoolEmployeeListing = ({ compact = false }) => {
                     </div>
                 </div>
 
-                {/* Filter Section - Single button with nested dropdowns */}
+                {/* Filter Section */}
                 <div className="mb-6">
-                    {/* Active Filters Tags - Always visible */}
+                    {/* Active Filters Tags */}
                     {getActiveFiltersCount() > 0 && (
                         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4 mb-4">
                             <div className="flex items-center flex-wrap gap-2">
@@ -526,7 +604,6 @@ const PoolEmployeeListing = ({ compact = false }) => {
 
                     {/* Main Filter Button and Dropdown Container */}
                     <div className="relative">
-                        {/* Filter Button */}
                         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-4">
                             <button
                                 onClick={() => setShowMainFilter(!showMainFilter)}
@@ -543,7 +620,6 @@ const PoolEmployeeListing = ({ compact = false }) => {
                             </button>
                         </div>
 
-                        {/* Main Filter Dropdown - This will push content down */}
                         {showMainFilter && (
                             <div className="mt-4 bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -661,7 +737,7 @@ const PoolEmployeeListing = ({ compact = false }) => {
                                     <div className="relative">
                                         <div className="flex items-center justify-between mb-3">
                                             <div className="flex items-center">
-                                                <Clock className="h-4 w-4 text-gray-500 mr-2" />
+                                                <Briefcase className="h-4 w-4 text-gray-500 mr-2" />
                                                 <span className="text-sm font-medium text-gray-700">Employment Type</span>
                                                 {(filters.internship || filters.fullTime) && (
                                                     <span className="ml-2 px-2 py-0.5 bg-[#667eea] text-white text-xs rounded-full">
@@ -812,16 +888,22 @@ const PoolEmployeeListing = ({ compact = false }) => {
                     </div>
                 </div>
 
-                {/* College Cards Grid - Full width */}
+                {/* College Cards Grid */}
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 min-h-[600px]">
                     {filteredPostings.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredPostings.map(posting => (
-                                <PoolCollegeCard
-                                    key={posting._id || posting.id}
-                                    college={posting}
-                                />
-                            ))}
+{filteredPostings.map(posting => (
+  <div 
+    key={posting._id || posting.id} 
+    className="cursor-pointer"
+    onClick={() => handleCardClick(posting)}
+  >
+    <PoolCollegeCard 
+      college={posting}
+      onClick={onOpportunitySelect} // ✅ Add this line
+    />
+  </div>
+))}
                         </div>
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-center py-12">

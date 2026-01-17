@@ -471,26 +471,28 @@ function AppRoutes() {
               <Route path="/interviews" element={<InterviewScheduler />} />
 
               {/* Find your Company On-campus routes and update them to this: */}
-              <Route path="/company-dashboard/On-campus">
-                {/* The full-screen gallery view (Initial state) */}
-                <Route index element={<CollegeListingPage />} />
-
-                {/* The split-view: activated when an ID is present in the URL */}
-                <Route path=":id" element={<CompanyOnCampusLayout />}>
-                  <Route index element={<CollegeDetailPage />} />
-                </Route>
-              </Route>
+              <Route path="/company-dashboard/on-campus">
+  {/* Remove the index route that renders CollegeListingPage directly */}
+  {/* <Route index element={<CollegeListingPage />} /> */} {/* ❌ Remove this */}
+  
+  {/* Make CompanyOnCampusLayout the main view */}
+  <Route index element={<CompanyOnCampusLayout />} />
+  
+  {/* Optional: For direct links to specific colleges */}
+  <Route path="college/:id" element={<CompanyOnCampusLayout />} />
+</Route>
 
 
 
               <Route path="/company-dashboard/pool-campus">
                 {/* The main full-screen list */}
-                <Route index element={<PoolEmployeeListing />} />
+                {/* <Route index element={<PoolEmployeeListing />} /> */}
+                <Route index element={<CompanyPoolCampusLayout />} />
 
                 {/* The split-view: activated when an ID exists in the URL */}
-                <Route path=":id" element={<CompanyPoolCampusLayout />}>
+                {/* <Route path=":id" element={<CompanyPoolCampusLayout />}>
                   <Route index element={<PoolCampusEmployeeDash />} />
-                </Route>
+                </Route> */}
               </Route>
 
               <Route path="/company-dashboard/Off-campus/:jobId" element={<OffCampusJobDetail />} />

@@ -1001,7 +1001,7 @@ function Home() {
         </div>
 
         {/* Recent Applications */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Recent Shortlisted</h2>
@@ -1075,7 +1075,7 @@ function Home() {
               </div>
             )}
           </div>
-        </div>
+        </div> */}
 
         {/* Quick Actions */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">

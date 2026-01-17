@@ -48,10 +48,9 @@
 
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { MapPin, User, Banknote, Heart } from 'lucide-react';
+import { MapPin, User, Banknote, Heart, ExternalLink } from 'lucide-react';
 import { SaveOppurtunity } from '@/lib/Company_AxiosInstance';
-import  toast  from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 const pastelColors = [
   // Purple/Indigo gradient variants (primary theme colors)
@@ -100,18 +99,6 @@ const pastelColors = [
   "bg-gradient-to-r from-[#fcd34d]/20 to-[#fbbf24]/20 text-[#d97706] border border-[#fcd34d]/30",
 ];
 
-// Helper function to get a random theme color
-const getRandomThemeColor = () => {
-  const themeColors = [
-    "bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30", // Purple
-    "bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30", // Green
-    "bg-gradient-to-r from-[#fbcfe8]/20 to-[#f9a8d4]/20 text-[#9d174d] border border-[#fbcfe8]/30", // Pink
-    "bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30", // Yellow
-    "bg-gradient-to-r from-[#bae6fd]/20 to-[#7dd3fc]/20 text-[#0369a1] border border-[#bae6fd]/30", // Blue
-  ];
-  return themeColors[Math.floor(Math.random() * themeColors.length)];
-};
-
 function getStableColor(id = "") {
   let hash = 0;
   for (let i = 0; i < id.length; i++) {
@@ -120,7 +107,7 @@ function getStableColor(id = "") {
   return pastelColors[hash];
 }
 
-const CollegeCard = ({ college }) => {
+const CollegeCard = ({ college, onClick }) => {
   const [isSaved, setIsSaved] = useState(false);
 
   if (!college) return null;
@@ -149,27 +136,26 @@ const CollegeCard = ({ college }) => {
   };
 
   const handleSave = async (e) => {
-  e.preventDefault();
-  e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
 
-  try {
-    const response = await SaveOppurtunity(
-      college._id,        // ✅ jobId
-      college.jobType     // ✅ jobType = "Pool-campus"
-    );
+    try {
+      const response = await SaveOppurtunity(
+        college._id,        // ✅ jobId
+        college.jobType     // ✅ jobType = "Pool-campus"
+      );
 
-    if (response?.data?.success === true) {
-      setIsSaved(true);
-      toast.success("Saved");
-    } else {
-      toast.error(response?.response?.data?.msg || "Unable to save");
+      if (response?.data?.success === true) {
+        setIsSaved(true);
+        toast.success("Saved");
+      } else {
+        toast.error(response?.response?.data?.msg || "Unable to save");
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+      toast.error("Something went wrong!");
     }
-  } catch (error) {
-    console.error("Save error:", error);
-    toast.error("Something went wrong!");
-  }
-};
-
+  };
 
   // Format location
   const formatLocation = () => {
@@ -179,25 +165,24 @@ const CollegeCard = ({ college }) => {
     return 'Location not specified';
   };
 
-  // Format package details
-  const formatPackage = () => {
-    if (college.packageDetails?.totalCTC) {
-      const currency = college.packageDetails.currency || 'INR';
-      const amount = college.packageDetails.totalCTC.toLocaleString();
-      return `${currency === 'INR' ? '₹' : currency} ${amount}`;
-    }
-    return 'Package not specified';
-  };
-
   const collegeStatus = getCollegeStatus();
   const stableColor = getStableColor(college._id || collegeName);
 
+  // Handle card click to open modal
+  const handleContactClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Contact clicked for:', collegeName);
+    
+    if (onClick && typeof onClick === 'function') {
+      onClick(college);
+    } else {
+      console.error('onClick handler is not available');
+    }
+  };
+
   return (
-    <div className="
-      w-full max-w-[350px] min-h-[430px] mx-auto rounded-2xl 
-      border shadow-sm hover:shadow-lg transition overflow-hidden
-      flex flex-col
-    ">
+    <div className="w-full max-w-[350px] min-h-[430px] mx-auto rounded-2xl border shadow-sm hover:shadow-lg transition overflow-hidden flex flex-col cursor-pointer">
       {/* TOP SECTION */}
       <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-grow`}>
 
@@ -209,7 +194,7 @@ const CollegeCard = ({ college }) => {
 
           <button
             onClick={handleSave}
-            className="bg-white p-2 rounded-full shadow"
+            className="bg-white p-2 rounded-full shadow hover:bg-gray-50 transition"
           >
             <Heart
               className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
@@ -310,7 +295,6 @@ const CollegeCard = ({ college }) => {
 
       {/* BOTTOM SECTION */}
       <div className="p-4 bg-white flex justify-between items-center border-t">
-
         <div>
           {/* Package */}
           <p className="font-semibold text-gray-900 text-sm">
@@ -318,7 +302,6 @@ const CollegeCard = ({ college }) => {
               ? `₹${college.packageDetails.totalCTC.toLocaleString()}`
               : "Not Disclosed"}
           </p>
-
           {/* Location */}
           <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
             <MapPin className="h-4 w-4 text-gray-500" />
@@ -328,15 +311,15 @@ const CollegeCard = ({ college }) => {
           </div>
         </div>
 
-        <Link
-          to={`/company-dashboard/On-campus/${college._id || college.id}`}
-          className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
+        {/* Contact Button - Fixed */}
+        <button
+          onClick={handleContactClick}
+          className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition flex items-center gap-1"
         >
+          <ExternalLink className="h-4 w-4" />
           Contact 
-        </Link>
-
+        </button>
       </div>
-
     </div>
   );
 };
