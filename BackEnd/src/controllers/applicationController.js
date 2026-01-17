@@ -477,7 +477,7 @@ export async function createOncampusApplication(req, res) {
   const { jobId } = req.body;
   const userId = req.user._id;
   const userType = req.user.userType;
-
+ console.log()
   
   try {
     let user;
@@ -907,6 +907,7 @@ export async function getCollegeApplicationsByJob(req, res) {
   
   try { const response = await fetchCollegeApplicationsByJobService( jobId, jobType, userType, targetStatus, isVisited ); 
     // to be implement -- sorting feature like ATS 
+    console.log(response)
       res.status(200).json(response.data); 
     } catch (error) 
     { 

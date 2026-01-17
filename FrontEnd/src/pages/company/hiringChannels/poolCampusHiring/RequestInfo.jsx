@@ -71,7 +71,33 @@ export default function PoolCampusHiringForm() {
     preferredHiringMode: '',
   };
 
-  const [formData, setFormData] = useState(initialState);
+  const [formData, setFormData] = useState(() => {
+    const savedData = localStorage.getItem('pendingPoolHiringRequest');
+    if (!savedData) return initialState;
+
+    try {
+      const parsed = JSON.parse(savedData);
+
+      // 1. Revive Main Dates
+      if (parsed.placementStartDate) parsed.placementStartDate = new Date(parsed.placementStartDate);
+      if (parsed.placementEndDate) parsed.placementEndDate = new Date(parsed.placementEndDate);
+      if (parsed.onlineTestDate) parsed.onlineTestDate = new Date(parsed.onlineTestDate);
+      if (parsed.offerRolloutDate) parsed.offerRolloutDate = new Date(parsed.offerRolloutDate);
+
+      // 2. Revive Nested Interview Window Dates
+      if (parsed.interviewWindow?.start) {
+        parsed.interviewWindow.start = new Date(parsed.interviewWindow.start);
+      }
+      if (parsed.interviewWindow?.end) {
+        parsed.interviewWindow.end = new Date(parsed.interviewWindow.end);
+      }
+
+      return parsed;
+    } catch (e) {
+      console.error("Error reviving Pool Campus data:", e);
+      return initialState;
+    }
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [descriptionError, setDescriptionError] = useState("");
@@ -100,6 +126,10 @@ export default function PoolCampusHiringForm() {
   const selectionProcessRef = useRef(null);
   const tagsRef = useRef(null);
   const collegeTypesRef = useRef(null);
+
+  useEffect(() => {
+    localStorage.setItem('pendingPoolHiringRequest', JSON.stringify(formData));
+  }, [formData]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -346,6 +376,7 @@ export default function PoolCampusHiringForm() {
         setTimeout(() => {
           toast.success('This job will expire after 15 days');
         }, 2000);
+        localStorage.removeItem('pendingPoolHiringRequest');
         setFormData(initialState);
       }
     } catch (err) {

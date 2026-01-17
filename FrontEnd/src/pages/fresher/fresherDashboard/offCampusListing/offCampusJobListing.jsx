@@ -183,13 +183,32 @@ const extractFilterOptions = (jobsData) => {
   const degrees = new Set();
   const courses = new Set();
   const employmentTypes = new Set();
+  const workModes = new Set();
 
   jobsData.forEach(job => {
     // Extract courses from API's "degree" field
     if (Array.isArray(job.degree)) {
       job.degree.forEach(deg => {
         if (typeof deg === "string") {
-          courses.add(deg.trim()); // ✅ Add to courses, not degrees
+          degrees.add(deg.trim());
+        }
+      });
+    }
+
+    // Extract COURSES from API's "studentStreams" field
+    if (Array.isArray(job.studentStreams)) {
+      job.studentStreams.forEach(stream => {
+        if (typeof stream === "string" && stream !== "All Streams") {
+          courses.add(stream.trim());
+        }
+      });
+    }
+
+    // Extract WORK MODES from API's "workMode" field
+    if (Array.isArray(job.workMode)) {
+      job.workMode.forEach(mode => {
+        if (typeof mode === "string") {
+          workModes.add(mode.trim());
         }
       });
     }
@@ -208,12 +227,15 @@ const extractFilterOptions = (jobsData) => {
 
   setFilterOptions(prev => ({
     ...prev,
-    // Keep static degree types
-    degree: prev.degree, // Polytechnic, ITI, Diploma, Undergraduate, Postgraduate
-    // Update courses dynamically from API
+    degree: degrees.size > 0
+      ? Array.from(degrees).map(label => ({ label }))
+      : prev.degree,
     courses: courses.size > 0
       ? Array.from(courses).map(label => ({ label }))
       : prev.courses,
+    workMode: workModes.size > 0
+      ? Array.from(workModes).map(label => ({ label }))
+      : prev.workMode,
     employmentType: employmentTypes.size > 0
       ? Array.from(employmentTypes).map(label => ({ label }))
       : prev.employmentType,
@@ -229,40 +251,45 @@ const extractFilterOptions = (jobsData) => {
 
     let result = [...offCampusJobs];
 
-    // Apply degree filters
-    if (filters.degree.length > 0) {
-  result = result.filter(job =>
-    filters.degree.includes(job.education?.degree)
-  );
-}
-
-    // Apply course filters - FILTER BY API's "degree" field
-    if (filters.courses.length > 0) {
-      result = result.filter(job =>
-        Array.isArray(job.degree) &&
-        filters.courses.some(selectedCourse =>
-          job.degree.some(apiDegree => 
-            apiDegree.toLowerCase().includes(selectedCourse.toLowerCase()) ||
-            selectedCourse.toLowerCase().includes(apiDegree.toLowerCase())
-          )
+    // Apply DEGREE filters (from API's "degree" field)
+  if (filters.degree.length > 0) {
+    result = result.filter(job =>
+      Array.isArray(job.degree) &&
+      filters.degree.some(selectedDegree =>
+        job.degree.some(apiDegree =>
+          apiDegree.toLowerCase() === selectedDegree.toLowerCase()
         )
-      );
-    }
+      )
+    );
+  }
+
+    // Apply COURSE filters (from API's "studentStreams" field)
+  if (filters.courses.length > 0) {
+    result = result.filter(job =>
+      Array.isArray(job.studentStreams) &&
+      filters.courses.some(selectedCourse =>
+        job.studentStreams.some(stream =>
+          stream.toLowerCase() === selectedCourse.toLowerCase()
+        )
+      )
+    );
+  }
 
 
 
-    // Apply employment type filter
-    if (filters.employmentType.length > 0) {
-      result = result.filter(job => {
-        if (Array.isArray(job.employmentType)) {
-          return filters.employmentType.some(type =>
-            job.employmentType.includes(type)
-          );
-        }
-        return filters.employmentType.includes(job.employmentType);
-      });
-    }
-
+    // Apply EMPLOYMENT TYPE filter
+  if (filters.employmentType.length > 0) {
+    result = result.filter(job => {
+      if (Array.isArray(job.employmentType)) {
+        return filters.employmentType.some(type =>
+          job.employmentType.some(empType =>
+            empType.toLowerCase() === type.toLowerCase()
+          )
+        );
+      }
+      return filters.employmentType.includes(job.employmentType);
+    });
+  }
 
 
     // Apply location filter
@@ -277,11 +304,18 @@ const extractFilterOptions = (jobsData) => {
       );
     }
 
-    if (filters.workMode.length > 0) {
-      result = result.filter(job =>
-        filters.workMode.some(mode => job.workMode === mode)
-      );
-    }
+    // Apply WORK MODE filter (from API's "workMode" field)
+  if (filters.workMode.length > 0) {
+    result = result.filter(job =>
+      Array.isArray(job.workMode) &&
+      filters.workMode.some(selectedMode =>
+        job.workMode.some(mode =>
+          mode.toLowerCase() === selectedMode.toLowerCase()
+        )
+      )
+    );
+  }
+
 
     if (filters.internship) {
       result = result.filter(job => job.jobType === 'Internship');
@@ -839,7 +873,7 @@ const extractFilterOptions = (jobsData) => {
                   </button>
                   
                   {openSubDropdowns.courses && (
-                    <div className="absolute z-[100] w-full mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
+                    <div className="absolute z-[100] w-full mt-2 p-3 bg-white backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
                       <div className="space-y-2">
                         {filterOptions.courses.map((option, index) => (
                           <div key={option.label + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">

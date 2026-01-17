@@ -1,3 +1,8 @@
+// In your controller file (e.g., controllers/companyProfileController.js)
+
+//import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js'
+import CollegeProfile from '../../models/collegeDashboard/collegeProfileModel.js' // Ensure this import exists
+
 import CompanyProfile from '../../models/companyDashboard/companyProfileModel.js'
 import cloudinary from '../../../config/cloudinary.js'
 import streamifier from 'streamifier';
@@ -106,7 +111,9 @@ export const getCompanyProfile = async (req, res) => {
     const userId = req.user._id;
 
     const companyProfile = await getCompanyService(userId)
-  
+    
+    console.log('for',req.user._id)
+    console.log('in here',companyProfile)
 
     if (!companyProfile) {
       return res.status(404).json({
@@ -220,3 +227,33 @@ export const updateCompanyProfile = async (req, res) => {
 };
 
 
+
+// controllers/CompanyDashboard/companyProfileController.js
+export const getCompanyImageByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId
+
+    const companyProfile = await getCompanyService(userId)
+  
+    console.log('for',userId)
+    console.log('pp',companyProfile)
+
+    if (!companyProfile) {
+      return res.status(404).json({
+        message: 'Company profile not found'
+      });
+    }
+
+    res.status(200).json({
+      message: 'Company profile retrieved successfully',
+      profile: companyProfile.data[0]
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'Failed to fetch company profile',
+      error: error.message
+    });
+  }
+};

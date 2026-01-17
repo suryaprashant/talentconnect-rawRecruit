@@ -12,7 +12,13 @@ axiosClient.defaults.headers = {
 // default 10sec
 axiosClient.defaults.timeout = 10000;
 axiosClient.defaults.withCredentials = true;
-
+export const getCompanyImageUrl = (companyId) => {
+  // Make sure this matches your backend route exactly
+  
+  return axiosClient.get(`/api/companyDashboard/getInformation/${companyId}`)
+  .then((response) => response)
+    .catch((error) => error);
+};
 export function getRegisteredColleges() {
   return axiosClient
     .get(`/api/student-dashboard/on-campus`)

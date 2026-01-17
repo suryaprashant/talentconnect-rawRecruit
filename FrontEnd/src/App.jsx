@@ -347,6 +347,7 @@ function AppRoutes() {
             <Routes>
 
               {/* Universal Home Route - Renders based on user role */}
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/home" element={<UnifiedDashboard />} />
 
               {/* student */}

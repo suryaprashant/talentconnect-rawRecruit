@@ -16,7 +16,7 @@ export default function RequestInfo({ onBackClick, formData, handleInputChange, 
         {/* Header (compressed) */}
         <header className="mb-6 text-center">
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-3">
-            Revolutionizing Campus Recruitment
+            Revolutionizing Campus Recruitment 
           </h1>
           <p className="text-base md:text-lg text-gray-600 max-w-xl mx-auto">
             Connect colleges with employers through smarter hiring, targeted

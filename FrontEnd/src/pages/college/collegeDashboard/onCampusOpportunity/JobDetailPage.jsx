@@ -114,7 +114,7 @@ const JobDetailPage = () => {
   const handleApply = async () => {
     try {
       const response = await ApplyForOnCampus(id);
-      if (response.data?.success === true) toast.success("Applied!");
+      if (response.data?.success === true) toast.success("Appliedmm!");
       else toast.error(response.response?.data?.msg || "Could not apply.");
     } catch (error) {
       console.log("Error: ", error);
@@ -201,6 +201,7 @@ const jobStatus = getJobStatus();
 
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
           {/* Header Section */}
+          
           <div className="border-b border-gray-200 bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4">
             {
               jobStatus.status ==='Completed' && (

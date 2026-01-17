@@ -1173,6 +1173,7 @@ import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import BackButton from '@/components/layout/BackButton';
 
 export default function PoolCampusHiringForm() {
   const collegeStreamMapping = {
@@ -1238,7 +1239,33 @@ export default function PoolCampusHiringForm() {
     preferredHiringMode: '',
   };
 
-  const [formData, setFormData] = useState(initialState);
+const [formData, setFormData] = useState(() => {
+    const savedData = localStorage.getItem('pendingEmployerPoolHiring');
+    if (!savedData) return initialState;
+
+    try {
+      const parsed = JSON.parse(savedData);
+
+      // 1. Revive Top-level Date Strings
+      if (parsed.placementStartDate) parsed.placementStartDate = new Date(parsed.placementStartDate);
+      if (parsed.placementEndDate) parsed.placementEndDate = new Date(parsed.placementEndDate);
+      if (parsed.onlineTestDate) parsed.onlineTestDate = new Date(parsed.onlineTestDate);
+      if (parsed.offerRolloutDate) parsed.offerRolloutDate = new Date(parsed.offerRolloutDate);
+
+      // 2. Revive Nested Interview Window Date Strings
+      if (parsed.interviewWindow?.start) {
+        parsed.interviewWindow.start = new Date(parsed.interviewWindow.start);
+      }
+      if (parsed.interviewWindow?.end) {
+        parsed.interviewWindow.end = new Date(parsed.interviewWindow.end);
+      }
+
+      return parsed;
+    } catch (e) {
+      console.error("Error parsing saved Employer Pool Campus data:", e);
+      return initialState;
+    }
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [descriptionError, setDescriptionError] = useState("");
@@ -1267,6 +1294,9 @@ export default function PoolCampusHiringForm() {
   const selectionProcessRef = useRef(null);
   const tagsRef = useRef(null);
   const collegeTypesRef = useRef(null);
+useEffect(() => {
+    localStorage.setItem('pendingEmployerPoolHiring', JSON.stringify(formData));
+  }, [formData]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -1513,6 +1543,7 @@ export default function PoolCampusHiringForm() {
         setTimeout(() => {
           toast.success('This job will expire after 15 days');
         }, 2000);
+        localStorage.removeItem('pendingEmployerPoolHiring');
         setFormData(initialState);
       }
     } catch (err) {
@@ -2323,7 +2354,9 @@ export default function PoolCampusHiringForm() {
             </div>
 
             {/* Register Button */}
-            <div className="flex justify-end pt-4">
+
+            <div className="flex justify-between pt-4">
+              <BackButton></BackButton>
               <button type="submit" disabled={isSubmitting} className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200 disabled:opacity-50">
                 {isSubmitting ? 'Submitting...' : 'Register'}
               </button>
