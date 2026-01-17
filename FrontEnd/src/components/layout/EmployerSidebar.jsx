@@ -1,7 +1,18 @@
 import SidebarNavItem from './SidebarNavItem';
 import SidebarNavGroup from './SidebarNavGroup';
-
+import { useState } from "react";
+import SidebarHelpModal from "@/components/ui/SidebarHelpModal";
+import { companyHelpContent } from "@/constants/companyHelpContent";
 function EmployerSidebar({ activePath }) {
+  const [openHelp, setOpenHelp] = useState(false);
+const [helpContent, setHelpContent] = useState(null);
+const handleOpenHelp = (key) => {
+    const content = companyHelpContent[key];
+    if (content) {
+      setHelpContent(content);
+      setOpenHelp(true);
+    }
+  };
   return (
     <div className="h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white">
       {/* Removed border-r border-gray-200 */}
@@ -19,7 +30,9 @@ function EmployerSidebar({ activePath }) {
             } 
             label="Home" 
             active={activePath === '/home'} 
+            onHelp={() => handleOpenHelp("home")}
           />
+          
 
           <SidebarNavItem 
             to="/employer/saved-jobs/" 
@@ -30,6 +43,7 @@ function EmployerSidebar({ activePath }) {
             } 
             label="Saved Opportunities" 
             active={activePath === '/employer/saved-jobs/'} 
+            onHelp={() => handleOpenHelp("saved")}
           />
 
           {/* Employer Dashboard */}
@@ -41,6 +55,7 @@ function EmployerSidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/employer-dashboard')}
+            onHelp={() => handleOpenHelp("companyDashboard")}
           >
             <SidebarNavItem
               to="/employer-dashboard/On-campus"
@@ -83,6 +98,7 @@ function EmployerSidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/service-request')}
+            onHelp={() => handleOpenHelp("serviceRequest")}
           >
             <SidebarNavItem
               to="/service-request/workforce-solution"
@@ -129,6 +145,7 @@ function EmployerSidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/employer/application-status')}
+            onHelp={() => handleOpenHelp("applicationStatus")}
           >
             <SidebarNavItem
               to="/employer/application-status/oncampus"
@@ -162,6 +179,7 @@ function EmployerSidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/hiring-channels')}
+            onHelp={() => handleOpenHelp("hiringChannels")}
           >
             <SidebarNavItem
               to="/hiring-channels/on-campus-hiring/employer"
@@ -205,6 +223,7 @@ function EmployerSidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/job-management')}
+            onHelp={() => handleOpenHelp("jobManagement")}
           >
             <SidebarNavItem
               to="/job-management/on-campus-listings/employer"
@@ -247,6 +266,7 @@ function EmployerSidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/shortlisted')}
+            onHelp={() => handleOpenHelp("shortlisted")}
           >
             <SidebarNavItem
               to="/employer/shortlisted/on-campus-listings"
@@ -289,6 +309,7 @@ function EmployerSidebar({ activePath }) {
               </svg>
             } 
             active={activePath.includes('/accepted')}
+            onHelp={() => handleOpenHelp("accepted")}
           >
             <SidebarNavItem
               to="/employer/accepted/on-campus-listings"
@@ -334,10 +355,17 @@ function EmployerSidebar({ activePath }) {
               }
               label="Chats"
               active={activePath === '/chats'}
+              onHelp={() => handleOpenHelp("chats")}
             />
           </div>
         </div>
       </div>
+      <SidebarHelpModal 
+        open={openHelp} 
+        onClose={() => setOpenHelp(false)} 
+        title={helpContent?.title} 
+        description={helpContent?.description}
+      />
     </div>
   );
 }
