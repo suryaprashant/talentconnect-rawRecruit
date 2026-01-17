@@ -318,13 +318,13 @@ const App = () => {
           title: 'Campus Branding', 
           desc: 'Enhance college reputation', 
           color: '#F59E0B'
-        },
-        { 
-          icon: <PieChart className="w-10 h-10" />, 
-          title: 'Analytics', 
-          desc: 'Placement insights & reports', 
-          color: '#8B5CF6'
         }
+        // { 
+        //   icon: <PieChart className="w-10 h-10" />, 
+        //   title: 'Analytics', 
+        //   desc: 'Placement insights & reports', 
+        //   color: '#8B5CF6'
+        // }
       ]
     },
     employer: {
@@ -894,242 +894,171 @@ const App = () => {
         </div>
 
         {/* How It Works - Modern Dashboard Layout */}
-        <section 
-          ref={howItWorksRef}
-          id="how-it-works" 
-          className="relative px-6 py-20"
+<section 
+  ref={howItWorksRef}
+  id="how-it-works" 
+  className="relative px-6 py-20"
+>
+  <div className="max-w-7xl mx-auto">
+    <div className="text-center mb-16">
+      <div className="inline-flex items-center gap-3 mb-6">
+        <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100">
+          <Layout className="w-6 h-6 text-purple-600" />
+        </div>
+        <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">Workflow</span>
+      </div>
+      <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+        How <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">RawRecruit</span> Works
+      </h2>
+      <p className="text-gray-600 text-lg max-w-3xl mx-auto">
+        A unified campus recruitment platform designed for colleges, companies, and employers. 
+        Streamline your fresher hiring process with our comprehensive campus recruitment solutions.
+      </p>
+    </div>
+
+    {/* Dashboard Style Cards */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {[
+        {
+          type: 'colleges',
+          icon: <GraduationCap className="w-8 h-8" />,
+          title: 'For Colleges (TPOs)',
+          steps: [
+            'Register your college on a centralized campus recruitment platform',
+            'Discover on-campus and pool-campus hiring requests from companies',
+            'Publish on-campus and pool-campus recruitment opportunities',
+            'Access student training, seminars, and institutional branding services'
+          ],
+          color: '#8B5CF6',
+          seoValue: 'Targets campus recruitment for colleges, TPO placement platform, on-campus recruitment',
+          description: 'Colleges can connect directly with companies, post hiring requests, and access training services.'
+        },
+        {
+          type: 'companies',
+          icon: <Building2 className="w-8 h-8" />,
+          title: 'For Companies (HR & Hiring Managers)',
+          steps: [
+            'Create a company profile to manage fresher hiring at scale',
+            'Explore college-led on-campus and pool-campus recruitment opportunities',
+            'Post on-campus, pool-campus, and off-campus hiring requirements',
+            'Access workforce solutions and employee training programs'
+          ],
+          color: '#EC4899',
+          seoValue: 'Targets fresher recruitment platform, campus hiring solutions, entry-level hiring',
+          description: 'Companies can find qualified candidates from colleges and post various campus recruitment opportunities.'
+        },
+        {
+          type: 'employers',
+          icon: <Briefcase className="w-8 h-8" />,
+          title: 'For Employers (Staffing & Hiring Partners)',
+          steps: [
+            'Set up an independent employer profile',
+            'Manage end-to-end campus and off-campus recruitment activities',
+            'Coordinate hiring on behalf of multiple companies',
+            'Handle company approvals, scheduling, and recruitment operations'
+          ],
+          color: '#3B82F6',
+          seoValue: 'Targets recruitment management, employer hiring solutions, campus hiring coordination',
+          description: 'Employers can work independently or on behalf of companies to manage recruitment processes.'
+        }
+      ].map((section, idx) => (
+        <div
+          key={idx}
+          onClick={() => handleRoleSelect(section.type)}
+          className="relative group cursor-pointer perspective-1000"
         >
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100">
-                  <Layout className="w-6 h-6 text-purple-600" />
-                </div>
-                <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">Workflow</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                How <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">RawRecruit</span> Works
-              </h2>
-              <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-                A unified campus recruitment platform designed for colleges, companies, and employers. 
-                Streamline your fresher hiring process with our comprehensive campus recruitment solutions.
-              </p>
-            </div>
-
-            {/* Dashboard Style Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  type: 'colleges',
-                  icon: <GraduationCap className="w-8 h-8" />,
-                  title: 'For Colleges (TPOs)',
-                  steps: [
-                    'Register your college on a centralized campus recruitment platform',
-                    'Discover on-campus and pool-campus hiring requests from companies',
-                    'Publish on-campus and pool-campus recruitment opportunities',
-                    'Access student training, seminars, and institutional branding services'
-                  ],
-                  color: '#8B5CF6',
-                  seoValue: 'Targets campus recruitment for colleges, TPO placement platform, on-campus recruitment',
-                  description: 'Colleges can connect directly with companies, post hiring requests, and access training services.'
-                },
-                {
-                  type: 'companies',
-                  icon: <Building2 className="w-8 h-8" />,
-                  title: 'For Companies (HR & Hiring Managers)',
-                  steps: [
-                    'Create a company profile to manage fresher hiring at scale',
-                    'Explore college-led on-campus and pool-campus recruitment opportunities',
-                    'Post on-campus, pool-campus, and off-campus hiring requirements',
-                    'Access workforce solutions and employee training programs'
-                  ],
-                  color: '#EC4899',
-                  seoValue: 'Targets fresher recruitment platform, campus hiring solutions, entry-level hiring',
-                  description: 'Companies can find qualified candidates from colleges and post various campus recruitment opportunities.'
-                },
-                {
-                  type: 'employers',
-                  icon: <Briefcase className="w-8 h-8" />,
-                  title: 'For Employers (Staffing & Hiring Partners)',
-                  steps: [
-                    'Set up an independent employer profile',
-                    'Manage end-to-end campus and off-campus recruitment activities',
-                    'Coordinate hiring on behalf of multiple companies',
-                    'Handle company approvals, scheduling, and recruitment operations'
-                  ],
-                  color: '#3B82F6',
-                  seoValue: 'Targets recruitment management, employer hiring solutions, campus hiring coordination',
-                  description: 'Employers can work independently or on behalf of companies to manage recruitment processes.'
-                }
-              ].map((section, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => handleRoleSelect(section.type)}
-                  className="relative group cursor-pointer perspective-1000"
-                >
-                  {/* Card with Glass Morphism - More expressive gradient on hover */}
-                  <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl p-8 h-full transform transition-all duration-500 group-hover:-translate-y-3 group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:border-white/60 group-hover:bg-gradient-to-br group-hover:from-purple-500/10 group-hover:via-pink-500/10 group-hover:to-blue-500/10">
-                    {/* Animated Top Accent - More expressive */}
-                    <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-500 group-hover:h-2 group-hover:shadow-[0_0_15px_rgba(139,92,246,0.3)]"></div>
-                    
-                    {/* Icon with enhanced hover effect */}
-                    <div className="relative mb-6">
-                      {/* Glow effect on hover */}
-                      <div className="absolute -inset-3 rounded-xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
-                        style={{
-                          background: `radial-gradient(circle at center, ${section.color}30 0%, transparent 70%)`,
-                          filter: 'blur(10px)',
-                        }}
-                      />
-                      <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-white to-gray-50 p-3 shadow-lg border border-white/60 transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
-                        <div 
-                          className="transition-transform duration-300 group-hover:scale-110"
-                          style={{ color: section.color }}
-                        >
-                          {section.icon}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Enhanced title hover effect */}
-                    <h3 className="text-2xl font-bold text-gray-800 mb-6 transform transition-all duration-300 group-hover:translate-x-2 group-hover:text-gray-900">
-                      {section.title}
-                    </h3>
-                    
-                    <ul className="space-y-4 mb-6">
-                      {section.steps.map((step, stepIdx) => (
-                        <li 
-                          key={stepIdx} 
-                          className="flex items-start gap-3 group/item transform transition-all duration-300 hover:translate-x-1"
-                        >
-                          {/* Enhanced number badge */}
-                          <div 
-                            className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center text-sm font-semibold shadow-sm border border-white/40 transform transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-1 group-hover/item:shadow-md"
-                            style={{ color: section.color }}
-                          >
-                            {stepIdx + 1}
-                          </div>
-                          <span className="text-gray-600 leading-relaxed pt-0.5 group-hover/text-gray-800 transition-colors duration-300">
-                            {step}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    {/* Enhanced interactive footer with clickable Learn More */}
-                    <div className="mt-6 pt-6 border-t border-gray-100/50 group-hover:border-gray-200/70 transition-colors duration-300 flex items-center justify-between">
-                      {/* Learn More button - Clickable for modal */}
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click
-                          openModal(section); // Function to open modal
-                        }}
-                        className="text-sm text-gray-500 group-hover:text-gray-700 group-hover:font-bold transition-all duration-300 hover:scale-105 hover:text-gray-900"
-                      >
-                        Learn more
-                      </button>
-                      {/* Enhanced arrow container */}
-                      <div className="relative overflow-hidden">
-                        {/* Animated slide trail */}
-                        <div 
-                          className="absolute -left-4 w-0 h-0.5 rounded-full group-hover:w-6 transition-all duration-500"
-                          style={{
-                            background: `linear-gradient(90deg, transparent, ${section.color})`,
-                          }}
-                        />
-                        {/* Arrow button */}
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent card click
-                            openModal(section); // Function to open modal
-                          }}
-                          className="w-8 h-8 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-sm border border-gray-100/60 transform transition-all duration-300 hover:scale-110 hover:translate-x-2 hover:shadow-md"
-                        >
-                          <ChevronRight className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors duration-300" />
-                        </button>
-                      </div>
-                    </div>
-                    
-                    {/* Edge highlights for 3D effect */}
-                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-                  </div>
-                  
-                  {/* Enhanced floating shadow */}
-                  <div className="absolute -bottom-3 left-3 right-3 h-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
-                    style={{
-                      background: `linear-gradient(90deg, ${section.color}40, ${section.type === 'colleges' ? '#C084FC' : section.type === 'companies' ? '#F472B6' : '#60A5FA'}40)`,
-                      filter: 'blur(15px)',
-                    }}
-                  ></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Modal */}
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="relative bg-white rounded-2xl max-w-lg w-full p-8 shadow-2xl">
-              {/* Close button */}
-              <button 
-                onClick={closeModal}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-              
-              {/* Modal content */}
-              <div className="mb-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center"
-                    style={{ backgroundColor: `${selectedSection?.color}20` }}
-                  >
-                    <div style={{ color: selectedSection?.color }}>
-                      {selectedSection?.icon}
-                    </div>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-800">
-                    {selectedSection?.title}
-                  </h3>
-                </div>
-                
-                <p className="text-gray-600 mb-6">
-                  {selectedSection?.description}
-                </p>
-                
-                <ul className="space-y-3">
-                  {selectedSection?.steps.map((step, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <div 
-                        className="flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-sm font-semibold"
-                        style={{ 
-                          backgroundColor: `${selectedSection?.color}20`,
-                          color: selectedSection?.color
-                        }}
-                      >
-                        {idx + 1}
-                      </div>
-                      <span className="text-gray-700">{step}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              
-              <button 
-                onClick={closeModal}
-                className="w-full py-3 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
-                style={{ 
-                  background: `linear-gradient(90deg, ${selectedSection?.color}, ${selectedSection?.type === 'colleges' ? '#C084FC' : selectedSection?.type === 'companies' ? '#F472B6' : '#60A5FA'})` 
+          {/* Card with Glass Morphism - More expressive gradient on hover */}
+          <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl p-8 h-full transform transition-all duration-500 group-hover:-translate-y-3 group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:border-white/60 group-hover:bg-gradient-to-br group-hover:from-purple-500/10 group-hover:via-pink-500/10 group-hover:to-blue-500/10">
+            {/* Animated Top Accent - More expressive */}
+            <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-500 group-hover:h-2 group-hover:shadow-[0_0_15px_rgba(139,92,246,0.3)]"></div>
+            
+            {/* Icon with enhanced hover effect */}
+            <div className="relative mb-6">
+              {/* Glow effect on hover */}
+              <div className="absolute -inset-3 rounded-xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                style={{
+                  background: `radial-gradient(circle at center, ${section.color}30 0%, transparent 70%)`,
+                  filter: 'blur(10px)',
                 }}
-              >
-                Got it
-              </button>
+              />
+              <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-white to-gray-50 p-3 shadow-lg border border-white/60 transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                <div 
+                  className="transition-transform duration-300 group-hover:scale-110"
+                  style={{ color: section.color }}
+                >
+                  {section.icon}
+                </div>
+              </div>
             </div>
+            
+            {/* Enhanced title hover effect */}
+            <h3 className="text-2xl font-bold text-gray-800 mb-6 transform transition-all duration-300 group-hover:translate-x-2 group-hover:text-gray-900">
+              {section.title}
+            </h3>
+            
+            <ul className="space-y-4 mb-6">
+              {section.steps.map((step, stepIdx) => (
+                <li 
+                  key={stepIdx} 
+                  className="flex items-start gap-3 group/item transform transition-all duration-300 hover:translate-x-1"
+                >
+                  {/* Enhanced number badge */}
+                  <div 
+                    className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center text-sm font-semibold shadow-sm border border-white/40 transform transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-1 group-hover/item:shadow-md"
+                    style={{ color: section.color }}
+                  >
+                    {stepIdx + 1}
+                  </div>
+                  <span className="text-gray-600 leading-relaxed pt-0.5 group-hover/text-gray-800 transition-colors duration-300">
+                    {step}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            
+            {/* SEO Value Section - Hidden by default, shows on hover */}
+            {/* <div className="mt-6 pt-4 border-t border-gray-100/30">
+              <div className="text-xs text-gray-500 mb-2">SEO Keywords</div>
+              <div className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300 italic leading-relaxed">
+                {section.seoValue}
+              </div>
+            </div> */}
+            
+            {/* Enhanced interactive footer with arrow only */}
+            <div className="mt-6 pt-6 border-t border-gray-100/50 group-hover:border-gray-200/70 transition-colors duration-300 flex items-center justify-end">
+              {/* Enhanced arrow container */}
+              <div className="relative overflow-hidden">
+                {/* Animated slide trail */}
+                <div 
+                  className="absolute -left-4 w-0 h-0.5 rounded-full group-hover:w-6 transition-all duration-500"
+                  style={{
+                    background: `linear-gradient(90deg, transparent, ${section.color})`,
+                  }}
+                />
+                {/* Arrow button */}
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-sm border border-gray-100/60 transform transition-all duration-300 group-hover:scale-110 group-hover:translate-x-2 group-hover:shadow-md">
+                  <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-gray-800 transition-colors duration-300" />
+                </div>
+              </div>
+            </div>
+            
+            {/* Edge highlights for 3D effect */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
           </div>
-        )}
+          
+          {/* Enhanced floating shadow */}
+          <div className="absolute -bottom-3 left-3 right-3 h-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+            style={{
+              background: `linear-gradient(90deg, ${section.color}40, ${section.type === 'colleges' ? '#C084FC' : section.type === 'companies' ? '#F472B6' : '#60A5FA'}40)`,
+              filter: 'blur(15px)',
+            }}
+          ></div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
 
         {/* Services Dashboard */}
         <section id="features" className="relative">
@@ -1159,15 +1088,17 @@ const App = () => {
             <div className="relative max-w-7xl mx-auto px-6 z-10">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
                 <div>
-                  <div className="inline-flex items-center gap-3 mb-6">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-indigo-100">
-                      <Building2 className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">For Companies</span>
-                  </div>
-                  <h2 className="text-4xl font-bold text-gray-800 mb-6">
-                    Tailored Recruitment Solutions
-                  </h2>
+                  <div className="inline-flex items-center gap-4 mb-4">
+  <div className="p-3 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 shadow-lg">
+    <Building2 className="w-10 h-10 text-purple-700" />
+  </div>
+  <span className="text-3xl font-extrabold text-gray-800 uppercase tracking-wide">
+    For Companies
+  </span>
+</div>
+<h2 className="text-2xl font-semibold text-gray-700 mb-6">
+  Tailored Recruitment Solutions
+</h2>
                   <p className="text-gray-600 text-lg mb-8 leading-relaxed">
                     {services.company.desc}
                   </p>
@@ -1295,162 +1226,262 @@ const App = () => {
           </div>
 
           {/* Colleges Section */}
-          <div 
-            ref={collegeServicesRef}
-            className={`relative w-full py-20 transition-all duration-1000 ${activeSection === 'colleges' ? '' : ''}`}
-          >
-            {/* Enhanced Background with curved corners - Brighter colors */}
-            <div 
-              className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-                activeSection === 'colleges' 
-                  ? 'bg-gradient-to-b from-pink-500/15 via-rose-500/15 to-pink-500/10 opacity-100' 
-                  : 'opacity-0'
-              }`}
-            />
-            
-            {/* Subtle border highlight for active section */}
-            <div 
-              className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-                activeSection === 'colleges' 
-                  ? 'border-2 border-pink-400/20 opacity-100' 
-                  : 'opacity-0 border-0'
-              }`}
-            />
-            
-            <div className="relative max-w-7xl mx-auto px-6 z-10">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
-                <div className="order-2 lg:order-1">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-rose-500/5 rounded-3xl blur-3xl"></div>
-                    <div className="relative grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {services.college.cards.map((service, idx) => {
-                        // Function to generate darker pastel shade of icon color
-                        const getDarkerPastelColor = (hexColor) => {
-                          const hex = hexColor.replace('#', '');
-                          const r = parseInt(hex.substr(0, 2), 16);
-                          const g = parseInt(hex.substr(2, 2), 16);
-                          const b = parseInt(hex.substr(4, 2), 16);
-                          
-                          const darkenFactor = 0.7;
-                          const dr = Math.floor(r * darkenFactor);
-                          const dg = Math.floor(g * darkenFactor);
-                          const db = Math.floor(b * darkenFactor);
-                          
-                          const sr = Math.min(255, dr + 40);
-                          const sg = Math.min(255, dg + 40);
-                          const sb = Math.min(255, db + 40);
-                          
-                          return `rgb(${sr}, ${sg}, ${sb})`;
-                        };
-                        
-                        const darkerPastelColor = getDarkerPastelColor(service.color);
-                        
-                        return (
-                          <div
-                            key={idx}
-                            onClick={() => handleServiceCardClick('college', service.title)}
-                            className="relative group cursor-pointer min-h-[180px]"
-                          >
-                            <div 
-                              className="relative bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-white/40 shadow-lg transform group-hover:-translate-y-2 transition-all duration-300 h-full group-hover:shadow-2xl overflow-hidden"
-                              style={{
-                                backgroundColor: 'rgba(255, 255, 255, 0.9)'
-                              }}
-                            >
-                              {/* Darker pastel color overlay on hover */}
-                              <div 
-                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                                style={{
-                                  background: `linear-gradient(135deg, ${darkerPastelColor}, ${darkerPastelColor})`,
-                                }}
-                              />
-                              
-                              {/* Icon container - unchanged */}
-                              <div className="relative z-10 w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 p-2.5 mb-3 shadow-sm border border-white/60 flex items-center justify-center group-hover:bg-white/20">
-                                <div className="flex items-center justify-center w-full h-full">
-                                  <div 
-                                    className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
-                                    style={{ color: service.color }}
-                                  >
-                                    {service.icon}
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {/* Content with SHARP WHITE text on hover */}
-                              <div className="relative z-10">
-                                <h3 
-                                  className="text-sm font-bold text-gray-800 mb-1 transition-all duration-300 group-hover:text-white group-hover:font-bold"
-                                >
-                                  {service.title}
-                                </h3>
-                                <p 
-                                  className="text-xs leading-relaxed text-gray-600 transition-all duration-300 group-hover:text-white"
-                                >
-                                  {service.desc}
-                                </p>
-                              </div>
-                              
-                              {/* Hover Indicator */}
-                              <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                                <div className="w-6 h-6 rounded-lg bg-white/90 flex items-center justify-center border border-white/60 shadow-lg backdrop-blur-sm group-hover:bg-white/20">
-                                  <ChevronRight 
-                                    className="w-3 h-3 transition-all duration-300 group-hover:scale-110 group-hover:text-white"
-                                    style={{ color: service.color }}
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                            
-                            {/* Glow Effect */}
-                            <div 
-                              className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
-                              style={{
-                                background: `radial-gradient(circle at center, ${service.color}50 0%, transparent 70%)`,
-                              }}
-                            ></div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
+<div 
+  ref={collegeServicesRef}
+  className={`relative w-full py-20 transition-all duration-1000 ${activeSection === 'colleges' ? '' : ''}`}
+>
+  {/* Enhanced Background with curved corners - Brighter colors */}
+  <div 
+    className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
+      activeSection === 'colleges' 
+        ? 'bg-gradient-to-b from-pink-500/15 via-rose-500/15 to-pink-500/10 opacity-100' 
+        : 'opacity-0'
+    }`}
+  />
+  
+  {/* Subtle border highlight for active section */}
+  <div 
+    className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
+      activeSection === 'colleges' 
+        ? 'border-2 border-pink-400/20 opacity-100' 
+        : 'opacity-0 border-0'
+    }`}
+  />
+  
+  <div className="relative max-w-7xl mx-auto px-6 z-10">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
+      <div className="order-2 lg:order-1">
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-rose-500/5 rounded-3xl blur-3xl"></div>
+          <div className="relative">
+            {/* First row - 3 cards */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+              {services.college.cards.slice(0, 3).map((service, idx) => {
+                // Function to generate darker pastel shade of icon color
+                const getDarkerPastelColor = (hexColor) => {
+                  const hex = hexColor.replace('#', '');
+                  const r = parseInt(hex.substr(0, 2), 16);
+                  const g = parseInt(hex.substr(2, 2), 16);
+                  const b = parseInt(hex.substr(4, 2), 16);
+                  
+                  const darkenFactor = 0.7;
+                  const dr = Math.floor(r * darkenFactor);
+                  const dg = Math.floor(g * darkenFactor);
+                  const db = Math.floor(b * darkenFactor);
+                  
+                  const sr = Math.min(255, dr + 40);
+                  const sg = Math.min(255, dg + 40);
+                  const sb = Math.min(255, db + 40);
+                  
+                  return `rgb(${sr}, ${sg}, ${sb})`;
+                };
                 
-                <div className="order-1 lg:order-2">
-                  <div className="inline-flex items-center gap-3 mb-6">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-pink-100 to-rose-100">
-                      <GraduationCap className="w-6 h-6 text-pink-600" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">For Colleges</span>
-                  </div>
-                  <h2 className="text-4xl font-bold text-gray-800 mb-6">
-                    Student Placement Excellence
-                  </h2>
-                  <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-                    {services.college.desc}
-                  </p>
-                  <button
-                    onClick={() => handleRoleSelect('college')}
-                    className="group relative text-white px-8 py-4 rounded-full font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
+                const darkerPastelColor = getDarkerPastelColor(service.color);
+                
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => handleServiceCardClick('college', service.title)}
+                    className="relative group cursor-pointer min-h-[180px]"
                   >
-                    {/* Base layer - Pink to Magenta */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-fuchsia-600 transition-all duration-300" />
+                    <div 
+                      className="relative bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-white/40 shadow-lg transform group-hover:-translate-y-2 transition-all duration-300 h-full group-hover:shadow-2xl overflow-hidden"
+                      style={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)'
+                      }}
+                    >
+                      {/* Darker pastel color overlay on hover */}
+                      <div 
+                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        style={{
+                          background: `linear-gradient(135deg, ${darkerPastelColor}, ${darkerPastelColor})`,
+                        }}
+                      />
+                      
+                      {/* Icon container - unchanged */}
+                      <div className="relative z-10 w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 p-2.5 mb-3 shadow-sm border border-white/60 flex items-center justify-center group-hover:bg-white/20">
+                        <div className="flex items-center justify-center w-full h-full">
+                          <div 
+                            className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
+                            style={{ color: service.color }}
+                          >
+                            {service.icon}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Content with SHARP WHITE text on hover */}
+                      <div className="relative z-10">
+                        <h3 
+                          className="text-sm font-bold text-gray-800 mb-1 transition-all duration-300 group-hover:text-white group-hover:font-bold"
+                        >
+                          {service.title}
+                        </h3>
+                        <p 
+                          className="text-xs leading-relaxed text-gray-600 transition-all duration-300 group-hover:text-white"
+                        >
+                          {service.desc}
+                        </p>
+                      </div>
+                      
+                      {/* Hover Indicator */}
+                      <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
+                        <div className="w-6 h-6 rounded-lg bg-white/90 flex items-center justify-center border border-white/60 shadow-lg backdrop-blur-sm group-hover:bg-white/20">
+                          <ChevronRight 
+                            className="w-3 h-3 transition-all duration-300 group-hover:scale-110 group-hover:text-white"
+                            style={{ color: service.color }}
+                          />
+                        </div>
+                      </div>
+                    </div>
                     
-                    {/* Hover color layer - Brighter pink/magenta */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-fuchsia-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    {/* Glow Effect */}
+                    <div 
+                      className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
+                      style={{
+                        background: `radial-gradient(circle at center, ${service.color}50 0%, transparent 70%)`,
+                      }}
+                    ></div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            {/* Second row - 2 cards, centered */}
+            <div className="flex justify-center">
+              <div className="grid grid-cols-2 gap-4 max-w-md">
+                {services.college.cards.slice(3, 5).map((service, idx) => {
+                  // Function to generate darker pastel shade of icon color
+                  const getDarkerPastelColor = (hexColor) => {
+                    const hex = hexColor.replace('#', '');
+                    const r = parseInt(hex.substr(0, 2), 16);
+                    const g = parseInt(hex.substr(2, 2), 16);
+                    const b = parseInt(hex.substr(4, 2), 16);
                     
-                    {/* Glow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-pink-400/30 to-fuchsia-400/30 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
+                    const darkenFactor = 0.7;
+                    const dr = Math.floor(r * darkenFactor);
+                    const dg = Math.floor(g * darkenFactor);
+                    const db = Math.floor(b * darkenFactor);
                     
-                    <span className="relative flex items-center gap-3">
-                      Explore College Features
-                      <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
-                    </span>
-                  </button>
-                </div>
+                    const sr = Math.min(255, dr + 40);
+                    const sg = Math.min(255, dg + 40);
+                    const sb = Math.min(255, db + 40);
+                    
+                    return `rgb(${sr}, ${sg}, ${sb})`;
+                  };
+                  
+                  const darkerPastelColor = getDarkerPastelColor(service.color);
+                  
+                  return (
+                    <div
+                      key={idx + 3}
+                      onClick={() => handleServiceCardClick('college', service.title)}
+                      className="relative group cursor-pointer min-h-[180px]"
+                    >
+                      <div 
+                        className="relative bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-white/40 shadow-lg transform group-hover:-translate-y-2 transition-all duration-300 h-full group-hover:shadow-2xl overflow-hidden"
+                        style={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.9)'
+                        }}
+                      >
+                        {/* Darker pastel color overlay on hover */}
+                        <div 
+                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          style={{
+                            background: `linear-gradient(135deg, ${darkerPastelColor}, ${darkerPastelColor})`,
+                          }}
+                        />
+                        
+                        {/* Icon container - unchanged */}
+                        <div className="relative z-10 w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 p-2.5 mb-3 shadow-sm border border-white/60 flex items-center justify-center group-hover:bg-white/20">
+                          <div className="flex items-center justify-center w-full h-full">
+                            <div 
+                              className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
+                              style={{ color: service.color }}
+                            >
+                              {service.icon}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Content with SHARP WHITE text on hover */}
+                        <div className="relative z-10">
+                          <h3 
+                            className="text-sm font-bold text-gray-800 mb-1 transition-all duration-300 group-hover:text-white group-hover:font-bold"
+                          >
+                            {service.title}
+                          </h3>
+                          <p 
+                            className="text-xs leading-relaxed text-gray-600 transition-all duration-300 group-hover:text-white"
+                          >
+                            {service.desc}
+                          </p>
+                        </div>
+                        
+                        {/* Hover Indicator */}
+                        <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
+                          <div className="w-6 h-6 rounded-lg bg-white/90 flex items-center justify-center border border-white/60 shadow-lg backdrop-blur-sm group-hover:bg-white/20">
+                            <ChevronRight 
+                              className="w-3 h-3 transition-all duration-300 group-hover:scale-110 group-hover:text-white"
+                              style={{ color: service.color }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Glow Effect */}
+                      <div 
+                        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
+                        style={{
+                          background: `radial-gradient(circle at center, ${service.color}50 0%, transparent 70%)`,
+                        }}
+                      ></div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      
+      <div className="order-1 lg:order-2">
+        <div className="inline-flex items-center gap-4 mb-4">
+  <div className="p-3 rounded-xl bg-gradient-to-br from-pink-100 to-rose-100 shadow-lg">
+    <GraduationCap className="w-10 h-10 text-pink-700" />
+  </div>
+  <span className="text-3xl font-extrabold text-gray-800 uppercase tracking-wide">
+    For Colleges
+  </span>
+</div>
+<h2 className="text-2xl font-semibold text-gray-700 mb-6">
+  Student Placement Excellence
+</h2>
+        <p className="text-gray-600 text-lg mb-8 leading-relaxed">
+          {services.college.desc}
+        </p>
+        <button
+          onClick={() => handleRoleSelect('college')}
+          className="group relative text-white px-8 py-4 rounded-full font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
+        >
+          {/* Base layer - Pink to Magenta */}
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-fuchsia-600 transition-all duration-300" />
+          
+          {/* Hover color layer - Brighter pink/magenta */}
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-fuchsia-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          
+          {/* Glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-400/30 to-fuchsia-400/30 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
+          
+          <span className="relative flex items-center gap-3">
+            Explore College Features
+            <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
           {/* Employers Section */}
           <div 
@@ -1478,15 +1509,17 @@ const App = () => {
             <div className="relative max-w-7xl mx-auto px-6 z-10">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div>
-                  <div className="inline-flex items-center gap-3 mb-6">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-blue-100 to-cyan-100">
-                      <Briefcase className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">For Employers</span>
-                  </div>
-                  <h2 className="text-4xl font-bold text-gray-800 mb-6">
-                    Recruitment Management Suite
-                  </h2>
+                  <div className="inline-flex items-center gap-4 mb-4">
+  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100 shadow-lg">
+    <Briefcase className="w-10 h-10 text-blue-700" />
+  </div>
+  <span className="text-3xl font-extrabold text-gray-800 uppercase tracking-wide">
+    For Employers
+  </span>
+</div>
+<h2 className="text-2xl font-semibold text-gray-700 mb-6">
+  Recruitment Management Suite
+</h2>
                   <p className="text-gray-600 text-lg mb-8 leading-relaxed">
                     {services.employer.desc}
                   </p>
@@ -2124,12 +2157,15 @@ const App = () => {
                   Transforming campus recruitment through innovation and excellence.
                 </p>
                 <div className="flex gap-3">
-                  <button className="w-8 h-8 rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 flex items-center justify-center hover:bg-gray-700/50 transition-colors">
-                    <Linkedin className="w-4 h-4 text-gray-400" />
-                  </button>
-                  <button className="w-8 h-8 rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 flex items-center justify-center hover:bg-gray-700/50 transition-colors">
+                  <button 
+  onClick={() => window.open("https://www.linkedin.com/company/talentsconnectss/", "_blank")}
+  className="w-8 h-8 rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 flex items-center justify-center hover:bg-gray-700/50 transition-colors"
+>
+  <Linkedin className="w-4 h-4 text-gray-400" />
+</button>
+                  {/* <button className="w-8 h-8 rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 flex items-center justify-center hover:bg-gray-700/50 transition-colors">
                     <Twitter className="w-4 h-4 text-gray-400" />
-                  </button>
+                  </button> */}
                 </div>
               </div>
 
