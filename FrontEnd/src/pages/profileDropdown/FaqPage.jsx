@@ -1,41 +1,139 @@
 import { useState } from 'react';
 import { Box } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+const companyFaqs = [
+  {
+    id: 1,
+    question: "How do companies get started on RawRecruit?",
+    answer:
+      "Create a company account, complete your profile, and choose hiring channels like On-Campus, Pool-Campus, or Off-Campus to start recruiting fresh talent."
+  },
+  {
+    id: 2,
+    question: "What hiring channels are available for companies?",
+    answer:
+      "Companies can hire through On-Campus drives, Pool-Campus hiring across colleges, and Off-Campus job postings for wider reach."
+  },
+  {
+    id: 3,
+    question: "Can we manage applications in one place?",
+    answer:
+      "Yes. RawRecruit provides centralized application tracking, shortlisting, and hiring status updates across all hiring channels."
+  },
+  {
+    id: 4,
+    question: "Do you support workforce and training services?",
+    answer:
+      "Yes. Companies can request workforce solutions, employee training, and employer branding services through the platform."
+  },
+  {
+    id: 5,
+    question: "How can companies contact support?",
+    answer:
+      "You can reach our support team via in-platform chat or by submitting a support request from your dashboard."
+  },
+  {
+    id: 6,
+    question: "Is RawRecruit suitable for fresher hiring in India?",
+    answer:
+      "Yes. RawRecruit is designed specifically for India’s campus recruitment and fresher hiring ecosystem."
+  }
+];
+
+const collegeFaqs = [
+  {
+    id: 1,
+    question: "How can colleges register on RawRecruit?",
+    answer:
+      "Colleges can sign up, create a placement profile, and start coordinating with companies for On-Campus and Pool-Campus recruitment."
+  },
+  {
+    id: 2,
+    question: "Can colleges post hiring opportunities?",
+    answer:
+      "Yes. Colleges can post On-Campus and Pool-Campus hiring opportunities visible to registered companies."
+  },
+  {
+    id: 3,
+    question: "How does RawRecruit help improve placements?",
+    answer:
+      "RawRecruit streamlines employer coordination, provides placement visibility, and supports student readiness through training and seminars."
+  },
+  {
+    id: 4,
+    question: "Are student training and seminars available?",
+    answer:
+      "Yes. Colleges can request student training programs, expert seminars, and campus branding support."
+  },
+  {
+    id: 5,
+    question: "Can colleges track placement activity?",
+    answer:
+      "Yes. Placement teams can monitor hiring requests, student participation, and overall placement progress."
+  },
+  {
+    id: 6,
+    question: "How do colleges connect with employers?",
+    answer:
+      "Colleges can communicate directly with companies through the platform for coordination and recruitment planning."
+  }
+];
+
+const candidateFaqs = [
+  {
+    id: 1,
+    question: "How do I create a candidate account?",
+    answer:
+      "Sign up using email or social login, complete your profile, and start exploring fresher jobs and opportunities."
+  },
+  {
+    id: 2,
+    question: "What job opportunities are available?",
+    answer:
+      "Candidates can apply for Off-Campus jobs and participate in campus drives through their college when available."
+  },
+  {
+    id: 3,
+    question: "Can I track my job applications?",
+    answer:
+      "Yes. You can track application status, shortlisting updates, and next steps directly from your dashboard."
+  },
+  {
+    id: 4,
+    question: "Does RawRecruit offer career support?",
+    answer:
+      "Yes. Candidates can access career counselling, training programs, mock interviews, and career planning services."
+  },
+  {
+    id: 5,
+    question: "Are mock interviews and guidance available?",
+    answer:
+      "Yes. Mock interviews and guidance sessions help you prepare for real interview scenarios and improve performance."
+  },
+  {
+    id: 6,
+    question: "How can I contact support?",
+    answer:
+      "You can reach support through in-app chat or submit a request from your dashboard."
+  }
+];
+
+
 const FAQPage = () => {
-  // FAQ data state
+
+  const selectedRole = localStorage.getItem("selectedrole");
+
   const navigate = useNavigate() ;
-  const [faqs] = useState([
-    {
-      id: 1,
-      question: "How do I create an account?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique."
-    },
-    {
-      id: 2,
-      question: "What payment methods do you accept?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique."
-    },
-    {
-      id: 3,
-      question: "How do I reset my password?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique."
-    },
-    {
-      id: 4,
-      question: "Can I cancel my subscription?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique."
-    },
-    {
-      id: 5,
-      question: "How can I contact customer support?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique."
-    },
-    {
-      id: 6,
-      question: "Do you offer refunds?",
-      answer: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique."
-    }
-  ]);
+  const faqs =
+  selectedRole === "company" || selectedRole === "employer"
+    ? companyFaqs
+    : selectedRole === "college"
+    ? collegeFaqs
+    : selectedRole === "student" || selectedRole === "fresher"
+    ? candidateFaqs
+    : candidateFaqs; // default fallback
+
 
   return (
     <div className="bg-white min-h-screen py-12 px-4">
@@ -66,7 +164,7 @@ const FAQPage = () => {
         <div className="text-center mt-16">
           <h2 className="text-3xl font-bold mb-4">Still have questions?</h2>
           <p className="text-gray-600 mb-8 max-w-xl mx-auto">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            If you need more help, our support team is here for you.
           </p>
           <button
             onClick={() => navigate('/ContactUs')}
