@@ -114,7 +114,10 @@ import casestudyHostingRoute from './routes/hostingManagement/casestudyHostingRo
 import workshopHostingRoute from './routes/hostingManagement/workshopHostingRoute.js';
 import serviceRequests from "./routes/serviceRequestsRoute.js"
 import interviewRoutes from "./routes/interviewRoutes.js";
+import metaRoutes from "./routes/metaRoutes.js"
+import { seedDB } from "./scripts/metaScript.js";
 app.use("/api/auth", authRoutes);
+
 
 // admin related auths
 app.use("/api/admin", adminAuth);
@@ -124,6 +127,7 @@ app.use("/api/admin/job-n-drive", jobDriveManagement);
 app.use("/api/admin/application", applicationManagement);
 app.use("/api/admin/servicerequest", serviceRequestManagement);
 
+app.use('/api/meta', metaRoutes);
 // admin relatd auth ends
 
 app.use("/api", student_onboardingroutes);
@@ -217,7 +221,7 @@ const startServer = async () => {
     // Connect to database FIRST
     await Connection();
     console.log('Database connected successfully');
-    
+    await seedDB();
     // THEN start the server
     server.listen(PORT, () => {
       console.log(`Server is running on PORT: ${PORT}`);

@@ -9,36 +9,36 @@ import "react-datepicker/dist/react-datepicker.css";
 
 export default function OffCampusHiringForm({ onBackClick }) {
   
-  const degreeStreamMapping = {
-    "Bachelor of Technology (B.Tech)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
-    "Bachelor of Engineering (BE)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
-    "Master of Technology (M.Tech)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
-    "Master of Engineering (ME)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
-    "Master of Business Administration (MBA)": ['Marketing', 'Finance', 'Human Resources', 'Operations', 'IT & Systems', 'International Business', 'Other'],
-    "Bachelor of Business Administration (BBA)": ['Marketing', 'Finance', 'Human Resources', 'General Management', 'Other'],
-    "Bachelor of Commerce (B.Com)": ['Accounting', 'Finance', 'Taxation', 'Economics', 'Other'],
-    "Master of Commerce (M.Com)": ['Accounting', 'Finance', 'Taxation', 'Economics', 'Other'],
-    "Bachelor of Science (B.Sc)": ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'Computer Science', 'Statistics', 'Other'],
-    "Master of Science (M.Sc)": ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'Computer Science', 'Statistics', 'Other'],
-    "Bachelor of Computer Applications (BCA)": ['Computer Applications', 'Software Development', 'Data Science', 'Other'],
-    "Master of Computer Applications (MCA)": ['Computer Applications', 'Software Development', 'Data Science', 'Other'],
-    "Bachelor of Arts (BA)": ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology', 'Other'],
-    "Master of Arts (MA)": ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology', 'Other'],
-    "Doctor of Philosophy (PhD)": ['Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Information Technology', 'Biotechnology', 'Chemical', 'Aerospace', 'Automobile', 'MBA', 'BBA', 'B.Com', 'B.Sc', 'BA', 'B.Tech', 'M.Tech', 'PhD', 'Other'],
-    "Post Doctorate": ['Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Information Technology', 'Biotechnology', 'Chemical', 'Aerospace', 'Automobile', 'MBA', 'BBA', 'B.Com', 'B.Sc', 'BA', 'B.Tech', 'M.Tech', 'PhD', 'Other'],
-    "High School / Diploma": ["All Streams", "Science", "Commerce", "Arts", "Vocational"],
-    "Associate Degree": ["All Streams", "Technical", "Business", "Healthcare"],
-    "Other": ["Other"]
-  };
+  // const degreeStreamMapping = {
+  //   "Bachelor of Technology (B.Tech)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
+  //   "Bachelor of Engineering (BE)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
+  //   "Master of Technology (M.Tech)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
+  //   "Master of Engineering (ME)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
+  //   "Master of Business Administration (MBA)": ['Marketing', 'Finance', 'Human Resources', 'Operations', 'IT & Systems', 'International Business', 'Other'],
+  //   "Bachelor of Business Administration (BBA)": ['Marketing', 'Finance', 'Human Resources', 'General Management', 'Other'],
+  //   "Bachelor of Commerce (B.Com)": ['Accounting', 'Finance', 'Taxation', 'Economics', 'Other'],
+  //   "Master of Commerce (M.Com)": ['Accounting', 'Finance', 'Taxation', 'Economics', 'Other'],
+  //   "Bachelor of Science (B.Sc)": ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'Computer Science', 'Statistics', 'Other'],
+  //   "Master of Science (M.Sc)": ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'Computer Science', 'Statistics', 'Other'],
+  //   "Bachelor of Computer Applications (BCA)": ['Computer Applications', 'Software Development', 'Data Science', 'Other'],
+  //   "Master of Computer Applications (MCA)": ['Computer Applications', 'Software Development', 'Data Science', 'Other'],
+  //   "Bachelor of Arts (BA)": ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology', 'Other'],
+  //   "Master of Arts (MA)": ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology', 'Other'],
+  //   "Doctor of Philosophy (PhD)": ['Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Information Technology', 'Biotechnology', 'Chemical', 'Aerospace', 'Automobile', 'MBA', 'BBA', 'B.Com', 'B.Sc', 'BA', 'B.Tech', 'M.Tech', 'PhD', 'Other'],
+  //   "Post Doctorate": ['Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Information Technology', 'Biotechnology', 'Chemical', 'Aerospace', 'Automobile', 'MBA', 'BBA', 'B.Com', 'B.Sc', 'BA', 'B.Tech', 'M.Tech', 'PhD', 'Other'],
+  //   "High School / Diploma": ["All Streams", "Science", "Commerce", "Arts", "Vocational"],
+  //   "Associate Degree": ["All Streams", "Technical", "Business", "Healthcare"],
+  //   "Other": ["Other"]
+  // };
 
   const jobRoles = ['Software Developer', 'Data Scientist', 'DevOps Engineer', 'QA Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'Mobile App Developer', 'UI/UX Designer', 'Product Manager', 'Business Analyst', 'Data Analyst', 'Machine Learning Engineer', 'Cloud Architect', 'Network Engineer', 'Cyber Security Specialist', 'Technical Writer', 'Sales Engineer', 'Marketing Specialist', 'HR Recruiter', 'Finance Analyst', 'Other'];
-  const skillsOptions = ['JavaScript', 'Python', 'Java', 'React', 'Node.js', 'HTML/CSS', 'SQL', 'MongoDB', 'AWS', 'Docker', 'Kubernetes', 'Machine Learning', 'Data Structures', 'Algorithms', 'Git', 'REST APIs'];
+  //const skillsOptions = ['JavaScript', 'Python', 'Java', 'React', 'Node.js', 'HTML/CSS', 'SQL', 'MongoDB', 'AWS', 'Docker', 'Kubernetes', 'Machine Learning', 'Data Structures', 'Algorithms', 'Git', 'REST APIs'];
   const benefitsOptions = ['Health Insurance', 'Provident Fund (PF)', 'Paid Time Off (PTO)', 'Work from Home', 'Performance Bonus', 'Stock Options'];
   const numberOfRoundsOptions = ['1', '2', '3', '4', '5', '6+'];
   const processOptions = ['Online Test', 'Coding Test', 'Aptitude Test', 'Group Discussion', 'Technical Interview', 'HR Interview', 'Case Study', 'Presentation'].map(option => `${option}`).sort((a, b) => a.localeCompare(b));
   const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
   const minStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '201-500', '500+'];
-  const degrees = Object.keys(degreeStreamMapping).sort();
+  //const degrees = Object.keys(degreeStreamMapping).sort();
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
   const initialState = {
@@ -83,6 +83,7 @@ export default function OffCampusHiringForm({ onBackClick }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [descriptionError, setDescriptionError] = useState("");
+  const [metaData, setMetaData] = useState([]);
 
   const cityOptions = useMemo(() =>
     City.getCitiesOfCountry('IN').map(city => ({
@@ -117,6 +118,18 @@ export default function OffCampusHiringForm({ onBackClick }) {
   const tagsRef = useRef(null);
   const venueRef = useRef(null);
   const degreeRef = useRef(null);
+
+useEffect(() => {
+  const fetchMeta = async () => {
+    try {
+      const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta`);
+      setMetaData(data);
+    } catch (err) {
+      console.error("Error loading metadata", err);
+    }
+  };
+  fetchMeta();
+}, []);
 
 useEffect(() => {
     localStorage.setItem('pendingOffCampusRequest', JSON.stringify(formData));
@@ -219,21 +232,57 @@ useEffect(() => {
     setFormData({ ...formData, contactPerson: { ...formData.contactPerson, [name]: value } });
   };
 
-  const handleCustomAdd = (field, value, setValue, predefinedOptions = []) => {
-    if (value.trim() === '') return;
-    setFormData(prev => {
-      const currentValues = prev[field] || [];
-      if (currentValues.map(v => v.toLowerCase()).includes(value.trim().toLowerCase()) || 
-          predefinedOptions.map(v => v.toLowerCase()).includes(value.trim().toLowerCase())) {
-        setValue('');
-        toast.error("Item already exists.");
-        return prev;
+  // const handleCustomAdd = (field, value, setValue, predefinedOptions = []) => {
+  //   if (value.trim() === '') return;
+  //   setFormData(prev => {
+  //     const currentValues = prev[field] || [];
+  //     if (currentValues.map(v => v.toLowerCase()).includes(value.trim().toLowerCase()) || 
+  //         predefinedOptions.map(v => v.toLowerCase()).includes(value.trim().toLowerCase())) {
+  //       setValue('');
+  //       toast.error("Item already exists.");
+  //       return prev;
+  //     }
+  //     const newValues = [...currentValues, value.trim()];
+  //     return { ...prev, [field]: newValues };
+  //   });
+  //   setValue('');
+  // };
+const handleCustomAdd = async (field, value, setValue) => {
+  if (value.trim() === '') return;
+
+  // Validation: Must select degree before adding stream or skill
+  if ((field === 'studentStreams' || field === 'skills') && formData.degree.length === 0) {
+    toast.error(`Please select a Degree first to link this ${field === 'skills' ? 'skill' : 'stream'}.`);
+    return;
+  }
+
+  try {
+    const payload = {
+      type: field,
+      name: value.trim(),
+      parentDegree: (field === 'studentStreams' || field === 'skills') ? formData.degree[0] : null
+    };
+
+    const res = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/meta/add`, payload);
+
+    setMetaData(prev => {
+      const index = prev.findIndex(m => m.degree === res.data.degree);
+      if (index > -1) {
+        const newMeta = [...prev];
+        newMeta[index] = res.data;
+        return newMeta;
       }
-      const newValues = [...currentValues, value.trim()];
-      return { ...prev, [field]: newValues };
+      return [...prev, res.data];
     });
+
     setValue('');
-  };
+    toast.success(`${value} added to database! Click it to select.`);
+    // Note: We are NOT updating formData here, so no "tick" appears automatically.
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Failed to save to server");
+  }
+};
+ 
 
   const handleLocationChange = (field, selectedOption) => {
     setFormData(prev => ({
@@ -249,18 +298,40 @@ useEffect(() => {
     }));
   };
 
-  const availableStreams = (() => {
-    if (formData.degree.length === 0) {
-      return [];
-    }
-    const allStreams = new Set();
-    formData.degree.forEach(degree => {
-      if (degreeStreamMapping[degree]) {
-        degreeStreamMapping[degree].forEach(stream => allStreams.add(stream));
-      }
-    });
-    return [...allStreams].sort((a, b) => a.localeCompare(b));
-  })();
+  // const availableStreams = (() => {
+  //   if (formData.degree.length === 0) {
+  //     return [];
+  //   }
+  //   const allStreams = new Set();
+  //   formData.degree.forEach(degree => {
+  //     if (degreeStreamMapping[degree]) {
+  //       degreeStreamMapping[degree].forEach(stream => allStreams.add(stream));
+  //     }
+  //   });
+  //   return [...allStreams].sort((a, b) => a.localeCompare(b));
+  // })();
+
+  const degrees = useMemo(() => metaData.map(m => m.degree).sort(), [metaData]);
+
+const availableStreams = useMemo(() => {
+  if (formData.degree.length === 0) return [];
+  const streams = new Set();
+  formData.degree.forEach(degName => {
+    const match = metaData.find(m => m.degree === degName);
+    if (match) match.streams.forEach(s => streams.add(s));
+  });
+  return [...streams].sort();
+}, [formData.degree, metaData]);
+
+const skillsOptions = useMemo(() => {
+  if (formData.degree.length === 0) return [];
+  const skills = new Set();
+  formData.degree.forEach(degName => {
+    const match = metaData.find(m => m.degree === degName);
+    if (match && match.skills) match.skills.forEach(s => skills.add(s));
+  });
+  return [...skills].sort();
+}, [formData.degree, metaData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -440,46 +511,62 @@ useEffect(() => {
                   <span className="text-sm text-gray-500">Select degree(s)</span>
                   <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.degree ? "rotate-180" : ""} text-gray-400`} />
                 </div>
-                {dropdownOpen.degree && (
-                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                    <div className="p-2 border-b border-gray-100 flex">
-                      <input
-                        type="text"
-                        placeholder="Add custom degree..."
-                        value={customDegree}
-                        onChange={(e) => setCustomDegree(e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleCustomAdd('degree', customDegree, setCustomDegree, degrees);
-                          }
-                        }}
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCustomAdd('degree', customDegree, setCustomDegree, degrees);
-                        }}
-                        className="ml-2 px-3 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-medium"
-                      >
-                        Add
-                      </button>
-                    </div>
-                    <div className="max-h-40 overflow-auto">
-                      {degrees.map(degree => (
-                        <div key={degree} onClick={() => handleMultiSelect('degree', degree)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.degree.includes(degree) ? "bg-blue-50" : ""}`}>
-                          <div className="flex items-center justify-between">
-                            <span className={`text-sm ${formData.degree.includes(degree) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{degree}</span>
-                            {formData.degree.includes(degree) && <span className="text-[#667eea]">✓</span>}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+               {dropdownOpen.degree && (
+  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden flex flex-col">
+    {/* Search & Add Section */}
+    <div className="p-2 border-b border-gray-100 flex gap-2 bg-gray-50">
+      <input
+        type="text"
+        placeholder="Search or type new degree..."
+        value={customDegree}
+        onChange={(e) => setCustomDegree(e.target.value)}
+        className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+        onClick={(e) => e.stopPropagation()}
+      />
+      {/* Only show Add button if the degree is new */}
+      {customDegree && !degrees.some(d => d.toLowerCase() === customDegree.trim().toLowerCase()) && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCustomAdd('degree', customDegree, setCustomDegree);
+          }}
+          className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+        >
+          Add New
+        </button>
+      )}
+    </div>
+
+    {/* Scrollable List Section */}
+    <div className="overflow-y-auto max-h-48">
+      {degrees
+        .filter(d => d.toLowerCase().includes(customDegree.toLowerCase()))
+        .map((degree) => (
+          <div
+            key={degree}
+            onClick={() => handleMultiSelect('degree', degree)}
+            className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-50 flex items-center justify-between ${
+              formData.degree.includes(degree) ? "bg-blue-50/50" : ""
+            }`}
+          >
+            <span className={`text-sm ${formData.degree.includes(degree) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+              {degree}
+            </span>
+            {formData.degree.includes(degree) && <span className="text-[#667eea] font-bold">✓</span>}
+          </div>
+        ))}
+      
+      {/* Message if no results found */}
+      {degrees.filter(d => d.toLowerCase().includes(customDegree.toLowerCase())).length === 0 && !customDegree && (
+        <div className="p-4 text-center text-gray-400 text-xs italic">
+          No degrees found. Type above to add one.
+        </div>
+      )}
+    </div>
+  </div>
+)}
+                
               </div>
 
               {/* Student Stream */}

@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useMemo } from "react";
 import { ChevronDownIcon, UploadIcon, XIcon, Award, Link, FileCode, Code } from "lucide-react";
-
+import axios from 'axios';
+//import { ChevronDownIcon, UploadIcon, XIcon, Award, Link, FileCode, Code } from "lucide-react";
+import toast from 'react-hot-toast';
 const isValidLinkedIn = (url) => {
   if (!url.trim()) return false;
   
@@ -64,27 +66,12 @@ const isValidPortfolio = (url) => {
   }
 };
 
-const skillOptions = [
-  "JavaScript",
-  "MERN Stack",
-  "React",
-  "Node.js",
-  "Python",
-  "Java",
-  "SQL",
-  "HTML",
-  "CSS",
-  "TypeScript",
-  "Angular",
-  "Vue.js",
-  "MongoDB",
-  "Express.js",
-  "Git",
-  "Docker",
-];
+
+
 
 export const StepFive = ({ onNext, onBack, formData, onChange }) => {
   // Local state to manage the form efficiently
+  const [metaData, setMetaData] = useState([]);
   const [localFormData, setLocalFormData] = useState({
     skills: [],
     certifications: "",
@@ -117,6 +104,107 @@ export const StepFive = ({ onNext, onBack, formData, onChange }) => {
     }
   }, [formData]);
 
+const [customSkillSearch, setCustomSkillSearch] = useState("");
+
+ // Inside StepFive component, add this state:
+const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+const handleSelectOrAdd = async (skillName) => {
+  const trimmedSkill = skillName.trim();
+  if (!trimmedSkill) return;
+
+  if (localFormData.skills.includes(trimmedSkill)) {
+    setCustomSkillSearch("");
+    setIsDropdownOpen(false);
+    return;
+  }
+
+  // If it's a new skill, save to DB, else just add to local state
+  if (!filteredSkillOptions.includes(trimmedSkill)) {
+    await handleAddNewSkill(trimmedSkill);
+  } else {
+    setLocalFormData(prev => ({
+      ...prev,
+      skills: [...prev.skills, trimmedSkill]
+    }));
+  }
+  setCustomSkillSearch("");
+  setIsDropdownOpen(false);
+};
+
+ // 1. Fetch Dynamic Metadata from Backend
+  useEffect(() => {
+    const fetchMeta = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta`);
+        setMetaData(data);
+      } catch (err) {
+        console.error("Error loading skill metadata", err);
+      }
+    };
+    fetchMeta();
+  }, []);
+
+  // 2. Filter Skills based on the Degree selected in previous steps
+  const filteredSkillOptions = useMemo(() => {
+    // Check education array from Step 3 or top-level degree field
+    const selectedDegree = formData.education?.[0]?.degree || formData.degree;
+    if (!selectedDegree) return [];
+
+    const match = metaData.find(m => m.degree === selectedDegree);
+    return match ? match.skills.sort() : [];
+  }, [formData.education, formData.degree, metaData]);
+
+  // 3. Global Handler to add new skills to the database
+  const handleAddNewSkill = async (newSkillName) => {
+    if (!newSkillName.trim()) return;
+    const selectedDegree = formData.education?.[0]?.degree || formData.degree;
+
+    try {
+      const payload = {
+        type: 'skills',
+        name: newSkillName.trim(),
+        parentDegree: selectedDegree
+      };
+
+      const { data } = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/meta/add`, payload);
+      
+      setMetaData(prev => {
+        const index = prev.findIndex(m => m.degree === data.degree);
+        const newMeta = [...prev];
+        newMeta[index] = data;
+        return newMeta;
+      });
+
+      if (!localFormData.skills.includes(newSkillName.trim())) {
+        setLocalFormData(prev => ({
+          ...prev,
+          skills: [...prev.skills, newSkillName.trim()]
+        }));
+      }
+      toast.success(`Skill "${newSkillName}" added to database!`);
+    } catch (err) {
+      toast.error("Failed to add new skill to global list");
+    }
+  };
+
+  // ... (Keep handleChange, handleFileChange, removeSkill, handleNextClick)
+
+  const handleSkillSelect = (e) => {
+    const skill = e.target.value;
+    if (skill === "ADD_NEW_CUSTOM") {
+      const custom = prompt("Enter new skill name:");
+      if (custom) handleAddNewSkill(custom);
+      return;
+    }
+    if (skill && !localFormData.skills.includes(skill)) {
+      setLocalFormData((prev) => ({
+        ...prev,
+        skills: [...prev.skills, skill],
+      }));
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLocalFormData((prev) => ({ ...prev, [name]: value }));
@@ -126,15 +214,15 @@ export const StepFive = ({ onNext, onBack, formData, onChange }) => {
     setLocalFormData((prev) => ({ ...prev, project: e.target.files[0] }));
   };
 
-  const handleSkillSelect = (e) => {
-    const skill = e.target.value;
-    if (skill && !localFormData.skills.includes(skill)) {
-      setLocalFormData((prev) => ({
-        ...prev,
-        skills: [...prev.skills, skill],
-      }));
-    }
-  };
+  // const handleSkillSelect = (e) => {
+  //   const skill = e.target.value;
+  //   if (skill && !localFormData.skills.includes(skill)) {
+  //     setLocalFormData((prev) => ({
+  //       ...prev,
+  //       skills: [...prev.skills, skill],
+  //     }));
+  //   }
+  // };
 
   const removeSkill = (skillToRemove) => {
     setLocalFormData((prev) => ({
@@ -211,51 +299,100 @@ export const StepFive = ({ onNext, onBack, formData, onChange }) => {
           {/* Form Section */}
           <div className="space-y-6">
             {/* Skills with Tag system */}
-            <div>
-              <label className="block text-gray-700 font-medium text-sm mb-2">
-                Skills
-              </label>
+            
+    {/* --- REPLACED SKILLS SECTION --- */}
+           <div>
+              <label className="block text-gray-700 font-medium text-sm mb-2">Skills</label>
               
-              {/* Selected Skills Tags */}
-              {localFormData.skills.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {localFormData.skills.map((skill) => (
-                    <div
-                      key={skill}
-                      className="flex items-center bg-gradient-to-r from-[#e0e7ff]/20 to-[#c7d2fe]/20 border border-[#e0e7ff]/30 text-gray-700 rounded-full px-3 py-1.5 text-sm"
-                    >
-                      {skill}
-                      <button
-                        type="button"
-                        onClick={() => removeSkill(skill)}
-                        className="ml-2 text-gray-500 hover:text-red-500 transition-colors"
-                      >
-                        <XIcon className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              {/* Chips for Selected Skills */}
+              <div className="flex flex-wrap gap-2 mb-3">
+                {localFormData.skills.map((skill) => (
+                  <div key={skill} className="flex items-center bg-[#667eea]/10 border border-[#667eea]/20 text-[#4338ca] rounded-full px-3 py-1.5 text-sm font-medium">
+                    {skill}
+                    <button type="button" onClick={() => removeSkill(skill)} className="ml-2 hover:text-red-500">
+                      <XIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
 
-              {/* Skills Dropdown */}
-              <div className="flex items-center">
-                <Code className="w-5 h-5 text-gray-400 mr-3" />
-                <div className="relative flex-grow">
-                  <select
-                    onChange={handleSkillSelect}
-                    value=""
-                    className="appearance-none w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
-                  >
-                    <option value="" disabled>Add a skill</option>
-                    {skillOptions.map((skill) => (
-                      <option key={skill} value={skill}>{skill}</option>
-                    ))}
-                  </select>
-                  <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+              {/* Search & Select Input */}
+              <div className="relative">
+                <div className="flex gap-2">
+                  <div className="relative flex-grow">
+                    <Code className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search or type a new skill..."
+                      value={customSkillSearch}
+                      onFocus={() => setIsDropdownOpen(true)}
+                      onChange={(e) => {
+                        setCustomSkillSearch(e.target.value);
+                        setIsDropdownOpen(true);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleSelectOrAdd(customSkillSearch);
+                        }
+                      }}
+                      className="w-full pl-12 p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] text-gray-700 placeholder-gray-400"
+                    />
+                  </div>
+                  {customSkillSearch && (
+                    <button
+                      type="button"
+                      onClick={() => handleSelectOrAdd(customSkillSearch)}
+                      className="px-6 bg-[#667eea] text-white rounded-xl font-medium hover:bg-[#5a6fd6] transition-all"
+                    >
+                      Add
+                    </button>
+                  )}
                 </div>
+
+                {/* Dropdown Menu */}
+                {isDropdownOpen && (
+                  <>
+                    {/* Transparent overlay to close dropdown when clicking outside */}
+                    <div className="fixed inset-0 z-20" onClick={() => setIsDropdownOpen(false)}></div>
+                    
+                    <div className="absolute z-30 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                      {filteredSkillOptions
+                        .filter(s => s.toLowerCase().includes(customSkillSearch.toLowerCase()))
+                        .map(skill => (
+                          <div
+                            key={skill}
+                            onClick={() => handleSelectOrAdd(skill)}
+                            className="p-3 hover:bg-[#667eea]/5 cursor-pointer text-gray-700 border-b border-gray-50 last:border-0"
+                          >
+                            {skill}
+                          </div>
+                        ))}
+                      
+                      {/* Show "Add New" option if typing something not in the list */}
+                      {customSkillSearch && !filteredSkillOptions.some(s => s.toLowerCase() === customSkillSearch.toLowerCase()) && (
+                        <div 
+                          onClick={() => handleSelectOrAdd(customSkillSearch)}
+                          className="p-3 text-[#667eea] font-medium hover:bg-[#667eea]/5 cursor-pointer"
+                        >
+                          + Add "{customSkillSearch}" as new skill
+                        </div>
+                      )}
+
+                      {filteredSkillOptions.length === 0 && !customSkillSearch && (
+                        <div className="p-4 text-center text-gray-400 text-sm">
+                          No default skills found. Type to add your own.
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
+            
+
+               
             {/* Certifications */}
             <div>
               <label htmlFor="certifications" className="block text-gray-700 font-medium text-sm mb-2">
