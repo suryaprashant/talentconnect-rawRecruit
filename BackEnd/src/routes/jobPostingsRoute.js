@@ -3,7 +3,7 @@ import secureRoute from '../middlewares/secureRouteMiddleware.js';
 
 import { createOffCampusJobPosting, createOnCampusPosting, createPoolCampusPosting, createJobPosting, createInternshipPosting, createOnCampusCollegeRequest, createPoolCampusCollegeRequest, createRefferralPosting } from '../controllers/jobPostingController.js';
 import { ViewController } from '../controllers/viewCountController.js';
-
+import { getRelevantOffCampusJobs } from '../controllers/relevantJobContoller.js';
 // api.. "/api/hiring-channels"
 
 const router = express.Router();

@@ -3,20 +3,8 @@ import { ChevronDownIcon, X, Target, MapPin, Briefcase } from "lucide-react";
 import { City } from "country-state-city";
 import CreatableSelect from 'react-select/creatable';
 
-const jobRoleOptions = [
-  "Software Developer",
-  "UI/UX Designer",
-  "Project Manager",
-  "Data Analyst",
-  "Marketing Specialist",
-  "DevOps Engineer",
-  "Product Manager",
-  "QA Engineer",
-  "System Administrator",
-  "Network Engineer",
-  "Business Analyst",
-  "Machine Learning Engineer",
-];
+const jobRoleOptions = ['Software Developer', 'Data Scientist', 'DevOps Engineer', 'QA Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'Mobile App Developer', 'UI/UX Designer', 'Product Manager', 'Business Analyst', 'Data Analyst', 'Machine Learning Engineer', 'Cloud Architect', 'Network Engineer', 'Cyber Security Specialist', 'Technical Writer', 'Sales Engineer', 'Marketing Specialist', 'HR Recruiter', 'Finance Analyst', 'Other'];
+ 
 const employmentTypeOptions = ["part time", "full time", "contract"];
 
 const SelectedTag = ({ item, onRemove }) => (

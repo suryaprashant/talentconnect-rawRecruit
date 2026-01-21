@@ -95,69 +95,75 @@ export const createPostingService = async (postingData , authUserId) => {
 };
 
 
-export const getJobPostingsByJobTypeService = async (jobType, userId) => {
+export const getJobPostingsByJobTypeService = async (jobType, userId, studentProfile = null) => {
     try {
-        const postings = await JobPostingTable.find({ jobType }).populate('companyPosted')
+        const postings = await JobPostingTable.find({ jobType })
+            .populate('companyPosted')
             .sort({ createdAt: -1 });
 
         const currentDate = new Date();
-        const updatedPostings = postings.map(posting => {
+        
+        // --- STEP 1: Status & Object Conversion (Standard functionality) ---
+        let processedPostings = postings.map(posting => {
             let status = posting.jobStatus;
-
-            // Check and update status based on dates
             if (posting.startDate && posting.endDate) {
                 const startDate = new Date(posting.startDate);
                 const endDate = new Date(posting.endDate);
 
-                if (currentDate < startDate) {
-                    status = "Pending";
-                } else if (currentDate >= startDate && currentDate <= endDate) {
-                    status = "Open";
-                } else if (currentDate > endDate) {
-                    status = "Closed";
-                }
+                if (currentDate < startDate) status = "Pending";
+                else if (currentDate >= startDate && currentDate <= endDate) status = "Open";
+                else status = "Closed";
             }
-
-            return {
-                ...posting.toObject(),
-                jobStatus: status
-            };
+            return { ...posting.toObject(), jobStatus: status };
         });
 
+        // --- STEP 2: Candidate Matching (ONLY if studentProfile is provided) ---
+        
+        // if (studentProfile && (studentProfile.jobRoles?.length > 0 || studentProfile.skills?.length > 0)) {
+        //     const studentRoles = (studentProfile.jobRoles || []).map(r => r.toLowerCase());
+        //     const studentSkills = (studentProfile.skills || []).map(s => s.toLowerCase());
+
+        //     processedPostings = processedPostings.filter(job => {
+        //         // Role Match: At least one
+        //         const jobRole = (job.role || "").toLowerCase();
+        //         const hasRoleMatch = studentRoles.some(role => jobRole.includes(role));
+
+        //         if (!hasRoleMatch) return false;
+
+        //         // Skill Match: 40% threshold
+        //         const jobSkills = job.requiredSkills || [];
+        //         if (jobSkills.length === 0) return true; 
+
+        //         const matchedCount = jobSkills.filter(s => 
+        //             studentSkills.includes(s.toLowerCase())
+        //         ).length;
+
+        //         return (matchedCount / jobSkills.length) >= 0.4;
+        //     });
+        // }
+
+        // --- STEP 3: Applied Jobs Filter (Standard functionality) ---
         if (userId) {
-            try {
-                let applicantId = null;
-                const onboarding = await OnboardingModel.findOne({ userId: userId }).select('_id').lean();
-                if (onboarding && onboarding._id) applicantId = onboarding._id;
+            const applicantId = studentProfile?._id || userId;
+            const jobIds = processedPostings.map(p => p._id);
+            const applications = await Application.find({
+                applicant: applicantId,
+                job: { $in: jobIds }
+            }).select('job').lean();
 
-                if (!applicantId) {
-                    try {
-                        applicantId = new mongoose.Types.ObjectId(userId);
-                    } catch (e) {
-                        applicantId = userId;
-                    }
-                }
-
-                const jobIds = postings.map(p => p._id);
-                const applications = await Application.find({
-                    applicant: applicantId,
-                    job: { $in: jobIds }
-                }).select('job').lean();
-
-                const appliedJobIds = new Set(applications.map(a => String(a.job)));
-                const filteredPostings = updatedPostings.filter(p => !appliedJobIds.has(String(p._id)));
-                return filteredPostings;
-            } catch (err) {
-                console.error('Error checking applications for user:', err);
-                return updatedPostings;
-            }
+            const appliedJobIds = new Set(applications.map(a => String(a.job)));
+            return processedPostings.filter(p => !appliedJobIds.has(String(p._id)));
         }
-        return updatedPostings;
+
+        return processedPostings;
     } catch (error) {
-        console.error("Error in getJobPostingsByJobTypeService:", error.message);
+        console.error("Error in service:", error.message);
         throw error;
     }
 };
+    
+
+   
 
 export const getReferralJobsService = async (jobType, candidatePostedId) => {
     try {

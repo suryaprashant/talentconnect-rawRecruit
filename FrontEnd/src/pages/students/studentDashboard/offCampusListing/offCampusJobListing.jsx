@@ -107,6 +107,7 @@ function OffCampusJobs({ compact = false }) {
     try {
       setIsLoading(true);
       const response = await getRelaventOffcampusOpportunity();
+      console.log('offcampus',response)
       const fetchedJobs = response.data?.data || [];
       setOffCampusJobs(fetchedJobs);
       setFilteredJobs(fetchedJobs);
@@ -480,7 +481,7 @@ if (compact) {
                   Off-Campus Jobs
                 </h1>
                 <p className="text-gray-600 mt-2">
-                  Based on your preferences and profile matching
+                  Based on your preferences and profile matching.. 
                 </p>
               </div>
             </div>
@@ -1089,16 +1090,15 @@ if (compact) {
           {filteredJobs.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredJobs.map(job => (
-                  <div
-                    key={job._id}
-                    className="h-full flex transform transition-all duration-200 hover:scale-[1.02]"
-                  >
-                    <div className="w-full" onClick={() => handleJobClick(job._id)}>
-                      <JobCard job={job} />
-                    </div>
-                  </div>
-                ))}
+               {filteredJobs.map((job) => (
+  <div
+    key={job._id || job.id} // Use the database ID as the key
+    className="h-full flex transform transition-all duration-200 hover:scale-[1.02]"
+    onClick={() => handleJobClick(job._id)}
+  >
+    <JobCard job={job} />
+  </div>
+))}
               </div>
 
               {/* View All Button */}
