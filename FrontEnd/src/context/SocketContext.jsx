@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useAuth } from "./AuthProvider";
+import { useLegacyAuth } from "./AuthProvider";
 import io from "socket.io-client";
 const socketContext = createContext();
 
@@ -53,7 +53,7 @@ export const useSocketContext = () => {
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
-  const [authUser] = useAuth();
+  const [authUser] = useLegacyAuth();
 
   useEffect(() => {
     if (authUser && authUser.user?._id) {

@@ -1,5 +1,5 @@
 // import HiringDrive from "../models/hiringChannelOffCampusRegisterModel.js";
-// import Intern from "../models/hiringChannelsPostinternshipsModel.js";
+
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 
 // fetch jobs
@@ -94,5 +94,29 @@ export async function fetchInternshipByIdService(Id) {
     } catch (error) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");
+    }
+}
+
+export async function fetchInternshipService(yearsOfExperience) {
+    try {
+        const response = await JobPostingTable.find({
+            openingFor: 'Offcampus',
+            yearsOfExperience: yearsOfExperience,
+            jobType: 'Internship' // keep this if you store internships separately
+        })
+        .populate({
+            path: 'companyPosted',
+            select: 'companyDetails'
+        })
+        .sort({ createdAt: -1 })
+        .lean();
+
+        return {
+            success: true,
+            data: response
+        };
+    } catch (error) {
+        console.log("Error fetching internships:", error.message);
+        throw new Error("Failed to fetch internships");
     }
 }

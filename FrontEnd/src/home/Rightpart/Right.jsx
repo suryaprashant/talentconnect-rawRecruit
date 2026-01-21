@@ -5,7 +5,7 @@ import Chatuser from "./Chatuser";
 import Messages from "./Messages";
 import Typesend from "./Typesend";
 import useConversation from "../../statemanage/useConversation.js";
-import { useAuth } from "../../context/AuthProvider.jsx";
+import { useLegacyAuth } from "../../context/AuthProvider.jsx";
 import { CiMenuFries } from "react-icons/ci";
 
 function Right() {
@@ -36,7 +36,7 @@ function Right() {
 export default Right;
 
 const NoChatSelected = () => {
-    const [authUser] = useAuth();
+    const [authUser] = useLegacyAuth();
 
     return (
         <div className="relative flex flex-col h-full items-center justify-center bg-blue-100 text-blue-800">

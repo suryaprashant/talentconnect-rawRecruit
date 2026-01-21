@@ -4,14 +4,14 @@ import CompanyOverview from './CompanyOverview';
 import CompanyProfileForm from './CompanyProfileForm';
 import UserManagement from './UserManagement';
 import axios from 'axios';
-import { useAuth } from '@/context/AuthProvider';
+import { useLegacyAuth } from '@/context/AuthProvider';
 
 export default function CompanyProfile() {
   const [activeTab, setActiveTab] = useState('Overview');
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { auth } = useAuth();
+  const { auth } = useLegacyAuth();
 
   const backendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
 

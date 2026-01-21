@@ -270,12 +270,7 @@ export async function checkStudentService(studentId) {
 export const handleOnboardingUpdate = async (updateData, files) => {
 
 
-  // const getCorrectUrl = (uploadResult) => {
-  //   if (uploadResult.resource_type === 'raw') {
-  //     return uploadResult.secure_url.replace('/image/upload/', '/raw/upload/');
-  //   }
-  //   return uploadResult.secure_url;
-  // };
+  
 
   if (files?.resume?.[0]) {
     const file = files.resume[0];
@@ -354,7 +349,7 @@ export const handleOnboardingUpdate = async (updateData, files) => {
   );
 
   // Set userType logic
-  let finalUserTypeForResponse = "candidate";
+  {/*let finalUserTypeForResponse = "candidate";
   let authUserType = "candidate";
   if (updateData.profileType) {
     authUserType = updateData.profileType.toLowerCase();
@@ -369,11 +364,16 @@ export const handleOnboardingUpdate = async (updateData, files) => {
     userType: authUserType,
     onboardingCompleted: true,
     onboardingStep: 6
-  })
+  })*/}
+
+  const updatedUser = await updateAuthUserService(updateData.userId, {
+  onboardingCompleted: true,
+  onboardingStep: 6
+});
+
 
   return {
-    finalUserTypeForResponse,
-    authUserType,
+   
     updatedUser,
     updatedOnboarding
   };

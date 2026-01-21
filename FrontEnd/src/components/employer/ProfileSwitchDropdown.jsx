@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '@/context/AuthProvider';
+import { useLegacyAuth } from '@/context/AuthProvider';
 import { 
     FiUser, FiSettings, FiLogOut, FiBriefcase, FiCheck,
     FiBell, FiHelpCircle, FiXCircle, FiLoader
@@ -13,7 +13,7 @@ import LeaveCompanyModal from './LeaveCompanyModal';
 
 function ProfileSwitchDropdown() {
    
-    const [authuser, setAuthuser] = useAuth();
+    const [authuser, setAuthuser] = useLegacyAuth();
     const navigate = useNavigate();
     const [companies, setCompanies] = useState([]);
     const [isLoading, setIsLoading] = useState(true);

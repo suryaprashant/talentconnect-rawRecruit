@@ -63,6 +63,7 @@ import eventParticipation from "./routes/eventParticipationRoute.js";
 import EmployerDashboard from "./routes/employerDahsboardRoute.js";
 import Company from "./routes/companyRoute.js";
 import Jobs from "./routes/jobsRoute.js"
+import Internship from "./routes/internshipRoute.js";
 
 // RawRecruit APIs
 import serviceRequestRouter from "./routes/servicerequestRoute.js";
@@ -153,7 +154,7 @@ app.use("/api/student-dashboard", studentDashboardRoute);
 app.use("/api/employer/hiring-channel", EmployerHiringChannelRoute);
 
 app.use("/jobs", Jobs);
-// app.use("/internship", Internship);
+app.use("/internship", Internship);
 app.use("/application", Application);
 app.use("/college/application",CollegeApplication);
 app.use("/hackathon", Hackathon);

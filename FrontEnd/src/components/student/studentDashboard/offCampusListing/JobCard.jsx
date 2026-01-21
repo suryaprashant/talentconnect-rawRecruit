@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { MapPin, User, Banknote, Heart, Briefcase, Calendar } from 'lucide-react';
 import { SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import  toast  from 'react-hot-toast';
+import { useAuth } from "@/context/AuthContext";
+
 
 const pastelColors = [
   // Purple/Indigo gradient variants (primary theme colors)
@@ -72,7 +74,12 @@ function getStableColor(id = "") {
 }
 
 const JobCard = ({ job }) => {
+  const { user, loading } = useAuth();
   const [isSaved, setIsSaved] = useState(job.isSaved || false);
+
+  if (loading) return null;
+
+  const role = user?.userType;
 
   const companyName =
     job.companyPosted?.companyName ||
@@ -212,7 +219,7 @@ const JobCard = ({ job }) => {
         </div>
 
         <Link
-          to={`/${localStorage.getItem("selectedRole")}-dashboard/Off-campus/${job._id}`}
+          to={`/${role}-dashboard/Off-campus/${job._id}`}
           className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
         >
           Details 

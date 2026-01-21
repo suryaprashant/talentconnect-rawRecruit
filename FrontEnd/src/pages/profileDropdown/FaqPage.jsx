@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Box } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const companyFaqs = [
   {
@@ -121,19 +122,22 @@ const candidateFaqs = [
 
 
 const FAQPage = () => {
-
-  const selectedRole = localStorage.getItem("selectedrole");
-
   const navigate = useNavigate() ;
-  const faqs =
-  selectedRole === "company" || selectedRole === "employer"
-    ? companyFaqs
-    : selectedRole === "college"
-    ? collegeFaqs
-    : selectedRole === "student" || selectedRole === "fresher"
-    ? candidateFaqs
-    : candidateFaqs; // default fallback
 
+  const { user, loading } = useAuth();
+
+  if (loading) return null; // or spinner
+
+  const role = user?.userType;
+ const roleFaqMap = {
+    company: companyFaqs,
+    employer: companyFaqs,
+    college: collegeFaqs,
+    student: candidateFaqs,
+    fresher: candidateFaqs,
+  };
+
+  const faqs = roleFaqMap[role] || candidateFaqs;
 
   return (
     <div className="bg-white min-h-screen py-12 px-4">

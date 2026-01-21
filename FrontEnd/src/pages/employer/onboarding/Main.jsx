@@ -172,7 +172,9 @@ import Welcome from "./Welcome";
 import TermsAndConditions from "./TermsCondition";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "@/context/AuthProvider";
+import { useLegacyAuth  } from "@/context/AuthProvider";
+import { useAuth } from "@/context/AuthContext";
+
 
 const STORAGE_KEYS = {
   FORM_DATA: 'employerOnboardingFormData',
@@ -183,7 +185,9 @@ const OnboardingFlowForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
-  const [authUser, setAuthUser] = useAuth();
+  const [authUser, setAuthUser] = useLegacyAuth ();
+  const { refreshUser } = useAuth();
+
 
   // Load data from sessionStorage on component mount (isolated per tab)
   useEffect(() => {
@@ -314,6 +318,9 @@ const OnboardingFlowForm = () => {
         };
         setAuthUser({ user: finalUser });
       }
+
+      await refreshUser(); // 🔥 Re-hydrates role + dashboard
+
 
       if (response.status === 201) {
         console.log("Onboarding created successfully:", response.data.profile);

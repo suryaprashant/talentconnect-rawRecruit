@@ -1,10 +1,12 @@
 import { useState } from "react";
 import axios from 'axios';
-import { useAuth } from '@/context/AuthProvider'
+import { useLegacyAuth  } from '@/context/AuthProvider'
+import { useAuth } from "@/context/AuthContext";
+
 
 const useApplicationForm = () => {
 
-    const [authUser, setAuthUser] = useAuth();
+    const [authUser, setAuthUser] = useLegacyAuth ();
     const [formData, setFormData] = useState({
         employerDetails: {
             name: '',
@@ -52,6 +54,10 @@ const useApplicationForm = () => {
         profileImage: null,
         acceptedTerms: false,
     });
+    const { refreshUser } = useAuth();
+
+    
+
 
     const updateFormData = (sectionOrField, fieldOrValue, value) => {
         setFormData(prev => {
@@ -122,6 +128,9 @@ const useApplicationForm = () => {
                 }
                 setAuthUser({ user: finalUser })
             }
+
+            await refreshUser(); // 🔥 Re-hydrates role + dashboard
+
             alert('Company profile created successfully!');
             return true;
         } catch (error) {

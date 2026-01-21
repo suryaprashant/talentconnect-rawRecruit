@@ -1,9 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { MapPinIcon, UserIcon, BriefcaseIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "@/context/AuthContext";
 
 const JobCard = ({ job }) => {
+  const { user, loading } = useAuth();
   const [isSaved, setIsSaved] = useState(job.isSaved || false);
+
+  if (loading) return null;
+
+  const role = user?.userType;
 
   const companyName =
     job.companyPosted?.companyName ||
@@ -107,7 +113,7 @@ const JobCard = ({ job }) => {
 
       {/* BUTTON AT BOTTOM */}
       <Link
-        to={`/${localStorage.getItem("selectedRole")}-dashboard/job-listing/${job._id}`}
+        to={`/${role}-dashboard/job-listing/${job._id}`}
         className="mt-5 block w-full text-center py-2 rounded-xl bg-black text-white font-medium hover:bg-gray-800 transition"
       >
         View Details
