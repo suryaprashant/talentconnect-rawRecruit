@@ -218,7 +218,7 @@ import EmployerOnCampusHiring from './pages/employer/hiringChannels/onCampusHiri
 import EmployerPoolCampuses from './pages/employer/hiringChannels/poolCampusHiring/PoolCampus'
 import EmployerOffCampus from "./pages/employer/hiringChannels/offCampusHiring/OffCapus";
 import ChatLayout from "./home/chatLayout";
-import { useAuth } from "./context/AuthProvider";
+import { useLegacyAuth } from "./context/AuthProvider";
 import EmployerProfile from "./pages/employer/dashboard/CompanyProfile";
 import LinkedInCallback from "./pages/auth/LinkedInCallback";
 import InvitationsPage from "./pages/InvitationsPage";
@@ -268,7 +268,7 @@ import OffCampusLayout from "./components/student/studentDashboard/offCampusList
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
-  const [authUser] = useAuth();
+  const [authUser] = useLegacyAuth();
 
   return (
     <Routes>

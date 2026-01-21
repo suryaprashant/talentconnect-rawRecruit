@@ -2,9 +2,17 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiUserPlus, FiFile, FiDownload, FiCheckCircle, FiExternalLink } from 'react-icons/fi';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 function NotificationsDropdown({ notifications, setNotifications, setUnreadCount }) {
     const navigate = useNavigate();
+
+    const { user, loading } = useAuth();
+
+    if (loading || !user) return null;
+
+    const role = user.userType; // company | employer | college | student | fresher
+
 
     const JOB_REGISTRATION_ROUTE_MAP = {
       college: {
@@ -55,7 +63,7 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
 
 
     const handleNotificationClick = async (notification) => {
-    const selectedRole = localStorage.getItem("selectedRole"); // company | employer
+   // company | employer
 
     // 1️⃣ Mark as read
     if (!notification.read) {
@@ -96,12 +104,12 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
         notification.type === "COLLEGE_APPLICATION_ACCEPTED" ||
         notification.type === "COLLEGE_APPLICATION_REJECTED"
     ) {
-        if (selectedRole === "company") {
+        if (role === "company") {
             navigate("/company/application-status/oncampus");
             return;
         }
 
-        if (selectedRole === "employer") {
+        if (role === "employer") {
             navigate("/employer/application-status/oncampus");
             return;
         }
@@ -109,11 +117,11 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
 
     // 🔔 JOB REGISTRATION (application related)
     if (notification.type === "JOB_REGISTRATION") {
-      const role = selectedRole; // college | company | employer
       const jobType = notification.jobType;
+      const targetRoute = JOB_REGISTRATION_ROUTE_MAP?.[role]?.[jobType];
+
     
-      const targetRoute =
-        JOB_REGISTRATION_ROUTE_MAP?.[role]?.[jobType];
+      
     
       if (targetRoute) {
         navigate(targetRoute);
@@ -130,8 +138,8 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
 
     //interviews schedulede
     if (notification.type === "INTERVIEW_SCHEDULED" ) {
-        const role = selectedRole; // college | company | employer
         const targetRoute = INTERVIEW_SCHEDULE_ROUTE_MAP?.[role];
+
     
         if (targetRoute) {
             navigate(targetRoute);
@@ -147,11 +155,9 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
   
     // 🔔 SYSTEM UPDATE (Company / Employer posted job)
     if (notification.type === "SYSTEM_UPDATE") {
-        const role = selectedRole; // company | employer | college
-        const jobType = notification.jobType; // On-campus | Pool-campus
-    
-        const targetRoute =
-            SYSTEM_UPDATE_ROUTE_MAP?.[role]?.[jobType];
+        const jobType = notification.jobType;
+        const targetRoute = SYSTEM_UPDATE_ROUTE_MAP?.[role]?.[jobType];
+
     
         if (targetRoute) {
             navigate(targetRoute);
@@ -172,15 +178,12 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
         notification.type === "APPLICATION_ACCEPTED" ||
         notification.type === "APPLICATION_REJECTED"
     ) {
-        if (selectedRole === "college") {
+        if (role  === "college") {
             navigate("/application-status/oncampus");
             return;
         }
 
     }
-
-
-    
 };
 
 

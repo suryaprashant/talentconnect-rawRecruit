@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRole } from "@/context/RoleContext/RoleContext";
 import axios from 'axios';
-import { useAuth } from "@/context/AuthProvider";
+import { useLegacyAuth } from "@/context/AuthProvider";
+import { useAuth } from "@/context/AuthContext";
 import { TermsModal } from '../Terms&conditionModal';
 import { CheckCircle, Shield, FileText } from "lucide-react";
 
@@ -12,7 +13,10 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
   const navigate = useNavigate();
 
   const { selectedRole, formData, clearFormData } = useRole();
-  const [, setAuthUser] = useAuth();
+  const [, setAuthUser] = useLegacyAuth();
+
+  const { login } = useAuth();
+
 
   const handleCheckboxChange = () => {
     setAgreed(!agreed);
@@ -104,6 +108,10 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
 
       if (response.data && response.data.user) {
         setAuthUser({ user: response.data.user });
+      }
+
+      if (response.data?.user) {
+        login(response.data.user); // 🔥 THIS IS THE FIX
       }
 
       clearFormData();

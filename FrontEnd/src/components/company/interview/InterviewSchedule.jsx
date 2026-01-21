@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 import { MoreHorizontal, Calendar, List, Building2 } from 'lucide-react';
 import { getCompanyInterviews, getInterviews } from "../../../lib/interview_AxiosClient.js";
-import { useAuth } from '@/context/AuthProvider';
+import { useAuth } from '@/context/AuthContext';
 
 export default function InterviewScheduler() {
+  const { user, loading: authLoading } = useAuth();
+
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dateSort, setDateSort] = useState("desc"); // default newest first
   
+  const role = user?.userType;
 
-  const selectedRole = localStorage.getItem("selectedRole");
+  
 
   useEffect(() => {
     const fetchInterviews = async () => {
@@ -28,8 +31,18 @@ export default function InterviewScheduler() {
 
   }, []);
 
-  const isCompanyView = selectedRole === "company";
-  const isCollegeView = selectedRole === "college";
+  if (authLoading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-gray-600">Loading user...</p>
+    </div>
+  );
+}
+
+
+  const isCompanyView = role === "company";
+  const isCollegeView = role === "college";
+
 
   const sortedInterviews = [...interviews].sort((a, b) => {
     const dateA = new Date(`${a.date} ${a.time}`);
@@ -87,7 +100,7 @@ export default function InterviewScheduler() {
               {sortedInterviews.map(interview => {
                 const formattedDateTime = `${interview.date} ${interview.time}`;
                 console.log("Interview companyAuthId:", interview.companyAuthId);
-                const isCompanyView = selectedRole === "company";
+                //const isCompanyView = selectedRole === "company";
 
                 // For COMPANY → show applicant
                 // For OTHERS → show recruiter

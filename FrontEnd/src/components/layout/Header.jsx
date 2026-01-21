@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { FiMenu, FiBell, FiChevronDown } from 'react-icons/fi';
-import { useAuth } from '@/context/AuthProvider';
+import { useLegacyAuth } from '@/context/AuthProvider';
 import axios from 'axios';
 import Avatar from '../ui/Avatar';
 import NotificationsDropdown from './NotificationDropdown';
@@ -8,7 +8,7 @@ import ProfileSwitchDropdown from '../employer/ProfileSwitchDropdown';
 import StandardProfileDropdown from './ProfileDropdown';
 
 function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
-    const [authuser] = useAuth();
+    const [authuser] = useLegacyAuth();
 
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);

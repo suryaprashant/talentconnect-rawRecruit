@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '../../context/AuthProvider';
+import { useLegacyAuth } from '../../context/AuthProvider';
 import toast from 'react-hot-toast';
 import axiosInstance from '../../lib/axiosInstance';
 import ReactGA from "react-ga4";
@@ -99,7 +99,7 @@ const getHiringChannelType = (url) => {
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [authUser, setAuthUser] = useAuth();
+  const [authUser, setAuthUser] = useLegacyAuth();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);

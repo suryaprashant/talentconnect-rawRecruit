@@ -60,14 +60,14 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // NEW: Added useNavigate
-import { useAuth } from '../../../../context/AuthProvider'; // NEW: Added useAuth
+import { useLegacyAuth } from '../../../../context/AuthProvider'; // NEW: Added useAuth
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
 
 export default function PoolCampus() {
   const navigate = useNavigate(); 
-  const [authUser] = useAuth(); 
+  const [authUser] = useLegacyAuth(); 
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
   const [formData, setFormData] = useState({
