@@ -21,7 +21,8 @@ function OffCampusJobs({ compact = false }) {
   });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortBy, setSortBy] = useState('newest');
+  const [sortBy, setSortBy] = useState('relevance');
+  //const [sortBy, setSortBy] = useState('newest');
 
   // State for dropdown visibility
   const [showMainFilter, setShowMainFilter] = useState(false);
@@ -274,6 +275,13 @@ function OffCampusJobs({ compact = false }) {
     if (filters.fullTime) {
       result = result.filter(job => job.jobType === 'Full-time');
     }
+
+    if (sortBy === 'relevance') {
+  // Sort by matchScore descending
+  result.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+} else if (sortBy === 'newest') {
+  result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+}
 
     if (sortBy === 'newest') {
       result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
