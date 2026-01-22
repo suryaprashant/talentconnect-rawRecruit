@@ -300,10 +300,10 @@ const OnboardingFlowForm = () => {
         jobRoles: formData.jobRoles || [],
         hiringLocations: formData.hiringLocations || [],
         lookingFor: formData.lookingFor,
-        employmentType: formData.employmentType || [],
+        employmentTypes: formData.employmentType || [],
       };
       finalFormData.append("hiringPreferences", JSON.stringify(hiringPreferences));
-
+      
       const response = await axios.post(
         `${import.meta.env.VITE_Backend_URL}/api/dashboard/employerOnboarding`,
         finalFormData,

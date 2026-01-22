@@ -20,7 +20,7 @@ const employerOnboardingSchema = new mongoose.Schema({
 
   companyDetails: {
     companyName: { type: String, required: true },
-    location: { type: String, required: true },
+    location: { type: String },
     state: { type: String },
     city: { type: String },
     country: { type: String },

@@ -44,12 +44,12 @@ function StudentSidebar({ activePath }) {
           label="Off-Campus Listings" 
           active={activePath === '/student-dashboard/Off-campus'} 
         />
-        {/* <SidebarNavItem 
+         <SidebarNavItem 
           to="/student-dashboard/Internship" 
           icon={<FiTrendingUp />} 
           label="Internship Opportunities" 
           active={activePath === '/student-dashboard/Internship'} 
-        /> */}
+        /> 
         {/* <SidebarNavItem 
           to="/student-dashboard/Referral" 
           icon={<FiUsers />} 
@@ -113,12 +113,12 @@ function StudentSidebar({ activePath }) {
           label="Off-Campus Listing" 
           active={activePath === '/application-status/Off-campus'} 
         />
-        {/* <SidebarNavItem 
+        <SidebarNavItem 
           to="/application-status/Internship" 
           icon={<FiTrendingUp />} 
           label="Internship Opportunities" 
           active={activePath === '/application-status/Internship'} 
-        /> */}
+        /> 
         {/* <SidebarNavItem 
           to="/application-status/Referral" 
           icon={<FiUsers />} 

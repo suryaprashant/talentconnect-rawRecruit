@@ -1,5 +1,10 @@
 import SidebarNavItem from './SidebarNavItem';
 import SidebarNavGroup from './SidebarNavGroup';
+import { 
+
+  FiTrendingUp,
+ 
+} from 'react-icons/fi';
 
 function FresherSidebar({ activePath }) {
   return (
@@ -51,6 +56,12 @@ function FresherSidebar({ activePath }) {
               label="Off-Campus Listings"
               active={activePath === '/fresher-dashboard/Off-campus'}
             />
+            <SidebarNavItem 
+              to="/fresher-dashboard/Internship" 
+              icon={<FiTrendingUp />} 
+              label="Internship Opportunities" 
+              active={activePath === '/fresher-dashboard/Internship'} 
+            /> 
             {/* <SidebarNavItem
               to="/fresher-dashboard/Referral"
               icon={
@@ -138,6 +149,7 @@ function FresherSidebar({ activePath }) {
               label="Off-Campus Listing"
               active={activePath === '/application-status/Off-campus'}
             />
+            
             {/* <SidebarNavItem
               to="/application-status/Referral"
               icon={
