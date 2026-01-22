@@ -272,7 +272,7 @@ export const createJobPosting = async (req, res) => {
 export const createInternshipPosting = async (req, res) => {
     try {
         const userId = req.user._id;
-
+        
         const companyPostedId = await getCompanyService(userId);
         if (!companyPostedId) {
             return res.status(404).json({ error: "Company profile not found" });

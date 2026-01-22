@@ -524,7 +524,7 @@ function AppRoutes() {
               <Route path="/job-management/Pool-campus" element={<PoolCampusJobManagement />} />
               <Route path="/job-management/Off-campus" element={<OffCampusJobManagement />} />
               <Route path="/job-management/Job-listings" element={<JobListingJobManagement />} />
-              <Route path="job-management/Internship" element={<InternshipListing />} />
+              <Route path="/job-management/Internship" element={<InternshipListing />} />
 
 
               {/* Accepted college / candidates  */}
