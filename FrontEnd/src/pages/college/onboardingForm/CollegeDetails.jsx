@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Country, State, City } from "country-state-city";
-import { fetchAllCollegesName } from "../../../lib/College_AxiosIntance";
+import { fetchAllCollegesName, registerNewCollege } from "../../../lib/College_AxiosIntance";
 import CreatableSelect from "react-select/creatable";
 
 export default function CollegeDetails({
@@ -12,7 +12,8 @@ export default function CollegeDetails({
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-  const [isRegisteringNewCollege, setIsRegisteringNewCollege] = useState(false);
+  const [isSubmittingCollege, setIsSubmittingCollege] = useState(false);
+  //const [isRegisteringNewCollege, setIsRegisteringNewCollege] = useState(false);
 
   const [existingColleges, setExistingColleges] = useState([]);
   const [isLoadingColleges, setIsLoadingColleges] = useState(false);
@@ -21,11 +22,11 @@ export default function CollegeDetails({
   );
   
   // Track if colleges have been loaded
-  const [collegesLoaded, setCollegesLoaded] = useState(false);
+  //const [collegesLoaded, setCollegesLoaded] = useState(false);
   // Track if dropdown is focused for the first time
-  const [isFirstFocus, setIsFirstFocus] = useState(true);
+  //const [isFirstFocus, setIsFirstFocus] = useState(true);
   // Ref for the select element
-  const selectRef = useRef(null);
+  //const selectRef = useRef(null);
 
   // Generate options for the CreatableSelect
   const locationOptions = useMemo(() => {
@@ -36,6 +37,40 @@ export default function CollegeDetails({
       }))
       ?.sort((a, b) => a.label.localeCompare(b.label));
   }, []);
+
+useEffect(() => {
+    const loadInitialColleges = async () => {
+      setIsLoadingColleges(true);
+      try {
+        const response = await fetchAllCollegesName();
+        // Ensure this handles the array format correctly
+        const collegeData = response?.data || response || [];
+        setExistingColleges(collegeData);
+      } catch (error) {
+        console.error("Failed to load colleges", error);
+      } finally {
+        setIsLoadingColleges(false);
+      }
+    };
+    loadInitialColleges();
+    setCountries(Country.getAllCountries());
+  }, []);
+
+const handleCreateCollege = async (inputValue) => {
+    setIsSubmittingCollege(true);
+    try {
+      const response = await registerNewCollege(inputValue);
+      const newCollege = response.data; // Backend returns { label, value }
+      
+      setExistingColleges((prev) => [...prev, newCollege]);
+      updateFormData("collegeName", newCollege.label);
+    } catch (error) {
+      console.error("Registration error", error);
+      alert("Error registering new college. It might already exist.");
+    } finally {
+      setIsSubmittingCollege(false);
+    }
+  };
 
   useEffect(() => {
     setCountries(Country.getAllCountries());
@@ -79,39 +114,11 @@ export default function CollegeDetails({
     nextStep();
   };
 
-  const loadColleges = async () => {
-    if (isLoadingColleges || collegesLoaded) {
-      return;
-    }
-
-    setIsLoadingColleges(true);
-    setCollegeDropdownMessage("Loading colleges...");
-
-    try {
-      const response = await fetchAllCollegesName();
-      const collegeData = response?.data || response || [];
-
-      if (collegeData.length > 0) {
-        setExistingColleges(collegeData);
-        setCollegesLoaded(true);
-      } else {
-        setCollegeDropdownMessage("No colleges found");
-      }
-    } catch (error) {
-      console.error("Failed to fetch college names:", error);
-      setCollegeDropdownMessage("Error loading colleges. Please try again.");
-    } finally {
-      setIsLoadingColleges(false);
-    }
-  };
+ 
+  
 
   // Handle focus on the dropdown
-  const handleDropdownFocus = () => {
-    if (isFirstFocus) {
-      loadColleges();
-      setIsFirstFocus(false);
-    }
-  };
+
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
@@ -175,67 +182,28 @@ export default function CollegeDetails({
                 <label className="block font-medium mb-3 text-gray-700 text-lg">
                   College/University Name *
                 </label>
-                {!isRegisteringNewCollege ? (
-                  <div>
-                    <select
-                      ref={selectRef}
-                      name="collegeName"
-                      value={safeFormData.collegeName || ""}
-                      onChange={handleChange}
-                      onFocus={handleDropdownFocus}
-                      onClick={handleDropdownFocus}
-                      disabled={isLoadingColleges}
-                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
-                      required
-                    >
-                      <option value="">
-                        {isLoadingColleges 
-                          ? "Loading colleges..." 
-                          : existingColleges.length === 0
-                            ? collegeDropdownMessage
-                            : "Select an existing college"
-                        }
-                      </option>
-                      {existingColleges.map((college) => (
-                        <option key={college.value} value={college.value}>
-                          {college.label}
-                        </option>
-                      ))}
-                    </select>
-                    <p
-                      className="text-base font-medium cursor-pointer hover:underline mt-4 text-center transition-all duration-200"
-                      onClick={() => {
-                        setIsRegisteringNewCollege(true);
-                        updateFormData("collegeName", "");
-                      }}
-                    >
-                      <span className="text-[#3b82f6] hover:text-[#2563eb]">Register New College</span>
-                    </p>
-                  </div>
-                ) : (
-                  <div>
-                    <input
-                      type="text"
-                      name="collegeName"
-                      value={safeFormData.collegeName || ""}
-                      onChange={handleChange}
-                      placeholder="Enter new college or university name"
-                      className="w-full p-4 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg"
-                      required
-                    />
-                    <p
-                      className="text-base font-medium cursor-pointer hover:underline mt-4 text-center transition-all duration-200"
-                      onClick={() => {
-                        setIsRegisteringNewCollege(false);
-                        updateFormData("collegeName", "");
-                      }}
-                    >
-                      <span className="text-[#3b82f6] hover:text-[#2563eb]">
-                        Select Existing College 
-                      </span>
-                    </p>
-                  </div>
-                )}
+               
+                 <CreatableSelect
+  isClearable
+  isDisabled={isLoadingColleges}
+  isLoading={isLoadingColleges}
+  options={existingColleges}
+  onCreateOption={handleCreateCollege} // You need to add the handleCreateCollege function I gave earlier
+  onChange={(opt) => updateFormData("collegeName", opt ? opt.label : "")}
+  value={safeFormData.collegeName ? { label: safeFormData.collegeName, value: safeFormData.collegeName } : null}
+  placeholder="Search or type to add new college..."
+  styles={{
+    control: (base) => ({
+      ...base,
+      borderColor: '#e5e7eb',
+      minHeight: '56px',
+      borderRadius: '0.75rem',
+      backgroundColor: 'rgba(255, 255, 255, 0.7)',
+      fontSize: '1.125rem',
+      '&:hover': { borderColor: '#93c5fd' }
+    }),
+  }}
+/>
               </div>
 
               <div>

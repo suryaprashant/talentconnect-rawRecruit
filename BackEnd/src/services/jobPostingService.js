@@ -98,8 +98,8 @@ export const createPostingService = async (postingData , authUserId) => {
 export const getJobPostingsByJobTypeService = async (jobType, userId, studentProfile = null) => {
     try {
         const postings = await JobPostingTable.find({ jobType })
-            .populate('companyPosted')
-            .sort({ createdAt: -1 });
+            .populate('companyPosted', 'name logo') // Ensure name is populated
+    .lean(); // Use lean for better performance and easier access
 
         const currentDate = new Date();
         

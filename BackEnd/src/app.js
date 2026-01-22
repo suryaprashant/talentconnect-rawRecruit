@@ -116,8 +116,10 @@ import serviceRequests from "./routes/serviceRequestsRoute.js"
 import interviewRoutes from "./routes/interviewRoutes.js";
 import metaRoutes from "./routes/metaRoutes.js"
 import { seedDB } from "./scripts/metaScript.js";
+import collegeRoutes from './routes/collegeNameRoute.js';
 app.use("/api/auth", authRoutes);
 
+app.use('/api/colleges', collegeRoutes);
 
 // admin related auths
 app.use("/api/admin", adminAuth);
