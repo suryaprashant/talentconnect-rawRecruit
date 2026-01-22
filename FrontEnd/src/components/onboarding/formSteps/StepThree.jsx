@@ -419,7 +419,38 @@ export const StepThree = ({
   });
 
   const [collegeSuggestions, setCollegeSuggestions] = useState([]);
+const [dbColleges, setDbColleges] = useState([]);
+const [isLoadingColleges, setIsLoadingColleges] = useState(false);
 
+useEffect(() => {
+  const fetchColleges = async () => {
+    try {
+      const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/colleges/all`);
+      // Ensure data is in { value, label } format
+      const formatted = data.map(c => typeof c === 'string' ? { value: c, label: c } : c);
+      setDbColleges(formatted);
+    } catch (err) {
+      console.error("Error loading colleges from DB", err);
+    }
+  };
+  fetchColleges();
+}, []);
+
+const handleAddCollege = async (name) => {
+  setIsLoadingColleges(true);
+  try {
+    const { data } = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/colleges/register`, { name });
+    // Update local state list so it appears in the dropdown
+    setDbColleges(prev => [...prev, data]);
+    // Set the selected value in the form
+    setLocalFormData(p => ({ ...p, college: data.label }));
+  } catch (err) {
+    console.error("College save failed", err);
+    alert("Could not register college. It might already exist.");
+  } finally {
+    setIsLoadingColleges(false);
+  }
+};
   const generateYearOptions = () => {
     const currentYear = new Date().getFullYear();
     const startYear = currentYear + 5;
@@ -608,73 +639,21 @@ const handleRemoteAdd = async (type, name) => {
           {/* Wider Form Section */}
           <div className="space-y-6">
             {/* College/University Field */}
-            <div>
-              <label htmlFor="college" className="block text-gray-700 font-medium text-sm mb-2">
-                College/University
-              </label>
-              {collegeSuggestions.includes(localFormData.college) ? (
-                <CreatableSelect
-                  isClearable
-                  placeholder="Select or type your college"
-                  options={collegeSuggestions.map((name) => ({
-                    value: name,
-                    label: name,
-                  }))}
-                  value={
-                    localFormData.college
-                      ? { value: localFormData.college, label: localFormData.college }
-                      : null
-                  }
-                  onChange={(selected) =>
-                    setLocalFormData((prev) => ({
-                      ...prev,
-                      college: selected ? selected.value : "",
-                    }))
-                  }
-                  className="mt-2"
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      minHeight: '56px',
-                      borderColor: '#d1d5db',
-                      borderRadius: '12px',
-                      '&:hover': {
-                        borderColor: '#667eea'
-                      }
-                    }),
-                    placeholder: (base) => ({
-                      ...base,
-                      color: '#9ca3af'
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      borderRadius: '12px',
-                      overflow: 'hidden'
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isFocused ? '#667eea10' : 'transparent',
-                      color: state.isFocused ? '#5b21b6' : '#374151',
-                      '&:hover': {
-                        backgroundColor: '#667eea10'
-                      }
-                    })
-                  }}
-                />
-              ) : (
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={localFormData.college}
-                    onChange={(e) =>
-                      setLocalFormData((prev) => ({ ...prev, college: e.target.value }))
-                    }
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
-                    placeholder="Enter your college name"
-                  />
-                </div>
-              )}
-            </div>
+           <div>
+  <label className="block text-gray-700 font-medium text-sm mb-2">College/University</label>
+  <CreatableSelect
+    isClearable
+    isLoading={isLoadingColleges}
+    options={dbColleges}
+    onCreateOption={handleAddCollege} // Uses the new College-only function
+    onChange={(sel) => setLocalFormData(p => ({ ...p, college: sel?.label || "" }))}
+    value={localFormData.college ? { value: localFormData.college, label: localFormData.college } : null}
+    styles={customSelectStyles}
+    placeholder="Search or add your college"
+  />
+</div>
+
+            
 
             {selectedRole === 'student' ? (
               // Student Layout: Degree & Semester side-by-side, Graduation Year on a new line
@@ -875,4 +854,13 @@ const handleRemoteAdd = async (type, name) => {
       </div>
     </div>
   );
+};
+const customSelectStyles = {
+  control: (base, state) => ({
+    ...base,
+    minHeight: '56px',
+    borderRadius: '12px',
+    borderColor: state.isFocused ? '#667eea' : '#d1d5db',
+    boxShadow: state.isFocused ? '0 0 0 3px rgba(102,126,234,0.1)' : 'none',
+  }),
 };

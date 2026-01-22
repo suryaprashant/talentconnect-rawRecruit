@@ -122,11 +122,24 @@ export function getMyApplicationStatus(jobType) {
 }
 
 // get all college names 
-export function fetchAllCollegesName() {
-  return axiosClient.get(`/dropdown/collegeName`)
-    .then(response => response)
-    .catch(error => error);
+// export function fetchAllCollegesName() {
+//   return axiosClient.get(`/dropdown/collegeName`)
+//     .then(response => response)
+//     .catch(error => error);
+// }
+
+export function fetchAllCollegesName (){
+  return axiosClient.get("/api/colleges/all");
 }
+
+//export const fetchAllCollegesName = () => .get("/all");
+
+// ADD the 'export' keyword here
+
+export function registerNewCollege (name){
+  return axiosClient.post("/api/colleges/register", { name });
+}
+//export const registerNewCollege = (name) => API.post("/register", { name });
 
 // get shortlistedCompanies by college
 

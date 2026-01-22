@@ -81,10 +81,7 @@ const JobCard = ({ job }) => {
 
   const role = user?.userType;
 
-  const companyName =
-    job.companyPosted?.companyName ||
-    job.companyPosted?.companyDetails?.companyName ||
-    "Company";
+  const companyName = job?.companyName || "Company";
 
   const logo =
     job.companyPosted?.profileImageUrl ||

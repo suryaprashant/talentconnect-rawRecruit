@@ -481,7 +481,7 @@ if (compact) {
                   Off-Campus Jobs
                 </h1>
                 <p className="text-gray-600 mt-2">
-                  Based on your preferences and profile matching.. 
+                  Based on your preferences and profile matching....
                 </p>
               </div>
             </div>
