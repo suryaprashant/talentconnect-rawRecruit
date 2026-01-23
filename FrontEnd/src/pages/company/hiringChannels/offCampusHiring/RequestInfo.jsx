@@ -7,6 +7,11 @@ import { City } from 'country-state-city';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 
+const toolsOptions = [
+  'Jenkins', 'VS Code', 'Git', 'GitHub', 'Docker', 'Kubernetes', 
+  'Postman', 'Jira', 'AWS', 'Azure', 'GCP', 'Terraform', 'Ansible'
+].map(tool => ({ value: tool, label: tool }));
+
 export default function OffCampusHiringForm({ onBackClick }) {
   
   // const degreeStreamMapping = {
@@ -61,25 +66,33 @@ export default function OffCampusHiringForm({ onBackClick }) {
     contactPerson: { name: '', designation: '', email: '', mobile: '', linkedin: '' },
     tags: [],
     minStudents: '',
+    cgpa: '', 
+  toolsAndPlatforms: [],
   };
 
   const [formData, setFormData] = useState(() => {
-    const savedData = localStorage.getItem('pendingOffCampusRequest');
-    if (!savedData) return initialState;
+  const savedData = localStorage.getItem('pendingOffCampusRequest');
+  if (!savedData) return initialState;
 
-    try {
-      const parsed = JSON.parse(savedData);
+  try {
+    const parsed = JSON.parse(savedData);
 
-      // Convert date strings back to Date objects
-      if (parsed.placementStartDate) parsed.placementStartDate = new Date(parsed.placementStartDate);
-      if (parsed.placementEndDate) parsed.placementEndDate = new Date(parsed.placementEndDate);
-      
-      return parsed;
-    } catch (e) {
-      console.error("Error reviving OffCampus data:", e);
-      return initialState;
-    }
-  });
+    // Convert date strings back to Date objects
+    if (parsed.placementStartDate) parsed.placementStartDate = new Date(parsed.placementStartDate);
+    if (parsed.placementEndDate) parsed.placementEndDate = new Date(parsed.placementEndDate);
+    
+    // --- FIX START: Merge with initialState to ensure new fields exist ---
+    return {
+      ...initialState, // Provides toolsAndPlatforms: [] and cgpa: ''
+      ...parsed        // Overwrites with saved data
+    };
+    // --- FIX END ---
+    
+  } catch (e) {
+    console.error("Error reviving OffCampus data:", e);
+    return initialState;
+  }
+});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [descriptionError, setDescriptionError] = useState("");
@@ -394,6 +407,8 @@ const skillsOptions = useMemo(() => {
         contactPerson: formData.contactPerson,
         minimumStudents: formData.minStudents,
         jobType: "Off-campus",
+        cgpa: parseFloat(formData.cgpa) || 0.0, // Backend stores as Double
+    toolsAndPlatforms: formData.toolsAndPlatforms,
       };
 
       const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/hiring-channels/off-campus`, submissionData, {
@@ -765,7 +780,64 @@ const skillsOptions = useMemo(() => {
                 )}
               </div>
             </div>
+{/* CGPA and Tools/Platforms Row */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {/* CGPA Field */}
+  <div>
+    <label className="block mb-2 font-medium text-sm text-gray-700">
+      Minimum CGPA Required <span className="text-red-500">*</span>
+    </label>
+    <input
+      type="number"
+      name="cgpa"
+      step="0.01"
+      min="0"
+      max="10"
+      value={formData.cgpa}
+      onChange={handleChange}
+      placeholder="e.g. 7.50"
+      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+      required
+    />
+  </div>
 
+  {/* Tools & Platforms Field */}
+  <div>
+    <label className="block mb-2 font-medium text-sm text-gray-700">
+      Tools & Platforms <span className="text-red-500">*</span>
+    </label>
+    <CreatableSelect
+      isMulti
+      options={toolsOptions}
+      value={formData.toolsAndPlatforms.map(t => ({ value: t, label: t }))}
+      onChange={(selected) => setFormData({
+        ...formData, 
+        toolsAndPlatforms: selected ? selected.map(s => s.value) : []
+      })}
+      placeholder="Select tools or type new ones..."
+      styles={{
+        control: (base) => ({
+          ...base,
+          borderColor: '#e5e7eb',
+          borderRadius: '0.5rem',
+          fontSize: '14px',
+          backgroundColor: '#f9fafb',
+        }),
+        multiValue: (base) => ({
+          ...base,
+          backgroundColor: '#667eea15',
+          borderRadius: '9999px',
+        }),
+        multiValueLabel: (base) => ({
+          ...base,
+          color: '#667eea',
+          fontSize: '12px',
+          fontWeight: '500'
+        })
+      }}
+    />
+  </div>
+</div>
             {/* Fifth Row: Tags and Package Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Tags */}
