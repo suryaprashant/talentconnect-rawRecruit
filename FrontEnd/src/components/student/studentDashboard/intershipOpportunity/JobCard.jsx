@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { MapPinIcon, BriefcaseIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "@/context/AuthContext";
 
 const JobCard = ({ job, userType }) => {
+  const { user, loading } = useAuth();
+
   const [isSaved, setIsSaved] = useState(job.isSaved || false);
+
+  if (loading) return null;
+
+  const role = user?.userType;
 
   const toggleSave = (e) => {
     e.preventDefault();
@@ -45,7 +52,7 @@ const JobCard = ({ job, userType }) => {
 
       {/* TITLE + COMPANY */}
       <Link
-        to={`/${localStorage.getItem("selectedRole")}-dashboard/Internship/${job._id}`}
+        to={`/${role}-dashboard/Internship/${job._id}`}
       >
         <h3 className="text-lg font-semibold text-gray-800 hover:text-blue-600">
           {job.jobTitle}
@@ -112,7 +119,7 @@ const JobCard = ({ job, userType }) => {
 
       {/* APPLY BUTTON */}
       <Link
-        to={`/${localStorage.getItem("selectedRole")}-dashboard/Internship/${job._id}`}
+        to={`/${role}-dashboard/Internship/${job._id}`}
         className="block w-full mt-5 py-2 text-center text-white bg-black rounded-md hover:bg-gray-800"
       >
         Apply now

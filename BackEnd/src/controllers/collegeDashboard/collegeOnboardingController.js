@@ -161,7 +161,7 @@ export const submitCollegeOnboarding = async (req, res) => {
     }
 
     const updatedUser = await updateAuthUserService(userId, {
-      userType: "college",
+      //userType: "college",
       onboardingCompleted: true,
       onboardingStep: 6
     })

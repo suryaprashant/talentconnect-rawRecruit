@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { FiMenu, FiBell, FiChevronDown } from 'react-icons/fi';
-import { useAuth } from '@/context/AuthProvider';
+import { useLegacyAuth } from '@/context/AuthProvider';
 import axios from 'axios';
-import Avatar from '../ui/Avatar';
 import NotificationsDropdown from './NotificationDropdown';
 import ProfileSwitchDropdown from '../employer/ProfileSwitchDropdown';
 import StandardProfileDropdown from './ProfileDropdown';
 
 function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
-    const [authuser] = useAuth();
+    const [authuser] = useLegacyAuth();
     const [profileImage, setProfileImage] = useState(null);
     const [loadingImage, setLoadingImage] = useState(true);
 
@@ -155,6 +154,11 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
         return name;
     };
 
+    // Get the first letter of user name for avatar
+    const getUserInitial = () => {
+        return getUserName().charAt(0).toUpperCase();
+    };
+
     return (
         <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 bg-white border-b border-gray-200 shadow-sm">
             <button
@@ -212,7 +216,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
                                                 const parent = e.target.parentElement;
                                                 parent.innerHTML = `
                                                     <div class="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                                                        ${getUserName().charAt(0).toUpperCase()}
+                                                        ${getUserInitial()}
                                                     </div>
                                                 `;
                                             }}
@@ -220,11 +224,11 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
                                     </div>
                                 ) : (
                                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold shadow-sm">
-                                        {getUserName().charAt(0).toUpperCase()}
+                                        {getUserInitial()}
                                     </div>
                                 )}
                                 <span className="hidden ml-2 mr-1 font-medium text-gray-700 md:block">
-                                    {authuser?.user?.name || authuser?.user?.email}
+                                    {getUserName()}
                                 </span>
                                 <FiChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileOpen ? 'transform rotate-180' : ''}`} />
                             </button>

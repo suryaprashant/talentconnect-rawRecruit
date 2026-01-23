@@ -23,10 +23,6 @@ function OffCampusJobs({ compact = false, onJobSelect, selectedJobId, hideSelect
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState('newest');
-  
-  // Modal state
-  const [selectedJob, setSelectedJob] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // State for dropdown visibility
   const [showMainFilter, setShowMainFilter] = useState(false);
@@ -106,6 +102,7 @@ function OffCampusJobs({ compact = false, onJobSelect, selectedJobId, hideSelect
     try {
       setIsLoading(true);
       const response = await getRelaventOffcampusOpportunity();
+      console.log('offcampus',response)
       const fetchedJobs = response.data?.data || [];
       setAllJobs(fetchedJobs);
       setOffCampusJobs(fetchedJobs);
@@ -286,6 +283,13 @@ function OffCampusJobs({ compact = false, onJobSelect, selectedJobId, hideSelect
     if (filters.fullTime) {
       result = result.filter(job => job.jobType === 'Full-time');
     }
+
+    if (sortBy === 'relevance') {
+  // Sort by matchScore descending
+  result.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+} else if (sortBy === 'newest') {
+  result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+}
 
     if (sortBy === 'newest') {
       result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
@@ -543,7 +547,7 @@ if (compact) {
                   Off-Campus Jobs
                 </h1>
                 <p className="text-gray-600 mt-2">
-                  Based on your preferences and profile matching
+                  Based on your preferences and profile matching....
                 </p>
               </div>
             </div>
@@ -1147,25 +1151,22 @@ if (compact) {
           </div>
         </div>
 
-        {/* Job Cards Grid */}
-      <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6 min-h-[600px]">
-        {filteredJobs.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredJobs.map(job => (
-                <div
-                  key={job._id}
-                  className="h-full flex"
-                >
-                  <div className="w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 overflow-hidden hover:shadow-xl hover:shadow-purple-100/50 transition-all duration-300 flex flex-col h-full">
-                    <JobCard 
-                      job={job} 
-                      onClick={handleJobSelect}
-                    />
+        {/* Job Cards */}
+        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6 min-h-[600px]">
+          {filteredJobs.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredJobs.map(job => (
+                  <div
+                    key={job._id}
+                    className="h-full flex transform transition-all duration-200 hover:scale-[1.02]"
+                  >
+                    <div className="w-full" onClick={() => handleJobClick(job._id)}>
+                      <JobCard job={job} />
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
               {/* View All Button */}
               <div className="mt-10 text-center">

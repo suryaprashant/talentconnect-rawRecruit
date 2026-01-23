@@ -4,14 +4,21 @@ import { statusSteps } from '../../../../constants/data.js';
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
 import { getJobDetails } from '@/lib/User_AxiosInstance';
 import { Link } from 'react-router-dom';
+import { useAuth } from "@/context/AuthContext";
+
 
 const OffcampusStatus = () => {
+  const { user, loading } = useAuth();
   const [offcampusJobs, setOffcampusJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  if (loading) return null;
+
+  const role = user?.userType;
 
   const fetchApplication = async () => {
     try {
@@ -646,7 +653,7 @@ const OffcampusStatus = () => {
   {/* Action Button */}
   <div className="mt-auto">
     <Link 
-      to={`/${localStorage.getItem("selectedRole")}-dashboard/Off-campus/${selectedJob?.fullJobDetails?._id || selectedJob.jobId || selectedJob.id}?isApplied=true`} 
+      to={`/${role}-dashboard/Off-campus/${selectedJob?.fullJobDetails?._id || selectedJob.jobId || selectedJob.id}?isApplied=true`} 
       className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#667eea]/40 transition-all duration-300 group"
     >
       View Full Details

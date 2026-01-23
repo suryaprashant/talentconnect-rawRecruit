@@ -9,14 +9,22 @@ import { getCollegeService } from "../../services/collegeService.js";
 import Auth from "../../models/authModel.js";
 
 
+
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
 const sendError = (res, statusCode, message) => res.status(statusCode).json({ message });
+
 
 
 export const getOffCampusPostings = async (req, res) => {
     const userId = req.user._id;
     try {
-        const postings = await getJobPostingsByJobTypeService("Off-campus", userId);
+        // Step 1: Specifically fetch onboarding for the candidate logic
+        const studentProfile = await OnboardingModel.findOne({ userId }).lean();
+
+        // Step 2: Pass the profile as a 3rd argument. 
+        // Other controllers that don't pass this won't trigger the filter.
+        const postings = await getJobPostingsByJobTypeService("Off-campus", userId, studentProfile);
+        
         sendResponse(res, 200, { data: postings });
     } catch (error) {
         sendError(res, 500, "Internal server error");

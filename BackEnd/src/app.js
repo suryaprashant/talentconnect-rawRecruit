@@ -63,6 +63,7 @@ import eventParticipation from "./routes/eventParticipationRoute.js";
 import EmployerDashboard from "./routes/employerDahsboardRoute.js";
 import Company from "./routes/companyRoute.js";
 import Jobs from "./routes/jobsRoute.js"
+import Internship from "./routes/internshipRoute.js";
 
 // RawRecruit APIs
 import serviceRequestRouter from "./routes/servicerequestRoute.js";
@@ -113,7 +114,12 @@ import casestudyHostingRoute from './routes/hostingManagement/casestudyHostingRo
 import workshopHostingRoute from './routes/hostingManagement/workshopHostingRoute.js';
 import serviceRequests from "./routes/serviceRequestsRoute.js"
 import interviewRoutes from "./routes/interviewRoutes.js";
+import metaRoutes from "./routes/metaRoutes.js"
+import { seedDB } from "./scripts/metaScript.js";
+import collegeRoutes from './routes/collegeNameRoute.js';
 app.use("/api/auth", authRoutes);
+
+app.use('/api/colleges', collegeRoutes);
 
 // admin related auths
 app.use("/api/admin", adminAuth);
@@ -123,6 +129,7 @@ app.use("/api/admin/job-n-drive", jobDriveManagement);
 app.use("/api/admin/application", applicationManagement);
 app.use("/api/admin/servicerequest", serviceRequestManagement);
 
+app.use('/api/meta', metaRoutes);
 // admin relatd auth ends
 
 app.use("/api", student_onboardingroutes);
@@ -153,7 +160,7 @@ app.use("/api/student-dashboard", studentDashboardRoute);
 app.use("/api/employer/hiring-channel", EmployerHiringChannelRoute);
 
 app.use("/jobs", Jobs);
-// app.use("/internship", Internship);
+app.use("/internship", Internship);
 app.use("/application", Application);
 app.use("/college/application",CollegeApplication);
 app.use("/hackathon", Hackathon);
@@ -216,7 +223,7 @@ const startServer = async () => {
     // Connect to database FIRST
     await Connection();
     console.log('Database connected successfully');
-    
+    await seedDB();
     // THEN start the server
     server.listen(PORT, () => {
       console.log(`Server is running on PORT: ${PORT}`);

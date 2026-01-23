@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthProvider'; 
+import { useLegacyAuth } from '@/context/AuthProvider'; 
 
 function AcceptInvitationModal({ invitation, onClose, onSuccess }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const [authuser, setAuthuser] = useAuth(); 
+    const [authuser, setAuthuser] = useLegacyAuth(); 
 
     const handleAccept = async (workMode) => {
         setLoading(true);

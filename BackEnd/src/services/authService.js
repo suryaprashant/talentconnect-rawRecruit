@@ -27,10 +27,19 @@ export const getCollegeCount = async () => {
 };
 
 // Total number of candidates (students / freshers / professionals etc.)
-export const getCandidateCount = async () => {
+{/*export const getCandidateCount = async () => {
   return await Auth.countDocuments({
     userType: {
       $in: ["candidate", "student", "fresher", "professional", "employer"],
+    },
+  });
+};*/}
+
+//v2 release changes
+export const getCandidateCount = async () => {
+  return await Auth.countDocuments({
+    userType: {
+      $in: [ "student", "fresher", "professional", "employer"],
     },
   });
 };
@@ -39,7 +48,7 @@ export const getCandidateCount = async () => {
 export const getStatusCountByUserType = async (userType = null) => {
   try {
     const validUserTypes = [
-      "candidate",
+      
       "student",
       "fresher",
       "professional",
@@ -127,7 +136,9 @@ export const upsertLinkedInAuthUser = async ({
       user.name = user.name || name;
       user.profileImage = user.profileImage || profileImage;
       user.authProvider = "linkedin";
-      user.userType = user.userType || userType;
+      if (!user.userType) {
+        user.userType = userType;
+      }
       await user.save();
       isNewUser = false;
     } else {
@@ -267,7 +278,7 @@ const generateRandomString = (length) => {
 
 export const generateLinkedInAuthUrl = ({ userType }) => {
   const validUserTypes = [
-    "candidate",
+    "student",
     "fresher",
     "professional",
     "company",

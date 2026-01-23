@@ -86,14 +86,14 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // NEW: Added useNavigate
-import { useAuth } from '../../../../context/AuthProvider'; // NEW: Added useAuth
+import { useLegacyAuth } from '../../../../context/AuthProvider'; // NEW: Added useAuth
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
 
 export default function OnCampusHiring() {
   const navigate = useNavigate(); // NEW: Added navigate
-  const [authUser] = useAuth(); // NEW: Added auth context
+  const [authUser] = useLegacyAuth(); // NEW: Added auth context
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
   const [formData, setFormData] = useState({

@@ -141,3 +141,28 @@ export const getCountOfTotalUsers= async (req, res, next) =>{
     });
   }
 }
+
+export const getMe = async (req, res) => {
+  try {
+    // req.user is set by auth middleware
+    const user = req.user;
+
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    return res.status(200).json({
+      user: {
+        _id: user._id,
+        email: user.email,
+        userType: user.userType,
+        onboardingCompleted: user.onboardingCompleted,
+        authProvider: user.authProvider,
+        status: user.status,
+      },
+    });
+  } catch (error) {
+    console.error("getMe error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

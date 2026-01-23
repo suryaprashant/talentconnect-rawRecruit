@@ -73,7 +73,7 @@ export const createCompanyProfile = async (req, res) => {
 
 
     const updatedUser = await updateAuthUserService(userId, {
-      userType: "company", // Changed from "college" to "company"
+      //userType: "company", // Changed from "college" to "company"
       onboardingCompleted: true,
       onboardingStep: 6
     })

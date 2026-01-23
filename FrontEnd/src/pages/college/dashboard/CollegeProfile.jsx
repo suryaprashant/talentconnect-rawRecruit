@@ -3,7 +3,7 @@ import { Globe, Users, Calendar, Upload, Edit2, Building2, MapPin, ExternalLink,
 import CollegeDescription from './CollegeDescription';
 import ProfileForm from './ProfileForm';
 import axios from 'axios';
-import { useAuth } from '@/context/AuthProvider';
+import { useLegacyAuth } from '@/context/AuthProvider';
 
 // Configure axios to send cookies with requests
 axios.defaults.withCredentials = true;
@@ -17,7 +17,7 @@ export default function CollegeProfile() {
   const [onboardingData, setOnboardingData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { auth } = useAuth();
+  const { auth } = useLegacyAuth();
 
   const profileInputRef = useRef(null);
   const backgroundInputRef = useRef(null);

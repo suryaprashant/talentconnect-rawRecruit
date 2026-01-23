@@ -1,6 +1,7 @@
 import CompanyProfile from '../models/companyDashboard/companyProfileModel.js';
 import Auth from "../models/authModel.js";
 import collegeProfileModel from "../models/collegeDashboard/collegeProfileModel.js"
+import EmployerOnboarding from '../models/employerDashboard/employerOnboardingModel.js';
 
 export async function createProfileService(profileData) {
     try {
@@ -9,8 +10,21 @@ export async function createProfileService(profileData) {
 
         return { success: true, msg: "profile created" };
     } catch (error) {
-        console.log("Error: ", error.message);
-        throw new Error("Failed to create profile");
+      console.error("Employer onboarding save failed:", error);
+      throw error; // let controller see mongoose error
+    }
+}
+
+//if we want to use above service we need to just change the casing of enums as per company profile modal
+export async function createEmployerProfileService(profileData) {
+    try {
+        const newProfileData = new EmployerOnboarding(profileData);
+        await newProfileData.save();
+
+        return { success: true, msg: "profile created" };
+    } catch (error) {
+      console.error("Employer onboarding save failed:", error);
+      throw error; // let controller see mongoose error
     }
 }
 

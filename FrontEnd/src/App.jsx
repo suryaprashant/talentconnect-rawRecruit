@@ -220,7 +220,7 @@ import EmployerOffCampus from "./pages/employer/hiringChannels/offCampusHiring/O
 import EmployerLayout from "./components/employer/employerDashboard/EmployerLayout";
 import EmployerPoolLayout from "./components/employer/employerDashboard/poolCampus/EmployerPoolLayout";
 import ChatLayout from "./home/chatLayout";
-import { useAuth } from "./context/AuthProvider";
+import { useLegacyAuth } from "./context/AuthProvider";
 import EmployerProfile from "./pages/employer/dashboard/CompanyProfile";
 import LinkedInCallback from "./pages/auth/LinkedInCallback";
 import InvitationsPage from "./pages/InvitationsPage";
@@ -271,7 +271,7 @@ import OffCampusLayout from "./components/student/studentDashboard/offCampusList
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
-  const [authUser] = useAuth();
+  const [authUser] = useLegacyAuth();
 
   return (
     <Routes>
@@ -526,7 +526,7 @@ function AppRoutes() {
               <Route path="/job-management/Pool-campus" element={<PoolCampusJobManagement />} />
               <Route path="/job-management/Off-campus" element={<OffCampusJobManagement />} />
               <Route path="/job-management/Job-listings" element={<JobListingJobManagement />} />
-              <Route path="job-management/Internship" element={<InternshipListing />} />
+              <Route path="/job-management/Internship" element={<InternshipListing />} />
 
 
               {/* Accepted college / candidates  */}

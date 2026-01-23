@@ -470,7 +470,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
                   value={formData.profileType || ""}
                   onChange={handleProfileTypeChange}
                   onBlur={handleFieldBlur}
-                  required
+                  
                   className="appearance-none w-full p-4 bg-transparent border-none focus:outline-none text-gray-700 pr-12 text-base" /* Increased padding and text size */
                 >
                   <option value="" disabled className="text-gray-400">Select a profile type</option>

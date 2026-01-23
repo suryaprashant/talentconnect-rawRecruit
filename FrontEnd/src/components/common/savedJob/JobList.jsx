@@ -3,13 +3,15 @@ import { Link } from "react-router-dom";
 import { Heart } from 'lucide-react';
 import { UnsaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/context/AuthContext';
 
 const JobList = ({ jobs }) => {
+  const { user, loading } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("date");
 
-  const selectedRole = localStorage.getItem("selectedRole");
-  const isCompany = selectedRole === "company" || selectedRole === "employer";
+  const role = user?.userType;
+  const isCompany = role === "company" || role === "employer";
 
 
   // Function to get initials from name
@@ -168,7 +170,7 @@ const JobList = ({ jobs }) => {
               return (
                 <Link
                   key={job?.job?._id}
-                  to={`/${selectedRole}-dashboard/${job?.jobType}/${job?.job?._id}?isSaved=true`}
+                  to={`/${role}-dashboard/${job?.jobType}/${job?.job?._id}?isSaved=true`}
                   className="group block"
                 >
                   

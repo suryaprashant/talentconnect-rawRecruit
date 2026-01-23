@@ -6,6 +6,7 @@ import "./index.css";
 import { BrowserRouter } from "react-router-dom"; // Keep this
 import { RoleProvider } from "./context/RoleContext/RoleContext";
 import { AuthProvider } from "./context/AuthProvider.jsx";
+import { AuthContextRole } from "./context/AuthContext.jsx";
 import { SocketProvider } from "./context/SocketContext.jsx";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Toaster } from 'react-hot-toast';
@@ -22,6 +23,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   // <StrictMode>
   <>
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <AuthContextRole>
       <BrowserRouter> {/* Keep BrowserRouter here */}
         <RoleProvider>
           <AuthProvider>
@@ -32,6 +34,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           </AuthProvider>
         </RoleProvider>
       </BrowserRouter>
+      </AuthContextRole>
     </GoogleOAuthProvider>
   </>
   // </StrictMode>

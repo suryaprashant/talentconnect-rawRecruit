@@ -2,12 +2,12 @@ import React, { useEffect } from "react";
 import Left from "./Leftpart/Left";
 import Right from "./Rightpart/Right";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthProvider";
+import { useLegacyAuth } from "../context/AuthProvider";
 import { Toaster } from "react-hot-toast";
 import useConversation from "../statemanage/useConversation";
 
 function ChatLayout() {
-    const [authUser] = useAuth();
+    const [authUser] = useLegacyAuth();
     const location = useLocation();
     const { selectedConversation } = useConversation();
 

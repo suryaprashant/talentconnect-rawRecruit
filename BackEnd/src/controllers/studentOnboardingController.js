@@ -37,8 +37,7 @@ export const submitOnboardingForm = async (req, res) => {
     }
     res.status(201).json({
       message: "Form submitted successfully!",
-      profileType: req.body.profileType,
-      userType: result.finalUserTypeForResponse,
+      userType: req.user.userType,
       user: result.updatedUser,
       onboarding: result.updatedOnboarding
     });
