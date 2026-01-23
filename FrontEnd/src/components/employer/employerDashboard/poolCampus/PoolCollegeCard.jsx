@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Users, MapPin } from 'lucide-react';
+import { Heart, Home, MapPin } from 'lucide-react';
 
 const pastelColors = [
   // Purple/Indigo gradient variants (primary theme colors)
-  "bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fd]/30",
+  "bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30",
   "bg-gradient-to-r from-[#c4b5fd]/20 to-[#a78bfa]/20 text-[#6d28d9] border border-[#c4b5fd]/30",
   "bg-gradient-to-r from-[#818cf8]/20 to-[#a5b4fc]/20 text-[#4f46e5] border border-[#818cf8]/30",
   
@@ -75,8 +75,174 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
 
   if (!college) return null;
 
-  const collegeName = college.name || 'Pool Campus';
-  const stableColor = getStableColor(college.id || collegeName);
+  // Extract pool campus name from EmployerPoolDetailsModal structure
+  const getPoolCampusName = () => {
+    // From EmployerPoolDetailsModal: college.collegePosted?.collegeUniversityDetails?.collegeName
+    if (college.collegePosted?.collegeUniversityDetails?.collegeName) {
+      return college.collegePosted.collegeUniversityDetails.collegeName;
+    }
+    if (college.name) {
+      return college.name;
+    }
+    if (college.collegeName) {
+      return college.collegeName;
+    }
+    return 'Pool Campus';
+  };
+
+  // Extract degree/college type
+  const getDegreeType = () => {
+    if (college.degreeType) {
+      return college.degreeType;
+    }
+    if (college.collegeType) {
+      return college.collegeType;
+    }
+    if (college.collegePosted?.collegeUniversityDetails?.collegeType) {
+      return college.collegePosted.collegeUniversityDetails.collegeType;
+    }
+    return 'Pool Campus';
+  };
+
+  // Extract location from EmployerPoolDetailsModal structure
+  const getLocation = () => {
+    // From EmployerPoolDetailsModal: posting.location (array) or collegePosted?.collegeUniversityDetails
+    if (college.location && Array.isArray(college.location)) {
+      return college.location.join(', ');
+    }
+    if (college.location) {
+      return college.location;
+    }
+    
+    const collegeDetails = college.collegePosted?.collegeUniversityDetails || college.collegeUniversityDetails || {};
+    const locationParts = [
+      collegeDetails.city,
+      collegeDetails.state,
+      collegeDetails.country
+    ].filter(Boolean);
+    
+    if (locationParts.length > 0) {
+      return locationParts.join(', ');
+    }
+    
+    return 'Multiple Locations';
+  };
+
+  // Extract logo from EmployerPoolDetailsModal structure
+  const getLogo = () => {
+    if (college.collegePosted?.profileImageUrl) {
+      return college.collegePosted.profileImageUrl;
+    }
+    if (college.logo) {
+      return college.logo;
+    }
+    if (college.profileImage) {
+      return college.profileImage;
+    }
+    return '';
+  };
+
+  // Extract package from EmployerPoolDetailsModal structure
+  const getPackage = () => {
+    if (college.avgPackage) {
+      return college.avgPackage;
+    }
+    if (college.packageDetails?.totalCTC) {
+      return college.packageDetails.totalCTC;
+    }
+    if (college.minPackage?.amount) {
+      return college.minPackage.amount;
+    }
+    return null;
+  };
+
+  // Extract description from EmployerPoolDetailsModal structure
+  const getDescription = () => {
+    if (college.description) {
+      return college.description;
+    }
+    if (college.collegePosted?.collegeUniversityDetails?.description) {
+      return college.collegePosted.collegeUniversityDetails.description;
+    }
+    return 'Pool campus connecting multiple colleges with shared placement drives and recruitment opportunities.';
+  };
+
+  // Extract specializations/streams from EmployerPoolDetailsModal structure
+  const getSpecializations = () => {
+    if (college.specializations && Array.isArray(college.specializations)) {
+      return college.specializations;
+    }
+    if (college.studentStreams && Array.isArray(college.studentStreams)) {
+      return college.studentStreams;
+    }
+    return [];
+  };
+
+  // Extract badges from EmployerPoolDetailsModal structure
+  const getBadges = () => {
+    if (college.badges && Array.isArray(college.badges)) {
+      return college.badges;
+    }
+    // Pool campus specific badges
+    return ['Multiple Colleges', 'Shared Drives', 'Centralized'];
+  };
+
+  // Extract college type from EmployerPoolDetailsModal structure
+  const getCollegeType = () => {
+    if (college.type) {
+      return college.type;
+    }
+    if (college.collegeType) {
+      return college.collegeType;
+    }
+    return 'Pool Campus';
+  };
+
+  // Extract stats from EmployerPoolDetailsModal structure
+  const getStats = () => {
+    if (college.stats) {
+      return college.stats;
+    }
+    
+    const stats = {};
+    if (college.numberOfStudent) {
+      stats['Students'] = college.numberOfStudent;
+    }
+    if (college.numberOfOpenings) {
+      stats['Openings'] = college.numberOfOpenings;
+    }
+    if (college.totalStudents) {
+      stats['Total Students'] = college.totalStudents;
+    }
+    
+    return Object.keys(stats).length > 0 ? stats : null;
+  };
+
+  // Extract tags from EmployerPoolDetailsModal structure
+  const getTags = () => {
+    if (college.tags && Array.isArray(college.tags)) {
+      return college.tags;
+    }
+    if (college.jobRoles && Array.isArray(college.jobRoles)) {
+      return college.jobRoles;
+    }
+    return [];
+  };
+
+  // Now use the extractor functions
+  const collegeName = getPoolCampusName();
+  const degreeType = getDegreeType();
+  const location = getLocation();
+  const logo = getLogo();
+  const avgPackage = getPackage();
+  const description = getDescription();
+  const specializations = getSpecializations();
+  const collegeBadges = getBadges();
+  const collegeType = getCollegeType();
+  const stats = getStats();
+  const tags = getTags();
+
+  const stableColor = getStableColor(college._id || collegeName);
 
   // Get initials for fallback
   const getInitials = (name = '') => {
@@ -98,7 +264,7 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
     }
   };
 
-  const handleDetailsClick = (e) => {
+  const handleContactClick = (e) => {
     e.stopPropagation();
     
     // Use onClick prop if provided
@@ -107,30 +273,13 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
     }
   };
 
-  // Format location
-  const formatLocation = () => 
-    college.location || 'Multiple Locations';
-
   // Format package details
   const formatPackage = () => {
-    if (college.avgPackage) {
-      return `₹${college.avgPackage.toLocaleString()}`;
+    if (avgPackage) {
+      return `₹${avgPackage.toLocaleString()}`;
     }
     return 'Not Disclosed';
   };
-
-  // Get description text
-  const getDescription = () => {
-    return college.description || 
-           'Pool campus connecting multiple colleges with shared placement drives and recruitment opportunities.';
-  };
-
-  // Pool campus badges
-  const poolBadges = college.badges || [];
-  const defaultBadges = ['Multiple Colleges', 'Shared Drives', 'Centralized'];
-  const displayBadges = poolBadges.length > 0 ? poolBadges : defaultBadges;
-
-  const description = getDescription();
 
   return (
     <div 
@@ -143,10 +292,10 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
     >
       {/* TOP SECTION - Pastel background */}
       <div className={`${stableColor} p-4 flex-1 flex flex-col min-h-[280px]`}>
-        {/* Pool Campus Type + Save */}
+        {/* Degree Type + Save */}
         <div className="flex justify-between items-start mb-2">
           <span className="text-xs bg-white/90 text-gray-700 px-3 py-1 rounded-full font-medium">
-            POOL CAMPUS
+            {degreeType}
           </span>
 
           <button
@@ -171,10 +320,10 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
               {collegeName}
             </h3>
 
-            {/* Pool Campus Badges */}
-            {displayBadges.length > 0 && (
+            {/* College Badges */}
+            {collegeBadges.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
-                {displayBadges.slice(0, 3).map((badge, index) => {
+                {collegeBadges.slice(0, 3).map((badge, index) => {
                   const badgeColors = [
                     "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700",
                     "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700",
@@ -193,45 +342,62 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
                     </span>
                   );
                 })}
-                {displayBadges.length > 3 && (
+                {collegeBadges.length > 3 && (
                   <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-1 rounded-full border">
-                    +{displayBadges.length - 3}
+                    +{collegeBadges.length - 3}
                   </span>
                 )}
               </div>
             )}
           </div>
 
-          {/* Pool Campus Logo */}
+          {/* College Logo */}
           <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
-            {college.logo && !imageError ? (
+            {logo && !imageError ? (
               <img 
-                src={college.logo} 
+                src={logo} 
                 alt={`${collegeName} logo`}
                 className="w-12 h-12 object-cover"
                 onError={() => setImageError(true)}
               />
             ) : (
               <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                <Users className="h-6 w-6 text-white" />
+                <Home className="h-6 w-6 text-white" />
               </div>
             )}
           </div>
         </div>
 
-        {/* Pool Campus Type Badge */}
-        {college.type && (
+        {/* College Type Badge */}
+        {collegeType && (
           <div className="mb-3">
             <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
-              {Array.isArray(college.type) ? college.type.join(', ') : college.type}
+              {Array.isArray(collegeType) ? collegeType.join(', ') : collegeType}
             </span>
           </div>
         )}
 
-        {/* Stats */}
-        {college.stats && (
+        {/* Streams/Specializations */}
+        {specializations.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
-            {Object.entries(college.stats).slice(0, 3).map(([key, value], index) => (
+            {specializations.slice(0, 3).map((specialization, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-blue-100 text-blue-800 border border-blue-300 rounded-full text-xs"
+              >
+                {specialization}
+              </span>
+            ))}
+            {specializations.length > 3 && (
+              <span className="px-2 py-1 text-xs text-gray-600">+{specializations.length - 3}</span>
+            )}
+          </div>
+        )}
+
+        {/* Stats */}
+        {stats && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {Object.entries(stats).slice(0, 3).map(([key, value], index) => (
               <span
                 key={index}
                 className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
@@ -242,23 +408,10 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
           </div>
         )}
 
-        {/* Pool Specific Stats */}
-        <div className="flex flex-wrap gap-2 mb-3">
-          <span className="px-3 py-1 bg-blue-100 text-blue-800 border border-blue-300 rounded-full text-xs">
-            50+ Colleges
-          </span>
-          <span className="px-3 py-1 bg-green-100 text-green-800 border border-green-300 rounded-full text-xs">
-            5000+ Students
-          </span>
-          <span className="px-3 py-1 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-full text-xs">
-            ₹8L+ Avg Package
-          </span>
-        </div>
-
         {/* Tags */}
-        {college.tags?.length > 0 && (
+        {tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
-            {college.tags.slice(0, 3).map((tag, index) => (
+            {tags.slice(0, 3).map((tag, index) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-gray-100 text-gray-800 border border-gray-300 rounded-full text-xs"
@@ -266,8 +419,8 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
                 {tag}
               </span>
             ))}
-            {college.tags.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{college.tags.length - 3}</span>
+            {tags.length > 3 && (
+              <span className="px-2 py-1 text-xs text-gray-600">+{tags.length - 3}</span>
             )}
           </div>
         )}
@@ -284,25 +437,25 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
       <div className="p-4 bg-white border-t">
         <div className="flex justify-between items-center">
           <div>
+            {/* Average Package */}
+            <p className="font-semibold text-gray-900 text-sm">
+              {formatPackage()} avg
+            </p>
+
             {/* Location */}
-            <div className="flex items-center gap-1 text-gray-700 text-xs">
-              <MapPin className="h-4 w-4 text-gray-500" />
+            <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
+              <MapPin className="w-4 h-4 text-gray-500" />
               <span className="line-clamp-1 max-w-[120px]">
-                {formatLocation()}
+                {location}
               </span>
             </div>
-            
-            {/* Contact Info */}
-            <p className="font-semibold text-gray-900 text-sm mt-1">
-              Contact Pool Campus
-            </p>
           </div>
 
           <button
-            onClick={handleDetailsClick}
+            onClick={handleContactClick}
             className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
           >
-            Details
+            Contact
           </button>
         </div>
       </div>

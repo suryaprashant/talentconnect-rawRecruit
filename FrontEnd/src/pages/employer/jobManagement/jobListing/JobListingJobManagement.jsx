@@ -157,91 +157,6 @@ export default function EmployerJobListing() {
               </p>
             </div>
           </div>
-
-          {/* Tabs */}
-          <div className="flex gap-1 mt-6 bg-gradient-to-r from-gray-50 to-white p-1 rounded-xl border border-gray-200">
-            <button
-              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === 'All Jobs' 
-                ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-              onClick={() => setActiveTab('All Jobs')}
-            >
-              All Jobs ({jobs?.length || 0})
-            </button>
-            <button
-              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === 'Published' 
-                ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-              onClick={() => setActiveTab('Published')}
-            >
-              Published
-            </button>
-            <button
-              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === 'Drafts' 
-                ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-              onClick={() => setActiveTab('Drafts')}
-            >
-              Drafts
-            </button>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-6">
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            <div className="relative flex-grow">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
-                placeholder="Search by name or email"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-
-            <button
-              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 ${showFilters 
-                ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
-                : 'bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-              }`}
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter className="h-4 w-4" />
-              Filters
-            </button>
-
-            <div className="text-sm text-gray-500">
-              Showing {startIndex + 1}-{Math.min(endIndex, filteredJobs?.length)} of {filteredJobs?.length}
-            </div>
-          </div>
-
-          {/* Filters Panel */}
-          {showFilters && (
-            <div className="mt-4 p-4 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-gray-900">Filters</h3>
-                <button
-                  onClick={() => setShowFilters(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Add filter options here if needed */}
-                <div className="text-sm text-gray-500 text-center p-4">
-                  Filter options will appear here
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Jobs Table */}
@@ -252,7 +167,7 @@ export default function EmployerJobListing() {
               <div className="col-span-4">Job Title</div>
               <div className="col-span-2">Status</div>
               <div className="col-span-2">Deadline</div>
-              <div className="col-span-2 text-center">Applications</div>
+              <div className="col-span-2 text-center">New Applications</div>
               <div className="col-span-2 text-center">Actions</div>
             </div>
           </div>
@@ -281,17 +196,22 @@ export default function EmployerJobListing() {
                 >
                   <div className="grid grid-cols-12 gap-4 items-center">
                     {/* Job Title */}
-                    <div className="col-span-4">
-                      <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
-                        {job?.jobTitle}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Briefcase className="h-3 w-3 text-gray-400" />
-                        <span className="text-sm text-gray-500">
-                          {job?.workMode} • {job?.location[0]}
-                        </span>
-                      </div>
-                    </div>
+<div className="col-span-4">
+  <Link
+    to={`/company-dashboard/preview/Internship/${job._id}?isApplied=true`}
+    className="group cursor-pointer block"
+  >
+    <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors break-words whitespace-normal">
+      {job?.jobTitle}
+    </h3>
+    <div className="flex items-center gap-2 mt-1">
+      <Briefcase className="h-3 w-3 text-gray-400 flex-shrink-0" />
+      <span className="text-sm text-gray-500 break-words">
+        {job?.workMode} • {job?.location?.[0] || 'N/A'}
+      </span>
+    </div>
+  </Link>
+</div>
 
                     {/* Status */}
                     <div className="col-span-2">

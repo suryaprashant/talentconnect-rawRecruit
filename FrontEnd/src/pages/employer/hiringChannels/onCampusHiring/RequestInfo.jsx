@@ -2499,7 +2499,7 @@ export default function RequestInfo() {
                 onClick={handleSubmit} 
                 className="px-6 py-2.5 text-sm bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:shadow-[#667eea]/30 focus:outline-none focus:ring-2 focus:ring-[#667eea]/50 transition-all duration-200"
               >
-                Registerb
+                Register
               </button>
             </div>
           </div>
