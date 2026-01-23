@@ -252,12 +252,12 @@ const showNewApplication = (job) => {
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
           {/* Table Header */}
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-            <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
+            <div className="grid grid-cols-10 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
               <div className="col-span-3">Job Title</div>
-              <div className="col-span-2">Status</div>
+              {/* <div className="col-span-2">Status</div> */}
               <div className="col-span-2">Deadline</div>
               <div className="col-span-1 text-center">Views</div>
-              <div className="col-span-1 text-center">Applications</div>
+              <div className="col-span-1 text-center">New Applications</div>
               <div className="col-span-3 text-center">Actions</div>
             </div>
           </div>
@@ -282,23 +282,23 @@ const showNewApplication = (job) => {
                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                   <div className="grid grid-cols-12 gap-4 items-center">
                     {/* Job Title */}
-                    <div className="col-span-3">
-                      <div 
-                        onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}
-                        className="group cursor-pointer"
-                      >
-                        <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors line-clamp-1">
-                          {job?.jobRoles?.map((title, ind) => title).join(', ')}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Briefcase className="h-3 w-3 text-gray-400" />
-                          <span className="text-sm text-gray-500">{job?.workMode}</span>
-                          <span className="text-gray-300">•</span>
-                          <MapPin className="h-3 w-3 text-gray-400" />
-                          <span className="text-sm text-gray-500 capitalize">{job?.location[0]}</span>
-                        </div>
-                      </div>
-                    </div>
+<div className="col-span-3">
+  <div 
+    onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}
+    className="group cursor-pointer"
+  >
+    <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
+      {job?.jobRoles?.map((title, ind) => title).join(', ')}
+    </h3>
+    <div className="flex items-center gap-2 mt-1">
+      <Briefcase className="h-3 w-3 text-gray-400" />
+      <span className="text-sm text-gray-500">{job?.workMode}</span>
+      <span className="text-gray-300">•</span>
+      <MapPin className="h-3 w-3 text-gray-400" />
+      <span className="text-sm text-gray-500 capitalize">{job?.location[0]}</span>
+    </div>
+  </div>
+</div>
 
                     {/* Status */}
                     <div className="col-span-2">

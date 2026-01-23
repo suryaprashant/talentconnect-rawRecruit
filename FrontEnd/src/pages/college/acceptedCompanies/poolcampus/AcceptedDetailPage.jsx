@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { Calendar, MapPin, FileText, Users, ArrowUpRight, User, Mail, Phone, Link, Briefcase, DollarSign, Target, ClipboardList } from 'lucide-react';
 import { format, isValid } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
+import useConversation from '@/statemanage/useConversation.js';
+import { conversationWithCollege } from '@/lib/College_AxiosIntance.js';
+import toast from 'react-hot-toast';
 
 const DetailRow = ({ icon: Icon, label, value }) => {
     if (!value || (Array.isArray(value) && value.length === 0)) return null;
@@ -25,6 +29,10 @@ const DetailRow = ({ icon: Icon, label, value }) => {
 
 const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onShortlist, onReject }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false); // Add this state
+    
+    const navigate = useNavigate(); // Add this
+    const { setSelectedConversation } = useConversation(); // Add this
 
     // Debug logging to see what data we're receiving
     console.log("College Application:", collegeApplication);
@@ -48,6 +56,50 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onSh
             console.log("Action error: ", error);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    // Add message button logic
+    const handleMessageClick = async (e) => {
+        e.stopPropagation();
+        setIsProcessing(true);
+        
+        try {
+            // Get the college's user ID from the application
+            const userId = collegeApplication?.applicant?._id || collegeApplication?.applicant?.userId;
+            
+            if (!userId) {
+                toast.error('Cannot start chat: User ID not found');
+                return;
+            }
+            
+            const response = await conversationWithCollege(userId);
+            if (response.data) {
+                const conversationUser = {
+                    _id: userId,
+                    name: collegeApplication?.applicant?.collegeUniversityDetails?.collegeName || 'Unknown College',
+                    email: collegeApplication?.applicant?.placementCoordinatorDetails?.officialEmail || '',
+                    profileImage: collegeApplication?.applicant?.profileImage || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+                    userType: 'college',
+                    fullname: collegeApplication?.applicant?.collegeUniversityDetails?.collegeName || 'Unknown College'
+                };
+
+                console.log("Setting conversation for direct chat:", conversationUser);
+
+                setSelectedConversation(conversationUser);
+
+                setTimeout(() => {
+                    navigate('/chat-application');
+                }, 100);
+
+            } else {
+                toast.error('Failed to create conversation');
+            }
+        } catch (error) {
+            console.error('Error starting chat:', error);
+            toast.error('Error starting conversation');
+        } finally {
+            setIsProcessing(false);
         }
     };
 
@@ -295,6 +347,21 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onSh
                     } disabled:opacity-50`}
                 >
                     {currentStatus === 'Rejected' ? 'Already Rejected' : (isSubmitting ? 'Processing...' : 'Reject Drive')}
+                </button>
+                
+                <button 
+                    onClick={handleMessageClick}
+                    disabled={isProcessing || isSubmitting}
+                    className={`flex items-center justify-center flex-1 py-2 font-medium rounded-md transition-colors duration-200 ${
+                        (isProcessing || isSubmitting) 
+                            ? 'opacity-50 cursor-not-allowed bg-white border border-gray-300 text-blue-500' 
+                            : 'bg-white border border-gray-300 text-blue-500 hover:bg-gray-100'
+                    }`}
+                >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                    </svg>
+                    {isProcessing ? 'Processing...' : 'Message'}
                 </button>
             </div>
         </div>

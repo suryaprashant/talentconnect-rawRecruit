@@ -1082,13 +1082,13 @@ const [formData, setFormData] = useState(() => {
   <label className="block mb-2 font-medium text-sm text-gray-700">Hiring Timeline</label>
   <div className="space-y-3">
     <div className="relative">
-      <label className="block mb-1 text-xs text-gray-600">Online Test Date</label>
+      <label className="block mb-1 text-xs text-gray-600">Test Date</label>
       <div className="relative">
         <DatePicker
           selected={formData.onlineTestDate ? new Date(formData.onlineTestDate) : null}
           onChange={(date) => handleDateChange(date, 'onlineTestDate')}
           dateFormat="dd-MM-yyyy"
-          placeholderText="Online test date"
+          placeholderText="Test date"
           className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
           wrapperClassName="w-full"
         />

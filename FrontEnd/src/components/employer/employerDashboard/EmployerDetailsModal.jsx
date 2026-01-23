@@ -1,100 +1,84 @@
 import { useState, useEffect, useRef } from 'react';
 import { 
-  Send, 
-  Calendar, 
   X, 
   Building2, 
   MapPin, 
-  Globe, 
-  Mail, 
-  Phone, 
-  Linkedin, 
+  Calendar, 
   Users, 
   Briefcase,
-  Star,
+  DollarSign,
+  Award,
+  Mail, 
+  Phone, 
+  Linkedin,
+  Send,
   Share2,
   Save,
   CheckCircle,
-  Award,
-  DollarSign,
-  ChevronLeft
+  FileText,
+  Download,
+  ExternalLink,
+  Home,
+  GraduationCap,
+  Star,
+  Clock
 } from 'lucide-react';
-import { format } from 'date-fns';
-import { ApplyForPoolcampusOppurtunity, SaveOppurtunity, submitAlternateDates } from '@/lib/Company_AxiosInstance.js';
 import toast from 'react-hot-toast';
+import { ApplyForOncampusOppurtunity, SaveOppurtunity, submitAlternateDates } from '@/lib/Company_AxiosInstance.js';
 import { viewed } from '@/lib/User_AxiosInstance';
-import useConversation from '@/statemanage/useConversation';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
+import useConversation from '@/statemanage/useConversation';
+import { format } from 'date-fns';
 
-const formatDateSafe = (dateString) => {
-  if (!dateString) return 'N/A';
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      return 'N/A';
-    }
-    return format(date, 'MMM d, yyyy');
-  } catch (err) {
-    return 'N/A';
-  }
-};
-
-const formatDateForInput = (dateString) => {
-  if (!dateString) return '';
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      return '';
-    }
-    return format(date, 'yyyy-MM-dd');
-  } catch (err) {
-    return '';
-  }
-};
-
-const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsApplied, isSaved: propIsSaved }) => {
-  console.log("🎯 PoolCampusDetailModal - Props received:", {
-    isOpen,
-    collegeExists: !!college,
-    collegeId: college?._id,
-    collegeName: college?.collegePosted?.collegeUniversityDetails?.collegeName
-  });
-  
-  if (!isOpen) {
-    console.log("🎯 Modal NOT rendering because isOpen is false");
-    return null;
-  }
-  
-  console.log("🎯 Modal SHOULD be rendering now");
+const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
+  const modalRef = useRef(null);
   
   const [posting, setPosting] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
   const [showAlternateDateModal, setShowAlternateDateModal] = useState(false);
   const [selectedStartDate, setSelectedStartDate] = useState('');
   const [selectedEndDate, setSelectedEndDate] = useState('');
   const [dateError, setDateError] = useState('');
-  
-  // College Details Modal State
   const [showCollegeModal, setShowCollegeModal] = useState(false);
-
-  const modalRef = useRef(null);
   
-  const { setSelectedConversation } = useConversation();  
+  const { setSelectedConversation } = useConversation();
 
+  // Format date safely
+  const formatDateSafe = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'N/A';
+      return format(date, 'MMM d, yyyy');
+    } catch (err) {
+      return 'N/A';
+    }
+  };
+
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '';
+      return format(date, 'yyyy-MM-dd');
+    } catch (err) {
+      return '';
+    }
+  };
+
+  // Fetch posting details
   const fetchPostingDetails = async () => {
     if (!college?._id) return;
     try {
       setLoading(true);
       setError(null);
-      // Assuming college data is already complete
       setPosting(college);
       await viewed(college._id);
     } catch (err) {
       console.error("Failed to fetch posting details:", err);
-      setError('Could not load the requested resource. It might have been removed.');
+      setError('Could not load the requested resource.');
     } finally {
       setLoading(false);
     }
@@ -140,14 +124,14 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onClose]);
 
+  // Handle share
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: `Pool Campus Opportunity at ${posting?.collegePosted?.collegeUniversityDetails?.collegeName}`,
-        text: `Check out this pool-campus opportunity at ${posting?.collegePosted?.collegeUniversityDetails?.collegeName}!`,
+        title: `${posting?.lookingFor || 'Job'} at ${posting?.collegePosted?.collegeUniversityDetails?.collegeName}`,
+        text: `Check out this opportunity for a ${posting?.lookingFor || 'job'} at ${posting?.collegePosted?.collegeUniversityDetails?.collegeName}!`,
         url: window.location.href,
-      })
-        .catch((error) => console.log('Error sharing', error));
+      }).catch((error) => console.log('Error sharing', error));
     } else {
       navigator.clipboard.writeText(window.location.href)
         .then(() => toast.success('Link copied to clipboard!'))
@@ -155,6 +139,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
     }
   };
 
+  // Handle save
   const handleSave = async (jobId) => {
     try {
       const response = await SaveOppurtunity(jobId, posting?.jobType);
@@ -166,51 +151,46 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
     }
   };
 
+  // Handle apply
   const handleApply = async (jobId) => {
     try {
-      const response = await ApplyForPoolcampusOppurtunity(jobId); 
-      if (response.data?.success === true) {
-        toast.success("Applied");
-        onClose(); // Close modal after successful application
-      } else {
-        toast.error(response?.response?.data?.msg || "Failed to apply");
-      }
+      const response = await ApplyForOncampusOppurtunity(jobId);
+      if (response.data?.success === true) toast.success("Applied");
+      else toast.error(response?.response?.data?.msg || "Failed to apply");
     } catch (error) {
       console.log("Error: ", error);
-      toast.error(`Something went wrong`);
+      toast.error("Something went wrong");
     }
   };
 
+  // Handle message click
   const handleMessageClick = async () => {
-    if (!posting?.collegePosted?.userId) {
-      toast.error("Coordinator ID is missing. Cannot start chat.");
+    if (!posting?.contactPerson?.email) {
+      toast.error("Contact person data is missing.");
       return;
     }
 
-    const collegeUserId = posting.collegePosted.userId;
-    const collegeDetails = posting.collegePosted;
-    const collegeName = collegeDetails?.collegeUniversityDetails?.collegeName || 'College';
-
+    const contactPerson = posting.contactPerson;
     setIsSubmitting(true);
+    
     try {
-      const response = await conversationWithCollege(collegeUserId);
-      
+      const response = await conversationWithCollege(contactPerson._id || contactPerson.email);
       if (response.data) {
         const conversationUser = {
-          _id: collegeUserId,
-          name: collegeName,
-          email: collegeDetails?.placementCoordinatorDetails?.officialEmail || '',
-          profileImage: collegeDetails?.profileImage || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+          _id: contactPerson._id || contactPerson.email,
+          name: contactPerson.name || 'Placement Officer',
+          email: contactPerson.email || '',
+          profileImage: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
           userType: 'college',
-          fullname: collegeName
+          fullname: contactPerson.name || 'Placement Officer',
+          designation: contactPerson.designation || 'Placement Officer'
         };
 
         setSelectedConversation(conversationUser);
-        onClose(); // Close modal before navigating
+        onClose();
         setTimeout(() => {
           window.location.href = '/chat-application';
         }, 100);
-
       } else {
         toast.error('Failed to create conversation');
       }
@@ -222,6 +202,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
     }
   };
 
+  // Alternate date modal handlers
   const handleAlternateDateClick = () => {
     setSelectedStartDate('');
     setSelectedEndDate('');
@@ -285,6 +266,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
     }
   };
 
+  // Alternate Date Modal Component
   const AlternateDateModal = () => {
     if (!showAlternateDateModal) return null;
 
@@ -303,7 +285,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
           
           <div className="mb-6">
             <p className="text-sm text-gray-600 mb-4">
-              Please select your preferred start and end dates for the pool-campus drive:
+              Please select your preferred start and end dates for the on-campus drive.
             </p>
             
             <div className="space-y-4">
@@ -365,30 +347,20 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
     );
   };
 
-  // COLLEGE DETAILS MODAL
+  // College Details Modal Component
   const CollegeDetailsModal = () => {
     if (!showCollegeModal || !posting?.collegePosted) return null;
 
     const collegeDetails = posting.collegePosted;
     const collegeUniDetails = collegeDetails.collegeUniversityDetails || {};
-    const collegeName = collegeUniDetails.collegeName || 'College';
-    const collegeType = collegeUniDetails.collegeType || 'Not Specified';
-    const universityName = collegeUniDetails.universityName || 'Not Specified';
-    const city = collegeUniDetails.city || 'Not Specified';
-    const state = collegeUniDetails.state || 'Not Specified';
-    const country = collegeUniDetails.country || 'Not Specified';
-    const pincode = collegeUniDetails.pincode || 'Not Specified';
-    const establishedYear = collegeUniDetails.establishedYear;
-    const collegeWebsite = collegeDetails.profileAchievements?.collegeWebsite;
-
+    
     return (
       <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div className="p-6">
-            {/* Header */}
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">{collegeName}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">{collegeUniDetails.collegeName || 'College'}</h2>
               </div>
               <button
                 onClick={() => setShowCollegeModal(false)}
@@ -398,62 +370,40 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
               </button>
             </div>
 
-            {/* College Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="space-y-3">
                 <div className="flex items-center text-gray-700">
                   <Building2 className="w-4 h-4 mr-3 text-blue-500" />
                   <span className="font-medium">College Type:</span>
-                  <span className="ml-2">{collegeType || 'N/A'}</span>
+                  <span className="ml-2">{collegeUniDetails.collegeType || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
                   <Calendar className="w-4 h-4 mr-3 text-blue-500" />
                   <span className="font-medium">Established:</span>
-                  <span className="ml-2">{establishedYear || 'N/A'}</span>
+                  <span className="ml-2">{collegeUniDetails.establishedYear || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
                   <Building2 className="w-4 h-4 mr-3 text-blue-500" />
                   <span className="font-medium">University:</span>
-                  <span className="ml-2">{universityName || 'N/A'}</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
-                  <span className="font-medium">City:</span>
-                  <span className="ml-2">{city || 'N/A'}</span>
+                  <span className="ml-2">{collegeUniDetails.universityName || 'N/A'}</span>
                 </div>
               </div>
               
               <div className="space-y-3">
                 <div className="flex items-center text-gray-700">
                   <MapPin className="w-4 h-4 mr-3 text-blue-500" />
+                  <span className="font-medium">City:</span>
+                  <span className="ml-2">{collegeUniDetails.city || 'N/A'}</span>
+                </div>
+                <div className="flex items-center text-gray-700">
+                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
                   <span className="font-medium">State:</span>
-                  <span className="ml-2">{state || 'N/A'}</span>
+                  <span className="ml-2">{collegeUniDetails.state || 'N/A'}</span>
                 </div>
                 <div className="flex items-center text-gray-700">
                   <MapPin className="w-4 h-4 mr-3 text-blue-500" />
                   <span className="font-medium">Country:</span>
-                  <span className="ml-2">{country || 'N/A'}</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <MapPin className="w-4 h-4 mr-3 text-blue-500" />
-                  <span className="font-medium">Pincode:</span>
-                  <span className="ml-2">{pincode || 'N/A'}</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <Globe className="w-4 h-4 mr-3 text-blue-500" />
-                  <span className="font-medium">Website:</span>
-                  {collegeWebsite ? (
-                    <a 
-                      href={collegeWebsite.startsWith('http') ? collegeWebsite : `https://${collegeWebsite}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="ml-2 text-blue-600 hover:underline"
-                    >
-                      Visit Website
-                    </a>
-                  ) : (
-                    <span className="ml-2">Not provided</span>
-                  )}
+                  <span className="ml-2">{collegeUniDetails.country || 'N/A'}</span>
                 </div>
               </div>
             </div>
@@ -496,12 +446,8 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
 
   const collegeDetails = posting.collegePosted;
   const collegeName = collegeDetails?.collegeUniversityDetails?.collegeName || 'the College';
-  const formattedStartDate = formatDateSafe(posting.startDate);
-  const formattedEndDate = formatDateSafe(posting.endDate);
-
-  // Use props or posting data for applied/saved status
-  const isApplied = propIsApplied || posting.isApplied || false;
-  const isSaved = propIsSaved || posting.isSaved || false;
+  const isApplied = posting.isApplied || false;
+  const isSaved = posting.isSaved || false;
 
   return (
     <>
@@ -509,7 +455,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
         ref={modalRef}
         className="relative w-full h-full bg-white rounded-l-2xl overflow-hidden flex flex-col"
       >
-        {/* Modal Header - Fixed height, no scroll */}
+        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-gray-50 to-white flex-shrink-0">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
@@ -524,11 +470,11 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
               <div className="flex flex-wrap items-center gap-2 mt-1">
                 <span className="inline-flex items-center text-xs text-gray-600 bg-gradient-to-r from-gray-50 to-white px-2 py-1 rounded-lg">
                   <Calendar className="h-3 w-3 mr-1" />
-                  {formattedStartDate} - {formattedEndDate}
+                  {formatDateSafe(posting.startDate)} - {formatDateSafe(posting.endDate)}
                 </span>
                 {/* <span className="inline-flex items-center text-xs text-gray-600 bg-gradient-to-r from-gray-50 to-white px-2 py-1 rounded-lg">
                   <MapPin className="h-3 w-3 mr-1" />
-                  {posting.location?.join(', ') || 'Location not specified'}
+                  {Array.isArray(posting.location) ? posting.location.join(', ') : posting.location || 'Location not specified'}
                 </span> */}
               </div>
             </div>
@@ -562,18 +508,18 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
           </div>
         </div>
 
-        {/* Main Content Area - Single scroll container */}
+        {/* Main Content */}
         <div className="flex-1 overflow-y-auto">
-          {/* Statistics Cards - Fixed height, no scroll */}
+          {/* Statistics Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 p-6">
-            {/* Min Package Card */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 md:p-4 min-h-[80px] md:min-h-[90px]">
+            {/* Min Package */}
+            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 md:p-4 min-h-[80px]">
               <div className="flex items-center justify-between h-full">
                 <div className="min-w-0">
-                  <p className="text-xs md:text-sm text-gray-600 mb-1">Minimum Package</p>
+                  <p className="text-xs md:text-sm text-gray-600 mb-1">Min Package</p>
                   <p className="text-sm md:text-base lg:text-lg font-bold text-[#667eea] leading-snug">
-                    {posting.packageDetails?.totalCTC 
-                      ? `${posting.packageDetails.currency || ''} ${posting.packageDetails.totalCTC.toLocaleString()}`
+                    {posting.minPackage?.amount 
+                      ? `${posting.minPackage.currency || ''} ${posting.minPackage.amount.toLocaleString()}`
                       : 'N/A'
                     }
                   </p>
@@ -584,28 +530,13 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
               </div>
             </div>
             
-            {/* Students to Place Card */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 md:p-4 min-h-[80px] md:min-h-[90px]">
-              <div className="flex items-center justify-between h-full">
-                <div className="min-w-0">
-                  <p className="text-xs md:text-sm text-gray-600 mb-1">Students to Place</p>
-                  <p className="text-sm md:text-base lg:text-lg font-bold text-green-600 leading-snug">
-                    {posting.noOfplacedStudents || 'N/A'}
-                  </p>
-                </div>
-                <div className="p-2 md:p-3 bg-gradient-to-br from-green-100 to-green-50 rounded-lg flex-shrink-0 ml-2">
-                  <Users className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
-                </div>
-              </div>
-            </div>
-            
-            {/* Employment Type Card */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 md:p-4 min-h-[80px] md:min-h-[90px]">
+            {/* Employment Type */}
+            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 md:p-4 min-h-[80px]">
               <div className="flex items-center justify-between h-full">
                 <div className="min-w-0">
                   <p className="text-xs md:text-sm text-gray-600 mb-1">Employment Type</p>
                   <p className="text-xs md:text-sm font-medium text-purple-600 line-clamp-2 leading-tight">
-                    {posting.employmentType?.join(', ') || 'N/A'}
+                    {posting.employmentType || 'N/A'}
                   </p>
                 </div>
                 <div className="p-2 md:p-3 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg flex-shrink-0 ml-2">
@@ -614,23 +545,38 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
               </div>
             </div>
             
-            {/* Looking For Card */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 md:p-4 min-h-[80px] md:min-h-[90px]">
+            {/* Job Type */}
+            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 md:p-4 min-h-[80px]">
               <div className="flex items-center justify-between h-full">
                 <div className="min-w-0">
-                  <p className="text-xs md:text-sm text-gray-600 mb-1">Looking For</p>
+                  <p className="text-xs md:text-sm text-gray-600 mb-1">Job Type</p>
+                  <p className="text-xs md:text-sm font-medium text-green-600 line-clamp-2 leading-tight">
+                    {posting.jobType || 'N/A'}
+                  </p>
+                </div>
+                <div className="p-2 md:p-3 bg-gradient-to-br from-green-100 to-green-50 rounded-lg flex-shrink-0 ml-2">
+                  <Award className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
+                </div>
+              </div>
+            </div>
+            
+            {/* Work Mode */}
+            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 md:p-4 min-h-[80px]">
+              <div className="flex items-center justify-between h-full">
+                <div className="min-w-0">
+                  <p className="text-xs md:text-sm text-gray-600 mb-1">Work Mode</p>
                   <p className="text-xs md:text-sm font-medium text-yellow-600 line-clamp-2 leading-tight">
-                    {posting.lookingFor || 'N/A'}
+                    {posting.workMode || 'N/A'}
                   </p>
                 </div>
                 <div className="p-2 md:p-3 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg flex-shrink-0 ml-2">
-                  <Award className="h-4 w-4 md:h-5 md:w-5 text-yellow-600" />
+                  <Clock className="h-4 w-4 md:h-5 md:w-5 text-yellow-600" />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Main Content - Scrollable within the main container */}
+          {/* Main Content Sections */}
           <div className="space-y-4 md:space-y-6 px-6 pb-6">
             {/* About This Opportunity */}
             <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">
@@ -638,35 +584,9 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
                 About This Opportunity
               </h3>
               {posting.description ? (
-                <ul className="list-disc list-inside space-y-2 text-gray-700 leading-relaxed text-sm md:text-base">
-                  {(() => {
-                    const sentences = posting.description
-                      .replace(/\n+/g, ' ')
-                      .split('.')
-                      .map(s => s.trim())
-                      .filter(Boolean);
-
-                    const bullets = [];
-                    let buffer = '';
-
-                    sentences.forEach(sentence => {
-                      if (sentence.length < 25) {
-                        buffer += sentence + ' ';
-                      } else {
-                        bullets.push((buffer + sentence).trim());
-                        buffer = '';
-                      }
-                    });
-
-                    if (buffer.trim()) {
-                      bullets.push(buffer.trim());
-                    }
-
-                    return bullets.map((point, idx) => (
-                      <li key={idx}>{point}.</li>
-                    ));
-                  })()}
-                </ul>
+                <p className="text-gray-700 leading-relaxed text-sm md:text-base">
+                  {posting.description}
+                </p>
               ) : (
                 <p className="text-gray-500 text-sm md:text-base">No description provided.</p>
               )}
@@ -675,7 +595,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
             {/* Contact Information */}
             <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">
               <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">
-                Point of Contact - Campus Placement
+                Point of Contact - Campus Placement Officer
               </h3>
               <div className="space-y-4">
                 <div className="flex items-start gap-3 md:gap-4">
@@ -744,144 +664,80 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
               </div>
             </div>
 
-            {/* Tentative Dates */}
-            {posting.proposedSchedule && (
+            {/* Student Batch Details */}
+            {posting?.studentStreams?.length > 0 && (
               <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">
-                  Tentative Date to held Pool-Campus
-                </h3>
-                <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-                  <div className="bg-gradient-to-r from-blue-50 to-white border border-blue-100 rounded-lg p-3 md:p-4">
-                    <p className="text-xs md:text-sm text-gray-600 mb-1">Proposed Start Date</p>
-                    <p className="font-medium text-gray-900 text-sm md:text-base">{formatDateSafe(posting.proposedSchedule?.startDate)}</p>
-                  </div>
-                  <div className="bg-gradient-to-r from-blue-50 to-white border border-blue-100 rounded-lg p-3 md:p-4">
-                    <p className="text-xs md:text-sm text-gray-600 mb-1">Proposed End Date</p>
-                    <p className="font-medium text-gray-900 text-sm md:text-base">{formatDateSafe(posting.proposedSchedule?.endDate)}</p>
-                  </div>
-                  <div className="bg-gradient-to-r from-blue-50 to-white border border-blue-100 rounded-lg p-3 md:p-4">
-                    <p className="text-xs md:text-sm text-gray-600 mb-1">Preferred Mode</p>
-                    <p className="font-medium text-gray-900 text-sm md:text-base">{posting.proposedSchedule?.preferredMode || 'N/A'}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Preferred Company Types */}
-            {posting.companyType?.length > 0 && (
-              <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">
-                  Preferred Company Types
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {posting.companyType.map((type, index) => (
-                    <span 
-                      key={index} 
-                      className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-lg hover:from-[#667eea]/10 hover:to-[#764ba2]/10 hover:border-[#667eea]/30 transition-all duration-200"
-                    >
-                      {type}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* College Student Details */}
-            {(posting.roundDetails?.length > 0 || posting.studentStreams?.length > 0) && (
-              <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">
-                  College Student Details
+                  Student Batch Details
                 </h3>
                 <div className="overflow-x-auto">
-                  {posting.roundDetails?.length > 0 ? (
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gradient-to-r from-gray-50 to-white">
-                        <tr>
-                          <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">S.No.</th>
-                          <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Branch</th>
-                          <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">No. of Students</th>
-                          <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Skills</th>
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gradient-to-r from-gray-50 to-white">
+                      <tr>
+                        <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">S.No.</th>
+                        <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Branch</th>
+                        <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">No. of Students</th>
+                        <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Skills</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {posting.studentStreams.map((stream, index) => (
+                        <tr key={index} className="hover:bg-gray-50/50 transition-colors">
+                          <td className="px-3 py-2 md:px-4 md:py-3 text-sm font-medium text-gray-900">{index + 1}</td>
+                          <td className="px-3 py-2 md:px-4 md:py-3 text-sm text-gray-700">{stream || 'N/A'}</td>
+                          <td className="px-3 py-2 md:px-4 md:py-3 text-sm text-gray-700">
+                            {posting?.numberOfStudent?.[index] || 'N/A'}
+                          </td>
+                          <td className="px-3 py-2 md:px-4 md:py-3 text-sm text-gray-700">
+                            {posting?.skills?.[index] || 'N/A'}
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {posting.roundDetails
-                          .filter(round => round.branch && round.students && round.skills)
-                          .map((round, index) => (
-                            <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                              <td className="px-3 py-2 md:px-4 md:py-3 text-sm font-medium text-gray-900">{index + 1}</td>
-                              <td className="px-3 py-2 md:px-4 md:py-3 text-sm text-gray-700">{round.branch || 'N/A'}</td>
-                              <td className="px-3 py-2 md:px-4 md:py-3 text-sm text-gray-700">{round.students || 'N/A'}</td>
-                              <td className="px-3 py-2 md:px-4 md:py-3 text-sm text-gray-700">{round.skills || 'N/A'}</td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
-                  ) : (
-                    posting.studentStreams?.length > 0 && posting.numberOfStudent?.length > 0 && (
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gradient-to-r from-gray-50 to-white">
-                          <tr>
-                            <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">S.No.</th>
-                            <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Branch</th>
-                            <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">No. of Students</th>
-                            <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Skills</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                          {posting.studentStreams
-                            .filter((stream, index) => 
-                              stream && 
-                              posting.numberOfStudent?.[index] && 
-                              (posting.roundSkills?.[index] || posting.skills?.[index])
-                            )
-                            .map((stream, index) => (
-                              <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                                <td className="px-3 py-2 md:px-4 md:py-3 text-sm font-medium text-gray-900">{index + 1}</td>
-                                <td className="px-3 py-2 md:px-4 md:py-3 text-sm text-gray-700">{stream || 'N/A'}</td>
-                                <td className="px-3 py-2 md:px-4 md:py-3 text-sm text-gray-700">
-                                  {posting.numberOfStudent?.[index] || 'N/A'}
-                                </td>
-                                <td className="px-3 py-2 md:px-4 md:py-3 text-sm text-gray-700">
-                                  {posting.roundSkills?.[index] || posting.skills?.[index] || 'N/A'}
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
-                    )
-                  )}
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}
 
-            {/* Amenities Required */}
-            {posting.amenitiesRequired?.length > 0 && (
-              <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">
-                  Amenities Required
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {posting.amenitiesRequired.map((amenity, index) => (
-                    <span 
-                      key={index} 
-                      className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-lg hover:from-[#667eea]/10 hover:to-[#764ba2]/10 hover:border-[#667eea]/30 transition-all duration-200"
-                    >
-                      {amenity}
-                    </span>
-                  ))}
+            {/* Proposed Schedule */}
+            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">
+              <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">
+                Proposed Schedule
+              </h3>
+              <p className="text-gray-700 mb-4 text-sm md:text-base">
+                We have several available recruitment drive slots for the 2025 graduating batch.
+                We believe our students align well with your hiring requirements and would be an excellent fit for your company.
+                Our campus is equipped with state-of-the-art infrastructure and has a strong record of successful placement drives.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <p className="font-medium mb-1 text-sm md:text-base">Preferred Drive Date:</p>
+                  <p className="text-gray-700 text-sm md:text-base">{formatDateSafe(posting?.startDate)}</p>
+                </div>
+                <div>
+                  <p className="font-medium mb-1 text-sm md:text-base">Alternative Dates:</p>
+                  <p className="text-gray-700 text-sm md:text-base">{formatDateSafe(posting?.endDate)}</p>
+                </div>
+                <div>
+                  <p className="font-medium mb-1 text-sm md:text-base">Preferred Mode:</p>
+                  <p className="text-gray-700 text-sm md:text-base">{posting?.workMode || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="font-medium mb-1 text-sm md:text-base">Time Slots Available:</p>
+                  <p className="text-gray-700 text-sm md:text-base">Full day (9:00 AM - 5:00 PM)</p>
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
 
-        {/* Modal Footer - Fixed at bottom, no scroll */}
+        {/* Footer */}
         <div className="border-t p-6 bg-gray-50 flex-shrink-0">
           <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 md:gap-4">
             <div className="flex flex-wrap gap-2 md:gap-3">
               <button
                 onClick={handleMessageClick}
-                disabled={isSubmitting || !posting?.collegePosted?.userId}
+                disabled={isSubmitting || !posting?.contactPerson?.email}
                 className="inline-flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-[#667eea] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
               >
                 <Send size={14} className="md:size-4" />
@@ -894,7 +750,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
                 className="inline-flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-700 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-sm md:text-base"
               >
                 <Calendar size={14} className="md:size-4" />
-                <span className="hidden sm:inline">Suggest Alternate Date</span>
+                <span className="hidden sm:inline">Alternate Date</span>
                 <span className="sm:hidden">Date</span>
               </button>
             </div>
@@ -919,4 +775,4 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
   );
 };
 
-export default PoolCampusDetailModal;
+export default EmployerDetailsModal;

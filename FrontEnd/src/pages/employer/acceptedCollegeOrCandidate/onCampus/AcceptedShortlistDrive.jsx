@@ -304,7 +304,7 @@ export default function OnCampusJobManagement() {
               <div className="col-span-3">Work Locations</div>
               <div className="col-span-2">End Date</div>
               <div className="col-span-1 text-center">Views</div>
-              <div className="col-span-1 text-center">Applications</div>
+              <div className="col-span-1 text-center">New Applications</div>
               <div className="col-span-2 text-center">Actions</div>
             </div>
           </div>

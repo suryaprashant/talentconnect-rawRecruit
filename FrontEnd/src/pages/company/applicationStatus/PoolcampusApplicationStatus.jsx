@@ -211,215 +211,431 @@
 
 
 import { useEffect, useState } from 'react';
-import { Search, MapPin, Clock, Calendar, Briefcase, Users, CheckCircle } from 'lucide-react';
+import { Search, MapPin, Clock, Calendar, Briefcase, Users, CheckCircle, XCircle, ArrowRight, GraduationCap } from 'lucide-react';
 import { statusSteps } from '../../../constants/data.js';
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
-import { Link } from 'react-router-dom';
+import { getPoolCampusJobById } from '@/lib/College_AxiosIntance';
+import { getRegisteredColleges } from '@/lib/Company_AxiosInstance';
+import PoolCampusDetailModal from '@/components/company/employerDashboard/poolCampus/PoolDetailModal';
+
+const poolCampusStatusSteps = ["Applied", "Shortlisted", "Accepted"];
 
 export default function PoolcampusApplicationStatus() {
   const [poolJobs, setPoolJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalCollege, setModalCollege] = useState(null);
+
+  // Add this helper function at the top of your component
+const extractCollegeName = (job) => {
+  if (!job) return "College";
+  
+  // Try from extracted collegeName first
+  if (job.collegeName && job.collegeName !== "College") {
+    return job.collegeName;
+  }
+  
+  // Fallback to fullJobDetails if available
+  const jobDetails = job.fullJobDetails;
+  if (!jobDetails) return "College";
+  
+  // Try every possible path
+  const possiblePaths = [
+    jobDetails.collegeName,
+    jobDetails.collegePosted?.collegeName,
+    jobDetails.collegePosted?.name,
+    jobDetails.collegePosted?.collegeUniversityDetails?.collegeName,
+    jobDetails.collegePosted?.collegeDetails?.collegeName,
+    jobDetails.collegePosted?.universityDetails?.collegeName,
+    jobDetails.postedBy?.collegeName,
+    jobDetails.postedBy?.name,
+    jobDetails.companyPosted?.companyDetails?.companyName,
+    jobDetails.title,
+    jobDetails.name
+  ];
+  
+  for (const path of possiblePaths) {
+    if (path && typeof path === 'string' && path.trim() !== '') {
+      return path;
+    }
+  }
+  
+  return "College";
+};
+
+// Also add for degree
+const extractDegree = (job) => {
+  if (!job) return "Various Streams";
+  
+  if (job.degree && job.degree !== "Various Streams") {
+    return job.degree;
+  }
+  
+  const jobDetails = job.fullJobDetails;
+  if (!jobDetails) return "Various Streams";
+  
+  if (Array.isArray(jobDetails.studentStreams) && jobDetails.studentStreams.length > 0) {
+    return jobDetails.studentStreams.join(", ");
+  }
+  if (Array.isArray(jobDetails.degree) && jobDetails.degree.length > 0) {
+    return jobDetails.degree.join(", ");
+  }
+  if (Array.isArray(jobDetails.degreeType) && jobDetails.degreeType.length > 0) {
+    return jobDetails.degreeType.join(", ");
+  }
+  
+  return "Various Streams";
+};
 
   const fetchApplication = async () => {
-    try {
-      const response = await getUserApplicationStatus("Pool-campus");
-      const rawData = response?.data?.data || [];
-
-      console.log("🔍 POOL CAMPUS - Raw API response:", rawData);
-      
-      if (rawData.length > 0) {
-        const firstItem = rawData[0];
-        console.log("🔍 First item structure:", firstItem);
-        console.log("🔍 jobDetails structure:", firstItem.jobDetails);
-        console.log("🔍 collegeDetails structure:", firstItem.collegeDetails);
-        console.log("🔍 postedByDetails structure:", firstItem.postedByDetails);
-      }
-
-      const normalized = rawData.map((item) => {
-        const jobDetails = item.jobDetails?.[0] || {};
-        const collegeDetails = item.collegeDetails?.[0] || {};
-        
-        let collegeName = "College/University";
-        if (collegeDetails?.collegeUniversityDetails?.collegeName) {
-          collegeName = collegeDetails.collegeUniversityDetails.collegeName;
-        } else if (collegeDetails?.collegeName) {
-          collegeName = collegeDetails.collegeName;
-        } else if (jobDetails?.collegeName) {
-          collegeName = jobDetails.collegeName;
-        }
-        
-        let jobTitle = "Pool Campus Drive";
-        if (jobDetails?.lookingFor) {
-          jobTitle = jobDetails.lookingFor;
-        }
-        else if (jobDetails?.eventName || jobDetails?.driveName) {
-          jobTitle = jobDetails.eventName || jobDetails.driveName;
-        }
-        else if (jobDetails?.designation) {
-          jobTitle = jobDetails.designation;
-        }
-        else if (jobDetails?.jobTitle) {
-          jobTitle = jobDetails.jobTitle;
-        }
-        else if (jobDetails?.role) {
-          jobTitle = jobDetails.role;
-        }
-        else if (!jobDetails?.lookingFor && !jobDetails?.designation) {
-          const degree = Array.isArray(jobDetails?.degree) ? jobDetails.degree[0] : 
-                        jobDetails?.qualification || jobDetails?.education;
-          
-          const batch = jobDetails?.batch || 
-                       jobDetails?.academicYear || 
-                       jobDetails?.graduationYear;
-          
-          if (degree && batch) {
-            jobTitle = `${degree} ${batch} Recruitment`;
-          } else if (degree) {
-            jobTitle = `${degree}`;
-          } else if (batch) {
-            jobTitle = `Batch ${batch} Campus Drive`;
-          } else {
-            jobTitle = `${collegeName} Campus Recruitment`;
-          }
-        }
-        
-        let location = "Location not specified";
-        if (jobDetails?.venue) {
-          location = jobDetails.venue;
-        }
-        else if (jobDetails?.location) {
-          if (Array.isArray(jobDetails.location)) {
-            location = jobDetails.location[0] || "Location not specified";
-          } else {
-            location = jobDetails.location;
-          }
-        }
-        else if (jobDetails?.collegeLocation) {
-          location = jobDetails.collegeLocation;
-        }
-        else if (jobDetails?.jobLocation) {
-          location = jobDetails.jobLocation;
-        }
-        else if (collegeDetails?.collegeUniversityDetails?.collegeLocation) {
-          location = collegeDetails.collegeUniversityDetails.collegeLocation;
-        }
-        
-        let companyLogo = null;
-        if (collegeDetails?.collegeUniversityDetails?.logo) {
-          companyLogo = collegeDetails.collegeUniversityDetails.logo;
-        }
-        else if (collegeDetails?.logo) {
-          companyLogo = collegeDetails.logo;
-        }
-        else if (collegeDetails?.profileImage) {
-          companyLogo = collegeDetails.profileImage;
-        }
-        
-        let skills = [];
-        if (Array.isArray(jobDetails?.skills)) {
-          skills = jobDetails.skills;
-        } else if (Array.isArray(jobDetails?.skillsRequired)) {
-          skills = jobDetails.skillsRequired;
-        } else if (jobDetails?.skills) {
-          skills = jobDetails.skills.split(',').map(skill => skill.trim());
-        }
-        
-        let degree = "Any Degree";
-        if (Array.isArray(jobDetails?.degree) && jobDetails.degree.length > 0) {
-          degree = jobDetails.degree.join(", ");
-        } else if (jobDetails?.qualification) {
-          degree = jobDetails.qualification;
-        } else if (jobDetails?.education) {
-          degree = jobDetails.education;
-        } else if (jobDetails?.degreeRequired) {
-          degree = jobDetails.degreeRequired;
-        }
-        
-        let employmentType = "Campus Placement";
-        if (jobDetails?.employmentType) {
-          if (Array.isArray(jobDetails.employmentType)) {
-            employmentType = jobDetails.employmentType.join(", ");
-          } else {
-            employmentType = jobDetails.employmentType;
-          }
-        } else if (jobDetails?.jobType) {
-          employmentType = jobDetails.jobType;
-        }
-        
-        let description = jobDetails?.description || jobDetails?.jobDescription || "Description not available";
-        if (description === "Description not available" || !description.trim()) {
-          description = `Campus recruitment drive at ${collegeName}. Open for eligible students to apply for various positions.`;
-        }
-        
-        const batch = jobDetails?.batch || 
-                      jobDetails?.academicYear || 
-                      jobDetails?.graduationYear || 
-                      "Current Batch";
-        
-        const driveType = item.jobType === "Pool-campus" ? "Pool Campus" : 
-                         item.jobType === "On-campus" ? "On-Campus" : "Campus Drive";
-        
-        return {
-          ...item,
-          id: item._id,
-          status: item.currentStatus ?? item.status ?? "Applied",
-          date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
-          company: collegeName,
-          companyLogo: companyLogo,
-          location: location,
-          jobTitle: jobTitle,
-          degree: degree,
-          employmentType: employmentType,
-          skills: skills,
-          description: description,
-          batch: batch,
-          driveType: driveType,
-          isCollegePosting: true,
-          postingType: driveType,
-          jobDetails: item.jobDetails || [],
-          collegeDetails: item.collegeDetails || []
-        };
-      });
-
-      console.log("✅ Normalized data:", normalized);
-      setPoolJobs(normalized);
-      if (normalized.length > 0) {
-        setSelectedJob(normalized[0]);
-      }
-    } catch (error) {
-      console.log("Error fetching pool applications: ", error);
+  try {
+    setLoading(true);
+    setError(null);
+    
+    const response = await getUserApplicationStatus("Pool-campus");
+    console.log("🔍 Application list response:", response);
+    
+    const rawData = response.data?.data || [];
+    
+    if (rawData.length === 0) {
       setPoolJobs([]);
+      setLoading(false);
+      return;
     }
-  };
+    
+    const detailedJobs = await Promise.all(
+      rawData.map(async (item) => {
+        try {
+          const jobId = item.job || item.jobDetails?.[0]?._id || item._id;
+          console.log(`🔍 Fetching job ${jobId}`);
+          
+          const jobResponse = await getPoolCampusJobById(jobId);
+          const jobDetails = jobResponse.data;
+          
+          // CRITICAL: Log the actual structure
+          console.log(`📊 JOB ${jobId} FULL STRUCTURE:`, jobDetails);
+          console.log(`📊 JOB ${jobId} collegePosted:`, jobDetails.collegePosted);
+          console.log(`📊 JOB ${jobId} collegePosted keys:`, jobDetails.collegePosted ? Object.keys(jobDetails.collegePosted) : 'No collegePosted');
+          
+          // IMPROVED COLLEGE NAME EXTRACTION
+          let collegeName = "College";
+
+          // Try to find college name from jobDetails
+          if (jobDetails.collegeName && jobDetails.collegeName !== "College") {
+            collegeName = jobDetails.collegeName;
+          } 
+          // Check collegePosted structure
+          else if (jobDetails.collegePosted) {
+            // Try all possible paths in order of likelihood
+            const possiblePaths = [
+              jobDetails.collegePosted.collegeUniversityDetails?.collegeName,
+              jobDetails.collegePosted.name,
+              jobDetails.collegePosted.collegeName,
+              jobDetails.collegePosted.collegeDetails?.collegeName,
+              jobDetails.collegePosted.universityDetails?.collegeName,
+              jobDetails.collegePosted.institutionName,
+              jobDetails.collegePosted.title
+            ];
+            
+            for (const path of possiblePaths) {
+              if (path && typeof path === 'string' && path.trim() !== '') {
+                collegeName = path.trim();
+                break;
+              }
+            }
+          } 
+          // Check postedBy structure
+          else if (jobDetails.postedBy) {
+            collegeName = jobDetails.postedBy.collegeName || 
+                          jobDetails.postedBy.name || 
+                          "College";
+          }
+
+          console.log(`✅ College name for job ${jobId}: ${collegeName}`);
+          
+          // Get degree - same logic as before
+          let degree = "Various Streams";
+          if (Array.isArray(jobDetails.studentStreams) && jobDetails.studentStreams.length > 0) {
+            degree = jobDetails.studentStreams.join(", ");
+          } else if (Array.isArray(jobDetails.degree) && jobDetails.degree.length > 0) {
+            degree = jobDetails.degree.join(", ");
+          } else if (Array.isArray(jobDetails.degreeType) && jobDetails.degreeType.length > 0) {
+            degree = jobDetails.degreeType.join(", ");
+          }
+          
+          // Get location
+          let location = "Location not specified";
+          if (Array.isArray(jobDetails.location) && jobDetails.location.length > 0) {
+            location = jobDetails.location.join(", ");
+          } else if (jobDetails.venue) {
+            location = jobDetails.venue;
+          } else if (Array.isArray(jobDetails.workLocation) && jobDetails.workLocation.length > 0) {
+            location = jobDetails.workLocation.join(", ");
+          }
+          
+          // Get logo
+          let collegeLogo = null;
+          if (jobDetails.collegePosted) {
+            collegeLogo = jobDetails.collegePosted.profileImage || 
+                         jobDetails.collegePosted.profileImageUrl || 
+                         jobDetails.collegePosted.logo;
+          }
+
+          // Debug logging
+          console.log(`📊 Final job object for ${jobId}:`, {
+            collegeName,
+            collegeLogo,
+            jobDetailsCollegePosted: jobDetails.collegePosted,
+            hasCollegeUniversityDetails: !!jobDetails.collegePosted?.collegeUniversityDetails,
+            collegeUniversityDetails: jobDetails.collegePosted?.collegeUniversityDetails
+          });
+          
+          return {
+            ...item,
+            id: item._id,
+            jobId: jobId,
+            status: item.currentStatus || item.status || "Applied",
+            date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+            collegeName: collegeName,
+            collegeLogo: collegeLogo,
+            location: location,
+            degree: degree,
+            employmentType: Array.isArray(jobDetails?.employmentType) && jobDetails.employmentType.length > 0
+              ? jobDetails.employmentType.join(", ")
+              : "Campus Placement",
+            skills: Array.isArray(jobDetails?.skills) ? jobDetails.skills : [],
+            description: jobDetails?.description || "No description available",
+            fullJobDetails: jobDetails,
+            // Add debug info
+            _debug: {
+              collegeNameFound: collegeName !== "College",
+              collegeNameSource: "various"
+            }
+          };
+          
+        } catch (jobError) {
+          console.error(`❌ Error fetching job ${item.job}:`, jobError);
+          return {
+            ...item,
+            id: item._id,
+            jobId: item.job || item._id,
+            status: item.currentStatus || item.status || "Applied",
+            date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
+            collegeName: "College",
+            collegeLogo: null,
+            location: "Location not specified",
+            degree: "Various Streams",
+            employmentType: "Campus Placement",
+            skills: [],
+            description: "No description available",
+            fullJobDetails: null,
+            _debug: {
+              collegeNameFound: false,
+              collegeNameSource: "error",
+              error: jobError.message
+            }
+          };
+        }
+      })
+    );
+    
+    console.log("✅ Final jobs:", detailedJobs);
+    setPoolJobs(detailedJobs);
+    if (detailedJobs.length > 0) {
+      setSelectedJob(detailedJobs[0]);
+    }
+    
+  } catch (error) {
+    console.error("❌ Error:", error);
+    setError(error.message || "Failed to fetch applications");
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchApplication();
   }, []);
 
   const filteredJobs = poolJobs.filter(job =>
-    (job?.jobTitle?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-    (job?.company?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+    (job?.degree?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+    (job?.collegeName?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
     (job?.location?.toLowerCase() || "").includes(searchTerm.toLowerCase())
   );
 
+  // Get status index for progress calculation
   const getStatusIndex = (status) => {
     if (!status) return 0;
-    const index = statusSteps.findIndex(step => step.toLowerCase() === status.toLowerCase());
-    return index >= 0 ? index : 0;
+    const lowerStatus = status.toLowerCase();
+    
+    // If rejected, show 0% progress (stays at Applied step)
+    if (lowerStatus === 'rejected') return 0;
+    
+    // For normal progression
+    if (lowerStatus === 'applied') return 0;
+    if (lowerStatus === 'shortlisted') return 1;
+    if (lowerStatus === 'accepted') return 2;
+    
+    return 0;
   };
 
-  const getCompanyInitials = (companyName) => {
-    if (!companyName || companyName === "College/University") return "CU";
-    const words = companyName.split(' ');
+  const getCollegeInitials = (collegeName) => {
+    if (!collegeName || collegeName === "College") return "CO";
+    const words = collegeName.split(' ').filter(word => word.length > 0);
     if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
     return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
   };
 
+  // Add retry function for individual jobs
+  const retryFetchJob = async (jobId) => {
+    try {
+      console.log(`🔄 Retrying fetch for pool campus job ${jobId}`);
+      const jobResponse = await getPoolCampusJobById(jobId);
+      const jobDetails = jobResponse.data;
+      
+      setPoolJobs(prev => prev.map(job => {
+        if (job.jobId === jobId) {
+          const companyName = jobDetails.companyPosted?.companyDetails?.companyName || 
+                             jobDetails.collegePosted?.collegeDetails?.collegeName ||
+                             "Company/College";
+          
+          const companyLogo = jobDetails.companyPosted?.profileImageUrl ||
+                              jobDetails.collegePosted?.profileImageUrl ||
+                              null;
+          
+          return {
+            ...job,
+            company: companyName,
+            companyLogo: companyLogo,
+            location: jobDetails?.venue || jobDetails?.workLocation?.[0] || job.location,
+            jobTitle: Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0 
+              ? jobDetails.jobRoles[0] 
+              : jobDetails?.lookingFor || job.jobTitle,
+            degree: Array.isArray(jobDetails?.studentStreams) && jobDetails.studentStreams.length > 0
+              ? jobDetails.studentStreams.join(", ")
+              : job.degree,
+            employmentType: Array.isArray(jobDetails?.employmentType) && jobDetails.employmentType.length > 0
+              ? jobDetails.employmentType.join(", ")
+              : job.employmentType,
+            skills: Array.isArray(jobDetails?.skills) ? jobDetails.skills : job.skills,
+            description: jobDetails?.description || job.description,
+            fullJobDetails: jobDetails
+          };
+        }
+        return job;
+      }));
+      
+    } catch (error) {
+      console.error(`❌ Failed to retry pool campus job ${jobId}:`, error);
+    }
+  };
+
+  const handleViewFullDetails = (job) => {
+    if (job?.fullJobDetails) {
+      // Debug: Log what we're getting
+      console.log('🔍 Job full details:', job.fullJobDetails);
+      console.log('🔍 Job collegeName:', job.collegeName);
+      
+      // Create a college object matching what PoolCampusDetailModal expects
+      const collegeForModal = {
+        _id: job.jobId,
+        // CRITICAL FIX: Ensure collegePosted has the right structure
+        collegePosted: job.fullJobDetails.collegePosted || {
+          // Provide fallback with collegeName
+          collegeUniversityDetails: {
+            collegeName: job.collegeName || "College"
+          },
+          profileImage: job.collegeLogo,
+          // Add other required fields if available
+          placementCoordinatorDetails: job.fullJobDetails.contactPerson || {},
+          profileAchievements: job.fullJobDetails.collegeDetails || {}
+        },
+        startDate: job.fullJobDetails.startDate,
+        endDate: job.fullJobDetails.endDate,
+        location: job.fullJobDetails.location || [job.location],
+        degreeType: job.fullJobDetails.degree || [job.degree],
+        employmentType: job.fullJobDetails.employmentType || [job.employmentType],
+        packageDetails: job.fullJobDetails.packageDetails,
+        noOfplacedStudents: job.fullJobDetails.noOfplacedStudents,
+        amenitiesRequired: job.fullJobDetails.amenitiesRequired,
+        companyType: job.fullJobDetails.companyType,
+        description: job.fullJobDetails.description,
+        jobType: "Pool-campus",
+        contactPerson: job.fullJobDetails.contactPerson,
+        proposedSchedule: job.fullJobDetails.proposedSchedule,
+        studentStreams: job.fullJobDetails.studentStreams,
+        roundDetails: job.fullJobDetails.roundDetails,
+        lookingFor: job.fullJobDetails.lookingFor,
+        numberOfStudent: job.fullJobDetails.numberOfStudent,
+        roundSkills: job.fullJobDetails.roundSkills,
+        skills: job.fullJobDetails.skills,
+        // Add any other fields needed by the modal
+        ...job.fullJobDetails,
+        // Ensure collegeName is accessible at root level too
+        collegeName: job.collegeName
+      };
+      
+      console.log('🔍 College for modal:', collegeForModal);
+      console.log('🔍 College name in modal data:', 
+        collegeForModal.collegePosted?.collegeUniversityDetails?.collegeName || 
+        collegeForModal.collegeName
+      );
+      
+      setModalCollege(collegeForModal);
+      setIsModalOpen(true);
+    } else {
+      console.error('No full job details available');
+      alert('Unable to load college details. Please try again later.');
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalCollege(null);
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#667eea] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading pool campus applications...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error && poolJobs.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center p-4">
+        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 max-w-md">
+          <div className="text-red-500 mb-4 text-center">
+            <svg className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">Error Loading Applications</h3>
+          <p className="text-sm text-gray-600 mb-4 text-center">{error}</p>
+          <button
+            onClick={fetchApplication}
+            className="w-full px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       <div className="container mx-auto px-4 py-6">
-        {/* Compact Header Section - Matched styling */}
+        {/* Header Section */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-5 mb-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg">
@@ -427,22 +643,22 @@ export default function PoolcampusApplicationStatus() {
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                Pool Campus Applications
+                Pool Campus College Applications
               </h1>
               <p className="text-sm text-gray-600">
-                Track your pool campus application progress
+                {poolJobs.length} college application(s) found
               </p>
             </div>
           </div>
           
-          {/* Compact Search - Matched styling */}
+          {/* Search - Update placeholder */}
           <div className="relative">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               <Search className="h-4 w-4 text-gray-400" />
             </div>
             <input
               type="text"
-              placeholder="Search applications..."
+              placeholder="Search by college name, degree, or location..."
               className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -450,14 +666,13 @@ export default function PoolcampusApplicationStatus() {
           </div>
         </div>
 
-        {/* Compact Main Layout - Matched grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 max-h-[calc(100vh-180px)]">
-          {/* Compact Applications List - Matched styling */}
+          {/* Applications List */}
           <div className="lg:col-span-1">
             <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg h-full flex flex-col">
               <div className="p-4 border-b border-gray-100">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-base font-semibold text-gray-900">Applications</h2>
+                  <h2 className="text-base font-semibold text-gray-900">College Applications</h2>
                   <span className="text-xs font-medium px-2 py-1 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full">
                     {filteredJobs.length}
                   </span>
@@ -478,24 +693,22 @@ export default function PoolcampusApplicationStatus() {
                         }`}
                       >
                         <div className="flex items-start gap-3">
-                          {/* Logo/Initials - FIXED: Only show initials when logo is not present */}
-                          {job.companyLogo ? (
+                          {/* College Logo/Initials */}
+                          {job.collegeLogo ? (
                             <div className="relative w-9 h-9">
                               <img 
-                                src={job.companyLogo} 
-                                alt={job.company}
+                                src={job.collegeLogo} 
+                                alt={job.collegeName}
                                 className="w-full h-full rounded-lg object-cover border border-gray-200"
                                 onError={(e) => {
-                                  // Hide the image and show initials on error
                                   e.target.style.display = 'none';
-                                  // Create initials div if it doesn't exist
                                   const initialsDiv = e.target.nextElementSibling;
                                   if (initialsDiv && initialsDiv.classList.contains('initials-fallback')) {
                                     initialsDiv.style.display = 'flex';
                                   }
                                 }}
                               />
-                              {/* Fallback initials - hidden by default, shown on image error */}
+                              {/* Fallback initials */}
                               <div 
                                 className={`initials-fallback absolute inset-0 rounded-lg flex items-center justify-center ${
                                   selectedJob?.id === job.id 
@@ -504,7 +717,7 @@ export default function PoolcampusApplicationStatus() {
                                 }`}
                                 style={{ display: 'none' }}
                               >
-                                <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
+                                <span className="text-xs font-bold">{getCollegeInitials(job.collegeName)}</span>
                               </div>
                             </div>
                           ) : (
@@ -513,23 +726,53 @@ export default function PoolcampusApplicationStatus() {
                                 ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
                                 : 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700'
                             }`}>
-                              <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
+                              <span className="text-xs font-bold">{getCollegeInitials(job.collegeName)}</span>
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-semibold text-gray-900 truncate">{job.company}</h3>
-                            <p className="text-xs text-gray-600 truncate">{job.jobTitle}</p>
+                            {/* College Name */}
+                            <h3 className="text-sm font-semibold text-gray-900 truncate">
+                              {job.collegeName}
+                              {/* {job._debug?.collegeNameFound === false && (
+                                <span className="ml-1 text-xs text-red-500" title="Could not fetch college name">
+                                  ⚠️
+                                </span>
+                              )} */}
+                            </h3>
+                            {/* Degree instead of Job Title */}
+                            <div className="flex items-center gap-1 mt-1">
+                              <GraduationCap className="h-3 w-3 text-gray-500" />
+                              <p className="text-xs text-gray-600 truncate">{job.degree}</p>
+                            </div>
                             <div className="mt-1.5 flex items-center text-xs text-gray-500 gap-2">
                               <span className="inline-flex items-center">
                                 <MapPin className="h-3 w-3 mr-1" />
                                 {job.location}
                               </span>
-                              <span className="text-xs px-1.5 py-0.5 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-600 rounded">
+                              <span className={`text-xs px-1.5 py-0.5 rounded ${
+                                job.status === 'Accepted' ? 'bg-green-100 text-green-700 border border-green-200' :
+                                job.status === 'Shortlisted' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
+                                job.status === 'Rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
+                                'bg-blue-100 text-blue-700 border border-blue-200'
+                              }`}>
                                 {job.status}
                               </span>
                             </div>
                           </div>
                         </div>
+                        {job._debug?.error && (
+                          <div className="mt-2 text-right">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                retryFetchJob(job.jobId);
+                              }}
+                              className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200"
+                            >
+                              Retry Fetch
+                            </button>
+                          </div>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -538,30 +781,34 @@ export default function PoolcampusApplicationStatus() {
                     <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-3">
                       <Search className="h-5 w-5 text-gray-400" />
                     </div>
-                    <p className="text-sm text-gray-500">No applications found</p>
+                    <p className="text-sm text-gray-500">No college applications found</p>
                   </div>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Compact Status and Details - Matched styling */}
+          {/* Status and Details */}
           <div className="lg:col-span-2">
             {selectedJob ? (
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg h-full flex flex-col">
-                {/* Status Progress - Matched styling */}
+                {/* Status Progress */}
                 <div className="p-5 border-b border-gray-100">
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <h2 className="text-lg font-bold text-gray-900">{selectedJob.company}</h2>
-                      <p className="text-sm text-gray-600">{selectedJob.jobTitle}</p>
+                      <h2 className="text-lg font-bold text-gray-900">{selectedJob.collegeName}</h2>
+                      {/* Show Degree with GraduationCap icon */}
+                      <div className="flex items-center gap-2 mt-1">
+                        <GraduationCap className="h-4 w-4 text-[#667eea]" />
+                        <p className="text-sm text-gray-600">{selectedJob.degree}</p>
+                      </div>
                     </div>
-                    {/* FIXED: Right side logo - Only show initials when logo is not present */}
-                    {selectedJob.companyLogo ? (
+                    {/* College Logo */}
+                    {selectedJob.collegeLogo ? (
                       <div className="relative w-12 h-12">
                         <img 
-                          src={selectedJob.companyLogo} 
-                          alt={selectedJob.company}
+                          src={selectedJob.collegeLogo} 
+                          alt={selectedJob.collegeName}
                           className="w-full h-full rounded-xl object-cover border border-gray-200"
                           onError={(e) => {
                             e.target.style.display = 'none';
@@ -577,66 +824,95 @@ export default function PoolcampusApplicationStatus() {
                           style={{ display: 'none' }}
                         >
                           <span className="text-lg font-bold text-[#667eea]">
-                            {getCompanyInitials(selectedJob.company)}
+                            {getCollegeInitials(selectedJob.collegeName)}
                           </span>
                         </div>
                       </div>
                     ) : (
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center">
                         <span className="text-lg font-bold text-[#667eea]">
-                          {getCompanyInitials(selectedJob.company)}
+                          {getCollegeInitials(selectedJob.collegeName)}
                         </span>
                       </div>
                     )}
                   </div>
                   
-                  <div className="relative">
-                    <div className="flex justify-between mb-1">
-                      {statusSteps?.slice(0, 4).map((step, idx) => {
-                        const currentIdx = getStatusIndex(selectedJob.status);
-                        const isActive = idx <= currentIdx;
-                        return (
-                          <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 4}%` }}>
-                            <div className={`w-6 h-6 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
-                              isActive 
-                                ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] border-[#667eea] text-white' 
-                                : 'bg-white border-gray-300 text-gray-400'
-                            }`}>
-                              {isActive ? <CheckCircle className="h-3 w-3" /> : idx + 1}
-                            </div>
-                            <span className={`text-xs text-center ${isActive ? 'text-[#667eea] font-medium' : 'text-gray-500'}`}>
-                              {step.length > 10 ? step.substring(0, 10) + '...' : step}
-                            </span>
+                  {/* Status bar */}
+                  {selectedJob.status.toLowerCase() === 'rejected' ? (
+                    // Rejected Status - Simple 2-step bar
+                    <div className="relative">
+                      <div className="flex justify-between mb-1">
+                        <div className="flex flex-col items-center" style={{ width: '50%' }}>
+                          <div className="w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 bg-red-100 border-red-300 text-red-700">
+                            <XCircle className="h-4 w-4" />
                           </div>
-                        );
-                      })}
+                          <span className="text-xs text-center text-red-700 font-medium">
+                            Applied
+                          </span>
+                        </div>
+                        <div className="flex flex-col items-center" style={{ width: '50%' }}>
+                          <div className="w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 bg-red-500 border-red-500 text-white">
+                            <XCircle className="h-4 w-4" />
+                          </div>
+                          <span className="text-xs text-center text-red-700 font-medium">
+                            Rejected
+                          </span>
+                        </div>
+                      </div>
+                      <div className="h-1.5 bg-gray-200 absolute left-[25%] right-[25%] top-4 -z-10 rounded-full">
+                        <div className="h-1.5 bg-gradient-to-r from-red-400 to-red-500 rounded-full w-full"></div>
+                      </div>
                     </div>
-                    <div className="h-1.5 bg-gray-200 absolute left-[12.5%] right-[12.5%] top-3 -z-10 rounded-full">
-                      <div
-                        className="h-1.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 rounded-full"
-                        style={{
-                          width: `${(getStatusIndex(selectedJob.status) / (statusSteps.length - 1)) * 100}%`
-                        }}
-                      ></div>
+                  ) : (
+                    // Normal Status Flow - 3-step bar
+                    <div className="relative">
+                      <div className="flex justify-between mb-1">
+                        {poolCampusStatusSteps.map((step, idx) => {
+                          const currentIdx = getStatusIndex(selectedJob.status);
+                          const isActive = idx <= currentIdx;
+                          return (
+                            <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 3}%` }}>
+                              <div className={`w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
+                                isActive 
+                                  ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] border-[#667eea] text-white'
+                                  : 'bg-white border-gray-300 text-gray-400'
+                              }`}>
+                                {isActive ? <CheckCircle className="h-4 w-4" /> : idx + 1}
+                              </div>
+                              <span className={`text-xs text-center ${isActive ? 'text-[#667eea] font-medium' : 'text-gray-500'}`}>
+                                {step}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="h-1.5 bg-gray-200 absolute left-[16.5%] right-[16.5%] top-4 -z-10 rounded-full">
+                        <div
+                          className="h-1.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 rounded-full"
+                          style={{
+                            width: `${(getStatusIndex(selectedJob.status) / (poolCampusStatusSteps.length - 1)) * 100}%`
+                          }}
+                        ></div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
-                {/* Job Details - Compact Grid - Matched styling */}
+                {/* College Details Grid */}
                 <div className="flex-1 p-5">
                   <div className="grid grid-cols-2 gap-4 mb-5">
                     <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
                         <Briefcase className="h-4 w-4 text-[#667eea]" />
-                        <span className="text-xs font-medium text-gray-700">Type</span>
+                        <span className="text-xs font-medium text-gray-700">Employment Type</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.employmentType}</p>
                     </div>
                     
                     <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
-                        <Calendar className="h-4 w-4 text-[#667eea]" />
-                        <span className="text-xs font-medium text-gray-700">Education</span>
+                        <GraduationCap className="h-4 w-4 text-[#667eea]" />
+                        <span className="text-xs font-medium text-gray-700">Streams/Degree</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.degree}</p>
                     </div>
@@ -651,14 +927,14 @@ export default function PoolcampusApplicationStatus() {
                     
                     <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
                       <div className="flex items-center gap-2 mb-1">
-                        <Clock className="h-4 w-4 text-[#667eea]" />
-                        <span className="text-xs font-medium text-gray-700">Applied</span>
+                        <Calendar className="h-4 w-4 text-[#667eea]" />
+                        <span className="text-xs font-medium text-gray-700">Applied On</span>
                       </div>
                       <p className="text-sm text-gray-900">{selectedJob.date}</p>
                     </div>
                   </div>
 
-                  {/* Skills - Compact - Matched styling */}
+                  {/* Skills */}
                   {selectedJob.skills && selectedJob.skills.length > 0 && (
                     <div className="mb-5">
                       <h3 className="text-sm font-medium text-gray-700 mb-2">Required Skills</h3>
@@ -677,23 +953,44 @@ export default function PoolcampusApplicationStatus() {
                     </div>
                   )}
 
-                  {/* Action Button - Matched styling */}
+                  {/* Description */}
+                  <div className="mb-5">
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
+                    <div className="p-3 bg-gradient-to-r from-gray-50/50 to-white/50 border border-gray-100 rounded-xl">
+                      <p className="text-sm text-gray-700 line-clamp-3">
+                        {selectedJob.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Action Button */}
                   <div className="mt-auto">
-                    <Link 
-                      to={`/company-dashboard/Pool-campus/${selectedJob?.jobDetails?.[0]?._id || selectedJob.id}?isApplied=true`} 
+                    <button 
+                      onClick={() => handleViewFullDetails(selectedJob)}
                       className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300"
                     >
-                      View Full Details
-                    </Link>
+                      View College Details
+                      <ArrowRight className="h-3.5 w-3.5 ml-2" />
+                    </button>
                   </div>
                 </div>
+              </div>
+            ) : poolJobs.length === 0 ? (
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg h-full flex flex-col items-center justify-center p-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-4">
+                  <Users className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Pool Applications</h3>
+                <p className="text-sm text-gray-600 text-center">
+                  You haven't applied to any pool campus drives yet.
+                </p>
               </div>
             ) : (
               <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg h-full flex flex-col items-center justify-center p-6">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-4">
                   <Users className="h-8 w-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Select an Application</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Select a College Application</h3>
                 <p className="text-sm text-gray-600 text-center">
                   Choose a pool campus application from the list to view detailed status
                 </p>
@@ -702,6 +999,23 @@ export default function PoolcampusApplicationStatus() {
           </div>
         </div>
       </div>
+      {/* Modal */}
+      {isModalOpen && modalCollege && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+            onClick={handleCloseModal}
+          />
+          <div className="relative z-10 w-full max-w-6xl h-[90vh] overflow-y-auto rounded-2xl bg-white">
+            <PoolCampusDetailModal
+              college={modalCollege}
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+              isApplied={true}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

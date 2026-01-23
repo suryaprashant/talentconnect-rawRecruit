@@ -157,7 +157,7 @@ export default function OffCampusJobManagement() {
                             <div className="col-span-4">Job Title</div>
                             <div className="col-span-2">Work Locations</div>
                             <div className="col-span-2">Deadline</div>
-                            <div className="col-span-1 text-center">Applications</div>
+                            <div className="col-span-1 text-center">New Applications</div>
                             <div className="col-span-3 text-center">Actions</div>
                         </div>
                     </div>
@@ -185,23 +185,25 @@ export default function OffCampusJobManagement() {
                                 >
                                     <div className="grid grid-cols-12 gap-4 items-center">
                                         {/* Job Title - Clickable Link for Job Preview */}
-                                        <div className="col-span-4">
-                                            <Link
-                                                to={`/company-dashboard/Off-campus/${job._id}?isApplied=true`}
-                                                className="group cursor-pointer block"
-                                            >
-                                                <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors line-clamp-1">
-                                                    {job?.jobRoles[0]}
-                                                </h3>
-                                                <div className="flex items-center gap-3 mt-1">
-                                                    <span className="inline-flex items-center text-sm text-gray-500">
-                                                        <Briefcase className="h-3 w-3 mr-1.5" />
-                                                        {job?.workMode}
-                                                    </span>
-                                                    
-                                                </div>
-                                            </Link>
-                                        </div>
+<div className="col-span-4">
+  <Link
+    to={`/company-dashboard/Off-campus/${job._id}?isApplied=true`}
+    className="group cursor-pointer block"
+  >
+    <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors line-clamp-1">
+      {Array.isArray(job?.jobRoles) 
+        ? job.jobRoles.join(', ') 
+        : job?.jobRoles?.[0] || 'N/A'
+      }
+    </h3>
+    <div className="flex items-center gap-3 mt-1">
+      <span className="inline-flex items-center text-sm text-gray-500">
+        <Briefcase className="h-3 w-3 mr-1.5" />
+        {job?.workMode}
+      </span>
+    </div>
+  </Link>
+</div>
 
                                         {/* Work locations */}
                                         <div className="col-span-2">

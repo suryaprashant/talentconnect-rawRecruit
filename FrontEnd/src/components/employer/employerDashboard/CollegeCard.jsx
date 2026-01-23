@@ -69,7 +69,7 @@ function getStableColor(id = "") {
   return pastelColors[hash];
 }
 
-const CollegeCard = ({ college }) => {
+const CollegeCard = ({ college, onClick, compact = false }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -87,18 +87,65 @@ const CollegeCard = ({ college }) => {
     return (words[0][0] + words[1][0]).toUpperCase();
   };
 
-  return (
-    <div className={`
-      w-full max-w-[350px] mx-auto rounded-2xl 
-shadow-sm hover:shadow-lg transition overflow-hidden
-flex flex-col h-full
- ${stableColor}
-    `}>
-      {/* FULL PASTEL CARD */}
-      <div className="p-5 flex flex-col flex-1">
+  const handleCardClick = (e) => {
+    // Don't trigger if clicking on save button
+    if (e.target.closest('button')) {
+      return;
+    }
+    
+    // Use onClick prop if provided
+    if (onClick && typeof onClick === 'function') {
+      onClick(college);
+    }
+  };
 
-        {/* College Type + Save */}
-        <div className="flex justify-between items-start">
+  const handleContactClick = (e) => {
+    e.stopPropagation();
+    
+    // Use onClick prop if provided
+    if (onClick && typeof onClick === 'function') {
+      onClick(college);
+    }
+  };
+
+  // Format location
+  const formatLocation = () => 
+    college.location || 'Location not specified';
+
+  // Format package details
+  const formatPackage = () => {
+    if (college.avgPackage) {
+      return `₹${college.avgPackage.toLocaleString()}`;
+    }
+    return 'Not Disclosed';
+  };
+
+  // Get description text
+  const getDescription = () => {
+    return college.description || 
+           'Leading educational institution with excellent placement records and industry partnerships.';
+  };
+
+  // College badges - similar to job roles
+  const collegeBadges = college.badges || [];
+  const defaultBadges = ['Top Rated', 'Placement Cell', 'Industry Connect'];
+  const displayBadges = collegeBadges.length > 0 ? collegeBadges : defaultBadges;
+
+  const description = getDescription();
+
+  return (
+    <div 
+      onClick={handleCardClick}
+      className="
+        w-full max-w-[350px] mx-auto rounded-2xl 
+        border shadow-sm hover:shadow-lg transition overflow-hidden
+        flex flex-col cursor-pointer h-full min-h-[400px]
+      "
+    >
+      {/* TOP SECTION - Pastel background */}
+      <div className={`${stableColor} p-4 flex-1 flex flex-col min-h-[280px]`}>
+        {/* Degree Type + Save */}
+        <div className="flex justify-between items-start mb-2">
           <span className="text-xs bg-white/90 text-gray-700 px-3 py-1 rounded-full font-medium">
             {degreeType}
           </span>
@@ -106,9 +153,10 @@ flex flex-col h-full
           <button
             onClick={(e) => {
               e.preventDefault();
+              e.stopPropagation();
               setIsSaved(!isSaved);
             }}
-            className="bg-white p-2 rounded-full shadow hover:shadow-md transition"
+            className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10"
           >
             <Heart
               className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
@@ -118,74 +166,152 @@ flex flex-col h-full
         </div>
 
         {/* College Name + Logo */}
-        <div className="mt-10 flex flex-col items-center gap-3">
-          {/* Logo/Icon */}
-          <div className="w-20 h-20 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <Home className="h-8 w-8 text-white" />
-            </div>
-          </div>
-
-          {/* College Name */}
-          <div className="flex flex-col items-center gap-1">
-            <h3 className="text-white font-semibold text-xl text-center">
+        <div className="flex justify-between items-start gap-2 mb-4">
+          <div className="flex-1 pr-2">
+            <h3 className="text-black font-semibold text-lg truncate mb-2">
               {collegeName}
             </h3>
 
-            {/* College Type Badge */}
-            <span className="text-sm font-medium text-white/90 bg-white/20 px-3 py-1 rounded-full border border-white/30">
-              College
+            {/* College Badges */}
+            {displayBadges.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {displayBadges.slice(0, 3).map((badge, index) => {
+                  const badgeColors = [
+                    "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700",
+                    "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700",
+                    "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700",
+                    "bg-gradient-to-r from-green-100 to-green-50 text-green-700",
+                    "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700",
+                  ];
+                  const colorClass = badgeColors[index % badgeColors.length];
+                  
+                  return (
+                    <span 
+                      key={index} 
+                      className={`text-xs font-medium px-2 py-1 rounded-full border ${colorClass}`}
+                    >
+                      {badge}
+                    </span>
+                  );
+                })}
+                {displayBadges.length > 3 && (
+                  <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-1 rounded-full border">
+                    +{displayBadges.length - 3}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* College Logo */}
+          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
+            {college.logo && !imageError ? (
+              <img 
+                src={college.logo} 
+                alt={`${collegeName} logo`}
+                className="w-12 h-12 object-cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                <Home className="h-6 w-6 text-white" />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* College Type Badge */}
+        {college.type && (
+          <div className="mb-3">
+            <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
+              {Array.isArray(college.type) ? college.type.join(', ') : college.type}
             </span>
           </div>
-        </div>
+        )}
 
-        {/* Stats/Info Section */}
-        <div className="mt-8 flex justify-center gap-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-white">50+</div>
-            <div className="text-xs text-white/90 mt-1">Companies</div>
+        {/* Streams/Specializations */}
+        {college.specializations?.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {college.specializations.slice(0, 3).map((specialization, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-blue-100 text-blue-800 border border-blue-300 rounded-full text-xs"
+              >
+                {specialization}
+              </span>
+            ))}
+            {college.specializations.length > 3 && (
+              <span className="px-2 py-1 text-xs text-gray-600">+{college.specializations.length - 3}</span>
+            )}
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-white">1000+</div>
-            <div className="text-xs text-white/90 mt-1">Students</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-white">₹10L+</div>
-            <div className="text-xs text-white/90 mt-1">Avg Package</div>
-          </div>
-        </div>
+        )}
 
-        {/* Description */}
-        <div className="mt-8 flex-1 flex items-center">
-          <p className="text-sm text-white/90 text-center line-clamp-3">
-            {college.description 
-              ? college.description.split(' ').slice(0, 20).join(' ') + (college.description.split(' ').length > 20 ? '...' : '')
-              : 'Leading educational institution with excellent placement records and industry partnerships.'}
+        {/* Stats */}
+        {college.stats && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {Object.entries(college.stats).slice(0, 3).map(([key, value], index) => (
+              <span
+                key={index}
+                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
+              >
+                {value} {key}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Tags */}
+        {college.tags?.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {college.tags.slice(0, 3).map((tag, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-gray-100 text-gray-800 border border-gray-300 rounded-full text-xs"
+              >
+                {tag}
+              </span>
+            ))}
+            {college.tags.length > 3 && (
+              <span className="px-2 py-1 text-xs text-gray-600">+{college.tags.length - 3}</span>
+            )}
+          </div>
+        )}
+
+        {/* Description - Made this section more prominent */}
+        <div className="flex-1 mb-2">
+          <p className="text-sm text-gray-700 line-clamp-3">
+            {description}
           </p>
         </div>
+      </div>
 
-        {/* Location Info */}
-        <div className="mt-6">
-          <div className="flex items-center justify-center gap-2 text-white/90">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-            </svg>
-            <span className="text-sm">
-              {college.location || 'Multiple Campuses'}
-            </span>
+      {/* BOTTOM SECTION - White background */}
+      <div className="p-4 bg-white border-t">
+        <div className="flex justify-between items-center">
+          <div>
+            {/* Average Package */}
+            <p className="font-semibold text-gray-900 text-sm">
+              {formatPackage()} avg
+            </p>
+
+            {/* Location */}
+            <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
+              <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+              </svg>
+              <span className="line-clamp-1 max-w-[120px]">
+                {formatLocation()}
+              </span>
+            </div>
           </div>
-        </div>
 
-        {/* Contact Button */}
-        <div className="mt-8 pt-4 border-t border-white/30">
-          <Link
-            to={`/employer-dashboard/On-campus/${college.id}`}
-            className="block w-full px-4 py-3 bg-white text-black rounded-xl text-sm font-medium hover:bg-gray-100 transition shadow hover:shadow-md text-center"
+          <button
+            onClick={handleContactClick}
+            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
           >
-            Contact College
-          </Link>
+            Contact
+          </button>
         </div>
-
       </div>
     </div>
   );

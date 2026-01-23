@@ -594,7 +594,7 @@ export default function OffCampusJobManagement() {
               <div className="col-span-4">Job Roles</div>
               <div className="col-span-3">Location</div>
               <div className="col-span-2">End Date</div>
-              <div className="col-span-1 text-center">Applications</div>
+              <div className="col-span-1 text-center">New Applications</div>
               <div className="col-span-2 text-center">Actions</div>
             </div>
           </div>

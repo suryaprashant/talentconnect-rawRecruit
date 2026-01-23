@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { MapPin, User, Banknote, Heart, Briefcase, Calendar } from 'lucide-react';
 import { SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
@@ -59,7 +59,7 @@ function getStableColor(id = "") {
   return pastelColors[hash];
 }
 
-const JobCard = ({ job }) => {
+const JobCard = ({ job, onClick, compact = false }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -69,7 +69,6 @@ const JobCard = ({ job }) => {
   const logo = job.logo || '';
   const jobId = job._id || job.id;
 
-  // Get job status based on dates (matching second component logic)
   const getJobStatus = () => {
     if (!job.startDate || !job.endDate) {
       return { status: 'Not Scheduled', color: 'bg-gray-100 text-gray-700' };
@@ -85,6 +84,27 @@ const JobCard = ({ job }) => {
       return { status: 'Active', color: 'bg-green-100 text-green-700' };
     } else {
       return { status: 'Completed', color: 'bg-gray-100 text-gray-700' };
+    }
+  };
+
+  const handleCardClick = (e) => {
+    // Don't trigger if clicking on save button or link inside card
+    if (e.target.closest('button') || e.target.closest('a')) {
+      return;
+    }
+    
+    // Use onClick prop if provided
+    if (onClick && typeof onClick === 'function') {
+      onClick(job);
+    }
+  };
+
+  const handleRegisterClick = (e) => {
+    e.stopPropagation();
+    
+    // Use onClick prop if provided
+    if (onClick && typeof onClick === 'function') {
+      onClick(job);
     }
   };
 
@@ -146,7 +166,7 @@ const JobCard = ({ job }) => {
 
   // Format employment type
   const formatEmploymentType = () => {
-    if (!job.position) return 'Position not specified';
+    if (!job.position) return 'Employment type not specified';
     return job.position;
   };
 
@@ -169,30 +189,39 @@ const JobCard = ({ job }) => {
     return [];
   };
 
+  // Get description text (fallback if description is not at root)
+  const getDescription = () => {
+    return job.description || 
+           job.jobDescription || 
+           'No description provided.';
+  };
+
   const jobStatus = getJobStatus();
   const stableColor = getStableColor(jobId || companyName);
   const streams = formatStreams();
   const hiringProcess = formatHiringProcess();
+  const description = getDescription();
 
   return (
-    <div className="
-  w-full max-w-[350px] mx-auto rounded-2xl 
-  border shadow-sm hover:shadow-lg transition overflow-hidden
-  flex flex-col h-full
-">
-
+    <div 
+      onClick={handleCardClick}
+      className="
+        w-full max-w-[350px] mx-auto rounded-2xl 
+        border shadow-sm hover:shadow-lg transition overflow-hidden
+        flex flex-col cursor-pointer
+      "
+    >
       {/* TOP SECTION - Pastel background */}
-      <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-1 flex flex-col`}>
-
+      <div className={`${stableColor} p-4 flex-1 flex flex-col`}>
         {/* Status + Save */}
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start mb-2">
           <span className={`text-xs ${jobStatus.color} px-3 py-1 rounded-full font-medium`}>
             {jobStatus.status}
           </span>
 
           <button
             onClick={handleSave}
-            className="bg-white p-2 rounded-full shadow"
+            className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10"
           >
             <Heart
               className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
@@ -202,20 +231,35 @@ const JobCard = ({ job }) => {
         </div>
 
         {/* Company Name + Position */}
-        <div className="mt-3 flex justify-between items-start gap-2">
-          <div className="flex flex-col gap-1">
-            <h3 className="text-black font-semibold text-lg truncate max-w-[200px]">
+        <div className="flex justify-between items-start gap-2 mb-3">
+          <div className="flex-1 pr-2">
+            <h3 className="text-black font-semibold text-lg truncate mb-4">
               {companyName}
             </h3>
 
-            {/* Display Position */}
+            {/* Job Roles - Directly below company name with no spacing */}
             {job.position && (
-              <div className="flex flex-wrap gap-1 mt-1">
-                <span 
-                  className="text-sm font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded border border-black/5"
-                >
-                  {formatEmploymentType()}
-                </span>
+              <div className="flex flex-wrap gap-1 mt-0">
+                {job.position.split(',').slice(0, 3).map((role, index) => {
+                  // Light pastel colors for job roles
+                  const roleColors = [
+                    "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700",
+                    "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700",
+                    "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700",
+                    "bg-gradient-to-r from-green-100 to-green-50 text-green-700",
+                    "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700",
+                  ];
+                  const colorClass = roleColors[index % roleColors.length];
+                  
+                  return (
+                    <span 
+                      key={index} 
+                      className={`text-sm font-medium px-2 py-0.5 rounded-full border ${colorClass}`}
+                    >
+                      {role.trim()}
+                    </span>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -239,17 +283,17 @@ const JobCard = ({ job }) => {
         </div>
 
         {/* Employment Type Badge */}
-        {job.position && (
-          <div className="mt-3">
+        {/* {job.position && (
+          <div className="mb-3">
             <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
               {formatEmploymentType()}
             </span>
           </div>
-        )}
+        )} */}
 
         {/* Streams */}
         {streams.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
+          <div className="flex flex-wrap gap-2 mb-3">
             {streams.slice(0, 3).map((stream, index) => (
               <span
                 key={index}
@@ -266,7 +310,7 @@ const JobCard = ({ job }) => {
 
         {/* Hiring Process Steps */}
         {hiringProcess.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
+          <div className="flex flex-wrap gap-2 mb-3">
             {hiringProcess.map((step, index) => (
               <span
                 key={index}
@@ -280,7 +324,7 @@ const JobCard = ({ job }) => {
 
         {/* Date Range */}
         {job.startDate && job.endDate && (
-          <div className="mt-3">
+          <div className="mb-3">
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3 text-gray-600" />
               <span className="text-xs text-gray-800">
@@ -292,7 +336,7 @@ const JobCard = ({ job }) => {
 
         {/* Venue */}
         {job.venue && (
-          <div className="mt-3">
+          <div className="mb-3">
             <div className="flex items-center gap-1">
               <Briefcase className="h-3 w-3 text-gray-600" />
               <span className="text-xs text-gray-800 truncate">
@@ -304,7 +348,7 @@ const JobCard = ({ job }) => {
 
         {/* Tags */}
         {job.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
+          <div className="flex flex-wrap gap-2 mb-3">
             {job.tags.slice(0, 3).map((tag, index) => (
               <span
                 key={index}
@@ -319,45 +363,43 @@ const JobCard = ({ job }) => {
           </div>
         )}
 
-        {/* Description - Fixed height */}
-        <div className="mt-3">
-          <p className="text-sm text-gray-700 line-clamp-3">
-            {job.description 
-              ? job.description.split(' ').slice(0, 20).join(' ') + (job.description.split(' ').length > 20 ? '...' : '')
-              : 'No description provided.'}
+        {/* Description - Flexible height with min-height */}
+        <div className="flex-1">
+          <p className="text-sm text-gray-700 line-clamp-2">
+            {description}
           </p>
         </div>
 
       </div>
 
       {/* BOTTOM SECTION - White background */}
-      <div className="p-4 bg-white flex justify-between items-center border-t h-[80px]">
+      <div className="p-4 bg-white border-t">
+        <div className="flex justify-between items-center">
+          <div>
+            {/* Package */}
+            <p className="font-semibold text-gray-900 text-sm">
+              {formatPackage() !== 'Package not specified' 
+                ? formatPackage()
+                : "Not Disclosed"}
+            </p>
 
-        <div>
-          {/* Package */}
-          <p className="font-semibold text-gray-900 text-sm">
-            {formatPackage() !== 'Package not specified' 
-              ? formatPackage()
-              : "Not Disclosed"}
-          </p>
-
-          {/* Location */}
-          <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
-            <MapPin className="h-4 w-4 text-gray-500" />
-            <span className="line-clamp-1 max-w-[120px]">
-              {formatLocation()}
-            </span>
+            {/* Location */}
+            <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
+              <MapPin className="h-4 w-4 text-gray-500" />
+              <span className="line-clamp-1 max-w-[120px]">
+                {formatLocation()}
+              </span>
+            </div>
           </div>
+
+          <button
+            onClick={handleRegisterClick}
+            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
+          >
+            Register
+          </button>
         </div>
-
-        <Link
-          to={`/college-dashboard/Pool-campus/${jobId}`}
-          className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
-        >
-          Register
-        </Link>
       </div>
-
     </div>
   );
 };

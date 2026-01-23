@@ -5,8 +5,9 @@ import axios from 'axios';
 import { useMemo } from 'react';
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
+import PoolJobDetailModal from '@/components/college/collegeDashboard/poolCampusOpportunity/PoolDetailModal';
 
-const PoolJobListingPage = ({ compact = false }) => {
+const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => {
   const [filters, setFilters] = useState({
     search: '',
     streams: [],
@@ -22,6 +23,10 @@ const PoolJobListingPage = ({ compact = false }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('relevance');
+  
+  // Modal state
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // State for dropdown visibility
   const [showMainFilter, setShowMainFilter] = useState(false);
@@ -255,6 +260,39 @@ const PoolJobListingPage = ({ compact = false }) => {
   }));
 };
 
+    const handleJobSelect = (job) => {
+    console.log('Opening details for:', job?.companyName);
+    setSelectedJob(job);
+    setIsModalOpen(true);
+    
+    // Pass to parent if onJobSelect exists (for compact mode)
+    if (onJobSelect && typeof onJobSelect === 'function') {
+      onJobSelect(job);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedJob(null);
+  };
+
+  // COMPACT VIEW - For sidebar
+  if (compact) {
+    return (
+      <div className="p-3 space-y-4">
+        {filteredJobs
+          .filter(job => selectedJobId ? job._id !== selectedJobId : true)
+          .map((job) => (
+            <JobCard 
+              key={job.id} 
+              job={job} 
+              onClick={onJobSelect}
+              compact={compact}
+            />
+          ))}
+      </div>
+    );
+  }
 
   const toggleSubDropdown = (dropdown) => {
     setOpenSubDropdowns(prev => ({
@@ -385,17 +423,17 @@ const PoolJobListingPage = ({ compact = false }) => {
       </div>
     );
   }
-if (compact) {
-    return (
-      <div className="p-3 space-y-4">
-        {filteredJobs.map((job) => (
-          <div key={job.id} className="w-full">
-            <JobCard job={job} />
-          </div>
-        ))}
-      </div>
-    );
-  }
+// if (compact) {
+//     return (
+//       <div className="p-3 space-y-4">
+//         {filteredJobs.map((job) => (
+//           <div key={job.id} className="w-full">
+//             <JobCard job={job} />
+//           </div>
+//         ))}
+//       </div>
+//     );
+//   }
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
       {/* Pastel blur background elements */}
@@ -936,23 +974,25 @@ if (compact) {
         </div>
        
 
-        {/* Job Cards - Exact same structure as On Campus */}
-        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">
-          {filteredJobs.length > 0 ? (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredJobs.map(job => (
-                  <div
-                    key={job._id || job.id}
-                    className="h-full flex"
-                  >
-                    {/* Same card wrapper structure as On Campus */}
-                    <div className="w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 flex flex-col h-full">
-                      <JobCard job={job} />
-                    </div>
+        {/* Job Cards Grid */}
+      <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">
+        {filteredJobs.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredJobs.map(job => (
+                <div
+                  key={job._id || job.id}
+                  className="h-full flex"
+                >
+                  <div className="w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 flex flex-col h-full">
+                    <JobCard 
+                      job={job} 
+                      onClick={handleJobSelect}
+                    />
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
 
               {/* Load More Button */}
               <div className="mt-10 text-center">
@@ -988,6 +1028,19 @@ if (compact) {
           )}
         </div>
       </div>
+    {/* Job Detail Modal for normal view */}
+      {isModalOpen && selectedJob && (
+        <div className="fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative z-10 flex items-center justify-center h-full p-4">
+            <PoolJobDetailModal
+              jobId={selectedJob._id || selectedJob.id}
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

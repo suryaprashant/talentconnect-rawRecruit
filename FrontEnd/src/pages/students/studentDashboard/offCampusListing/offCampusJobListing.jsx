@@ -1,13 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, X, Filter, MapPin, Search, Briefcase, Calendar, TrendingUp, RefreshCw, AlertCircle, Building, DollarSign, Clock, Users, GraduationCap, BookOpen } from 'lucide-react';
 import JobCard from '@/components/student/studentDashboard/offCampusListing/JobCard';
 import { getRelaventOffcampusOpportunity } from '@/lib/User_AxiosInstance';
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
+import OffCampusJobDetailModal from '@/components/student/studentDashboard/offCampusListing/OffCampusJobDetailModal';
 
-function OffCampusJobs({ compact = false }) {
+function OffCampusJobs({ compact = false, onJobSelect, selectedJobId, hideSelected = false, onJobsLoaded }) {
   const [offCampusJobs, setOffCampusJobs] = useState([]);
+  const [allJobs, setAllJobs] = useState([]); // Store all fetched jobs
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [filters, setFilters] = useState({
     workMode: [],
@@ -22,6 +23,10 @@ function OffCampusJobs({ compact = false }) {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState('newest');
+  
+  // Modal state
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // State for dropdown visibility
   const [showMainFilter, setShowMainFilter] = useState(false);
@@ -85,41 +90,45 @@ function OffCampusJobs({ compact = false }) {
   });
 
   const cityOptions = useMemo(
-      () =>
-        City.getCitiesOfCountry('IN').map(city => ({
-          value: city.name,
-          label: city.name,
-        })),
-      []
-    );
+    () =>
+      City.getCitiesOfCountry('IN').map(city => ({
+        value: city.name,
+        label: city.name,
+      })),
+    []
+  );
   
-    const safeLocation = Array.isArray(filters.location)
-      ? filters.location
-      : [];
-
-  const navigate = useNavigate();
-
-  const handleJobClick = (jobId) => {
-    navigate(`/student-dashboard/Off-campus/${jobId}`);
-  };
+  const safeLocation = Array.isArray(filters.location)
+    ? filters.location
+    : [];
 
   const fetchOffcampusOpportunity = async () => {
     try {
       setIsLoading(true);
       const response = await getRelaventOffcampusOpportunity();
       const fetchedJobs = response.data?.data || [];
+      setAllJobs(fetchedJobs);
       setOffCampusJobs(fetchedJobs);
-      setFilteredJobs(fetchedJobs);
       
       if (fetchedJobs.length > 0) {
         extractFilterOptions(fetchedJobs);
       }
+      
+      // Notify parent component about loaded jobs
+      if (onJobsLoaded) {
+        onJobsLoaded(fetchedJobs);
+      }
+      
       setError(null);
     } catch (error) {
       setError('Failed to load jobs. Please try again later.')
       console.log(error);
+      setAllJobs([]);
       setOffCampusJobs([]);
-      setFilteredJobs([]);
+      
+      if (onJobsLoaded) {
+        onJobsLoaded([]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -127,126 +136,131 @@ function OffCampusJobs({ compact = false }) {
 
   useEffect(() => {
     fetchOffcampusOpportunity();
-  }, []);
+  }, [onJobsLoaded]);
 
   const extractFilterOptions = (jobsData) => {
-  const degrees = new Set();
-  const courses = new Set();
-  const employmentTypes = new Set();
-  const workModes = new Set();
+    const degrees = new Set();
+    const courses = new Set();
+    const employmentTypes = new Set();
+    const workModes = new Set();
 
-  jobsData.forEach(job => {
-    // Extract courses from API's "degree" field
-    if (Array.isArray(job.degree)) {
-      job.degree.forEach(deg => {
-        if (typeof deg === "string") {
-          degrees.add(deg.trim());
-        }
-      });
-    }
+    jobsData.forEach(job => {
+      // Extract courses from API's "degree" field
+      if (Array.isArray(job.degree)) {
+        job.degree.forEach(deg => {
+          if (typeof deg === "string") {
+            degrees.add(deg.trim());
+          }
+        });
+      }
 
-    // Extract COURSES from API's "studentStreams" field
-    if (Array.isArray(job.studentStreams)) {
-      job.studentStreams.forEach(stream => {
-        if (typeof stream === "string" && stream !== "All Streams") {
-          courses.add(stream.trim());
-        }
-      });
-    }
+      // Extract COURSES from API's "studentStreams" field
+      if (Array.isArray(job.studentStreams)) {
+        job.studentStreams.forEach(stream => {
+          if (typeof stream === "string" && stream !== "All Streams") {
+            courses.add(stream.trim());
+          }
+        });
+      }
 
-    // Extract WORK MODES from API's "workMode" field
-    if (Array.isArray(job.workMode)) {
-      job.workMode.forEach(mode => {
-        if (typeof mode === "string") {
-          workModes.add(mode.trim());
-        }
-      });
-    }
+      // Extract WORK MODES from API's "workMode" field
+      if (Array.isArray(job.workMode)) {
+        job.workMode.forEach(mode => {
+          if (typeof mode === "string") {
+            workModes.add(mode.trim());
+          }
+        });
+      }
 
-    // EMPLOYMENT TYPE
-    if (Array.isArray(job.employmentType)) {
-      job.employmentType.forEach(type => {
-        if (typeof type === "string") {
-          employmentTypes.add(type.trim());
-        }
-      });
-    } else if (typeof job.employmentType === "string") {
-      employmentTypes.add(job.employmentType.trim());
-    }
-  });
+      // EMPLOYMENT TYPE
+      if (Array.isArray(job.employmentType)) {
+        job.employmentType.forEach(type => {
+          if (typeof type === "string") {
+            employmentTypes.add(type.trim());
+          }
+        });
+      } else if (typeof job.employmentType === "string") {
+        employmentTypes.add(job.employmentType.trim());
+      }
+    });
 
-  setFilterOptions(prev => ({
-    ...prev,
-    degree: degrees.size > 0
-      ? Array.from(degrees).map(label => ({ label }))
-      : prev.degree,
-    courses: courses.size > 0
-      ? Array.from(courses).map(label => ({ label }))
-      : prev.courses,
-    workMode: workModes.size > 0
-      ? Array.from(workModes).map(label => ({ label }))
-      : prev.workMode,
-    employmentType: employmentTypes.size > 0
-      ? Array.from(employmentTypes).map(label => ({ label }))
-      : prev.employmentType,
-  }));
-};
+    setFilterOptions(prev => ({
+      ...prev,
+      degree: degrees.size > 0
+        ? Array.from(degrees).map(label => ({ label }))
+        : prev.degree,
+      courses: courses.size > 0
+        ? Array.from(courses).map(label => ({ label }))
+        : prev.courses,
+      workMode: workModes.size > 0
+        ? Array.from(workModes).map(label => ({ label }))
+        : prev.workMode,
+      employmentType: employmentTypes.size > 0
+        ? Array.from(employmentTypes).map(label => ({ label }))
+        : prev.employmentType,
+    }));
+  };
 
   useEffect(() => {
-    if (!Array.isArray(offCampusJobs)) {
+    if (!Array.isArray(allJobs)) {
       setFilteredJobs([]);
       return;
     }
 
-    let result = [...offCampusJobs];
+    let result = [...allJobs];
+
+    // Filter out selected job if hideSelected is true and selectedJobId exists
+    if (hideSelected && selectedJobId) {
+      result = result.filter(job => {
+        const jobId = job._id || job.id;
+        return jobId !== selectedJobId;
+      });
+    }
 
     // Apply DEGREE filters (from API's "degree" field)
-  if (filters.degree.length > 0) {
-    result = result.filter(job =>
-      Array.isArray(job.degree) &&
-      filters.degree.some(selectedDegree =>
-        job.degree.some(apiDegree =>
-          apiDegree.toLowerCase() === selectedDegree.toLowerCase()
+    if (filters.degree.length > 0) {
+      result = result.filter(job =>
+        Array.isArray(job.degree) &&
+        filters.degree.some(selectedDegree =>
+          job.degree.some(apiDegree =>
+            apiDegree.toLowerCase() === selectedDegree.toLowerCase()
+          )
         )
-      )
-    );
-  }
+      );
+    }
 
     // Apply COURSE filters (from API's "studentStreams" field)
-  if (filters.courses.length > 0) {
-    result = result.filter(job =>
-      Array.isArray(job.studentStreams) &&
-      filters.courses.some(selectedCourse =>
-        job.studentStreams.some(stream =>
-          stream.toLowerCase() === selectedCourse.toLowerCase()
+    if (filters.courses.length > 0) {
+      result = result.filter(job =>
+        Array.isArray(job.studentStreams) &&
+        filters.courses.some(selectedCourse =>
+          job.studentStreams.some(stream =>
+            stream.toLowerCase() === selectedCourse.toLowerCase()
+          )
         )
-      )
-    );
-  }
-
-
+      );
+    }
 
     // Apply EMPLOYMENT TYPE filter
-  if (filters.employmentType.length > 0) {
-    result = result.filter(job => {
-      if (Array.isArray(job.employmentType)) {
-        return filters.employmentType.some(type =>
-          job.employmentType.some(empType =>
-            empType.toLowerCase() === type.toLowerCase()
-          )
-        );
-      }
-      return filters.employmentType.includes(job.employmentType);
-    });
-  }
-
+    if (filters.employmentType.length > 0) {
+      result = result.filter(job => {
+        if (Array.isArray(job.employmentType)) {
+          return filters.employmentType.some(type =>
+            job.employmentType.some(empType =>
+              empType.toLowerCase() === type.toLowerCase()
+            )
+          );
+        }
+        return filters.employmentType.includes(job.employmentType);
+      });
+    }
 
     // Apply location filter
     if (Array.isArray(filters.location) && filters.location.length > 0) {
-      result = result.filter(college =>
-        Array.isArray(college.location) &&
+      result = result.filter(job =>
+        Array.isArray(job.location) &&
         filters.location.some(filterLoc =>
-          college.location.some(
+          job.location.some(
             loc => loc.toLowerCase() === filterLoc.toLowerCase()
           )
         )
@@ -254,17 +268,16 @@ function OffCampusJobs({ compact = false }) {
     }
 
     // Apply WORK MODE filter (from API's "workMode" field)
-  if (filters.workMode.length > 0) {
-    result = result.filter(job =>
-      Array.isArray(job.workMode) &&
-      filters.workMode.some(selectedMode =>
-        job.workMode.some(mode =>
-          mode.toLowerCase() === selectedMode.toLowerCase()
+    if (filters.workMode.length > 0) {
+      result = result.filter(job =>
+        Array.isArray(job.workMode) &&
+        filters.workMode.some(selectedMode =>
+          job.workMode.some(mode =>
+            mode.toLowerCase() === selectedMode.toLowerCase()
+          )
         )
-      )
-    );
-  }
-
+      );
+    }
 
     if (filters.internship) {
       result = result.filter(job => job.jobType === 'Internship');
@@ -291,7 +304,8 @@ function OffCampusJobs({ compact = false }) {
     }
 
     setFilteredJobs(result);
-  }, [filters, offCampusJobs, sortBy]);
+    setOffCampusJobs(result);
+  }, [filters, allJobs, sortBy, hideSelected, selectedJobId]);
 
   const handleFilterChange = (filterType, value) => {
     setFilters(prev => {
@@ -320,6 +334,55 @@ function OffCampusJobs({ compact = false }) {
       }
     });
   };
+
+  const handleJobSelect = (job) => {
+    console.log('Opening details for:', job?.companyPosted?.companyDetails?.companyName);
+    setSelectedJob(job);
+    setIsModalOpen(true);
+    
+    // Pass to parent if onJobSelect exists (for compact mode)
+    if (onJobSelect && typeof onJobSelect === 'function') {
+      onJobSelect(job);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedJob(null);
+  };
+
+  // COMPACT VIEW - For sidebar
+  if (compact) {
+    return (
+      <div className="p-3 space-y-2">
+        {filteredJobs.length > 0 ? (
+          filteredJobs.map(job => (
+            <div 
+              key={job._id} 
+              className="cursor-pointer hover:bg-gray-50 rounded-lg transition-colors"
+              onClick={() => handleJobSelect(job)}
+            >
+              <JobCard 
+                job={job} 
+                onClick={() => {}} // Empty function since we handle click on parent div
+              />
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
+              <Building className="h-6 w-6 text-gray-400" />
+            </div>
+            <p className="text-gray-500 text-sm">
+              {hideSelected && selectedJobId 
+                ? "No other jobs to display" 
+                : "No jobs found"}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   const toggleSubDropdown = (dropdown) => {
     setOpenSubDropdowns(prev => ({
@@ -1084,22 +1147,25 @@ if (compact) {
           </div>
         </div>
 
-        {/* Job Cards */}
-        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6 min-h-[600px]">
-          {filteredJobs.length > 0 ? (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredJobs.map(job => (
-                  <div
-                    key={job._id}
-                    className="h-full flex transform transition-all duration-200 hover:scale-[1.02]"
-                  >
-                    <div className="w-full" onClick={() => handleJobClick(job._id)}>
-                      <JobCard job={job} />
-                    </div>
+        {/* Job Cards Grid */}
+      <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6 min-h-[600px]">
+        {filteredJobs.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredJobs.map(job => (
+                <div
+                  key={job._id}
+                  className="h-full flex"
+                >
+                  <div className="w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 overflow-hidden hover:shadow-xl hover:shadow-purple-100/50 transition-all duration-300 flex flex-col h-full">
+                    <JobCard 
+                      job={job} 
+                      onClick={handleJobSelect}
+                    />
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
 
               {/* View All Button */}
               <div className="mt-10 text-center">
@@ -1135,6 +1201,19 @@ if (compact) {
           )}
         </div>
       </div>
+    {/* Job Detail Modal for normal view */}
+      {isModalOpen && selectedJob && (
+        <div className="fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative z-10 flex items-center justify-center h-full p-4">
+            <OffCampusJobDetailModal
+              jobId={selectedJob._id}
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

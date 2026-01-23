@@ -42,26 +42,29 @@ export default function OffCampusHiringForm({ onBackClick }) {
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
   const initialState = {
-    venue: '',
-    degree: [],
-    studentStreams: [],
-    eligibilityCriteria: '',
-    description: '',
-    packageDetails: { currency: 'INR', totalCTC: '', fixedPay: '', joiningBonus: '' },
-    workLocations: [],
-    jobRoles: [],
-    workMode: [],
-    employmentType: [],
-    skills: [],
-    benefits: [],
-    placementStartDate: '',
-    placementEndDate: '',
-    numberOfRounds: '',
-    selectionProcess: [],
-    contactPerson: { name: '', designation: '', email: '', mobile: '', linkedin: '' },
-    tags: [],
-    minStudents: '',
-  };
+  venue: '',
+  degree: [],
+  studentStreams: [],
+  eligibilityCriteria: '',
+  description: '',
+  packageDetails: { currency: 'INR', totalCTC: '', fixedPay: '', joiningBonus: '' },
+  workLocations: [],
+  jobRoles: [],
+  workMode: [],
+  employmentType: [],
+  skills: [],
+  benefits: [],
+  placementStartDate: '',
+  placementEndDate: '',
+  onlineTestDate: '', // Add this
+  interviewWindow: { start: '', end: '' }, // Add this
+  offerRolloutDate: '', // Add this
+  numberOfRounds: '',
+  selectionProcess: [],
+  contactPerson: { name: '', designation: '', email: '', mobile: '', linkedin: '' },
+  tags: [],
+  minStudents: '',
+};
 
   const [formData, setFormData] = useState(() => {
     const savedData = localStorage.getItem('pendingOffCampusRequest');
@@ -192,6 +195,17 @@ useEffect(() => {
     }));
   };
 
+  const handleInterviewDateChange = (date, field) => {
+  const formattedDate = formatDateLocal(date);
+  setFormData(prev => ({
+    ...prev,
+    interviewWindow: {
+      ...prev.interviewWindow,
+      [field]: formattedDate
+    }
+  }));
+};
+
   const toggleDropdown = (dropdown) => {
     setDropdownOpen(prev => {
       const wasOpen = prev[dropdown];
@@ -263,14 +277,14 @@ useEffect(() => {
   })();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
+  e.preventDefault();
+  setError(null);
 
-    if (formData.description.length > 500) {
-      setDescriptionError("Job description cannot exceed 500 characters.");
-      toast.error("Job description cannot exceed 500 characters.");
-      return;
-    }
+  if (formData.description.length > 500) {
+    setDescriptionError("Job description cannot exceed 500 characters.");
+    toast.error("Job description cannot exceed 500 characters.");
+    return;
+  }
 
     const fieldsToValidate = [
       { key: 'studentStreams', name: 'Student Stream' },
@@ -294,36 +308,39 @@ useEffect(() => {
 
     setIsSubmitting(true);
 
-    try {
-      const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1];
+  try {
+    const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1];
 
-      const submissionData = {
-        venue: formData.venue,
-        degree: formData.degree,
-        studentStreams: formData.studentStreams,
-        eligibilityCriteria: formData.eligibilityCriteria,
-        description: formData.description,
-        packageDetails: {
-          currency: formData.packageDetails.currency,
-          totalCTC: parseFloat(formData.packageDetails.totalCTC) || 0,
-          fixedPay: parseFloat(formData.packageDetails.fixedPay) || 0,
-          joiningBonus: parseFloat(formData.packageDetails.joiningBonus) || 0
-        },
-        location: formData.workLocations,
-        jobRoles: formData.jobRoles,
-        workMode: formData.workMode,
-        employmentType: formData.employmentType,
-        skills: formData.skills,
-        benefits: formData.benefits,
-        tags: formData.tags,
-        startDate: formData.placementStartDate,
-        endDate: formData.placementEndDate,
-        rounds: formData.numberOfRounds ? [formData.numberOfRounds] : [],
-        selectionProcess: formData.selectionProcess.join(' + '),
-        contactPerson: formData.contactPerson,
-        minimumStudents: formData.minStudents,
-        jobType: "Off-campus",
-      };
+    const submissionData = {
+      venue: formData.venue,
+      degree: formData.degree,
+      studentStreams: formData.studentStreams,
+      eligibilityCriteria: formData.eligibilityCriteria,
+      description: formData.description,
+      packageDetails: {
+        currency: formData.packageDetails.currency,
+        totalCTC: parseFloat(formData.packageDetails.totalCTC) || 0,
+        fixedPay: parseFloat(formData.packageDetails.fixedPay) || 0,
+        joiningBonus: parseFloat(formData.packageDetails.joiningBonus) || 0
+      },
+      location: formData.workLocations,
+      jobRoles: formData.jobRoles,
+      workMode: formData.workMode,
+      employmentType: formData.employmentType,
+      skills: formData.skills,
+      benefits: formData.benefits,
+      tags: formData.tags,
+      startDate: formData.placementStartDate,
+      endDate: formData.placementEndDate,
+      onlineTestDate: formData.onlineTestDate, // Add this
+      interviewWindow: formData.interviewWindow, // Add this
+      offerRolloutDate: formData.offerRolloutDate, // Add this
+      rounds: formData.numberOfRounds ? [formData.numberOfRounds] : [],
+      selectionProcess: formData.selectionProcess.join(' + '),
+      contactPerson: formData.contactPerson,
+      minimumStudents: formData.minStudents,
+      jobType: "Off-campus",
+    };
 
       const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/hiring-channels/off-campus`, submissionData, {
         headers: {
@@ -934,6 +951,73 @@ useEffect(() => {
           placeholderText="End date"
           className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
           required
+          wrapperClassName="w-full"
+        />
+        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+      </div>
+    </div>
+  </div>
+</div>
+
+{/* Ninth Row: Hiring Timeline Dates */}
+<div>
+  <label className="block mb-2 font-medium text-sm text-gray-700">Hiring Timeline</label>
+  <div className="space-y-3">
+    <div>
+      <label className="block mb-1 text-xs text-gray-600">Test Date</label>
+      <div className="relative">
+        <DatePicker
+          selected={formData.onlineTestDate ? new Date(formData.onlineTestDate) : null}
+          onChange={(date) => handleDateChange(date, 'onlineTestDate')}
+          dateFormat="dd-MM-yyyy"
+          placeholderText="Test date"
+          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+          wrapperClassName="w-full"
+        />
+        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label className="block mb-1 text-xs text-gray-600">Interview Start</label>
+        <div className="relative">
+          <DatePicker
+            selected={formData.interviewWindow?.start ? new Date(formData.interviewWindow.start) : null}
+            onChange={(date) => handleInterviewDateChange(date, 'start')}
+            dateFormat="dd-MM-yyyy"
+            placeholderText="Interview start"
+            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+            wrapperClassName="w-full"
+          />
+          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+        </div>
+      </div>
+      <div>
+        <label className="block mb-1 text-xs text-gray-600">Interview End</label>
+        <div className="relative">
+          <DatePicker
+            selected={formData.interviewWindow?.end ? new Date(formData.interviewWindow.end) : null}
+            onChange={(date) => handleInterviewDateChange(date, 'end')}
+            dateFormat="dd-MM-yyyy"
+            placeholderText="Interview end"
+            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+            wrapperClassName="w-full"
+          />
+          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+        </div>
+      </div>
+    </div>
+    
+    <div>
+      <label className="block mb-1 text-xs text-gray-600">Offer Rollout Date</label>
+      <div className="relative">
+        <DatePicker
+          selected={formData.offerRolloutDate ? new Date(formData.offerRolloutDate) : null}
+          onChange={(date) => handleDateChange(date, 'offerRolloutDate')}
+          dateFormat="dd-MM-yyyy"
+          placeholderText="Offer rollout"
+          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
           wrapperClassName="w-full"
         />
         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />

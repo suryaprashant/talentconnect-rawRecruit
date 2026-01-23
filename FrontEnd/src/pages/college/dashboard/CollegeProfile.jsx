@@ -332,12 +332,12 @@ export default function CollegeProfile() {
 
                 {/* College Details */}
                 <div className="flex flex-wrap items-center gap-4 mt-4">
-                  {collegeLocation && (
+                  {/* {collegeLocation && (
                     <div className="flex items-center gap-2 text-gray-600">
                       <MapPin className="h-4 w-4 text-[#3b82f6]" />
                       <span className="text-sm">{collegeLocation}</span>
                     </div>
-                  )}
+                  )} */}
 
                   {(city || state || country) && (
                     <div className="flex items-center gap-2 text-gray-600">

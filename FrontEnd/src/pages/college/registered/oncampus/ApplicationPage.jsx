@@ -286,7 +286,7 @@ const handleViewAllApplications = (jobId, e) => {
             </div>
 
             {/* Search and Filters */}
-            <div className="p-6 border-b border-white/50">
+            {/* <div className="p-6 border-b border-white/50">
               <div className="flex flex-col md:flex-row gap-4 items-center">
                 <div className="relative flex-grow">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -313,7 +313,7 @@ const handleViewAllApplications = (jobId, e) => {
                   {totalItems > 0 ? `Showing ${startIndex + 1}-${endIndex} of ${totalItems}` : 'Showing 0-0 of 0'}
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Table */}
             <div className="overflow-x-auto">
@@ -322,10 +322,10 @@ const handleViewAllApplications = (jobId, e) => {
                   <tr>
                     {/* UPDATED HEADER: Degree instead of Job Title */}
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Degree</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
+                    {/* <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th> */}
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Deadline</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Views</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Applications</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">New Applications</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
                   </tr>
                 </thead>
@@ -372,7 +372,7 @@ const handleViewAllApplications = (jobId, e) => {
                           onClick={() => handleView(jobId)}
                         >
                           {/* UPDATED COLUMN: Degree and Location */}
-                          <td className="px-6 py-4">
+<td className="px-6 py-4">
   <Link
     to={`/college-dashboard/preview/On-campus/${job._id}?isApplied=true`}
     disabled={job.applicationCount === 0}
@@ -380,7 +380,7 @@ const handleViewAllApplications = (jobId, e) => {
     title={job.applicationCount === 0 ? "No applications to view" : "View Job Description"}
     onClick={e => e.stopPropagation()}
   >
-    <div className={`font-medium ${job.applicationCount === 0 ? 'text-black-400' : 'text-gray-900'}`}>
+    <div className={`font-medium whitespace-normal break-words ${job.applicationCount === 0 ? 'text-black-400' : 'text-gray-900'}`}>
       {jobDegree}
     </div>
     <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">

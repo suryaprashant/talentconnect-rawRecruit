@@ -142,7 +142,7 @@ const RoleSelection = () => {
             {/* Back Button and Get Started badge in same container */}
             <div className="relative mb-12 mt-12">
               {/* Back Button on left */}
-              <div className="absolute left-0 top-0">
+              {/* <div className="absolute left-0 top-0">
                 <button
                   onClick={() => navigate(-1)}
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-5 py-2 rounded-full text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300"
@@ -157,7 +157,7 @@ const RoleSelection = () => {
                   </svg>
                   Back
                 </button>
-              </div>
+              </div> */}
 
               {/* Get Started badge centered */}
               <div className="flex justify-center">

@@ -131,7 +131,7 @@ import JobDetailPage from "./pages/college/collegeDashboard/onCampusOpportunity/
 import InternJobsListingPage from "./pages/college/collegeDashboard/intershipOpportunity/InternJobListingPage";
 import InternJobDetailPage from "./pages/college/collegeDashboard/intershipOpportunity/InternJobDetailPage";
 import PoolJobListingPage from "./pages/college/collegeDashboard/poolCampusOpportunity/PoolJobListingPage";
-import PoolJobDetailsPage from "./pages/college/collegeDashboard/poolCampusOpportunity/PoolJobDetailPage";
+// import PoolJobDetailsPage from "./pages/college/collegeDashboard/poolCampusOpportunity/PoolJobDetailPage";
 import InternJobListings from "./pages/students/studentDashboard/internshipOpportunity/InternJobListing";
 import InternJobDetails from "./pages/students/studentDashboard/internshipOpportunity/InternJobDetails";
 import CareerCraft from "./pages/students/serviceRequest/CareerCraft";
@@ -217,6 +217,8 @@ import EmployerPostIntership from "./pages/employer/hiringChannels/postInternshi
 import EmployerOnCampusHiring from './pages/employer/hiringChannels/onCampusHiring/OnCampusHiring'
 import EmployerPoolCampuses from './pages/employer/hiringChannels/poolCampusHiring/PoolCampus'
 import EmployerOffCampus from "./pages/employer/hiringChannels/offCampusHiring/OffCapus";
+import EmployerLayout from "./components/employer/employerDashboard/EmployerLayout";
+import EmployerPoolLayout from "./components/employer/employerDashboard/poolCampus/EmployerPoolLayout";
 import ChatLayout from "./home/chatLayout";
 import { useAuth } from "./context/AuthProvider";
 import EmployerProfile from "./pages/employer/dashboard/CompanyProfile";
@@ -259,6 +261,7 @@ import StudentResumePreview from "./pages/students/StudentResumePreview";
 import OnCampusLayout from "@/components/college/collegeDashboard/onCampusOpprtunity/OnCampusLayout";
 //import JobDetailPage from "@/components/college/collegeDashboard/onCampusOpprtunity/JobDetailPage";
 import PoolCampusLayout from "./components/college/collegeDashboard/poolCampusOpportunity/PoolCampusLayout";
+import PoolJobDetailsPage from "./pages/college/collegeDashboard/poolCampusOpportunity/PoolJobDetailPage";
 import CompanyOnCampusLayout from "./components/company/CompanyOnCampusLayout";
 import CollegeDetailPage from "./pages/company/employerDashboard/CollegeDetailPage";
 import CompanyPoolCampusLayout from "./components/company/CompanyPoolCampusLayout";
@@ -361,15 +364,16 @@ function AppRoutes() {
 
 
 
-<Route path="/student-dashboard/Off-campus">
-  {/* The main full-screen list view */}
+{/* <Route path="/student-dashboard/Off-campus">
+
   <Route index element={<OffCampusJobs />} />
 
-  {/* The split-view: layout wraps the detail page */}
+
   <Route path=":jobId" element={<OffCampusLayout />}>
     <Route index element={<OffCampusJobDetail />} />
   </Route>
-</Route>
+</Route> */}
+<Route path="/student-dashboard/Off-campus" element={<OffCampusLayout />} />
 
               <Route path="/student-dashboard/hackathon" element={<Hackathon />} />
               <Route path="/student-dashboard/hackathon/:id" element={<Detail />} />
@@ -473,22 +477,20 @@ function AppRoutes() {
 
               {/* Find your Company On-campus routes and update them to this: */}
               <Route path="/company-dashboard/on-campus">
-  {/* Remove the index route that renders CollegeListingPage directly */}
-  {/* <Route index element={<CollegeListingPage />} /> */} {/* ❌ Remove this */}
-  
-  {/* Make CompanyOnCampusLayout the main view */}
-  <Route index element={<CompanyOnCampusLayout />} />
-  
-  {/* Optional: For direct links to specific colleges */}
-  <Route path="college/:id" element={<CompanyOnCampusLayout />} />
-</Route>
 
+  <Route index element={<CompanyOnCampusLayout />} />
+{/* <Route path="/company-dashboard/on-campus/:collegeId" element={<AppliedCollegeDetails />} /> */}
+{/* <Route path="application-status/on-campus" element={<OncampusApplicationStatus />} /> */}
+
+</Route>
 
 
               <Route path="/company-dashboard/pool-campus">
                 {/* The main full-screen list */}
                 {/* <Route index element={<PoolEmployeeListing />} /> */}
                 <Route index element={<CompanyPoolCampusLayout />} />
+                {/* <Route index element={<PoolCampusEmployeeDash />} /> */}
+                {/* <Route path=":id" element={<CompanyPoolCampusLayout />} /> */}
 
                 {/* The split-view: activated when an ID exists in the URL */}
                 {/* <Route path=":id" element={<CompanyPoolCampusLayout />}>
@@ -570,11 +572,20 @@ function AppRoutes() {
 
               <Route path="/employer-interviews" element={<EmployerInterviewScheduler />} />
               <Route path="/employer-dashboard/resume-search" element={<EmployerResumeApp />} />
-              <Route path="/employer-dashboard/On-campus" element={<EmployerListingPage />} />
-              <Route path="/employer-dashboard/On-campus/:id" element={<EmployerDetailsPage />} />
 
-              <Route path="/employer-dashboard/pool-campus" element={<EmployerPoolEmployeeListing />} />
-              <Route path="/employer-dashboard/pool-campus/:i" element={<EmployerPoolCampus />} />
+              {/* <Route path="/employer-dashboard/On-campus" element={<EmployerListingPage />} /> */}
+              <Route path="/employer-dashboard/On-campus" element={<EmployerLayout />} />
+              {/* <Route path="/employer-dashboard/On-campus/:id" element={<EmployerDetailsPage />} /> */}
+              
+
+              {/* <Route path="/employer-dashboard/pool-campus" element={<EmployerPoolEmployeeListing />} /> */}
+              <Route path="/employer-dashboard/pool-campus" element={<EmployerPoolLayout />} />
+              {/* <Route path="/employer-dashboard/pool-campus/:i" element={<EmployerPoolCampus />} /> */}
+
+              {/* <Route path="/employer-dashboard/on-campus-colleges" element={<EmployerListingPage />} />
+<Route path="/employer-dashboard/on-campus-colleges/:id" element={<EmployerDetailsPage />} />
+<Route path="/employer-dashboard/pool-campus-colleges" element={<PoolCampusListingPage />} />
+<Route path="/employer-dashboard/pool-campus-colleges/:id" element={<PoolCampusDetailsPage />} /> */}
 
               {/* service request  */}
               <Route path="/service-request/workforce-solution" element={<EmployerWorkforce />} />
@@ -638,15 +649,10 @@ function AppRoutes() {
               <Route path="/college/saved-jobs/*" element={<JobRoutes />} />
 
               {/* College Dashboard Routes */}
-              <Route path="/college-dashboard/On-campus">
-                {/* Full Page: No ID in URL */}
-                <Route index element={<JobsListingPage />} />
-
-                {/* Split View: ID exists in URL */}
-                <Route path=":id" element={<OnCampusLayout />}>
-                  <Route index element={<JobDetailPage />} />
-                </Route>
-              </Route>
+<Route path="/college-dashboard/on-campus" element={<OnCampusLayout />}>
+  <Route index element={<JobsListingPage />} />
+  {/* No separate detail route needed */}
+</Route>
 
               <Route path="/college-dashboard/Internship" element={<InternJobsListingPage />} />
               <Route path="/college-dashboard/Internship/:id" element={<InternJobDetailPage />} />
@@ -654,12 +660,10 @@ function AppRoutes() {
               {/* <Route path="/college-dashboard/Pool-campus" element={<PoolJobListingPage />} />
               <Route path="/college-dashboard/Pool-campus/:id" element={<PoolJobDetailsPage />} /> */}
 
-              <Route path="/college-dashboard/Pool-campus">
-              <Route index element={<PoolJobListingPage />} />
-              <Route path=":id" element={<PoolCampusLayout />}>
-                <Route index element={<PoolJobDetailsPage />} />
-              </Route>
-            </Route>
+              {/* <Route path="/college-dashboard/Pool-campus" element={<PoolCampusLayout />} />
+              <Route path="/college-dashboard/Pool-campus/:id" element={<PoolJobDetailsPage />} /> */}
+              {/* <Route path="/college-dashboard/Pool-campus/:id" element={<PoolJobDetailsPage />} /> */}
+<Route path="/college-dashboard/Pool-campus" element={<PoolCampusLayout />} />
 
               {/* service request  */}
               <Route path='service-request/campus-placement' element={<CampusPlacement />} />
