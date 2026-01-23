@@ -41,7 +41,12 @@ export const getRelevantOffCampusJobs = async (req, res) => {
 
       // --- 2. TOOLS & PLATFORMS (10%) ---
       const studentTools = (student.toolsAndPlatforms || []).map(norm);
-      let matchedTools = studentTools.filter(t => fullJobText.includes(t) || jobReqSkills.includes(t));
+      const jobTools = (job.toolsAndPlatforms || []).map(norm); // Structured field
+      
+      let matchedTools = studentTools.filter(t => 
+        jobTools.includes(t) || fullJobText.includes(t)
+      );
+
       if (matchedTools.length >= 2) breakdown.tools = 10;
       else if (matchedTools.length === 1) breakdown.tools = 5;
       logs.tools = `Matched Tools: [${matchedTools.join(", ") || "None"}]`;
@@ -66,19 +71,32 @@ export const getRelevantOffCampusJobs = async (req, res) => {
       let acadDetails = [];
 
       // CGPA check
-      const cgpaRegex = /(?:cgpa|cut-off|minimum|min)\s*[:>=]*\s*([0-9]\.[0-9]|[0-9]{2})/i;
-      const cgpaMatch = fullJobText.match(cgpaRegex);
-      if (!cgpaMatch) {
-        breakdown.academics += 10;
-        acadDetails.push("CGPA: Full Credit (No min specified)");
+     const requiredCGPA = parseFloat(job.cgpa) || 0;
+      
+      if (requiredCGPA === 0) {
+        // Fallback to existing Regex if the structured field is empty
+        const cgpaRegex = /(?:cgpa|cut-off|minimum|min)\s*[:>=]*\s*([0-9]\.[0-9]|[0-9]{2})/i;
+        const cgpaMatch = fullJobText.match(cgpaRegex);
+        
+        if (!cgpaMatch) {
+          breakdown.academics += 10;
+          acadDetails.push("CGPA: Full Credit (No min specified)");
+        } else {
+          const regexRequired = parseFloat(cgpaMatch[1]);
+          if (sCGPA >= regexRequired) {
+            breakdown.academics += 10;
+            acadDetails.push(`CGPA: Match (Regex: ${sCGPA} >= ${regexRequired})`);
+          } else { acadDetails.push(`CGPA: Fail (Regex: ${sCGPA} < ${regexRequired})`); }
+        }
       } else {
-        const requiredCGPA = parseFloat(cgpaMatch[1]);
+        // Use the structured Double field
         if (sCGPA >= requiredCGPA) {
           breakdown.academics += 10;
-          acadDetails.push(`CGPA: Match (${sCGPA} >= ${requiredCGPA})`);
-        } else { acadDetails.push(`CGPA: Fail (${sCGPA} < ${requiredCGPA})`); }
+          acadDetails.push(`CGPA: Match (Schema: ${sCGPA} >= ${requiredCGPA})`);
+        } else {
+          acadDetails.push(`CGPA: Fail (Schema: ${sCGPA} < ${requiredCGPA})`);
+        }
       }
-
       // Year check
       const yearRegex = /\b(202[0-9]|2030)\b/;
       const hasYearMention = yearRegex.test(fullJobText);
