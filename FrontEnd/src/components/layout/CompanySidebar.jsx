@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLegacyAuth } from '@/context/AuthProvider';
 import SidebarNavItem from './SidebarNavItem';
 import SidebarNavGroup from './SidebarNavGroup';
 import SidebarHelpModal from "@/components/ui/SidebarHelpModal";
@@ -7,7 +8,7 @@ import { companyHelpContent } from "@/constants/companyHelpContent";
 function CompanySidebar({ activePath }) {
   const [openHelp, setOpenHelp] = useState(false);
   const [helpContent, setHelpContent] = useState(null);
-
+const [authUser] = useLegacyAuth();
   const handleOpenHelp = (key) => {
     const content = companyHelpContent[key];
     if (content) {
