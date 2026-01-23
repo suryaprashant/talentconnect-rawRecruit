@@ -127,7 +127,15 @@ const jobPostingSchema = new mongoose.Schema({
     minimumStudents: { type: String },
 
     internshipDuration: { type: String },
+cgpa: {
+        type: Number,
+        default: 0.0
+    },
 
+    // Tools and Platforms (Stored as a Vector/Array of Strings)
+    toolsAndPlatforms: [{
+        type: String
+    }],
     eligibilityCriteria: {
         type: String
     },

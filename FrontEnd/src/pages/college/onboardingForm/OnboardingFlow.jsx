@@ -218,8 +218,10 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios'; 
-import {useAuth} from '../../../context/AuthProvider'
+import {useLegacyAuth } from '../../../context/AuthProvider'
 import toast from 'react-hot-toast';
+import { useAuth } from "@/context/AuthContext";
+
 
 // Import Page Components
 import Welcome from './Welcome';
@@ -253,7 +255,9 @@ const totalVisibleStepperSteps = stepperSteps.length;
 function OnboardingFlow() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [authUser, setAuthUser] = useAuth();
+  const [authUser, setAuthUser] = useLegacyAuth ();
+  const { refreshUser } = useAuth();
+
 
   const [formData, setFormData] = useState({
     collegeName: '',
@@ -435,6 +439,9 @@ function OnboardingFlow() {
         };
         setAuthUser({ user: finalUser });
       }
+
+      await refreshUser(); // 🔥 Re-hydrates role + dashboard
+
 
       toast.success('College onboarding form submitted successfully!');
       

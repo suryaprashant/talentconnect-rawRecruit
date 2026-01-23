@@ -9,22 +9,47 @@ import Logo from '../ui/Logo'
 import FresherSidebar from './FresherSidebar'
 import ProfessionalSidebar from './ProfessionalSidebar'
 import EmployerSidebar from './EmployerSidebar'
+import { useAuth } from "@/context/AuthContext";
+
 
 function Sidebar({ open, setOpen }) {
   const navigate = useNavigate();
   const location = useLocation()
+  const { user, loading } = useAuth();
+
+if (loading) {
+  return (
+    <aside className="w-64 bg-white border-r">
+      <div className="p-4 text-gray-500">Loading...</div>
+    </aside>
+  );
+}
+
+
+const isAuthenticated = !!user;
+const role = user?.userType;
   
-  const selectedRole=localStorage.getItem('selectedRole')
+ 
   const isActive = (path) => location.pathname === path
   
-  const isAuthenticated = localStorage.getItem('token') && localStorage.getItem('ChatAppUser');
+  //const isAuthenticated = localStorage.getItem('token') && localStorage.getItem('ChatAppUser');
   
-  const handleLogin =()=>{
+  {/*const handleLogin =()=>{
      const userType=localStorage.getItem('selectedServiceType')
      localStorage.setItem('selectedRole',userType)
      console.log(userType)
      navigate('/login')
-  }
+  }*/}
+
+  const handleLogin = () => {
+  navigate('/login');
+};
+
+  console.log("Sidebar auth:", {
+    loading,
+    isAuthenticated,
+    role
+  });
 
   return (
     <>
@@ -61,12 +86,12 @@ function Sidebar({ open, setOpen }) {
             {selectedRole === 'college' && <CollegeSidebar activePath={location.pathname} />}
              */}
           
-            {isAuthenticated && selectedRole === 'student' && <StudentSidebar activePath={location.pathname} />}
-            {isAuthenticated && selectedRole === 'fresher' && <FresherSidebar activePath={location.pathname} />}
-            {isAuthenticated && selectedRole === 'professional' && <ProfessionalSidebar activePath={location.pathname} />}
-            {isAuthenticated && selectedRole === 'employer' && <EmployerSidebar activePath={location.pathname} />}
-            {isAuthenticated && selectedRole === 'company' && <CompanySidebar activePath={location.pathname} />}
-            {isAuthenticated && selectedRole === 'college' && <CollegeSidebar activePath={location.pathname} />}
+            {isAuthenticated && role  === 'student' && <StudentSidebar activePath={location.pathname} />}
+            {isAuthenticated && role === 'fresher' && <FresherSidebar activePath={location.pathname} />}
+            {isAuthenticated && role === 'professional' && <ProfessionalSidebar activePath={location.pathname} />}
+            {isAuthenticated && role === 'employer' && <EmployerSidebar activePath={location.pathname} />}
+            {isAuthenticated && role === 'company' && <CompanySidebar activePath={location.pathname} />}
+            {isAuthenticated && role === 'college' && <CollegeSidebar activePath={location.pathname} />}
 
             {!isAuthenticated && (
               <div className='text-center'>

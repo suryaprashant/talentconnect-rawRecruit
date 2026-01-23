@@ -60,14 +60,14 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
-import { useAuth } from '../../../../context/AuthProvider'; 
+import { useLegacyAuth } from '../../../../context/AuthProvider'; 
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
 
 export default function OffCampus() {
   const navigate = useNavigate(); 
-  const [authUser] = useAuth(); 
+  const [authUser] = useLegacyAuth(); 
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
   const [formData, setFormData] = useState({

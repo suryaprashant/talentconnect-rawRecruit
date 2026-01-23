@@ -4,7 +4,7 @@ import employerOnboardingModel from '../../models/employerDashboard/employerOnbo
 import cloudinary from '../../../config/cloudinary.js';
 import streamifier from 'streamifier';
 import Auth from '../../models/authModel.js'
-import { getCompanyService, updateCompanyProfileService, createProfileService } from '../../services/companyService.js';
+import { getCompanyService, updateCompanyProfileService, createProfileService, createEmployerProfileService } from '../../services/companyService.js';
 import { updateAuthUserService } from '../../services/authService.js';
 
 // Helper function to upload a file stream to Cloudinary
@@ -25,8 +25,8 @@ const streamUpload = (buffer, folder) => {
 export const createEmployerOnboarding = async (req, res) => {
     try {
         const userId = req.user._id;
-        const company = await getCompanyService(userId)
-        
+        const company = await getCompanyService(userId);
+    
         if (!company) {
             return res.status(400).json({ message: 'Onboarding already exists for this user.' });
         }
@@ -42,14 +42,19 @@ export const createEmployerOnboarding = async (req, res) => {
         if (files?.backgroundImage?.[0]) {
             uploads.backgroundImageUrl = (await streamUpload(files.backgroundImage[0].buffer, 'employerBackgroundImages')).secure_url;
         }
+        const parsedEmployerDetails = JSON.parse(employerDetails);
+        const parsedCompanyDetails = JSON.parse(companyDetails);
+        const parsedHiringPreferences = JSON.parse(hiringPreferences);
 
         // Create the new document using service
-        const onboardingData = await createProfileService({
-            userId,
-            ...uploads,
-            employerDetails: JSON.parse(employerDetails),
-            companyDetails: JSON.parse(companyDetails),
-            hiringPreferences: JSON.parse(hiringPreferences),
+       const onboardingData = await createProfileService({
+          userId,
+          employerDetails: {
+            ...parsedEmployerDetails,
+            ...uploads, // ✅ CORRECT PLACE
+          },
+          companyDetails: parsedCompanyDetails,
+          hiringPreferences: parsedHiringPreferences,
         });
 
         const updatedUser = await updateAuthUserService(userId, {

@@ -272,7 +272,7 @@ export const createJobPosting = async (req, res) => {
 export const createInternshipPosting = async (req, res) => {
     try {
         const userId = req.user._id;
-
+        
         const companyPostedId = await getCompanyService(userId);
         if (!companyPostedId) {
             return res.status(404).json({ error: "Company profile not found" });
@@ -287,6 +287,17 @@ export const createInternshipPosting = async (req, res) => {
         if (!newPosting) {
             return sendError(res, 500, "Failed to create internship posting");
         }
+
+        // 🔔 Notify students & freshers
+        await notifyUsersOnJobPost({
+          companyId: userId,
+          companyName: companyPostedId.data[0].companyDetails.companyName,
+          jobTitle: newPosting.jobTitle || req.body.jobTitle || "new internship",
+          jobId: newPosting._id,
+          jobType: newPosting.jobType,
+        }).catch(err => {
+          console.error("Notification Error:", err.message);
+        });
 
         sendResponse(res, 201, { message: "Internship posting created successfully!", data: newPosting });
     } catch (error) {

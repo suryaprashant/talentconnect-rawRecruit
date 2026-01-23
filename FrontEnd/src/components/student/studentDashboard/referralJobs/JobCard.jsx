@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { MapPinIcon, HeartIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "@/context/AuthContext";
+
 
 // Pastel color options
 const pastelColors = [
@@ -71,7 +73,12 @@ function getStableColor(id = "") {
 }
 
 const JobCard = ({ job }) => {
+  const { user, loading } = useAuth();
   const [isSaved, setIsSaved] = useState(job?.isSaved || false);
+
+    if (loading) return null;
+
+  const role = user?.userType;
 
   const companyName =
     job.companyPosted?.companyName ||
@@ -173,7 +180,7 @@ const JobCard = ({ job }) => {
         </div>
 
         <Link
-          to={`/${localStorage.getItem("selectedRole")}-dashboard/job-listing/${job._id}`}
+          to={`/${role}-dashboard/job-listing/${job._id}`}
           className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
         >
           Details

@@ -26,14 +26,14 @@ export const authenticate = (req, res, next) => {
 };
 
 // Optional: Role-based middleware
-export const authorize = (...roles) => {
-    return (req, res, next) => {
-        if (!roles.includes(req.user.role)) {
-            return res.status(403).json({ 
-                success: false, 
-                message: 'User role not authorized' 
-            });
-        }
-        next();
-    };
+export const authorize = (...allowedUserTypes) => {
+  return (req, res, next) => {
+    if (!allowedUserTypes.includes(req.user.userType)) {
+      return res.status(403).json({
+        success: false,
+        message: "User not authorized"
+      });
+    }
+    next();
+  };
 };

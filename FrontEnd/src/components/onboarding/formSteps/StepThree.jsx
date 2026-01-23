@@ -390,15 +390,12 @@ export const StepThree = ({
   );
 };*/
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useMemo } from "react";
 import CreatableSelect from "react-select/creatable";
 import { UploadIcon, GraduationCap } from "lucide-react";
 import colleges from "../../../assets/colleges.json";
-const degreeOptions = [
-  { value: "bachelors", label: "Bachelor's" },
-  { value: "masters", label: "Master's" },
-  { value: "phd", label: "PhD" },
-];
+import axios from 'axios';
+
 
 const normalizeString = (str) =>
   str?.toLowerCase().replace(/[^\w\s]/g, "").replace(/\s+/g, " ").trim() || "";
@@ -422,7 +419,38 @@ export const StepThree = ({
   });
 
   const [collegeSuggestions, setCollegeSuggestions] = useState([]);
+const [dbColleges, setDbColleges] = useState([]);
+const [isLoadingColleges, setIsLoadingColleges] = useState(false);
 
+useEffect(() => {
+  const fetchColleges = async () => {
+    try {
+      const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/colleges/all`);
+      // Ensure data is in { value, label } format
+      const formatted = data.map(c => typeof c === 'string' ? { value: c, label: c } : c);
+      setDbColleges(formatted);
+    } catch (err) {
+      console.error("Error loading colleges from DB", err);
+    }
+  };
+  fetchColleges();
+}, []);
+
+const handleAddCollege = async (name) => {
+  setIsLoadingColleges(true);
+  try {
+    const { data } = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/colleges/register`, { name });
+    // Update local state list so it appears in the dropdown
+    setDbColleges(prev => [...prev, data]);
+    // Set the selected value in the form
+    setLocalFormData(p => ({ ...p, college: data.label }));
+  } catch (err) {
+    console.error("College save failed", err);
+    alert("Could not register college. It might already exist.");
+  } finally {
+    setIsLoadingColleges(false);
+  }
+};
   const generateYearOptions = () => {
     const currentYear = new Date().getFullYear();
     const startYear = currentYear + 5;
@@ -435,6 +463,47 @@ export const StepThree = ({
   };
   const yearOptions = generateYearOptions();
 
+  const [metaData, setMetaData] = useState([]);
+
+// 1. Fetch data from your new API
+useEffect(() => {
+  const fetchMeta = async () => {
+    try {
+      const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta`);
+      setMetaData(data);
+    } catch (err) {
+      console.error("Error loading degrees", err);
+    }
+  };
+  fetchMeta();
+}, []);
+
+// 2. Map Degrees for the first dropdown
+const degreeOptions = useMemo(() => 
+  metaData.map(m => ({ value: m.degree, label: m.degree })), 
+[metaData]);
+
+// 3. Map linked Streams for the Specialization dropdown
+const specializationOptions = useMemo(() => {
+  if (!localFormData.degree) return [];
+  const match = metaData.find(m => m.degree === localFormData.degree);
+  return match ? match.streams.map(s => ({ value: s, label: s })) : [];
+}, [localFormData.degree, metaData]);
+
+// 4. Handler to add new entries to the database on the fly
+const handleRemoteAdd = async (type, name) => {
+  try {
+    const payload = {
+      type: type === 'degree' ? 'degree' : 'studentStreams',
+      name: name.trim(),
+      parentDegree: type === 'specialization' ? localFormData.degree : null
+    };
+    const { data } = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/meta/add`, payload);
+    setMetaData(prev => [...prev.filter(m => m.degree !== data.degree), data]);
+  } catch (err) {
+    console.error("Save failed", err);
+  }
+};
   // Get the role from sessionStorage
   const selectedRole = sessionStorage.getItem('candidateOnboardingSelectedRole');
   
@@ -563,80 +632,28 @@ export const StepThree = ({
               Educational Background
             </h1>
             <p className="text-gray-600 mb-4">
-              Provide your academic background to match with relevant job and internship opportunities.
+              Provide your academic background to match with relevant job and internship opportunities
             </p>
           </div>
 
           {/* Wider Form Section */}
           <div className="space-y-6">
             {/* College/University Field */}
-            <div>
-              <label htmlFor="college" className="block text-gray-700 font-medium text-sm mb-2">
-                College/University
-              </label>
-              {collegeSuggestions.includes(localFormData.college) ? (
-                <CreatableSelect
-                  isClearable
-                  placeholder="Select or type your college"
-                  options={collegeSuggestions.map((name) => ({
-                    value: name,
-                    label: name,
-                  }))}
-                  value={
-                    localFormData.college
-                      ? { value: localFormData.college, label: localFormData.college }
-                      : null
-                  }
-                  onChange={(selected) =>
-                    setLocalFormData((prev) => ({
-                      ...prev,
-                      college: selected ? selected.value : "",
-                    }))
-                  }
-                  className="mt-2"
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      minHeight: '56px',
-                      borderColor: '#d1d5db',
-                      borderRadius: '12px',
-                      '&:hover': {
-                        borderColor: '#667eea'
-                      }
-                    }),
-                    placeholder: (base) => ({
-                      ...base,
-                      color: '#9ca3af'
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      borderRadius: '12px',
-                      overflow: 'hidden'
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isFocused ? '#667eea10' : 'transparent',
-                      color: state.isFocused ? '#5b21b6' : '#374151',
-                      '&:hover': {
-                        backgroundColor: '#667eea10'
-                      }
-                    })
-                  }}
-                />
-              ) : (
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={localFormData.college}
-                    onChange={(e) =>
-                      setLocalFormData((prev) => ({ ...prev, college: e.target.value }))
-                    }
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
-                    placeholder="Enter your college name"
-                  />
-                </div>
-              )}
-            </div>
+           <div>
+  <label className="block text-gray-700 font-medium text-sm mb-2">College/University</label>
+  <CreatableSelect
+    isClearable
+    isLoading={isLoadingColleges}
+    options={dbColleges}
+    onCreateOption={handleAddCollege} // Uses the new College-only function
+    onChange={(sel) => setLocalFormData(p => ({ ...p, college: sel?.label || "" }))}
+    value={localFormData.college ? { value: localFormData.college, label: localFormData.college } : null}
+    styles={customSelectStyles}
+    placeholder="Search or add your college"
+  />
+</div>
+
+            
 
             {selectedRole === 'student' ? (
               // Student Layout: Degree & Semester side-by-side, Graduation Year on a new line
@@ -738,93 +755,34 @@ export const StepThree = ({
               // Non-Student Layout: Degree & Graduation Year side-by-side
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Degree */}
-                <div>
-                  <label htmlFor="degree" className="block text-gray-700 font-medium text-sm mb-2">
-                    Degree
-                  </label>
-                  <CreatableSelect
-                    isClearable
-                    placeholder="Select or type your degree"
-                    options={degreeOptions}
-                    value={
-                      localFormData.degree
-                        ? {
-                            value: localFormData.degree,
-                            label: localFormData.degree,
-                          }
-                        : null
-                    }
-                    onChange={(selected) =>
-                      setLocalFormData((prev) => ({
-                        ...prev,
-                        degree: selected ? selected.value : "",
-                      }))
-                    }
-                    className="mt-2"
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        minHeight: '56px',
-                        borderColor: '#d1d5db',
-                        borderRadius: '12px',
-                        '&:hover': {
-                          borderColor: '#667eea'
-                        }
-                      }),
-                      placeholder: (base) => ({
-                        ...base,
-                        color: '#9ca3af'
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        borderRadius: '12px',
-                        overflow: 'hidden'
-                      }),
-                      option: (base, state) => ({
-                        ...base,
-                        backgroundColor: state.isFocused ? '#667eea10' : 'transparent',
-                        color: state.isFocused ? '#5b21b6' : '#374151',
-                        '&:hover': {
-                          backgroundColor: '#667eea10'
-                        }
-                      })
-                    }}
-                  />
-                </div>
+                <CreatableSelect
+  isClearable
+  options={degreeOptions}
+  onCreateOption={(val) => handleRemoteAdd('degree', val)}
+  value={localFormData.degree ? { value: localFormData.degree, label: localFormData.degree } : null}
+  onChange={(sel) => setLocalFormData(p => ({ ...p, degree: sel?.value || "", specialization: "" }))}
+  placeholder="Search or add degree"
+/>
+             
                 
                 {/* Graduation Year */}
                 <GraduationYearSelect flexClass="w-full" />
               </div>
             )}
-
+           <label htmlFor="semester" className="block text-gray-700 font-medium text-sm mb-2">
+                    Field of Study / Specialization
+           </label>
             {/* Field of Study / Specialization */}
-            <div>
-              <label htmlFor="specialization" className="block text-gray-700 font-medium text-sm mb-2">
-                Field of Study / Specialization
-              </label>
-              <input
-                id="specialization"
-                name="specialization"
-                value={
-                  localFormData.specialization &&
-                  localFormData.specialization !== "Not Found"
-                    ? localFormData.specialization
-                    : ""
-                }
-                onChange={(e) =>
-                  setLocalFormData((prev) => ({
-                    ...prev,
-                    specialization: e.target.value,
-                  }))
-                }
-                className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
-                placeholder={
-                  localFormData.specialization === "Not Found"
-                    ? "Not Found"
-                    : "Enter your specialization"
-                }
-              />
-            </div>
+           <CreatableSelect
+            isClearable
+            isDisabled={!localFormData.degree}
+            options={specializationOptions}
+            onCreateOption={(val) => handleRemoteAdd('specialization', val)}
+            value={localFormData.specialization ? { value: localFormData.specialization, label: localFormData.specialization } : null}
+            onChange={(sel) => setLocalFormData(p => ({ ...p, specialization: sel?.value || "" }))}
+            placeholder="Search or add specialization"
+          />
+                      
 
             {/* CGPA/Percentage */}
             <div>
@@ -896,4 +854,13 @@ export const StepThree = ({
       </div>
     </div>
   );
+};
+const customSelectStyles = {
+  control: (base, state) => ({
+    ...base,
+    minHeight: '56px',
+    borderRadius: '12px',
+    borderColor: state.isFocused ? '#667eea' : '#d1d5db',
+    boxShadow: state.isFocused ? '0 0 0 3px rgba(102,126,234,0.1)' : 'none',
+  }),
 };

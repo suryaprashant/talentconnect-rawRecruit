@@ -1,6 +1,6 @@
 import { fetchInternshipByIdService, 
-    // fetchInternshipService, 
-    // fetchJobListingOpportunityService, 
+     fetchInternshipService, 
+     //fetchJobListingOpportunityService, 
     fetchOpportunityService, 
     fetchReferalOpportunityService} from "../services/jobService.js";
 
@@ -31,28 +31,50 @@ export async function fetchOnCampusOpportunities(req, res) {
     }
 }
 
-// export async function fetchInternshipOpportunities(req, res) {
-//     const userType = req.user.userType;
-    // console.log("usertype: ", userType)
-    // const { openingFor } = req.query;
+ {/*export async function fetchInternshipOpportunities(req, res) {
+     const userType = req.user.userType;
+     console.log("usertype: ", userType)
+     const { openingFor } = req.query;
 
-    // const query = {};
-    // if (openingFor) query.openingFor = openingFor;
-    // else query.openingFor = 'Offcampus'
-    // query.yearsOfExperience=yearsOfExperience;
+     const query = {};
+     if (openingFor) query.openingFor = openingFor;
+     else query.openingFor = 'Offcampus'
+    query.yearsOfExperience=yearsOfExperience;
 
-//     let yearsOfExperience;
-//     if (userType === 'student' || userType === 'fresher') yearsOfExperience = 0;
-//     else if (userType === 'professional') yearsOfExperience = 1;
-//     else return res.status(403).json({ msg: "Invalid user" });
+     let yearsOfExperience;
+     if (userType === 'student' || userType === 'fresher') yearsOfExperience = 0;
+     else if (userType === 'professional') yearsOfExperience = 1;
+     else return res.status(403).json({ msg: "Invalid user" })
+     try {
+         const response = await fetchInternshipService(yearsOfExperience);
+         res.status(200).json(response.data);
+     } catch (error) {
+         res.status(500).json({ error: "Internal server error" });
+     }
+ }*/}
 
-//     try {
-//         const response = await fetchInternshipService(yearsOfExperience);
-//         res.status(200).json(response.data);
-//     } catch (error) {
-//         res.status(500).json({ error: "Internal server error" });
-//     }
-// }
+ export async function fetchInternshipOpportunities(req, res) {
+    const userType = req.user.userType;
+    const { openingFor } = req.query;
+
+    let yearsOfExperience;
+
+    if (userType === 'student' || userType === 'fresher') {
+        yearsOfExperience = 0;
+    } else if (userType === 'professional') {
+        yearsOfExperience = 1;
+    } else {
+        return res.status(403).json({ msg: "Invalid user" });
+    }
+
+    try {
+        const response = await fetchInternshipService(yearsOfExperience);
+        res.status(200).json(response.data);
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
 
 export async function findOffcampusOpportunityById(req, res) {
     const jobId = req.params.jobId;
@@ -66,6 +88,7 @@ export async function findOffcampusOpportunityById(req, res) {
         res.status(500).json({ error: "Internal server error" });
     }
 }
+
 export async function findJobListingOpportunityById(req, res) {
     const jobId = req.params.jobId;
 

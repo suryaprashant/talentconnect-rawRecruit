@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useAuth } from '../../context/AuthProvider';
+import { useLegacyAuth } from '../../context/AuthProvider';
 import toast from 'react-hot-toast';
 import axiosInstance from '../../lib/axiosInstance';
 import ReactGA from "react-ga4";
@@ -58,7 +58,7 @@ const handleAuthRedirect = (user, navigate) => {
 function SignupPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [authUser, setAuthUser] = useAuth();
+  const [authUser, setAuthUser] = useLegacyAuth();
   const selectedRole = sessionStorage.getItem('tempSelectedRole') || localStorage.getItem('selectedRole');
 
   const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '' });
@@ -73,11 +73,11 @@ function SignupPage() {
   // Role display names
   const roleDisplayNames = {
     candidate: 'Candidate',
+    student: 'Student',
+    fresher: 'Fresher',
     college: 'College',
     company: 'Company',
     employer: 'Employer',
-    student: 'Student',
-    fresher: 'Fresher',
     professional: 'Professional'
   };
 

@@ -6,6 +6,17 @@ const googleClient = new OAuth2Client({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 });
 
+const ALLOWED_USER_TYPES = [
+  "student",
+  "fresher",
+  "professional",
+  "company",
+  "college",
+  "employer",
+  "admin"
+];
+
+
 export const authenticateWithGoogle = async ({ code, userType }) => {
     
     const { tokens } = await googleClient.getToken({
@@ -29,20 +40,21 @@ export const authenticateWithGoogle = async ({ code, userType }) => {
     const isNewUser = !user;
 
     if (isNewUser) {
-        if (!userType) {
-            const error = new Error('User type is required for new registrations.');
-            error.statusCode = 400;
-            throw error;
-        }
-        user = await Auth.create({
-            name,
-            email,
-            profileImage: picture,
-            authProvider: 'google',
-            googleId,
-            userType
-        });
-    } else {
+      if (!ALLOWED_USER_TYPES.includes(userType)) {
+        const error = new Error("Invalid user type for registration");
+        error.statusCode = 400;
+        throw error;
+      }
+
+      user = await Auth.create({
+        name,
+        email,
+        profileImage: picture,
+        authProvider: "google",
+        googleId,
+        userType
+      });
+    }else {
         user.name = name;
         user.profileImage = picture;
         user.googleId = googleId; // Ensure googleId is set if they previously signed up with email

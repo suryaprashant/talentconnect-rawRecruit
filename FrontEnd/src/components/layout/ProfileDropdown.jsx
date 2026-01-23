@@ -3,11 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FiUser, FiSettings, FiBell, FiHelpCircle, FiLogOut } from 'react-icons/fi';
 import Cookies from "js-cookie";
-import { useAuth } from '@/context/AuthProvider';
+import { useLegacyAuth } from '@/context/AuthProvider';
 
 function StandardProfileDropdown() {
   const navigate = useNavigate();
-  const [auth] = useAuth();
+  const [auth] = useLegacyAuth();
   const handleLogout = async () => {
     try {
       await axios.post(`${import.meta.env.VITE_Backend_URL}/api/auth/logout`, {}, { withCredentials: true });

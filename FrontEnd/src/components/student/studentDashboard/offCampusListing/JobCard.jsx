@@ -59,18 +59,20 @@ function getStableColor(id = "") {
   return pastelColors[hash];
 }
 
-const JobCard = ({ job, onClick }) => {
+const JobCard = ({ job, onClick }) => { // Add onClick prop
   const [isSaved, setIsSaved] = useState(job.isSaved || false);
   const [imageError, setImageError] = useState(false);
 
-  const companyName =
-    job.companyPosted?.companyName ||
-    job.companyPosted?.companyDetails?.companyName ||
-    "Company";
+  // Remove the undefined loading and user variables
+  const companyName = job?.companyName || 
+                     job?.collegeName || 
+                     job?.companyPosted?.companyDetails?.companyName || 
+                     "Company";
 
-  const logo =
-    job.companyPosted?.profileImageUrl ||
-    "https://cdn-icons-png.flaticon.com/512/25/25231.png";
+  const logo = job?.companyPosted?.profileImageUrl ||
+               job?.collegePosted?.profileImage ||
+               job?.collegePosted?.profileImageUrl ||
+               "https://cdn-icons-png.flaticon.com/512/25/25231.png";
 
   const stableColor = getStableColor(job._id || companyName);
 
@@ -100,10 +102,9 @@ const JobCard = ({ job, onClick }) => {
     e.stopPropagation();
   
     try {
-      const response = await SaveOppurtunity(
-        job._id,        // ✅ jobId
-        job.jobType     // ✅ jobType = "Pool-campus"
-      );
+      // Check if job has jobType, otherwise default to "Off-campus"
+      const jobType = job?.jobType || "Off-campus";
+      const response = await SaveOppurtunity(job._id, jobType);
   
       if (response?.data?.success === true) {
         setIsSaved(true);
@@ -129,13 +130,20 @@ const JobCard = ({ job, onClick }) => {
     if (Array.isArray(job.location)) {
       return job.location.slice(0, 2).join(', ');
     }
+    if (job.venue) {
+      return job.venue;
+    }
+    if (job.workLocation && Array.isArray(job.workLocation)) {
+      return job.workLocation.slice(0, 2).join(', ');
+    }
     return job.location || "Remote";
   };
 
   // Format package details
   const formatPackage = () => {
     if (job.packageDetails?.totalCTC) {
-      return `₹${job.packageDetails.totalCTC.toLocaleString()}`;
+      const currency = job.packageDetails.currency || '₹';
+      return `${currency} ${job.packageDetails.totalCTC.toLocaleString()}`;
     }
     return 'Not Disclosed';
   };
@@ -162,9 +170,11 @@ const JobCard = ({ job, onClick }) => {
   // Get colored badges for job roles
   const getJobRoleBadges = () => {
     if (!job.jobRoles?.length) {
+      // Try to get jobTitle or lookingFor as fallback
+      const title = job.jobTitle || job.lookingFor || "Job Role";
       return (
         <span className="text-sm font-bold text-gray-900">
-          {job.jobTitle || "Job Role"}
+          {title}
         </span>
       );
     }
@@ -196,15 +206,30 @@ const JobCard = ({ job, onClick }) => {
     );
   };
 
+  // Get user role for navigation
+  const getUserRole = () => {
+    // Try to get from localStorage
+    const storedRole = localStorage.getItem("selectedRole");
+    if (storedRole) return storedRole;
+    
+    // Default to 'college' if not found
+    return 'college';
+  };
+
   const jobStatus = getJobStatus();
+  const userRole = getUserRole();
+  
+  // Determine job type for routing
+  const jobType = job?.jobType || "Off-campus";
+  const routePath = `/${userRole}-dashboard/${jobType}/${job._id}`;
 
   return (
     <div 
       onClick={handleCardClick}
       className="
         w-full max-w-[350px] mx-auto rounded-2xl 
-        border shadow-sm hover:shadow-lg transition overflow-hidden
-        flex flex-col cursor-pointer h-full
+        border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden
+        flex flex-col cursor-pointer h-full hover:scale-[1.02] bg-white
       "
     >
       {/* TOP SECTION - Pastel background */}
@@ -217,7 +242,8 @@ const JobCard = ({ job, onClick }) => {
 
           <button
             onClick={handleSave}
-            className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10"
+            className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10 hover:bg-gray-50"
+            aria-label={isSaved ? "Remove from saved" : "Save job"}
           >
             <Heart
               className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
@@ -237,7 +263,7 @@ const JobCard = ({ job, onClick }) => {
             {getJobRoleBadges()}
           </div>
 
-          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
+          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border border-gray-300 shrink-0">
             {logo && !imageError ? (
               <img 
                 src={logo} 
@@ -246,7 +272,7 @@ const JobCard = ({ job, onClick }) => {
                 onError={() => setImageError(true)}
               />
             ) : (
-              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
                 <span className="text-sm font-semibold text-gray-700">
                   {getInitials(companyName)}
                 </span>
@@ -279,7 +305,7 @@ const JobCard = ({ job, onClick }) => {
             {job.skills.slice(0, 3).map((skill, index) => (
               <span
                 key={index}
-                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
+                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/60 backdrop-blur-sm"
               >
                 {skill}
               </span>
@@ -301,29 +327,30 @@ const JobCard = ({ job, onClick }) => {
       </div>
 
       {/* BOTTOM SECTION - White background */}
-      <div className="p-4 bg-white border-t">
+      <div className="p-4 bg-white border-t border-gray-200">
         <div className="flex justify-between items-center">
-          <div>
+          <div className="min-w-0">
             {/* Package */}
-            <p className="font-semibold text-gray-900 text-sm">
+            <p className="font-semibold text-gray-900 text-sm truncate">
               {formatPackage()}
             </p>
 
             {/* Location */}
             <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
-              <MapPin className="h-4 w-4 text-gray-500" />
-              <span className="line-clamp-1 max-w-[120px]">
+              <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
+              <span className="line-clamp-1 truncate">
                 {formatLocation()}
               </span>
             </div>
           </div>
 
-          <button
+          <Link
+            to={routePath}
             onClick={handleDetailsClick}
-            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
+            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition whitespace-nowrap flex-shrink-0 ml-2"
           >
             Details
-          </button>
+          </Link>
         </div>
       </div>
     </div>

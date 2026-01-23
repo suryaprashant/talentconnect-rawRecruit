@@ -261,14 +261,16 @@ export default function EmployerInterviewScheduler() {
 import { useState, useEffect } from 'react';
 import { MoreHorizontal, Calendar, List, Building2 } from 'lucide-react';
 import { getCompanyInterviews, getInterviews } from "../../../lib/interview_AxiosClient.js";
-import { useAuth } from '@/context/AuthProvider';
+import { useAuth } from '@/context/AuthContext';
 
 export default function EmployerInterviewScheduler() {
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dateSort, setDateSort] = useState("desc"); // default newest first
   
-  const role = localStorage.getItem("selectedRole");
+  const { user, loading: authLoading } = useAuth();
+  const role = user?.userType;
+
 
   useEffect(() => {
     const fetchInterviews = async () => {
@@ -286,6 +288,15 @@ export default function EmployerInterviewScheduler() {
     fetchInterviews();
 
   }, []);
+
+  if (authLoading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-gray-600">Loading user...</p>
+    </div>
+  );
+}
+
 
   const isCollegeView = role === "college";
   const isCompanyOrEmployer = role === "company" || role === "employer";

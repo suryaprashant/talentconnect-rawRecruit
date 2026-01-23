@@ -1,6 +1,17 @@
 import { authenticateWithGoogle } from "../../services/googleAuthService.js";
 import { generateToken } from "../..//services/authService.js";
 
+const ALLOWED_USER_TYPES = [
+  "student",
+  "fresher",
+  "professional",
+  "company",
+  "college",
+  "employer",
+  "admin"
+];
+
+
 
 export const googleAuth = async (req, res) => {
     try {
@@ -11,6 +22,12 @@ export const googleAuth = async (req, res) => {
         }
 
         const { user, isNewUser } = await authenticateWithGoogle({ code, userType });
+
+        if (isNewUser && !ALLOWED_USER_TYPES.includes(userType)) {
+          return res.status(400).json({
+            message: "Invalid user type selected"
+          });
+        }
 
         const token = generateToken({
             userId: user._id,

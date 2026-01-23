@@ -1,4 +1,4 @@
-import { useAuth } from '@/context/AuthProvider'
+import { useLegacyAuth } from '@/context/AuthProvider'
 import { FiPlus } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import Button from '@/components/ui/Button'
@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 // import { getFresherDashboardMetrics } from '@/lib/User_AxiosInstance'
 
 function FresherDashboard() {
-  const [authuser, setAuthUser] = useAuth();
+  const [authuser, setAuthUser] = useLegacyAuth();
   const navigate = useNavigate()
   
   const [dashboardData, setDashboardData] = useState({

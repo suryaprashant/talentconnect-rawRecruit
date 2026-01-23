@@ -4,7 +4,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { City } from 'country-state-city';
 
-export default function PostJob() {
+export default function PostIntership() {
   const initialState = {
     jobTitle: '',
     description: '',

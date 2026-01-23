@@ -20,44 +20,34 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
     };
 
     const handleNextClick = () => {
-        if (validateForm()) {
-            let lookingForData = formData.lookingFor;
+      if (!validateForm()) return;
 
-            if (lookingForData === 'both') {
-                lookingForData = ['job', 'internship'];
-            } else if (typeof lookingForData === 'string') {
-                lookingForData = [lookingForData];
-            }
+      let lookingForValue = formData.lookingFor;
 
-            const formattedData = {
-                ...formData,
-                lookingFor: lookingForData,
-                employmentType: Array.isArray(formData.employmentType) 
-                    ? formData.employmentType 
-                    : [formData.employmentType].filter(Boolean)
-            };
-            updateFormData(formattedData);
-            onNext();
-        }
+      if (lookingForValue === 'job') lookingForValue = 'job';
+      if (lookingForValue === 'internship') lookingForValue = 'internship';
+      if (lookingForValue === 'both') lookingForValue = 'both';
+
+      updateFormData({
+        ...formData,
+        lookingFor: lookingForValue,
+        employmentType: Array.isArray(formData.employmentType)
+          ? formData.employmentType
+          : [formData.employmentType].filter(Boolean),
+      });
+
+      onNext();
     };
+
 
     const handleLookingForChange = (value) => {
         updateFormData({ lookingFor: value });
     };
 
-    const isLookingForActive = (option) => {
-        const val = formData.lookingFor;
-        
-        if (val === option) return true;
-
-        if (Array.isArray(val)) {
-            if (option === 'both') {
-                return val.includes('job') && val.includes('internship');
-            }
-            return val.includes(option) && val.length === 1;
-        }
-        return false;
+    const isLookingForActive = (value) => {
+      return formData.lookingFor === value;
     };
+
 
     const handleEmploymentTypeChange = (value) => {
         const currentTypes = formData.employmentType || [];
@@ -300,47 +290,58 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-3">
-                                Looking for
-                            </label>
-                            <div className="flex space-x-2">
-                                {['job', 'internship', 'both (Job+Internship)'].map((option) => (
-                                    <button
-                                        key={option}
-                                        type="button"
-                                        onClick={() => handleLookingForChange(option)}
-                                        className={`px-4 py-2 rounded-lg border transition-all duration-300 ${
-                                            isLookingForActive(option)
-                                                ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent'
-                                                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                                        }`}
-                                    >
-                                        {option.charAt(0).toUpperCase() + option.slice(1)}
-                                    </button>
-                                ))}
-                            </div>
-                            {errors.lookingFor && (
-                                <p className="mt-1 text-sm text-red-600">{errors.lookingFor}</p>
-                            )}
+                          <label className="block text-sm font-medium text-gray-700 mb-3">
+                            Looking for
+                          </label>
+
+                          <div className="flex space-x-2">
+                            {[
+                              { label: 'Job', value: 'job' },
+                              { label: 'Internship', value: 'internship' },
+                              { label: 'Both (Job + Internship)', value: 'both' },
+                            ].map((option) => (
+                              <button
+                                key={option.value}
+                                type="button"
+                                onClick={() => handleLookingForChange(option.value)}
+                                className={`px-4 py-2 rounded-lg border transition-all duration-300 ${
+                                  isLookingForActive(option.value)
+                                    ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent'
+                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                                }`}
+                              >
+                                {option.label}
+                              </button>
+                            ))}
+                          </div>
+                        
+                          {errors.lookingFor && (
+                            <p className="mt-1 text-sm text-red-600">{errors.lookingFor}</p>
+                          )}
                         </div>
+                      
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-3">
                                 Employment type
                             </label>
                             <div className="flex space-x-2">
-                                {['part-time', 'full-time', 'contract'].map((option) => (
+                                {[
+                                    { label: 'Part-time', value: 'Part-time' },
+                                      { label: 'Full-time', value: 'Full-time' },
+                                      { label: 'Contract', value: 'Contract' },
+                                    ].map((option) => (
                                     <button
-                                        key={option}
+                                        key={option.value}
                                         type="button"
-                                        onClick={() => handleEmploymentTypeChange(option)}
+                                        onClick={() => handleEmploymentTypeChange(option.value)}
                                         className={`px-4 py-2 rounded-lg border transition-all duration-300 ${
-                                            formData.employmentType?.includes(option)
+                                            formData.employmentType?.includes(option.value)
                                                 ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent'
                                                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                                         }`}
                                     >
-                                        {option.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+                                        {option.label}
                                     </button>
                                 ))}
                             </div>

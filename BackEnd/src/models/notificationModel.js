@@ -50,7 +50,7 @@ const notificationSchema = new mongoose.Schema({
     },
     jobType: {
         type: String,
-        enum: ["On-campus", "Off-campus", "Pool-campus"],
+        enum: ["On-campus", "Off-campus", "Pool-campus", "Internship"],
         required: false,
     },
 
