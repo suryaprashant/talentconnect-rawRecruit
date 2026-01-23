@@ -253,50 +253,55 @@ export default function OnCampusJobManagement() {
     const [currentStatus, setCurrentStatus] = useState(companyApplication.currentStatus);
     const [isProcessing, setIsProcessing] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    
+    // Add this line - get setSelectedConversation from the hook
+    const { setSelectedConversation } = useConversation();
 
     if (!companyApplication || !companyApplication.applicant) {
-      return null;
+        return null;
     }
 
     const { _id: applicationId, applicant, createdAt } = companyApplication;
     const { companyDetails, employerDetails, profileImageUrl, userId } = applicant;
 
     const handleMessageClick = async (e) => {
-      e.stopPropagation();
+        e.stopPropagation();
 
-      if (!userId) {
-        toast.error("Company user not found");
-        return;
-      }
-
-      console.log("Chatting with company:", {
-        userId,
-        companyDetails
-      });
-      try {
-        const response = await conversationWithCollege(userId);
-
-        if (response.data) {
-          const conversationUser = {
-            _id: userId,
-            name: companyDetails?.companyName || 'Unknown Company',
-            fullname: companyDetails?.companyName || 'Unknown Company',
-            email: employerDetails?.workEmail || '',
-            profileImage:
-              profileImageUrl ||
-              'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-            userType: 'company'
-          };
-
-          setSelectedConversation(conversationUser);
-          navigate('/chat-application');
-        } else {
-          toast.error('Failed to create conversation');
+        if (!userId) {
+            toast.error("Company user not found");
+            return;
         }
-      } catch (error) {
-        console.error('Chat error:', error);
-        toast.error('Error starting conversation');
-      }
+
+        console.log("Chatting with company:", {
+            userId,
+            companyDetails
+        });
+        
+        // Now setSelectedConversation is defined
+        try {
+            const response = await conversationWithCollege(userId);
+
+            if (response.data) {
+                const conversationUser = {
+                    _id: userId,
+                    name: companyDetails?.companyName || 'Unknown Company',
+                    fullname: companyDetails?.companyName || 'Unknown Company',
+                    email: employerDetails?.workEmail || '',
+                    profileImage:
+                        profileImageUrl ||
+                        'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+                    userType: 'company'
+                };
+
+                setSelectedConversation(conversationUser);
+                navigate('/chat-application');
+            } else {
+                toast.error('Failed to create conversation');
+            }
+        } catch (error) {
+            console.error('Chat error:', error);
+            toast.error('Error starting conversation');
+        }
     };
 
     const handleReject = async (e) => {
@@ -779,7 +784,7 @@ export default function OnCampusJobManagement() {
             </div>
 
             {/* Search and Filters */}
-            <div className="p-6 border-b border-white/50">
+            {/* <div className="p-6 border-b border-white/50">
               <div className="flex flex-col md:flex-row gap-4 items-center">
                 <div className="relative flex-grow">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -806,7 +811,7 @@ export default function OnCampusJobManagement() {
                   {totalItems > 0 ? `Showing ${startIndex + 1}-${endIndex} of ${totalItems}` : 'Showing 0-0 of 0'}
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Error Alert */}
             {error && (
@@ -824,10 +829,10 @@ export default function OnCampusJobManagement() {
                 <thead className="bg-white/50">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Degree</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
+                    {/* <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th> */}
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Deadline</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Views</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Applications</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">New Applications</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
                   </tr>
                 </thead>
@@ -866,11 +871,16 @@ export default function OnCampusJobManagement() {
                           className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200"
                         >
                           <td 
-                            className="px-6 py-4 cursor-pointer" 
-                            onClick={() => navigate(`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`)}
-                          >
-                            <div className="font-medium text-gray-900">{degree}</div>
-                          </td>
+  className="px-6 py-4 cursor-pointer" 
+  onClick={() => navigate(`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`)}
+>
+  <div className="font-medium text-gray-900 whitespace-normal break-words">
+    {Array.isArray(degree) 
+      ? degree.join(', ') 
+      : degree || 'N/A'
+    }
+  </div>
+</td>
                           <td className="px-6 py-4">
                             <span className={`px-3 py-1 text-xs font-medium rounded-full ${jobStatus === 'Open'
                               ? 'bg-gradient-to-r from-[#a7f3d0]/20 to-[#34d399]/20 text-[#059669] border border-[#a7f3d0]/30'

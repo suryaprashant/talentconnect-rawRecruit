@@ -922,7 +922,6 @@ export default function PoolCampusHiringForm({ onBackClick }) {
         venue: '',
         degree: [],
         collegeTypes: '',
-        workMode: [],
         employmentType: [],
         salaryRange: 'INR',
         salaryValue: '',
@@ -943,7 +942,7 @@ export default function PoolCampusHiringForm({ onBackClick }) {
         proposedSchedule: { startDate: '', endDate: '', preferredMode: '' },
     };
 
-  const [formData, setFormData] = useState(() => {
+    const [formData, setFormData] = useState(() => {
         const savedData = localStorage.getItem('pendingPoolCampusRegistration');
         if (!savedData) return initialFormState;
 
@@ -968,6 +967,7 @@ export default function PoolCampusHiringForm({ onBackClick }) {
             return initialFormState;
         }
     });
+    
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [alert, setAlert] = useState({ show: false, message: '', type: '' });
@@ -1006,35 +1006,34 @@ export default function PoolCampusHiringForm({ onBackClick }) {
     }, []);
 
     // Function to add a new row
-const handleAddRound = () => {
-  // Create new round object
-  const newRound = {
-    id: Date.now(), // Unique ID using timestamp
-    branch: '',
-    students: '',
-    skills: ''
-  };
-  
-  // Update form data with new round added to array
-  setFormData(prev => ({
-    ...prev,
-    rounds: [...prev.rounds, newRound]
-  }));
-};
+    const handleAddRound = () => {
+        // Create new round object
+        const newRound = {
+            id: Date.now(), // Unique ID using timestamp
+            branch: '',
+            students: '',
+            skills: ''
+        };
+        
+        // Update form data with new round added to array
+        setFormData(prev => ({
+            ...prev,
+            rounds: [...prev.rounds, newRound]
+        }));
+    };
 
-// Function to remove a row
-const handleRemoveRound = (id) => {
-  // Filter out the round with the matching id
-  const updatedRounds = formData.rounds.filter(round => round.id !== id);
-  setFormData(prev => ({
-    ...prev,
-    rounds: updatedRounds
-  }));
-};
+    // Function to remove a row
+    const handleRemoveRound = (id) => {
+        // Filter out the round with the matching id
+        const updatedRounds = formData.rounds.filter(round => round.id !== id);
+        setFormData(prev => ({
+            ...prev,
+            rounds: updatedRounds
+        }));
+    };
 
     const degreeOptions = ['B.Tech', 'M.Tech', 'MBA', 'B.Sc', 'M.Sc', 'PhD'];
     const collegeTypeOptions = ['Engineering', 'Medical', 'Management', 'Arts & Science', 'Law', 'Pharmacy', 'Architecture'];
-    const workModeOptions = ['On-site', 'Remote', 'Hybrid'];
     const branchOptions = ['Computer Science', 'Mechanical', 'Civil', 'Electrical', 'Electronics', 'Bio-medical'];
     const designationOptions = ['Professor', 'HOD', 'Placement Officer', 'Dean', 'Coordinator'];
     const minStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '200+'];
@@ -1042,13 +1041,11 @@ const handleRemoveRound = (id) => {
     const companyTypeOptions = ["MNC", "Startup", "SME", "Public Sector"];
     const proposedModeOptions = ["Online", "Offline", "Hybrid"];
 
-
     useEffect(() => {
         localStorage.setItem('pendingPoolCampusRegistration', JSON.stringify(formData));
     }, [formData]);
 
     useEffect(() => {
-      
         const handleClickOutside = (event) => {
             const refs = {
                 amenities: amenitiesRef,
@@ -1233,11 +1230,6 @@ const handleRemoveRound = (id) => {
             isValid = false;
         }
 
-        if (formData.workMode.length === 0) {
-            newErrors.workMode = 'Please select at least one work mode';
-            isValid = false;
-        }
-
         if (formData.employmentType.length === 0) {
             newErrors.employmentType = 'Please select at least one employment type';
             isValid = false;
@@ -1274,23 +1266,24 @@ const handleRemoveRound = (id) => {
             isValid = false;
         }
 
-     // Replace the old startDate.trim() check with this:
-if (!formData.proposedSchedule.startDate) {
-    newErrors.proposedStartDate = 'Please select proposed start date';
-    isValid = false;
-}
+        // Replace the old startDate.trim() check with this:
+        if (!formData.proposedSchedule.startDate) {
+            newErrors.proposedStartDate = 'Please select proposed start date';
+            isValid = false;
+        }
 
-// Replace the old endDate.trim() check with this:
-if (!formData.proposedSchedule.endDate) {
-    newErrors.proposedEndDate = 'Please select proposed end date';
-    isValid = false;
-}
+        // Replace the old endDate.trim() check with this:
+        if (!formData.proposedSchedule.endDate) {
+            newErrors.proposedEndDate = 'Please select proposed end date';
+            isValid = false;
+        }
 
-// Replace the old preferredMode.trim() check with this:
-if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.preferredMode.trim()) {
-    newErrors.proposedMode = 'Please select preferred mode';
-    isValid = false;
-}
+        // Replace the old preferredMode.trim() check with this:
+        if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.preferredMode.trim()) {
+            newErrors.proposedMode = 'Please select preferred mode';
+            isValid = false;
+        }
+
         if (formData.description.length > 500) {
             setDescriptionError("Description cannot exceed 500 characters.");
             isValid = false;
@@ -1313,9 +1306,8 @@ if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.prefe
         e.preventDefault();
         console.log("Submit Clicked!");
         if (!validateForm()) {
-            console.log("Validation Failed:", errors); //
+            console.log("Validation Failed:", errors);
             showAlert('Please fill all required fields correctly', 'error');
-
             return;
         }
 
@@ -1343,7 +1335,6 @@ if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.prefe
             venue: formData.venue,
             degree: formData.degree,
             collegeTypes: formData.collegeTypes ? [formData.collegeTypes] : [],
-            workMode: formData.workMode,
             employmentType: formData.employmentType,
             packageDetails: {
                 currency: formData.salaryRange,
@@ -1531,7 +1522,7 @@ if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.prefe
                             </div>
                         </div>
 
-                        {/* Row 2: College Type and Work Mode */}
+                        {/* Row 2: College Type and Employment Type */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             {/* College Type */}
                             <div ref={collegeTypesRef} className="relative">
@@ -1582,25 +1573,25 @@ if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.prefe
                                 )}
                             </div>
 
-                            {/* Work Mode */}
+                            {/* Employment Type */}
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Monitor className="w-4 h-4 text-[#3b82f6]" />
-                                    Work Mode <span className="text-red-500">*</span>
+                                    <Briefcase className="w-4 h-4 text-[#3b82f6]" />
+                                    Employment type <span className="text-red-500">*</span>
                                 </label>
                                 <div className="flex gap-2">
-                                    {workModeOptions.map((type) => (
+                                    {['Part-time', 'Full-time', 'Contract'].map((type) => (
                                         <button key={type} type="button" className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 ${
-                                            formData.workMode.includes(type) 
+                                            formData.employmentType.includes(type) 
                                                 ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent' 
                                                 : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
-                                        }`} onClick={() => handleMultiToggle('workMode', type)}>
+                                        }`} onClick={() => handleMultiToggle('employmentType', type)}>
                                             {type}
                                         </button>
                                     ))}
                                 </div>
-                                {errors.workMode && (
-                                    <p className="mt-1 text-xs text-red-600">{errors.workMode}</p>
+                                {errors.employmentType && (
+                                    <p className="mt-1 text-xs text-red-600">{errors.employmentType}</p>
                                 )}
                             </div>
                         </div>
@@ -1657,133 +1648,111 @@ if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.prefe
                             </div>
                         </div>
 
-                        {/* Row 4: Employment Type and Salary */}
+                        {/* Row 4: Salary and Application Dates */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {/* Employment Type */}
+                            {/* Salary */}
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Briefcase className="w-4 h-4 text-[#3b82f6]" />
-                                    Employment type <span className="text-red-500">*</span>
+                                    <DollarSign className="w-4 h-4 text-[#3b82f6]" />
+                                    Minimum Cut-off Salary
                                 </label>
-                                <div className="flex gap-2">
-                                    {['Part-time', 'Full-time', 'Contract'].map((type) => (
-                                        <button key={type} type="button" className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 ${
-                                            formData.employmentType.includes(type) 
-                                                ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent' 
-                                                : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
-                                        }`} onClick={() => handleMultiToggle('employmentType', type)}>
-                                            {type}
-                                        </button>
-                                    ))}
+                                <div className="flex rounded-lg overflow-hidden border border-gray-200/80 focus-within:ring-1 focus-within:ring-[#93c5fd] focus-within:border-transparent transition-all duration-200">
+                                    <div className="relative bg-white/50 backdrop-blur-sm flex items-center">
+                                        <div className="px-3 py-2 w-24 text-sm flex items-center gap-2">
+                                            {formData.salaryRange === 'INR' ? (
+                                                <>
+                                                    <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
+                                                    <span>INR</span>
+                                                </>
+                                            ) : formData.salaryRange === 'USD' ? (
+                                                <>
+                                                    <DollarSign className="w-3.5 h-3.5 text-gray-600" />
+                                                    <span>USD</span>
+                                                </>
+                                            ) : formData.salaryRange === 'EUR' ? (
+                                                <>
+                                                    <Euro className="w-3.5 h-3.5 text-gray-600" />
+                                                    <span>EUR</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
+                                                    <span>INR</span>
+                                                </>
+                                            )}
+                                        </div>
+                                        <select 
+                                            name="salaryRange" 
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                            value={formData.salaryRange || 'INR'} 
+                                            onChange={handleChange}
+                                        >
+                                            <option value="INR">INR</option>
+                                            <option value="USD">USD</option>
+                                            <option value="EUR">EUR</option>
+                                        </select>
+                                        <ChevronDown className="absolute right-2 w-3 h-3 text-gray-400 pointer-events-none" />
+                                    </div>
+                                    <div className="relative flex-1">
+                                        <input 
+                                            name="salaryValue" 
+                                            type="number" 
+                                            className="bg-white/50 backdrop-blur-sm w-full px-3 py-2 text-sm focus:outline-none" 
+                                            placeholder="Amount" 
+                                            value={formData.salaryValue || ''} 
+                                            onChange={handleChange}
+                                            min="0"
+                                            step="1000"
+                                        />
+                                        {/* Currency icon in input field */}
+                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                            {formData.salaryRange === 'INR' ? (
+                                                <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
+                                            ) : formData.salaryRange === 'USD' ? (
+                                                <DollarSign className="w-3.5 h-3.5 text-gray-500" />
+                                            ) : formData.salaryRange === 'EUR' ? (
+                                                <Euro className="w-3.5 h-3.5 text-gray-500" />
+                                            ) : (
+                                                <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
-                                {errors.employmentType && (
-                                    <p className="mt-1 text-xs text-red-600">{errors.employmentType}</p>
-                                )}
                             </div>
 
-                            {/* Salary */}
-<div>
-  <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-    <DollarSign className="w-4 h-4 text-[#3b82f6]" />
-    Minimum Cut-off Salary
-  </label>
-  <div className="flex rounded-lg overflow-hidden border border-gray-200/80 focus-within:ring-1 focus-within:ring-[#93c5fd] focus-within:border-transparent transition-all duration-200">
-    <div className="relative bg-white/50 backdrop-blur-sm flex items-center">
-      <div className="px-3 py-2 w-24 text-sm flex items-center gap-2">
-        {formData.salaryRange === 'INR' ? (
-          <>
-            <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
-            <span>INR</span>
-          </>
-        ) : formData.salaryRange === 'USD' ? (
-          <>
-            <DollarSign className="w-3.5 h-3.5 text-gray-600" />
-            <span>USD</span>
-          </>
-        ) : formData.salaryRange === 'EUR' ? (
-          <>
-            <Euro className="w-3.5 h-3.5 text-gray-600" />
-            <span>EUR</span>
-          </>
-        ) : (
-          <>
-            <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
-            <span>INR</span>
-          </>
-        )}
-      </div>
-      <select 
-        name="salaryRange" 
-        className="absolute inset-0 opacity-0 cursor-pointer"
-        value={formData.salaryRange || 'INR'} 
-        onChange={handleChange}
-      >
-        <option value="INR">INR</option>
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-      </select>
-      <ChevronDown className="absolute right-2 w-3 h-3 text-gray-400 pointer-events-none" />
-    </div>
-    <div className="relative flex-1">
-      <input 
-        name="salaryValue" 
-        type="number" 
-        className="bg-white/50 backdrop-blur-sm w-full px-3 py-2 text-sm focus:outline-none" 
-        placeholder="Amount" 
-        value={formData.salaryValue || ''} 
-        onChange={handleChange}
-        min="0"
-        step="1000"
-      />
-      {/* Currency icon in input field */}
-      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-        {formData.salaryRange === 'INR' ? (
-          <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
-        ) : formData.salaryRange === 'USD' ? (
-          <DollarSign className="w-3.5 h-3.5 text-gray-500" />
-        ) : formData.salaryRange === 'EUR' ? (
-          <Euro className="w-3.5 h-3.5 text-gray-500" />
-        ) : (
-          <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
-        )}
-      </div>
-    </div>
-  </div>
-</div>
+                            {/* Application Dates */}
+                            <div>
+                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                    <Calendar className="w-4 h-4 text-[#3b82f6]" />
+                                    Application Dates
+                                </label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <div className="relative">
+                                        <DatePicker
+                                            selected={formData.tentativeStartDate ? new Date(formData.tentativeStartDate) : null}
+                                            onChange={(date) => handleDateChange(date, 'tentativeStartDate')}
+                                            dateFormat="dd-MM-yyyy"
+                                            placeholderText="Start"
+                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
+                                        />
+                                        <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                    </div>
+                                    <div className="relative">
+                                        <DatePicker
+                                            selected={formData.tentativeEndDate ? new Date(formData.tentativeEndDate) : null}
+                                            onChange={(date) => handleDateChange(date, 'tentativeEndDate')}
+                                            dateFormat="dd-MM-yyyy"
+                                            placeholderText="End"
+                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
+                                        />
+                                        <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Row 5: Application Dates and Contact Person Name */}
+                        {/* Row 5: Contact Person Name and Designation */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {/* Application Dates */}
-<div>
-  <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-    <Calendar className="w-4 h-4 text-[#3b82f6]" />
-    Application Dates
-  </label>
-  <div className="grid grid-cols-2 gap-2">
-    <div className="relative">
-      <DatePicker
-        selected={formData.tentativeStartDate ? new Date(formData.tentativeStartDate) : null}
-        onChange={(date) => handleDateChange(date, 'tentativeStartDate')}
-        dateFormat="dd-MM-yyyy"
-        placeholderText="Start"
-        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
-      />
-      <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-    </div>
-    <div className="relative">
-      <DatePicker
-        selected={formData.tentativeEndDate ? new Date(formData.tentativeEndDate) : null}
-        onChange={(date) => handleDateChange(date, 'tentativeEndDate')}
-        dateFormat="dd-MM-yyyy"
-        placeholderText="End"
-        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
-      />
-      <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-    </div>
-  </div>
-</div>
-
                             {/* Contact Person Name */}
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
@@ -1802,10 +1771,7 @@ if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.prefe
                                     <p className="mt-1 text-xs text-red-600">{errors.contactPersonName}</p>
                                 )}
                             </div>
-                        </div>
 
-                        {/* Row 6: Contact Designation and Email */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             {/* Designation */}
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
@@ -1829,7 +1795,10 @@ if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.prefe
                                     )}
                                 </div>
                             </div>
+                        </div>
 
+                        {/* Row 6: Contact Email and Mobile */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             {/* Contact Email */}
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
@@ -1848,10 +1817,7 @@ if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.prefe
                                     <p className="mt-1 text-xs text-red-600">{errors.contactPersonEmail}</p>
                                 )}
                             </div>
-                        </div>
 
-                        {/* Row 7: Contact Mobile and LinkedIn */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             {/* Contact Mobile */}
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
@@ -1870,7 +1836,10 @@ if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.prefe
                                     <p className="mt-1 text-xs text-red-600">{errors.contactPersonMobile}</p>
                                 )}
                             </div>
+                        </div>
 
+                        {/* Row 7: LinkedIn Profile and Minimum Students */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             {/* LinkedIn Profile */}
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
@@ -1886,10 +1855,7 @@ if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.prefe
                                     className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
                                 />
                             </div>
-                        </div>
 
-                        {/* Row 8: Minimum Students and Company Type */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             {/* Minimum Students */}
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
@@ -1913,7 +1879,10 @@ if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.prefe
                                     )}
                                 </div>
                             </div>
+                        </div>
 
+                        {/* Row 8: Company Type and Rounds Table Header */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             {/* Company Type */}
                             <div ref={companyTypeRef} className="relative">
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
@@ -1971,91 +1940,95 @@ if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.prefe
                                     )}
                                 </div>
                             </div>
+
+                            {/* Rounds Table Header */}
+                            <div>
+                                <div className="flex justify-between items-center mb-2">
+                                    <label className="block text-gray-700 font-medium text-sm flex items-center gap-1.5">
+                                        <List className="w-4 h-4 text-[#3b82f6]" />
+                                        Student Details
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={handleAddRound}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3b82f6] text-white text-xs rounded-lg hover:bg-[#2563eb] transition-colors duration-200"
+                                    >
+                                        <Plus className="w-3.5 h-3.5" />
+                                        Add Student
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Row 9: Rounds Table - Full Width */}
-<div>
-  <div className="flex justify-between items-center mb-2">
-    <label className="block text-gray-700 font-medium text-sm flex items-center gap-1.5">
-      <List className="w-4 h-4 text-[#3b82f6]" />
-      Student Details
-    </label>
-    <button
-      type="button"
-      onClick={handleAddRound}
-      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3b82f6] text-white text-xs rounded-lg hover:bg-[#2563eb] transition-colors duration-200"
-    >
-      <Plus className="w-3.5 h-3.5" />
-      Add Student
-    </button>
-  </div>
-  <div className="overflow-x-auto">
-    <table className="min-w-full divide-y divide-white/50 text-xs">
-      <thead className="bg-white/50">
-        <tr>
-          <th className="px-2 py-1.5 text-left font-medium text-gray-500">S.No</th>
-          <th className="px-2 py-1.5 text-left font-medium text-gray-500">Branch</th>
-          <th className="px-2 py-1.5 text-left font-medium text-gray-500">Count</th>
-          <th className="px-2 py-1.5 text-left font-medium text-gray-500">Skills (comma separated)</th>
-          <th className="px-2 py-1.5 text-left font-medium text-gray-500">Action </th>
-        </tr>
-      </thead>
-      <tbody className="bg-white/30 divide-y divide-white/50">
-        {formData.rounds.map((round, index) => (
-          <tr key={round.id}>
-            <td className="px-2 py-1.5 text-center">{index + 1}</td>
-            <td className="px-2 py-1.5">
-              <select 
-                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
-                value={round.branch} 
-                onChange={(e) => handleRoundChange(round.id, 'branch', e.target.value)}
-              >
-                <option value="">Select</option>
-                {branchOptions.map(option => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-            </td>
-            <td className="px-2 py-1.5">
-              <input 
-                type="number" 
-                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
-                value={round.students} 
-                onChange={(e) => handleRoundChange(round.id, 'students', e.target.value)} 
-                min="0" 
-                placeholder="0"
-              />
-            </td>
-            <td className="px-2 py-1.5">
-              <input 
-                type="text" 
-                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
-                value={round.skills} 
-                onChange={(e) => handleRoundChange(round.id, 'skills', e.target.value)} 
-                placeholder="e.g., React, Node.js, MongoDB" 
-              />
-            </td>
-            <td className="px-2 py-1.5 text-center">
-              <button
-                type="button"
-                onClick={() => handleRemoveRound(round.id)}
-                className="text-red-500 hover:text-red-700 transition-colors duration-200"
-                title="Remove"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-  {formData.rounds.length === 0 && (
-    <div className="text-center py-4 text-gray-500 text-sm">
-      No student details added. Click "Add Student" to get started.
-    </div>
-  )}
-</div>
+                        <div>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-white/50 text-xs">
+                                    <thead className="bg-white/50">
+                                        <tr>
+                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">S.No</th>
+                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Branch</th>
+                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Count</th>
+                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Skills (comma separated)</th>
+                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Action </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white/30 divide-y divide-white/50">
+                                        {formData.rounds.map((round, index) => (
+                                            <tr key={round.id}>
+                                                <td className="px-2 py-1.5 text-center">{index + 1}</td>
+                                                <td className="px-2 py-1.5">
+                                                    <select 
+                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
+                                                        value={round.branch} 
+                                                        onChange={(e) => handleRoundChange(round.id, 'branch', e.target.value)}
+                                                    >
+                                                        <option value="">Select</option>
+                                                        {branchOptions.map(option => (
+                                                            <option key={option} value={option}>{option}</option>
+                                                        ))}
+                                                    </select>
+                                                </td>
+                                                <td className="px-2 py-1.5">
+                                                    <input 
+                                                        type="number" 
+                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
+                                                        value={round.students} 
+                                                        onChange={(e) => handleRoundChange(round.id, 'students', e.target.value)} 
+                                                        min="0" 
+                                                        placeholder="0"
+                                                    />
+                                                </td>
+                                                <td className="px-2 py-1.5">
+                                                    <input 
+                                                        type="text" 
+                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
+                                                        value={round.skills} 
+                                                        onChange={(e) => handleRoundChange(round.id, 'skills', e.target.value)} 
+                                                        placeholder="e.g., React, Node.js, MongoDB" 
+                                                    />
+                                                </td>
+                                                <td className="px-2 py-1.5 text-center">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveRound(round.id)}
+                                                        className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                                                        title="Remove"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {formData.rounds.length === 0 && (
+                                <div className="text-center py-4 text-gray-500 text-sm">
+                                    No student details added. Click "Add Student" to get started.
+                                </div>
+                            )}
+                        </div>
 
                         {/* Row 10: Amenities and Description */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

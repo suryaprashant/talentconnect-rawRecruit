@@ -4,7 +4,7 @@ import { Heart, Users, MapPin } from 'lucide-react';
 
 const pastelColors = [
   // Purple/Indigo gradient variants (primary theme colors)
-  "bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30",
+  "bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fd]/30",
   "bg-gradient-to-r from-[#c4b5fd]/20 to-[#a78bfa]/20 text-[#6d28d9] border border-[#c4b5fd]/30",
   "bg-gradient-to-r from-[#818cf8]/20 to-[#a5b4fc]/20 text-[#4f46e5] border border-[#818cf8]/30",
   
@@ -69,27 +69,82 @@ function getStableColor(id = "") {
   return pastelColors[hash];
 }
 
-const PoolCollegeCard = ({ college }) => {
+const PoolCollegeCard = ({ college, onClick, compact = false }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   if (!college) return null;
 
-  const collegeName = college.name || 'College';
-  const degreeType = college.degreeType || 'Degree';
+  const collegeName = college.name || 'Pool Campus';
   const stableColor = getStableColor(college.id || collegeName);
 
-  return (
-    <div className="
-      w-full max-w-[350px] mx-auto rounded-2xl 
-      border shadow-sm hover:shadow-lg transition overflow-hidden
-      flex flex-col h-full
-    ">
-      {/* TOP SECTION - Gradient */}
-      <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-1 flex flex-col`}>
+  // Get initials for fallback
+  const getInitials = (name = '') => {
+    if (!name) return '?';
+    const words = name.trim().split(' ');
+    if (words.length === 1) return words[0][0].toUpperCase();
+    return (words[0][0] + words[1][0]).toUpperCase();
+  };
 
+  const handleCardClick = (e) => {
+    // Don't trigger if clicking on save button
+    if (e.target.closest('button')) {
+      return;
+    }
+    
+    // Use onClick prop if provided
+    if (onClick && typeof onClick === 'function') {
+      onClick(college);
+    }
+  };
+
+  const handleDetailsClick = (e) => {
+    e.stopPropagation();
+    
+    // Use onClick prop if provided
+    if (onClick && typeof onClick === 'function') {
+      onClick(college);
+    }
+  };
+
+  // Format location
+  const formatLocation = () => 
+    college.location || 'Multiple Locations';
+
+  // Format package details
+  const formatPackage = () => {
+    if (college.avgPackage) {
+      return `₹${college.avgPackage.toLocaleString()}`;
+    }
+    return 'Not Disclosed';
+  };
+
+  // Get description text
+  const getDescription = () => {
+    return college.description || 
+           'Pool campus connecting multiple colleges with shared placement drives and recruitment opportunities.';
+  };
+
+  // Pool campus badges
+  const poolBadges = college.badges || [];
+  const defaultBadges = ['Multiple Colleges', 'Shared Drives', 'Centralized'];
+  const displayBadges = poolBadges.length > 0 ? poolBadges : defaultBadges;
+
+  const description = getDescription();
+
+  return (
+    <div 
+      onClick={handleCardClick}
+      className="
+        w-full max-w-[350px] mx-auto rounded-2xl 
+        border shadow-sm hover:shadow-lg transition overflow-hidden
+        flex flex-col cursor-pointer h-full min-h-[400px]
+      "
+    >
+      {/* TOP SECTION - Pastel background */}
+      <div className={`${stableColor} p-4 flex-1 flex flex-col min-h-[280px]`}>
         {/* Pool Campus Type + Save */}
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start mb-2">
           <span className="text-xs bg-white/90 text-gray-700 px-3 py-1 rounded-full font-medium">
             POOL CAMPUS
           </span>
@@ -97,9 +152,10 @@ const PoolCollegeCard = ({ college }) => {
           <button
             onClick={(e) => {
               e.preventDefault();
+              e.stopPropagation();
               setIsSaved(!isSaved);
             }}
-            className="bg-white p-2 rounded-full shadow"
+            className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10"
           >
             <Heart
               className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
@@ -109,33 +165,85 @@ const PoolCollegeCard = ({ college }) => {
         </div>
 
         {/* College Name + Logo */}
-        <div className="mt-3 flex justify-between items-start gap-2">
-          <div className="flex flex-col gap-1">
-            <h3 className="text-black font-semibold text-lg truncate max-w-[200px]">
+        <div className="flex justify-between items-start gap-2 mb-4">
+          <div className="flex-1 pr-2">
+            <h3 className="text-black font-semibold text-lg truncate mb-2">
               {collegeName}
             </h3>
 
-            {/* College Type Badge */}
-            <div className="flex flex-wrap gap-1 mt-1">
-              <span className="text-sm font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded border border-black/5">
-                {degreeType}
-              </span>
-              <span className="text-sm font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded border border-black/5">
-                Pool Campus
-              </span>
-            </div>
+            {/* Pool Campus Badges */}
+            {displayBadges.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {displayBadges.slice(0, 3).map((badge, index) => {
+                  const badgeColors = [
+                    "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700",
+                    "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700",
+                    "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700",
+                    "bg-gradient-to-r from-green-100 to-green-50 text-green-700",
+                    "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700",
+                  ];
+                  const colorClass = badgeColors[index % badgeColors.length];
+                  
+                  return (
+                    <span 
+                      key={index} 
+                      className={`text-xs font-medium px-2 py-1 rounded-full border ${colorClass}`}
+                    >
+                      {badge}
+                    </span>
+                  );
+                })}
+                {displayBadges.length > 3 && (
+                  <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-1 rounded-full border">
+                    +{displayBadges.length - 3}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Logo/Icon */}
+          {/* Pool Campus Logo */}
           <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <Users className="h-6 w-6 text-white" />
-            </div>
+            {college.logo && !imageError ? (
+              <img 
+                src={college.logo} 
+                alt={`${collegeName} logo`}
+                className="w-12 h-12 object-cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                <Users className="h-6 w-6 text-white" />
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Stats/Info Section */}
-        <div className="flex flex-wrap gap-2 mt-3">
+        {/* Pool Campus Type Badge */}
+        {college.type && (
+          <div className="mb-3">
+            <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
+              {Array.isArray(college.type) ? college.type.join(', ') : college.type}
+            </span>
+          </div>
+        )}
+
+        {/* Stats */}
+        {college.stats && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {Object.entries(college.stats).slice(0, 3).map(([key, value], index) => (
+              <span
+                key={index}
+                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
+              >
+                {value} {key}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Pool Specific Stats */}
+        <div className="flex flex-wrap gap-2 mb-3">
           <span className="px-3 py-1 bg-blue-100 text-blue-800 border border-blue-300 rounded-full text-xs">
             50+ Colleges
           </span>
@@ -147,44 +255,57 @@ const PoolCollegeCard = ({ college }) => {
           </span>
         </div>
 
-        {/* Description */}
-        <div className="mt-3">
-          <p className="text-sm text-gray-700 line-clamp-3">
-            {college.description 
-              ? college.description.split(' ').slice(0, 20).join(' ') + (college.description.split(' ').length > 20 ? '...' : '')
-              : 'Pool campus connecting multiple colleges with shared placement drives and recruitment opportunities.'}
-          </p>
-        </div>
-
-      </div>
-
-      {/* BOTTOM SECTION - White */}
-      <div className="p-4 bg-white flex justify-between items-center border-t">
-
-        <div>
-          {/* Location */}
-          <div className="flex items-center gap-1 text-gray-700 text-xs">
-            <MapPin className="h-4 w-4 text-gray-500" />
-            <span className="line-clamp-1 max-w-[120px]">
-              {college.location || 'Multiple Locations'}
-            </span>
+        {/* Tags */}
+        {college.tags?.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {college.tags.slice(0, 3).map((tag, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-gray-100 text-gray-800 border border-gray-300 rounded-full text-xs"
+              >
+                {tag}
+              </span>
+            ))}
+            {college.tags.length > 3 && (
+              <span className="px-2 py-1 text-xs text-gray-600">+{college.tags.length - 3}</span>
+            )}
           </div>
-          
-          {/* Contact Info */}
-          <p className="font-semibold text-gray-900 text-sm mt-1">
-            Contact Pool Campus
+        )}
+
+        {/* Description */}
+        <div className="flex-1 mb-2">
+          <p className="text-sm text-gray-700 line-clamp-3">
+            {description}
           </p>
         </div>
-
-        <Link
-          to={`/employer-dashboard/Pool-campus/${college.id}`}
-          className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
-        >
-          Details
-        </Link>
-
       </div>
 
+      {/* BOTTOM SECTION - White background */}
+      <div className="p-4 bg-white border-t">
+        <div className="flex justify-between items-center">
+          <div>
+            {/* Location */}
+            <div className="flex items-center gap-1 text-gray-700 text-xs">
+              <MapPin className="h-4 w-4 text-gray-500" />
+              <span className="line-clamp-1 max-w-[120px]">
+                {formatLocation()}
+              </span>
+            </div>
+            
+            {/* Contact Info */}
+            <p className="font-semibold text-gray-900 text-sm mt-1">
+              Contact Pool Campus
+            </p>
+          </div>
+
+          <button
+            onClick={handleDetailsClick}
+            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
+          >
+            Details
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

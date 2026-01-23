@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { Calendar, MapPin, FileText, Users, ArrowUpRight, User, Mail, Phone, Link, Briefcase, DollarSign, Target, ClipboardList, Send } from 'lucide-react';
 import { format, isValid } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
+import useConversation from '@/statemanage/useConversation.js';
+import { conversationWithCollege } from '@/lib/College_AxiosIntance.js';
+import toast from 'react-hot-toast';
 
 const DetailRow = ({ icon: Icon, label, value }) => {
     if (!value || (Array.isArray(value) && value.length === 0)) return null;
@@ -25,6 +29,10 @@ const DetailRow = ({ icon: Icon, label, value }) => {
 
 const CollegeRequestDetail = ({ collegeApplication, driveDetails, onReject }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false); // Add this state
+    
+    const navigate = useNavigate(); // Add this
+    const { setSelectedConversation } = useConversation(); // Add this
 
     // Debug logging to see what data we're receiving
     console.log("College Application:", collegeApplication);
@@ -48,6 +56,50 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onReject }) =>
             console.log("Action error: ", error);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    // Add message button logic
+    const handleMessageClick = async (e) => {
+        e.stopPropagation();
+        setIsProcessing(true);
+        
+        try {
+            // Get the college's user ID from the application
+            const userId = collegeApplication?.applicant?._id || collegeApplication?.applicant?.userId;
+            
+            if (!userId) {
+                toast.error('Cannot start chat: User ID not found');
+                return;
+            }
+            
+            const response = await conversationWithCollege(userId);
+            if (response.data) {
+                const conversationUser = {
+                    _id: userId,
+                    name: collegeApplication?.applicant?.collegeUniversityDetails?.collegeName || 'Unknown College',
+                    email: collegeApplication?.applicant?.placementCoordinatorDetails?.officialEmail || '',
+                    profileImage: collegeApplication?.applicant?.profileImage || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+                    userType: 'college',
+                    fullname: collegeApplication?.applicant?.collegeUniversityDetails?.collegeName || 'Unknown College'
+                };
+
+                console.log("Setting conversation for direct chat:", conversationUser);
+
+                setSelectedConversation(conversationUser);
+
+                setTimeout(() => {
+                    navigate('/chat-application');
+                }, 100);
+
+            } else {
+                toast.error('Failed to create conversation');
+            }
+        } catch (error) {
+            console.error('Error starting chat:', error);
+            toast.error('Error starting conversation');
+        } finally {
+            setIsProcessing(false);
         }
     };
 
@@ -188,10 +240,6 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onReject }) =>
                         </div>
                     </div>
                 )}
-
-              
-               
-               
             </div>
 
             {/* Coordinator and Application Status */}
@@ -293,16 +341,16 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onReject }) =>
                     {currentStatus === 'Rejected' ? 'Already Rejected' : (isSubmitting ? 'Processing...' : 'Reject Drive')}
                 </button>
                 <button
-                    onClick={() => {/* Add message functionality here */}}
-                    disabled={isSubmitting}
+                    onClick={handleMessageClick}
+                    disabled={isProcessing || isSubmitting}
                     className={`flex-1 justify-center py-2 font-medium rounded-md transition-colors duration-200 flex items-center ${
-                        isSubmitting 
+                        (isProcessing || isSubmitting) 
                             ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
                             : 'bg-gray-500 text-white hover:bg-gray-600'
                     }`}
                 >
                     <Send size={16} className="mr-2" /> 
-                    {isSubmitting ? 'Processing...' : 'Message'}
+                    {isProcessing ? 'Processing...' : 'Message'}
                 </button>
             </div>
         </div>

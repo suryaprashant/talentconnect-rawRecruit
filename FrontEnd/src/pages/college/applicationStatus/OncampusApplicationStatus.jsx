@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Search, MapPin, Clock, Calendar, Briefcase, Award, CheckCircle, ArrowRight } from 'lucide-react';
+import { Search, MapPin, Clock, Calendar, Briefcase, Award, CheckCircle, ArrowRight, XCircle } from 'lucide-react';
 import { statusSteps } from '../../../constants/data.js';
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
 import { getCompanyPostingForOncampusDetail } from '@/lib/College_AxiosIntance';
 import { getCompanyImageUrl } from '@/lib/Company_AxiosInstance';
 import { Link } from 'react-router-dom';
+import JobDetailModal from '@/components/college/collegeDashboard/onCampusOpprtunity/OnCampusDetailModal'; // Add this import
 
 export default function OncampusApplicationStatus() {
   const [oncampusJobs, setOncampusJobs] = useState([]);
@@ -12,6 +13,12 @@ export default function OncampusApplicationStatus() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Add this state
+  const [modalJobId, setModalJobId] = useState(null); // Add this state
+
+  // Custom status steps for on-campus applications
+  const onCampusStatusSteps = ['Applied', 'Shortlisted', 'Accepted'];
+  const rejectionStatus = 'Rejected';
 
   const fetchApplication = async () => {
     try {
@@ -39,47 +46,34 @@ export default function OncampusApplicationStatus() {
         rawData.map(async (item) => {
           try {
             const jobId = item.job || item.jobDetails?.[0]?._id || item._id;
-           // console.log(`🔍 Fetching on-campus job details for jobId: ${jobId}`);
-            
-        const jobResponse = await getCompanyPostingForOncampusDetail(jobId);
+            const jobResponse = await getCompanyPostingForOncampusDetail(jobId);
             const jobDetails = jobResponse.data;
             
-            //const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company";
-
-           const companyUserId = jobDetails.postedByUser || jobDetails.companyPosted?.userId;
-          // let companyLogo=null ;
- 
-const companyLogo = item.companyProfile?.profileImage || item.companyProfile?.profileImageUrl || null;
-const companyName = item.companyProfile?.companyDetails?.companyName || "Company";
+            const companyUserId = jobDetails.postedByUser || jobDetails.companyPosted?.userId;
+            const companyLogo = item.companyProfile?.profileImage || item.companyProfile?.profileImageUrl || null;
+            const companyName = item.companyProfile?.companyDetails?.companyName || "Company";
             console.log('image url',companyLogo)
 
-          
-            // Extract job roles (this is what you want to show)
-            // jobRoles is an array like ["Software Developer", "Data Analyst", "Aerospace Engineer"]
+            // Extract job roles
             let jobRolesText = "Position";
             if (Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0) {
               jobRolesText = jobDetails.jobRoles.join(', ');
             } else if (jobDetails?.lookingFor) {
-              // Fallback to lookingFor if jobRoles is not available
               jobRolesText = jobDetails.lookingFor;
             }
             
-            // For the job title in the list, show just the first job role
             const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0 
               ? jobDetails.jobRoles[0] 
               : jobDetails?.lookingFor || "Position";
             
-            // Location extraction
             const location = Array.isArray(jobDetails?.workLocation) && jobDetails.workLocation.length > 0 
               ? jobDetails.workLocation.join(', ') 
               : "Location not specified";
             
-            // Extract employment type (Full-time, Internship, etc.)
             const employmentType = Array.isArray(jobDetails?.employmentType) && jobDetails.employmentType.length > 0
               ? jobDetails.employmentType.join(', ')
               : "Full-time";
             
-            // Other fields
             const degree = Array.isArray(jobDetails?.degree) && jobDetails.degree.length > 0
               ? jobDetails.degree.join(', ')
               : "Degree requirements";
@@ -94,11 +88,8 @@ const companyName = item.companyProfile?.companyDetails?.companyName || "Company
               date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
               company: companyName,
               companyLogo: companyLogo,
-              // Use first job role as the job title for the list
               jobTitle: firstJobRole,
-              // Store all job roles for the details view
               jobRoles: jobRolesText,
-              // Store employment type separately
               employmentType: employmentType,
               location: location,
               degree: degree,
@@ -182,10 +173,20 @@ const companyName = item.companyProfile?.companyDetails?.companyName || "Company
     (job?.location?.toLowerCase() || "").includes(searchTerm.toLowerCase())
   );
 
+  // Get status index for progress calculation
   const getStatusIndex = (status) => {
     if (!status) return 0;
-    const index = statusSteps.findIndex(step => step.toLowerCase() === status.toLowerCase());
-    return index >= 0 ? index : 0;
+    const lowerStatus = status.toLowerCase();
+    
+    // If rejected, show 0% progress (stays at Applied step)
+    if (lowerStatus === 'rejected') return 0;
+    
+    // For normal progression
+    if (lowerStatus === 'applied') return 0;
+    if (lowerStatus === 'shortlisted') return 1;
+    if (lowerStatus === 'accepted') return 2;
+    
+    return 0;
   };
 
   const getCompanyInitials = (companyName) => {
@@ -195,8 +196,6 @@ const companyName = item.companyProfile?.companyDetails?.companyName || "Company
     return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
   };
 
-
-  
   const retryFetchJob = async (jobId) => {
     try {
       console.log(`🔄 Retrying fetch for on-campus job ${jobId}`);
@@ -207,7 +206,6 @@ const companyName = item.companyProfile?.companyDetails?.companyName || "Company
         if (job.jobId === jobId) {
           const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company";
           
-          // Extract job roles
           const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0 
             ? jobDetails.jobRoles[0] 
             : jobDetails?.lookingFor || "Position";
@@ -245,6 +243,18 @@ const companyName = item.companyProfile?.companyDetails?.companyName || "Company
   };
 
   console.log('job',filteredJobs)
+
+  const handleViewFullDetails = (job) => {
+    console.log('Opening modal for job:', job?.jobId || job?.id);
+    setModalJobId(job.jobId || job.id);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalJobId(null);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex items-center justify-center">
@@ -329,49 +339,44 @@ const companyName = item.companyProfile?.companyDetails?.companyName || "Company
                 {filteredJobs.length > 0 ? (
                   <div className="space-y-2">
                     {filteredJobs.map(job => (
-                    <div
-  key={job.id}
-  onClick={() => setSelectedJob(job)}
-  className={`w-full text-left p-3 rounded-xl transition-all duration-200 cursor-pointer ${
-    selectedJob?.id === job.id 
-      ? 'bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 border border-[#3b82f6]/20' 
-      : 'hover:bg-white/30 border border-transparent'
-  }`}
->
+                      <div
+                        key={job.id}
+                        onClick={() => setSelectedJob(job)}
+                        className={`w-full text-left p-3 rounded-xl transition-all duration-200 cursor-pointer ${
+                          selectedJob?.id === job.id 
+                            ? 'bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 border border-[#3b82f6]/20' 
+                            : 'hover:bg-white/30 border border-transparent'
+                        }`}
+                      >
                         <div className="flex items-start gap-3">
-               <div className="w-9 h-9 flex-shrink-0">
-  {job.companyLogo ? (
-    <img 
-      src={job.companyLogo} 
-      alt={job.company}
-      className="w-9 h-9 rounded-lg object-cover border border-white/60"
-      onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
-    />
-  ) : null}
-  <div 
-    className={`${job.companyLogo ? 'hidden' : 'flex'} w-9 h-9 rounded-lg items-center justify-center font-bold text-xs ${
-      selectedJob?.id === job.id 
-        ? 'bg-gradient-to-br from-[#93c5fd] to-[#3b82f6] text-white' 
-        : 'bg-white/50 border border-white/60 text-[#3b82f6]'
-    }`}
-  >
-    {getCompanyInitials(job.company)}
-  </div>
-</div>
-        
+                          <div className="w-9 h-9 flex-shrink-0">
+                            {job.companyLogo ? (
+                              <img 
+                                src={job.companyLogo} 
+                                alt={job.company}
+                                className="w-9 h-9 rounded-lg object-cover border border-white/60"
+                                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                              />
+                            ) : null}
+                            <div 
+                              className={`${job.companyLogo ? 'hidden' : 'flex'} w-9 h-9 rounded-lg items-center justify-center font-bold text-xs ${
+                                selectedJob?.id === job.id 
+                                  ? 'bg-gradient-to-br from-[#93c5fd] to-[#3b82f6] text-white' 
+                                  : 'bg-white/50 border border-white/60 text-[#3b82f6]'
+                              }`}
+                            >
+                              {getCompanyInitials(job.company)}
+                            </div>
+                          </div>
+                  
                           <div className="flex-1 min-w-0">
                             <h3 className="text-sm font-semibold text-gray-900 truncate">{job.company}</h3>
-                            {/* This now shows the first job role (e.g., "Software Developer") */}
                             <p className="text-xs text-gray-600 truncate">{job.jobTitle}</p>
                             <div className="mt-1.5 flex items-center text-xs text-gray-500 gap-2">
                               <span className="inline-flex items-center">
                                 <MapPin className="h-3 w-3 mr-1 text-[#3b82f6]" />
                                 {job.location}
                               </span>
-                              {/* Show employment type badge (Full-time, Internship, etc.) */}
-                              {/* <span className="text-xs px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded border border-purple-200">
-                                {job.employmentType}
-                              </span> */}
                               <span className={`text-xs px-1.5 py-0.5 rounded ${
                                 job.status === 'Accepted' ? 'bg-green-100 text-green-700 border border-green-200' :
                                 job.status === 'Shortlisted' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
@@ -413,65 +418,88 @@ const companyName = item.companyProfile?.companyDetails?.companyName || "Company
 
           {/* Status and Details */}
           <div className="lg:col-span-2">
-            {selectedJob ? (
-              <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg h-full flex flex-col">
+          {selectedJob ? (
+            <div className="bg-white/90 backdrop-blur-sm border border-white/60 rounded-2xl shadow-lg h-full flex flex-col">
                 {/* Status Progress */}
                 <div className="p-5 border-b border-white/60">
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <h2 className="text-lg font-bold text-gray-900">{selectedJob.company}</h2>
-                      {/* This shows all job roles (e.g., "Software Developer, Data Analyst, Aerospace Engineer") */}
                       <p className="text-sm text-gray-600">{selectedJob.jobRoles}</p>
                     </div>
-                 <div className="w-12 h-12 flex-shrink-0">
-  {selectedJob.companyLogo ? (
-    <img 
-      src={selectedJob.companyLogo} 
-      alt={selectedJob.company}
-      className="w-12 h-12 rounded-xl object-cover border border-white/60"
-    />
-  ) : (
-    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#93c5fd]/20 to-[#3b82f6]/20 flex items-center justify-center border border-white/60 font-bold text-lg text-[#3b82f6]">
-      {getCompanyInitials(selectedJob.company)}
-    </div>
-  )}
-</div>
+                    <div className="w-12 h-12 flex-shrink-0">
+                      {selectedJob.companyLogo ? (
+                        <img 
+                          src={selectedJob.companyLogo} 
+                          alt={selectedJob.company}
+                          className="w-12 h-12 rounded-xl object-cover border border-white/60"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#93c5fd]/20 to-[#3b82f6]/20 flex items-center justify-center border border-white/60 font-bold text-lg text-[#3b82f6]">
+                          {getCompanyInitials(selectedJob.company)}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   
-                  <div className="relative">
-                    <div className="flex justify-between mb-1">
-                      {statusSteps?.slice(0, 4).map((step, idx) => {
-                        const currentIdx = getStatusIndex(selectedJob.status);
-                        const isActive = idx <= currentIdx;
-                        return (
-                          <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 4}%` }}>
-                            <div className={`w-6 h-6 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
-                              isActive 
-                                ? 'bg-[#3b82f6] border-[#3b82f6] text-white'
-
-                                : 'bg-white/50 border-white/60 text-gray-400'
-                            }`}>
-                              {isActive ? <CheckCircle className="h-3 w-3" /> : idx + 1}
-                            </div>
-                            <span className={`text-xs text-center ${isActive ? 'text-[#3b82f6] font-medium' : 'text-gray-500'}`}>
-                              {step.length > 10 ? step.substring(0, 10) + '...' : step}
-                            </span>
+                  {selectedJob.status.toLowerCase() === 'rejected' ? (
+                    // Rejected Status - Simple 2-step bar
+                    <div className="relative">
+                      <div className="flex justify-between mb-1">
+                        <div className="flex flex-col items-center" style={{ width: '50%' }}>
+                          <div className="w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 bg-red-100 border-red-300 text-red-700">
+                            <XCircle className="h-4 w-4" />
                           </div>
-                        );
-                      })}
+                          <span className="text-xs text-center text-red-700 font-medium">
+                            Applied
+                          </span>
+                        </div>
+                        <div className="flex flex-col items-center" style={{ width: '50%' }}>
+                          <div className="w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 bg-red-500 border-red-500 text-white">
+                            <XCircle className="h-4 w-4" />
+                          </div>
+                          <span className="text-xs text-center text-red-700 font-medium">
+                            Rejected
+                          </span>
+                        </div>
+                      </div>
+                      <div className="h-1.5 bg-white/50 absolute left-[25%] right-[25%] top-4 -z-10">
+                        <div className="h-1.5 bg-gradient-to-r from-red-400 to-red-500 rounded-full w-full"></div>
+                      </div>
                     </div>
-                    <div className="h-1.5 bg-white/50 absolute left-[12.5%] right-[12.5%] top-3 -z-10">
-
-
-  <div
-    className="h-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] transition-all duration-300 rounded-full"
-    style={{
-      width: `${(getStatusIndex(selectedJob.status) / (statusSteps.length - 1)) * 100}%`
-    }}
-  ></div>
-</div>
-
-                  </div>
+                  ) : (
+                    // Normal Status Flow - 3-step bar
+                    <div className="relative">
+                      <div className="flex justify-between mb-1">
+                        {onCampusStatusSteps.map((step, idx) => {
+                          const currentIdx = getStatusIndex(selectedJob.status);
+                          const isActive = idx <= currentIdx;
+                          return (
+                            <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 3}%` }}>
+                              <div className={`w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
+                                isActive 
+                                  ? 'bg-[#3b82f6] border-[#3b82f6] text-white'
+                                  : 'bg-white/50 border-white/60 text-gray-400'
+                              }`}>
+                                {isActive ? <CheckCircle className="h-4 w-4" /> : idx + 1}
+                              </div>
+                              <span className={`text-xs text-center ${isActive ? 'text-[#3b82f6] font-medium' : 'text-gray-500'}`}>
+                                {step}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="h-1.5 bg-white/50 absolute left-[16.5%] right-[16.5%] top-4 -z-10">
+                        <div
+                          className="h-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] transition-all duration-300 rounded-full"
+                          style={{
+                            width: `${(getStatusIndex(selectedJob.status) / (onCampusStatusSteps.length - 1)) * 100}%`
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Job Details Grid */}
@@ -482,7 +510,6 @@ const companyName = item.companyProfile?.companyDetails?.companyName || "Company
                         <Briefcase className="h-4 w-4 text-[#3b82f6]" />
                         <span className="text-xs font-medium text-gray-700">Job Type</span>
                       </div>
-                      {/* This shows employment type (Full-time, Internship, etc.) */}
                       <p className="text-sm text-gray-900">{selectedJob.employmentType}</p>
                     </div>
                     
@@ -542,14 +569,14 @@ const companyName = item.companyProfile?.companyDetails?.companyName || "Company
 
                   {/* Action Button */}
                   <div className="mt-auto">
-                    <Link 
-                      to={`/college-dashboard/On-campus/${selectedJob?.fullJobDetails?._id || selectedJob.jobId || selectedJob.id}?isApplied=true`} 
-                      className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-300"
-                    >
-                      View Full Details
-                      <ArrowRight className="h-3.5 w-3.5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
-                    </Link>
-                  </div>
+                <button 
+                  onClick={() => handleViewFullDetails(selectedJob)}
+                  className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-300"
+                >
+                  View Full Details
+                  <ArrowRight className="h-3.5 w-3.5 ml-2" />
+                </button>
+              </div>
                 </div>
               </div>
             ) : oncampusJobs.length === 0 ? (
@@ -576,6 +603,22 @@ const companyName = item.companyProfile?.companyDetails?.companyName || "Company
           </div>
         </div>
       </div>
+      {isModalOpen && modalJobId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+            onClick={handleCloseModal}
+          />
+          <div className="relative z-10 w-full max-w-6xl h-[90vh] overflow-y-auto rounded-2xl bg-white">
+            <JobDetailModal
+              jobId={modalJobId}
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+              isApplied={true} // Add this to hide the Register button
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

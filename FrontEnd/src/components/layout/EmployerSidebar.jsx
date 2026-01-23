@@ -55,7 +55,7 @@ const handleOpenHelp = (key) => {
               </svg>
             } 
             active={activePath.includes('/employer-dashboard')}
-            onHelp={() => handleOpenHelp("companyDashboard")}
+            onHelp={() => handleOpenHelp("employer-dashboard")}
           >
             <SidebarNavItem
               to="/employer-dashboard/On-campus"

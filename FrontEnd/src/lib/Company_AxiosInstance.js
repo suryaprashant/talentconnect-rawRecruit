@@ -26,6 +26,13 @@ export function getRegisteredColleges() {
     .catch((error) => error);
 }
 
+export function getCollegeById(collegeId) {
+  return axiosClient
+    .get(`/api/college-details/${collegeId}`)
+    .then((response) => response)
+    .catch((error) => error);
+}
+
 export function getCollegeDetail(collegeId) {
   return axiosClient
     .get(`/api/student-dashboard/on-campus/company/${collegeId}`)

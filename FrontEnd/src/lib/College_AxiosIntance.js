@@ -70,7 +70,6 @@ export function getOncampusJobs() {
     .catch(error => error);
 }
 
-
 export function getPoolCampusForCompany() {
   return axiosClient.get(`/api/student-dashboard/pool-campus/company`)
     .then(response => response)
@@ -83,6 +82,12 @@ export function getPoolCampusJobByIdForCompany(jobId) {
     .catch(error => console.log("Error", error));
 }
 // /api/student-dashboard/getPoolCampusJob/${id}
+
+export function getOnCampusJobById(id) {
+  return axiosClient.get(`/api/student-dashboard/getOnCampusJob/${id}`)
+    .then(response => response)
+    .catch(error => error);
+}
 
 export function getPoolCampusJobById(id) {
   return axiosClient.get(`/api/student-dashboard/getPoolCampusJob/${id}`)

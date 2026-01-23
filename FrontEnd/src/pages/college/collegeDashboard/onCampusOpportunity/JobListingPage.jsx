@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import JobCard from '@/components/college/collegeDashboard/onCampusOpprtunity/JobCard';
 import { Filter, ChevronDown, ChevronUp, X, Search, Briefcase, Calendar, Users, MapPin, TrendingUp, RefreshCw, AlertCircle, Building, GraduationCap, BookOpen } from 'lucide-react';
 import { getCompanyPostingForOncampus } from '@/lib/College_AxiosIntance';
+import JobDetailModal from '@/components/college/collegeDashboard/onCampusOpprtunity/OnCampusDetailModal';
 
-const JobsListingPage = ({ compact = false }) => {
+const JobsListingPage = ({ compact = false, onJobSelect, selectedJobId }) => {
   const [jobPosted, setjobPosted] = useState([]);
   const [filteredjobPosted, setFilteredjobPosted] = useState([]);
   const [filters, setFilters] = useState({
@@ -18,6 +19,10 @@ const JobsListingPage = ({ compact = false }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  
+  // Modal state
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // State for dropdown visibility
   const [showMainFilter, setShowMainFilter] = useState(false);
@@ -30,8 +35,8 @@ const JobsListingPage = ({ compact = false }) => {
     college: false
   });
 
-  // Mock filter options (replace with your actual data)
-  const [filterOptions, setFilterOptions] = useState({
+  // Filter options
+  const [filterOptions] = useState({
     workMode: [
       { label: 'Work from office', count: 28692 },
       { label: 'Hybrid', count: 756 },
@@ -214,6 +219,23 @@ const JobsListingPage = ({ compact = false }) => {
     setFilteredjobPosted(result);
   }, [filters, jobPosted, searchQuery, sortBy]);
 
+  const handleJobSelect = (job) => {
+    console.log('Opening details for:', job?.companyPosted?.companyDetails?.companyName);
+    setSelectedJob(job);
+    setIsModalOpen(true);
+    
+    // Pass to parent if onJobSelect exists (for compact mode)
+    if (onJobSelect && typeof onJobSelect === 'function') {
+      onJobSelect(job);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedJob(null);
+  };
+
+  // Filter handler functions (keep your existing handlers)
   const handleFilterChange = (filterType, value) => {
     setFilters(prev => {
       if (Array.isArray(prev[filterType])) {
@@ -297,6 +319,24 @@ const JobsListingPage = ({ compact = false }) => {
     return count;
   };
 
+  // In the compact section:
+if (compact) {
+  return (
+    <div className="p-2 space-y-3"> {/* Reduced padding */}
+      {filteredjobPosted
+        .filter(job => selectedJobId ? job._id !== selectedJobId : true)
+        .map((job) => (
+          <JobCard
+            key={job._id || job.id}
+            job={job}
+            onClick={onJobSelect}
+            compact={compact}
+          />
+        ))}
+    </div>
+  );
+}
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex items-center justify-center">
@@ -326,15 +366,15 @@ const JobsListingPage = ({ compact = false }) => {
       </div>
     );
   }
-if (compact) {
-    return (
-      <div className="p-3 space-y-4">
-        {filteredjobPosted.map(job => (
-          <JobCard key={job._id} job={job} />
-        ))}
-      </div>
-    );
-  }
+// if (compact) {
+//     return (
+//       <div className="p-3 space-y-4">
+//         {filteredjobPosted.map(job => (
+//           <JobCard key={job._id} job={job} />
+//         ))}
+//       </div>
+//     );
+//   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
@@ -361,18 +401,6 @@ if (compact) {
                   Explore companies posting for on-campus opportunities at your college
                 </p>
               </div>
-              {/* <div className="w-full lg:w-96">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="Search companies, positions, keywords..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent focus:outline-none shadow-sm"
-                  />
-                </div>
-              </div> */}
             </div>
           </div>
         </div>
@@ -907,7 +935,7 @@ if (compact) {
           </div>
         </div>
 
-        {/* Job Cards */}
+        {/* Job Cards Grid */}
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">
           {filteredjobPosted.length > 0 ? (
             <>
@@ -918,7 +946,10 @@ if (compact) {
                     className="h-full flex"
                   >
                     <div className="w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 flex flex-col h-full">
-                      <JobCard job={jobPosted} />
+                      <JobCard 
+                        job={jobPosted} 
+                        onClick={handleJobSelect}
+                      />
                     </div>
                   </div>
                 ))}
@@ -958,6 +989,20 @@ if (compact) {
           )}
         </div>
       </div>
+
+      {/* Job Detail Modal */}
+      {isModalOpen && selectedJob && (
+        <div className="fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative z-10 flex items-center justify-center h-full p-4">
+            <JobDetailModal
+              jobId={selectedJob._id}
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

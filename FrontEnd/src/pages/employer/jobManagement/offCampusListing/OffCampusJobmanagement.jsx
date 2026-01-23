@@ -556,7 +556,7 @@ export default function OffCampusJobManagement() {
               <div className="col-span-4">Job Title</div>
               <div className="col-span-3">Location</div>
               <div className="col-span-2">End Date</div>
-              <div className="col-span-1 text-center">Applications</div>
+              <div className="col-span-1 text-center">New Applications</div>
               <div className="col-span-2 text-center">Actions</div>
             </div>
           </div>
@@ -581,22 +581,25 @@ export default function OffCampusJobManagement() {
                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                   <div className="grid grid-cols-12 gap-4 items-center">
                     {/* Job Title */}
-                    <div className="col-span-4">
-                      <Link
-                        to={`/company-dashboard/Off-campus/${job._id}?isApplied=true`}
-                        className="group cursor-pointer block"
-                      >
-                        <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
-                          {job?.jobRoles?.[0] || 'N/A'}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <FileText className="h-3 w-3 text-gray-400" />
-                          <span className="text-sm text-gray-500">
-                            {job?.workMode} • {job?.employmentType || 'N/A Type'}
-                          </span>
-                        </div>
-                      </Link>
-                    </div>
+<div className="col-span-4">
+  <Link
+    to={`/company-dashboard/Off-campus/${job._id}?isApplied=true`}
+    className="group cursor-pointer block"
+  >
+    <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
+      {Array.isArray(job?.jobRoles) 
+        ? job.jobRoles.join(', ') 
+        : job?.jobRoles || 'N/A'
+      }
+    </h3>
+    <div className="flex items-center gap-2 mt-1">
+      <FileText className="h-3 w-3 text-gray-400" />
+      <span className="text-sm text-gray-500">
+        {job?.workMode} • {job?.employmentType || 'N/A Type'}
+      </span>
+    </div>
+  </Link>
+</div>
 
                     {/* Location */}
                     <div className="col-span-3">

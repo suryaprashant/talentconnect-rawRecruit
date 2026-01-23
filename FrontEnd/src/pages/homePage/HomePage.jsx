@@ -115,11 +115,11 @@ const App = () => {
   }, []);
 
   const handleCardClick = (cardType) => {
-    const hiringRoutes = {
-      'On-Campus': '/hiring-channels/on-campus-hiring',
-      'Pool-Campus': '/hiring-channels/pool-campus-hiring',
-      'Off-Campus': '/hiring-channels/off-campus-hiring'
-    };
+    // const hiringRoutes = {
+    //   'On-Campus Recruitment': '/hiring-channels/on-campus-hiring',
+    //   'Pool-Campus Recruitment': '/hiring-channels/pool-campus-hiring',
+    //   'Off-Campus Recruitment': '/hiring-channels/off-campus-hiring'
+    // };
 
     const targetRoute = hiringRoutes[cardType];
     if (targetRoute) {
@@ -602,278 +602,262 @@ const App = () => {
             </div>
 
             {/* Hero Cards - Modern Dashboard Style */}
-            <div id="services" className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto relative">
-              {heroCards.map((card, idx) => {
-                // Create unique gradient colors for each card
-                const gradientColors = [
-                  { from: '#8B5CF6', via: '#7C3AED', to: '#6D28D9', bg: '#8B5CF6', dark: '#4C1D95' }, // Purple
-                  { from: '#C026D3', via: '#952e8f', to: '#6D28D9', bg: '#952e8f', dark: '#952e8f' }, // Magenta/Purple
-                  { from: '#60A5FA', via: '#3B82F6', to: '#1D4ED8', bg: '#60A5FA', dark: '#1E3A8A' }  // Blue
-                ];
+<div id="services" className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto relative">
+  {heroCards.map((card, idx) => {
+    // Create unique gradient colors for each card
+    const gradientColors = [
+      { from: '#8B5CF6', via: '#7C3AED', to: '#6D28D9', bg: '#8B5CF6', dark: '#4C1D95' }, // Purple
+      { from: '#C026D3', via: '#952e8f', to: '#6D28D9', bg: '#952e8f', dark: '#952e8f' }, // Magenta/Purple
+      { from: '#60A5FA', via: '#3B82F6', to: '#1D4ED8', bg: '#60A5FA', dark: '#1E3A8A' }  // Blue
+    ];
+    
+    const colors = gradientColors[idx];
+    
+    return (
+      <div
+        key={idx}
+        onClick={() => handleCardClick(card.title)}
+        onMouseEnter={(e) => {
+          setHoveredCard(idx);
+          // Enhanced hover animations
+          const cardElement = e.currentTarget;
+          cardElement.style.transform = 'translateY(-12px) translateZ(30px)';
+          cardElement.style.boxShadow = `
+            0 25px 50px -12px ${colors.from}40,
+            0 10px 30px -5px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.2)
+          `;
+          
+          // Animate floating elements
+          const floatingElements = cardElement.querySelectorAll('.floating-element');
+          floatingElements.forEach((el, i) => {
+            el.style.animation = `floatElement 2s ease-in-out ${i * 0.2}s infinite`;
+          });
+          
+          // Pulse glow effect
+          const glowElement = cardElement.querySelector('.card-glow');
+          if (glowElement) {
+            glowElement.style.opacity = '0.6';
+            glowElement.style.animation = 'pulseGlow 1.5s ease-in-out infinite';
+          }
+        }}
+        onMouseLeave={(e) => {
+          setHoveredCard(null);
+          const cardElement = e.currentTarget;
+          cardElement.style.transform = 'translateY(0) translateZ(0)';
+          cardElement.style.boxShadow = '';
+          
+          // Reset floating elements
+          const floatingElements = cardElement.querySelectorAll('.floating-element');
+          floatingElements.forEach(el => {
+            el.style.animation = '';
+          });
+          
+          // Reset glow
+          const glowElement = cardElement.querySelector('.card-glow');
+          if (glowElement) {
+            glowElement.style.opacity = '0';
+            glowElement.style.animation = '';
+          }
+        }}
+        className="relative group cursor-pointer perspective-1000 h-full"
+        style={{
+          animationDelay: `${idx * 150}ms`,
+          animation: `slideUp 0.6s ease-out forwards ${idx * 150}ms, floatCard${idx + 1} 4s ease-in-out infinite ${idx * 0.3}s`,
+          opacity: 0,
+          transformStyle: 'preserve-3d',
+          willChange: 'transform, box-shadow',
+          transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+      >
+        {/* Card Glow Effect */}
+        <div 
+          className="card-glow absolute -inset-4 rounded-3xl opacity-0 transition-opacity duration-500"
+          style={{
+            background: `radial-gradient(circle at 50% 0%, ${colors.from}30 0%, transparent 70%)`,
+            filter: 'blur(20px)',
+            zIndex: 0,
+          }}
+        />
+        
+        {/* Floating Background Elements */}
+        <div className="absolute inset-0 overflow-hidden rounded-3xl">
+          {/* Subtle grid pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0" style={{
+              backgroundImage: `linear-gradient(to right, ${colors.from}20 1px, transparent 1px),
+                                linear-gradient(to bottom, ${colors.from}20 1px, transparent 1px)`,
+              backgroundSize: '20px 20px',
+            }} />
+          </div>
+          
+          {/* Floating particles */}
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="floating-element absolute w-2 h-2 rounded-full"
+              style={{
+                background: colors.from,
+                left: `${15 + i * 10}%`,
+                top: `${20 + i * 8}%`,
+                opacity: 0.1,
+                animation: `floatParticle 3s ease-in-out ${i * 0.4}s infinite`,
+              }}
+            />
+          ))}
+        </div>
+        
+        {/* Card Container with Glass Morphism - FLEX COLUMN */}
+        <div className="relative bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl overflow-hidden z-10 transition-all duration-500 group-hover:bg-gradient-to-br group-hover:from-gray-900 group-hover:to-gray-800 group-hover:border-gray-700/40 h-full flex flex-col">
+          {/* Top Accent Bar - Only visible normally, hidden on hover */}
+          <div 
+            className="h-1.5 w-full rounded-t-3xl transition-all duration-500 group-hover:h-0 group-hover:opacity-0 flex-shrink-0"
+            style={{
+              background: `linear-gradient(90deg, ${colors.from}, ${colors.via}, ${colors.to})`,
+            }}
+          />
+          
+          {/* Card Content - FLEXIBLE HEIGHT */}
+          <div className="relative p-8 flex-grow flex flex-col">
+            {/* Color overlay on hover - Takes full card */}
+            <div 
+              className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              style={{
+                background: `linear-gradient(135deg, ${colors.dark}ee, ${colors.dark}cc)`,
+              }}
+            />
+            
+            <div className="relative flex-grow flex flex-col">
+              {/* Icon Container with Floating Effect */}
+              <div className="relative mb-8 flex-shrink-0">
+                {/* Icon Background Glow */}
+                <div 
+                  className="absolute -inset-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                  style={{
+                    background: `radial-gradient(circle at center, ${colors.from}40 0%, transparent 70%)`,
+                    filter: 'blur(15px)',
+                  }}
+                />
                 
-                const colors = gradientColors[idx];
-                
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => handleCardClick(card.title)}
-                    onMouseEnter={(e) => {
-                      setHoveredCard(idx);
-                      // Enhanced hover animations
-                      const cardElement = e.currentTarget;
-                      cardElement.style.transform = 'translateY(-12px) translateZ(30px)';
-                      cardElement.style.boxShadow = `
-                        0 25px 50px -12px ${colors.from}40,
-                        0 10px 30px -5px rgba(0, 0, 0, 0.1),
-                        inset 0 1px 0 0 rgba(255, 255, 255, 0.2)
-                      `;
-                      
-                      // Animate floating elements
-                      const floatingElements = cardElement.querySelectorAll('.floating-element');
-                      floatingElements.forEach((el, i) => {
-                        el.style.animation = `floatElement 2s ease-in-out ${i * 0.2}s infinite`;
-                      });
-                      
-                      // Pulse glow effect
-                      const glowElement = cardElement.querySelector('.card-glow');
-                      if (glowElement) {
-                        glowElement.style.opacity = '0.6';
-                        glowElement.style.animation = 'pulseGlow 1.5s ease-in-out infinite';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      setHoveredCard(null);
-                      const cardElement = e.currentTarget;
-                      cardElement.style.transform = 'translateY(0) translateZ(0)';
-                      cardElement.style.boxShadow = '';
-                      
-                      // Reset floating elements
-                      const floatingElements = cardElement.querySelectorAll('.floating-element');
-                      floatingElements.forEach(el => {
-                        el.style.animation = '';
-                      });
-                      
-                      // Reset glow
-                      const glowElement = cardElement.querySelector('.card-glow');
-                      if (glowElement) {
-                        glowElement.style.opacity = '0';
-                        glowElement.style.animation = '';
-                      }
-                    }}
-                    className="relative group cursor-pointer perspective-1000 h-full"
-                    style={{
-                      animationDelay: `${idx * 150}ms`,
-                      animation: `slideUp 0.6s ease-out forwards ${idx * 150}ms, floatCard${idx + 1} 4s ease-in-out infinite ${idx * 0.3}s`,
-                      opacity: 0,
-                      transformStyle: 'preserve-3d',
-                      willChange: 'transform, box-shadow',
-                      transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                    }}
-                  >
-                    {/* Card Glow Effect */}
+                {/* Icon Container */}
+                <div className="relative">
+                  {/* Icon Background - White normally, stays white on hover */}
+                  <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-white to-gray-50 p-4 shadow-lg border border-white/60 flex items-center justify-center group-hover:border-white/80">
+                    {/* Inner Glow */}
                     <div 
-                      className="card-glow absolute -inset-4 rounded-3xl opacity-0 transition-opacity duration-500"
+                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
                       style={{
-                        background: `radial-gradient(circle at 50% 0%, ${colors.from}30 0%, transparent 70%)`,
-                        filter: 'blur(20px)',
-                        zIndex: 0,
+                        background: `linear-gradient(135deg, ${colors.from}30, ${colors.to}30)`,
                       }}
                     />
                     
-                    {/* Floating Background Elements */}
-                    <div className="absolute inset-0 overflow-hidden rounded-3xl">
-                      {/* Subtle grid pattern */}
-                      <div className="absolute inset-0 opacity-5">
-                        <div className="absolute inset-0" style={{
-                          backgroundImage: `linear-gradient(to right, ${colors.from}20 1px, transparent 1px),
-                                            linear-gradient(to bottom, ${colors.from}20 1px, transparent 1px)`,
-                          backgroundSize: '20px 20px',
-                        }} />
-                      </div>
-                      
-                      {/* Floating particles */}
-                      {[...Array(8)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="floating-element absolute w-2 h-2 rounded-full"
-                          style={{
-                            background: colors.from,
-                            left: `${15 + i * 10}%`,
-                            top: `${20 + i * 8}%`,
-                            opacity: 0.1,
-                            animation: `floatParticle 3s ease-in-out ${i * 0.4}s infinite`,
-                          }}
-                        />
-                      ))}
+                    {/* Icon */}
+                    <div 
+                      className="relative transform transition-transform duration-500 group-hover:scale-110"
+                      style={{ color: colors.from }}
+                    >
+                      {card.icon}
                     </div>
-                    
-                    {/* Card Container with Glass Morphism - FLEX COLUMN */}
-                    <div className="relative bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl overflow-hidden z-10 transition-all duration-500 group-hover:bg-gradient-to-br group-hover:from-gray-900 group-hover:to-gray-800 group-hover:border-gray-700/40 h-full flex flex-col">
-                      {/* Top Accent Bar - Only visible normally, hidden on hover */}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Title with Gradient - White text on hover */}
+              <div className="mb-4 flex-shrink-0">
+                <h3 className="text-2xl font-bold">
+                  <span className="bg-gradient-to-r from-gray-800 via-gray-900 to-black bg-clip-text text-transparent group-hover:text-white transition-all duration-500">
+                    {card.title}
+                  </span>
+                  {/* Animated underline - Only appears on hover */}
+                  <div 
+                    className="h-0.5 w-0 group-hover:w-full transition-all duration-700 mt-1"
+                    style={{
+                      background: `linear-gradient(90deg, ${colors.from}, ${colors.to})`,
+                    }}
+                  />
+                </h3>
+              </div>
+              
+              {/* Features List with Animated Indicators - FLEXIBLE CONTENT */}
+              <ul className="space-y-4 mb-6 flex-grow"> {/* Changed from mb-4 to mb-6 for more space after features */}
+                {card.features.map((feature, fIdx) => (
+                  <li 
+                    key={fIdx}
+                    className="flex items-start gap-3 group/item"
+                    style={{ animationDelay: `${fIdx * 100}ms` }}
+                  >
+                    {/* Animated Check Circle */}
+                    <div className="relative flex-shrink-0 mt-1">
+                      {/* Pulse Ring */}
                       <div 
-                        className="h-1.5 w-full rounded-t-3xl transition-all duration-500 group-hover:h-0 group-hover:opacity-0 flex-shrink-0"
+                        className="absolute -inset-1 rounded-full opacity-0 group-hover/item:opacity-30 transition-opacity duration-300"
                         style={{
-                          background: `linear-gradient(90deg, ${colors.from}, ${colors.via}, ${colors.to})`,
+                          background: colors.from,
+                          animation: 'pulseRing 2s ease-in-out infinite',
                         }}
                       />
                       
-                      {/* Card Content - FLEXIBLE HEIGHT */}
-                      <div className="relative p-8 flex-grow flex flex-col">
-                        {/* Color overlay on hover - Takes full card */}
-                        <div 
-                          className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                          style={{
-                            background: `linear-gradient(135deg, ${colors.dark}ee, ${colors.dark}cc)`,
-                          }}
-                        />
-                        
-                        <div className="relative flex-grow flex flex-col">
-                          {/* Icon Container with Floating Effect */}
-                          <div className="relative mb-8 flex-shrink-0">
-                            {/* Icon Background Glow */}
-                            <div 
-                              className="absolute -inset-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
-                              style={{
-                                background: `radial-gradient(circle at center, ${colors.from}40 0%, transparent 70%)`,
-                                filter: 'blur(15px)',
-                              }}
-                            />
-                            
-                            {/* Icon Container */}
-                            <div className="relative">
-                              {/* Icon Background - White normally, stays white on hover */}
-                              <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-white to-gray-50 p-4 shadow-lg border border-white/60 flex items-center justify-center group-hover:border-white/80">
-                                {/* Inner Glow */}
-                                <div 
-                                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
-                                  style={{
-                                    background: `linear-gradient(135deg, ${colors.from}30, ${colors.to}30)`,
-                                  }}
-                                />
-                                
-                                {/* Icon */}
-                                <div 
-                                  className="relative transform transition-transform duration-500 group-hover:scale-110"
-                                  style={{ color: colors.from }}
-                                >
-                                  {card.icon}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Title with Gradient - White text on hover */}
-                          <div className="mb-4 flex-shrink-0">
-                            <h3 className="text-2xl font-bold">
-                              <span className="bg-gradient-to-r from-gray-800 via-gray-900 to-black bg-clip-text text-transparent group-hover:text-white transition-all duration-500">
-                                {card.title}
-                              </span>
-                              {/* Animated underline - Only appears on hover */}
-                              <div 
-                                className="h-0.5 w-0 group-hover:w-full transition-all duration-700 mt-1"
-                                style={{
-                                  background: `linear-gradient(90deg, ${colors.from}, ${colors.to})`,
-                                }}
-                              />
-                            </h3>
-                          </div>
-                          
-                          {/* Features List with Animated Indicators - FLEXIBLE CONTENT */}
-                          <ul className="space-y-4 mb-8 flex-grow">
-                            {card.features.map((feature, fIdx) => (
-                              <li 
-                                key={fIdx}
-                                className="flex items-start gap-3 group/item"
-                                style={{ animationDelay: `${fIdx * 100}ms` }}
-                              >
-                                {/* Animated Check Circle */}
-                                <div className="relative flex-shrink-0 mt-1">
-                                  {/* Pulse Ring */}
-                                  <div 
-                                    className="absolute -inset-1 rounded-full opacity-0 group-hover/item:opacity-30 transition-opacity duration-300"
-                                    style={{
-                                      background: colors.from,
-                                      animation: 'pulseRing 2s ease-in-out infinite',
-                                    }}
-                                  />
-                                  
-                                  {/* Check Circle - White on hover */}
-                                  <div 
-                                    className="relative w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-0.5 group-hover:bg-white group-hover:border group-hover:border-white/60"
-                                    style={{
-                                      background: `linear-gradient(135deg, ${colors.from}, ${colors.via})`,
-                                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                                    }}
-                                  >
-                                    <CheckCircle className="w-3.5 h-3.5 text-white group-hover:text-gray-700 transition-colors duration-300" />
-                                  </div>
-                                </div>
-                                
-                                {/* Feature Text - White text on hover */}
-                                <span className="text-sm text-gray-600 group-hover:text-gray-200 transition-colors duration-300 leading-relaxed">
-                                  {feature}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                          
-                          {/* Interactive Bottom Section - FIXED AT BOTTOM */}
-                          <div className="pt-6 border-t border-gray-100/50 group-hover:border-gray-700/50 transition-colors duration-500 flex-shrink-0">
-                            {/* Progress Indicator */}
-                            {/* <div className="flex items-center justify-between mb-3">
-                              
-                              <span className="text-xs text-gray-500 group-hover:text-gray-300 transition-colors duration-500">Explore</span>
-                              <div className="flex items-center gap-1">
-                                {[...Array(3)].map((_, dotIdx) => (
-                                  <div
-                                    key={dotIdx}
-                                    className="w-1.5 h-1.5 rounded-full transition-all duration-300 group-hover:scale-125"
-                                    style={{
-                                      background: dotIdx === idx % 3 ? colors.from : '#E5E7EB',
-                                      animation: dotIdx === idx % 3 ? `pulseDot 1.5s ease-in-out ${dotIdx * 0.2}s infinite` : 'none',
-                                    }}
-                                  />
-                                ))}
-                              </div>
-                            </div> */}
-                            
-                            {/* Animated Arrow */}
-                            <div className="flex items-center justify-end">
-                              <div className="relative">
-                                {/* Arrow Trail */}
-                                <div className="absolute -left-8 w-0 h-0.5 rounded-full group-hover:w-8 transition-all duration-500"
-                                  style={{
-                                    background: `linear-gradient(90deg, transparent, ${colors.from})`,
-                                  }}
-                                />
-                                
-                                {/* Arrow - White on hover */}
-                                <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-gray-50 to-white border border-gray-100/60 flex items-center justify-center shadow-sm group-hover:bg-white group-hover:border-white/80 group-hover:shadow-md transition-all duration-300 group-hover:translate-x-2">
-                                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-700 transition-colors duration-300" />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                      {/* Check Circle - White on hover */}
+                      <div 
+                        className="relative w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-0.5 group-hover:bg-white group-hover:border group-hover:border-white/60"
+                        style={{
+                          background: `linear-gradient(135deg, ${colors.from}, ${colors.via})`,
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                        }}
+                      >
+                        <CheckCircle className="w-3.5 h-3.5 text-white group-hover:text-gray-700 transition-colors duration-300" />
                       </div>
-                      
-                      {/* Edge Highlights for 3D Effect - Darker on hover */}
-                      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover:via-gray-700/50 flex-shrink-0" />
-                      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:via-gray-700/30 flex-shrink-0" />
                     </div>
                     
-                    {/* Floating Shadow */}
-                    <div className="absolute -bottom-4 left-4 right-4 h-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                    {/* Feature Text - White text on hover */}
+                    <span className="text-sm text-gray-600 group-hover:text-gray-200 transition-colors duration-300 leading-relaxed">
+                      {feature}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              
+              {/* REMOVED: Interactive Bottom Section with Arrow */}
+              {/* This entire section has been removed */}
+              
+              {/* REMOVED: <div className="pt-2 border-t border-gray-100/50 group-hover:border-gray-700/50 transition-colors duration-500 flex-shrink-0">
+                Animated Arrow
+                <div className="flex items-center justify-end">
+                  <div className="relative">
+                    Arrow Trail
+                    <div className="absolute -left-8 w-0 h-0.5 rounded-full group-hover:w-8 transition-all duration-500"
                       style={{
-                        background: colors.from,
-                        filter: 'blur(15px)',
-                        transform: 'translateZ(-20px)',
+                        background: `linear-gradient(90deg, transparent, ${colors.from})`,
                       }}
                     />
+                    
+                    Arrow - White on hover
+                    <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-gray-50 to-white border border-gray-100/60 flex items-center justify-center shadow-sm group-hover:bg-white group-hover:border-white/80 group-hover:shadow-md transition-all duration-300 group-hover:translate-x-2">
+                      <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-700 transition-colors duration-300" />
+                    </div>
                   </div>
-                );
-              })}
+                </div>
+              </div> */}
             </div>
+          </div>
+          
+          {/* Edge Highlights for 3D Effect - Darker on hover */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover:via-gray-700/50 flex-shrink-0" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:via-gray-700/30 flex-shrink-0" />
+        </div>
+        
+        {/* Floating Shadow */}
+        <div className="absolute -bottom-4 left-4 right-4 h-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+          style={{
+            background: colors.from,
+            filter: 'blur(15px)',
+            transform: 'translateZ(-20px)',
+          }}
+        />
+      </div>
+    );
+  })}
+</div>
           </section>
 
           <style jsx>{`

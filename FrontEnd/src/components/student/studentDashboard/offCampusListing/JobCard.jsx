@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPin, User, Banknote, Heart, Briefcase, Calendar } from 'lucide-react';
+import { MapPin, Heart } from 'lucide-react';
 import { SaveOppurtunity } from '@/lib/Company_AxiosInstance';
-import  toast  from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 const pastelColors = [
   // Purple/Indigo gradient variants (primary theme colors)
@@ -51,18 +51,6 @@ const pastelColors = [
   "bg-gradient-to-r from-[#fcd34d]/20 to-[#fbbf24]/20 text-[#d97706] border border-[#fcd34d]/30",
 ];
 
-// Helper function to get a random theme color
-const getRandomThemeColor = () => {
-  const themeColors = [
-    "bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30", // Purple
-    "bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30", // Green
-    "bg-gradient-to-r from-[#fbcfe8]/20 to-[#f9a8d4]/20 text-[#9d174d] border border-[#fbcfe8]/30", // Pink
-    "bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30", // Yellow
-    "bg-gradient-to-r from-[#bae6fd]/20 to-[#7dd3fc]/20 text-[#0369a1] border border-[#bae6fd]/30", // Blue
-  ];
-  return themeColors[Math.floor(Math.random() * themeColors.length)];
-};
-
 function getStableColor(id = "") {
   let hash = 0;
   for (let i = 0; i < id.length; i++) {
@@ -71,8 +59,9 @@ function getStableColor(id = "") {
   return pastelColors[hash];
 }
 
-const JobCard = ({ job }) => {
+const JobCard = ({ job, onClick }) => {
   const [isSaved, setIsSaved] = useState(job.isSaved || false);
+  const [imageError, setImageError] = useState(false);
 
   const companyName =
     job.companyPosted?.companyName ||
@@ -84,6 +73,27 @@ const JobCard = ({ job }) => {
     "https://cdn-icons-png.flaticon.com/512/25/25231.png";
 
   const stableColor = getStableColor(job._id || companyName);
+
+  const handleCardClick = (e) => {
+    // Don't trigger if clicking on save button or details button
+    if (e.target.closest('button')) {
+      return;
+    }
+    
+    // Use onClick prop if provided
+    if (onClick && typeof onClick === 'function') {
+      onClick(job);
+    }
+  };
+
+  const handleDetailsClick = (e) => {
+    e.stopPropagation();
+    
+    // Use onClick prop if provided
+    if (onClick && typeof onClick === 'function') {
+      onClick(job);
+    }
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -107,25 +117,107 @@ const JobCard = ({ job }) => {
     }
   };
 
+  const getInitials = (name = '') => {
+    if (!name) return '?';
+    const words = name.trim().split(' ');
+    if (words.length === 1) return words[0][0].toUpperCase();
+    return (words[0][0] + words[1][0]).toUpperCase();
+  };
+
+  // Format location
+  const formatLocation = () => {
+    if (Array.isArray(job.location)) {
+      return job.location.slice(0, 2).join(', ');
+    }
+    return job.location || "Remote";
+  };
+
+  // Format package details
+  const formatPackage = () => {
+    if (job.packageDetails?.totalCTC) {
+      return `₹${job.packageDetails.totalCTC.toLocaleString()}`;
+    }
+    return 'Not Disclosed';
+  };
+
+  // Get job status (Upcoming/Active/Completed)
+  const getJobStatus = () => {
+    if (!job?.startDate || !job?.endDate) {
+      return { status: 'Unknown', color: 'bg-gray-100 text-gray-700' };
+    }
+    
+    const now = new Date();
+    const startDate = new Date(job.startDate);
+    const endDate = new Date(job.endDate);
+
+    if (now < startDate) {
+      return { status: 'Upcoming', color: 'bg-blue-100 text-blue-700' };
+    } else if (now >= startDate && now <= endDate) {
+      return { status: 'Active', color: 'bg-green-100 text-green-700' };
+    } else {
+      return { status: 'Completed', color: 'bg-gray-100 text-gray-700' };
+    }
+  };
+
+  // Get colored badges for job roles
+  const getJobRoleBadges = () => {
+    if (!job.jobRoles?.length) {
+      return (
+        <span className="text-sm font-bold text-gray-900">
+          {job.jobTitle || "Job Role"}
+        </span>
+      );
+    }
+    
+    const roleColors = [
+      "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
+      "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border-purple-200",
+      "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700 border-pink-200",
+      "bg-gradient-to-r from-green-100 to-green-50 text-green-700 border-green-200",
+      "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border-yellow-200",
+    ];
+    
+    return (
+      <div className="flex flex-wrap gap-1 mt-2">
+        {job.jobRoles.slice(0, 3).map((role, index) => (
+          <span 
+            key={index} 
+            className={`text-sm font-medium px-2 py-0.5 rounded-full border ${roleColors[index % roleColors.length]}`}
+          >
+            {role}
+          </span>
+        ))}
+        {job.jobRoles.length > 3 && (
+          <span className="text-sm font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-0.5 rounded-full border border-gray-200">
+            +{job.jobRoles.length - 3}
+          </span>
+        )}
+      </div>
+    );
+  };
+
+  const jobStatus = getJobStatus();
+
   return (
-    <div className="
-      w-full max-w-[350px] min-h-[430px] mx-auto rounded-2xl 
-      border shadow-sm hover:shadow-lg transition overflow-hidden
-      flex flex-col
-    ">
-
-      {/* TOP SECTION */}
-      <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-grow`}>
-
-        {/* Date + Save */}
-        <div className="flex justify-between items-start">
-          <span className="text-xs bg-white px-3 py-1 rounded-full font-medium">
-            {new Date(job?.createdAt).toLocaleDateString()}
+    <div 
+      onClick={handleCardClick}
+      className="
+        w-full max-w-[350px] mx-auto rounded-2xl 
+        border shadow-sm hover:shadow-lg transition overflow-hidden
+        flex flex-col cursor-pointer h-full
+      "
+    >
+      {/* TOP SECTION - Pastel background */}
+      <div className={`${stableColor} p-4 flex-1 flex flex-col`}>
+        {/* Status + Save */}
+        <div className="flex justify-between items-start mb-2">
+          <span className={`text-xs ${jobStatus.color} px-3 py-1 rounded-full font-medium`}>
+            {jobStatus.status}
           </span>
 
           <button
             onClick={handleSave}
-            className="bg-white p-2 rounded-full shadow"
+            className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10"
           >
             <Heart
               className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
@@ -134,49 +226,56 @@ const JobCard = ({ job }) => {
           </button>
         </div>
 
-        {/* Company + Job Roles (Updated) */}
-        <div className="mt-3 flex justify-between items-start gap-2">
-          <div className="flex flex-col gap-1">
-            <h3 className="text-black font-semibold text-lg">
+        {/* Company Name + Job Roles */}
+        <div className="flex justify-between items-start gap-2 mb-3">
+          <div className="flex-1 pr-2">
+            <h3 className="text-black font-semibold text-lg truncate">
               {companyName}
             </h3>
-
-            {/* Display ALL Job Roles in small font */}
-            <div className="flex flex-wrap gap-1 mt-1">
-              {job.jobRoles && job.jobRoles.length > 0 ? (
-                job.jobRoles.map((role, index) => (
-                  <span 
-                    key={index} 
-                    className="text-sm font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded border border-black/5"
-                  >
-                    {role}
-                  </span>
-                ))
-              ) : (
-                <span className="text-sm font-bold text-gray-900">
-                   {job.jobTitle || "Job Role"}
-                </span>
-              )}
-            </div>
+            
+            {/* Job Roles as colored badges */}
+            {getJobRoleBadges()}
           </div>
 
           <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
-            <img src={logo} alt="logo" className="w-12 h-12 object-cover" />
+            {logo && !imageError ? (
+              <img 
+                src={logo} 
+                alt={`${companyName} logo`}
+                className="w-12 h-12 object-cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                <span className="text-sm font-semibold text-gray-700">
+                  {getInitials(companyName)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Urgent Hiring */}
+        {/* Urgent Hiring Badge */}
         {job.urgent && (
-          <div className="mt-3">
+          <div className="mb-3">
             <span className="px-3 py-1 bg-red-100 text-red-700 border border-red-300 rounded-full text-xs font-semibold">
               Urgent Hiring
             </span>
           </div>
         )}
 
+        {/* Employment Type Badge */}
+        {job.employmentType && (
+          <div className="mb-3">
+            <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
+              {Array.isArray(job.employmentType) ? job.employmentType.join(', ') : job.employmentType}
+            </span>
+          </div>
+        )}
+
         {/* Skills */}
         {job.skills?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
+          <div className="flex flex-wrap gap-2 mb-3">
             {job.skills.slice(0, 3).map((skill, index) => (
               <span
                 key={index}
@@ -186,40 +285,47 @@ const JobCard = ({ job }) => {
               </span>
             ))}
             {job.skills.length > 3 && (
-               <span className="px-2 py-1 text-xs text-gray-600">+{job.skills.length - 3}</span>
+              <span className="px-2 py-1 text-xs text-gray-600">+{job.skills.length - 3}</span>
             )}
           </div>
         )}
 
-      </div>
-
-      {/* BOTTOM SECTION */}
-      <div className="p-4 bg-white flex justify-between items-center border-t">
-
-        <div>
-          <p className="font-semibold text-gray-900 text-sm">
-            {job.packageDetails?.totalCTC ? `₹${job.packageDetails.totalCTC}` : "Not Disclosed"}
+        {/* Description - Using job description if available */}
+        <div className="flex-1">
+          <p className="text-sm text-gray-700 line-clamp-2">
+            {job.description || 
+             job.jobDescription || 
+             `${companyName} is hiring for various positions.`}
           </p>
-
-          <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
-            <MapPin className="h-4 w-4 text-gray-500" />
-            <span className="line-clamp-1 max-w-[120px]">
-              {Array.isArray(job.location)
-                ? job.location.join(", ")
-                : job.location || "Remote"}
-            </span>
-          </div>
         </div>
-
-        <Link
-          to={`/${localStorage.getItem("selectedRole")}-dashboard/Off-campus/${job._id}`}
-          className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
-        >
-          Details 
-        </Link>
-
       </div>
 
+      {/* BOTTOM SECTION - White background */}
+      <div className="p-4 bg-white border-t">
+        <div className="flex justify-between items-center">
+          <div>
+            {/* Package */}
+            <p className="font-semibold text-gray-900 text-sm">
+              {formatPackage()}
+            </p>
+
+            {/* Location */}
+            <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
+              <MapPin className="h-4 w-4 text-gray-500" />
+              <span className="line-clamp-1 max-w-[120px]">
+                {formatLocation()}
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={handleDetailsClick}
+            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
+          >
+            Details
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
