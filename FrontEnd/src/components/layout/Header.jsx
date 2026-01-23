@@ -168,7 +168,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
             >
                 <FiMenu className="w-6 h-6" aria-hidden="true" />
             </button>
-
+            
             <div className="flex items-center ml-auto space-x-4">
                 {authuser && (
                     <>
@@ -187,6 +187,7 @@ function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
                                 )}
                                 
                             </button>
+                           
                             {notificationsOpen && (
                                 <NotificationsDropdown
                                     notifications={notifications}
