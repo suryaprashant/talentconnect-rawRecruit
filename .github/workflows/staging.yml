@@ -46,6 +46,7 @@ jobs:
           script: |
             set -e
             cd /var/www/raw-recruit-test/talentconnect-rawRecruit
+            git fetch origin
             git checkout staging
             git pull origin staging
 
