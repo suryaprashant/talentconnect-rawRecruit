@@ -6,60 +6,71 @@ import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
 import { Link } from 'react-router-dom';
 
 const InternshipStatus = () => {
-  const [offcampusJobs, setOffcampusJobs] = useState();
-  const [selectedJob, setSelectedJob] = useState();
+  const [offcampusJobs, setOffcampusJobs] = useState([]);
+  const [selectedJob, setSelectedJob] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
 
   const fetchApplication = async () => {
-    try {
-      const response = await getUserApplicationStatus("Internship");
-      const rawData = response?.data?.data || [];
-      const normalized = rawData.map((item) => {
-        const firstHistory = Array.isArray(item?.statusHistory) && item.statusHistory.length > 0 ? item.statusHistory[0] : null;
-        const existingJobDetails = Array.isArray(item?.jobDetails) ? item.jobDetails : [];
-        const existingCompanyDetails = Array.isArray(item?.companyDetails) ? item.companyDetails : [];
+  try {
+    const response = await getUserApplicationStatus("Internship");
+    const rawData = response?.data?.data ?? [];
 
-        const safeJobDetails = existingJobDetails.length > 0
-          ? existingJobDetails
-          : [{
-            jobTitle: "N/A",
-            yearsOfExperience: "-",
-            workLocations: "-",
-            jobDescription: ""
-          }];
+    const normalized = rawData.map((item) => {
+      // status history
+      const firstHistory =
+        Array.isArray(item?.statusHistory) && item.statusHistory.length > 0
+          ? item.statusHistory[0]
+          : null;
 
-        const safeCompanyDetails = existingCompanyDetails.length > 0
-          ? existingCompanyDetails
-          : [{ companyDetails: { companyName: "-" } }];
+      // job details (OBJECT from API)
+      const safeJobDetails = item?.jobDetails ?? {
+        jobTitle: "N/A",
+        location: [],
+        workMode: [],
+        description: "",
+      };
 
-        return {
-          ...item,
-          id: item?._id,
-          status: item?.currentStatus ?? item?.status ?? "",
-          date: new Date(firstHistory?.date).toUTCString().slice(0,16) ?? item?.createdAt ?? "",
-          jobDetails: safeJobDetails,
-          companyDetails: safeCompanyDetails,
-          workMode:  item?.jobDetails?.workMode,
-          // experience: item?.experience ?? safeJobDetails?.[0]?.yearsOfExperience ?? "-"
+      // company details (OBJECT from API)
+      const safeCompanyDetails =
+        item?.companyProfile?.companyDetails ?? {
+          companyName: "-",
         };
-      });
 
-      setOffcampusJobs(normalized);
-      setSelectedJob(normalized[0]);
-      console.log("response: ", response.data.data[0]);
-    } catch (error) {
-      console.log("Error: ", error);
-    }
+      return {
+        ...item,
+        id: item._id,
+        status: item.currentStatus ?? "",
+        date: firstHistory?.date
+          ? new Date(firstHistory.date).toUTCString().slice(0, 16)
+          : "",
+        jobDetails: safeJobDetails,          // OBJECT ✅
+        companyDetails: safeCompanyDetails,  // OBJECT ✅
+      };
+    });
+
+    setOffcampusJobs(normalized);
+    setSelectedJob(normalized[0] ?? null);
+  } catch (error) {
+    console.error("Error fetching applications:", error);
   }
+};
+
 
   useEffect(() => {
     fetchApplication();
   }, [])
 
-  const filteredJobs = offcampusJobs?.filter(job =>
-    job?.jobDetails[0]?.jobTitle?.toLowerCase().includes(searchTerm.toLowerCase()) || job?.companyDetails[0].companyDetails.companyName.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredJobs = offcampusJobs?.filter((job) => {
+  const jobTitle = job?.jobDetails?.jobTitle?.toLowerCase() ?? "";
+  const companyName = job?.companyDetails?.companyName?.toLowerCase() ?? "";
+
+  return (
+    jobTitle.includes(searchTerm.toLowerCase()) ||
+    companyName.includes(searchTerm.toLowerCase())
   );
+});
+
 
   const getStatusIndex = (status) => statusSteps.findIndex(step => step === status);
 
@@ -112,14 +123,22 @@ const InternshipStatus = () => {
               onClick={() => setSelectedJob(job)}
             >
               <span className='text-gray-400'>{job?.currentStatus}</span>
-              <h3 className="font-medium">{job.jobDetails[0].jobTitle}</h3>
-              <p className="text-sm text-gray-600">{job.companyDetails[0].companyDetails.companyName}</p>
+              <h3 className="font-medium">{job.jobDetails.jobTitle}</h3>
+              <p className="text-sm text-gray-600">{job.companyDetails?.companyName ?? "-"}</p>
               <div className="mt-2 flex items-center text-xs text-gray-500">
                 <Clock className="h-3 w-3 mr-1" />
-                <span>{job.jobDetails[0].workMode}</span>
+                <span>
+                  {Array.isArray(job.jobDetails?.workMode)
+                    ? job.jobDetails.workMode.join(", ")
+                    : "-"}
+                </span>
                 <span className="mx-2">•</span>
                 <MapPin className="h-3 w-3 mr-1" />
-                <span>{job.jobDetails[0].location.map((l, i) => (<span key={i}>{l + ', '}</span>))}</span>
+                <span>{Array.isArray(job.jobDetails.location) &&
+                  job.jobDetails.location.map((l, i) => (
+                    <span key={i}>{l}, </span>
+                  ))}
+                </span>
               </div>
             </div>
           )) : (
@@ -163,16 +182,21 @@ const InternshipStatus = () => {
               <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
                 <div className="flex justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-800">{selectedJob.jobDetails[0].jobTitle}</h2>
-                    <p className="text-gray-600">{selectedJob.companyDetails[0].companyDetails.companyName}</p>
+                    <h2 className="text-xl font-semibold text-gray-800">{selectedJob.jobDetails?.jobTitle}</h2>
+                    <p className="text-gray-600">{selectedJob.companyDetails?.companyName}</p>
                     <div className="mt-2 text-sm text-gray-500">
                       <p>Job ID: {selectedJob._id}</p>
                       <div className="flex items-center mt-1">
                         {/* <Clock className="h-4 w-4 mr-1" /> */}
-                        <span>{selectedJob?.jobDetails[0]?.workMode}</span>
+                        <span>{Array.isArray(selectedJob?.jobDetails?.workMode)
+                          ? selectedJob.jobDetails.workMode.join(", ")
+                        : "-"}</span>
                         <span className="mx-2">•</span>
                         <MapPin className="h-4 w-4 mr-1" />
-                        <span>{selectedJob?.jobDetails[0]?.location.map((l, i) => (<span key={i}>{l + ', '}</span>))}</span>
+                        <span>{Array.isArray(selectedJob?.jobDetails?.location) &&
+                        selectedJob.jobDetails.location.map((l, i) => (
+                          <span key={i}>{l}, </span>
+                        ))}</span>
                       </div>
                     </div>
                   </div>

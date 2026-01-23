@@ -47,7 +47,7 @@ export const createEmployerOnboarding = async (req, res) => {
         const parsedHiringPreferences = JSON.parse(hiringPreferences);
 
         // Create the new document using service
-       const onboardingData = await createEmployerProfileService({
+       const onboardingData = await createProfileService({
           userId,
           employerDetails: {
             ...parsedEmployerDetails,
