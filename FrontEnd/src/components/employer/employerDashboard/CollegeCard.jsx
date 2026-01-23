@@ -75,9 +75,166 @@ const CollegeCard = ({ college, onClick, compact = false }) => {
 
   if (!college) return null;
 
-  const collegeName = college.name || 'College';
-  const degreeType = college.degreeType || 'Degree';
-  const stableColor = getStableColor(college.id || collegeName);
+  // Extract college name from different possible structures
+  const getCollegeName = () => {
+    if (college.collegePosted?.collegeUniversityDetails?.collegeName) {
+      return college.collegePosted.collegeUniversityDetails.collegeName;
+    }
+    if (college.collegeUniversityDetails?.collegeName) {
+      return college.collegeUniversityDetails.collegeName;
+    }
+    if (college.name) {
+      return college.name;
+    }
+    if (college.collegeName) {
+      return college.collegeName;
+    }
+    return 'College';
+  };
+
+  // Extract degree type
+  const getDegreeType = () => {
+    if (college.degreeType) {
+      return college.degreeType;
+    }
+    if (college.collegeType) {
+      return college.collegeType;
+    }
+    if (college.collegePosted?.collegeUniversityDetails?.collegeType) {
+      return college.collegePosted.collegeUniversityDetails.collegeType;
+    }
+    return 'Degree';
+  };
+
+  // Extract location
+  const getLocation = () => {
+    const collegeDetails = college.collegePosted?.collegeUniversityDetails || college.collegeUniversityDetails || {};
+    
+    const locationParts = [
+      collegeDetails.city,
+      collegeDetails.state,
+      collegeDetails.country
+    ].filter(Boolean);
+    
+    if (locationParts.length > 0) {
+      return locationParts.join(', ');
+    }
+    
+    if (college.location) {
+      return college.location;
+    }
+    
+    return 'Location not specified';
+  };
+
+  // Extract logo
+  const getLogo = () => {
+    if (college.collegePosted?.profileImageUrl) {
+      return college.collegePosted.profileImageUrl;
+    }
+    if (college.logo) {
+      return college.logo;
+    }
+    if (college.profileImage) {
+      return college.profileImage;
+    }
+    return '';
+  };
+
+  // Extract package
+  const getPackage = () => {
+    if (college.avgPackage) {
+      return college.avgPackage;
+    }
+    if (college.packageDetails?.totalCTC) {
+      return college.packageDetails.totalCTC;
+    }
+    return null;
+  };
+
+  // Extract description
+  const getDescription = () => {
+    if (college.description) {
+      return college.description;
+    }
+    if (college.collegePosted?.collegeUniversityDetails?.description) {
+      return college.collegePosted.collegeUniversityDetails.description;
+    }
+    return 'Leading educational institution with excellent placement records and industry partnerships.';
+  };
+
+  // Extract specializations/streams
+  const getSpecializations = () => {
+    if (college.specializations && Array.isArray(college.specializations)) {
+      return college.specializations;
+    }
+    if (college.studentStreams && Array.isArray(college.studentStreams)) {
+      return college.studentStreams;
+    }
+    return [];
+  };
+
+  // Extract badges
+  const getBadges = () => {
+    if (college.badges && Array.isArray(college.badges)) {
+      return college.badges;
+    }
+    return ['Top Rated', 'Placement Cell', 'Industry Connect'];
+  };
+
+  // Extract college type
+  const getCollegeType = () => {
+    if (college.type) {
+      return college.type;
+    }
+    if (college.collegeType) {
+      return college.collegeType;
+    }
+    return null;
+  };
+
+  // Extract stats
+  const getStats = () => {
+    if (college.stats) {
+      return college.stats;
+    }
+    
+    const stats = {};
+    if (college.numberOfStudent) {
+      stats['Students'] = college.numberOfStudent;
+    }
+    if (college.establishedYear) {
+      stats['Established'] = college.establishedYear;
+    }
+    if (college.facultyCount) {
+      stats['Faculty'] = college.facultyCount;
+    }
+    
+    return Object.keys(stats).length > 0 ? stats : null;
+  };
+
+  // Extract tags
+  const getTags = () => {
+    if (college.tags && Array.isArray(college.tags)) {
+      return college.tags;
+    }
+    return [];
+  };
+
+  // Now use the extractor functions
+  const collegeName = getCollegeName();
+  const degreeType = getDegreeType();
+  const location = getLocation();
+  const logo = getLogo();
+  const avgPackage = getPackage();
+  const description = getDescription();
+  const specializations = getSpecializations();
+  const collegeBadges = getBadges();
+  const collegeType = getCollegeType();
+  const stats = getStats();
+  const tags = getTags();
+
+  const stableColor = getStableColor(college._id || collegeName);
 
   // Get initials for fallback
   const getInitials = (name = '') => {
@@ -108,30 +265,13 @@ const CollegeCard = ({ college, onClick, compact = false }) => {
     }
   };
 
-  // Format location
-  const formatLocation = () => 
-    college.location || 'Location not specified';
-
   // Format package details
   const formatPackage = () => {
-    if (college.avgPackage) {
-      return `₹${college.avgPackage.toLocaleString()}`;
+    if (avgPackage) {
+      return `₹${avgPackage.toLocaleString()}`;
     }
     return 'Not Disclosed';
   };
-
-  // Get description text
-  const getDescription = () => {
-    return college.description || 
-           'Leading educational institution with excellent placement records and industry partnerships.';
-  };
-
-  // College badges - similar to job roles
-  const collegeBadges = college.badges || [];
-  const defaultBadges = ['Top Rated', 'Placement Cell', 'Industry Connect'];
-  const displayBadges = collegeBadges.length > 0 ? collegeBadges : defaultBadges;
-
-  const description = getDescription();
 
   return (
     <div 
@@ -173,9 +313,9 @@ const CollegeCard = ({ college, onClick, compact = false }) => {
             </h3>
 
             {/* College Badges */}
-            {displayBadges.length > 0 && (
+            {collegeBadges.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
-                {displayBadges.slice(0, 3).map((badge, index) => {
+                {collegeBadges.slice(0, 3).map((badge, index) => {
                   const badgeColors = [
                     "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700",
                     "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700",
@@ -194,9 +334,9 @@ const CollegeCard = ({ college, onClick, compact = false }) => {
                     </span>
                   );
                 })}
-                {displayBadges.length > 3 && (
+                {collegeBadges.length > 3 && (
                   <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-1 rounded-full border">
-                    +{displayBadges.length - 3}
+                    +{collegeBadges.length - 3}
                   </span>
                 )}
               </div>
@@ -205,9 +345,9 @@ const CollegeCard = ({ college, onClick, compact = false }) => {
 
           {/* College Logo */}
           <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
-            {college.logo && !imageError ? (
+            {logo && !imageError ? (
               <img 
-                src={college.logo} 
+                src={logo} 
                 alt={`${collegeName} logo`}
                 className="w-12 h-12 object-cover"
                 onError={() => setImageError(true)}
@@ -221,18 +361,18 @@ const CollegeCard = ({ college, onClick, compact = false }) => {
         </div>
 
         {/* College Type Badge */}
-        {college.type && (
+        {collegeType && (
           <div className="mb-3">
             <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
-              {Array.isArray(college.type) ? college.type.join(', ') : college.type}
+              {Array.isArray(collegeType) ? collegeType.join(', ') : collegeType}
             </span>
           </div>
         )}
 
         {/* Streams/Specializations */}
-        {college.specializations?.length > 0 && (
+        {specializations.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
-            {college.specializations.slice(0, 3).map((specialization, index) => (
+            {specializations.slice(0, 3).map((specialization, index) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-blue-100 text-blue-800 border border-blue-300 rounded-full text-xs"
@@ -240,16 +380,16 @@ const CollegeCard = ({ college, onClick, compact = false }) => {
                 {specialization}
               </span>
             ))}
-            {college.specializations.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{college.specializations.length - 3}</span>
+            {specializations.length > 3 && (
+              <span className="px-2 py-1 text-xs text-gray-600">+{specializations.length - 3}</span>
             )}
           </div>
         )}
 
         {/* Stats */}
-        {college.stats && (
+        {stats && (
           <div className="flex flex-wrap gap-2 mb-3">
-            {Object.entries(college.stats).slice(0, 3).map(([key, value], index) => (
+            {Object.entries(stats).slice(0, 3).map(([key, value], index) => (
               <span
                 key={index}
                 className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
@@ -261,9 +401,9 @@ const CollegeCard = ({ college, onClick, compact = false }) => {
         )}
 
         {/* Tags */}
-        {college.tags?.length > 0 && (
+        {tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
-            {college.tags.slice(0, 3).map((tag, index) => (
+            {tags.slice(0, 3).map((tag, index) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-gray-100 text-gray-800 border border-gray-300 rounded-full text-xs"
@@ -271,8 +411,8 @@ const CollegeCard = ({ college, onClick, compact = false }) => {
                 {tag}
               </span>
             ))}
-            {college.tags.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{college.tags.length - 3}</span>
+            {tags.length > 3 && (
+              <span className="px-2 py-1 text-xs text-gray-600">+{tags.length - 3}</span>
             )}
           </div>
         )}
@@ -300,7 +440,7 @@ const CollegeCard = ({ college, onClick, compact = false }) => {
                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
               </svg>
               <span className="line-clamp-1 max-w-[120px]">
-                {formatLocation()}
+                {location}
               </span>
             </div>
           </div>

@@ -126,20 +126,6 @@ export default function EmployerJobListing() {
                                 Track Your Job Listings and Streamline Shortlisted Candidate Applications
                             </p>
                         </div>
-                        
-                        {/* Search Bar */}
-                        <div className="relative w-full md:w-96">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Search className="h-4 w-4 text-gray-400" />
-                            </div>
-                            <input
-                                type="text"
-                                className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
-                                placeholder="Search by job title, work mode, or venue"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
                     </div>
                 </div>
 
