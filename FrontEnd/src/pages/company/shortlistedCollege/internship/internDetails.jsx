@@ -173,6 +173,23 @@ const InternshipDetails = ({ job, onClose }) => {
               </button>
             </div>
 
+            {/* Status Badge */}
+            <div className="mb-6">
+              <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${
+                currentStatus === 'Accepted' 
+                  ? 'bg-gradient-to-r from-green-100 to-green-50 text-green-700 border border-green-200' 
+                  : currentStatus === 'Shortlisted'
+                  ? 'bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border border-yellow-200'
+                  : currentStatus === 'Rejected'
+                  ? 'bg-gradient-to-r from-red-100 to-red-50 text-red-700 border border-red-200'
+                  : 'bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border border-blue-200'
+              }`}>
+                {currentStatus === 'Shortlisted' && <CheckCircle size={16} className="mr-2" />}
+                Status: {currentStatus}
+              </span>
+            </div>
+
+
             {/* Salary Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
@@ -529,14 +546,13 @@ const InternshipDetails = ({ job, onClose }) => {
       {showApplicantModal && <ApplicantDetailsModal />}
       
       {/* Interview Scheduler Popup */}
-      {toggleScheduleInterviewPopup && selectedApplicantForInterview && (
-        <InterviewSchedulerPopup
-          setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
-          applicantId={selectedApplicantForInterview.applicant._id}
-          applicantType={selectedApplicantForInterview.applicant.profileType}
-          jobRole={job?.jobTitle}
-        />
-      )}
+      {toggleScheduleInterviewPopup && selectedApplicant && job && (
+              <InterviewSchedulerPopup
+                setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
+                application={selectedApplicant}
+                job={job}
+              />
+            )}
     </div>
   );
 };

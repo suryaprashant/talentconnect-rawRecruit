@@ -223,7 +223,7 @@ export default function EmployerPostJob() {
 
       toast.success("Job posted successfully!");
       setTimeout(() => {
-        toast.success('This job will expire after 15 days');
+        toast.success('This job will expire after 30 days');
       }, 2000);
       setFormData(initialState);
 

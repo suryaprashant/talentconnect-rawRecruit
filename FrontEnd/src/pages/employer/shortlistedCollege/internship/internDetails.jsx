@@ -18,6 +18,7 @@ const EmployerInternshipDetails = ({ job, onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [toggleScheduleInterviewPopup, setToggleScheduleInterviewPopup] = useState(false);
+  const [selectedApplicantForInterview, setSelectedApplicantForInterview] = useState(null);
   const [applications, setApplications] = useState([]);
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [showApplicantModal, setShowApplicantModal] = useState(false);
@@ -558,7 +559,7 @@ const EmployerInternshipDetails = ({ job, onClose }) => {
       {showApplicantModal && <ApplicantDetailsModal />}
       
       {/* Interview Scheduler Popup */}
-      {toggleScheduleInterviewPopup && selectedApplicant && (
+      {/*{toggleScheduleInterviewPopup && selectedApplicant && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full">
             <button
@@ -575,7 +576,14 @@ const EmployerInternshipDetails = ({ job, onClose }) => {
             />
           </div>
         </div>
-      )}
+      )}*/}
+      {toggleScheduleInterviewPopup && selectedApplicant && job && (
+          <InterviewSchedulerPopup
+            setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
+            application={selectedApplicant}
+            job={job}
+          />
+        )}
     </div>
   );
 };

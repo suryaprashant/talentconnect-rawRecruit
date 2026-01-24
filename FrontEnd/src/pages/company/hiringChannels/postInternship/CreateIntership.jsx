@@ -207,7 +207,7 @@ export default function PostIntership() {
 
       toast.success("Internship posted successfully!");
       setTimeout(() => {
-        toast.success('This internship will expire after 15 days');
+        toast.success('This internship will expire after 30 days');
       }, 2000);
       setFormData(initialState);
 
