@@ -233,4 +233,9 @@ export function deleteCollegeJob(jobId) {
     .catch(error => error);
 }
 
-
+// Add this function to your College_AxiosInstance.js
+export function getCollegePostingForPoolcampus() {
+  return axiosClient.get(`/api/student-dashboard/pool-campus/college`)
+    .then(response => response)
+    .catch(error => error);
+}

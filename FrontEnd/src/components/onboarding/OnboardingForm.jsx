@@ -77,40 +77,54 @@ export const OnboardingForm = () => {
     setSelectedRole(profileType);
   };
 
-  const handleFormDataChange = (newData) => {
-  updateFormData((prev) => {
-    const merged = { ...prev };
+//   const handleFormDataChange = (newData) => {
+//   updateFormData((prev) => {
+//     const merged = { ...prev };
 
-    Object.entries(newData || {}).forEach(([key, value]) => {
-      // Manual input always wins
-      if (
-        merged[key] !== undefined &&
-        merged[key] !== null &&
-        merged[key] !== ""
-      ) {
-        return;
-      }
+//     Object.entries(newData || {}).forEach(([key, value]) => {
+//       // Manual input always wins
+//       if (
+//         merged[key] !== undefined &&
+//         merged[key] !== null &&
+//         merged[key] !== ""
+//       ) {
+//       return{
+//         ...prev, 
+//       ...newData
+//       }
+//       }
 
-      // Arrays (skills, etc.)
-      if (Array.isArray(value)) {
-        merged[key] = value;
-        return;
-      }
+//       // Arrays (skills, etc.)
+//       if (Array.isArray(value)) {
+//         merged[key] = value;
+//         return;
+//       }
 
-      // Objects (education, experience, etc.)
-      if (typeof value === "object" && value !== null) {
-        merged[key] = value;
-        return;
-      }
+//       // Objects (education, experience, etc.)
+//       if (typeof value === "object" && value !== null) {
+//         merged[key] = value;
+//         return;
+//       }
 
-      // Primitives
-      merged[key] = value;
+//       // Primitives
+//       merged[key] = value;
+//     });
+
+//     return merged;
+//   });
+// };
+
+const handleFormDataChange = (newData) => {
+    updateFormData((prev) => {
+      // 1. We create a copy of the previous state
+      // 2. We merge it with the new data coming from the component
+      // This allows manual typing to actually save into the state
+      return {
+        ...prev,
+        ...newData
+      };
     });
-
-    return merged;
-  });
-};
-
+  };
 
   const renderStep = () => {
     const role = selectedRole?.toLowerCase();
