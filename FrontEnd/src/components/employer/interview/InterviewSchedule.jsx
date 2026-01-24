@@ -264,11 +264,12 @@ import { getCompanyInterviews, getInterviews } from "../../../lib/interview_Axio
 import { useAuth } from '@/context/AuthContext';
 
 export default function EmployerInterviewScheduler() {
+  const { user, loading: authLoading } = useAuth();
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dateSort, setDateSort] = useState("desc"); // default newest first
   
-  const { user, loading: authLoading } = useAuth();
+  
   const role = user?.userType;
 
 
@@ -298,8 +299,9 @@ export default function EmployerInterviewScheduler() {
 }
 
 
+   const isCompanyView = role === "company";
   const isCollegeView = role === "college";
-  const isCompanyOrEmployer = role === "company" || role === "employer";
+
 
   const sortedInterviews = [...interviews].sort((a, b) => {
     const dateA = new Date(`${a.date} ${a.time}`);
@@ -357,6 +359,25 @@ export default function EmployerInterviewScheduler() {
               {sortedInterviews.map(interview => {
                 const formattedDateTime = `${interview.date} ${interview.time}`;
                 console.log("Interview companyAuthId:", interview.companyAuthId);
+                //const isCompanyView = selectedRole === "company";
+
+                // For COMPANY → show applicant
+                // For OTHERS → show recruiter
+                const displayName = isCompanyView
+                  ? interview.applicantSnapshot?.name
+                  : interview.companySnapshot?.scheduledBy?.name;
+
+                const displayDesignation = isCompanyView
+                  ? interview.applicantSnapshot?.designation ||
+                    interview.applicantSnapshot?.profileType
+                  : interview.companySnapshot?.scheduledBy?.designation;
+
+                const displayOrg = isCompanyView
+                  ? interview.applicantSnapshot?.collegeName
+                  : interview.companySnapshot?.companyName;
+
+                const avatarLetter = displayName?.charAt(0) || "U";
+
 
                 return (
                   
@@ -368,28 +389,23 @@ export default function EmployerInterviewScheduler() {
                       <div className="flex gap-5">
                         <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center">
                           <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl font-bold text-[#667eea]">
-                            {interview.coordinator?.name?.charAt(0) || "C"}
+                            {avatarLetter}
+
                           </div>
                         </div>
 
                         <div>
                           <h3 className="font-bold text-xl text-gray-900">
-                            {isCompanyOrEmployer
-                              ? interview.coordinator?.name
-                              : interview.companySnapshot?.scheduledBy?.name}
+                            {displayName || "—"}
 
                           </h3>
                           <p className="text-gray-700 font-medium">
-                            {isCompanyOrEmployer
-                              ? interview.coordinator?.designation
-                              : interview.companySnapshot?.scheduledBy?.designation}
+                            {displayDesignation || ""}
                           </p>
                           <div className="mt-3">
-                            <div className="text-sm text-gray-500 font-medium">College</div>
+                            <div className="text-sm text-gray-500 font-medium">{isCompanyView ? "College" : "Company"}</div>
                             <div className="text-gray-800">
-                              {isCompanyOrEmployer
-                                ? interview.coordinator?.collegeName
-                                : interview.companySnapshot?.companyName}
+                              {displayOrg || "—"}
                             </div>
                           </div>
                         </div>
