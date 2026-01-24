@@ -59,42 +59,88 @@ const formatDateForInput = (dateString) => {
 };
 
 // Update the normalizeCollegeData function
+// Update the normalizeCollegeData function
 const normalizeCollegeData = (collegeData) => {
-  if (!collegeData) return null;
+  if (!collegeData) {
+    console.log("❌ College data is null or undefined");
+    return null;
+  }
   
   console.log("🔧 Raw collegeData for normalization:", collegeData);
   
-  // If data already has collegePosted, just return it
-  if (collegeData.collegePosted) {
-    console.log("✅ Already has collegePosted structure");
+  // If data already has collegePosted with collegeUniversityDetails, just return it
+  if (collegeData.collegePosted?.collegeUniversityDetails?.collegeName) {
+    console.log("✅ Already has proper collegePosted structure");
     return collegeData;
   }
   
-  // If it's from application status without collegePosted
-  console.log("🔄 Need to create collegePosted structure");
+  console.log("🔄 Need to create/repair collegePosted structure");
   
-  // Create the expected structure
-  return {
+  // Create a properly structured object
+  const normalized = {
     ...collegeData,
+    
+    // Ensure contactPerson exists
+    contactPerson: collegeData.contactPerson || {
+      name: "Not specified",
+      designation: "Placement Officer",
+      email: "",
+      mobile: ""
+    },
+    
+    // Ensure collegePosted has the right structure
     collegePosted: {
+      // Preserve existing collegePosted data if any
+      ...(collegeData.collegePosted || {}),
+      
+      // Ensure collegeUniversityDetails exists
       collegeUniversityDetails: {
-        collegeName: collegeData.company || "College",
-        collegeType: collegeData.collegeType || "Not Specified",
-        universityName: collegeData.university || "Not Specified",
-        city: collegeData.city || "Not Specified",
-        state: collegeData.state || "Not Specified",
-        country: collegeData.country || "Not Specified"
+        collegeName: collegeData.collegePosted?.collegeUniversityDetails?.collegeName || 
+                    collegeData.collegeName || 
+                    collegeData.title || 
+                    collegeData.company || 
+                    "College",
+        collegeType: collegeData.collegePosted?.collegeUniversityDetails?.collegeType || 
+                    collegeData.collegeType || 
+                    "Not Specified",
+        universityName: collegeData.collegePosted?.collegeUniversityDetails?.universityName || 
+                       collegeData.university || 
+                       "Not Specified",
+        city: collegeData.collegePosted?.collegeUniversityDetails?.city || 
+             collegeData.city || 
+             "Not Specified",
+        state: collegeData.collegePosted?.collegeUniversityDetails?.state || 
+              collegeData.state || 
+              "Not Specified",
+        country: collegeData.collegePosted?.collegeUniversityDetails?.country || 
+                collegeData.country || 
+                "Not Specified"
       },
-      profileImage: collegeData.companyLogo || collegeData.profileImage,
-      userId: collegeData.userId,
+      
+      // Ensure profileImage exists
+      profileImage: collegeData.collegePosted?.profileImage || 
+                   collegeData.collegeLogo || 
+                   null,
+      
+      // Ensure userId exists
+      userId: collegeData.collegePosted?.userId || collegeData.userId,
+      
+      // Ensure placementCoordinatorDetails exists
       placementCoordinatorDetails: {
         officialEmail: collegeData.contactPerson?.email || ""
       },
+      
+      // Ensure profileAchievements exists
       profileAchievements: {
         collegeWebsite: collegeData.website || ""
       }
     }
   };
+  
+  console.log("✅ Normalized college data:", normalized);
+  console.log("✅ College name in normalized data:", normalized.collegePosted.collegeUniversityDetails.collegeName);
+  
+  return normalized;
 };
 
 // Debug function to log college structure
@@ -137,19 +183,48 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
   const { setSelectedConversation } = useConversation();  
 
   const fetchPostingDetails = async () => {
-    if (!college?._id) return;
-    try {
-      setLoading(true);
-      setError(null);
-      setPosting(college);
-      await viewed(college._id);
-    } catch (err) {
-      console.error("Failed to fetch posting details:", err);
-      setError('Could not load the requested resource. It might have been removed.');
-    } finally {
-      setLoading(false);
+  if (!college) {
+    console.log("❌ No college data provided to modal");
+    setError('No college data provided');
+    setLoading(false);
+    return;
+  }
+  
+  try {
+    setLoading(true);
+    setError(null);
+    
+    console.log("🔍 Fetching posting details for college:", college);
+    console.log("🔍 College ID:", college._id);
+    console.log("🔍 College structure:", JSON.stringify(college, null, 2));
+    
+    // Normalize the college data first
+    const normalizedCollege = normalizeCollegeData(college);
+    
+    if (!normalizedCollege) {
+      throw new Error("Failed to normalize college data");
     }
-  };
+    
+    console.log("✅ Normalized college data:", normalizedCollege);
+    console.log("✅ College name after normalization:", normalizedCollege.collegePosted?.collegeUniversityDetails?.collegeName);
+    
+    setPosting(normalizedCollege);
+    
+    // Mark as viewed if needed
+    try {
+      await viewed(college._id);
+    } catch (viewErr) {
+      console.warn("Could not mark as viewed:", viewErr);
+    }
+  } catch (err) {
+    console.error("❌ Failed to fetch posting details:", err);
+    console.error("❌ Error details:", err.message);
+    console.error("❌ Error stack:", err.stack);
+    setError('Could not load the requested resource. It might have been removed.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     if (isOpen && college) {

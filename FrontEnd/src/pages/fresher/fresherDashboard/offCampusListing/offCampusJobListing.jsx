@@ -1,12 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronUp, X, Filter, MapPin, Search, Briefcase, Calendar, TrendingUp, RefreshCw, AlertCircle, Building, DollarSign, Clock, Users, GraduationCap, BookOpen } from 'lucide-react';
 import JobCard from '@/components/student/studentDashboard/offCampusListing/JobCard';
+import { ChevronDown, ChevronUp, X, Filter, MapPin, Search, Briefcase, Calendar, TrendingUp, RefreshCw, AlertCircle, Building, DollarSign, Clock, Users, GraduationCap, BookOpen } from 'lucide-react';
 import { getRelaventOffcampusOpportunity } from '@/lib/User_AxiosInstance';
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
 
-function FOffCampusListings() {
+function FOffCampusListings({ compact = false, onJobSelect, selectedJobId }) {
   const [offCampusJobs, setOffCampusJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [filters, setFilters] = useState({
@@ -23,7 +22,6 @@ function FOffCampusListings() {
   const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState('newest');
 
-  // State for dropdown visibility
   const [showMainFilter, setShowMainFilter] = useState(false);
   const [openSubDropdowns, setOpenSubDropdowns] = useState({
     workMode: false,
@@ -97,12 +95,6 @@ function FOffCampusListings() {
     ? filters.location
     : [];
 
-  const navigate = useNavigate();
-
-  const handleJobClick = (jobId) => {
-    navigate(`/fresher-dashboard/Off-campus/${jobId}`);
-  };
-
   const fetchOffcampusOpportunity = async () => {
     try {
       setIsLoading(true);
@@ -129,119 +121,64 @@ function FOffCampusListings() {
     fetchOffcampusOpportunity();
   }, []);
 
- 
+  const extractFilterOptions = (jobsData) => {
+    const degrees = new Set();
+    const courses = new Set();
+    const employmentTypes = new Set();
+    const workModes = new Set();
 
-{/*const extractFilterOptions = (jobsData) => {
-  const degrees = new Set();
-  const courses = new Set();
-  const employmentTypes = new Set();
+    jobsData.forEach(job => {
+      if (Array.isArray(job.degree)) {
+        job.degree.forEach(deg => {
+          if (typeof deg === "string") {
+            degrees.add(deg.trim());
+          }
+        });
+      }
 
-  jobsData.forEach(job => {
-    // DEGREE
-    if (Array.isArray(job.education?.degree)) {
-      job.education.degree.forEach(deg => {
-        if (typeof deg === "string") {
-          degrees.add(deg.trim());
-        }
-      });
-    } else if (typeof job.education?.degree === "string") {
-      degrees.add(job.education.degree.trim());
-    }
+      if (Array.isArray(job.studentStreams)) {
+        job.studentStreams.forEach(stream => {
+          if (typeof stream === "string" && stream !== "All Streams") {
+            courses.add(stream.trim());
+          }
+        });
+      }
 
-    // COURSE
-    if (job.education?.course) {
-      courses.add(job.education.course.trim());
-    }
+      if (Array.isArray(job.workMode)) {
+        job.workMode.forEach(mode => {
+          if (typeof mode === "string") {
+            workModes.add(mode.trim());
+          }
+        });
+      }
 
-    // EMPLOYMENT TYPE
-    if (Array.isArray(job.employmentType)) {
-      job.employmentType.forEach(type => {
-        if (typeof type === "string") {
-          employmentTypes.add(type.trim());
-        }
-      });
-    } else if (typeof job.employmentType === "string") {
-      employmentTypes.add(job.employmentType.trim());
-    }
-  });
+      if (Array.isArray(job.employmentType)) {
+        job.employmentType.forEach(type => {
+          if (typeof type === "string") {
+            employmentTypes.add(type.trim());
+          }
+        });
+      } else if (typeof job.employmentType === "string") {
+        employmentTypes.add(job.employmentType.trim());
+      }
+    });
 
-  setFilterOptions(prev => ({
-    ...prev,
-    // Only update if we found degrees, otherwise keep default
-    degree: degrees.size > 0 
-      ? Array.from(degrees).map(label => ({ label }))
-      : prev.degree,  // ✅ Keep default values if no data found
-    // Uncomment this if you want to extract courses from API
-    // courses: Array.from(courses).map(label => ({ label })),
-    employmentType: employmentTypes.size > 0
-      ? Array.from(employmentTypes).map(label => ({ label }))
-      : prev.employmentType,  // ✅ Keep default values if no data found
-  }));
-};*/}
-
-const extractFilterOptions = (jobsData) => {
-  const degrees = new Set();
-  const courses = new Set();
-  const employmentTypes = new Set();
-  const workModes = new Set();
-
-  jobsData.forEach(job => {
-    // Extract courses from API's "degree" field
-    if (Array.isArray(job.degree)) {
-      job.degree.forEach(deg => {
-        if (typeof deg === "string") {
-          degrees.add(deg.trim());
-        }
-      });
-    }
-
-    // Extract COURSES from API's "studentStreams" field
-    if (Array.isArray(job.studentStreams)) {
-      job.studentStreams.forEach(stream => {
-        if (typeof stream === "string" && stream !== "All Streams") {
-          courses.add(stream.trim());
-        }
-      });
-    }
-
-    // Extract WORK MODES from API's "workMode" field
-    if (Array.isArray(job.workMode)) {
-      job.workMode.forEach(mode => {
-        if (typeof mode === "string") {
-          workModes.add(mode.trim());
-        }
-      });
-    }
-
-    // EMPLOYMENT TYPE
-    if (Array.isArray(job.employmentType)) {
-      job.employmentType.forEach(type => {
-        if (typeof type === "string") {
-          employmentTypes.add(type.trim());
-        }
-      });
-    } else if (typeof job.employmentType === "string") {
-      employmentTypes.add(job.employmentType.trim());
-    }
-  });
-
-  setFilterOptions(prev => ({
-    ...prev,
-    degree: degrees.size > 0
-      ? Array.from(degrees).map(label => ({ label }))
-      : prev.degree,
-    courses: courses.size > 0
-      ? Array.from(courses).map(label => ({ label }))
-      : prev.courses,
-    workMode: workModes.size > 0
-      ? Array.from(workModes).map(label => ({ label }))
-      : prev.workMode,
-    employmentType: employmentTypes.size > 0
-      ? Array.from(employmentTypes).map(label => ({ label }))
-      : prev.employmentType,
-  }));
-};
-
+    setFilterOptions(prev => ({
+      ...prev,
+      degree: degrees.size > 0
+        ? Array.from(degrees).map(label => ({ label }))
+        : prev.degree,
+      courses: courses.size > 0
+        ? Array.from(courses).map(label => ({ label }))
+        : prev.courses,
+      workMode: workModes.size > 0
+        ? Array.from(workModes).map(label => ({ label }))
+        : prev.workMode,
+      employmentType: employmentTypes.size > 0
+        ? Array.from(employmentTypes).map(label => ({ label }))
+        : prev.employmentType,
+    }));
+  };
 
   useEffect(() => {
     if (!Array.isArray(offCampusJobs)) {
@@ -250,6 +187,13 @@ const extractFilterOptions = (jobsData) => {
     }
 
     let result = [...offCampusJobs];
+
+    if (selectedJobId) {
+      result = result.filter(job => {
+        const jobId = job._id || job.id;
+        return jobId !== selectedJobId;
+      });
+    }
 
     // Apply DEGREE filters (from API's "degree" field)
   if (filters.degree.length > 0) {
@@ -275,8 +219,6 @@ const extractFilterOptions = (jobsData) => {
     );
   }
 
-
-
     // Apply EMPLOYMENT TYPE filter
   if (filters.employmentType.length > 0) {
     result = result.filter(job => {
@@ -290,7 +232,6 @@ const extractFilterOptions = (jobsData) => {
       return filters.employmentType.includes(job.employmentType);
     });
   }
-
 
     // Apply location filter
     if (Array.isArray(filters.location) && filters.location.length > 0) {
@@ -315,7 +256,6 @@ const extractFilterOptions = (jobsData) => {
       )
     );
   }
-
 
     if (filters.internship) {
       result = result.filter(job => job.jobType === 'Internship');
@@ -342,7 +282,7 @@ const extractFilterOptions = (jobsData) => {
     }
 
     setFilteredJobs(result);
-  }, [filters, offCampusJobs, sortBy]);
+  }, [filters, offCampusJobs, sortBy, selectedJobId]);
 
   const handleFilterChange = (filterType, value) => {
     setFilters(prev => {
@@ -450,6 +390,34 @@ const extractFilterOptions = (jobsData) => {
     return count;
   };
 
+  // COMPACT VIEW - For sidebar
+  if (compact) {
+    return (
+      <div className="p-3 space-y-2">
+        {filteredJobs.length > 0 ? (
+          filteredJobs.map(job => (
+            <JobCard 
+              key={job._id} 
+              job={job} 
+              onClick={onJobSelect}
+            />
+          ))
+        ) : (
+          <div className="text-center py-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
+              <Building className="h-6 w-6 text-gray-400" />
+            </div>
+            <p className="text-gray-500 text-sm">
+              {selectedJobId 
+                ? "No other jobs to display" 
+                : "No jobs found"}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10 flex items-center justify-center">
@@ -508,57 +476,6 @@ const extractFilterOptions = (jobsData) => {
             </div>
           </div>
         </div>
-
-        {/* Stats Cards */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-purple-100/50 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Opportunities</p>
-                <p className="text-2xl font-bold text-[#667eea]">{offCampusJobs.length}</p>
-              </div>
-              <div className="p-2 bg-gradient-to-br from-[#a5b4fc]/30 to-[#667eea]/20 rounded-lg">
-                <Building className="w-5 h-5 text-[#667eea]" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-emerald-100/50 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Active Applications</p>
-                <p className="text-2xl font-bold text-[#10b981]">0</p>
-              </div>
-              <div className="p-2 bg-gradient-to-br from-[#a7f3d0]/30 to-[#10b981]/20 rounded-lg">
-                <Clock className="w-5 h-5 text-[#10b981]" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-amber-100/50 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Shortlisted</p>
-                <p className="text-2xl font-bold text-[#f59e0b]">0</p>
-              </div>
-              <div className="p-2 bg-gradient-to-br from-[#fde68a]/30 to-[#f59e0b]/20 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-[#f59e0b]" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-pink-100/50 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Interviews</p>
-                <p className="text-2xl font-bold text-[#ec4899]">0</p>
-              </div>
-              <div className="p-2 bg-gradient-to-br from-[#f9a8d4]/30 to-[#ec4899]/20 rounded-lg">
-                <Users className="w-5 h-5 text-[#ec4899]" />
-              </div>
-            </div>
-          </div>
-        </div> */}
 
         {/* Main Filter Section with Dropdown System */}
         <div className="mb-8">
@@ -773,7 +690,7 @@ const extractFilterOptions = (jobsData) => {
                                 className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
                               >
                                 {option.label}
-                              </label>
+                            </label>
                             </div>
                             {option.count && (
                               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
@@ -1063,22 +980,23 @@ const extractFilterOptions = (jobsData) => {
           </div>
         </div>
 
-        {/* Jobs Cards */}
-        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6 min-h-[600px]">
-          {filteredJobs.length > 0 ? (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredJobs.map(job => (
-                  <div
-                    key={job._id}
-                    className="h-full flex transform transition-all duration-200 hover:scale-[1.02]"
-                  >
-                    <div className="w-full" onClick={() => handleJobClick(job._id)}>
-                      <JobCard job={job} />
-                    </div>
-                  </div>
-                ))}
-              </div>
+        {/* Jobs Cards Grid */}
+      <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6 min-h-[600px]">
+        {filteredJobs.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredJobs.map(job => (
+                <div
+                  key={job._id}
+                  className="h-full flex"
+                >
+                  <JobCard 
+                    job={job} 
+                    onClick={onJobSelect}
+                  />
+                </div>
+              ))}
+            </div>
 
               {/* View All Button */}
               <div className="mt-10 text-center">

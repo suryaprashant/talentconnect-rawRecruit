@@ -115,9 +115,41 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
 
   if (!college) return null;
 
-  const collegeDetails = college.collegePosted;
-  const collegeName = collegeDetails?.collegeUniversityDetails?.collegeName || 'College';
-  const logo = collegeDetails?.profileImage || '';
+  // Fix: Better college name extraction
+  const getCollegeName = () => {
+    // Try multiple possible paths to get college name
+    if (college.collegePosted?.collegeUniversityDetails?.collegeName) {
+      return college.collegePosted.collegeUniversityDetails.collegeName;
+    }
+    if (college.collegePosted?.name) {
+      return college.collegePosted.name;
+    }
+    if (college.collegeName) {
+      return college.collegeName;
+    }
+    if (college.name) {
+      return college.name;
+    }
+    return 'College';
+  };
+
+  const collegeName = getCollegeName();
+  
+  // Fix: Better logo extraction
+  const getCollegeLogo = () => {
+    if (college.collegePosted?.profileImage) {
+      return college.collegePosted.profileImage;
+    }
+    if (college.profileImage) {
+      return college.profileImage;
+    }
+    if (college.logo) {
+      return college.logo;
+    }
+    return '';
+  };
+
+  const logo = getCollegeLogo();
 
   // Get status based on dates
   const getCollegeStatus = () => {
@@ -166,7 +198,7 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
     try {
       const response = await SaveOppurtunity(
         college._id,        // ✅ jobId
-        college.jobType     // ✅ jobType = "Pool-campus"
+        college.jobType || "Pool-campus"     // ✅ jobType = "Pool-campus"
       );
 
       if (response?.data?.success === true) {
@@ -187,6 +219,14 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
       return college.location.slice(0, 2).join(', ');
     }
     if (college.venue) return college.venue;
+    
+    // Try to get location from college details
+    if (college.collegePosted?.collegeUniversityDetails?.city) {
+      const city = college.collegePosted.collegeUniversityDetails.city;
+      const state = college.collegePosted.collegeUniversityDetails.state;
+      return `${city}${state ? `, ${state}` : ''}`;
+    }
+    
     return 'Location not specified';
   };
 
@@ -252,8 +292,8 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
       onClick={handleCardClick}
       className={`
         ${compact ? "w-full" : "w-full max-w-[350px]"} 
-        mx-auto rounded-2xl border shadow-sm hover:shadow-lg transition overflow-hidden
-        flex flex-col cursor-pointer h-full
+        mx-auto rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden
+        flex flex-col cursor-pointer h-full hover:scale-[1.02] bg-white
       `}
     >
       {/* TOP SECTION - Pastel background */}
@@ -266,7 +306,8 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
 
           <button
             onClick={handleSave}
-            className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10"
+            className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10 hover:bg-gray-50"
+            aria-label={isSaved ? "Remove from saved" : "Save college"}
           >
             <Heart
               className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
@@ -286,7 +327,7 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
             {getDegreeBadges()}
           </div>
 
-          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
+          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border border-gray-300 shrink-0">
             {logo && !imageError ? (
               <img 
                 src={logo} 
@@ -295,8 +336,8 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
                 onError={() => setImageError(true)}
               />
             ) : (
-              <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-sm font-semibold text-white">
+              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                <span className="text-sm font-semibold text-gray-700">
                   {getInitials(collegeName)}
                 </span>
               </div>
@@ -336,7 +377,7 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
             {college.workMode.slice(0, 3).map((mode, index) => (
               <span
                 key={index}
-                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
+                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/60 backdrop-blur-sm"
               >
                 {mode}
               </span>
@@ -370,7 +411,7 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
             {college.amenitiesRequired.slice(0, 3).map((amenity, index) => (
               <span
                 key={index}
-                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
+                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/60 backdrop-blur-sm"
               >
                 {amenity}
               </span>
@@ -390,18 +431,18 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
       </div>
 
       {/* BOTTOM SECTION - White background */}
-      <div className="p-4 bg-white border-t">
+      <div className="p-4 bg-white border-t border-gray-200">
         <div className="flex justify-between items-center">
-          <div>
+          <div className="min-w-0">
             {/* Package */}
-            <p className="font-semibold text-gray-900 text-sm">
+            <p className="font-semibold text-gray-900 text-sm truncate">
               {formatPackage()}
             </p>
 
             {/* Location */}
             <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
-              <MapPin className="h-4 w-4 text-gray-500" />
-              <span className="line-clamp-1 max-w-[120px]">
+              <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
+              <span className="line-clamp-1 truncate">
                 {formatLocation()}
               </span>
             </div>
@@ -409,7 +450,7 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
 
           <button
             onClick={handleDetailsClick}
-            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
+            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition whitespace-nowrap flex-shrink-0 ml-2"
           >
             Details
           </button>

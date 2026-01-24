@@ -59,7 +59,7 @@ function getStableColor(id = "") {
   return pastelColors[hash];
 }
 
-const JobCard = ({ job, onClick }) => { // Add onClick prop
+const JobCard = ({ job, onClick }) => {
   const [isSaved, setIsSaved] = useState(job.isSaved || false);
   const [imageError, setImageError] = useState(false);
 
@@ -122,7 +122,7 @@ const JobCard = ({ job, onClick }) => { // Add onClick prop
     if (!name) return '?';
     const words = name.trim().split(' ');
     if (words.length === 1) return words[0][0].toUpperCase();
-    return (words[0][0] + words[1][0]).toUpperCase();
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
   };
 
   // Format location
@@ -151,7 +151,7 @@ const JobCard = ({ job, onClick }) => { // Add onClick prop
   // Get job status (Upcoming/Active/Completed)
   const getJobStatus = () => {
     if (!job?.startDate || !job?.endDate) {
-      return { status: 'Unknown', color: 'bg-gray-100 text-gray-700' };
+      return { status: 'Not Scheduled', color: 'bg-gray-100 text-gray-700' };
     }
     
     const now = new Date();
@@ -206,6 +206,13 @@ const JobCard = ({ job, onClick }) => { // Add onClick prop
     );
   };
 
+  // Get description text
+  const getDescription = () => {
+    return job.description || 
+           job.jobDescription || 
+           `${companyName} is hiring for various positions.`;
+  };
+
   // Get user role for navigation
   const getUserRole = () => {
     // Try to get from localStorage
@@ -218,6 +225,7 @@ const JobCard = ({ job, onClick }) => { // Add onClick prop
 
   const jobStatus = getJobStatus();
   const userRole = getUserRole();
+  const description = getDescription();
   
   // Determine job type for routing
   const jobType = job?.jobType || "Off-campus";
@@ -228,8 +236,8 @@ const JobCard = ({ job, onClick }) => { // Add onClick prop
       onClick={handleCardClick}
       className="
         w-full max-w-[350px] mx-auto rounded-2xl 
-        border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden
-        flex flex-col cursor-pointer h-full hover:scale-[1.02] bg-white
+        border shadow-sm hover:shadow-lg transition overflow-hidden
+        flex flex-col cursor-pointer h-full
       "
     >
       {/* TOP SECTION - Pastel background */}
@@ -242,7 +250,7 @@ const JobCard = ({ job, onClick }) => { // Add onClick prop
 
           <button
             onClick={handleSave}
-            className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10 hover:bg-gray-50"
+            className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10"
             aria-label={isSaved ? "Remove from saved" : "Save job"}
           >
             <Heart
@@ -263,7 +271,7 @@ const JobCard = ({ job, onClick }) => { // Add onClick prop
             {getJobRoleBadges()}
           </div>
 
-          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border border-gray-300 shrink-0">
+          <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
             {logo && !imageError ? (
               <img 
                 src={logo} 
@@ -272,7 +280,7 @@ const JobCard = ({ job, onClick }) => { // Add onClick prop
                 onError={() => setImageError(true)}
               />
             ) : (
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
                 <span className="text-sm font-semibold text-gray-700">
                   {getInitials(companyName)}
                 </span>
@@ -305,7 +313,7 @@ const JobCard = ({ job, onClick }) => { // Add onClick prop
             {job.skills.slice(0, 3).map((skill, index) => (
               <span
                 key={index}
-                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/60 backdrop-blur-sm"
+                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
               >
                 {skill}
               </span>
@@ -316,29 +324,44 @@ const JobCard = ({ job, onClick }) => { // Add onClick prop
           </div>
         )}
 
-        {/* Description - Using job description if available */}
+        {/* Company Types (if available in job object) */}
+        {job.companyType?.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {job.companyType.slice(0, 2).map((type, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs"
+              >
+                {type}
+              </span>
+            ))}
+            {job.companyType.length > 2 && (
+              <span className="px-2 py-1 text-xs text-gray-600">+{job.companyType.length - 2}</span>
+            )}
+          </div>
+        )}
+
+        {/* Description */}
         <div className="flex-1">
           <p className="text-sm text-gray-700 line-clamp-2">
-            {job.description || 
-             job.jobDescription || 
-             `${companyName} is hiring for various positions.`}
+            {description}
           </p>
         </div>
       </div>
 
       {/* BOTTOM SECTION - White background */}
-      <div className="p-4 bg-white border-t border-gray-200">
+      <div className="p-4 bg-white border-t">
         <div className="flex justify-between items-center">
-          <div className="min-w-0">
+          <div>
             {/* Package */}
-            <p className="font-semibold text-gray-900 text-sm truncate">
+            <p className="font-semibold text-gray-900 text-sm">
               {formatPackage()}
             </p>
 
             {/* Location */}
             <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
-              <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
-              <span className="line-clamp-1 truncate">
+              <MapPin className="h-4 w-4 text-gray-500" />
+              <span className="line-clamp-1 max-w-[120px]">
                 {formatLocation()}
               </span>
             </div>
@@ -347,7 +370,7 @@ const JobCard = ({ job, onClick }) => { // Add onClick prop
           <Link
             to={routePath}
             onClick={handleDetailsClick}
-            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition whitespace-nowrap flex-shrink-0 ml-2"
+            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
           >
             Details
           </Link>
