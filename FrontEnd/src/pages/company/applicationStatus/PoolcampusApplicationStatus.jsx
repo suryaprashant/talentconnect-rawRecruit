@@ -733,11 +733,6 @@ const extractDegree = (job) => {
                             {/* College Name */}
                             <h3 className="text-sm font-semibold text-gray-900 truncate">
                               {job.collegeName}
-                              {/* {job._debug?.collegeNameFound === false && (
-                                <span className="ml-1 text-xs text-red-500" title="Could not fetch college name">
-                                  ⚠️
-                                </span>
-                              )} */}
                             </h3>
                             {/* Degree instead of Job Title */}
                             <div className="flex items-center gap-1 mt-1">

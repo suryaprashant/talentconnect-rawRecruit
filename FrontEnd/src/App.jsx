@@ -267,6 +267,7 @@ import CollegeDetailPage from "./pages/company/employerDashboard/CollegeDetailPa
 import CompanyPoolCampusLayout from "./components/company/CompanyPoolCampusLayout";
 import OffCampusJobs from "./pages/students/studentDashboard/offCampusListing/offCampusJobListing";
 import OffCampusLayout from "./components/student/studentDashboard/offCampusListing/OffCampusLayout";
+import InternshipLayout from "./components/student/studentDashboard/intershipOpportunity/InternshipLayout";
 
 // Create query client
 const queryClient = new QueryClient();
@@ -357,7 +358,9 @@ function AppRoutes() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/student-dashboard/Job-listing" element={<JobListings />} />
               <Route path="/student-dashboard/Job-listing/:jobId" element={<JobDetails />} />
-              <Route path="/student-dashboard/Internship" element={<InternJobListings />} />
+              {/* <Route path="/student-dashboard/Internship" element={<InternJobListings />} /> */}
+{/* <Route path="/student-dashboard/Internship" element={<InternshipLayout />} /> */}
+<Route path="/student-dashboard/Internship" element={<InternshipLayout userType="student" />} />
               <Route path="/student-dashboard/Internship/:jobId" element={<InternJobDetails />} />
 
               
@@ -373,6 +376,7 @@ function AppRoutes() {
     <Route index element={<OffCampusJobDetail />} />
   </Route>
 </Route> */}
+{/* <Route path="/student-dashboard/Off-campus" element={<OffCampusLayout />} /> */}
 <Route path="/student-dashboard/Off-campus" element={<OffCampusLayout />} />
 
               <Route path="/student-dashboard/hackathon" element={<Hackathon />} />
@@ -414,12 +418,16 @@ function AppRoutes() {
               <Route path="/fresherprofile" element={<Fresher_Profile />} />
 
               <Route path="/fresher-dashboard/Job-listing" element={<FJobListings />} />
+              
               <Route path="/fresher-dashboard/Job-listing/:jobId" element={<FJobDetails />} />
 
-              <Route path="/fresher-dashboard/Internship" element={<FInternJobListings />} />
+              {/* <Route path="/fresher-dashboard/Internship" element={<FInternJobListings />} /> */}
+              <Route path="/fresher-dashboard/Internship" element={<InternshipLayout userType="fresher" />} />
               <Route path="/fresher-dashboard/Internship/:jobId" element={<FInternJobDetails />} />
 
-              <Route path="/fresher-dashboard/Off-campus" element={<FOffCampusJobListings />} />
+              {/* <Route path="/fresher-dashboard/Off-campus" element={<FOffCampusJobListings />} /> */}
+              {/* <Route path="/fresher-dashboard/Off-campus" element={<OffCampusLayout />} /> */}
+              <Route path="/fresher-dashboard/Off-campus" element={<OffCampusLayout />} />
               <Route path="/fresher-dashboard/Off-campus/:jobId" element={<FOffCampusJobDetail />} />
 
               <Route path="/fresher-dashboard/Referral" element={<RefferalJobPosting />} />
