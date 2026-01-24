@@ -433,7 +433,7 @@ const skillsOptions = useMemo(() => {
       if (response.status === 201) {
         toast.success('Off-campus job posted');
         setTimeout(() => {
-          toast.success('This job will expire after 15 days');
+          toast.success('This job will expire after 30 days');
         }, 2000);
         localStorage.removeItem('pendingOffCampusRequest');
         setFormData(initialState);
