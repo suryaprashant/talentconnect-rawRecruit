@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+//import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MapPin, Heart } from 'lucide-react';
 import { SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
@@ -62,7 +63,7 @@ function getStableColor(id = "") {
 const JobCard = ({ job, onClick }) => {
   const [isSaved, setIsSaved] = useState(job.isSaved || false);
   const [imageError, setImageError] = useState(false);
-
+const navigate = useNavigate();
   // Remove the undefined loading and user variables
   const companyName = job?.companyName || 
                      job?.collegeName || 
@@ -367,17 +368,17 @@ const JobCard = ({ job, onClick }) => {
             </div>
           </div>
 
-          <Link
-            to={routePath}
-            onClick={handleDetailsClick}
+          <div
+            //onClick={handleDetailsClick}
+           // onClick={(e) => e.stopPropagation()}
             className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
           >
-            Details
-          </Link>
+            Detail
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default JobCard;
+export default JobCard
