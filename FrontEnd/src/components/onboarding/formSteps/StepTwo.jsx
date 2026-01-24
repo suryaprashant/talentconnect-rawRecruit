@@ -3,6 +3,7 @@ import { MailIcon, PhoneIcon, ChevronDownIcon, AlertCircle, User } from "lucide-
 import { extractValidEmail } from "@/lib/utils";
 
 export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChange }) => {
+  const parsedData = formData?.parsedData || {};
   const [hasAutoSeparated, setHasAutoSeparated] = React.useState(false);
   const [validationErrors, setValidationErrors] = React.useState({
     name: '',
@@ -30,7 +31,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     if (Object.keys(updates).length > 0) {
       onChange(updates);
     }
-  }, [formData.parsedData]);
+  }, [formData?.parsedData?.name]);
 
 
   const separateContactInfo = (text) => {
@@ -165,7 +166,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
   };
 
   React.useEffect(() => {
-    if (formData.parsedData.name && !hasAutoSeparated &&
+    if (parsedData?.name && !hasAutoSeparated &&
       (formData.parsedData.name.includes('+91') ||
         /\d{10}/.test(formData.parsedData.name) ||
         /@/.test(formData.parsedData.name) ||
@@ -193,7 +194,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
         setHasAutoSeparated(true);
       }
     }
-  }, [formData.parsedData.name]);
+  }, [parsedData?.name]);
 
   const validateField = (name, value) => {
     let error = '';
@@ -299,18 +300,32 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     }
   };
 
-  const validateAllFields = () => {
-    const errors = {
-      name: validateField('name', formData.parsedData.name || ''),
-      email: validateField('email', formData.parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser")).user.email || ''),
-      phone: validateField('phone', formData.parsedData.phone || ''),
-      profileType: validateField('profileType', formData.profileType || '')
-    };
+//   const validateAllFields = () => {
+//     const errors = {
+//       name: validateField('name', formData.parsedData.name || ''),
+// //email: validateField('email', formData.parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser")).user.email || ''),
+//       email: validateField('email', formData.parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser"))?.user?.email || ''),
+// phone: validateField('phone', formData.parsedData.phone || ''),
+//       profileType: validateField('profileType', formData.profileType || '')
+//     };
 
-    setValidationErrors(errors);
+//     setValidationErrors(errors);
 
-    return !Object.values(errors).some(error => error !== '');
+//     return !Object.values(errors).some(error => error !== '');
+//   };
+
+const validateAllFields = () => {
+  const errors = {
+    // Check manual input (formData.name) first, then fallback to parsedData
+    name: validateField('name', formData.name || parsedData.name || ''),
+    email: validateField('email', formData.email || parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser") || "{}")?.user?.email || ''),
+    phone: validateField('phone', formData.phone || parsedData.phone || ''),
+    profileType: validateField('profileType', formData.profileType || '')
   };
+
+  setValidationErrors(errors);
+  return !Object.values(errors).some(error => error !== '');
+};
 
   const handleNextClick = () => {
     const isValid = validateAllFields();
@@ -380,7 +395,8 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
                     name="name"
                     placeholder="Enter your full name"
                     className="w-full bg-transparent border-none focus:outline-none text-gray-700 placeholder-gray-400 text-base"
-                    value={formData.parsedData.name || ""}
+                   // value={formData.parsedData.name || ""}
+                   value={formData.name || parsedData.name || ""}
                     onChange={handleNameChange}
                     onBlur={handleFieldBlur}
                   />
@@ -409,8 +425,11 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
                     name="email"
                     placeholder="name@example.com"
                     className="w-full bg-transparent border-none focus:outline-none text-gray-700 placeholder-gray-400 text-base"
-                    value={formData.parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser")).user.email || ""}
-                    onChange={handleEmailChange}
+                    //value={formData.parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser")).user.email || ""}
+                    // Inside the email <input />
+                  // value={parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser"))?.user?.email || ""}
+                   value={formData.email || parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser") || "{}")?.user?.email || ""}
+                  onChange={handleEmailChange}
                     onBlur={handleFieldBlur}
                     required
                   />
@@ -439,7 +458,8 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
                     name="phone"
                     placeholder="+91 9876543210"
                     className="w-full bg-transparent border-none focus:outline-none text-gray-700 placeholder-gray-400 text-base"
-                    value={formData.parsedData.phone || ""}
+                   // value={parsedData.phone || ""}
+                   value={formData.phone || parsedData.phone || ""}
                     onChange={handlePhoneChange}
                     onBlur={handleFieldBlur}
                     required
@@ -499,7 +519,9 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
             </button>
             <button
               onClick={handleNextClick}
-              disabled={!formData.parsedData.phone || !formData.profileType || !formData.parsedData.name}
+              //disabled={!formData.parsedData.phone || !formData.profileType || !formData.parsedData.name}
+           //   disabled={!parsedData.phone || !formData.profileType || !parsedData.name}
+           disabled={!formData.phone && !parsedData.phone}
               className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none" /* Increased padding and text */
             >
               Next
