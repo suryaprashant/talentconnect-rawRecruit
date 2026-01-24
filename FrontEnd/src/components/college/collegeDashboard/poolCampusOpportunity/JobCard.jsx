@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { MapPin, User, Banknote, Heart, Briefcase, Calendar } from 'lucide-react';
+import { MapPin, Heart } from 'lucide-react';
 import { SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 
@@ -59,25 +58,31 @@ function getStableColor(id = "") {
   return pastelColors[hash];
 }
 
-const JobCard = ({ job }) => {
+const JobCard = ({ job, onClick }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   if (!job) return null;
 
-  const companyName = job.companyName || 'Company';
-  const logo = job.logo || '';
-  const jobId = job._id || job.id;
+  // Extract data from the job object with proper fallbacks
+  const companyDetails = job.companyPosted?.companyDetails || {};
+  const companyName = companyDetails.companyName || 
+                     job.companyName || 
+                     'Company';
+  
+  const logo = job.companyPosted?.profileImageUrl || 
+               companyDetails.logo || 
+               'https://via.placeholder.com/48';
 
-  // Get job status based on dates (matching second component logic)
+  // Get status based on dates
   const getJobStatus = () => {
-    if (!job.startDate || !job.endDate) {
+    const now = new Date();
+    const startDate = job.startDate ? new Date(job.startDate) : null;
+    const endDate = job.endDate ? new Date(job.endDate) : null;
+
+    if (!startDate || !endDate) {
       return { status: 'Not Scheduled', color: 'bg-gray-100 text-gray-700' };
     }
-
-    const now = new Date();
-    const startDate = new Date(job.startDate);
-    const endDate = new Date(job.endDate);
 
     if (now < startDate) {
       return { status: 'Upcoming', color: 'bg-blue-100 text-blue-700' };
@@ -88,111 +93,294 @@ const JobCard = ({ job }) => {
     }
   };
 
+  const handleCardClick = (e) => {
+    // Don't trigger if clicking on save button or details button
+    if (e.target.closest('button')) {
+      return;
+    }
+    
+    // Use onClick prop if provided
+    if (onClick && typeof onClick === 'function') {
+      onClick(job);
+    }
+  };
+
+  const handleDetailsClick = (e) => {
+    e.stopPropagation();
+    
+    // Use onClick prop if provided
+    if (onClick && typeof onClick === 'function') {
+      onClick(job);
+    }
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!jobId) {
-      console.error("Invalid job object in card:", job);
-      toast.error("Invalid job");
-      return;
-    }
-
     try {
-      const res = await SaveOppurtunity(jobId, "Pool-campus");
+      const response = await SaveOppurtunity(
+        job._id,        
+        job.jobType || "Pool-campus"
+      );
 
-      if (res?.data?.success) {
+      if (response?.data?.success === true) {
         setIsSaved(true);
         toast.success("Saved");
       } else {
-        toast.error(res?.response?.data?.msg || "Unable to save");
+        toast.error(response?.response?.data?.msg || "Unable to save");
       }
-    } catch (err) {
-      console.error("Save error:", err);
-      toast.error("Something went wrong");
+    } catch (error) {
+      console.error("Save error:", error);
+      toast.error("Something went wrong!");
     }
   };
 
-  const getInitials = (name = '') => {
+  // Format location - combine venue and workLocation
+  const formatLocation = () => {
+    const locationParts = [];
+    
+    // Add venue if available
+    if (job.venue && job.venue !== 'Not specified') {
+      locationParts.push(job.venue);
+    }
+    
+    // Add work location if available
+    if (Array.isArray(job.workLocation) && job.workLocation.length > 0) {
+      const workLoc = job.workLocation.slice(0, 2).join(', ');
+      if (!locationParts.includes(workLoc)) {
+        locationParts.push(workLoc);
+      }
+    }
+    
+    // Add location string if available
+    if (typeof job.location === 'string' && job.location !== 'Not specified') {
+      if (!locationParts.includes(job.location)) {
+        locationParts.push(job.location);
+      }
+    }
+    
+    // Return combined location or default
+    return locationParts.length > 0 
+      ? locationParts.slice(0, 2).join(' • ') 
+      : 'Location not specified';
+  };
+
+  const getInitials = (name) => {
     if (!name) return '?';
     const words = name.trim().split(' ');
     if (words.length === 1) return words[0][0].toUpperCase();
-    return (words[0][0] + words[1][0]).toUpperCase();
-  };
-
-  // Format location
-  const formatLocation = () => {
-    if (job.location && job.location !== 'Not specified') {
-      return job.location;
-    }
-    return 'Location not specified';
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
   };
 
   // Format package details
   const formatPackage = () => {
-    if (job.package && job.package !== 'Not specified') {
+    if (job.packageDetails?.totalCTC) {
+      const currency = job.packageDetails.currency || '₹';
+      return `${currency}${job.packageDetails.totalCTC.toLocaleString()}`;
+    }
+    if (job.package && typeof job.package === 'string' && job.package.includes('₹')) {
       return job.package;
     }
-    return 'Package not specified';
+    return 'Not Disclosed';
   };
 
-  // Format date range
-  const formatDateRange = () => {
-    if (!job.startDate || !job.endDate) return 'Dates not specified';
-    const s = new Date(job.startDate);
-    const e = new Date(job.endDate);
-    return `${s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${e.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-  };
-
-  // Format employment type
-  const formatEmploymentType = () => {
-    if (!job.position) return 'Position not specified';
-    return job.position;
-  };
-
-  // Format streams
-  const formatStreams = () => {
-    if (job.streams && job.streams.length > 0 && job.streams[0] !== 'Not specified') {
-      return job.streams;
-    }
-    return [];
-  };
-
-  // Format hiring process steps
-  const formatHiringProcess = () => {
-    if (job.hiringProcess && job.hiringProcess.length > 0 && job.hiringProcess[0] !== 'Not specified') {
-      if (typeof job.hiringProcess === 'string') {
-        return job.hiringProcess.split(' + ').slice(0, 3);
-      }
-      return job.hiringProcess.slice(0, 3);
-    }
-    return [];
+  // Get description text
+  const getDescription = () => {
+    return job.description || 
+           job.jobDescription || 
+           companyDetails.description ||
+           `${companyName} is hiring for various positions.`;
   };
 
   const jobStatus = getJobStatus();
-  const stableColor = getStableColor(jobId || companyName);
-  const streams = formatStreams();
-  const hiringProcess = formatHiringProcess();
+  const stableColor = getStableColor(job._id || companyName);
+  const description = getDescription();
+
+  // Get colored badges for job roles
+  const getJobRoleBadges = () => {
+    if (!job.jobRoles?.length) {
+      // Try to get position or jobTitle as fallback
+      const position = job.position || job.jobTitle || "Job Role";
+      return (
+        <div className="flex flex-wrap gap-1 mt-2">
+          <span className="text-sm font-medium bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full">
+            {position}
+          </span>
+        </div>
+      );
+    }
+    
+    const roleColors = [
+      "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
+      "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border-purple-200",
+      "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700 border-pink-200",
+      "bg-gradient-to-r from-green-100 to-green-50 text-green-700 border-green-200",
+      "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border-yellow-200",
+    ];
+    
+    return (
+      <div className="flex flex-wrap gap-1 mt-2">
+        {job.jobRoles.slice(0, 3).map((role, index) => (
+          <span 
+            key={index} 
+            className={`text-sm font-medium px-2 py-0.5 rounded-full border ${roleColors[index % roleColors.length]}`}
+          >
+            {role}
+          </span>
+        ))}
+        {job.jobRoles.length > 3 && (
+          <span className="text-sm font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-0.5 rounded-full border border-gray-200">
+            +{job.jobRoles.length - 3}
+          </span>
+        )}
+      </div>
+    );
+  };
+
+  // Get student streams badges
+  const getStreamBadges = () => {
+    if (!job.studentStreams?.length && !job.streams?.length) return null;
+    
+    const streams = job.studentStreams || job.streams || [];
+    const streamColors = [
+      "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
+      "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border-purple-200",
+      "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700 border-pink-200",
+    ];
+    
+    return (
+      <div className="flex flex-wrap gap-1 mt-1">
+        {streams.slice(0, 2).map((stream, index) => (
+          <span 
+            key={index} 
+            className={`text-xs font-medium px-2 py-0.5 rounded-full border ${streamColors[index % streamColors.length]}`}
+          >
+            {stream}
+          </span>
+        ))}
+        {streams.length > 2 && (
+          <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-0.5 rounded-full border border-gray-200">
+            +{streams.length - 2}
+          </span>
+        )}
+      </div>
+    );
+  };
+
+  // Get work mode badge
+  const getWorkModeBadge = () => {
+    if (!job.workMode) return null;
+    
+    return (
+      <div className="mt-1">
+        <span className="px-2 py-1 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border border-blue-200 rounded-full text-xs font-medium">
+          {Array.isArray(job.workMode) ? job.workMode.join(', ') : job.workMode}
+        </span>
+      </div>
+    );
+  };
+
+  // Get skills badges
+  const getSkillsBadges = () => {
+    if (!job.skills?.length) return null;
+    
+    return (
+      <div className="flex flex-wrap gap-2 mb-3">
+        {job.skills.slice(0, 3).map((skill, index) => (
+          <span
+            key={index}
+            className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
+          >
+            {skill}
+          </span>
+        ))}
+        {job.skills.length > 3 && (
+          <span className="px-2 py-1 text-xs text-gray-600">+{job.skills.length - 3}</span>
+        )}
+      </div>
+    );
+  };
+
+  // Get selection process badges
+  const getSelectionProcessBadges = () => {
+    if (!job.selectionProcess?.length && !job.hiringProcess?.length) return null;
+    
+    const process = job.selectionProcess || job.hiringProcess || [];
+    
+    return (
+      <div className="flex flex-wrap gap-2 mb-3">
+        {process.slice(0, 2).map((step, index) => (
+          <span
+            key={index}
+            className="px-3 py-1 bg-gradient-to-r from-purple-100 to-purple-50 text-purple-800 border border-purple-300 rounded-full text-xs"
+          >
+            {step}
+          </span>
+        ))}
+        {process.length > 2 && (
+          <span className="px-2 py-1 text-xs text-gray-600">+{process.length - 2}</span>
+        )}
+      </div>
+    );
+  };
+
+  // Get employment type badge
+  const getEmploymentTypeBadge = () => {
+    if (!job.employmentType?.length) return null;
+    
+    return (
+      <div className="mb-3">
+        <span className="px-3 py-1 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
+          {Array.isArray(job.employmentType) ? job.employmentType.join(', ') : job.employmentType}
+        </span>
+      </div>
+    );
+  };
+
+  // Get company type badges (similar to amenities in CollegeCard)
+  const getCompanyTypeBadges = () => {
+    if (!companyDetails.companyType?.length && !companyDetails.industryType?.length) return null;
+    
+    const types = companyDetails.companyType || companyDetails.industryType || [];
+    
+    return (
+      <div className="flex flex-wrap gap-2 mb-3">
+        {types.slice(0, 2).map((type, index) => (
+          <span
+            key={index}
+            className="px-3 py-1 bg-gradient-to-r from-purple-100 to-purple-50 text-purple-800 border border-purple-300 rounded-full text-xs"
+          >
+            {type}
+          </span>
+        ))}
+        {types.length > 2 && (
+          <span className="px-2 py-1 text-xs text-gray-600">+{types.length - 2}</span>
+        )}
+      </div>
+    );
+  };
 
   return (
-    <div className="
-  w-full max-w-[350px] mx-auto rounded-2xl 
-  border shadow-sm hover:shadow-lg transition overflow-hidden
-  flex flex-col h-full
-">
-
+    <div 
+      onClick={handleCardClick}
+      className="
+        w-full max-w-[350px] mx-auto rounded-2xl 
+        border shadow-sm hover:shadow-lg transition overflow-hidden
+        flex flex-col cursor-pointer h-full min-h-[360px]
+      "
+    >
       {/* TOP SECTION - Pastel background */}
-      <div className={`${stableColor} p-4 pb-6 rounded-b-2xl flex-1 flex flex-col`}>
-
+      <div className={`${stableColor} p-4 flex-1 flex flex-col min-h-[240px]`}>
         {/* Status + Save */}
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start mb-2">
           <span className={`text-xs ${jobStatus.color} px-3 py-1 rounded-full font-medium`}>
             {jobStatus.status}
           </span>
 
           <button
             onClick={handleSave}
-            className="bg-white p-2 rounded-full shadow"
+            className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10"
           >
             <Heart
               className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
@@ -201,23 +389,21 @@ const JobCard = ({ job }) => {
           </button>
         </div>
 
-        {/* Company Name + Position */}
-        <div className="mt-3 flex justify-between items-start gap-2">
-          <div className="flex flex-col gap-1">
-            <h3 className="text-black font-semibold text-lg truncate max-w-[200px]">
+        {/* Company Name + Job Roles */}
+        <div className="flex justify-between items-start gap-2 mb-3">
+          <div className="flex-1 pr-2">
+            <h3 className="text-black font-semibold text-lg truncate">
               {companyName}
             </h3>
-
-            {/* Display Position */}
-            {job.position && (
-              <div className="flex flex-wrap gap-1 mt-1">
-                <span 
-                  className="text-sm font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded border border-black/5"
-                >
-                  {formatEmploymentType()}
-                </span>
-              </div>
-            )}
+            
+            {/* Job Roles as colored badges */}
+            {getJobRoleBadges()}
+            
+            {/* Stream badges */}
+            {getStreamBadges()}
+            
+            {/* Work mode badge */}
+            {getWorkModeBadge()}
           </div>
 
           <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
@@ -239,125 +425,60 @@ const JobCard = ({ job }) => {
         </div>
 
         {/* Employment Type Badge */}
-        {job.position && (
-          <div className="mt-3">
-            <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
-              {formatEmploymentType()}
+        {getEmploymentTypeBadge()}
+
+        {/* Company Type Badges */}
+        {getCompanyTypeBadges()}
+
+        {/* Skills */}
+        {getSkillsBadges()}
+
+        {/* Selection Process */}
+        {getSelectionProcessBadges()}
+
+        {/* Urgent Hiring Badge */}
+        {job.urgent && (
+          <div className="mb-3">
+            <span className="px-3 py-1 bg-gradient-to-r from-red-100 to-red-50 text-red-700 border border-red-300 rounded-full text-xs font-semibold">
+              Urgent Hiring
             </span>
           </div>
         )}
 
-        {/* Streams */}
-        {streams.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {streams.slice(0, 3).map((stream, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-blue-100 text-blue-800 border border-blue-300 rounded-full text-xs"
-              >
-                {stream}
-              </span>
-            ))}
-            {streams.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{streams.length - 3}</span>
-            )}
-          </div>
-        )}
-
-        {/* Hiring Process Steps */}
-        {hiringProcess.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {hiringProcess.map((step, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
-              >
-                {step}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Date Range */}
-        {job.startDate && job.endDate && (
-          <div className="mt-3">
-            <div className="flex items-center gap-1">
-              <Calendar className="h-3 w-3 text-gray-600" />
-              <span className="text-xs text-gray-800">
-                {formatDateRange()}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Venue */}
-        {job.venue && (
-          <div className="mt-3">
-            <div className="flex items-center gap-1">
-              <Briefcase className="h-3 w-3 text-gray-600" />
-              <span className="text-xs text-gray-800 truncate">
-                {job.venue}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Tags */}
-        {job.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {job.tags.slice(0, 3).map((tag, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-gray-100 text-gray-800 border border-gray-300 rounded-full text-xs"
-              >
-                {tag}
-              </span>
-            ))}
-            {job.tags.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{job.tags.length - 3}</span>
-            )}
-          </div>
-        )}
-
-        {/* Description - Fixed height */}
-        <div className="mt-3">
-          <p className="text-sm text-gray-700 line-clamp-3">
-            {job.description 
-              ? job.description.split(' ').slice(0, 20).join(' ') + (job.description.split(' ').length > 20 ? '...' : '')
-              : 'No description provided.'}
+        {/* Description */}
+        <div className="flex-1 mt-2">
+          <p className="text-sm text-gray-700 line-clamp-2">
+            {description}
           </p>
         </div>
-
       </div>
 
       {/* BOTTOM SECTION - White background */}
-      <div className="p-4 bg-white flex justify-between items-center border-t h-[80px]">
+      <div className="p-4 bg-white border-t">
+        <div className="flex justify-between items-center">
+          <div>
+            {/* Package */}
+            <p className="font-semibold text-gray-900 text-sm">
+              {formatPackage()}
+            </p>
 
-        <div>
-          {/* Package */}
-          <p className="font-semibold text-gray-900 text-sm">
-            {formatPackage() !== 'Package not specified' 
-              ? formatPackage()
-              : "Not Disclosed"}
-          </p>
-
-          {/* Location */}
-          <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
-            <MapPin className="h-4 w-4 text-gray-500" />
-            <span className="line-clamp-1 max-w-[120px]">
-              {formatLocation()}
-            </span>
+            {/* Location with venue included */}
+            <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
+              <MapPin className="h-4 w-4 text-gray-500" />
+              <span className="line-clamp-1 max-w-[120px]">
+                {formatLocation()}
+              </span>
+            </div>
           </div>
+
+          <button
+            onClick={handleDetailsClick}
+            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
+          >
+            Details
+          </button>
         </div>
-
-        <Link
-          to={`/college-dashboard/Pool-campus/${jobId}`}
-          className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
-        >
-          Register
-        </Link>
       </div>
-
     </div>
   );
 };

@@ -164,6 +164,7 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
     applicantData: null
   });
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false); // Add this state
 
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
@@ -252,50 +253,6 @@ const refreshList = () => getApplicants(jobId, jobType, isVisited);
       getApplicants(jobId, jobType, isVisited);
     }
   }, [jobId,isVisited]);
-// downloads directly
-
-//   const handleViewResume = async (applicant) => {
-//   const applicantData = applicant?.applicant || {};
-//   const applicantStr = JSON.stringify(applicantData);
-//   const urlMatch = applicantStr.match(/(https?:\/\/res\.cloudinary\.com\/[^"'\s]+)/);
-  
-//   if (!urlMatch) return toast.error("No resume found");
-  
-//   const cloudinaryUrl = urlMatch[0];
-  
-//   toast.loading("Converting resume to PDF...");
-  
-//   try {
-//     // Fetch the file
-//     const response = await fetch(cloudinaryUrl);
-//     const blob = await response.blob();
-    
-//     // Create a new blob with PDF type
-//     const pdfBlob = new Blob([blob], { type: 'application/pdf' });
-//     const pdfUrl = URL.createObjectURL(pdfBlob);
-    
-//     // Create download link
-//     const link = document.createElement('a');
-//     link.href = pdfUrl;
-//     link.download = `${applicantData.name || 'resume'}.pdf`;
-//     link.style.display = 'none';
-    
-//     document.body.appendChild(link);
-//     link.click();
-    
-//     // Cleanup
-//     URL.revokeObjectURL(pdfUrl);
-//     document.body.removeChild(link);
-    
-//     toast.dismiss();
-//     toast.success("Resume downloaded as PDF!");
-    
-//   } catch (error) {
-//     toast.dismiss();
-//     toast.error("Failed to convert resume");
-//     console.error("Error:", error);
-//   }
-// };
 
 // opens in new tab
 const handleViewResume = async (applicant) => {
@@ -474,78 +431,6 @@ const handleViewResume = async (applicant) => {
   }
 };
 
-// ===== HELPER FUNCTIONS =====
-
-const processResumeUrl = (url) => {
-  if (!url) return url;
-  
-  console.log("Original URL:", url);
-  
-  // For Cloudinary raw uploads
-  if (url.includes('cloudinary.com') && url.includes('/raw/upload/')) {
-    // RAW uploads have different format than image uploads
-    // Don't add .pdf extension to the path - Cloudinary handles this
-    
-    // Option 1: Try as direct raw file (no transformations)
-    const directUrl = url;
-    
-    // Option 2: Try with .pdf at the end (some raw uploads need this)
-    const withPdfExtension = url + '.pdf';
-    
-    // Option 3: Try with force download flag
-    const withAttachment = url.replace('/upload/', '/upload/fl_attachment/');
-    
-    // Option 4: Try with both attachment and .pdf
-    const withBoth = url.replace('/upload/', '/upload/fl_attachment/') + '.pdf';
-    
-    console.log("Testing different URL formats:");
-    console.log("1. Direct:", directUrl);
-    console.log("2. With .pdf:", withPdfExtension);
-    console.log("3. With attachment:", withAttachment);
-    console.log("4. With both:", withBoth);
-    
-    // Return the simplest version first
-    return directUrl;
-  }
-  
-  return url;
-};
-
-// Open resume in optimal way
-const openResume = (url, applicantName) => {
-  console.log('Opening resume:', url);
-  
-  // Try to open in new tab
-  const newWindow = window.open('', '_blank');
-  
-  if (!newWindow) {
-    // If popup blocked, use iframe modal
-    toast('Please allow popups to view resume');
-    
-    // Create modal with iframe
-    const modalHtml = `
-      <div style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:9999;">
-        <div style="position:relative; width:90vw; height:90vh; margin:5vh auto; background:white; border-radius:10px;">
-          <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #ddd;">
-            <h3 style="margin:0;">${applicantName}'s Resume</h3>
-            <button onclick="this.parentElement.parentElement.parentElement.remove()" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
-          </div>
-          <iframe src="${url}" style="width:100%; height:calc(100% - 50px); border:none;"></iframe>
-        </div>
-      </div>
-    `;
-    
-    const modalDiv = document.createElement('div');
-    modalDiv.innerHTML = modalHtml;
-    document.body.appendChild(modalDiv);
-    
-  } else {
-    // Open in new tab
-    newWindow.location.href = url;
-    toast.success('Resume opened in new tab');
-  }
-};
-
   // ==================== Handle Message Click ====================
   const handleMessageClick = async (applicant) => {
     if (!applicant?.applicant?._id) {
@@ -554,6 +439,8 @@ const openResume = (url, applicantName) => {
     }
 
     const userId = applicant.applicant._id;
+    setIsProcessing(true); // Set loading state
+    
     try {
       const response = await conversationWithCollege(userId);
       if (response.data) {
@@ -566,16 +453,22 @@ const openResume = (url, applicantName) => {
           fullname: applicant.applicant.name || 'Unknown Applicant'
         };
 
+        console.log("Setting conversation for direct chat:", conversationUser);
+
         setSelectedConversation(conversationUser);
+
         setTimeout(() => {
           navigate('/chat-application');
         }, 100);
+
       } else {
         toast.error('Failed to create conversation');
       }
     } catch (error) {
       console.error('Error starting chat:', error);
       toast.error('Error starting conversation');
+    } finally {
+      setIsProcessing(false); // Reset loading state
     }
   };
 
@@ -905,11 +798,15 @@ const openResume = (url, applicantName) => {
                       {/* Message Button */}
                       <button
                         onClick={() => handleMessageClick(applicant)}
-                        disabled={isSubmitting}
-                        className="flex items-center justify-center flex-1 py-2.5 font-medium bg-white border border-gray-300 text-blue-600 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50"
+                        disabled={isProcessing || isSubmitting}
+                        className={`flex items-center justify-center flex-1 py-2.5 font-medium rounded-lg transition-colors duration-200 ${
+                          (isProcessing || isSubmitting) 
+                            ? 'opacity-50 cursor-not-allowed bg-white border border-gray-300 text-blue-600' 
+                            : 'bg-white border border-gray-300 text-blue-600 hover:bg-gray-50'
+                        }`}
                       >
                         <MessageSquare size={16} className="mr-2" />
-                        Message
+                        {isProcessing ? 'Processing...' : 'Message'}
                       </button>
                       
                       {/* Shortlist Button */}

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, X, Filter, Building2, MapPin, Search, GraduationCap, BookOpen, Briefcase, Calendar, Users, TrendingUp, RefreshCw, AlertCircle, Building } from 'lucide-react';
-import CollegeCard from '../../../components/company/employerDashboard/CollegeCard';
+import CollegeCard from '@/components/employer/employerDashboard/CollegeCard';
 import { getRegisteredColleges } from '@/lib/Company_AxiosInstance';
+import EmployerDetailsModal from '@/components/employer/employerDashboard/EmployerDetailsModal';
 
-const EmployerListingPage = () => {
+const EmployerListingPage = ({ compact = false, onCollegeSelect, selectedCollegeId }) => {
   const [colleges, setColleges] = useState([]);
   const [filteredColleges, setFilteredColleges] = useState([]);
   const [filters, setFilters] = useState({
@@ -19,6 +20,10 @@ const EmployerListingPage = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState('newest');
+  
+  // Modal state
+  const [selectedCollege, setSelectedCollege] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // State for dropdown visibility
   const [showMainFilter, setShowMainFilter] = useState(false);
@@ -254,6 +259,39 @@ const EmployerListingPage = () => {
       }
     });
   };
+
+  const handleCollegeSelect = (college) => {
+    console.log('Opening details for:', college?.collegePosted?.collegeUniversityDetails?.collegeName || college?.name);
+    setSelectedCollege(college);
+    setIsModalOpen(true);
+    
+    // Pass to parent if onCollegeSelect exists (for compact mode)
+    if (onCollegeSelect && typeof onCollegeSelect === 'function') {
+      onCollegeSelect(college);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCollege(null);
+  };
+
+  // COMPACT VIEW - For sidebar
+  if (compact) {
+    return (
+      <div className="p-3 space-y-4">
+        {filteredColleges
+          .filter(college => selectedCollegeId ? college._id !== selectedCollegeId : true)
+          .map((college) => (
+            <CollegeCard 
+              key={college._id} 
+              college={college} 
+              onClick={onCollegeSelect}
+            />
+          ))}
+      </div>
+    );
+  }
 
   const toggleSubDropdown = (dropdown) => {
     setOpenSubDropdowns(prev => ({
@@ -950,22 +988,25 @@ const EmployerListingPage = () => {
           </div>
         </div>
 
-        {/* College Cards */}
-        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">
-          {filteredColleges.length > 0 ? (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredColleges.map(college => (
-                  <div
-                    key={college._id || college.id}
-                    className="h-full flex"
-                  >
-                    <div className="w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 flex flex-col h-full">
-                      <CollegeCard college={college} />
-                    </div>
+        {/* College Cards Grid */}
+      <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">
+        {filteredColleges.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredColleges.map(college => (
+                <div
+                  key={college._id || college.id}
+                  className="h-full flex"
+                >
+                  <div className="w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 flex flex-col h-full">
+                    <CollegeCard 
+                      college={college} 
+                      onClick={handleCollegeSelect}
+                    />
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
 
               {/* View All Button */}
               <div className="mt-10 text-center">
@@ -1001,6 +1042,19 @@ const EmployerListingPage = () => {
           )}
         </div>
       </div>
+      {/* College Detail Modal for normal view */}
+      {isModalOpen && selectedCollege && (
+        <div className="fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative z-10 flex items-center justify-center h-full p-4">
+            <EmployerDetailsModal
+              college={selectedCollege}
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

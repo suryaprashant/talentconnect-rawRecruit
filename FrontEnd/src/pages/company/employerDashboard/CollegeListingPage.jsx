@@ -835,43 +835,48 @@ const CollegeListingPage = ({ compact = false, onCollegeSelect }) => {
         </div>
 
         {/* College Cards Grid */}
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 min-h-[600px]">
-          {filteredColleges.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredColleges.map(college => (
-                <CollegeCard
-                  key={college._id || college.id}
-                  college={college}
-                  onClick={onCollegeSelect} // Correctly passing the function
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-6">
-                <Building2 className="h-12 w-12 text-gray-400" />
-              </div>
-              <h3 className="text-2xl font-semibold text-gray-900 mb-3">No colleges found</h3>
-              <p className="text-gray-600 mb-8 max-w-md">
-                No colleges match your current filter criteria. Try adjusting your filters or search criteria to find more options.
-              </p>
-              <div className="flex flex-wrap gap-3 justify-center">
-                <button
-                  onClick={clearAllFilters}
-                  className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300"
-                >
-                  Clear All Filters
-                </button>
-                <button
-                  onClick={() => window.location.reload()}
-                  className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-300"
-                >
-                  Refresh Page
-                </button>
-              </div>
-            </div>
-          )}
+        {/* College Cards Grid */}
+<div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 overflow-hidden">
+  {filteredColleges.length > 0 ? (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {filteredColleges.map(college => (
+        <div
+          key={college._id || college.id}
+          className="h-full"
+        >
+          <CollegeCard
+            college={college}
+            onClick={onCollegeSelect}
+          />
         </div>
+      ))}
+    </div>
+  ) : (
+    <div className="flex flex-col items-center justify-center py-12">
+      <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-6">
+        <Building2 className="h-12 w-12 text-gray-400" />
+      </div>
+      <h3 className="text-2xl font-semibold text-gray-900 mb-3">No colleges found</h3>
+      <p className="text-gray-600 mb-8 max-w-md">
+        No colleges match your current filter criteria. Try adjusting your filters or search criteria to find more options.
+      </p>
+      <div className="flex flex-wrap gap-3 justify-center">
+        <button
+          onClick={clearAllFilters}
+          className="px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-300"
+        >
+          Clear All Filters
+        </button>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-300"
+        >
+          Refresh Page
+        </button>
+      </div>
+    </div>
+  )}
+</div>
       </div>
     </div>
   );

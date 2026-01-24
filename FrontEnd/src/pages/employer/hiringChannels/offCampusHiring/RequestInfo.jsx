@@ -1102,6 +1102,9 @@ export default function OffCampusHiringForm({ onBackClick }) {
     benefits: [],
     placementStartDate: '',
     placementEndDate: '',
+    onlineTestDate: '',
+    interviewWindow: { start: '', end: '' },
+    offerRolloutDate: '',
     numberOfRounds: '',
     selectionProcess: [],
     contactPerson: { name: '', designation: '', email: '', mobile: '', linkedin: '' },
@@ -1229,6 +1232,17 @@ useEffect(() => {
   const handleDateChange = (date, name) => {
     const formattedDate = formatDateLocal(date);
     setFormData(prev => ({ ...prev, [name]: formattedDate }));
+  };
+
+  const handleInterviewDateChange = (date, field) => {
+    const formattedDate = formatDateLocal(date);
+    setFormData(prev => ({
+      ...prev,
+      interviewWindow: {
+        ...prev.interviewWindow,
+        [field]: formattedDate
+      }
+    }));
   };
 
   const handleMultiSelect = (field, value) => {
@@ -1374,6 +1388,9 @@ useEffect(() => {
         tags: formData.tags,
         startDate: formData.placementStartDate,
         endDate: formData.placementEndDate,
+        onlineTestDate: formData.onlineTestDate,
+        interviewWindow: formData.interviewWindow,
+        offerRolloutDate: formData.offerRolloutDate,
         rounds: formData.numberOfRounds ? [formData.numberOfRounds] : [],
         selectionProcess: formData.selectionProcess.join(' + '),
         contactPerson: formData.contactPerson,
@@ -1392,7 +1409,7 @@ useEffect(() => {
       if (response.status === 201) {
         toast.success('Off-campus job posted');
         setTimeout(() => {
-          toast.success('This job will expire after 15 days');
+          toast.success('This job will expire after 30 days');
         }, 2000);
         localStorage.removeItem('pendingOffCampusRequest');
         setFormData(initialState);
@@ -1924,47 +1941,129 @@ useEffect(() => {
             </div>
 
             {/* Eighth Row: Placement Dates */}
-<div>
-  <label className="block mb-2 font-medium text-sm text-gray-700">
-    <Calendar className="inline w-4 h-4 mr-1" />
-    Tentative Date of Placement / Hiring <span className="text-red-500">*</span>
-  </label>
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div className="relative">
-      <label className="block mb-1 text-xs text-gray-600">Start Date</label>
-      <div className="relative">
-        <DatePicker
-          selected={formData.placementStartDate ? new Date(formData.placementStartDate) : null}
-          onChange={(date) => handleDateChange(date, 'placementStartDate')}
-          dateFormat="dd-MM-yyyy"
-          placeholderText="Select start date"
-          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-          required
-          wrapperClassName="w-full"
-        />
-        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-      </div>
-    </div>
-    <div className="relative">
-      <label className="block mb-1 text-xs text-gray-600">End Date</label>
-      <div className="relative">
-        <DatePicker
-          selected={formData.placementEndDate ? new Date(formData.placementEndDate) : null}
-          onChange={(date) => handleDateChange(date, 'placementEndDate')}
-          dateFormat="dd-MM-yyyy"
-          placeholderText="Select end date"
-          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-          required
-          wrapperClassName="w-full"
-        />
-        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-      </div>
-    </div>
-  </div>
-</div>
+            <div>
+              <label className="block mb-2 font-medium text-sm text-gray-700">
+                <Calendar className="inline w-4 h-4 mr-1" />
+                Tentative Date of Placement / Hiring <span className="text-red-500">*</span>
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="relative">
+                  <label className="block mb-1 text-xs text-gray-600">Start Date</label>
+                  <div className="relative">
+                    <DatePicker
+                      selected={formData.placementStartDate ? new Date(formData.placementStartDate) : null}
+                      onChange={(date) => handleDateChange(date, 'placementStartDate')}
+                      dateFormat="dd-MM-yyyy"
+                      placeholderText="Select start date"
+                      className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      required
+                      wrapperClassName="w-full"
+                    />
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                  </div>
+                </div>
+                <div className="relative">
+                  <label className="block mb-1 text-xs text-gray-600">End Date</label>
+                  <div className="relative">
+                    <DatePicker
+                      selected={formData.placementEndDate ? new Date(formData.placementEndDate) : null}
+                      onChange={(date) => handleDateChange(date, 'placementEndDate')}
+                      dateFormat="dd-MM-yyyy"
+                      placeholderText="Select end date"
+                      className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      required
+                      wrapperClassName="w-full"
+                    />
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                  </div>
+                </div>
+              </div>
+            </div>
 
-            {/* Ninth Row: Number of Rounds and Selection Process */}
+            {/* Ninth Row: Online Test Date and Interview Window */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Online Test Date */}
+              <div>
+                <label className="block mb-2 font-medium text-sm text-gray-700">Online Test Date</label>
+                <div className="relative">
+                  <DatePicker
+                    selected={formData.onlineTestDate ? new Date(formData.onlineTestDate) : null}
+                    onChange={(date) => handleDateChange(date, 'onlineTestDate')}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Select test date"
+                    className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    wrapperClassName="w-full"
+                  />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                </div>
+              </div>
+
+              {/* Interview Window Header */}
+              {/* <div>
+                <label className="block mb-2 font-medium text-sm text-gray-700">Interview Window</label>
+              </div> */}
+            </div>
+
+            <div>
+              <div>
+                <label className="block mb-2 font-medium text-sm text-gray-700">Interview Window</label>
+              </div>
+            </div>
+
+            {/* Tenth Row: Interview Window Dates */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              {/* Interview Start Date */}
+              <div>
+                <label className="block mb-1 text-xs text-gray-600">Start Date</label>
+                <div className="relative">
+                  <DatePicker
+                    selected={formData.interviewWindow?.start ? new Date(formData.interviewWindow.start) : null}
+                    onChange={(date) => handleInterviewDateChange(date, 'start')}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Select start date"
+                    className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    wrapperClassName="w-full"
+                  />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                </div>
+              </div>
+
+              {/* Interview End Date */}
+              <div>
+                <label className="block mb-1 text-xs text-gray-600">End Date</label>
+                <div className="relative">
+                  <DatePicker
+                    selected={formData.interviewWindow?.end ? new Date(formData.interviewWindow.end) : null}
+                    onChange={(date) => handleInterviewDateChange(date, 'end')}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Select end date"
+                    className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    wrapperClassName="w-full"
+                  />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                </div>
+              </div>
+            </div>
+
+            {/* Eleventh Row: Offer Rollout Date and Number of Rounds */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Offer Rollout Date */}
+              <div>
+                <label className="block mb-2 font-medium text-sm text-gray-700">Offer Rollout Date</label>
+                <div className="relative">
+                  <DatePicker
+                    selected={formData.offerRolloutDate ? new Date(formData.offerRolloutDate) : null}
+                    onChange={(date) => handleDateChange(date, 'offerRolloutDate')}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Select offer rollout date"
+                    className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    wrapperClassName="w-full"
+                  />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                </div>
+              </div>
+
               {/* Number of Rounds */}
               <div>
                 <label className="block mb-2 font-medium text-sm text-gray-700">Number of Rounds <span className="text-red-500">*</span></label>
@@ -1982,41 +2081,41 @@ useEffect(() => {
                   <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
                 </div>
               </div>
-
-              {/* Process of Selection */}
-              <div ref={selectionProcessRef} className="relative">
-                <label className="block font-medium mb-2 text-sm text-gray-700">Process of Selection <span className="text-red-500">*</span></label>
-                <div
-                  onClick={() => toggleDropdown('selectionProcess')}
-                  className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors min-h-[38px] bg-gradient-to-r from-gray-50 to-white"
-                >
-                  <span className={`text-sm ${formData.selectionProcess.length > 0 ? "text-gray-700" : "text-gray-500"}`}>
-                    {formData.selectionProcess.length > 0
-                      ? formData.selectionProcess.join(' + ')
-                      : 'Select process'}
-                  </span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.selectionProcess ? "rotate-180" : ""} text-gray-400`} />
-                </div>
-                {dropdownOpen.selectionProcess && (
-                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                    {processOptions.map(process => (
-                      <div
-                        key={process}
-                        onClick={() => handleMultiSelect('selectionProcess', process)}
-                        className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.selectionProcess.includes(process) ? "bg-blue-50" : ""}`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className={`text-sm ${formData.selectionProcess.includes(process) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{process}</span>
-                          {formData.selectionProcess.includes(process) && <span className="text-[#667eea]">✓</span>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
 
-            {/* Tenth Row: Tags */}
+            {/* Twelfth Row: Process of Selection */}
+            <div ref={selectionProcessRef} className="relative">
+              <label className="block font-medium mb-2 text-sm text-gray-700">Process of Selection <span className="text-red-500">*</span></label>
+              <div
+                onClick={() => toggleDropdown('selectionProcess')}
+                className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors min-h-[38px] bg-gradient-to-r from-gray-50 to-white"
+              >
+                <span className={`text-sm ${formData.selectionProcess.length > 0 ? "text-gray-700" : "text-gray-500"}`}>
+                  {formData.selectionProcess.length > 0
+                    ? formData.selectionProcess.join(' + ')
+                    : 'Select process'}
+                </span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.selectionProcess ? "rotate-180" : ""} text-gray-400`} />
+              </div>
+              {dropdownOpen.selectionProcess && (
+                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
+                  {processOptions.map(process => (
+                    <div
+                      key={process}
+                      onClick={() => handleMultiSelect('selectionProcess', process)}
+                      className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.selectionProcess.includes(process) ? "bg-blue-50" : ""}`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className={`text-sm ${formData.selectionProcess.includes(process) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{process}</span>
+                        {formData.selectionProcess.includes(process) && <span className="text-[#667eea]">✓</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Thirteenth Row: Tags */}
             <div>
               <label className="block font-medium mb-2 text-sm text-gray-700">Tags</label>
               <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
@@ -2047,12 +2146,12 @@ useEffect(() => {
               )}
             </div>
 
-            {/* Eleventh Row: Contact Information Header */}
+            {/* Fourteenth Row: Contact Information Header */}
             <div className="border-t border-gray-200 pt-4">
               <h3 className="text-lg font-semibold text-gray-700 mb-4">Contact Information</h3>
             </div>
 
-            {/* Twelfth Row: Contact Person and Designation */}
+            {/* Fifteenth Row: Contact Person and Designation */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Contact Person */}
               <div>
@@ -2087,7 +2186,7 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* Thirteenth Row: Contact Email and Mobile */}
+            {/* Sixteenth Row: Contact Email and Mobile */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Contact person email */}
               <div>
@@ -2124,7 +2223,7 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* Fourteenth Row: LinkedIn and Minimum Students */}
+            {/* Seventeenth Row: LinkedIn and Minimum Students */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Contact person LinkedIn Profile */}
               <div>

@@ -10,24 +10,21 @@ import FresherSidebar from './FresherSidebar'
 import ProfessionalSidebar from './ProfessionalSidebar'
 import EmployerSidebar from './EmployerSidebar'
 import { useAuth } from "@/context/AuthContext";
+import { useLegacyAuth } from '@/context/AuthProvider';
 
 
 function Sidebar({ open, setOpen }) {
   const navigate = useNavigate();
   const location = useLocation()
-  const { user, loading } = useAuth();
-
-if (loading) {
-  return (
-    <aside className="w-64 bg-white border-r">
-      <div className="p-4 text-gray-500">Loading...</div>
-    </aside>
-  );
-}
+ const [authUser] = useLegacyAuth();
 
 
-const isAuthenticated = !!user;
-const role = user?.userType;
+const isAuthenticated = !!authUser;
+  const role = authUser?.user?.userType;
+const loading = false;
+
+
+
   
  
   const isActive = (path) => location.pathname === path

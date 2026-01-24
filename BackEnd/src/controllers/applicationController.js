@@ -322,12 +322,24 @@ export async function createJobListingApplication(req, res) {
 export async function createIntershipApplication(req, res) {
   const { internshipId } = req.body;
   const userId = req.user._id;
+  const userType = req.user.userType;
 
   try {
     // to get userId from user database
     const user = await getStudentService(userId);
 
-    if (!user || !internshipId) return res.status(404).json({ msg: "Invalid" });
+    if (!user || !user.data?.length || !internshipId) {
+      return res.status(404).json({ msg: "User or Internship not found!" });
+    }
+
+    const actorProfile = user.data[0];
+
+    const internship = await JobPostingTable.findById(internshipId)
+      .populate("companyPosted");
+
+    if (!internship) {
+      return res.status(404).json({ msg: "Internship not found" });
+    }
 
     const application = await createApplicationService(
       user.data[0]._id,
@@ -338,9 +350,34 @@ export async function createIntershipApplication(req, res) {
     if (application.success === false)
       return res.status(403).json({ msg: application.message });
 
+     // 🔔 NOTIFICATION (NON-BLOCKING)
+    try {
+      if (internship.companyPosted?.userId) {
+        const studentName =
+          actorProfile?.fullName ||
+          actorProfile?.name ||
+          "A candidate";
+
+        const jobTitle =
+          internship.jobTitle ||
+          `${internship.jobType} ${internship.lookingFor || "Role"}`;
+
+        await notifyCompanyOnStudentApply({
+          companyAuthId: internship.companyPosted.userId,
+          studentAuthId: userId,
+          studentName,
+          jobTitle,
+          jobId: internship._id,
+          jobType: internship.jobType, // "Internship"
+        });
+      }
+    } catch (notifyErr) {
+      console.error("🔕 Internship notification failed:", notifyErr);
+    }
+
     res.status(201).json(application);
   } catch (error) {
-    console.log("Error: ", error);
+    console.log("❌ createIntershipApplication error: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -994,7 +1031,8 @@ export async function shortlistApplicant(req, res) {
             senderId: req.user._id,          // company/employer AUTH _id
             companyName,
             status: response.data.currentStatus, // Shortlisted
-            applicationId: response.data._id
+            applicationId: response.data._id,
+            jobType: response.data.jobType
           });
         
         } catch (err) {
@@ -1033,7 +1071,8 @@ export async function shortlistApplicant(req, res) {
             senderId: req.user._id,
             companyName,
             status: "Shortlisted",
-            applicationId: response.data._id
+            applicationId: response.data._id,
+            jobType: response.data.jobType
           });
         } catch (err) {
           console.error("Student shortlist notification failed:", err);
@@ -1152,7 +1191,8 @@ export async function rejectApplicant(req, res) {
             senderId: req.user._id,                // company AUTH ID
             companyName,
             status: "Rejected",
-            applicationId: response.data._id
+            applicationId: response.data._id,
+            jobType: response.data.jobType
           });
         
         } catch (err) {
@@ -1188,7 +1228,8 @@ export async function rejectApplicant(req, res) {
             senderId: req.user._id,
             companyName,
             status: "Rejected",
-            applicationId: response.data._id
+            applicationId: response.data._id,
+            jobType: response.data.jobType
           });
         } catch (err) {
           console.error("Student reject notification failed:", err);
@@ -1384,7 +1425,8 @@ export async function acceptApplicant(req, res) {
             senderId: actorAuthId,          // company/employer AUTH
             companyName,
             status: "Accepted",
-            applicationId: application._id
+            applicationId: application._id,
+            jobType: response.data.jobType
           });
         }
       } catch (err) {
@@ -1428,7 +1470,8 @@ export async function acceptApplicant(req, res) {
           senderId: actorAuthId,
           companyName,
           status: "Accepted",
-          applicationId: application._id
+          applicationId: application._id,
+          jobType: response.data.jobType
         });
       } catch (err) {
         console.error("Accept → Student notification failed:", err);

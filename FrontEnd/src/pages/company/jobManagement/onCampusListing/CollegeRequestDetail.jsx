@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { Calendar, MapPin, FileText, Users, CheckCircle, ArrowUpRight, User, Mail, Phone, Link, Briefcase, DollarSign, Target, ClipboardList } from 'lucide-react';
 import { format, isValid } from 'date-fns';
 import CollegeInfoModal from '@/components/college/collegeDashboard/collegeInfoModal';
+import { useNavigate } from 'react-router-dom';
+import useConversation from '@/statemanage/useConversation.js';
+import { conversationWithCollege } from '@/lib/College_AxiosIntance.js';
+import toast from 'react-hot-toast';
 
 const DetailRow = ({ icon: Icon, label, value }) => {
   if (!value || (Array.isArray(value) && value.length === 0)) return null;
@@ -19,9 +23,12 @@ const DetailRow = ({ icon: Icon, label, value }) => {
 // 1. Accept 'jobDetails' as a new prop
 const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShortlist, onReject }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false); // Add this
   const [modalPos, setModalPos] = useState(null);
   const [showCollegeModal, setShowCollegeModal] = useState(false);
-
+  
+  const navigate = useNavigate(); // Add this
+  const { setSelectedConversation } = useConversation(); // Add this
 
   const safeFormatDate = (dateString, formatStr = 'MMM d, yyyy') => {
     if (!dateString) return 'Not Specified';
@@ -38,6 +45,49 @@ const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShor
     }
     finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleMessageClick = async (e) => {
+    e.stopPropagation();
+    setIsProcessing(true);
+    
+    try {
+      // Get the college's user ID from the application
+      const userId = collegeApplication?.applicant?._id || collegeApplication?.applicant?.userId;
+      
+      if (!userId) {
+        toast.error('Cannot start chat: User ID not found');
+        return;
+      }
+      
+      const response = await conversationWithCollege(userId);
+      if (response.data) {
+        const conversationUser = {
+          _id: userId,
+          name: collegeApplication?.applicant?.collegeUniversityDetails?.collegeName || 'Unknown College',
+          email: collegeApplication?.applicant?.placementCoordinatorDetails?.officialEmail || '',
+          profileImage: collegeApplication?.applicant?.profileImage || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+          userType: 'college',
+          fullname: collegeApplication?.applicant?.collegeUniversityDetails?.collegeName || 'Unknown College'
+        };
+
+        console.log("Setting conversation for direct chat:", conversationUser);
+
+        setSelectedConversation(conversationUser);
+
+        setTimeout(() => {
+          navigate('/chat-application');
+        }, 100);
+
+      } else {
+        toast.error('Failed to create conversation');
+      }
+    } catch (error) {
+      console.error('Error starting chat:', error);
+      toast.error('Error starting conversation');
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -114,9 +164,6 @@ const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShor
               
                 setShowCollegeModal(true);
               }}
-
-
-
             >           
               {collegeName || 'College Name Not Found'}
             </h1>
@@ -127,11 +174,6 @@ const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShor
             </div>
           </div>
         </div>
-        {/*<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-          <div className="text-center"><div className="font-bold text-lg">{placementRate}{placementRate !== 'Not Specified' && '%'}</div><div className="text-sm text-gray-600">Placement Rate</div></div>
-          <div className="text-center"><div className="font-bold text-lg">{highestPackage}{highestPackage !== 'Not Specified' && ' LPA'}</div><div className="text-sm text-gray-600">Highest Package</div></div>
-          <div className="text-center"><div className="font-bold text-lg">{averagePackage}{averagePackage !== 'Not Specified' && ' LPA'}</div><div className="text-sm text-gray-600">Average Package</div></div>
-        </div>*/}
       </div>
 
       {/* 3. Use the corrected variables in the JSX */}
@@ -145,8 +187,6 @@ const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShor
           <DetailRow icon={DollarSign} label="Salary (LPA)" value={minimumSalary || 'Not Specified'} />
           <DetailRow icon={Users} label="Minimum Students" value={minimumStudents} />
           <DetailRow icon={Calendar} label="Drive Period" value={`${safeFormatDate(startDate)} to ${safeFormatDate(endDate)}`} />
-          {/* <DetailRow icon={ClipboardList} label="Rounds" value={rounds} />
-          <DetailRow icon={ClipboardList} label="Selection Process" value={selectionProcess} /> */}
         </div>
       </div>
 
@@ -187,52 +227,52 @@ const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShor
       </div>
 
       {/* 4. Fixed Action Buttons */}
-{/* The onAccept/onShortlist/onReject props already have the ID bound from the parent.
-    You can call them directly inside handleAction. */}
-<div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
-    <button 
-        onClick={() => handleAction(onAccept)} 
-        disabled={isSubmitting} 
-        className="flex items-center justify-center flex-1 py-2 font-medium bg-white text-green-500 rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200"
-    >
-        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
+        <button 
+          onClick={() => handleAction(onAccept)} 
+          disabled={isSubmitting} 
+          className="flex items-center justify-center flex-1 py-2 font-medium bg-white text-green-500 rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-        </svg>
-        {isSubmitting ? 'Processing...' : 'Accept Application'}
-    </button>
-    
-    <button 
-        onClick={() => handleAction(onShortlist)} 
-        disabled={isSubmitting} 
-        className="flex items-center justify-center flex-1 py-2 font-medium bg-white border border-gray-300 text-yellow-500 rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200"
-    >
-        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          </svg>
+          {isSubmitting ? 'Processing...' : 'Accept Application'}
+        </button>
+        
+        <button 
+          onClick={() => handleAction(onShortlist)} 
+          disabled={isSubmitting} 
+          className="flex items-center justify-center flex-1 py-2 font-medium bg-white border border-gray-300 text-yellow-500 rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-        </svg>
-        {isSubmitting ? 'Processing...' : 'Shortlist Application'}
-    </button>
-    
-    <button 
-        onClick={() => handleAction(onReject)} 
-        disabled={isSubmitting} 
-        className="flex items-center justify-center flex-1 py-2 font-medium bg-white border border-gray-300 text-red-500 rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200"
-    >
-        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          </svg>
+          {isSubmitting ? 'Processing...' : 'Shortlist Application'}
+        </button>
+        
+        <button 
+          onClick={() => handleAction(onReject)} 
+          disabled={isSubmitting} 
+          className="flex items-center justify-center flex-1 py-2 font-medium bg-white border border-gray-300 text-red-500 rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors duration-200"
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-        {isSubmitting ? 'Processing...' : 'Reject Application'}
-    </button>
-    
-    <button 
-        onClick={() => window.location.href = '/chat-application'}
-        className="flex items-center justify-center flex-1 py-2 font-medium bg-white border border-gray-300 text-blue-500 rounded-md hover:bg-gray-300 transition-colors duration-200"
-    >
-        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          </svg>
+          {isSubmitting ? 'Processing...' : 'Reject Application'}
+        </button>
+        
+        <button 
+          onClick={handleMessageClick}
+          disabled={isProcessing || isSubmitting}
+          className={`flex items-center justify-center flex-1 py-2 font-medium border border-gray-300 rounded-md transition-colors duration-200 ${(isProcessing || isSubmitting) ? 'opacity-50 cursor-not-allowed bg-gray-100' : 'bg-white text-blue-500 hover:bg-gray-300'}`}
+        >
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
-        </svg>
-        Message
-    </button>
-</div>
+          </svg>
+          {isProcessing ? 'Processing...' : 'Message'}
+        </button>
+      </div>
+      
       {showCollegeModal && modalPos && (
         <CollegeInfoModal
           college={collegeApplication.applicant}
@@ -240,8 +280,6 @@ const CollegeRequestDetail = ({ collegeApplication, jobDetails, onAccept, onShor
           onClose={() => setShowCollegeModal(false)}
         />
       )}
-
-
     </div>
   );
 };

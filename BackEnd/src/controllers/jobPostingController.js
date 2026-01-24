@@ -288,6 +288,17 @@ export const createInternshipPosting = async (req, res) => {
             return sendError(res, 500, "Failed to create internship posting");
         }
 
+        // 🔔 Notify students & freshers
+        await notifyUsersOnJobPost({
+          companyId: userId,
+          companyName: companyPostedId.data[0].companyDetails.companyName,
+          jobTitle: newPosting.jobTitle || req.body.jobTitle || "new internship",
+          jobId: newPosting._id,
+          jobType: newPosting.jobType,
+        }).catch(err => {
+          console.error("Notification Error:", err.message);
+        });
+
         sendResponse(res, 201, { message: "Internship posting created successfully!", data: newPosting });
     } catch (error) {
         console.error("Error in createInternshipPosting:", error.message);

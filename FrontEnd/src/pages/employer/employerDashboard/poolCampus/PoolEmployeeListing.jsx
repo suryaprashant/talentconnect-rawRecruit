@@ -198,34 +198,39 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, X, Filter, SortAsc, Building2, MapPin, Users, Calendar, Briefcase, Search, GraduationCap, BookOpen, TrendingUp, RefreshCw, AlertCircle, Building } from 'lucide-react';
-import PoolCollegeCard from '@/components/company/employerDashboard/poolCampus/PoolCollegeCard';
+import PoolCollegeCard from '@/components/employer/employerDashboard/poolCampus/PoolCollegeCard';
 import { getPoolCampusForCompany } from '../../../../lib/College_AxiosIntance';
+import EmployerPoolDetailsModal from '@/components/employer/employerDashboard/poolCampus/EmployerPoolDetailsModal';
 
-const EmployerPoolEmployeeListing = () => {
-    const [postings, setPostings] = useState([]);
-    const [filteredPostings, setFilteredPostings] = useState([]);
-    const [filters, setFilters] = useState({
-        workMode: [],
-        degree: [],
-        courses: [],
-        location: '',
-        college: '',
-        internship: false,
-        fullTime: false
-    });
-    const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [sortBy, setSortBy] = useState('newest');
+const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId }) => {
+  const [postings, setPostings] = useState([]);
+  const [filteredPostings, setFilteredPostings] = useState([]);
+  const [filters, setFilters] = useState({
+    workMode: [],
+    degree: [],
+    courses: [],
+    location: '',
+    college: '',
+    internship: false,
+    fullTime: false
+  });
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [sortBy, setSortBy] = useState('newest');
+  
+  // Modal state
+  const [selectedPool, setSelectedPool] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // State for dropdown visibility
-    const [showMainFilter, setShowMainFilter] = useState(false);
-    const [openSubDropdowns, setOpenSubDropdowns] = useState({
-        workMode: false,
-        degree: false,
-        courses: false,
-        location: false,
-        college: false
-    });
+  // State for dropdown visibility
+  const [showMainFilter, setShowMainFilter] = useState(false);
+  const [openSubDropdowns, setOpenSubDropdowns] = useState({
+    workMode: false,
+    degree: false,
+    courses: false,
+    location: false,
+    college: false
+  });
 
     const [filterOptions, setFilterOptions] = useState({
         workMode: [
@@ -413,6 +418,40 @@ const EmployerPoolEmployeeListing = () => {
         });
     };
 
+    const handlePoolSelect = (pool) => {
+    console.log('Opening details for:', pool?.collegePosted?.collegeUniversityDetails?.collegeName);
+    setSelectedPool(pool);
+    setIsModalOpen(true);
+    
+    // Pass to parent if onPoolSelect exists (for compact mode)
+    if (onPoolSelect && typeof onPoolSelect === 'function') {
+      onPoolSelect(pool);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPool(null);
+  };
+
+  // COMPACT VIEW - For sidebar
+  if (compact) {
+    return (
+      <div className="p-3 space-y-4">
+        {filteredPostings
+          .filter(pool => selectedPoolId ? pool._id !== selectedPoolId : true)
+          .map((pool) => (
+            <PoolCollegeCard 
+              key={pool._id || pool.id} 
+              college={pool} 
+              onClick={onPoolSelect}
+              compact={compact}
+            />
+          ))}
+      </div>
+    );
+  }
+
     const toggleSubDropdown = (dropdown) => {
         setOpenSubDropdowns(prev => ({
             ...prev,
@@ -525,7 +564,7 @@ const EmployerPoolEmployeeListing = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
+    <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
             {/* Pastel blur background elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#fbcfe8]/20 rounded-full blur-3xl"></div>
@@ -1040,21 +1079,24 @@ const EmployerPoolEmployeeListing = () => {
                 </div>
 
                 {/* Postings Cards */}
-                <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">
-                    {filteredPostings.length > 0 ? (
-                        <>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {filteredPostings.map(posting => (
-                                    <div
-                                        key={posting._id || posting.id}
-                                        className="h-full flex"
-                                    >
-                                        <div className="w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 flex flex-col h-full">
-                                            <PoolCollegeCard college={posting} />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+      <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">
+        {filteredPostings.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredPostings.map(posting => (
+                <div
+                  key={posting._id || posting.id}
+                  className="h-full flex"
+                >
+                  <div className="w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 flex flex-col h-full">
+                    <PoolCollegeCard 
+                      college={posting} 
+                      onClick={handlePoolSelect}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
 
                             {/* View All Button */}
                             <div className="mt-10 text-center">
@@ -1090,8 +1132,22 @@ const EmployerPoolEmployeeListing = () => {
                     )}
                 </div>
             </div>
+            
+        {/* Pool Detail Modal for normal view */}
+      {isModalOpen && selectedPool && (
+        <div className="fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative z-10 flex items-center justify-center h-full p-4">
+            <EmployerPoolDetailsModal
+              pool={selectedPool}
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+            />
+          </div>
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
-export default EmployerPoolEmployeeListing;
+export default PoolCollegeListingPage;

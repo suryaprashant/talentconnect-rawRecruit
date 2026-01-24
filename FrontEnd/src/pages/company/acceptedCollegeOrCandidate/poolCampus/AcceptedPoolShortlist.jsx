@@ -301,7 +301,7 @@ export default function PoolCampusJobManagement() {
               <div className="col-span-3">Work Locations</div>
               <div className="col-span-2">End Date</div>
               <div className="col-span-1 text-center">Views</div>
-              <div className="col-span-1 text-center">Applications</div>
+              <div className="col-span-1 text-center">New Applications</div>
               <div className="col-span-2 text-center">Actions</div>
             </div>
           </div>
@@ -326,22 +326,22 @@ export default function PoolCampusJobManagement() {
                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                   <div className="grid grid-cols-12 gap-4 items-center">
                     {/* Job Roles */}
-                    <div className="col-span-3">
-                      <div 
-                        onClick={() => navigate(`/company-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}
-                        className="group cursor-pointer"
-                      >
-                        <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors line-clamp-1">
-                          {displayJobRoles(job)}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <FileText className="h-3 w-3 text-gray-400" />
-                          <span className="text-sm text-gray-500">
-                            {Array.isArray(job.employmentType) ? job.employmentType.join(', ') : job.employmentType || 'N/A Type'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+<div className="col-span-3">
+  <div 
+    onClick={() => navigate(`/company-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}
+    className="group cursor-pointer"
+  >
+    <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
+      {displayJobRoles(job)}
+    </h3>
+    <div className="flex items-center gap-2 mt-1">
+      <FileText className="h-3 w-3 text-gray-400" />
+      <span className="text-sm text-gray-500">
+        {Array.isArray(job.employmentType) ? job.employmentType.join(', ') : job.employmentType || 'N/A Type'}
+      </span>
+    </div>
+  </div>
+</div>
 
                     {/* Work Locations */}
                     <div className="col-span-3">

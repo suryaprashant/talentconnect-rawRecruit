@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { motion } from 'framer-motion';
 import { Country, State, City } from 'country-state-city';
 import { ChevronDownIcon } from "lucide-react";
+import { fetchAllCompaniesName } from '@/lib/Company_AxiosInstance';
+
 
 // Helper component for the dropdown/select box with an icon
 const CustomSelect = ({ label, name, value, onChange, options, error, required = false }) => (
@@ -40,6 +42,39 @@ const ConnectToCompany = ({ onNext, onBack, formData, updateFormData }) => {
     const [availableStates, setAvailableStates] = useState([]);
     const [availableCities, setAvailableCities] = useState([]);
     const [isRegisteringNewCompany, setIsRegisteringNewCompany] = useState(false);
+    const [existingCompanyOptions, setExistingCompanyOptions] = useState([]);
+    const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
+
+    useEffect(() => {
+      const loadCompanies = async () => {
+        if (isLoadingCompanies) return;
+
+        setIsLoadingCompanies(true);
+        setExistingCompanyOptions([{ value: '', label: 'Loading companies...' }]);
+
+        try {
+          const response = await fetchAllCompaniesName();
+
+          let companyData = [];
+          if (Array.isArray(response?.data)) {
+            companyData = response.data;
+          } else if (Array.isArray(response)) {
+            companyData = response;
+          }
+
+          setExistingCompanyOptions(companyData);
+        } catch (error) {
+          console.error('Failed to fetch company names:', error);
+          setExistingCompanyOptions([
+            { value: '', label: 'Error loading companies' }
+          ]);
+        } finally {
+          setIsLoadingCompanies(false);
+        }
+      };
+
+      loadCompanies();
+    }, []);
 
     // Load countries
     useEffect(() => {
@@ -141,11 +176,7 @@ const ConnectToCompany = ({ onNext, onBack, formData, updateFormData }) => {
         }
     };
     
-    const companyNameOptions = [
-        { name: "Tech Corp" },
-        { name: "StartUp Inc" },
-        { name: "Enterprise Ltd" },
-    ];
+    
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea]/15 via-[#f093fb]/10 to-[#764ba2]/15 p-4">
@@ -220,12 +251,13 @@ const ConnectToCompany = ({ onNext, onBack, formData, updateFormData }) => {
                                             errors.companyName ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     >
-                                        <option value="" disabled>Select or search your company</option>
-                                        {companyNameOptions.map((option) => (
-                                            <option key={option.name} value={option.name}>
-                                                {option.name}
-                                            </option>
+                                        <option value="" disabled>{isLoadingCompanies ? 'Loading companies...' : 'Select your company'}</option>
+                                        {existingCompanyOptions.map((option) => (
+                                          <option key={option.value} value={option.value}>
+                                            {option.label}
+                                          </option>
                                         ))}
+
                                     </select>
                                     <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                                 </div>

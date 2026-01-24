@@ -23,11 +23,13 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
         "On-campus": "/job-management/On-campus",
         "Pool-campus": "/job-management/Pool-campus",
         "Off-campus": "/job-management/Off-campus",
+        "Internship": "/job-management/Internship",
       },
       employer: {
-        "On-campus": "/job-management/On-campus",
-        "Pool-campus": "/job-management/Pool-campus",
-        "Off-campus": "/job-management/Off-campus",
+        "On-campus": "/job-management/on-campus-listings/employer",
+        "Pool-campus": "/job-management/pool-campus-listings/employer",
+        "Off-campus": "/job-management/Off-campus/employer",
+        "Internship": "/job-management/Internship",
       },
       
     };
@@ -47,9 +49,11 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
       },
       student: {
         "Off-campus": "/student-dashboard/Off-campus",
+        "Internship": "/student-dashboard/Internship",
       },
       fresher: {
         "Off-campus": "/fresher-dashboard/Off-campus",
+        "Internship": "/fresher-dashboard/Internship",
       }
     };
 
@@ -60,6 +64,25 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
         student: "/student-interviews",
         fresher: "/fresher-interviews",
     }
+
+    const APPLICATION_STATUS_ROUTE_MAP = {
+      student: {
+        
+        "Off-campus": "/application-status/Off-campus",
+        "Internship": "/application-status/Internship",
+      },
+      fresher: {
+        
+        "Off-campus": "/application-status/off-campus",
+        "Internship": "/application-status/internship",
+      },
+      college: {
+        "On-campus": "/application-status/oncampus",
+        "Pool-campus": "/application-status/poolcampus",
+        
+      }
+    };
+
 
 
     const handleNotificationClick = async (notification) => {
@@ -174,16 +197,28 @@ function NotificationsDropdown({ notifications, setNotifications, setUnreadCount
 
     //company taking action on college application
     if (
-        notification.type === "APPLICATION_SHORTLISTED" ||
-        notification.type === "APPLICATION_ACCEPTED" ||
-        notification.type === "APPLICATION_REJECTED"
+      notification.type === "APPLICATION_SHORTLISTED" ||
+      notification.type === "APPLICATION_ACCEPTED" ||
+      notification.type === "APPLICATION_REJECTED"
     ) {
-        if (role  === "college") {
-            navigate("/application-status/oncampus");
-            return;
-        }
+      const jobType = notification.jobType;
+      const targetRoute =
+        APPLICATION_STATUS_ROUTE_MAP?.[role]?.[jobType];
 
+      if (targetRoute) {
+        navigate(targetRoute);
+        return;
+      }
+
+      console.warn("No route found for APPLICATION status", {
+        role,
+        jobType,
+        type: notification.type,
+      });
+
+      return;
     }
+
 };
 
 

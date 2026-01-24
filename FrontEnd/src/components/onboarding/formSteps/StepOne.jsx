@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { ProgressIndicator } from "../ProgressIndicator"; 
-import { UploadIcon, FileText, CheckCircle } from 'lucide-react';
+import { UploadIcon, FileText, CheckCircle, ChevronRight } from 'lucide-react';
 
 export const StepOne = ({ onNext, onCancel, onChange }) => {
   const [file, setFile] = useState(null);
@@ -28,19 +27,21 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to parse resume. Please try again.');
+        throw new Error('Failed to parse resume. You can still continue and fill details manually.');
       }
 
       const parsedData = await response.json();
+      // Pass the parsed data up to the parent state
       onChange(parsedData);
       
       setIsSuccess(true);
       setMessage("Success! Resume parsed successfully. Redirecting...");
       setIsLoading(false);
       
+      // Auto-advance after success
       setTimeout(() => {
         onNext();
-      }, 1000);
+      }, 1500);
 
     } catch (error) {
       console.error("Error uploading resume:", error);
@@ -61,7 +62,8 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
 
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-8 w-full max-w-xl">
-          {/* Header with gradient */}
+          
+          {/* Header */}
           <div className="text-center mb-6">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center mx-auto mb-4">
               <FileText className="w-10 h-10 text-[#667eea]" />
@@ -70,7 +72,7 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
               Upload Your Resume
             </h1>
             <p className="text-gray-600 mb-4">
-              Save time by uploading your resume. We'll extract key details to pre-fill your onboarding form.
+              Upload a PDF to pre-fill your profile, or skip to enter your details manually.
             </p>
           </div>
 
@@ -80,24 +82,24 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
               Upload Resume (PDF)
             </label>
             
-            <label className={`flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
+            <label className={`flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-xl transition-all duration-200 ${
               isLoading 
-                ? 'bg-gradient-to-r from-[#fef3c7]/20 to-[#fde68a]/20 border-[#fde68a]'
+                ? 'bg-amber-50/30 border-amber-200 cursor-wait'
                 : isSuccess
-                ? 'bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 border-[#86efac]'
-                : 'border-gray-300 hover:border-[#667eea] hover:bg-[#667eea]/5'
-            } ${isLoading ? 'cursor-wait' : 'cursor-pointer'}`}>
+                ? 'bg-green-50/30 border-green-300'
+                : 'border-gray-300 hover:border-[#667eea] hover:bg-[#667eea]/5 cursor-pointer'
+            }`}>
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 {isSuccess ? (
-                  <CheckCircle className="w-12 h-12 text-[#065f46] mb-3" />
+                  <CheckCircle className="w-12 h-12 text-green-600 mb-3" />
                 ) : (
-                  <UploadIcon className={`w-12 h-12 mb-3 ${isLoading ? 'text-[#92400e] animate-pulse' : 'text-gray-400'}`} />
+                  <UploadIcon className={`w-12 h-12 mb-3 ${isLoading ? 'text-amber-500 animate-pulse' : 'text-gray-400'}`} />
                 )}
                 
                 {isLoading ? (
-                  <p className="mb-2 text-sm text-[#92400e] font-medium">Processing your resume...</p>
+                  <p className="mb-2 text-sm text-amber-700 font-medium">Processing your resume...</p>
                 ) : isSuccess ? (
-                  <p className="mb-2 text-sm text-[#065f46] font-medium">Successfully parsed!</p>
+                  <p className="mb-2 text-sm text-green-700 font-medium">Successfully parsed!</p>
                 ) : (
                   <>
                     <p className="mb-2 text-sm text-gray-500">
@@ -110,7 +112,7 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
                 )}
                 
                 {file && !isLoading && !isSuccess && (
-                  <p className="mt-4 text-sm font-medium text-[#5b21b6]">
+                  <p className="mt-4 text-sm font-medium text-[#5b21b6] truncate max-w-xs">
                     Selected: {file.name}
                   </p>
                 )}
@@ -126,12 +128,12 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
             
             {/* Message Display */}
             {message && (
-              <div className={`mt-4 p-3 rounded-xl text-sm font-medium ${
+              <div className={`mt-4 p-3 rounded-xl text-sm font-medium border ${
                 isSuccess 
-                  ? 'bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30'
+                  ? 'bg-green-50 text-green-800 border-green-200'
                   : isLoading
-                  ? 'bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30'
-                  : 'bg-gradient-to-r from-[#fecaca]/20 to-[#fca5a5]/20 text-[#991b1b] border border-[#fecaca]/30'
+                  ? 'bg-amber-50 text-amber-800 border-amber-200'
+                  : 'bg-red-50 text-red-800 border-red-200'
               }`}>
                 {message}
               </div>
@@ -143,17 +145,24 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
             <button
               onClick={onCancel}
               disabled={isLoading}
-              className="flex items-center justify-center px-6 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-700 hover:bg-white/90 hover:shadow-md transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center justify-center px-6 py-3 bg-white/70 border border-gray-200 rounded-xl text-gray-700 hover:bg-white/90 hover:shadow-md transition-all duration-200 font-medium disabled:opacity-50"
             >
               Cancel
             </button>
+            
             <button
               onClick={onNext}
-              disabled={isLoading || !file}
-              className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+              disabled={isLoading}
+              className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium disabled:opacity-50"
             >
-              {isLoading ? "Processing..." : "Continue"}
-              {!isLoading && <UploadIcon className="w-4 h-4 ml-2" />}
+              {isLoading ? (
+                "Processing..."
+              ) : (
+                <>
+                  {file ? "Continue" : "Skip for now"}
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </>
+              )}
             </button>
           </div>
 
