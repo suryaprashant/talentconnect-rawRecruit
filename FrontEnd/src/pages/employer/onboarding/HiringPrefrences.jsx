@@ -24,9 +24,9 @@ const DefineHiringPreferences = ({ onBack, formData, onNext, updateFormData }) =
 
       let lookingForValue = formData.lookingFor;
 
-      if (lookingForValue === 'job') lookingForValue = 'Job';
-      if (lookingForValue === 'internship') lookingForValue = 'Internship';
-      if (lookingForValue === 'both') lookingForValue = 'Both';
+      if (lookingForValue === 'job') lookingForValue = 'job';
+      if (lookingForValue === 'internship') lookingForValue = 'internship';
+      if (lookingForValue === 'both') lookingForValue = 'both';
 
       updateFormData({
         ...formData,

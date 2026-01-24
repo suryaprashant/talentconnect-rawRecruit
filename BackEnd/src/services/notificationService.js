@@ -46,11 +46,14 @@ export async function markAsReadService(Id) {
 const getRecipientFilterByJobType = (jobType) => {
   switch (jobType) {
     case "Off-campus":
+    case "Internship":
       return { userType: { $in: ["student", "fresher"] } };
+
     default:
       return null;
   }
 };
+
 
 export const notifyUsersOnJobPost = async ({
   companyId,
@@ -70,7 +73,7 @@ export const notifyUsersOnJobPost = async ({
       recipientId: user._id,
       senderId: companyId,
       type: "SYSTEM_UPDATE",
-      message: `${companyName} posted a ${jobType} job`,
+      message: `${companyName} posted  a new ${jobType} opportunity`,
       referenceId: jobId,
       jobType,
       read: false,
@@ -161,7 +164,8 @@ export const notifyOnApplicationStatusChange = async ({
   senderId,
   companyName,
   status,
-  applicationId
+  applicationId,
+  jobType
 }) => {
   try {
     const statusMessageMap = {
@@ -179,6 +183,7 @@ export const notifyOnApplicationStatusChange = async ({
       type: `APPLICATION_${status.toUpperCase()}`, // eg APPLICATION_SHORTLISTED
       message,
       referenceId: applicationId,
+      jobType,
       read: false
     });
   } catch (error) {

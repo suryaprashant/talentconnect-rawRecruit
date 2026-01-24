@@ -15,7 +15,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
   const { selectedRole, formData, clearFormData } = useRole();
   const [, setAuthUser] = useLegacyAuth();
 
-  const { login } = useAuth();
+  const { login, refreshUser } = useAuth();
 
 
   const handleCheckboxChange = () => {
@@ -109,6 +109,8 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
       if (response.data && response.data.user) {
         setAuthUser({ user: response.data.user });
       }
+
+      await refreshUser();
 
       if (response.data?.user) {
         login(response.data.user); // 🔥 THIS IS THE FIX

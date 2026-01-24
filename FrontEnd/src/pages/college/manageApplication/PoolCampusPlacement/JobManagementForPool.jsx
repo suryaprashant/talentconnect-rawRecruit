@@ -770,7 +770,7 @@ const navigateWithParams = (jobId, targetStatus, isVisited) => {
             </div>
 
             {/* Search and Filters */}
-            <div className="p-6 border-b border-white/50">
+            {/* <div className="p-6 border-b border-white/50">
               <div className="flex flex-col md:flex-row gap-4 items-center">
                 <div className="relative flex-grow">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -797,7 +797,7 @@ const navigateWithParams = (jobId, targetStatus, isVisited) => {
                   {totalItems > 0 ? `Showing ${startIndex + 1}-${endIndex} of ${totalItems}` : 'Showing 0-0 of 0'}
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Table */}
             <div className="overflow-x-auto">
@@ -805,10 +805,10 @@ const navigateWithParams = (jobId, targetStatus, isVisited) => {
                 <thead className="bg-white/50">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Degree</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
+                    {/* <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th> */}
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Deadline</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Views</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Applications</th>
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">New Applications</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
                   </tr>
                 </thead>
@@ -859,15 +859,15 @@ const navigateWithParams = (jobId, targetStatus, isVisited) => {
                           className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200"
                         >
                           <td 
-                            className="px-6 py-4 cursor-pointer" 
-                            onClick={() => handleRowClick(jobId)}
-                          >
-                            <div className="font-medium text-gray-900">{jobDegree}</div>
-                            <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-                              <MapPin className="w-3 h-3" />
-                              {jobLocation}
-                            </div>
-                          </td>
+  className="px-6 py-4 cursor-pointer" 
+  onClick={() => handleRowClick(jobId)}
+>
+  <div className="font-medium text-gray-900 whitespace-normal break-words">{jobDegree}</div>
+  <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+    <MapPin className="w-3 h-3" />
+    {jobLocation}
+  </div>
+</td>
                           <td className="px-6 py-4">
                             <span className={`px-3 py-1 text-xs font-medium rounded-full ${jobStatus === 'Open'
                               ? 'bg-gradient-to-r from-[#a7f3d0]/20 to-[#34d399]/20 text-[#059669] border border-[#a7f3d0]/30'

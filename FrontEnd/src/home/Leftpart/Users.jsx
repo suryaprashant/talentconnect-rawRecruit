@@ -62,11 +62,8 @@ function Users() {
         </button>
       </div>
 
-      {/* Users Container */}
-      <div 
-        className="overflow-y-auto bg-gradient-to-b from-white/50 to-gray-50/30"
-        style={{ maxHeight: "calc(100vh - 100px - 64px)" }}
-      >
+      {/* Users Container - Removed fixed height */}
+      <div className="bg-gradient-to-b from-white/50 to-gray-50/30">
         {loading ? (
           <div className="flex items-center justify-center h-32">
             <div className="text-center">

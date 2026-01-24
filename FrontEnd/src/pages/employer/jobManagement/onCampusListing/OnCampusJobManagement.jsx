@@ -291,7 +291,7 @@ export default function OnCampusJobManagement() {
               <div className="col-span-3">Locations</div>
               <div className="col-span-2">End Date</div>
               <div className="col-span-1 text-center">Views</div>
-              <div className="col-span-1 text-center">New Apps</div>
+              <div className="col-span-1 text-center">New Applications</div>
               <div className="col-span-2 text-center">Actions</div>
             </div>
           </div>
@@ -316,20 +316,28 @@ export default function OnCampusJobManagement() {
                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                   <div className="grid grid-cols-12 gap-4 items-center">
                     {/* Looking For */}
-                    <div className="col-span-3">
-                      <Link
-                        to={`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`}
-                        className="group cursor-pointer block"
-                      >
-                        <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
-                          {job.jobRoles || 'N/A'}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <FileText className="h-3 w-3 text-gray-400" />
-                          <span className="text-sm text-gray-500">{job.employmentType || 'N/A Type'}</span>
-                        </div>
-                      </Link>
-                    </div>
+<div className="col-span-3">
+  <Link
+    to={`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`}
+    className="group cursor-pointer block"
+  >
+    <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
+      {Array.isArray(job.jobRoles) 
+        ? job.jobRoles.join(', ') 
+        : job.jobRoles || 'N/A'
+      }
+    </h3>
+    <div className="flex items-center gap-2 mt-1">
+      <FileText className="h-3 w-3 text-gray-400" />
+      <span className="text-sm text-gray-500">
+        {Array.isArray(job.employmentType) 
+          ? job.employmentType.join(', ') 
+          : job.employmentType || 'N/A Type'
+        }
+      </span>
+    </div>
+  </Link>
+</div>
 
                     {/* Locations */}
                     <div className="col-span-3">

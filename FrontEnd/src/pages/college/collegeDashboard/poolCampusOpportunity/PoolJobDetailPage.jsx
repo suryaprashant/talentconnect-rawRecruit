@@ -65,6 +65,7 @@ const PoolJobDetailsPage = () => {
     const [error, setError] = useState(null);
     const [saved, setSaved] = useState(false);
     const navigate = useNavigate();
+    
     const handleGoBack = () => {
         navigate(-1);
     };
@@ -132,24 +133,22 @@ const PoolJobDetailsPage = () => {
     };
 
     const getJobStatus = () => {
-  if (!jobDetails?.startDate || !jobDetails?.endDate) {
-    return { status: 'Unknown', color: 'bg-gray-100 text-gray-700' };
-  }
+        if (!jobDetails?.startDate || !jobDetails?.endDate) {
+            return { status: 'Unknown', color: 'bg-gray-100 text-gray-700' };
+        }
 
-  const now = new Date();
-  const startDate = new Date(jobDetails.startDate);
-  const endDate = new Date(jobDetails.endDate);
+        const now = new Date();
+        const startDate = new Date(jobDetails.startDate);
+        const endDate = new Date(jobDetails.endDate);
 
-  if (now < startDate) {
-    return { status: 'Upcoming', color: 'bg-blue-100 text-blue-700' };
-  } else if (now >= startDate && now <= endDate) {
-    return { status: 'Active', color: 'bg-green-100 text-green-700' };
-  } else {
-    return { status: 'Completed', color: 'bg-gray-100 text-gray-700' };
-  }
-};
-
-  /////////  console.log('hhhhhhhhhh',jobDetails)
+        if (now < startDate) {
+            return { status: 'Upcoming', color: 'bg-blue-100 text-blue-700' };
+        } else if (now >= startDate && now <= endDate) {
+            return { status: 'Active', color: 'bg-green-100 text-green-700' };
+        } else {
+            return { status: 'Completed', color: 'bg-gray-100 text-gray-700' };
+        }
+    };
 
     if (loading) {
         return (
@@ -164,11 +163,11 @@ const PoolJobDetailsPage = () => {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 flex items-center justify-center text-center p-4">
-                <div>
-                    <p className="text-red-600 text-xl">{error}</p>
-                    <button 
-                        onClick={() => window.location.reload()} 
+            <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 flex items-center justify-center">
+                <div className="text-center">
+                    <p className="mt-4 text-red-600">{error}</p>
+                    <button
+                        onClick={() => window.location.reload()}
                         className="mt-4 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200"
                     >
                         Retry
@@ -193,10 +192,12 @@ const PoolJobDetailsPage = () => {
             </div>
         );
     }
-  const jobStatus = getJobStatus();
+    
+    const jobStatus = getJobStatus();
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
-            <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <main className="px-6 py-6">
                 <button onClick={() => handleGoBack()} className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -206,103 +207,63 @@ const PoolJobDetailsPage = () => {
 
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
                     {/* Header Section */}
-                    <div className="border-b border-gray-200 bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 p-6">
-                        <div className="bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] py-2 px-4 text-sm mb-6 rounded-lg flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                            {
-              jobStatus.status ==='Completed' && (
+                    <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4">
+                        {jobStatus.status === 'Completed' ? (
+                            <div className="text-sm font-medium text-[#667eea]">Registrations Completed</div>
+                        ) : (
+                            <div className="text-sm font-medium text-[#667eea]">Registration Open</div>
+                        )}
 
-                <div className="text-sm font-medium text-[#667eea]">Registrations Completed</div>
-              )
-            }
-  {
-              jobStatus.status !='Completed' && (
-
-                <div className="text-sm font-medium text-[#667eea]">Registration Open</div>
-              )
-            }
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-2">
+                            <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                                {jobDetails?.companyPosted?.companyDetails?.companyName || 'Not Specified'}
+                            </h1>
                         </div>
-                        <div className="flex flex-col md:flex-row justify-between">
-                            <div className="flex items-start mb-4 md:mb-0">
-                                <div className="w-14 h-14 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-md flex items-center justify-center mr-4 overflow-hidden">
-                                    {jobDetails.companyPosted?.profileImageUrl ? (
-                                        <img
-                                            src={jobDetails.companyPosted.profileImageUrl}
-                                            alt={`${jobDetails.companyPosted?.companyDetails?.companyName} logo`}
-                                            className="w-full h-full object-contain"
-                                        />
-                                    ) : (
-                                        <Building className="w-8 h-8 text-[#667eea]" />
-                                    )}
-                                </div>
-                                <div>
-                                    <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                                        {jobDetails.companyPosted?.companyDetails?.companyName || 'Not Specified'}
-                                    </h1>
-                                    <div className="flex items-center mt-1">
-                                        <Calendar className="h-4 w-4 text-[#667eea] mr-2" />
-                                        <p className="text-sm text-gray-600">{formatDate(jobDetails.startDate)} - {formatDate(jobDetails.endDate)}</p>
-                                    </div>
-                                    <div className="flex items-center mt-1">
-                                        <Globe className="h-4 w-4 text-[#667eea] mr-2" />
-                                        <a
-                                            href={jobDetails.companyPosted?.companyDetails?.websiteUrl ? `https://${jobDetails.companyPosted.companyDetails.websiteUrl}` : '#'}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-sm text-[#667eea] hover:text-[#764ba2] transition-colors"
-                                        >
-                                            {jobDetails.companyPosted?.companyDetails?.websiteUrl || 'Not specified'}
-                                        </a>
-                                    </div>
-                                    {/* Hiring Venue  */}
-                                    <div className="flex items-center mt-1">
-                                        <MapPin className="h-4 w-4 text-[#667eea] mr-2" />
-                                        <p className="text-sm text-gray-600">{jobDetails?.venue || 'Venue Not Specified'}</p>
-                                    </div>
 
-                                    <div className="flex space-x-2 mt-5">
-                                        {!isApplied && (<>
-                                            <button
-                                                onClick={handleApply}
-                                                className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-5 py-2 rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200"
-                                            >
-                                                Register Now
-                                            </button>
-                                            {!isSaved && (<button
-                                                onClick={() => handleSave(jobDetails?._id, "Pool-campus")}
-                                                disabled={saved}
-                                                className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-400 bg-gray-100 text-gray-500 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-lg transition-all duration-200`}
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-2 ${saved ? 'text-[#667eea]' : 'text-gray-500'}`} viewBox="0 0 20 20" fill={saved ? 'currentColor' : 'none'} stroke="currentColor">
-                                                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-                                                </svg>
-                                                {saved ? 'Saved' : 'Save'}
-                                            </button>)}
-                                        </>)}
-                                        <button
-                                            onClick={handleShare}
-                                            className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                                <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                                            </svg>
-                                            Share
-                                        </button>
-                                    </div>
-                                </div>
+                        <div className="flex flex-col sm:flex-row justify-between mt-4">
+                            <div className="flex items-center text-sm text-gray-600">
+                                <Calendar className="h-5 w-5 mr-1 text-[#667eea]" />
+                                <span>{formatDate(jobDetails?.startDate)} - {formatDate(jobDetails?.endDate)}</span>
                             </div>
+                            {/* <div className="flex items-center mt-2 sm:mt-0 text-sm text-gray-600">
+                                <MapPin className="h-5 w-5 mr-1 text-[#667eea]" />
+                                <span>{jobDetails?.workLocation?.join(', ') || 'Not Specified'}</span>
+                            </div> */}
+                        </div>
+
+                        {/* Moved Save and Share buttons here, removed Register Now */}
+                        <div className="flex space-x-2 mt-4">
+                            {!isSaved && (
+                                <button
+                                    onClick={() => handleSave(jobDetails?._id, "Pool-campus")}
+                                    disabled={saved}
+                                    className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-lg transition-all duration-200`}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-1 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={saved ? 'currentColor' : 'none'} stroke="currentColor">
+                                        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                                    </svg>
+                                    {saved ? 'Saved' : 'Save'}
+                                </button>
+                            )}
+                            <button
+                                onClick={handleShare}
+                                className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                                </svg>
+                                Share
+                            </button>
                         </div>
                     </div>
 
-                    {/* All subsequent sections */}
-                    <div className="px-6 py-6 border-t border-gray-200">
+                    {/* About Section */}
+                    <div className="px-6 py-6">
                         <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                             About {jobDetails.companyPosted?.companyDetails?.companyName || 'the Company'}
                         </h2>
                         <p className="text-gray-700 mb-6">{jobDetails.companyPosted?.companyDetails?.description || 'No description provided.'}</p>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                             <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
                                 <div className="text-2xl font-bold text-gray-900">{jobDetails.companyPosted?.companyDetails?.numberOfEmployees || 'N/A'}</div>
                                 <div className="text-sm text-gray-600">Employees</div>
@@ -318,24 +279,26 @@ const PoolJobDetailsPage = () => {
                         </div>
                     </div>
 
-                    <div className="px-6 py-6 border-t border-gray-200">
+                    {/* Job Description */}
+                    <div className="px-6 py-6">
                         <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                             Job Description
                         </h2>
-                        <div className="prose max-w-none text-gray-700">
+                        <div className="text-gray-700">
                             {jobDetails?.description ? (
-  <ul className="list-disc pl-5 space-y-2">
-    {splitIntoBullets(jobDetails.description).map((point, idx) => (
-      <li key={idx}>{point}</li>
-    ))}
-  </ul>
-) : (
-  <p>No job description provided.</p>
-)}
+                                <ul className="list-disc pl-5 space-y-2">
+                                    {splitIntoBullets(jobDetails.description).map((point, idx) => (
+                                        <li key={idx}>{point}</li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p>No job description provided.</p>
+                            )}
                         </div>
                     </div>
 
-                    <div className="px-6 py-6 border-t border-gray-200">
+                    {/* Job Details */}
+                    <div className="px-6 py-6">
                         <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                             Job Details
                         </h2>
@@ -360,16 +323,15 @@ const PoolJobDetailsPage = () => {
                                 <div className="text-sm font-medium text-[#667eea]">Job Location</div>
                                 <div className="mt-1 text-base text-gray-900">{jobDetails?.workLocation?.join(', ') || 'Not Specified'}</div>
                             </div>
-                            {/* --- NEWLY ADDED --- */}
                             <div>
                                 <div className="text-sm font-medium text-[#667eea]">Preferred Hiring Mode</div>
                                 <div className="mt-1 text-base text-gray-900">{jobDetails?.companyHiringPreference?.preferredMode || 'Not Specified'}</div>
                             </div>
-                            {/* --- END NEW --- */}
                         </div>
                     </div>
 
-                    <div className="px-6 py-6 border-t border-gray-200">
+                    {/* Required Skills */}
+                    <div className="px-6 py-6">
                         <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                             Required Skills
                         </h2>
@@ -386,7 +348,8 @@ const PoolJobDetailsPage = () => {
                         </div>
                     </div>
 
-                    <div className="px-6 py-6 border-t border-gray-200">
+                    {/* Amenity/Facility Required */}
+                    <div className="px-6 py-6">
                         <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                             Amenity/Facility Required
                         </h2>
@@ -403,12 +366,12 @@ const PoolJobDetailsPage = () => {
                         </div>
                     </div>
 
-                    {/* --- SECTION UNCOMMENTED AND POPULATED --- */}
-                    <div className="px-6 py-6 border-t border-gray-200">
+                    {/* Eligibility Criteria */}
+                    <div className="px-6 py-6">
                         <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                             Eligibility Criteria
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 mb-6">
                             <div>
                                 <div className="text-sm font-medium text-[#667eea]">Drive Open To (College Type)</div>
                                 <div className="mt-1 text-base text-gray-900">{jobDetails?.collegeTypes?.join(', ') || 'Not Specified'}</div>
@@ -426,20 +389,24 @@ const PoolJobDetailsPage = () => {
                                 <div className="mt-1 text-base text-gray-900">{jobDetails?.minimumStudents || 'Not Specified'}</div>
                             </div>
                         </div>
-                        {(typeof jobDetails.eligibilityCriteria === 'string' && jobDetails.eligibilityCriteria) && (
-                            <div>
-                                <div className="text-sm font-medium text-[#667eea]">Additional Criteria</div>
-                                <ul className="list-disc pl-5 mt-1 space-y-2 text-gray-700">
-  {splitIntoBullets(jobDetails.eligibilityCriteria).map((point, idx) => (
-    <li key={idx}>{point}</li>
-  ))}
-</ul>
+                        {(jobDetails?.eligibilityCriteria || jobDetails?.additionalEligibilityCriteria || jobDetails?.additionalCriteria) && (
+                            <div className="mt-6">
+                                <div className="text-sm font-medium text-[#667eea] mb-2">Additional Criteria</div>
+                                <ul className="list-disc pl-5 text-base text-gray-700 space-y-2">
+                                    {splitIntoBullets(
+                                        jobDetails.eligibilityCriteria || 
+                                        jobDetails.additionalEligibilityCriteria || 
+                                        jobDetails.additionalCriteria
+                                    ).map((point, idx) => (
+                                        <li key={idx}>{point}</li>
+                                    ))}
+                                </ul>
                             </div>
                         )}
                     </div>
-                    {/* --- END SECTION --- */}
 
-                    <div className="px-6 py-6 border-t border-gray-200">
+                    {/* Compensation & Benefits */}
+                    <div className="px-6 py-6">
                         <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                             Compensation & Benefits
                         </h2>
@@ -470,90 +437,93 @@ const PoolJobDetailsPage = () => {
                             </div>
                         </div>
                         <h3 className="font-medium text-[#667eea] mt-6 mb-3">Benefits Offered</h3>
-<div className="flex flex-wrap gap-2">
-  {jobDetails?.benefits?.length > 0 ? (
-    jobDetails.benefits.map((benefit, index) => (
-      <span
-        key={index}
-        className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
-      >
-        {benefit}
-      </span>
-    ))
-  ) : (
-    <span className="px-3 py-1.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-full text-sm">
-      No benefits specified
-    </span>
-  )}
-</div>
+                        <div className="flex flex-wrap gap-2">
+                            {jobDetails?.benefits?.length > 0 ? (
+                                jobDetails.benefits.map((benefit, index) => (
+                                    <span
+                                        key={index}
+                                        className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
+                                    >
+                                        {benefit}
+                                    </span>
+                                ))
+                            ) : (
+                                <span className="px-3 py-1.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-full text-sm">
+                                    No benefits specified
+                                </span>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="px-6 py-6 border-t border-gray-200">
-  <div className="mb-6">
-    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-1">
-      Selection Process
-    </h2>
-    <div className="text-sm text-gray-500">
-  Number of rounds: {normalizeSelectionProcess(jobDetails?.selectionProcess).length}
-</div>
+                    {/* Selection Process */}
+                    <div className="px-6 py-6">
+                        <div className="mb-4">
+                            <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-1">
+                                Selection Process
+                            </h2>
+                            <div className="text-md text-gray-500">
+                                Number of rounds: {normalizeSelectionProcess(jobDetails?.selectionProcess).length}
+                            </div>
+                        </div>
 
-  </div>
-  
-  {normalizeSelectionProcess(jobDetails?.selectionProcess).length > 0 ? (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {normalizeSelectionProcess(jobDetails.selectionProcess).map((step, index) => (
-        <div 
-          key={index}
-          className="group bg-white border border-gray-200 rounded-xl p-4 hover:border-[#667eea]/30 hover:shadow-md transition-all duration-200"
-        >
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
-              <span className="text-sm font-bold text-white">{index + 1}</span>
-            </div>
-            <p className="font-medium text-gray-900">Round {index + 1}</p>
-          </div>
-          
-          <p className="text-sm text-gray-600 line-clamp-3">{step}</p>
-        </div>
-      ))}
-    </div>
-  ) : (
-    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg p-4 border border-gray-200">
-      <p className="text-gray-500 text-center">Selection process details not provided.</p>
-    </div>
-  )}
-</div>
+                        {normalizeSelectionProcess(jobDetails?.selectionProcess).length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {normalizeSelectionProcess(jobDetails.selectionProcess).map((step, index) => (
+                                    <div 
+                                        key={index}
+                                        className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#667eea]/30 hover:shadow-sm transition-all duration-200"
+                                    >
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
+                                                <span className="text-xs font-bold text-white">{index + 1}</span>
+                                            </div>
+                                            <p className="text-sm font-medium text-gray-900">Round {index + 1}</p>
+                                        </div>
+                                        
+                                        <p className="text-xs text-gray-600 line-clamp-3">{step}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg p-4">
+                                <p className="text-sm text-gray-500 text-center">Selection process details not provided.</p>
+                            </div>
+                        )}
+                    </div>
 
-                    {/* --- SECTION UPDATED WITH DYNAMIC DATA --- */}
-                    <div className="px-6 py-6 border-t border-gray-200">
+                    {/* Important Dates */}
+                    <div className="px-6 py-6">
                         <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                             Important Dates
                         </h2>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div className="border border-gray-300 p-4 rounded-lg bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                                <p className="text-sm text-[#667eea] mb-1">Registration Deadline</p>
-                                <p className="font-medium text-gray-900">{formatDate(jobDetails.endDate)}</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
+                                <div className="text-sm font-medium text-[#667eea]">Registration Deadline</div>
+                                <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(jobDetails?.endDate)}</div>
                             </div>
-                            <div className="border border-gray-300 p-4 rounded-lg bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                                <p className="text-sm text-[#667eea] mb-1">Online Test Date</p>
-                                <p className="font-medium text-gray-900">{formatDate(jobDetails.onlineTestDate)}</p>
+                            <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
+                                <div className="text-sm font-medium text-[#667eea]">Online Test Date</div>
+                                <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(jobDetails.onlineTestDate)}</div>
                             </div>
-                            <div className="border border-gray-300 p-4 rounded-lg bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                                <p className="text-sm text-[#667eea] mb-1">Interview Window</p>
-                                <p className="font-medium text-gray-900">{formatDate(jobDetails.interviewWindow?.start)} - {formatDate(jobDetails.interviewWindow?.end)}</p>
+                            <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
+                                <div className="text-sm font-medium text-[#667eea]">Interview Window</div>
+                                <div className="mt-1 text-lg font-medium text-gray-900">
+                                    {formatDate(jobDetails.interviewWindow?.start) === 'Not Specified' ? 'N/A' : `${formatDate(jobDetails.interviewWindow?.start)} - ${formatDate(jobDetails.interviewWindow?.end)}`}
+                                </div>
                             </div>
-                            <div className="border border-gray-300 p-4 rounded-lg bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                                <p className="text-sm text-[#667eea] mb-1">Offer Rollout</p>
-                                <p className="font-medium text-gray-900">{formatDate(jobDetails.offerRolloutDate)}</p>
+                            <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
+                                <div className="text-sm font-medium text-[#667eea]">Offer Rollout</div>
+                                <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(jobDetails.offerRolloutDate)}</div>
                             </div>
                         </div>
                     </div>
-                    {/* --- END SECTION --- */}
 
-                    <div className="px-6 py-6 border-t border-gray-200">
+                    {/* Contact Person */}
+                    <div className="px-6 py-6">
                         <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                            Company Placement Officer Contact:
+                            Company Placement Officer Contact
                         </h2>
+
                         <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
                             <div className="flex items-start">
                                 <div className="mr-3 flex-shrink-0">
@@ -594,6 +564,20 @@ const PoolJobDetailsPage = () => {
                             </div>
                         </div>
                     </div>
+
+                    {/* Register Now Button at Bottom */}
+                    {!isApplied && jobStatus.status !== 'Completed' && (
+                        <div className="px-6 py-6 bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5">
+                            <div className="flex justify-center">
+                                <button 
+                                    className="inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-lg font-medium rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200"
+                                    onClick={handleApply}
+                                >
+                                    Register Now
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </main>
         </div>

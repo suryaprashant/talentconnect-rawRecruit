@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Search, MapPin, Clock, Calendar, Briefcase, Award, CheckCircle, Building, Users, FileText, ArrowRight } from 'lucide-react';
+import { Search, MapPin, Clock, Calendar, Briefcase, Award, CheckCircle, Building, Users, FileText, ArrowRight, XCircle } from 'lucide-react';
 import { statusSteps } from '../../../constants/data.js';
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
-import { getPoolCampusJobById } from '@/lib/College_AxiosIntance'; // Import the same function
+import { getPoolCampusJobById } from '@/lib/College_AxiosIntance';
+import PoolJobDetailModal from '@/components/college/collegeDashboard/poolCampusOpportunity/PoolDetailModal';
 import { Link } from 'react-router-dom';
 
 export default function PoolCampusApplicationStatus() {
@@ -11,13 +12,18 @@ export default function PoolCampusApplicationStatus() {
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false); // Add this state
+    const [modalJobId, setModalJobId] = useState(null); // Add this state
+
+    // Custom status steps for pool campus applications
+    const poolCampusStatusSteps = ['Applied', 'Shortlisted', 'Accepted'];
+    const rejectionStatus = 'Rejected';
 
     const fetchApplication = async () => {
         try {
             setLoading(true);
             setError(null);
             
-            // Step 1: Get application list
             const response = await getUserApplicationStatus("Pool-campus");
             console.log("🔍 Step 1 - Application list response:", response);
             
@@ -34,17 +40,14 @@ export default function PoolCampusApplicationStatus() {
                 return;
             }
             
-            // Step 2: For each application, fetch the full job details
             console.log("🔍 Step 2 - Fetching job details for each application...");
             
             const detailedJobs = await Promise.all(
                 rawData.map(async (item) => {
                     try {
-                        // Get the job ID from the application
                         const jobId = item.job || item.jobDetails?.[0]?._id || item._id;
                         console.log(`🔍 Fetching job details for jobId: ${jobId}`);
                         
-                        // Fetch full job details using the SAME function as PoolJobDetailsPage
                         const jobResponse = await getPoolCampusJobById(jobId);
                         const jobDetails = jobResponse.data;
                         
@@ -53,12 +56,10 @@ export default function PoolCampusApplicationStatus() {
                             jobTitle: jobDetails.jobRoles?.[0]
                         });
                         
-                        // Extract data using the SAME logic as PoolJobDetailsPage
-                    const companyName = item.companyProfile?.companyDetails?.companyName || 
+                        const companyName = item.companyProfile?.companyDetails?.companyName || 
                               jobDetails.companyPosted?.companyDetails?.companyName || "Company/College";
             
-            // ✅ Correctly map the logo from the backend profile
-            const companyLogo = item.companyProfile?.profileImage || 
+                        const companyLogo = item.companyProfile?.profileImage || 
                               item.companyProfile?.profileImageUrl || 
                               jobDetails.companyPosted?.profileImageUrl || null;
                         const location = jobDetails?.venue || "Location not specified";
@@ -88,9 +89,7 @@ export default function PoolCampusApplicationStatus() {
                             employmentType: employmentType,
                             skills: skills,
                             description: description,
-                            // Store the full job details for the View Details link
                             fullJobDetails: jobDetails,
-                            // Store for debugging
                             _debug: {
                                 jobId: jobId,
                                 hasCompanyPosted: !!jobDetails.companyPosted,
@@ -100,7 +99,6 @@ export default function PoolCampusApplicationStatus() {
                         
                     } catch (jobError) {
                         console.error(`❌ Error fetching job ${item.job}:`, jobError);
-                        // Return a fallback if we can't fetch job details
                         return {
                             ...item,
                             id: item._id,
@@ -131,7 +129,6 @@ export default function PoolCampusApplicationStatus() {
             console.error("❌ Error in fetchApplication:", error);
             setError(error.message || "Failed to fetch applications");
             
-            // Even if there's an error, try to show what we have
             if (error.response?.data?.data) {
                 const rawData = error.response.data.data;
                 const fallbackJobs = rawData.map(item => ({
@@ -160,20 +157,28 @@ export default function PoolCampusApplicationStatus() {
         fetchApplication();
     }, []);
 
-    // Rest of your component remains the same...
     const filteredJobs = poolcampusJobs.filter(job =>
         (job?.jobTitle?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
         (job?.company?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
         (job?.location?.toLowerCase() || "").includes(searchTerm.toLowerCase())
     );
 
+    // Get status index for progress calculation
     const getStatusIndex = (status) => {
         if (!status) return 0;
-        const index = statusSteps.findIndex(step => step.toLowerCase() === status.toLowerCase());
-        return index >= 0 ? index : 0;
+        const lowerStatus = status.toLowerCase();
+        
+        // If rejected, show 0% progress (stays at Applied step)
+        if (lowerStatus === 'rejected') return 0;
+        
+        // For normal progression
+        if (lowerStatus === 'applied') return 0;
+        if (lowerStatus === 'shortlisted') return 1;
+        if (lowerStatus === 'accepted') return 2;
+        
+        return 0;
     };
 
-    // Helper function to get initials for company logo
     const getCompanyInitials = (companyName) => {
         if (!companyName || companyName === "Company/College") return "CC";
         const words = companyName.split(' ').filter(word => word.length > 0);
@@ -181,14 +186,12 @@ export default function PoolCampusApplicationStatus() {
         return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
     };
 
-    // Add a retry function for individual jobs
     const retryFetchJob = async (jobId) => {
         try {
             console.log(`🔄 Retrying fetch for job ${jobId}`);
             const jobResponse = await getPoolCampusJobById(jobId);
             const jobDetails = jobResponse.data;
             
-            // Update the job in the list
             setPoolcampusJobs(prev => prev.map(job => {
                 if (job.jobId === jobId) {
                     const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company/College";
@@ -221,7 +224,17 @@ export default function PoolCampusApplicationStatus() {
         }
     };
 
-    // Loading state
+    const handleViewFullDetails = (job) => {
+        console.log('Opening modal for job:', job?.jobId || job?.id);
+        setModalJobId(job.jobId || job.id);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setModalJobId(null);
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex items-center justify-center">
@@ -233,7 +246,6 @@ export default function PoolCampusApplicationStatus() {
         );
     }
 
-    // Error state
     if (error && poolcampusJobs.length === 0) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex items-center justify-center p-4">
@@ -310,35 +322,34 @@ export default function PoolCampusApplicationStatus() {
                                 {filteredJobs.length > 0 ? (
                                     <div className="space-y-2">
                                         {filteredJobs.map(job => (
-                                            //////
                                            <div
-    key={job.id}
-    onClick={() => setSelectedJob(job)}
-    className={`w-full text-left p-3 rounded-xl transition-all duration-200 cursor-pointer ${
-        selectedJob?.id === job.id 
-            ? 'bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 border border-[#3b82f6]/20' 
-            : 'hover:bg-white/30 border border-transparent'
-    }`}
->
-    <div className="flex items-start gap-3">
-        {/* Logo Container */}
-        <div className="w-9 h-9 flex-shrink-0 relative">
-            {job.companyLogo ? (
-                <img 
-                    src={job.companyLogo} 
-                    alt={job.company}
-                    className="w-9 h-9 rounded-lg object-cover border border-white/60 absolute inset-0 z-10"
-                    onError={(e) => { e.target.style.display = 'none'; }}
-                />
-            ) : null}
-            <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs ${
-                selectedJob?.id === job.id 
-                    ? 'bg-gradient-to-br from-[#93c5fd] to-[#3b82f6] text-white' 
-                    : 'bg-white/50 border border-white/60 text-[#3b82f6]'
-            }`}>
-                {getCompanyInitials(job.company)}
-            </div>
-        </div>
+                                                key={job.id}
+                                                onClick={() => setSelectedJob(job)}
+                                                className={`w-full text-left p-3 rounded-xl transition-all duration-200 cursor-pointer ${
+                                                    selectedJob?.id === job.id 
+                                                        ? 'bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 border border-[#3b82f6]/20' 
+                                                        : 'hover:bg-white/30 border border-transparent'
+                                                }`}
+                                            >
+                                                <div className="flex items-start gap-3">
+                                                    {/* Logo Container */}
+                                                    <div className="w-9 h-9 flex-shrink-0 relative">
+                                                        {job.companyLogo ? (
+                                                            <img 
+                                                                src={job.companyLogo} 
+                                                                alt={job.company}
+                                                                className="w-9 h-9 rounded-lg object-cover border border-white/60 absolute inset-0 z-10"
+                                                                onError={(e) => { e.target.style.display = 'none'; }}
+                                                            />
+                                                        ) : null}
+                                                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs ${
+                                                            selectedJob?.id === job.id 
+                                                                ? 'bg-gradient-to-br from-[#93c5fd] to-[#3b82f6] text-white' 
+                                                                : 'bg-white/50 border border-white/60 text-[#3b82f6]'
+                                                        }`}>
+                                                            {getCompanyInitials(job.company)}
+                                                        </div>
+                                                    </div>
                                                     <div className="flex-1 min-w-0">
                                                         <h3 className="text-sm font-semibold text-gray-900 truncate">
                                                             {job.company}
@@ -406,50 +417,78 @@ export default function PoolCampusApplicationStatus() {
                                             <p className="text-sm text-gray-600">{selectedJob.jobTitle}</p>
                                         </div>
                                        <div className="w-12 h-12 flex-shrink-0 relative">
-    {selectedJob.companyLogo ? (
-        <img 
-            src={selectedJob.companyLogo} 
-            alt={selectedJob.company}
-            className="w-12 h-12 rounded-xl object-cover border border-white/60 absolute inset-0 z-10"
-            onError={(e) => { e.target.style.display = 'none'; }}
-        />
-    ) : null}
-    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#93c5fd]/20 to-[#3b82f6]/20 flex items-center justify-center border border-white/60 font-bold text-lg text-[#3b82f6]">
-        {getCompanyInitials(selectedJob.company)}
-    </div>
-</div>
+                                            {selectedJob.companyLogo ? (
+                                                <img 
+                                                    src={selectedJob.companyLogo} 
+                                                    alt={selectedJob.company}
+                                                    className="w-12 h-12 rounded-xl object-cover border border-white/60 absolute inset-0 z-10"
+                                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                                />
+                                            ) : null}
+                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#93c5fd]/20 to-[#3b82f6]/20 flex items-center justify-center border border-white/60 font-bold text-lg text-[#3b82f6]">
+                                                {getCompanyInitials(selectedJob.company)}
+                                            </div>
+                                        </div>
                                     </div>
                                     
-                                    <div className="relative">
-                                        <div className="flex justify-between mb-1">
-                                            {statusSteps?.slice(0, 4).map((step, idx) => {
-                                                const currentIdx = getStatusIndex(selectedJob.status);
-                                                const isActive = idx <= currentIdx;
-                                                return (
-                                                    <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 4}%` }}>
-                                                        <div className={`w-6 h-6 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
-                                                            isActive 
-                                                                ? 'bg-[#3b82f6] border-[#3b82f6] text-white' 
-                                                                : 'bg-white/50 border-white/60 text-gray-400'
-                                                        }`}>
-                                                            {isActive ? <CheckCircle className="h-3 w-3" /> : idx + 1}
-                                                        </div>
-                                                        <span className={`text-xs text-center ${isActive ? 'text-[#3b82f6] font-medium' : 'text-gray-500'}`}>
-                                                            {step.length > 10 ? step.substring(0, 10) + '...' : step}
-                                                        </span>
+                                    {selectedJob.status.toLowerCase() === 'rejected' ? (
+                                        // Rejected Status - Simple 2-step bar
+                                        <div className="relative">
+                                            <div className="flex justify-between mb-1">
+                                                <div className="flex flex-col items-center" style={{ width: '50%' }}>
+                                                    <div className="w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 bg-red-100 border-red-300 text-red-700">
+                                                        <XCircle className="h-4 w-4" />
                                                     </div>
-                                                );
-                                            })}
+                                                    <span className="text-xs text-center text-red-700 font-medium">
+                                                        Applied
+                                                    </span>
+                                                </div>
+                                                <div className="flex flex-col items-center" style={{ width: '50%' }}>
+                                                    <div className="w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 bg-red-500 border-red-500 text-white">
+                                                        <XCircle className="h-4 w-4" />
+                                                    </div>
+                                                    <span className="text-xs text-center text-red-700 font-medium">
+                                                        Rejected
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="h-1.5 bg-white/50 absolute left-[25%] right-[25%] top-4 -z-10">
+                                                <div className="h-1.5 bg-gradient-to-r from-red-400 to-red-500 rounded-full w-full"></div>
+                                            </div>
                                         </div>
-                                        <div className="h-1.5 bg-white/50 absolute left-[12.5%] right-[12.5%] top-3 -z-10">
-                                            <div
-                                                className="h-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] transition-all duration-300 rounded-full"
-                                                style={{
-                                                    width: `${(getStatusIndex(selectedJob.status) / (statusSteps.length - 1)) * 100}%`
-                                                }}
-                                            ></div>
+                                    ) : (
+                                        // Normal Status Flow - 3-step bar
+                                        <div className="relative">
+                                            <div className="flex justify-between mb-1">
+                                                {poolCampusStatusSteps.map((step, idx) => {
+                                                    const currentIdx = getStatusIndex(selectedJob.status);
+                                                    const isActive = idx <= currentIdx;
+                                                    return (
+                                                        <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 3}%` }}>
+                                                            <div className={`w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
+                                                                isActive 
+                                                                    ? 'bg-[#3b82f6] border-[#3b82f6] text-white'
+                                                                    : 'bg-white/50 border-white/60 text-gray-400'
+                                                            }`}>
+                                                                {isActive ? <CheckCircle className="h-4 w-4" /> : idx + 1}
+                                                            </div>
+                                                            <span className={`text-xs text-center ${isActive ? 'text-[#3b82f6] font-medium' : 'text-gray-500'}`}>
+                                                                {step}
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                            <div className="h-1.5 bg-white/50 absolute left-[16.5%] right-[16.5%] top-4 -z-10">
+                                                <div
+                                                    className="h-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] transition-all duration-300 rounded-full"
+                                                    style={{
+                                                        width: `${(getStatusIndex(selectedJob.status) / (poolCampusStatusSteps.length - 1)) * 100}%`
+                                                    }}
+                                                ></div>
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
 
                                 {/* Job Details Grid */}
@@ -517,15 +556,15 @@ export default function PoolCampusApplicationStatus() {
                                         </div>
                                     </div>
 
-                                    {/* Action Button */}
+                                    {/* Action Button - Update this section */}
                                     <div className="mt-auto">
-                                        <Link 
-                                            to={`/college-dashboard/Pool-campus/${selectedJob?.fullJobDetails?._id || selectedJob.jobId || selectedJob.id}?isApplied=true`} 
+                                        <button 
+                                            onClick={() => handleViewFullDetails(selectedJob)}
                                             className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white text-sm rounded-xl hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-300"
                                         >
                                             View Full Details
-                                            <ArrowRight className="h-3.5 w-3.5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
-                                        </Link>
+                                            <ArrowRight className="h-3.5 w-3.5 ml-2" />
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -553,6 +592,23 @@ export default function PoolCampusApplicationStatus() {
                     </div>
                 </div>
             </div>
+
+        {isModalOpen && modalJobId && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+            onClick={handleCloseModal}
+        />
+        <div className="relative z-10 w-full max-w-6xl h-[90vh] overflow-y-auto rounded-2xl bg-white">
+            <PoolJobDetailModal
+                jobId={modalJobId}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                isApplied={true}
+            />
+        </div>
+    </div>
+)}
         </div>
     );
 }

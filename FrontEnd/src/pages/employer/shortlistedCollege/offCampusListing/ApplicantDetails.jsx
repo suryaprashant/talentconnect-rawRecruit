@@ -383,15 +383,12 @@ const ApplicantDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
                     Reject Application
                   </button>
                 </div>
-                {toggleScheduleInterviewPopup && (
-                  <div>
-                    <InterviewSchedulerPopup
-                      setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
-                      applicantId={applicant.applicant._id}
-                      applicantType={applicant.applicant.profileType}
-                      jobRole={job?.jobRoles[0]}
-                    />
-                  </div>
+                {toggleScheduleInterviewPopup && selectedApplicant && job && (
+                  <InterviewSchedulerPopup
+                    setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
+                    application={selectedApplicant}
+                    job={job}
+                  />
                 )}
               </div>
             ))

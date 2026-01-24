@@ -7,21 +7,27 @@ import { useLegacyAuth } from '@/context/AuthProvider';
 
 function StandardProfileDropdown() {
   const navigate = useNavigate();
-  const [auth] = useLegacyAuth();
+const [authUser, setAuthUserStable] = useLegacyAuth();
   const handleLogout = async () => {
     try {
       await axios.post(`${import.meta.env.VITE_Backend_URL}/api/auth/logout`, {}, { withCredentials: true });
       localStorage.clear();
       Cookies.remove("jwt", { path: '/' });
+     //setAuth({ user: null, token: null });
+     setAuthUserStable(null);
       navigate('/', { replace: true });
+     //window.location.href = "/";
     } catch (error) {
       console.error('Logout failed:', error);
+      localStorage.clear();
       alert('Logout failed. Please try again.');
     }
   };
 
   const getProfileRoute = () => {
-    const userType = auth?.user?.userType || '';
+    if (!authUser || !authUser.user) return '/';
+
+    const userType = authUser.user.userType || '';
     // console.log("User type kya hai ", userType);
     // console.log(userType)
     switch (userType) {
@@ -37,7 +43,7 @@ function StandardProfileDropdown() {
         return '/profprofile?editProfile=true';
     }
   };
-
+ if (!authUser) return null;
   const profileRoute = getProfileRoute();
 
   return (

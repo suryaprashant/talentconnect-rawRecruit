@@ -241,3 +241,16 @@ export const getStudentDashboardMetrics = async () => {
     throw error;
   }
 };
+
+// Add these functions to your User_AxiosInstance.js file
+export function getOffCampusJobDetail(jobId) {
+  return axiosClient.get(`/api/student-dashboard/off-campus/${jobId}`)
+    .then(response => response)
+    .catch(error => error);
+}
+
+export function ApplyForOffCampusJob(jobId) {
+  return axiosClient.post(`/application/candidate/offcampus`, { jobId: jobId })
+    .then(response => response)
+    .catch(error => error);
+}
