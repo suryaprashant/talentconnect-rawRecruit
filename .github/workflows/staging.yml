@@ -50,12 +50,10 @@ jobs:
             git checkout staging
             git pull origin staging
 
-            cd BackEnd
-            npm install
-            pm2 reload rawrecruit-test-api || pm2 start src/app.js --name rawrecruit-test-api
-
-            cd ../FrontEnd
+            cd FrontEnd
             npm install
             npm run build
 
-            pm2 reload rawrecruit-test-web || pm2 start npm --name rawrecruit-test-web -- run preview -- --port 7070 --host
+            cd ../BackEnd
+            npm install
+            pm2 reload rawrecruit-test-api || pm2 start src/app.js --name rawrecruit-test-api
