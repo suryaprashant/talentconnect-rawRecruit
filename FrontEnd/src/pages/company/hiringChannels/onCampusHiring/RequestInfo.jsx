@@ -341,7 +341,7 @@ const [formData, setFormData] = useState(() => {
       if (response.status === 201) {
         toast.success('On-campus opportunity posted');
         setTimeout(() => {
-          toast.success('This job will expire after 15 days');
+          toast.success('This job will expire after 30 days');
         }, 2000);
         localStorage.removeItem('pendingOnCampusRequest'); 
         setFormData(initialData);
