@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import JobCard from '@/components/college/collegeDashboard/poolCampusOpportunity/JobCard';
 import { MapPin, Filter, Search, Briefcase, TrendingUp, Calendar, Users, X, RefreshCw, ChevronDown, ChevronUp, Building, GraduationCap, BookOpen, Tag, DollarSign, Check, Award } from 'lucide-react';
-import axios from 'axios';
+import { getPoolCampusForCompany } from '@/lib/College_AxiosIntance'; // Use existing function
 import { useMemo } from 'react';
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
@@ -51,37 +51,68 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
     setLoading(true);
     setError(null);
     try {
-      const backendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
-      const response = await axios.get(`${backendUrl}/api/student-dashboard/getAllPoolCampusJobs`);
+      const response = await getPoolCampusForCompany(); // Use existing function
 
-      const mappedJobs = response.data.data.map(backendJob => {
-        const companyName = backendJob.companyPosted?.companyDetails?.companyName || 'N/A';
-        const description = backendJob.description || backendJob.companyPosted?.companyDetails?.description || 'No description provided.';
-        const logo = backendJob.companyPosted?.profileImageUrl || 'https://via.placeholder.com/48';
+      console.log('Pool campus response:', response);
+
+      // Check response structure
+      if (!response.data) {
+        throw new Error('No data received from server');
+      }
+
+      const backendJobs = response.data?.data || response.data || [];
+      
+      if (!Array.isArray(backendJobs)) {
+        console.log('Backend jobs is not array:', backendJobs);
+        setAllJobs([]);
+        setFilteredJobs([]);
+        return;
+      }
+
+      const mappedJobs = backendJobs.map(backendJob => {
+        // Extract company details
+        const companyName = backendJob.companyPosted?.companyDetails?.companyName || 
+                           backendJob.companyName || 
+                           'N/A';
+        
+        const description = backendJob.description || 
+                           backendJob.companyPosted?.companyDetails?.description || 
+                           'No description provided.';
+        
+        const logo = backendJob.companyPosted?.profileImageUrl || 
+                    backendJob.logo || 
+                    'https://via.placeholder.com/48';
+        
+        // Extract location
         const location = backendJob.workLocation && backendJob.workLocation.length > 0
           ? backendJob.workLocation.join(', ')
-          : 'Not specified';
-        
+          : (backendJob.location || 'Not specified');
+
+        // Extract package details
         const packageDetails = backendJob.packageDetails;
         let minPackage = 'Not specified';
         let packageAmount = 0;
         if (packageDetails && packageDetails.totalCTC) {
-            minPackage = `₹ ${packageDetails.totalCTC.toLocaleString()} ${packageDetails.currency || 'INR'}`;
-            packageAmount = packageDetails.totalCTC;
+          minPackage = `₹ ${packageDetails.totalCTC.toLocaleString()} ${packageDetails.currency || 'INR'}`;
+          packageAmount = packageDetails.totalCTC;
         }
 
+        // Extract streams
         const streams = backendJob.studentStreams && backendJob.studentStreams.length > 0 
           ? backendJob.studentStreams 
-          : ['Not specified'];
+          : (backendJob.streams || ['Not specified']);
+
+        // Extract job roles
+        const jobRoles = backendJob.jobRoles || backendJob.position || ['Not specified'];
 
         return {
-          id: backendJob._id,
+          id: backendJob._id || backendJob.id,
           companyName: companyName,
           logo: logo,
           isOnsite: backendJob.workMode === 'On-site',
           venue: backendJob.venue || 'Not specified',
           streams: streams,
-          position: backendJob.jobRoles && backendJob.jobRoles.length > 0 ? backendJob.jobRoles.join(', ') : 'Not specified',
+          position: Array.isArray(jobRoles) ? jobRoles.join(', ') : jobRoles,
           location: location,
           package: minPackage,
           packageAmount: packageAmount,
@@ -95,25 +126,30 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
           tags: backendJob?.tags || [],
           createdAt: backendJob.createdAt,
           // Add these fields to match JobCard props
-          _id: backendJob._id,
+          _id: backendJob._id || backendJob.id,
           companyPosted: backendJob.companyPosted,
-          jobRoles: backendJob.jobRoles,
+          jobRoles: Array.isArray(jobRoles) ? jobRoles : [jobRoles],
           studentStreams: streams,
-          workLocation: backendJob.workLocation,
+          workLocation: backendJob.workLocation || backendJob.location,
           startDate: backendJob.startDate,
           endDate: backendJob.endDate,
           selectionProcess: backendJob.selectionProcess,
           packageDetails: backendJob.packageDetails,
-          jobType: "Pool-campus"
+          jobType: "Pool-campus",
+          // Additional fields for filtering
+          degree: backendJob.degree || streams,
+          skills: backendJob.skills || [],
+          urgent: backendJob.urgent || false
         };
       });
       
+      console.log('Mapped jobs:', mappedJobs);
       setAllJobs(mappedJobs);
       setFilteredJobs(mappedJobs);
 
       // Extract unique filter options
-      const uniqueStreams = [...new Set(mappedJobs.flatMap(job => job.streams))];
-      const uniqueLocations = [...new Set(mappedJobs.map(job => job.location).filter(loc => loc !== 'Not specified'))];
+      const uniqueStreams = [...new Set(mappedJobs.flatMap(job => job.streams).filter(Boolean))];
+      const uniqueLocations = [...new Set(mappedJobs.map(job => job.location).filter(loc => loc && loc !== 'Not specified'))];
       const uniqueTags = [...new Set(mappedJobs.flatMap(job => [
         job.workMode,
         job.employmentType,
@@ -121,25 +157,25 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
       ]).filter(tag => tag && tag !== 'Not specified'))];
 
       setFilterOptions({
-        streams: uniqueStreams,
+        streams: uniqueStreams.map(label => ({ label })),
         locations: uniqueLocations,
-        tags: uniqueTags
+        tags: uniqueTags.map(label => ({ label }))
       });
     } catch (err) {
       console.error("Error fetching pool campus jobs:", err);
-      setError("Failed to fetch jobs. Please try again later.");
+      setError("Failed to fetch pool campus jobs. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
 
   const cityOptions = useMemo(() => {
-  const cities = City.getCitiesOfCountry("IN") || [];
-  return cities.map(city => ({
-    value: city.name,
-    label: city.name,
-  }));
-}, []);
+    const cities = City.getCitiesOfCountry("IN") || [];
+    return cities.map(city => ({
+      value: city.name,
+      label: city.name,
+    }));
+  }, []);
 
   useEffect(() => {
     fetchJobs();
@@ -148,17 +184,25 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
   useEffect(() => {
     let result = allJobs;
 
+    // Apply selected job filtering (for compact mode)
+    if (selectedJobId) {
+      result = result.filter(job => job._id !== selectedJobId);
+    }
+
     if (filters.search) {
+      const searchTerm = filters.search.toLowerCase();
       result = result.filter(job =>
-        job.companyName.toLowerCase().includes(filters.search.toLowerCase()) ||
-        job.position.toLowerCase().includes(filters.search.toLowerCase()) ||
-        job.venue.toLowerCase().includes(filters.search.toLowerCase())
+        job.companyName.toLowerCase().includes(searchTerm) ||
+        (job.position && job.position.toLowerCase().includes(searchTerm)) ||
+        (job.venue && job.venue.toLowerCase().includes(searchTerm))
       );
     }
 
     if (filters.streams.length > 0) {
       result = result.filter(job =>
-        filters.streams.some(filterStream => job.streams.includes(filterStream))
+        job.streams && filters.streams.some(filterStream => 
+          job.streams.includes(filterStream)
+        )
       );
     }
 
@@ -168,13 +212,15 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
 
     if (filters.locations.length > 0) {
       result = result.filter(job =>
-        filters.locations.some(filterLoc => job.location.includes(filterLoc))
+        job.location && filters.locations.some(filterLoc => 
+          job.location.toLowerCase().includes(filterLoc.toLowerCase())
+        )
       );
     }
 
     if (filters.role) {
       result = result.filter(job =>
-        job.position.toLowerCase().includes(filters.role.toLowerCase())
+        job.position && job.position.toLowerCase().includes(filters.role.toLowerCase())
       );
     }
 
@@ -201,8 +247,6 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
       );
     }
 
-       // Apply location filter
-
     // Apply sorting
     if (sortBy === 'date') {
       result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
@@ -212,10 +256,16 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
       result.sort((a, b) => a.packageAmount - b.packageAmount);
     } else if (sortBy === 'company') {
       result.sort((a, b) => a.companyName.localeCompare(b.companyName));
+    } else if (sortBy === 'newest') {
+      result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    } else if (sortBy === 'oldest') {
+      result.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
     }
 
     setFilteredJobs(result);
-  }, [filters, allJobs, sortBy]);
+  }, [filters, allJobs, sortBy, selectedJobId]);
+
+  // ... (keep all other functions the same as before)
 
   const handleFilterChange = (filterType, value) => {
     setFilters(prev => {
@@ -252,15 +302,15 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
   };
 
   const handleLocationMultiChange = (selectedOptions) => {
-  setFilters(prev => ({
-    ...prev,
-    locations: selectedOptions
-      ? selectedOptions.map(opt => opt.value)
-      : [],
-  }));
-};
+    setFilters(prev => ({
+      ...prev,
+      locations: selectedOptions
+        ? selectedOptions.map(opt => opt.value)
+        : [],
+    }));
+  };
 
-    const handleJobSelect = (job) => {
+  const handleJobSelect = (job) => {
     console.log('Opening details for:', job?.companyName);
     setSelectedJob(job);
     setIsModalOpen(true);
@@ -280,16 +330,32 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
   if (compact) {
     return (
       <div className="p-3 space-y-4">
-        {filteredJobs
-          .filter(job => selectedJobId ? job._id !== selectedJobId : true)
-          .map((job) => (
-            <JobCard 
-              key={job.id} 
-              job={job} 
-              onClick={onJobSelect}
-              compact={compact}
-            />
-          ))}
+        {filteredJobs.length > 0 ? (
+          filteredJobs
+            .filter(job => selectedJobId ? job._id !== selectedJobId : true)
+            .map((job) => (
+              <div 
+                key={job._id || job.id} 
+                className="w-full"
+              >
+                <JobCard 
+                  job={job} 
+                  onClick={onJobSelect}
+                />
+              </div>
+            ))
+        ) : (
+          <div className="text-center py-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
+              <Building className="h-6 w-6 text-gray-400" />
+            </div>
+            <p className="text-gray-500 text-sm">
+              {selectedJobId 
+                ? "No other pool campus opportunities to display" 
+                : "No pool campus opportunities found"}
+            </p>
+          </div>
+        )}
       </div>
     );
   }
@@ -409,7 +475,7 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
       <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60 flex items-center justify-center">
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-8 max-w-md text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#fca5a5]/30 to-[#ef4444]/20 rounded-full mb-4">
-            <MapPin className="w-8 h-8 text-[#ef4444]" />
+            <Building className="w-8 h-8 text-[#ef4444]" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Opportunities</h3>
           <p className="text-gray-600 mb-6">{error}</p>
@@ -423,17 +489,9 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
       </div>
     );
   }
-// if (compact) {
-//     return (
-//       <div className="p-3 space-y-4">
-//         {filteredJobs.map((job) => (
-//           <div key={job.id} className="w-full">
-//             <JobCard job={job} />
-//           </div>
-//         ))}
-//       </div>
-//     );
-//   }
+
+  // ... (keep the rest of the JSX exactly the same as in your working code)
+  // The rest of the component JSX remains unchanged
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
       {/* Pastel blur background elements */}
@@ -634,19 +692,19 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
                     <div className="mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
                       <div className="space-y-2">
                         {filterOptions.streams.map((stream, index) => (
-                          <div key={stream + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
+                          <div key={stream.label + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
                             <input
                               type="checkbox"
-                              id={`stream-${stream}-${index}`}
-                              checked={filters.streams.includes(stream)}
-                              onChange={() => handleFilterChange('streams', stream)}
+                              id={`stream-${stream.label}-${index}`}
+                              checked={filters.streams.includes(stream.label)}
+                              onChange={() => handleFilterChange('streams', stream.label)}
                               className="h-4 w-4 text-[#ec4899] focus:ring-[#f9a8d4]/50 border-gray-300 rounded"
                             />
                             <label 
-                              htmlFor={`stream-${stream}-${index}`}
+                              htmlFor={`stream-${stream.label}-${index}`}
                               className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
                             >
-                              {stream}
+                              {stream.label}
                             </label>
                           </div>
                         ))}
@@ -728,70 +786,69 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
 
                 {/* Locations Filter */}
                 <div className="relative">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <div className="flex items-center">
-                                                <MapPin className="h-4 w-4 text-gray-500 mr-2" />
-                                                <span className="text-sm font-medium text-gray-700">Location</span>
-                                                {Array.isArray(filters.locations) && filters.locations.length > 0 && (
-                                                    <span className="ml-2 px-2 py-0.5 bg-[#667eea] text-white text-xs rounded-full">
-                                                      {filters.locations.length}
-                                                    </span>
-                                                )}
-                                            </div>
-                                            {Array.isArray(filters.locations) && filters.locations.length > 0 && (
-                                                <button
-                                                  onClick={() => setFilters(prev => ({ ...prev, locations: [] }))}
-                                                  className="text-xs text-[#667eea] hover:text-[#764ba2]"
-                                                >
-                                                  Clear
-                                                </button>
-                                            )}
-                                        </div>
-                                        
-                                        <button
-                                            type="button"
-  onClick={(e) => {
-    e.stopPropagation();
-    toggleSubDropdown('locations');
-  }}
-                                            className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all duration-200 mb-2"
-                                        >
-                                            <span className="text-sm text-gray-700">Select Location</span>
-                                            <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.locations ? 'transform rotate-180' : ''}`} />
-                                        </button>
-                                        
-                                        {openSubDropdowns.locations && (
-  <div
-    className="relative z-50 mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200"
-    onClick={(e) => e.stopPropagation()}
-  >
-    <CreatableSelect
-      isMulti
-      options={cityOptions}
-      value={(Array.isArray(filters.locations) ? filters.locations : []).map(loc => ({
-        value: loc,
-        label: loc,
-      }))}
-      onChange={handleLocationMultiChange}
-      placeholder="Select or type locations..."
-      menuPortalTarget={document.body}
-      menuPosition="fixed"
-      styles={{
-        menuPortal: base => ({ ...base, zIndex: 9999 }),
-        menu: base => ({ ...base, zIndex: 9999 }),
-        control: base => ({
-          ...base,
-          minHeight: '38px',
-          borderRadius: '0.75rem',
-          backgroundColor: 'rgb(249 250 251)',
-          borderColor: '#e5e7eb',
-        }),
-      }}
-    />
-  </div>
-)}
-
-                                    </div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                      <span className="text-sm font-medium text-gray-700">Location</span>
+                      {Array.isArray(filters.locations) && filters.locations.length > 0 && (
+                        <span className="ml-2 px-2 py-0.5 bg-[#667eea] text-white text-xs rounded-full">
+                          {filters.locations.length}
+                        </span>
+                      )}
+                    </div>
+                    {Array.isArray(filters.locations) && filters.locations.length > 0 && (
+                      <button
+                        onClick={() => setFilters(prev => ({ ...prev, locations: [] }))}
+                        className="text-xs text-[#667eea] hover:text-[#764ba2]"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleSubDropdown('locations');
+                    }}
+                    className="flex items-center justify-between w-full p-3 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all duration-200 mb-2"
+                  >
+                    <span className="text-sm text-gray-700">Select Location</span>
+                    <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${openSubDropdowns.locations ? 'transform rotate-180' : ''}`} />
+                  </button>
+                  
+                  {openSubDropdowns.locations && (
+                    <div
+                      className="relative z-50 mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <CreatableSelect
+                        isMulti
+                        options={cityOptions}
+                        value={(Array.isArray(filters.locations) ? filters.locations : []).map(loc => ({
+                          value: loc,
+                          label: loc,
+                        }))}
+                        onChange={handleLocationMultiChange}
+                        placeholder="Select or type locations..."
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
+                        styles={{
+                          menuPortal: base => ({ ...base, zIndex: 9999 }),
+                          menu: base => ({ ...base, zIndex: 9999 }),
+                          control: base => ({
+                            ...base,
+                            minHeight: '38px',
+                            borderRadius: '0.75rem',
+                            backgroundColor: 'rgb(249 250 251)',
+                            borderColor: '#e5e7eb',
+                          }),
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
 
                 {/* Role Filter */}
                 <div className="relative">
@@ -872,19 +929,19 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
                     <div className="mt-2 p-3 bg-white/50 backdrop-blur-sm rounded-lg border border-white/50 max-h-60 overflow-y-auto">
                       <div className="space-y-2">
                         {filterOptions.tags.map((tag, index) => (
-                          <div key={tag + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
+                          <div key={tag.label + index} className="flex items-center p-2 hover:bg-white/30 rounded transition-all duration-200">
                             <input
                               type="checkbox"
-                              id={`tag-${tag}-${index}`}
-                              checked={filters.tags.includes(tag)}
-                              onChange={() => handleFilterChange('tags', tag)}
+                              id={`tag-${tag.label}-${index}`}
+                              checked={filters.tags.includes(tag.label)}
+                              onChange={() => handleFilterChange('tags', tag.label)}
                               className="h-4 w-4 text-[#818cf8] focus:ring-[#c7d2fe]/50 border-gray-300 rounded"
                             />
                             <label 
-                              htmlFor={`tag-${tag}-${index}`}
+                              htmlFor={`tag-${tag.label}-${index}`}
                               className="ml-3 text-sm text-gray-700 cursor-pointer flex-1"
                             >
-                              {tag}
+                              {tag.label}
                             </label>
                           </div>
                         ))}
@@ -967,32 +1024,33 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
                  sortBy === 'date' ? 'Date Posted' : 
                  sortBy === 'package-high' ? 'Package (High to Low)' :
                  sortBy === 'package-low' ? 'Package (Low to High)' :
+                 sortBy === 'newest' ? 'Newest First' :
+                 sortBy === 'oldest' ? 'Oldest First' :
                  'Company Name (A-Z)'}
               </div>
             </div>
           </div>
         </div>
-       
 
         {/* Job Cards Grid */}
-      <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">
-        {filteredJobs.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredJobs.map(job => (
-                <div
-                  key={job._id || job.id}
-                  className="h-full flex"
-                >
-                  <div className="w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 flex flex-col h-full">
-                    <JobCard 
-                      job={job} 
-                      onClick={handleJobSelect}
-                    />
+        <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">
+          {filteredJobs.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredJobs.map(job => (
+                  <div
+                    key={job._id || job.id}
+                    className="h-full flex"
+                  >
+                    <div className="w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 flex flex-col h-full">
+                      <JobCard 
+                        job={job} 
+                        onClick={handleJobSelect}
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
               {/* Load More Button */}
               <div className="mt-10 text-center">
@@ -1028,7 +1086,8 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
           )}
         </div>
       </div>
-    {/* Job Detail Modal for normal view */}
+
+      {/* Job Detail Modal for normal view */}
       {isModalOpen && selectedJob && (
         <div className="fixed inset-0 z-50">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
