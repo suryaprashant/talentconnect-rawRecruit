@@ -4,19 +4,41 @@ import Application from "../models/applicationModel.js";
 
 export const getRelevantOffCampusJobs = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const student = await Onboarding.findOne({ userId }).lean();
-    if (!student) return res.status(404).json({ error: "Profile not found." });
+   
+    // 1. Check if user is logged in
+    const userId = req.user?._id; 
+    let student = null;
+    let appliedSet = new Set();
 
-    const appliedJobIds = await Application.find({ applicant: student._id }).distinct('job');
-    const appliedSet = new Set(appliedJobIds.map(id => id.toString()));
-
-    const jobs = await JobPostingTable.find({ 
+    // 2. Only fetch student-specific data if a user exists
+    if (userId) {
+      student = await Onboarding.findOne({ userId }).lean();
+      if (student) {
+        const appliedJobIds = await Application.find({ applicant: student._id }).distinct('job');
+        appliedSet = new Set(appliedJobIds.map(id => id.toString()));
+      }
+    }
+   
+    const query = { 
       jobType: "Off-campus", 
-      jobStatus: { $in: ["Open", "Pending"] }, 
-      _id: { $nin: Array.from(appliedSet) } 
-    }).populate('companyPosted').lean();
+      jobStatus: { $in: ["Open", "Pending"] } 
+    };
+    
+    if (userId) {
+      query._id = { $nin: Array.from(appliedSet) };
+    }
 
+    const jobs = await JobPostingTable.find(query).populate('companyPosted').lean();
+
+    if (!student) {
+      const guestJobs = jobs.map(job => ({
+        ...job,
+        matchScore: 0,
+        companyName: job.companyPosted?.companyDetails?.companyName || "Company"
+      }));
+      return res.status(200).json({ data: guestJobs });
+    }
+    
     console.log(`\n\x1b[35m[RELEVANCY ENGINE] Scoring ${jobs.length} jobs for ${student.name}\x1b[0m`);
 
     const norm = (v) => v ? String(v).toLowerCase().replace(/[\s.-]/g, "").trim() : "";
