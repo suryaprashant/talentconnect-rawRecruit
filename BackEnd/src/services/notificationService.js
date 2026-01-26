@@ -4,6 +4,7 @@ import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import EmployerProfile from "../models/employerDashboard/employerProfileModel.js";
 import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
+import { getReceiverSocketId , io } from "../socketIO/server.js";
 
 
 export async function getNotificationService(Id) {
@@ -157,7 +158,7 @@ export const notifyCompaniesOnCollegeJobRequest = async ({
 };
 
 
-//shortlist/accepted
+//shortlist/accepted real time working
 export const notifyOnApplicationStatusChange = async ({
   recipientId,
   recipientType,
@@ -177,7 +178,9 @@ export const notifyOnApplicationStatusChange = async ({
     const message = statusMessageMap[status];
     if (!message) return;
 
-    await Notification.create({
+    console.log("🔔 Creating notification for:", recipientId);
+
+    const notification = await Notification.create({
       recipientId,
       senderId,
       type: `APPLICATION_${status.toUpperCase()}`, // eg APPLICATION_SHORTLISTED
@@ -186,11 +189,28 @@ export const notifyOnApplicationStatusChange = async ({
       jobType,
       read: false
     });
+
+    console.log("✅ Notification saved:", notification._id);
+
+    // REAL-TIME PUSH (CHAT STYLE)
+    try {
+      const receiverSocketId = getReceiverSocketId(recipientId.toString());
+
+      console.log("🧩 receiverSocketId:", receiverSocketId);
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newNotification", notification);
+      } 
+
+    } catch (err) {
+      console.error("Socket notification emit failed:", err);
+    }
+
   } catch (error) {
     console.error("Application status notification error:", error);
   }
 };
 
+//real time working
 export async function notifyOnCollegeApplicationStatusChange({
   application,
   newStatus,
@@ -255,7 +275,20 @@ export async function notifyOnCollegeApplicationStatusChange({
       read: false
     }));
 
-    await Notification.insertMany(notifications);
+    
+
+    const createdNotifications = await Notification.insertMany(notifications);
+
+    createdNotifications.forEach(notification => {
+      const receiverSocketId = getReceiverSocketId(
+        notification.recipientId.toString()
+      );
+    
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newNotification", notification);
+      }
+    });
+
 
   } catch (error) {
     console.error("🔔 Application status notification failed:", error.message);
