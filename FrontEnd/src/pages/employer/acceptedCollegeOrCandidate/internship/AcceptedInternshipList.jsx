@@ -21,7 +21,7 @@ export default function InternshipListing() {
         setLoading(true);
         setError(null);
         try {
-            const response = await getPostedJobs("Internship");
+            const response = await getPostedJobs("Internship", "Accepted");
             setJobs(response?.data);
         } catch (err) {
             console.error("Error fetching internships:", err);

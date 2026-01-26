@@ -98,7 +98,7 @@ export async function getCompanyEmail(companyId) {
 
 
 
-export const getEmployerService = async (user) => {
+{/*export const getEmployerService = async (user) => {
     const { _id: authUserId, activeCompanyId } = user;
    
     
@@ -113,7 +113,9 @@ export const getEmployerService = async (user) => {
     }
 
     return ownProfileResult;
-};
+};*/}
+
+
 
 
 //Prathmesh 
@@ -125,3 +127,17 @@ export const getEmployerService = async (user) => {
 
   return college.userId;
 }*/}
+
+export async function getEmployerService(userId) {
+    try {
+        const company = await CompanyProfile.find({ userId: userId }).lean();
+        if (!company) {
+            return { success: false, msg: "Company profile not found" };
+        }
+        
+        return { success: true, data: company };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to fetch");
+    }
+}

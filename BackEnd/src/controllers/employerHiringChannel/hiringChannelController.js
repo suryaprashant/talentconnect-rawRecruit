@@ -289,7 +289,7 @@ export const createInternshipPosting = async (req, res) => {
             jobType: "Internship",
         };
 
-        const newPosting = await createPostingService(postingData);
+        const newPosting = await createPostingService(postingData, userId);
         if (!newPosting) {
             return sendError(res, 500, "Failed to create internship posting");
         }
