@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Eye, ChevronLeft, ChevronRight, Trash, Building2, Calendar, AlertCircle, Briefcase, Users } from 'lucide-react';
+import { Search, Eye, ChevronLeft, ChevronRight, Trash, Building2, Calendar, AlertCircle, Users, MapPin, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ApplicantDetails from './internDetails';
 import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
@@ -22,7 +22,7 @@ export default function InternshipListing() {
         setError(null);
         try {
             const response = await getPostedJobs("Internship", "Accepted");
-            setJobs(response?.data);
+            setJobs(response?.data || []);
         } catch (err) {
             console.error("Error fetching internships:", err);
             setError(err.response?.data?.message || err.message || "Failed to fetch accepted internships.");
@@ -52,15 +52,26 @@ export default function InternshipListing() {
 
     // Filter jobs based on search query
     const filteredJobs = jobs?.filter(job => {
+        if (!searchQuery) return true;
+        
         const searchLower = searchQuery.toLowerCase();
+        
+        // Safely convert values to strings before calling toLowerCase()
+        const jobTitleStr = job.jobTitle ? String(job.jobTitle).toLowerCase() : '';
+        const statusStr = job.status ? String(job.status).toLowerCase() : '';
+        const locationStr = job.location?.[0] ? String(job.location[0]).toLowerCase() : '';
+        const workModeStr = job.workMode ? String(job.workMode).toLowerCase() : '';
+        
         return (
-            (job.jobTitle?.toLowerCase().includes(searchLower)) ||
-            (job.status?.toLowerCase().includes(searchLower)) ||
+            jobTitleStr.includes(searchLower) ||
+            statusStr.includes(searchLower) ||
+            locationStr.includes(searchLower) ||
+            workModeStr.includes(searchLower) ||
             (job._id?.toLowerCase().includes(searchLower))
         );
     });
 
-    const totalItems = filteredJobs?.length;
+    const totalItems = filteredJobs?.length || 0;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentJobs = filteredJobs?.slice(startIndex, startIndex + itemsPerPage);
@@ -111,6 +122,10 @@ export default function InternshipListing() {
                                             {selectedJob?.status || 'N/A'}
                                         </span>
                                         <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
+                                            <MapPin className="h-3 w-3 mr-1.5" />
+                                            {selectedJob?.location?.[0] || 'No Location'}
+                                        </span>
+                                        <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                                             <Calendar className="h-3 w-3 mr-1.5" />
                                             {selectedJob?.endDate ? new Date(selectedJob.endDate).toLocaleDateString('en-US', { 
                                                 month: 'short', 
@@ -120,7 +135,7 @@ export default function InternshipListing() {
                                         </span>
                                         <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                                             <Users className="h-3 w-3 mr-1.5" />
-                                            New Applications: {selectedJob?.applicationCount || 0}
+                                            Accepted Applications: {selectedJob?.applicationCount || 0}
                                         </span>
                                     </div>
                                 </div>
@@ -159,18 +174,18 @@ export default function InternshipListing() {
                         </div>
                         
                         {/* Search Bar */}
-                        {/* <div className="relative w-full md:w-96">
+                        <div className="relative w-full md:w-96">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <Search className="h-4 w-4 text-gray-400" />
                             </div>
                             <input
                                 type="text"
                                 className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
-                                placeholder="Search by job title or status"
+                                placeholder="Search by job title, status, or location"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
-                        </div> */}
+                        </div>
                     </div>
                 </div>
 
@@ -189,14 +204,15 @@ export default function InternshipListing() {
 
                 {/* Internships Table */}
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
-                    {/* Table Header */}
+                    {/* Table Header - Original UI */}
                     <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
                         <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
-                            <div className="col-span-4">Job Title</div>
-                            <div className="col-span-2">Status</div>
-                            <div className="col-span-2">Deadline</div>
+                            <div className="col-span-3">Internship Role</div>
+                            <div className="col-span-3">Location</div>
+                            <div className="col-span-2">End Date</div>
+                            <div className="col-span-1 text-center">Views</div>
                             <div className="col-span-1 text-center">New Applications</div>
-                            <div className="col-span-3 text-center">Actions</div>
+                            <div className="col-span-2 text-center">Actions</div>
                         </div>
                     </div>
 
@@ -219,43 +235,38 @@ export default function InternshipListing() {
                             currentJobs?.map(job => (
                                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                                     <div className="grid grid-cols-12 gap-4 items-center">
-                                        {/* Job Title - Full width without truncation */}
-                                        <div className="col-span-4">
+                                        {/* Job Title/Role - Original layout */}
+                                        <div className="col-span-3">
                                             <Link
-                                                to={`/company-dashboard/preview/Internship/${job._id}?isApplied=true`}
-                                                className="group cursor-pointer block"
+                                                to={`/company-dashboard/Internship/${job._id}?isApplied=true`}
+                                                className="group cursor-pointer"
                                             >
                                                 <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors break-words whitespace-normal">
                                                     {job?.jobTitle || 'N/A'}
                                                 </h3>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <span className="text-xs font-medium px-2 py-0.5 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-full">
+                                                    <FileText className="h-3 w-3 text-gray-400" />
+                                                    <span className="text-sm text-gray-500">
                                                         {job?.internshipDuration || 'N/A Duration'}
-                                                    </span>
-                                                    <span className="text-xs font-medium px-2 py-0.5 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-full">
-                                                        {job?.workMode || 'N/A Mode'}
                                                     </span>
                                                 </div>
                                             </Link>
                                         </div>
 
-                                        {/* Status */}
-                                        <div className="col-span-2">
-                                            <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
-                                                job?.status === 'Published'
-                                                    ? 'bg-gradient-to-r from-green-100 to-green-50 text-green-700 border border-green-200'
-                                                    : job?.status === 'Draft'
-                                                    ? 'bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border border-yellow-200'
-                                                    : 'bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200'
-                                            }`}>
-                                                {job?.status || 'N/A'}
-                                            </span>
+                                        {/* Location - Original layout */}
+                                        <div className="col-span-3">
+                                            <div className="flex items-center gap-2">
+                                                <MapPin className="h-3 w-3 text-gray-400 flex-shrink-0" />
+                                                <span className="text-gray-700 text-sm truncate">
+                                                    {job?.location?.[0] || 'No Location'}
+                                                </span>
+                                            </div>
                                         </div>
 
-                                        {/* Deadline */}
+                                        {/* End Date - Original layout */}
                                         <div className="col-span-2">
                                             <div className="flex items-center gap-2">
-                                                <Calendar className="h-3 w-3 text-gray-400 flex-shrink-0" />
+                                                <Calendar className="h-3 w-3 text-gray-400" />
                                                 <span className="text-gray-700 text-sm">
                                                     {job?.endDate ? new Date(job.endDate).toLocaleDateString('en-US', { 
                                                         month: 'short', 
@@ -266,20 +277,30 @@ export default function InternshipListing() {
                                             </div>
                                         </div>
 
-                                        {/* New Applications Count */}
+                                        {/* Views - Original layout */}
                                         <div className="col-span-1 text-center">
-                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium">
+                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                                                {job?.views || 0}
+                                            </span>
+                                        </div>
+
+                                        {/* Accepted Applications - Original layout */}
+                                        <div 
+                                            className="col-span-1 text-center cursor-pointer group"
+                                            onClick={() => handleViewApplications(job)}
+                                        >
+                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
                                                 {job?.applicationCount || 0}
                                             </span>
                                         </div>
 
-                                        {/* Actions */}
-                                        <div className="col-span-3">
+                                        {/* Actions - Original layout */}
+                                        <div className="col-span-2">
                                             <div className="flex items-center justify-center gap-2">
                                                 <button
                                                     onClick={() => handleViewApplications(job)}
                                                     className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
-                                                    title="View Accepted Applications"
+                                                    title="View Applications"
                                                 >
                                                     <Eye size={16} />
                                                 </button>
@@ -298,7 +319,7 @@ export default function InternshipListing() {
                         )}
                     </div>
 
-                    {/* Pagination */}
+                    {/* Pagination - Original layout */}
                     {totalPages > 1 && (
                         <div className="flex items-center justify-between p-4 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-white">
                             <button

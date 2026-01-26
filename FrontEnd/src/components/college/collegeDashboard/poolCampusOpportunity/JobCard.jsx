@@ -71,8 +71,9 @@ const JobCard = ({ job, onClick }) => {
                      'Company';
   
   const logo = job.companyPosted?.profileImageUrl || 
-               companyDetails.logo || 
-               'https://via.placeholder.com/48';
+             companyDetails.logo || 
+             job.logo || 
+             null;
 
   // Get status based on dates
   const getJobStatus = () => {
@@ -339,27 +340,43 @@ const JobCard = ({ job, onClick }) => {
   };
 
   // Get company type badges (similar to amenities in CollegeCard)
-  const getCompanyTypeBadges = () => {
-    if (!companyDetails.companyType?.length && !companyDetails.industryType?.length) return null;
-    
-    const types = companyDetails.companyType || companyDetails.industryType || [];
-    
-    return (
-      <div className="flex flex-wrap gap-2 mb-3">
-        {types.slice(0, 2).map((type, index) => (
-          <span
-            key={index}
-            className="px-3 py-1 bg-gradient-to-r from-purple-100 to-purple-50 text-purple-800 border border-purple-300 rounded-full text-xs"
-          >
-            {type}
-          </span>
-        ))}
-        {types.length > 2 && (
-          <span className="px-2 py-1 text-xs text-gray-600">+{types.length - 2}</span>
-        )}
-      </div>
-    );
-  };
+  // Get company type badges (similar to amenities in CollegeCard)
+const getCompanyTypeBadges = () => {
+  // Safely get types, handling strings, arrays, or undefined
+  let types = [];
+  
+  if (companyDetails.companyType) {
+    if (Array.isArray(companyDetails.companyType)) {
+      types = companyDetails.companyType;
+    } else if (typeof companyDetails.companyType === 'string') {
+      types = [companyDetails.companyType];
+    }
+  } else if (companyDetails.industryType) {
+    if (Array.isArray(companyDetails.industryType)) {
+      types = companyDetails.industryType;
+    } else if (typeof companyDetails.industryType === 'string') {
+      types = [companyDetails.industryType];
+    }
+  }
+  
+  if (types.length === 0) return null;
+  
+  return (
+    <div className="flex flex-wrap gap-2 mb-3">
+      {types.slice(0, 2).map((type, index) => (
+        <span
+          key={index}
+          className="px-3 py-1 bg-gradient-to-r from-purple-100 to-purple-50 text-purple-800 border border-purple-300 rounded-full text-xs"
+        >
+          {type}
+        </span>
+      ))}
+      {types.length > 2 && (
+        <span className="px-2 py-1 text-xs text-gray-600">+{types.length - 2}</span>
+      )}
+    </div>
+  );
+};
 
   return (
     <div 
@@ -407,21 +424,22 @@ const JobCard = ({ job, onClick }) => {
           </div>
 
           <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
-            {logo && !imageError ? (
-              <img 
-                src={logo} 
-                alt={`${companyName} logo`}
-                className="w-12 h-12 object-cover"
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-sm font-semibold text-gray-700">
-                  {getInitials(companyName)}
-                </span>
-              </div>
-            )}
-          </div>
+  {/* Only show image if logo exists and is a valid URL */}
+  {logo && logo.startsWith('http') && !imageError ? (
+    <img 
+      src={logo} 
+      alt={`${companyName} logo`}
+      className="w-12 h-12 object-cover"
+      onError={() => setImageError(true)}
+    />
+  ) : (
+    <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center">
+      <span className="text-lg font-bold text-blue-700">
+        {getInitials(companyName)}
+      </span>
+    </div>
+  )}
+</div>
         </div>
 
         {/* Employment Type Badge */}

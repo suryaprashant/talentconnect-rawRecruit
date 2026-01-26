@@ -87,6 +87,7 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const modalRef = useRef(null);
+  const contentRef = useRef(null);
 
   const loadJobDetail = async () => {
     if (!jobId) return;
@@ -255,6 +256,7 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
   const jobStatus = getJobStatus();
   const isApplied = propIsApplied || job.isApplied || false;
   const companyName = job?.companyPosted?.companyDetails?.companyName || 'Company';
+  const workLocation = job?.workLocation?.join(', ') || 'Not Specified';
 
   return (
     <>
@@ -271,38 +273,43 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
         </button>
 
         {/* Main Content Area - Single scroll container */}
-        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+        <div ref={contentRef} className="flex-1 overflow-y-auto bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
           <div className="p-6">
             {/* Header Section */}
-            <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4 rounded-xl mb-6">
-              {jobStatus.status === 'Completed' ? (
-                <div className="text-sm font-medium text-[#667eea]">Registrations Completed</div>
-              ) : (
-                <div className="text-sm font-medium text-[#667eea]">Registration Open</div>
-              )}
-
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-2">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                  {companyName}
-                </h1>
-              </div>
-
-              <div className="flex flex-col sm:flex-row justify-between mt-4">
-                <div className="flex items-center text-sm text-gray-600">
-                  <Calendar className="h-5 w-5 mr-1 text-[#667eea]" />
-                  <span>{formatDate(job?.startDate)} - {formatDate(job?.endDate)}</span>
+            <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-5 rounded-xl mb-6">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm font-medium text-[#667eea]">
+                      {jobStatus.status === 'Completed' ? 'Registrations Completed' : 'Registration Open'}
+                    </span>
+                  </div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                    {companyName}
+                  </h1>
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-3">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Calendar className="h-4 w-4 mr-2 text-[#667eea]" />
+                      <span>{formatDate(job?.startDate)} - {formatDate(job?.endDate)}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <MapPin className="h-4 w-4 mr-2 text-[#667eea]" />
+                      <span>{workLocation}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Save and Share buttons */}
-              <div className="flex space-x-2 mt-4">
+              <div className="flex space-x-3 mt-4">
                 {!saved && !isApplied && (
                   <button
                     onClick={handleSave}
                     disabled={saved}
                     className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-lg transition-all duration-200`}
                   >
-                    <Save className={`h-5 w-5 mr-1 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} fill={saved ? 'currentColor' : 'none'} />
+                    <Save className={`h-5 w-5 mr-2 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} fill={saved ? 'currentColor' : 'none'} />
                     {saved ? 'Saved' : 'Save'}
                   </button>
                 )}
@@ -310,7 +317,7 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
                   onClick={handleShare}
                   className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
                 >
-                  <Share2 className="h-5 w-5 mr-1 text-gray-400" />
+                  <Share2 className="h-5 w-5 mr-2 text-gray-400" />
                   Share
                 </button>
               </div>
@@ -322,81 +329,77 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   About {companyName}
                 </h2>
-                <p className="text-gray-700 mb-6">{job?.companyPosted?.companyDetails?.description || 'No description provided.'}</p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="text-2xl font-bold text-gray-900">{job?.companyPosted?.companyDetails?.numberOfEmployees || 'N/A'}</div>
-                    <div className="text-sm text-gray-600">Employees</div>
+                <p className="text-gray-700 mb-8">{job?.companyPosted?.companyDetails?.description || 'No description provided.'}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                    <div className="text-3xl font-bold text-gray-900 mb-2">{job?.companyPosted?.companyDetails?.numberOfEmployees || 'N/A'}</div>
+                    <div className="text-sm text-gray-600 font-medium">Employees</div>
                   </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="text-2xl font-bold text-gray-900">{job?.companyPosted?.companyDetails?.industryType || 'N/A'}</div>
-                    <div className="text-sm text-gray-600">Industries</div>
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                    <div className="text-3xl font-bold text-gray-900 mb-2">{job?.companyPosted?.companyDetails?.industryType || 'N/A'}</div>
+                    <div className="text-sm text-gray-600 font-medium">Industries</div>
                   </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="text-2xl font-bold text-gray-900">{job?.country || job?.companyPosted?.companyDetails?.country || 'N/A'}</div>
-                    <div className="text-sm text-gray-600">Countries</div>
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                    <div className="text-3xl font-bold text-gray-900 mb-2">{job?.country || job?.companyPosted?.companyDetails?.country || 'N/A'}</div>
+                    <div className="text-sm text-gray-600 font-medium">Countries</div>
                   </div>
                 </div>
               </div>
 
               {/* Description */}
-              <div className="px-6 py-6">
+              <div className="px-6 py-6 border-t border-gray-100">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   {job.lookingFor} Description
                 </h2>
-                <div className="text-gray-700">
-                  {job?.description ? (
-                    <ul className="list-disc pl-5 space-y-2">
-                      {splitIntoMeaningfulPoints(job.description).map((point, index) => (
-                        <li key={index}>{point}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No job description provided.</p>
-                  )}
+                <div className="text-gray-700 whitespace-pre-wrap">
+                  {job?.description || 'No job description provided.'}
                 </div>
               </div>
 
               {/* Job Details */}
-              <div className="px-6 py-6">
+              <div className="px-6 py-6 border-t border-gray-100">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   Job Details
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Looking For</div>
-                    <div className="mt-1 text-base text-gray-900">{job?.lookingFor || 'Not Specified'}</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Looking For</div>
+                      <div className="text-base text-gray-900">{job?.lookingFor || 'Not Specified'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Employment Type</div>
+                      <div className="text-base text-gray-900">{job?.employmentType?.join(', ') || 'Not Specified'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Job Roles</div>
+                      <div className="text-base text-gray-900">{job?.jobRoles?.join(', ') || 'Not Specified'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Work Mode</div>
+                      <div className="text-base text-gray-900">{job?.workMode?.join(', ') || 'Not Specified'}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Employment Type</div>
-                    <div className="mt-1 text-base text-gray-900">{job?.employmentType?.join(', ') || 'Not Specified'}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Job Roles</div>
-                    <div className="mt-1 text-base text-gray-900">{job?.jobRoles?.join(', ') || 'Not Specified'}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Work Mode</div>
-                    <div className="mt-1 text-base text-gray-900">{job?.workMode?.join(', ') || 'Not Specified'}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Preferred Hiring Mode</div>
-                    <div className="mt-1 text-base text-gray-900">{job?.companyHiringPreference?.preferredMode || 'Not Specified'}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Amenities/Facilities Required</div>
-                    <div className="mt-1 text-base text-gray-900">{job?.amenitiesRequired?.join(', ') || 'None'}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Job Location</div>
-                    <div className="mt-1 text-base text-gray-900">{job?.workLocation?.join(', ') || 'Not Specified'}</div>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Preferred Hiring Mode</div>
+                      <div className="text-base text-gray-900">{job?.companyHiringPreference?.preferredMode || 'Not Specified'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Amenities/Facilities Required</div>
+                      <div className="text-base text-gray-900">{job?.amenitiesRequired?.join(', ') || 'None'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Job Location</div>
+                      <div className="text-base text-gray-900">{workLocation}</div>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Required Skills */}
               {job?.skills && job?.skills.length > 0 && (
-                <div className="px-6 py-6">
+                <div className="px-6 py-6 border-t border-gray-100">
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                     Required Skills
                   </h2>
@@ -414,71 +417,110 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
               )}
 
               {/* Eligibility Criteria */}
-              <div className="px-6 py-6">
+              <div className="px-6 py-6 border-t border-gray-100">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   Eligibility Criteria
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 mb-6">
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Eligible Degrees</div>
-                    <div className="mt-1 text-base text-gray-900">{job?.degree?.join(' / ') || 'Not Specified'}</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Eligible Degrees</div>
+                      <div className="text-base text-gray-900">{job?.degree?.join(' / ') || 'Not Specified'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Eligible Streams</div>
+                      <div className="text-base text-gray-900">{job?.studentStreams?.join(', ') || 'Not Specified'}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Eligible Streams</div>
-                    <div className="mt-1 text-base text-gray-900">{job?.studentStreams?.join(', ') || 'Not Specified'}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Eligible College Categories</div>
-                    <div className="mt-1 text-base text-gray-900">{job?.collegeCategories?.join(', ') || 'Not Specified'}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Minimum Students Required</div>
-                    <div className="mt-1 text-base text-gray-900">{job?.minimumStudents || 'Not Specified'}</div>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Eligible College Categories</div>
+                      <div className="text-base text-gray-900">{job?.collegeCategories?.join(', ') || 'Not Specified'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Minimum Students Required</div>
+                      <div className="text-base text-gray-900">{job?.minimumStudents || 'Not Specified'}</div>
+                    </div>
                   </div>
                 </div>
                 
                 {/* Additional Criteria */}
                 {(job?.eligibilityCriteria || job?.additionalEligibilityCriteria || job?.additionalCriteria) && (
                   <div className="mt-6">
-                    <div className="text-sm font-medium text-[#667eea] mb-2">Additional Criteria</div>
-                    <ul className="list-disc pl-5 text-base text-gray-700 space-y-2">
+                    <div className="text-sm font-medium text-[#667eea] mb-3">Additional Criteria</div>
+                    <div className="space-y-2">
                       {splitIntoMeaningfulPoints(
                         job.eligibilityCriteria || 
                         job.additionalEligibilityCriteria || 
                         job.additionalCriteria
-                      ).map((point, index) => (
-                        <li key={index}>{point}</li>
-                      ))}
-                    </ul>
+                      ).map((point, index) => {
+                        // Special handling for specific criteria
+                        if (point.toLowerCase().includes('minimum') && point.toLowerCase().includes('60%')) {
+                          return (
+                            <div key={index} className="flex items-start">
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt-2 mr-3 flex-shrink-0"></div>
+                              <span className="text-base text-gray-700">Minimum 60% marks required</span>
+                            </div>
+                          );
+                        } else if (point.toLowerCase().includes('fresher')) {
+                          return (
+                            <div key={index} className="flex items-start">
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt-2 mr-3 flex-shrink-0"></div>
+                              <span className="text-base text-gray-700">Freshers preferred</span>
+                            </div>
+                          );
+                        } else if (point.toLowerCase().includes('urgent')) {
+                          return (
+                            <div key={index} className="flex items-start">
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt-2 mr-3 flex-shrink-0"></div>
+                              <span className="text-base text-gray-700">Urgent hiring</span>
+                            </div>
+                          );
+                        } else if (point.toLowerCase().includes('remote')) {
+                          return (
+                            <div key={index} className="flex items-start">
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt-2 mr-3 flex-shrink-0"></div>
+                              <span className="text-base text-gray-700">Remote work location available</span>
+                            </div>
+                          );
+                        }
+                        return (
+                          <div key={index} className="flex items-start">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt-2 mr-3 flex-shrink-0"></div>
+                            <span className="text-base text-gray-700">{point}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>
 
               {/* Compensation & Benefits */}
-              <div className="px-6 py-6">
+              <div className="px-6 py-6 border-t border-gray-100">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   Compensation & Benefits
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="text-sm font-medium text-[#667eea]">Total CTC</div>
-                    <div className="text-xl font-bold text-gray-900">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                    <div className="text-sm font-medium text-[#667eea] mb-2">Total CTC</div>
+                    <div className="text-2xl font-bold text-gray-900">
                       {job?.packageDetails?.totalCTC
                         ? `${job.packageDetails.currency || ''} ${job.packageDetails.totalCTC.toLocaleString()}`
                         : 'Not Specified'}
                     </div>
                   </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="text-sm font-medium text-[#667eea]">Fixed Pay</div>
-                    <div className="text-xl font-bold text-gray-900">
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                    <div className="text-sm font-medium text-[#667eea] mb-2">Fixed Pay</div>
+                    <div className="text-2xl font-bold text-gray-900">
                       {job?.packageDetails?.fixedPay
                         ? `${job.packageDetails.currency || ''} ${job.packageDetails.fixedPay.toLocaleString()}`
                         : 'N/A'}
                     </div>
                   </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="text-sm font-medium text-[#667eea]">Variable Pay</div>
-                    <div className="text-xl font-bold text-gray-900">
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                    <div className="text-sm font-medium text-[#667eea] mb-2">Variable Pay</div>
+                    <div className="text-2xl font-bold text-gray-900">
                       {job?.packageDetails?.joiningBonus
                         ? `${job.packageDetails.currency || ''} ${job.packageDetails.joiningBonus.toLocaleString()}`
                         : 'N/A'}
@@ -505,7 +547,7 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
               </div>
 
               {/* Selection Process */}
-              <div className="px-6 py-6">
+              <div className="px-6 py-6 border-t border-gray-100">
                 <div className="mb-4">
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-1">
                     Selection Process
@@ -541,7 +583,7 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
               </div>
 
               {/* Important Dates */}
-              <div className="px-6 py-6">
+              <div className="px-6 py-6 border-t border-gray-100">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   Important Dates
                 </h2>
@@ -569,7 +611,7 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
 
               {/* Contact Person */}
               {job?.contactPerson && (
-                <div className="px-6 py-6">
+                <div className="px-6 py-6 border-t border-gray-100">
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                     Contact Person
                   </h2>
@@ -609,25 +651,27 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
                   </div>
                 </div>
               )}
-
-              {/* Register Now Button at Bottom */}
-              {!isApplied && jobStatus.status !== 'Completed' && (
-                <div className="px-6 py-6 bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5">
-                  <div className="flex justify-center">
-                    <button 
-                      className="inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-lg font-medium rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={handleApply}
-                      disabled={isSubmitting}
-                    >
-                      <CheckCircle className="h-5 w-5 mr-2" />
-                      {isSubmitting ? 'Applying...' : 'Register Now'}
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
+
+        {/* Fixed Footer with Register Now Button */}
+        {!isApplied && jobStatus.status !== 'Completed' && (
+  <div className="sticky bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-40">
+    <div className="max-w-4xl mx-auto">
+      <div className="flex justify-center">
+        <button 
+          className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={handleApply}
+          disabled={isSubmitting}
+        >
+          <CheckCircle className="h-5 w-5 mr-2" />
+          {isSubmitting ? 'Applying...' : 'Register Now'}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       </div>
     </>
   );

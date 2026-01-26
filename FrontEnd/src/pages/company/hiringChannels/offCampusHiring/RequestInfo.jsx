@@ -13,28 +13,6 @@ const toolsOptions = [
 ].map(tool => ({ value: tool, label: tool }));
 
 export default function OffCampusHiringForm({ onBackClick }) {
-  
-  // const degreeStreamMapping = {
-  //   "Bachelor of Technology (B.Tech)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
-  //   "Bachelor of Engineering (BE)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
-  //   "Master of Technology (M.Tech)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
-  //   "Master of Engineering (ME)": ['Computer Science', 'Information Technology', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Chemical', 'Aerospace', 'Automobile', 'Biotechnology', 'Other'],
-  //   "Master of Business Administration (MBA)": ['Marketing', 'Finance', 'Human Resources', 'Operations', 'IT & Systems', 'International Business', 'Other'],
-  //   "Bachelor of Business Administration (BBA)": ['Marketing', 'Finance', 'Human Resources', 'General Management', 'Other'],
-  //   "Bachelor of Commerce (B.Com)": ['Accounting', 'Finance', 'Taxation', 'Economics', 'Other'],
-  //   "Master of Commerce (M.Com)": ['Accounting', 'Finance', 'Taxation', 'Economics', 'Other'],
-  //   "Bachelor of Science (B.Sc)": ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'Computer Science', 'Statistics', 'Other'],
-  //   "Master of Science (M.Sc)": ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'Computer Science', 'Statistics', 'Other'],
-  //   "Bachelor of Computer Applications (BCA)": ['Computer Applications', 'Software Development', 'Data Science', 'Other'],
-  //   "Master of Computer Applications (MCA)": ['Computer Applications', 'Software Development', 'Data Science', 'Other'],
-  //   "Bachelor of Arts (BA)": ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology', 'Other'],
-  //   "Master of Arts (MA)": ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology', 'Other'],
-  //   "Doctor of Philosophy (PhD)": ['Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Information Technology', 'Biotechnology', 'Chemical', 'Aerospace', 'Automobile', 'MBA', 'BBA', 'B.Com', 'B.Sc', 'BA', 'B.Tech', 'M.Tech', 'PhD', 'Other'],
-  //   "Post Doctorate": ['Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Information Technology', 'Biotechnology', 'Chemical', 'Aerospace', 'Automobile', 'MBA', 'BBA', 'B.Com', 'B.Sc', 'BA', 'B.Tech', 'M.Tech', 'PhD', 'Other'],
-  //   "High School / Diploma": ["All Streams", "Science", "Commerce", "Arts", "Vocational"],
-  //   "Associate Degree": ["All Streams", "Technical", "Business", "Healthcare"],
-  //   "Other": ["Other"]
-  // };
 
   const jobRoles = ['Software Developer', 'Data Scientist', 'DevOps Engineer', 'QA Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'Mobile App Developer', 'UI/UX Designer', 'Product Manager', 'Business Analyst', 'Data Analyst', 'Machine Learning Engineer', 'Cloud Architect', 'Network Engineer', 'Cyber Security Specialist', 'Technical Writer', 'Sales Engineer', 'Marketing Specialist', 'HR Recruiter', 'Finance Analyst', 'Other'];
   //const skillsOptions = ['JavaScript', 'Python', 'Java', 'React', 'Node.js', 'HTML/CSS', 'SQL', 'MongoDB', 'AWS', 'Docker', 'Kubernetes', 'Machine Learning', 'Data Structures', 'Algorithms', 'Git', 'REST APIs'];
@@ -596,72 +574,85 @@ const skillsOptions = useMemo(() => {
               </div>
 
               {/* Student Stream */}
-              <div ref={studentStreamsRef} className="relative">
-                <label className="block font-medium mb-2 text-sm text-gray-700">Student Stream <span className="text-red-500">*</span></label>
-                <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
-                  {formData.studentStreams.map(stream => (
-                    <div key={stream} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                      <span>{stream}</span>
-                      <button type="button" onClick={() => removeSelectedItem('studentStreams', stream)} className="ml-1 text-gray-500 hover:text-gray-700">
-                        <X size={12} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div
-                  onClick={() => formData.degree.length > 0 && toggleDropdown('studentStreams')}
-                  className={`flex items-center justify-between p-2 w-full border rounded-lg ${!formData.degree.length ? 'bg-gray-50 cursor-not-allowed' : 'cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white'} border-gray-200`}
-                >
-                  <span className="text-sm text-gray-500">
-                    {formData.degree.length > 0 ? 'Select streams' : 'Select degree first'}
-                  </span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.studentStreams ? "rotate-180" : ""} text-gray-400`} />
-                </div>
-                {dropdownOpen.studentStreams && formData.degree.length > 0 && (
-                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                    <div className="p-2 border-b border-gray-100 flex">
-                      <input
-                        type="text"
-                        placeholder="Add custom stream..."
-                        value={customStream}
-                        onChange={(e) => setCustomStream(e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
-                          }
-                        }}
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
-                        }}
-                        className="ml-2 px-3 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-medium"
-                      >
-                        Add
-                      </button>
-                    </div>
-                    <div className="max-h-40 overflow-auto">
-                      {availableStreams.length > 0 ? (
-                        availableStreams.map(stream => (
-                          <div key={stream} onClick={() => handleMultiSelect('studentStreams', stream)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.studentStreams.includes(stream) ? "bg-blue-50" : ""}`}>
-                            <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.studentStreams.includes(stream) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{stream}</span>
-                              {formData.studentStreams.includes(stream) && <span className="text-[#667eea]">✓</span>}
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="px-3 py-2 text-sm text-gray-500 border-b border-gray-100">Add streams manually</div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+<div ref={studentStreamsRef} className="relative">
+  <label className="block font-medium mb-2 text-sm text-gray-700">Student Stream <span className="text-red-500">*</span></label>
+  <div className="flex flex-wrap gap-1 mb-2 max-h-20 overflow-y-auto">
+    {formData.studentStreams.map(stream => (
+      <div key={stream} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+        <span>{stream}</span>
+        <button type="button" onClick={() => removeSelectedItem('studentStreams', stream)} className="ml-1 text-gray-500 hover:text-gray-700">
+          <X size={12} />
+        </button>
+      </div>
+    ))}
+  </div>
+  <div
+    onClick={() => formData.degree.length > 0 && toggleDropdown('studentStreams')}
+    className={`flex items-center justify-between p-3 w-full border rounded-lg ${!formData.degree.length ? 'bg-gray-50 cursor-not-allowed' : 'cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white'} border-gray-200`}
+  >
+    <span className="text-sm text-gray-500">
+      {formData.degree.length > 0 ? 'Select streams' : 'Select degree first'}
+    </span>
+    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.studentStreams ? "rotate-180" : ""} text-gray-400`} />
+  </div>
+  {dropdownOpen.studentStreams && formData.degree.length > 0 && (
+    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+      {/* Add custom stream section */}
+      <div className="p-2 border-b border-gray-100 bg-gray-50">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Add custom stream..."
+            value={customStream}
+            onChange={(e) => setCustomStream(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
+              }
+            }}
+            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
+            }}
+            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+      
+      {/* Scrollable list of streams */}
+      <div className="overflow-y-auto max-h-48">
+        {availableStreams.length > 0 ? (
+          availableStreams.map(stream => (
+            <div 
+              key={stream} 
+              onClick={() => handleMultiSelect('studentStreams', stream)} 
+              className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+                formData.studentStreams.includes(stream) ? "bg-blue-50/50" : ""
+              }`}
+            >
+              <span className={`text-sm ${formData.studentStreams.includes(stream) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                {stream}
+              </span>
+              {formData.studentStreams.includes(stream) && <span className="text-[#667eea] font-bold">✓</span>}
+            </div>
+          ))
+        ) : (
+          <div className="p-4 text-center text-gray-400 text-xs italic">
+            No streams found. Add a stream above.
+          </div>
+        )}
+      </div>
+    </div>
+  )}
+</div>
             </div>
 
             {/* Third Row: Eligibility and Description */}
@@ -702,63 +693,80 @@ const skillsOptions = useMemo(() => {
             {/* Fourth Row: Skills and Benefits */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Skills */}
-              <div ref={skillsRef} className="relative">
-                <label className="block font-medium mb-2 text-sm text-gray-700">Skills <span className="text-red-500">*</span></label>
-                <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
-                  {formData.skills.map(skill => (
-                    <div key={skill} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                      <span>{skill}</span>
-                      <button type="button" onClick={() => removeSelectedItem('skills', skill)} className="ml-1 text-gray-500 hover:text-gray-700">
-                        <X size={12} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div onClick={() => toggleDropdown('skills')} className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white">
-                  <span className="text-sm text-gray-500">Select skills</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.skills ? "rotate-180" : ""} text-gray-400`} />
-                </div>
-                {dropdownOpen.skills && (
-                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                    <div className="p-2 border-b border-gray-100 flex">
-                      <input
-                        type="text"
-                        placeholder="Add custom skill..."
-                        value={customSkill}
-                        onChange={(e) => setCustomSkill(e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
-                          }
-                        }}
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
-                        }}
-                        className="ml-2 px-3 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-medium"
-                      >
-                        Add
-                      </button>
-                    </div>
-                    <div className="max-h-40 overflow-auto">
-                      {skillsOptions.map(skill => (
-                        <div key={skill} onClick={() => handleMultiSelect('skills', skill)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.skills.includes(skill) ? "bg-blue-50" : ""}`}>
-                          <div className="flex items-center justify-between">
-                            <span className={`text-sm ${formData.skills.includes(skill) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{skill}</span>
-                            {formData.skills.includes(skill) && <span className="text-[#667eea]">✓</span>}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+<div ref={skillsRef} className="relative">
+  <label className="block font-medium mb-2 text-sm text-gray-700">Skills <span className="text-red-500">*</span></label>
+  <div className="flex flex-wrap gap-1 mb-2 max-h-20 overflow-y-auto">
+    {formData.skills.map(skill => (
+      <div key={skill} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+        <span>{skill}</span>
+        <button type="button" onClick={() => removeSelectedItem('skills', skill)} className="ml-1 text-gray-500 hover:text-gray-700">
+          <X size={12} />
+        </button>
+      </div>
+    ))}
+  </div>
+  <div onClick={() => toggleDropdown('skills')} className="flex items-center justify-between p-3 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white">
+    <span className="text-sm text-gray-500">Select skills</span>
+    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.skills ? "rotate-180" : ""} text-gray-400`} />
+  </div>
+  {dropdownOpen.skills && (
+    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+      {/* Add custom skill section */}
+      <div className="p-2 border-b border-gray-100 bg-gray-50">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Add custom skill..."
+            value={customSkill}
+            onChange={(e) => setCustomSkill(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
+              }
+            }}
+            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
+            }}
+            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+      
+      {/* Scrollable list of skills */}
+      <div className="overflow-y-auto max-h-48">
+        {skillsOptions.map(skill => (
+          <div 
+            key={skill} 
+            onClick={() => handleMultiSelect('skills', skill)} 
+            className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+              formData.skills.includes(skill) ? "bg-blue-50/50" : ""
+            }`}
+          >
+            <span className={`text-sm ${formData.skills.includes(skill) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+              {skill}
+            </span>
+            {formData.skills.includes(skill) && <span className="text-[#667eea] font-bold">✓</span>}
+          </div>
+        ))}
+        
+        {skillsOptions.length === 0 && (
+          <div className="p-4 text-center text-gray-400 text-xs italic">
+            No skills found. Add a skill above.
+          </div>
+        )}
+      </div>
+    </div>
+  )}
+</div>
 
               {/* Benefits Offered */}
               <div ref={benefitsRef} className="relative">

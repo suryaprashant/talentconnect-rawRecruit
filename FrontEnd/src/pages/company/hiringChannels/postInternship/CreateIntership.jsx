@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { ChevronDown, X, Briefcase, MapPin, DollarSign, Users, BookOpen, Target, Award, Shield, Clock, GraduationCap } from 'lucide-react';
+import { ChevronDown, X, Briefcase } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { City } from 'country-state-city';
@@ -7,7 +7,7 @@ import CreatableSelect from 'react-select/creatable';
 
 export default function PostIntership() {
   const initialState = {
-    jobTitle: '',
+    jobTitles: [],
     description: '',
     location: [],
     workMode: 'On-site',
@@ -32,6 +32,58 @@ export default function PostIntership() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [descriptionError, setDescriptionError] = useState("");
 
+  // Add job title options array
+  const jobTitleOptions = [
+    "Software Engineer",
+    "Data Analyst", 
+    "DevOps Engineer",
+    "UX/UI Designer",
+    "Product Manager",
+    "QA Engineer",
+    "System Administrator",
+    "Network Engineer",
+    "Business Analyst",
+    "Machine Learning Engineer",
+    "Frontend Developer",
+    "Backend Developer",
+    "Full Stack Developer",
+    "Mobile App Developer",
+    "Cloud Engineer",
+    "Database Administrator",
+    "Security Analyst",
+    "Project Manager",
+    "Scrum Master",
+    "Technical Writer",
+    "Data Scientist",
+    "AI Engineer",
+    "DevOps Specialist",
+    "Site Reliability Engineer",
+    "IT Support Specialist",
+    "Cybersecurity Analyst",
+    "Digital Marketing Specialist",
+    "Content Writer",
+    "Graphic Designer",
+    "UI Designer",
+    "UX Researcher",
+    "Product Designer",
+    "Business Intelligence Analyst",
+    "Data Engineer",
+    "Machine Learning Specialist",
+    "AR/VR Developer",
+    "Blockchain Developer",
+    "Game Developer",
+    "Embedded Systems Engineer",
+    "Hardware Engineer",
+    "Network Administrator",
+    "Systems Engineer",
+    "IT Manager",
+    "Solutions Architect",
+    "Technical Lead",
+    "Engineering Manager",
+    "CTO",
+    "CIO"
+  ];
+
   const educationOptions = ["High School", "Bachelor's Degree", "Master's Degree", "PhD", "Diploma", "Other"];
   const fieldOfStudyOptions = ["Computer Science", "Engineering", "Business", "Arts", "Sciences", "Mathematics", "Medicine", "Law", "Other"];
   const durationOptions = ["1 Month", "2 Months", "3 Months", "6 Months", "1 Year", "Flexible"];
@@ -41,24 +93,33 @@ export default function PostIntership() {
   const allBenefits = ["Health Insurance", "Paid Time Off", "Mentorship Program", "Certificate of Completion", "Letter of Recommendation", "Flexible Hours"];
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
+  // Define cityOptions here before any hooks that use it
+  const cityOptions = useMemo(() => {
+    try {
+      const cities = City.getCitiesOfCountry('IN') || [];
+      return cities.map(city => ({
+        value: city.name,
+        label: city.name,
+      }));
+    } catch (error) {
+      console.error("Error loading cities:", error);
+      return [];
+    }
+  }, []);
+
   const [customSkill, setCustomSkill] = useState('');
   const [customBenefit, setCustomBenefit] = useState('');
   const [customStream, setCustomStream] = useState('');
-
-  const cityOptions = useMemo(() =>
-    City.getCitiesOfCountry('IN').map(city => ({
-      value: city.name,
-      label: city.name,
-    })),
-  []);
-
+  const [customJobTitle, setCustomJobTitle] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState({
+    jobTitles: false,
     skills: false,
     benefits: false,
     studentStreams: false,
     tags: false
   });
 
+  const jobTitlesRef = useRef(null);
   const skillsRef = useRef(null);
   const benefitsRef = useRef(null);
   const studentStreamsRef = useRef(null);
@@ -67,6 +128,7 @@ export default function PostIntership() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdownRefs = {
+        jobTitles: jobTitlesRef,
         skills: skillsRef,
         benefits: benefitsRef,
         studentStreams: studentStreamsRef,
@@ -162,7 +224,7 @@ export default function PostIntership() {
     }
 
     const requiredFields = {
-      jobTitle: "Job Title",
+      jobTitles: "Job Title",
       description: "Job Description",
       location: "Location",
       'minPackage.amount': "Stipend Amount",
@@ -251,43 +313,111 @@ export default function PostIntership() {
 
           <form onSubmit={handlePostJob}>
             <div className="space-y-6">
-              {/* First Row: Job Title and Work Mode */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Job Title */}
-                <div>
-                  <label htmlFor="jobTitle" className="block font-medium mb-2 text-sm text-gray-700">
-                    Job Title <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="jobTitle"
-                    name="jobTitle"
-                    placeholder="e.g., Frontend Developer Intern"
-                    className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                    value={formData.jobTitle}
-                    onChange={handleInputChange}
-                  />
-                </div>
+              {/* First Row: Job Titles and Work Mode */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {/* Job Titles - Updated to support multiple selection */}
+  <div ref={jobTitlesRef} className="relative">
+    <label className="block font-medium mb-2 text-sm text-gray-700">
+      Job Titles <span className="text-red-500">*</span>
+    </label>
+    
+    {/* Selected tags - removed scrolling from here */}
+    <div className="flex flex-wrap gap-1 mb-2">
+      {formData.jobTitles.map(title => (
+        <div key={title} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+          <span>{title}</span>
+          <button
+            type="button"
+            onClick={() => removeSelectedItem('jobTitles', title)}
+            className="ml-1 text-gray-500 hover:text-gray-700"
+          >
+            <X size={12} />
+          </button>
+        </div>
+      ))}
+    </div>
+    
+    <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[38px]" onClick={() => toggleDropdown('jobTitles')}>
+      <span className="text-sm text-gray-500">
+        {formData.jobTitles.length > 0 ? `${formData.jobTitles.length} title(s) selected` : "Select job titles (multiple allowed)"}
+      </span>
+      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.jobTitles ? "rotate-180" : ""} text-gray-400`} />
+    </div>
+    
+    {dropdownOpen.jobTitles && (
+      <div className="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+        {/* Custom input section - fixed height, not scrollable */}
+        <div className="p-2 border-b border-gray-100 bg-gray-50">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Add custom job title..."
+              value={customJobTitle}
+              onChange={(e) => setCustomJobTitle(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleCustomAdd('jobTitles', customJobTitle, setCustomJobTitle);
+                }
+              }}
+              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+            />
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCustomAdd('jobTitles', customJobTitle, setCustomJobTitle);
+              }}
+              className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+            >
+              Add
+            </button>
+          </div>
+        </div>
+        
+        {/* Scrollable list ONLY - this is the only scrollable area */}
+        <div className="overflow-y-auto max-h-48">
+          {jobTitleOptions.map((title, index) => (
+            <div
+              key={index}
+              onClick={() => handleMultiSelect('jobTitles', title)}
+              className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+                formData.jobTitles.includes(title) ? "bg-blue-50/50" : ""
+              }`}
+            >
+              <span className={`text-sm ${formData.jobTitles.includes(title) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                {title}
+              </span>
+              {formData.jobTitles.includes(title) && <span className="text-[#667eea] font-bold">✓</span>}
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+    
+    <p className="text-xs text-gray-500 mt-1">Select one or more job titles that apply to this internship</p>
+  </div>
 
-                {/* Work Mode */}
-                <div>
-                  <label className="block mb-2 font-medium text-sm text-gray-700">
-                    Work Mode <span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex gap-2">
-                    {['On-site', 'Remote', 'Hybrid'].map(mode => (
-                      <button
-                        key={mode}
-                        type="button"
-                        className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${formData.workMode === mode ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
-                        onClick={() => handleOptionSelect('workMode', mode)}
-                      >
-                        {mode}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+  {/* Work Mode */}
+  <div>
+    <label className="block mb-2 font-medium text-sm text-gray-700">
+      Work Mode <span className="text-red-500">*</span>
+    </label>
+    <div className="flex gap-2 p-2">
+      {['On-site', 'Remote', 'Hybrid'].map(mode => (
+        <button
+          key={mode}
+          type="button"
+          className={`flex-1 px-3 py-2 text-sm border rounded-lg transition-colors ${formData.workMode === mode ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
+          onClick={() => handleOptionSelect('workMode', mode)}
+        >
+          {mode}
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
 
               {/* Second Row: Location and Broadcast Options */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -372,6 +502,7 @@ export default function PostIntership() {
                 </div>
               </div>
 
+              {/* Rest of your form remains the same... */}
               {/* Third Row: Stipend and Openings */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Stipend */}
@@ -508,215 +639,242 @@ export default function PostIntership() {
               </div>
 
               {/* Seventh Row: Preferred Field of Study */}
-              <div ref={studentStreamsRef} className="relative">
-                <label className="block font-medium mb-2 text-sm text-gray-700">
-                  Preferred Field of Study
-                </label>
-                <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
-                  {formData.studentStreams.map(stream => (
-                    <div key={stream} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                      <span>{stream}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeSelectedItem('studentStreams', stream)}
-                        className="ml-1 text-gray-500 hover:text-gray-700"
-                      >
-                        <X size={12} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors min-h-[38px] bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('studentStreams')}>
-                  <span className="text-sm text-gray-500">Select preferred fields of study</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.studentStreams ? "rotate-180" : ""} text-gray-400`} />
-                </div>
-                {dropdownOpen.studentStreams && (
-                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                    <div className="p-2 border-b border-gray-100 flex">
-                      <input
-                        type="text"
-                        placeholder="Add custom field..."
-                        value={customStream}
-                        onChange={(e) => setCustomStream(e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleCustomAdd('studentStreams', customStream, setCustomStream);
-                          }
-                        }}
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCustomAdd('studentStreams', customStream, setCustomStream);
-                        }}
-                        className="ml-2 px-3 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-medium"
-                      >
-                        Add
-                      </button>
-                    </div>
-                    <div className="max-h-40 overflow-auto">
-                      {fieldOfStudyOptions.map(stream => (
-                        <div
-                          key={stream}
-                          onClick={() => handleMultiSelect('studentStreams', stream)}
-                          className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.studentStreams.includes(stream) ? "bg-blue-50" : ""}`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className={`text-sm ${formData.studentStreams.includes(stream) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>
-                              {stream}
-                            </span>
-                            {formData.studentStreams.includes(stream) && <span className="text-[#667eea]">✓</span>}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+<div ref={studentStreamsRef} className="relative">
+  <label className="block font-medium mb-2 text-sm text-gray-700">
+    Preferred Field of Study
+  </label>
+  
+  {/* Selected fields - removed scrolling from here */}
+  <div className="flex flex-wrap gap-1 mb-1">
+    {formData.studentStreams.map(stream => (
+      <div key={stream} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+        <span>{stream}</span>
+        <button
+          type="button"
+          onClick={() => removeSelectedItem('studentStreams', stream)}
+          className="ml-1 text-gray-500 hover:text-gray-700"
+        >
+          <X size={12} />
+        </button>
+      </div>
+    ))}
+  </div>
+  
+  <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors min-h-[38px] bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('studentStreams')}>
+    <span className="text-sm text-gray-500">Select preferred fields of study</span>
+    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.studentStreams ? "rotate-180" : ""} text-gray-400`} />
+  </div>
+  
+  {dropdownOpen.studentStreams && (
+    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+      {/* Custom input section - fixed height, not scrollable */}
+      <div className="p-2 border-b border-gray-100 bg-gray-50">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Add custom field..."
+            value={customStream}
+            onChange={(e) => setCustomStream(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleCustomAdd('studentStreams', customStream, setCustomStream);
+              }
+            }}
+            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCustomAdd('studentStreams', customStream, setCustomStream);
+            }}
+            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+      
+      {/* Scrollable list ONLY - this is the only scrollable area */}
+      <div className="overflow-y-auto max-h-48">
+        {fieldOfStudyOptions.map(stream => (
+          <div
+            key={stream}
+            onClick={() => handleMultiSelect('studentStreams', stream)}
+            className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+              formData.studentStreams.includes(stream) ? "bg-blue-50/50" : ""
+            }`}
+          >
+            <span className={`text-sm ${formData.studentStreams.includes(stream) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+              {stream}
+            </span>
+            {formData.studentStreams.includes(stream) && <span className="text-[#667eea] font-bold">✓</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
 
               {/* Eighth Row: Skills and Benefits */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Skills */}
-                <div ref={skillsRef} className="relative">
-                  <label className="block font-medium mb-2 text-sm text-gray-700">Skills</label>
-                  <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
-                    {formData.skills.map((skill, index) => (
-                      <div key={index} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                        <span>{skill}</span>
-                        <button
-                          type="button"
-                          className="ml-1 text-gray-500 hover:text-gray-700"
-                          onClick={() => removeSelectedItem('skills', skill)}
-                        >
-                          <X size={12} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors min-h-[38px] bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('skills')}>
-                    <span className="text-sm text-gray-500">Select skills</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.skills ? "rotate-180" : ""} text-gray-400`} />
-                  </div>
-                  {dropdownOpen.skills && (
-                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                      <div className="p-2 border-b border-gray-100 flex">
-                        <input
-                          type="text"
-                          placeholder="Add custom skill..."
-                          value={customSkill}
-                          onChange={(e) => setCustomSkill(e.target.value)}
-                          onClick={(e) => e.stopPropagation()}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              handleCustomAdd('skills', customSkill, setCustomSkill);
-                            }
-                          }}
-                          className="w-full p-2 text-sm border border-gray-200 rounded-lg"
-                        />
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCustomAdd('skills', customSkill, setCustomSkill);
-                          }}
-                          className="ml-2 px-3 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-medium"
-                        >
-                          Add
-                        </button>
-                      </div>
-                      <div className="max-h-40 overflow-auto">
-                        {allSkills.map((skill, index) => (
-                          <div
-                            key={index}
-                            onClick={() => handleMultiSelect('skills', skill)}
-                            className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.skills.includes(skill) ? "bg-blue-50" : ""}`}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.skills.includes(skill) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>
-                                {skill}
-                              </span>
-                              {formData.skills.includes(skill) && <span className="text-[#667eea]">✓</span>}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+<div ref={skillsRef} className="relative">
+  <label className="block font-medium mb-2 text-sm text-gray-700">Skills</label>
+  
+  {/* Selected skills - removed scrolling from here */}
+  <div className="flex flex-wrap gap-1 mb-1">
+    {formData.skills.map((skill, index) => (
+      <div key={index} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+        <span>{skill}</span>
+        <button
+          type="button"
+          className="ml-1 text-gray-500 hover:text-gray-700"
+          onClick={() => removeSelectedItem('skills', skill)}
+        >
+          <X size={12} />
+        </button>
+      </div>
+    ))}
+  </div>
+  
+  <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors min-h-[38px] bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('skills')}>
+    <span className="text-sm text-gray-500">Select skills</span>
+    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.skills ? "rotate-180" : ""} text-gray-400`} />
+  </div>
+  
+  {dropdownOpen.skills && (
+    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+      {/* Custom input section - fixed height, not scrollable */}
+      <div className="p-2 border-b border-gray-100 bg-gray-50">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Add custom skill..."
+            value={customSkill}
+            onChange={(e) => setCustomSkill(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleCustomAdd('skills', customSkill, setCustomSkill);
+              }
+            }}
+            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCustomAdd('skills', customSkill, setCustomSkill);
+            }}
+            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+      
+      {/* Scrollable list ONLY - this is the only scrollable area */}
+      <div className="overflow-y-auto max-h-48">
+        {allSkills.map((skill, index) => (
+          <div
+            key={index}
+            onClick={() => handleMultiSelect('skills', skill)}
+            className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+              formData.skills.includes(skill) ? "bg-blue-50/50" : ""
+            }`}
+          >
+            <span className={`text-sm ${formData.skills.includes(skill) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+              {skill}
+            </span>
+            {formData.skills.includes(skill) && <span className="text-[#667eea] font-bold">✓</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
 
                 {/* Benefits */}
-                <div ref={benefitsRef} className="relative">
-                  <label className="block font-medium mb-2 text-sm text-gray-700">Benefits</label>
-                  <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
-                    {formData.benefits.map((benefit, index) => (
-                      <div key={index} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                        <span>{benefit}</span>
-                        <button
-                          type="button"
-                          className="ml-1 text-gray-500 hover:text-gray-700"
-                          onClick={() => removeSelectedItem('benefits', benefit)}
-                        >
-                          <X size={12} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors min-h-[38px] bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('benefits')}>
-                    <span className="text-sm text-gray-500">Select benefits</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.benefits ? "rotate-180" : ""} text-gray-400`} />
-                  </div>
-                  {dropdownOpen.benefits && (
-                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                      <div className="p-2 border-b border-gray-100 flex">
-                        <input
-                          type="text"
-                          placeholder="Add custom benefit..."
-                          value={customBenefit}
-                          onChange={(e) => setCustomBenefit(e.target.value)}
-                          onClick={(e) => e.stopPropagation()}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              handleCustomAdd('benefits', customBenefit, setCustomBenefit);
-                            }
-                          }}
-                          className="w-full p-2 text-sm border border-gray-200 rounded-lg"
-                        />
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCustomAdd('benefits', customBenefit, setCustomBenefit);
-                          }}
-                          className="ml-2 px-3 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-medium"
-                        >
-                          Add
-                        </button>
-                      </div>
-                      <div className="max-h-40 overflow-auto">
-                        {allBenefits.map((benefit, index) => (
-                          <div
-                            key={index}
-                            onClick={() => handleMultiSelect('benefits', benefit)}
-                            className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.benefits.includes(benefit) ? "bg-blue-50" : ""}`}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>
-                                {benefit}
-                              </span>
-                              {formData.benefits.includes(benefit) && <span className="text-[#667eea]">✓</span>}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+<div ref={benefitsRef} className="relative">
+  <label className="block font-medium mb-2 text-sm text-gray-700">Benefits</label>
+  
+  {/* Selected benefits - removed scrolling from here */}
+  <div className="flex flex-wrap gap-1 mb-1">
+    {formData.benefits.map((benefit, index) => (
+      <div key={index} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+        <span>{benefit}</span>
+        <button
+          type="button"
+          className="ml-1 text-gray-500 hover:text-gray-700"
+          onClick={() => removeSelectedItem('benefits', benefit)}
+        >
+          <X size={12} />
+        </button>
+      </div>
+    ))}
+  </div>
+  
+  <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors min-h-[38px] bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('benefits')}>
+    <span className="text-sm text-gray-500">Select benefits</span>
+    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.benefits ? "rotate-180" : ""} text-gray-400`} />
+  </div>
+  
+  {dropdownOpen.benefits && (
+    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+      {/* Custom input section - fixed height, not scrollable */}
+      <div className="p-2 border-b border-gray-100 bg-gray-50">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Add custom benefit..."
+            value={customBenefit}
+            onChange={(e) => setCustomBenefit(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleCustomAdd('benefits', customBenefit, setCustomBenefit);
+              }
+            }}
+            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCustomAdd('benefits', customBenefit, setCustomBenefit);
+            }}
+            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+      
+      {/* Scrollable list ONLY - this is the only scrollable area */}
+      <div className="overflow-y-auto max-h-48">
+        {allBenefits.map((benefit, index) => (
+          <div
+            key={index}
+            onClick={() => handleMultiSelect('benefits', benefit)}
+            className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+              formData.benefits.includes(benefit) ? "bg-blue-50/50" : ""
+            }`}
+          >
+            <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+              {benefit}
+            </span>
+            {formData.benefits.includes(benefit) && <span className="text-[#667eea] font-bold">✓</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
               </div>
 
               {/* Ninth Row: Certifications and Work Authorization */}

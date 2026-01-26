@@ -115,37 +115,53 @@ const PoolCollegeCard = ({ college, onClick, compact = false }) => {
 
   if (!college) return null;
 
-  // Fix: Better college name extraction
+  // =========== SIMPLIFIED COLLEGE NAME EXTRACTION ===========
   const getCollegeName = () => {
-    // Try multiple possible paths to get college name
-    if (college.collegePosted?.collegeUniversityDetails?.collegeName) {
-      return college.collegePosted.collegeUniversityDetails.collegeName;
-    }
-    if (college.collegePosted?.name) {
-      return college.collegePosted.name;
-    }
-    if (college.collegeName) {
+    // Priority 1: Root level fields (these exist in your data)
+    if (college.collegeName && college.collegeName !== 'College') {
       return college.collegeName;
     }
-    if (college.name) {
+    if (college.name && college.name !== 'College') {
       return college.name;
     }
+    
+    // Priority 2: Check if there's real data in collegePosted
+    if (college.collegePosted) {
+      if (college.collegePosted.collegeUniversityDetails?.collegeName) {
+        return college.collegePosted.collegeUniversityDetails.collegeName;
+      }
+      if (college.collegePosted.name) {
+        return college.collegePosted.name;
+      }
+    }
+    
+    // Priority 3: Fallback to normalized field
+    if (college.normalizedCollegeName) {
+      return college.normalizedCollegeName;
+    }
+    
+    // Last resort
     return 'College';
   };
 
   const collegeName = getCollegeName();
   
-  // Fix: Better logo extraction
+  // =========== SIMPLIFIED LOGO EXTRACTION ===========
   const getCollegeLogo = () => {
+    // Try root level first
+    if (college.logo) return college.logo;
+    if (college.profileImage) return college.profileImage;
+    
+    // Then check collegePosted
     if (college.collegePosted?.profileImage) {
       return college.collegePosted.profileImage;
     }
-    if (college.profileImage) {
-      return college.profileImage;
+    
+    // Then normalized field
+    if (college.normalizedLogo) {
+      return college.normalizedLogo;
     }
-    if (college.logo) {
-      return college.logo;
-    }
+    
     return '';
   };
 

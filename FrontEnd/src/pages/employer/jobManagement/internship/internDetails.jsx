@@ -281,7 +281,7 @@ import {
   Calendar, MapPin, Target, FileText, Building2, Globe, 
   ArrowUpRight, ClipboardList, Users, Award, ChevronLeft,
   Github, Linkedin, ExternalLink, X, GraduationCap, Globe as GlobeIcon,
-  CheckCircle, Clock, AlertCircle
+  CheckCircle, Clock, AlertCircle, Eye
 } from 'lucide-react';
 
 const InternshipDetails = ({ job, onClose, isVisited }) => {
@@ -588,40 +588,50 @@ const InternshipDetails = ({ job, onClose, isVisited }) => {
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-gray-200">
+            {/* Action Buttons - Updated to match main layout */}
+            <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-gray-200">
+              <button
+                onClick={() => handleViewApplicantDetails(selectedApplicant)}
+                className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
+                title="View Details"
+              >
+                <Eye size={16} />
+              </button>
               <button 
                 onClick={() => handleMessageClick(selectedApplicant)}
                 disabled={isProcessing}
-                className="flex items-center justify-center flex-1 py-3 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 text-blue-600 rounded-xl hover:bg-blue-100 transition-all duration-200 disabled:opacity-50"
+                className="p-2 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-600 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-200 disabled:opacity-50"
+                title="Message"
               >
-                <Send size={18} className="mr-2" />
-                {isProcessing ? 'Processing...' : 'Message Candidate'}
+                <Send size={16} />
               </button>
-              <button
-                onClick={() => acceptApplicant(selectedApplicant._id)}
-                disabled={isSubmitting}
-                className="flex items-center justify-center flex-1 py-3 bg-gradient-to-r from-green-100 to-green-50 border border-green-200 text-green-700 rounded-xl hover:bg-green-100 transition-all duration-200 disabled:opacity-50"
-              >
-                <CheckCircle size={18} className="mr-2" />
-                Accept Candidate
-              </button>
-              <button
-                onClick={() => shortlistApplicant(selectedApplicant._id)}
-                disabled={isSubmitting}
-                className="flex items-center justify-center flex-1 py-3 bg-gradient-to-r from-yellow-100 to-yellow-50 border border-yellow-200 text-yellow-700 rounded-xl hover:bg-yellow-100 transition-all duration-200 disabled:opacity-50"
-              >
-                <Clock size={18} className="mr-2" />
-                Shortlist Candidate
-              </button>
-              <button
-                onClick={() => rejectApplicant(selectedApplicant._id)}
-                disabled={isSubmitting}
-                className="flex items-center justify-center flex-1 py-3 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-700 rounded-xl hover:bg-red-100 transition-all duration-200 disabled:opacity-50"
-              >
-                <X size={18} className="mr-2" />
-                Reject Application
-              </button>
+              {currentStatus !== 'Accepted' && (
+                <button
+                  onClick={() => acceptApplicant(selectedApplicant._id)}
+                  disabled={isSubmitting}
+                  className="px-4 py-2 bg-gradient-to-r from-green-100 to-green-50 border border-green-200 text-green-700 rounded-lg hover:bg-green-100 hover:text-green-800 transition-all duration-200 disabled:opacity-50"
+                >
+                  Accept
+                </button>
+              )}
+              {currentStatus !== 'Shortlisted' && currentStatus !== 'Accepted' && (
+                <button
+                  onClick={() => shortlistApplicant(selectedApplicant._id)}
+                  disabled={isSubmitting}
+                  className="px-4 py-2 bg-gradient-to-r from-yellow-100 to-yellow-50 border border-yellow-200 text-yellow-700 rounded-lg hover:bg-yellow-100 hover:text-yellow-800 transition-all duration-200 disabled:opacity-50"
+                >
+                  Shortlist
+                </button>
+              )}
+              {currentStatus !== 'Rejected' && (
+                <button
+                  onClick={() => rejectApplicant(selectedApplicant._id)}
+                  disabled={isSubmitting}
+                  className="px-4 py-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-700 rounded-lg hover:bg-red-100 hover:text-red-800 transition-all duration-200 disabled:opacity-50"
+                >
+                  Reject
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -741,14 +751,14 @@ const InternshipDetails = ({ job, onClose, isVisited }) => {
                         </div>
                       </div>
 
-                      {/* Action Buttons */}
+                      {/* Action Buttons - Updated to match consistent style */}
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleViewApplicantDetails(application)}
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
                           title="View Details"
                         >
-                          <User size={16} />
+                          <Eye size={16} />
                         </button>
                         <button
                           onClick={() => handleMessageClick(application)}
