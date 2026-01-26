@@ -4,7 +4,7 @@ import secureRoute from '../../middlewares/secureRouteMiddleware.js';
 import { getRelevantOffCampusJobs } from '../../controllers/relevantJobContoller.js';
 const router = express.Router();
 
-router.get('/off-campus', secureRoute, getRelevantOffCampusJobs);
+router.get('/off-campus', getRelevantOffCampusJobs);
 router.get('/on-campus', secureRoute, getOnCampusPostingsForCompany);
 router.get('/on-campus/company/:id', secureRoute, getOnCampusPostingForCompanybyID);
 
