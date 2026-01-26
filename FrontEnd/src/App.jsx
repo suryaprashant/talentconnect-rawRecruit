@@ -268,6 +268,7 @@ import CompanyPoolCampusLayout from "./components/company/CompanyPoolCampusLayou
 import OffCampusJobs from "./pages/students/studentDashboard/offCampusListing/offCampusJobListing";
 import OffCampusLayout from "./components/student/studentDashboard/offCampusListing/OffCampusLayout";
 import InternshipLayout from "./components/student/studentDashboard/intershipOpportunity/InternshipLayout";
+import InternshipListingEmployer from "./pages/employer/jobManagement/internship/internahipListing";
 
 // Create query client
 const queryClient = new QueryClient();
@@ -609,7 +610,7 @@ function AppRoutes() {
 
               <Route path="/job-management/Off-campus/employer" element={<EmployerOffCampusJobManagement />} />
               <Route path="/job-management/job-listings/employer" element={<EmployerJobListingJobManagement />} />
-              <Route path="/employer/job-management/Internship" element={<EmployerJobListingJobManagement />} />
+              <Route path="/employer/job-management/Internship" element={<InternshipListingEmployer />} />
 
 
               <Route path="/employer/application-status/oncampus" element={<OncampusApplicationStatus />} />

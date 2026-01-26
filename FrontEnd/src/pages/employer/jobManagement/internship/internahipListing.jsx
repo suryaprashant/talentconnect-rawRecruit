@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Search, Eye, ChevronLeft, ChevronRight, Trash, Briefcase, MapPin, Calendar, Users, AlertCircle, DollarSign } from 'lucide-react';
+import {
+  Search, Eye, ChevronLeft, ChevronRight, Trash, Building2, Calendar,
+  AlertCircle, Users, Briefcase
+} from 'lucide-react';
 import ApplicantDetails from './internDetails';
-import { Link } from 'react-router-dom';
 import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
+import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 export default function InternshipListing() {
@@ -14,6 +17,7 @@ export default function InternshipListing() {
   const [selectedJob, setSelectedJob] = useState(null);
   const [showJobDetail, setShowJobDetail] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const itemsPerPage = 10;
 
@@ -22,7 +26,7 @@ export default function InternshipListing() {
     setError(null);
     try {
       const response = await getPostedJobs("Internship", "Applied");
-      setJobs(response?.data);
+      setJobs(response?.data || []);
     } catch (err) {
       console.error("Error fetching internships:", err);
       setError(err.response?.data?.message || err.message || "Failed to fetch internships.");
@@ -41,8 +45,8 @@ export default function InternshipListing() {
       const confirmed = window.confirm("This action can't be undone! Are you sure you want to delete the internship?");
       if (confirmed) {
         await deleteJobById(jobId);
-        fetchJobs();
-        toast.success(`Internship deleted successfully`);
+        await fetchJobs();
+        toast.success("Internship deleted successfully");
       }
     } catch (error) {
       console.error("Error deleting internship:", error);
@@ -53,20 +57,15 @@ export default function InternshipListing() {
   // Filter jobs based on search query
   const filteredJobs = jobs?.filter(job => {
     const searchLower = searchQuery.toLowerCase();
-    const locationsMatch = Array.isArray(job.location)
-      ? job.location.some(location =>
-        location?.toLowerCase().includes(searchLower))
-      : false;
-
     return (
       (job.jobTitle?.toLowerCase().includes(searchLower)) ||
+      (job.status?.toLowerCase().includes(searchLower)) ||
       (job.workMode?.toLowerCase().includes(searchLower)) ||
-      locationsMatch ||
-      (job._id?.toLowerCase().includes(searchLower))
+      (job.location?.[0]?.toLowerCase().includes(searchLower))
     );
   });
 
-  const totalItems = filteredJobs?.length;
+  const totalItems = filteredJobs?.length || 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentJobs = filteredJobs?.slice(startIndex, startIndex + itemsPerPage);
@@ -79,16 +78,6 @@ export default function InternshipListing() {
   const handleBackToList = () => {
     setSelectedJob(null);
     setShowJobDetail(false);
-  };
-
-  const displayLocations = (locations) => {
-    if (!locations || locations.length === 0) return 'N/A';
-    return Array.isArray(locations) ? locations.join(', ') : String(locations);
-  };
-
-  const formatStipend = (packageDetails) => {
-    if (!packageDetails || !packageDetails.currency || !packageDetails.amount) return 'N/A';
-    return `${packageDetails.currency} ${packageDetails.amount.toLocaleString()}`;
   };
 
   // If showing job detail, render the detail view
@@ -110,24 +99,37 @@ export default function InternshipListing() {
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl">
-                  <Briefcase className="h-6 w-6 text-[#667eea]" />
+                  <Building2 className="h-6 w-6 text-[#667eea]" />
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
                     Applications for: {selectedJob?.jobTitle || 'N/A'}
                   </h2>
                   <div className="flex flex-wrap items-center gap-3 mt-2">
-                    <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
-                      <MapPin className="h-3 w-3 mr-1.5" />
-                      {displayLocations(selectedJob?.location)}
+                    <span className={`inline-flex items-center text-sm px-3 py-1.5 rounded-lg ${
+                      selectedJob?.status === 'Published'
+                        ? 'bg-gradient-to-r from-green-100 to-green-50 text-green-700 border border-green-200'
+                        : selectedJob?.status === 'Draft'
+                        ? 'bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border border-yellow-200'
+                        : 'bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200'
+                    }`}>
+                      {selectedJob?.status || 'N/A'}
                     </span>
                     <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
-                      <Briefcase className="h-3 w-3 mr-1.5" />
-                      {selectedJob?.workMode || 'N/A Mode'}
+                      <Calendar className="h-3 w-3 mr-1.5" />
+                      {selectedJob?.endDate ? new Date(selectedJob.endDate).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric'
+                      }) : 'N/A'}
                     </span>
                     <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
-                      <DollarSign className="h-3 w-3 mr-1.5" />
-                      {formatStipend(selectedJob?.minPackage)}
+                      <Users className="h-3 w-3 mr-1.5" />
+                      Total Applications: {selectedJob?.applicationCount || 0}
+                    </span>
+                    <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
+                      <Eye className="h-3 w-3 mr-1.5" />
+                      Views: {selectedJob?.views || 0}
                     </span>
                   </div>
                 </div>
@@ -154,7 +156,7 @@ export default function InternshipListing() {
             <div className="mb-4 md:mb-0">
               <div className="flex items-center mb-2">
                 <div className="p-2 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <Briefcase className="h-5 w-5 text-[#667eea]" />
+                  <Building2 className="h-5 w-5 text-[#667eea]" />
                 </div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
                   Manage Internship Applications
@@ -166,18 +168,18 @@ export default function InternshipListing() {
             </div>
             
             {/* Search Bar */}
-            <div className="relative w-full md:w-96">
+            {/* <div className="relative w-full md:w-96">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-4 w-4 text-gray-400" />
               </div>
               <input
                 type="text"
                 className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
-                placeholder="Search by title, location, or work mode"
+                placeholder="Search by job title, status, or location"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -199,14 +201,11 @@ export default function InternshipListing() {
           {/* Table Header */}
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
             <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
-              <div className="col-span-3">Job Title</div>
-              <div className="col-span-2">Work Mode</div>
-              <div className="col-span-2">Location</div>
-              <div className="col-span-1">Stipend</div>
-              <div className="col-span-1 text-center">End Date</div>
-              <div className="col-span-1 text-center">Views</div>
-              <div className="col-span-1 text-center">New Applications</div>
-              <div className="col-span-1 text-center">Actions</div>
+              <div className="col-span-4">Internship Details</div>
+              <div className="col-span-2">Status</div>
+              <div className="col-span-2">Deadline</div>
+              <div className="col-span-1 text-center">Applications</div>
+              <div className="col-span-3 text-center">Actions</div>
             </div>
           </div>
 
@@ -229,89 +228,82 @@ export default function InternshipListing() {
               currentJobs?.map(job => (
                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                   <div className="grid grid-cols-12 gap-4 items-center">
-                    {/* Job Title */}
-                    <div className="col-span-3">
-                      <Link
-                        to={`/company-dashboard/preview/Internship/${job._id}?isApplied=true`}
-                        className="group cursor-pointer block"
-                      >
-                        <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors line-clamp-1">
+                    {/* Job Title - Full width without truncation */}
+                    <div className="col-span-4">
+                      <div className="group cursor-pointer block">
+                        <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors break-words whitespace-normal">
                           {job?.jobTitle || 'N/A'}
                         </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs font-medium px-2 py-0.5 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-full">
-                            {job?.internshipDuration || 'N/A'}
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                          <span className="inline-flex items-center text-xs font-medium px-2 py-0.5 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-full">
+                            <Briefcase className="h-2.5 w-2.5 mr-1" />
+                            {job?.workMode || 'N/A Mode'}
+                          </span>
+                          <span className="inline-flex items-center text-xs font-medium px-2 py-0.5 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-full">
+                            {job?.location?.[0] || 'No Location'}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {job?.internshipDuration || 'N/A Duration'}
                           </span>
                         </div>
-                      </Link>
+                      </div>
                     </div>
 
-                    {/* Work Mode */}
+                    {/* Status */}
                     <div className="col-span-2">
-                      <div className="flex items-center gap-2">
-                        <Briefcase className="h-3 w-3 text-gray-400 flex-shrink-0" />
-                        <span className="text-gray-700 text-sm capitalize truncate">
-                          {job?.workMode || 'N/A'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Location */}
-                    <div className="col-span-2">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-3 w-3 text-gray-400 flex-shrink-0" />
-                        <span className="text-gray-700 text-sm truncate">
-                          {displayLocations(job.location)}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Stipend */}
-                    <div className="col-span-1">
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="h-3 w-3 text-gray-400 flex-shrink-0" />
-                        <span className="text-gray-700 text-sm truncate">
-                          {formatStipend(job?.minPackage)}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* End Date */}
-                    <div className="col-span-1 text-center">
-                      <div className="flex flex-col items-center">
-                        <Calendar className="h-3 w-3 text-gray-400 mb-1" />
-                        <span className="text-gray-700 text-xs">
-                          {job?.endDate ? new Date(job.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'N/A'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Views */}
-                    <div className="col-span-1 text-center">
-                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
-                        {job?.views || 0}
+                      <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
+                        job?.status === 'Published'
+                          ? 'bg-gradient-to-r from-green-100 to-green-50 text-green-700 border border-green-200'
+                          : job?.status === 'Draft'
+                          ? 'bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border border-yellow-200'
+                          : 'bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200'
+                      }`}>
+                        {job?.status || 'N/A'}
                       </span>
+                    </div>
+
+                    {/* Deadline */}
+                    <div className="col-span-2">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-3 w-3 text-gray-400 flex-shrink-0" />
+                        <span className="text-gray-700 text-sm">
+                          {job?.endDate ? new Date(job.endDate).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                          }) : 'N/A'}
+                        </span>
+                      </div>
                     </div>
 
                     {/* Applications Count */}
-                    <div 
-                      className="col-span-1 text-center cursor-pointer group"
-                      onClick={() => handleViewApplications(job)}
-                    >
-                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
-                        {job?.applicationCount || 0}
-                      </span>
+                    <div className="col-span-1 text-center">
+                      <div className="inline-flex flex-col items-center">
+                        <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium">
+                          {job?.applicationCount || 0}
+                        </span>
+                        <span className="text-xs text-gray-500 mt-1">
+                          New
+                        </span>
+                      </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="col-span-1">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => handleViewApplications(job)}
+                    <div className="col-span-3">
+                      <div className="flex items-center justify-center gap-3">
+                        <Link
+                          to={`/company-dashboard/Internship/${job._id}?isApplied=true`}
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
-                          title="View Applications"
+                          title="View Details"
                         >
                           <Eye size={16} />
+                        </Link>
+                        <button
+                          onClick={() => handleViewApplications(job)}
+                          className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 border border-[#667eea]/20 text-[#667eea] rounded-lg hover:bg-[#667eea]/20 hover:border-[#667eea]/30 transition-all duration-200 text-sm font-medium"
+                          title="View Applications"
+                        >
+                          View Apps
                         </button>
                         <button 
                           onClick={() => handleDelete(job._id)}
