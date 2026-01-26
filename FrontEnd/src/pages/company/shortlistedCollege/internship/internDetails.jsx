@@ -546,10 +546,10 @@ const InternshipDetails = ({ job, onClose }) => {
       {showApplicantModal && <ApplicantDetailsModal />}
       
       {/* Interview Scheduler Popup */}
-      {toggleScheduleInterviewPopup && selectedApplicant && job && (
+      {toggleScheduleInterviewPopup && selectedApplicantForInterview  && job && (
               <InterviewSchedulerPopup
                 setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
-                application={selectedApplicant}
+                application={selectedApplicantForInterview}
                 job={job}
               />
             )}
