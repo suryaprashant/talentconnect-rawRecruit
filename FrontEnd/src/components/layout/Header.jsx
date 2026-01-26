@@ -5,18 +5,28 @@ import axios from 'axios';
 import NotificationsDropdown from './NotificationDropdown';
 import ProfileSwitchDropdown from '../employer/ProfileSwitchDropdown';
 import StandardProfileDropdown from './ProfileDropdown';
+import useGetSocketNotification from '@/context/useGetSocketNotification';
+
 
 function Header({ sidebarOpen, setSidebarOpen, profileOpen, setProfileOpen }) {
     const [authuser] = useLegacyAuth();
     const [profileImage, setProfileImage] = useState(null);
     const [loadingImage, setLoadingImage] = useState(true);
 
-    const [notificationsOpen, setNotificationsOpen] = useState(false);
+    const [notificationsOpen, setNotificationsOpen] = useState([]);
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
 
     const profileRef = useRef(null);
     const notificationRef = useRef(null);
+
+    // 🔔 Real-time notifications (same idea as chat)
+    useGetSocketNotification(
+      notifications,
+      setNotifications,
+      setUnreadCount
+    );
+
 
     // Fetch profile image based on user type
     useEffect(() => {

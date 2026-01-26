@@ -1,6 +1,7 @@
 import React from "react";
 import { MailIcon, PhoneIcon, ChevronDownIcon, AlertCircle, User } from "lucide-react";
 import { extractValidEmail } from "@/lib/utils";
+import { getProfileTypeFromJWT } from "../../../context/RoleContext/jwt";
 
 export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChange }) => {
   const parsedData = formData?.parsedData || {};
@@ -11,6 +12,16 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     phone: '',
     profileType: ''
   });
+
+  React.useEffect(() => {
+    const profileType = getProfileTypeFromJWT();
+
+    if (profileType && !formData.profileType) {
+      onProfileTypeSelect(profileType);
+      onChange({ profileType });
+    }
+  }, []);
+
 
   React.useEffect(() => {
     if (!formData?.parsedData) return;
@@ -476,6 +487,7 @@ const validateAllFields = () => {
             </div>
 
             {/* Profile Type Field - Full width below */}
+            {!formData.profileType && (
             <div>
               <label htmlFor="profileType" className="block text-gray-700 font-medium text-sm mb-2">
                 Profile Type <span className="text-red-500">*</span>
@@ -505,7 +517,7 @@ const validateAllFields = () => {
                   {validationErrors.profileType}
                 </div>
               )}
-            </div>
+            </div>)}
 
           </div>
 
