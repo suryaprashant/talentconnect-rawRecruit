@@ -1,0 +1,59 @@
+name: Deploy to VPS (Production)
+
+on:
+  push:
+    branches:
+      - preprod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+    
+      - name: Install backend dependencies
+        working-directory: BackEnd
+        run: npm install
+
+      - name: Backend syntax validation
+        working-directory: BackEnd
+        run: node -c src/app.js
+
+      
+      - name: Install frontend dependencies
+        working-directory: FrontEnd
+        run: npm install
+
+      - name: Frontend build validation
+        working-directory: FrontEnd
+        run: npm run build
+
+      
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            cd /var/www/raw-recruit/talentconnect-rawRecruit
+            git fetch origin
+            git checkout preprod
+            git pull origin preprod
+
+            cd FrontEnd
+            npm install
+            npm run build
+
+            cd ../BackEnd
+            npm install
+            pm2 reload rawrecruit-api || pm2 start src/app.js --name rawrecruit-api
