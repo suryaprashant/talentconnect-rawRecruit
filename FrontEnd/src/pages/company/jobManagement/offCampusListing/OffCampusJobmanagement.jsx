@@ -77,30 +77,30 @@ export default function OffCampusJobManagement() {
     setCurrentPage(pageNumber);
   };
 
-const handleView = async (job) => {
-  try {
-    // 1. Mark as read on the backend first
-    await markApplicationsVisited(job._id, "Off-campus", "Applied");
-    
-    // 2. Refresh dashboard to update counts
-    await fetchJobs(); 
-    
-    // 3. Open details and show everyone (isVisited="false" means "do not filter by unvisited")
-    setSelectedJob(job);
-    setIsVisited("false"); 
-    setShowJobDetail(true);
-  } catch (error) {
-    setSelectedJob(job);
-    setIsVisited("false");
-    setShowJobDetail(true);
-  }
-};
+  const handleView = async (job) => {
+    try {
+      // 1. Mark as read on the backend first
+      await markApplicationsVisited(job._id, "Off-campus", "Applied");
+      
+      // 2. Refresh dashboard to update counts
+      await fetchJobs(); 
+      
+      // 3. Open details and show everyone (isVisited="false" means "do not filter by unvisited")
+      setSelectedJob(job);
+      setIsVisited("false"); 
+      setShowJobDetail(true);
+    } catch (error) {
+      setSelectedJob(job);
+      setIsVisited("false");
+      setShowJobDetail(true);
+    }
+  };
 
-const showNewApplication = (job) => {
-  setSelectedJob(job);
-  setIsVisited("true"); // Show ONLY unvisited
-  setShowJobDetail(true);
-};
+  const showNewApplication = (job) => {
+    setSelectedJob(job);
+    setIsVisited("true"); // Show ONLY unvisited
+    setShowJobDetail(true);
+  };
 
   const handleEdit = (jobId) => {
     console.log(`Edit job with ID: ${jobId}`);
@@ -181,83 +181,18 @@ const showNewApplication = (job) => {
                 Track Your Job Listings and Streamline Candidate Applications
               </p>
             </div>
-            
-            {/* Search Bar */}
-            {/* <div className="relative w-full md:w-96">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
-                placeholder="Search by role, location, or work mode"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div> */}
           </div>
         </div>
-
-        {/* Tabs */}
-        {/* <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg mb-6 overflow-hidden">
-          <div className="flex overflow-x-auto">
-            {['All Jobs', 'Published', 'Drafts'].map(tab => (
-              <button
-                key={tab}
-                className={`flex-1 px-6 py-4 text-sm font-medium transition-all duration-200 relative ${
-                  activeTab === tab 
-                    ? 'text-[#667eea]' 
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-                onClick={() => {
-                  setActiveTab(tab);
-                  setCurrentPage(1);
-                }}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  {tab}
-                  <span className={`px-2 py-0.5 text-xs rounded-full ${
-                    activeTab === tab 
-                      ? 'bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 text-[#667eea]' 
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {getTabCount(tab)}
-                  </span>
-                </div>
-                {activeTab === tab && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#667eea] to-[#764ba2]"></div>
-                )}
-              </button>
-            ))}
-          </div>
-        </div> */}
-
-        {/* Stats Bar */}
-        {/* <div className="mb-6">
-          <div className="flex items-center justify-between text-sm text-gray-600 px-2">
-            <div>
-              Showing <span className="font-semibold text-[#667eea]">{startIndex + 1}</span> - <span className="font-semibold text-[#667eea]">{Math.min(endIndex, filteredJobs?.length || 0)}</span> of <span className="font-semibold text-[#667eea]">{filteredJobs?.length || 0}</span> jobs
-            </div>
-            <button
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter className="h-4 w-4" />
-              Filters
-            </button>
-          </div>
-        </div> */}
 
         {/* Jobs Table */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
           {/* Table Header */}
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-            <div className="grid grid-cols-10 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
-              <div className="col-span-3">Job Title</div>
-              {/* <div className="col-span-2">Status</div> */}
+            <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
+              <div className="col-span-4">Job Title</div>
               <div className="col-span-2">Deadline</div>
               <div className="col-span-1 text-center">Views</div>
-              <div className="col-span-1 text-center">New Applications</div>
+              <div className="col-span-2 text-center">New Applications</div>
               <div className="col-span-3 text-center">Actions</div>
             </div>
           </div>
@@ -281,37 +216,26 @@ const showNewApplication = (job) => {
               currentJobs?.map(job => (
                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                   <div className="grid grid-cols-12 gap-4 items-center">
-                    {/* Job Title */}
-<div className="col-span-3">
-  <div 
-    onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}
-    className="group cursor-pointer"
-  >
-    <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
-      {job?.jobRoles?.map((title, ind) => title).join(', ')}
-    </h3>
-    <div className="flex items-center gap-2 mt-1">
-      <Briefcase className="h-3 w-3 text-gray-400" />
-      <span className="text-sm text-gray-500">{job?.workMode}</span>
-      <span className="text-gray-300">•</span>
-      <MapPin className="h-3 w-3 text-gray-400" />
-      <span className="text-sm text-gray-500 capitalize">{job?.location[0]}</span>
-    </div>
-  </div>
-</div>
-
-                    {/* Status */}
-                    <div className="col-span-2">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                        job?.status === 'Published'
-                          ? 'bg-gradient-to-r from-green-100 to-green-50 text-green-700'
-                          : 'bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700'
-                      }`}>
-                        {job?.status}
-                      </span>
+                    {/* Job Title - col-span-4 (increased from 3) */}
+                    <div className="col-span-4">
+                      <div 
+                        onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}
+                        className="group cursor-pointer"
+                      >
+                        <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
+                          {job?.jobRoles?.map((title, ind) => title).join(', ')}
+                        </h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Briefcase className="h-3 w-3 text-gray-400" />
+                          <span className="text-sm text-gray-500">{job?.workMode}</span>
+                          <span className="text-gray-300">•</span>
+                          <MapPin className="h-3 w-3 text-gray-400" />
+                          <span className="text-sm text-gray-500 capitalize">{job?.location[0]}</span>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Deadline */}
+                    {/* Deadline - col-span-2 */}
                     <div className="col-span-2">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-3 w-3 text-gray-400" />
@@ -321,16 +245,16 @@ const showNewApplication = (job) => {
                       </div>
                     </div>
 
-                    {/* Views */}
+                    {/* Views - col-span-1 */}
                     <div className="col-span-1 text-center">
                       <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
                         {job.views || 0}
                       </span>
                     </div>
 
-                    {/* Applications */}
+                    {/* Applications - col-span-2 (increased from 1) */}
                     <div 
-                      className="col-span-1 text-center cursor-pointer group"
+                      className="col-span-2 text-center cursor-pointer group"
                       onClick={() => handleView(job)}
                     >
                       <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
@@ -338,24 +262,16 @@ const showNewApplication = (job) => {
                       </span>
                     </div>
 
-                    {/* Actions */}
+                    {/* Actions - col-span-3 */}
                     <div className="col-span-3">
                       <div className="flex items-center justify-center gap-2">
                         <button
-                          onClick={() =>showNewApplication(job)}
+                          onClick={() => showNewApplication(job)}
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
                           title="View Job"
                         >
                           <Eye size={16} />
-                          
                         </button>
-                        {/* <button
-                          onClick={() => handleEdit(job._id)}
-                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
-                          title="Edit Job"
-                        >
-                          <Edit size={16} />
-                        </button> */}
                         <button 
                           onClick={() => handleDelete(job._id)}
                           className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
@@ -372,7 +288,7 @@ const showNewApplication = (job) => {
           </div>
 
           {/* Pagination */}
-          {/* {totalPages > 1 && (
+          {totalPages > 1 && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-white">
               <div className="flex items-center gap-4">
                 <button
@@ -439,7 +355,7 @@ const showNewApplication = (job) => {
                 <ChevronRight size={16} />
               </button>
             </div>
-          )} */}
+          )}
         </div>
       </div>
     </div>

@@ -952,12 +952,12 @@ const App = () => {
           className="relative group cursor-pointer perspective-1000"
         >
           {/* Card with Glass Morphism - More expressive gradient on hover */}
-          <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl p-8 h-full transform transition-all duration-500 group-hover:-translate-y-3 group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:border-white/60 group-hover:bg-gradient-to-br group-hover:from-purple-500/10 group-hover:via-pink-500/10 group-hover:to-blue-500/10">
+          <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl p-7 h-full transform transition-all duration-500 group-hover:-translate-y-3 group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:border-white/60 group-hover:bg-gradient-to-br group-hover:from-purple-500/10 group-hover:via-pink-500/10 group-hover:to-blue-500/10">
             {/* Animated Top Accent - More expressive */}
             <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-500 group-hover:h-2 group-hover:shadow-[0_0_15px_rgba(139,92,246,0.3)]"></div>
             
-            {/* Icon with enhanced hover effect */}
-            <div className="relative mb-6">
+            {/* Icon with enhanced hover effect - Further reduced margin */}
+            <div className="relative mb-3"> {/* Changed from mb-4 to mb-3 */}
               {/* Glow effect on hover */}
               <div className="absolute -inset-3 rounded-xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
                 style={{
@@ -965,7 +965,7 @@ const App = () => {
                   filter: 'blur(10px)',
                 }}
               />
-              <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-white to-gray-50 p-3 shadow-lg border border-white/60 transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+              <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-white to-gray-50 p-2.5 shadow-lg border border-white/60 transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
                 <div 
                   className="transition-transform duration-300 group-hover:scale-110"
                   style={{ color: section.color }}
@@ -975,42 +975,34 @@ const App = () => {
               </div>
             </div>
             
-            {/* Enhanced title hover effect */}
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 transform transition-all duration-300 group-hover:translate-x-2 group-hover:text-gray-900">
+            {/* Enhanced title hover effect - Further reduced margin */}
+            <h3 className="text-xl font-bold text-gray-800 mb-3 transform transition-all duration-300 group-hover:translate-x-2 group-hover:text-gray-900">
               {section.title}
             </h3>
             
-            <ul className="space-y-4 mb-6">
+            <ul className="space-y-2.5 mb-4"> {/* Reduced space-y-3 to space-y-2.5 and mb-6 to mb-4 */}
               {section.steps.map((step, stepIdx) => (
                 <li 
                   key={stepIdx} 
-                  className="flex items-start gap-3 group/item transform transition-all duration-300 hover:translate-x-1"
+                  className="flex items-start gap-2.5 group/item transform transition-all duration-300 hover:translate-x-1"
                 >
-                  {/* Enhanced number badge */}
+                  {/* Enhanced number badge - Smaller */}
                   <div 
-                    className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center text-sm font-semibold shadow-sm border border-white/40 transform transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-1 group-hover/item:shadow-md"
+                    className="flex-shrink-0 w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center text-xs font-semibold shadow-sm border border-white/40 transform transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-0.5 group-hover/item:shadow-md"
                     style={{ color: section.color }}
                   >
                     {stepIdx + 1}
                   </div>
-                  <span className="text-gray-600 leading-relaxed pt-0.5 group-hover/text-gray-800 transition-colors duration-300">
+                  <span className="text-gray-600 text-sm leading-relaxed pt-0.5 group-hover:text-gray-800 transition-colors duration-300">
                     {step}
                   </span>
                 </li>
               ))}
             </ul>
             
-            {/* SEO Value Section - Hidden by default, shows on hover */}
-            {/* <div className="mt-6 pt-4 border-t border-gray-100/30">
-              <div className="text-xs text-gray-500 mb-2">SEO Keywords</div>
-              <div className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300 italic leading-relaxed">
-                {section.seoValue}
-              </div>
-            </div> */}
-            
-            {/* Enhanced interactive footer with arrow only */}
-            <div className="mt-6 pt-6 border-t border-gray-100/50 group-hover:border-gray-200/70 transition-colors duration-300 flex items-center justify-end">
-              {/* Enhanced arrow container */}
+            {/* Reduced spacing further - Minimal padding */}
+            <div className="pt-2 border-t border-gray-100/30 group-hover:border-gray-200/70 transition-colors duration-300 flex items-center justify-end">
+              {/* Enhanced arrow container - Smaller */}
               <div className="relative overflow-hidden">
                 {/* Animated slide trail */}
                 <div 
@@ -1019,9 +1011,9 @@ const App = () => {
                     background: `linear-gradient(90deg, transparent, ${section.color})`,
                   }}
                 />
-                {/* Arrow button */}
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-sm border border-gray-100/60 transform transition-all duration-300 group-hover:scale-110 group-hover:translate-x-2 group-hover:shadow-md">
-                  <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-gray-800 transition-colors duration-300" />
+                {/* Arrow button - Smaller */}
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-sm border border-gray-100/60 transform transition-all duration-300 group-hover:scale-110 group-hover:translate-x-2 group-hover:shadow-md">
+                  <ChevronRight className="w-3.5 h-3.5 text-gray-600 group-hover:text-gray-800 transition-colors duration-300" />
                 </div>
               </div>
             </div>

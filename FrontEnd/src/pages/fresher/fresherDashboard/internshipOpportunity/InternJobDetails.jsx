@@ -1,38 +1,30 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-// import { fetchJobDetails, fetchSimilarJobs } from '../../../../constants/JobListing' // Keep commented if not used
-import JobCard from '@/components/student/studentDashboard/intershipOpportunity/JobCard'; // Ensure this path is correct
-import { ApplyForInternship, getInternshipById, getInternshipDetail, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
+import { ApplyForInternship, getInternshipById, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
+import { ArrowLeft, MapPin, Building2, Users, Calendar, Briefcase, DollarSign, Award, GraduationCap, FileText, Globe, Clock, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const InternJobDetails = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
   const [jobDetails, setJobDetails] = useState(null);
-  const [similarJobs, setSimilarJobs] = useState([]); // Still unused if fetchSimilarJobs is commented
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchParams] = useSearchParams();
-  const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
-  const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
+  const [isSaved, setIsSaved] = useState((searchParams.get('isSaved') || '').toLowerCase() === 'true');
+  const [isApplied, setIsApplied] = useState((searchParams.get('isApplied') || '').toLowerCase() === 'true');
+  const [isApplying, setIsApplying] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const loadJobDetails = async () => {
       try {
         setIsLoading(true);
-
-        // Fetch job details
         const response = await getInternshipById(jobId);
-
         setJobDetails(response.data);
         await viewed(response.data._id);
-        setIsLoading(false);
-        // console.log("Internship Details:", response.data);
-
-        // Fetch similar jobs (currently commented out, so no change needed here)
-        // const similar = await fetchSimilarJobs(jobId);
-        // setSimilarJobs(similar);
-
+        console.log("Internship Details:", response.data);
         setError(null);
       } catch (err) {
         setError('Failed to load internship details. Please try again later.');
@@ -42,53 +34,117 @@ const InternJobDetails = () => {
       }
     };
 
-    if (jobId) { // Only load if jobId is available
+    if (jobId) {
       loadJobDetails();
     }
   }, [jobId]);
 
   const handleApply = async () => {
     try {
+      setIsApplying(true);
       const response = await ApplyForInternship(jobId);
-      if (response?.data?.success === true) toast.success('Application submitted!');
-      else toast.error(response.response.data?.msg)
+      console.log("Apply response:", response);
+      
+      if (response?.data?.success === true) {
+        toast.success('Application submitted!');
+        setIsApplied(true);
+      } else {
+        const errorMsg = response?.response?.data?.msg || 
+                        response?.data?.msg || 
+                        'Failed to apply. Please try again.';
+        toast.error(errorMsg);
+      }
     } catch (err) {
       console.error('Error applying for internship:', err);
-      toast.error('Something went wrong!');
+      const errorMsg = err?.response?.data?.msg || 
+                      err?.message || 
+                      'Something went wrong!';
+      toast.error(errorMsg);
+    } finally {
+      setIsApplying(false);
     }
   };
 
   const handleSave = async () => {
     try {
-      const response = await SaveOppurtunity(jobId, jobDetails?.jobType);
-      // console.log(response)
-      if (response?.data?.success === true) toast.success('Job saved!');
-      else toast.error(response.response.data?.msg)
+      setIsSaving(true);
+      const response = await SaveOppurtunity(jobId, jobDetails?.jobType || 'internship');
+      console.log("Save response:", response);
+      
+      if (response?.data?.success === true) {
+        toast.success('Internship saved!');
+        setIsSaved(true);
+      } else {
+        const errorMsg = response?.response?.data?.msg || 
+                        response?.data?.msg || 
+                        'Failed to save internship. Please try again.';
+        toast.error(errorMsg);
+      }
     } catch (err) {
-      console.error('Error applying for job:', err);
-      toast.error('Something went wrong!');
+      console.error('Error saving internship:', err);
+      const errorMsg = err?.response?.data?.msg || 
+                      err?.message || 
+                      'Something went wrong!';
+      toast.error(errorMsg);
+    } finally {
+      setIsSaving(false);
     }
+  };
+
+  const handleBackToList = () => {
+    window.history.back();
+  };
+
+  // Helper function to render array data as tags
+  const renderTags = (data) => {
+    if (Array.isArray(data) && data.length > 0) {
+      return (
+        <div className="flex flex-wrap gap-2 mt-1">
+          {data.map((item, index) => (
+            <span key={index} className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 text-gray-800 text-xs font-medium px-2.5 py-1 rounded-full capitalize border border-gray-200">
+              {item}
+            </span>
+          ))}
+        </div>
+      );
+    }
+    return <span className="text-gray-700">N/A</span>;
+  };
+
+  // Helper function to render bullet points
+  const renderBulletPoints = (text) => {
+    if (!text) return <p className="text-gray-700">No information available.</p>;
+    
+    return (
+      <ul className="space-y-2 text-gray-700">
+        {text
+          .split(/\n|\.\s+|;\s+/)
+          .filter(point => point.trim().length > 0)
+          .map((point, index) => (
+            <li key={index} className="flex items-start gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] mt-2 flex-shrink-0"></div>
+              <span>{point.trim()}</span>
+            </li>
+          ))}
+      </ul>
+    );
   };
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-slate-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#667eea]"></div>
       </div>
     );
   }
 
   if (error || !jobDetails) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-slate-50 p-4 text-center">
-        <div>
-          <svg className="mx-auto h-12 w-12 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <h2 className="mt-4 text-2xl font-bold text-slate-800">{error || "Internship Not Found"}</h2>
-          <p className="mt-2 text-slate-600">We couldn't retrieve the details for this internship posting.</p>
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+        <div className="text-center p-4">
+          <p className="text-xl font-semibold text-red-500">{error || "Internship not found"}</p>
           <button
-            className="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg"
+            className="mt-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] hover:shadow-lg hover:shadow-[#667eea]/30 text-white px-4 py-2 rounded-lg transition-all duration-200"
             onClick={() => navigate('/student-dashboard/Internship')}
           >
             Back to Internships
@@ -98,113 +154,275 @@ const InternJobDetails = () => {
     );
   }
 
-  const Section = ({ title, children }) => (
-    <section>
-      <h2 className="text-xl font-bold text-slate-800 mb-4 pb-2 border-b border-slate-200">{title}</h2>
-      <div className="text-slate-700 leading-relaxed space-y-4">
-        {children}
-      </div>
-    </section>
-  );
-
-  const InfoPill = ({ icon, text }) => (
-    <div className="flex items-center text-slate-500">
-      {icon}
-      <span className="ml-1.5">{text}</span>
-    </div>
-  );
-
-  const SnapshotListItem = ({ icon, label, value }) => (
-    <div className="flex-1 min-w-[200px]">
-      <div className="flex items-center text-sm text-slate-500">
-        {icon}
-        <span className="ml-2">{label}</span>
-      </div>
-      <p className="font-semibold text-slate-800 mt-0.5">{value}</p>
-    </div>
-  );
-
   return (
-    <div className="bg-slate-50 min-h-screen font-sans p-4 sm:p-6 lg:p-8">
-      <div className="container mx-auto max-w-5xl">
-        <main>
-          <div className="bg-white p-8 rounded-xl shadow-md space-y-8">
-            <header className="flex flex-col sm:flex-row items-start justify-between pb-4 border-b border-slate-200">
-              <div>
-                <h1 className="text-4xl font-extrabold text-slate-900 mb-2">{jobDetails.jobTitle}</h1>
-                <p className="text-lg text-slate-600 mb-4">at {jobDetails.companyPosted?.companyDetails?.companyName}</p>
-                <p className="text-sm text-slate-400 mb-4">Internship ID: {jobDetails._id}</p>
-                <div className="flex flex-wrap gap-x-6 gap-y-2">
-                  <InfoPill icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>} text={Array.isArray(jobDetails.location) ? jobDetails.location.join(', ') : jobDetails.location} />
-                  <InfoPill icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" /></svg>} text={jobDetails.internshipDuration} />
-                </div>
-              </div>
-              {!isApplied && (<div className="flex items-center gap-3 mt-4 sm:mt-0 flex-shrink-0">
-                {!isSaved && (<button onClick={handleSave} className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-5 rounded-lg transition duration-300">Save</button>)}
-                <button onClick={handleApply} className="bg-blue-600 hover:bg-indigo-600 text-white font-bold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">Apply</button>
-              </div>)}
-            </header>
+    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+      <div className="max-w-4xl mx-auto bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 p-6 my-8">
+        {/* Back Button - Top Left */}
+        <button 
+          onClick={handleBackToList} 
+          className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 mr-1" />
+          Back
+        </button>
 
-            <Section title="Internship Description">
-              <p>{jobDetails.description}</p>
-            </Section>
-
-            {/* <Section title="Responsibilities">
-                            <p>{jobDetails.responsibilities || 'Not specified'}</p>
-                        </Section> */}
-
-            <Section title="Eligibility Criteria">
-              <p>{jobDetails.eligibilityCriteria}</p>
-            </Section>
-
-            <Section title="Key Skills">
-              <div className="flex flex-wrap gap-2">
-                {jobDetails.skills?.map((skill) => (
-                  <span key={skill} className="bg-indigo-100 text-indigo-800 px-3 py-1.5 rounded-full text-sm font-medium">{skill}</span>
-                ))}
-              </div>
-            </Section>
-
-            <Section title="Benefits & Perks">
-              <div className="flex flex-wrap gap-2">
-                {jobDetails.benefits?.map((benefit) => (
-                  <span key={benefit} className="bg-green-100 text-green-800 px-3 py-1.5 rounded-full text-sm font-medium">{benefit}</span>
-                ))}
-              </div>
-            </Section>
-
-            <Section title="Education">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-slate-500">Minimum Education</p>
-                  <p className="text-slate-700 capitalize font-semibold">{jobDetails.minEducation}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-slate-500">Preferred Streams</p>
-                  <p className="text-slate-700 capitalize font-semibold">{jobDetails.studentStreams?.join(', ') || 'N/A'}</p>
-                </div>
-              </div>
-            </Section>
-
-            <Section title="Opportunity Snapshot">
-              <div className="flex flex-wrap gap-y-4 gap-x-8">
-                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>} label="Industry" value={jobDetails.companyPosted?.companyDetails?.industryType} />
-                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm14 1a1 1 0 11-2 0 1 1 0 012 0zM2 13a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2zm14 1a1 1 0 11-2 0 1 1 0 012 0z" clipRule="evenodd" /></svg>} label="Work Mode" value={jobDetails.workMode} />
-                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.5 2.5 0 00-1.162-.682zM11 12.849v-1.698c.22.071.412.164.567.267a2.5 2.5 0 001.162.682zM10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.5 4.5 0 00-1.876.762A4.5 4.5 0 007.5 7.75v5.5a4.5 4.5 0 003.376 4.408A4.5 4.5 0 0012.5 13.25v-5.5a4.5 4.5 0 00-1-2.908z" /></svg>} label="Stipend" value={`${jobDetails.minPackage?.amount} ${jobDetails.minPackage?.currency}`} />
-                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg>} label="Openings" value={jobDetails.numberOfOpenings} />
-                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 2a2 2 0 00-2 2v11a3 3 0 003 3h8a3 3 0 003-3V4a2 2 0 00-2-2H5zm0 2h10v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4z" clipRule="evenodd" /></svg>} label="Certificate Required" value={jobDetails.certifications || "Not Required"} />
-                <SnapshotListItem icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.72 7.97 5 10 5c2.03 0 3.488.72 4.756 1.321l.003.001c.624.305 1.135.688 1.536 1.106l-1.091.819C14.72 7.82 14.166 7.5 13 7.5c-1.276 0-2.221.48-2.638.895l-.068.071c-.693.732-.888 1.816-.949 2.887l-2.024.091a4.502 4.502 0 01-1.008-2.324zM10 15a4.5 4.5 0 100-9 4.5 4.5 0 000 9z" clipRule="evenodd" /></svg>} label="Work Authorization" value={jobDetails.workAuthorization} />
-              </div>
-            </Section>
-
-            <Section title="About The Company">
-              <p className="text-slate-700 mb-4">{jobDetails.companyPosted?.companyDetails?.description}</p>
-              <p className="text-sm text-slate-500">
-                <span className="font-semibold text-slate-600">Location:</span> {`${jobDetails.companyPosted?.companyDetails?.companyLocation || 'N/A'}, ${jobDetails.companyPosted?.companyDetails?.state || ''}, ${jobDetails.companyPosted?.companyDetails?.country || ''}`}
-              </p>
-            </Section>
+        {/* Header */}
+        <div className="flex justify-between items-start mb-6">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 mr-4 flex items-center justify-center rounded-full overflow-hidden">
+              {jobDetails.companyPosted?.profileImage ? (
+                <img
+                  src={jobDetails.companyPosted.profileImage}
+                  alt={jobDetails.companyPosted.companyDetails.companyName || "Company Logo"}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://placehold.co/48x48/cccccc/000000?text=Logo';
+                  }}
+                />
+              ) : (
+                <Building2 className="w-8 h-8 text-[#667eea]" />
+              )}
+            </div>
+            <div>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+                {jobDetails.jobTitle}
+              </h2>
+              <p className="text-gray-600">at {jobDetails.companyPosted?.companyDetails?.companyName || 'N/A'}</p>
+            </div>
           </div>
-        </main>
+          <div className="flex space-x-2">
+            {!isApplied && (
+              <>
+                {/* Save Button */}
+                {!isSaved ? (
+                  <button 
+                    onClick={handleSave} 
+                    disabled={isSaving}
+                    className={`bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 hover:from-[#667eea]/20 hover:to-[#764ba2]/20 text-[#667eea] font-bold py-2 px-5 rounded-lg transition-all duration-300 border border-gray-200 ${
+                      isSaving ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    {isSaving ? 'Saving...' : 'Save'}
+                  </button>
+                ) : (
+                  <button 
+                    className="bg-gradient-to-br from-green-500/10 to-green-600/10 text-green-600 font-bold py-2 px-5 rounded-lg border border-green-200 cursor-default"
+                    disabled
+                  >
+                    ✓ Saved
+                  </button>
+                )}
+                
+                {/* Apply Button */}
+                <button 
+                  onClick={handleApply}
+                  disabled={isApplying}
+                  className={`px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 ${
+                    isApplying ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {isApplying ? 'Applying...' : 'Apply'}
+                </button>
+              </>
+            )}
+            {isApplied && (
+              <button 
+                className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-2 px-5 rounded-lg cursor-default"
+                disabled
+              >
+                ✓ Applied
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* About Company */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            About {jobDetails.companyPosted?.companyDetails?.companyName || "Company"}
+          </h3>
+          <p className="text-gray-700 mb-4">{jobDetails.companyPosted?.companyDetails?.description || 'No company description available.'}</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-4 rounded-lg">
+              <div className="font-bold text-lg">{jobDetails.companyPosted?.companyDetails?.numberOfEmployees || "N/A"}</div>
+              <div className="text-sm text-gray-600">Employees</div>
+            </div>
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-4 rounded-lg">
+              <div className="font-bold text-lg capitalize">{jobDetails.companyPosted?.companyDetails?.industryType || "N/A"}</div>
+              <div className="text-sm text-gray-600">Industry</div>
+            </div>
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-4 rounded-lg">
+              <div className="font-bold text-lg">{jobDetails.companyPosted?.companyDetails?.country || "N/A"}</div>
+              <div className="text-sm text-gray-600">Country</div>
+            </div>
+          </div>
+        </section>
+
+        {/* Internship Details */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Internship Details
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="flex items-start">
+              <MapPin className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Location</div>
+                {renderTags(jobDetails.location)}
+              </div>
+            </div>
+            <div className="flex items-start">
+              <Clock className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Duration</div>
+                <div className="text-gray-700">{jobDetails.internshipDuration || 'N/A'}</div>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <Briefcase className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Work Mode</div>
+                <div className="text-gray-700 capitalize">{jobDetails.workMode || 'N/A'}</div>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <Users className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Number of Openings</div>
+                <div className="text-gray-700">{jobDetails.numberOfOpenings || 'N/A'}</div>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <DollarSign className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Stipend</div>
+                <div className="text-gray-700">
+                  {jobDetails.minPackage?.amount 
+                    ? `${jobDetails.minPackage.amount} ${jobDetails.minPackage.currency}` 
+                    : 'Not Specified'}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <Globe className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Work Authorization</div>
+                <div className="text-gray-700 capitalize">{jobDetails.workAuthorization || 'N/A'}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Internship Description */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Internship Description
+          </h3>
+          {renderBulletPoints(jobDetails.description)}
+        </section>
+
+        {/* Eligibility Criteria */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Eligibility Criteria
+          </h3>
+          {renderBulletPoints(jobDetails.eligibilityCriteria)}
+        </section>
+
+        {/* Key Skills */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Key Skills Required
+          </h3>
+          {renderTags(jobDetails.skills)}
+        </section>
+
+        {/* Education Requirements */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Education Requirements
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="flex items-start">
+              <GraduationCap className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Minimum Education</div>
+                <div className="text-gray-700 capitalize">{jobDetails.minEducation || 'N/A'}</div>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <FileText className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <div>
+                <div className="font-medium text-[#667eea]">Preferred Streams</div>
+                {renderTags(jobDetails.studentStreams)}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Benefits & Perks */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Benefits & Perks
+          </h3>
+          {renderTags(jobDetails.benefits)}
+        </section>
+
+        {/* Certificate Requirements */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Certificate Requirements
+          </h3>
+          <div className="flex items-center">
+            <CheckCircle className="w-5 h-5 mr-3 text-[#667eea] flex-shrink-0" />
+            <div className="text-gray-700">{jobDetails.certifications || "Not Required"}</div>
+          </div>
+        </section>
+
+        {/* Important Dates */}
+        <section>
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Important Dates
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#667eea]">Application Deadline</div>
+              <div className="font-medium text-red-600">
+                {jobDetails.endDate ? new Date(jobDetails.endDate).toLocaleDateString('en-GB') : 'N/A'}
+              </div>
+            </div>
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#667eea]">Internship Start</div>
+              <div className="font-medium text-gray-700">Flexible</div>
+            </div>
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#667eea]">Interview Dates</div>
+              <div className="font-medium text-gray-700">To be scheduled</div>
+            </div>
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#667eea]">Results</div>
+              <div className="font-medium text-gray-700">Rolling basis</div>
+            </div>
+          </div>
+        </section>
+
+        {/* Company Location */}
+        <section className="mt-8 pt-6 border-t border-gray-200">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Company Location
+          </h3>
+          <div className="flex items-start">
+            <MapPin className="w-5 h-5 mt-0.5 mr-3 text-[#667eea] flex-shrink-0" />
+            <div>
+              <div className="text-gray-700">
+                {`${jobDetails.companyPosted?.companyDetails?.companyLocation || 'N/A'}, 
+                ${jobDetails.companyPosted?.companyDetails?.state || ''}, 
+                ${jobDetails.companyPosted?.companyDetails?.country || ''}`}
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );

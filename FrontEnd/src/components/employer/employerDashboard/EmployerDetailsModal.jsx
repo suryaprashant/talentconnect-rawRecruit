@@ -6,8 +6,6 @@ import {
   Calendar, 
   Users, 
   Briefcase,
-  DollarSign,
-  Award,
   Mail, 
   Phone, 
   Linkedin,
@@ -15,13 +13,9 @@ import {
   Share2,
   Save,
   CheckCircle,
-  FileText,
-  Download,
-  ExternalLink,
-  Home,
-  GraduationCap,
-  Star,
-  Clock
+  Award,
+  Clock,
+  IndianRupee // Added IndianRupee icon
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { ApplyForOncampusOppurtunity, SaveOppurtunity, submitAlternateDates } from '@/lib/Company_AxiosInstance.js';
@@ -32,6 +26,7 @@ import { format } from 'date-fns';
 
 const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
   const modalRef = useRef(null);
+  const contentRef = useRef(null); // Added contentRef for scrollable area
   
   const [posting, setPosting] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -445,7 +440,16 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
   }
 
   const collegeDetails = posting.collegePosted;
+  const collegeUniDetails = collegeDetails?.collegeUniversityDetails || {};
   const collegeName = collegeDetails?.collegeUniversityDetails?.collegeName || 'the College';
+  const formattedStartDate = formatDateSafe(posting.startDate);
+  const formattedEndDate = formatDateSafe(posting.endDate);
+  
+  // Get location from college details
+  const city = collegeUniDetails.city || '';
+  const state = collegeUniDetails.state || '';
+  const location = [city, state].filter(Boolean).join(', ') || 'Location not specified';
+
   const isApplied = posting.isApplied || false;
   const isSaved = posting.isSaved || false;
 
@@ -467,15 +471,16 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
                   onClick={() => setShowCollegeModal(true)}>
                 {collegeName}
               </h2>
-              <div className="flex flex-wrap items-center gap-2 mt-1">
-                <span className="inline-flex items-center text-xs text-gray-600 bg-gradient-to-r from-gray-50 to-white px-2 py-1 rounded-lg">
-                  <Calendar className="h-3 w-3 mr-1" />
-                  {formatDateSafe(posting.startDate)} - {formatDateSafe(posting.endDate)}
-                </span>
-                {/* <span className="inline-flex items-center text-xs text-gray-600 bg-gradient-to-r from-gray-50 to-white px-2 py-1 rounded-lg">
-                  <MapPin className="h-3 w-3 mr-1" />
-                  {Array.isArray(posting.location) ? posting.location.join(', ') : posting.location || 'Location not specified'}
-                </span> */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mt-1">
+                <div className="flex items-center text-sm text-gray-600">
+                  <Calendar className="h-4 w-4 mr-1 flex-shrink-0" />
+                  <span>{formattedStartDate} - {formattedEndDate}</span>
+                </div>
+                <div className="hidden sm:block text-gray-400">|</div>
+                <div className="flex items-center text-sm text-gray-600">
+                  <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                  <span>{location}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -508,75 +513,79 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 overflow-y-auto">
-          {/* Statistics Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 p-6">
-            {/* Min Package */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 md:p-4 min-h-[80px]">
-              <div className="flex items-center justify-between h-full">
-                <div className="min-w-0">
-                  <p className="text-xs md:text-sm text-gray-600 mb-1">Min Package</p>
-                  <p className="text-sm md:text-base lg:text-lg font-bold text-[#667eea] leading-snug">
+        {/* Main Content Area - Scrollable */}
+        <div 
+          ref={contentRef}
+          className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+          style={{ borderRadius: '0 0 0 1rem' }}
+        >
+          {/* Statistics Cards - Horizontal Layout */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-6">
+            {/* Min Package Card */}
+            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg">
+                  <IndianRupee className="h-5 w-5 text-blue-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-gray-600 mb-1">Min Package</p>
+                  <p className="text-base font-bold text-[#667eea] truncate">
                     {posting.minPackage?.amount 
-                      ? `${posting.minPackage.currency || ''} ${posting.minPackage.amount.toLocaleString()}`
+                      ? `${posting.minPackage.currency || '₹'} ${posting.minPackage.amount.toLocaleString()}`
                       : 'N/A'
                     }
                   </p>
                 </div>
-                <div className="p-2 md:p-3 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg flex-shrink-0 ml-2">
-                  <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                </div>
               </div>
             </div>
             
-            {/* Employment Type */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 md:p-4 min-h-[80px]">
-              <div className="flex items-center justify-between h-full">
-                <div className="min-w-0">
-                  <p className="text-xs md:text-sm text-gray-600 mb-1">Employment Type</p>
-                  <p className="text-xs md:text-sm font-medium text-purple-600 line-clamp-2 leading-tight">
+            {/* Employment Type Card */}
+            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg">
+                  <Briefcase className="h-5 w-5 text-purple-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-gray-600 mb-1">Employment Type</p>
+                  <p className="text-sm font-medium text-purple-600 truncate">
                     {posting.employmentType || 'N/A'}
                   </p>
                 </div>
-                <div className="p-2 md:p-3 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg flex-shrink-0 ml-2">
-                  <Briefcase className="h-4 w-4 md:h-5 md:w-5 text-purple-600" />
-                </div>
               </div>
             </div>
             
-            {/* Job Type */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 md:p-4 min-h-[80px]">
-              <div className="flex items-center justify-between h-full">
-                <div className="min-w-0">
-                  <p className="text-xs md:text-sm text-gray-600 mb-1">Job Type</p>
-                  <p className="text-xs md:text-sm font-medium text-green-600 line-clamp-2 leading-tight">
+            {/* Job Type Card */}
+            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg">
+                  <Award className="h-5 w-5 text-green-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-gray-600 mb-1">Job Type</p>
+                  <p className="text-sm font-medium text-green-600 truncate">
                     {posting.jobType || 'N/A'}
                   </p>
                 </div>
-                <div className="p-2 md:p-3 bg-gradient-to-br from-green-100 to-green-50 rounded-lg flex-shrink-0 ml-2">
-                  <Award className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
-                </div>
               </div>
             </div>
             
-            {/* Work Mode */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 md:p-4 min-h-[80px]">
-              <div className="flex items-center justify-between h-full">
-                <div className="min-w-0">
-                  <p className="text-xs md:text-sm text-gray-600 mb-1">Work Mode</p>
-                  <p className="text-xs md:text-sm font-medium text-yellow-600 line-clamp-2 leading-tight">
+            {/* Work Mode Card */}
+            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg">
+                  <Clock className="h-5 w-5 text-yellow-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-gray-600 mb-1">Work Mode</p>
+                  <p className="text-sm font-medium text-yellow-600 truncate">
                     {posting.workMode || 'N/A'}
                   </p>
-                </div>
-                <div className="p-2 md:p-3 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg flex-shrink-0 ml-2">
-                  <Clock className="h-4 w-4 md:h-5 md:w-5 text-yellow-600" />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Main Content Sections */}
+          {/* Main Content */}
           <div className="space-y-4 md:space-y-6 px-6 pb-6">
             {/* About This Opportunity */}
             <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">
@@ -584,9 +593,9 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
                 About This Opportunity
               </h3>
               {posting.description ? (
-                <p className="text-gray-700 leading-relaxed text-sm md:text-base">
+                <div className="text-gray-700 leading-relaxed text-sm md:text-base whitespace-pre-line">
                   {posting.description}
-                </p>
+                </div>
               ) : (
                 <p className="text-gray-500 text-sm md:text-base">No description provided.</p>
               )}
@@ -594,73 +603,78 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
 
             {/* Contact Information */}
             <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">
-              <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">
+              <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-4">
                 Point of Contact - Campus Placement Officer
               </h3>
               <div className="space-y-4">
-                <div className="flex items-start gap-3 md:gap-4">
-                  <div className="p-2 md:p-3 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg flex-shrink-0">
-                    <Users className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+                <div className="flex items-start gap-4">
+                  <div className="p-2.5 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg flex-shrink-0 mt-1">
+                    <Users className="h-5 w-5 text-blue-600" />
                   </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 text-sm md:text-base">College Placement Officer Contact:</h4>
-                    <div className="flex items-center mt-1">
-                      <span className="font-medium text-sm md:text-base">{posting?.contactPerson?.name || 'Not specified'}</span>
-                      <span className="text-gray-600 ml-2 text-sm">({posting?.contactPerson?.designation || 'TPO'})</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gradient-to-br from-green-100 to-green-50 rounded-lg flex-shrink-0">
-                      <Mail className="h-4 w-4 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs md:text-sm text-gray-600">Email</p>
-                      <a 
-                        href={`mailto:${posting?.contactPerson?.email}`}
-                        className="font-medium text-blue-600 hover:text-blue-800 text-sm md:text-base truncate block"
-                      >
-                        {posting?.contactPerson?.email || 'No email provided'}
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg flex-shrink-0">
-                      <Phone className="h-4 w-4 text-purple-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs md:text-sm text-gray-600">Phone</p>
-                      <a 
-                        href={`tel:${posting?.contactPerson?.mobile}`}
-                        className="font-medium text-blue-600 hover:text-blue-800 text-sm md:text-base"
-                      >
-                        {posting?.contactPerson?.mobile || 'No mobile provided'}
-                      </a>
+                  <div className="flex-1">
+                    <h4 className="font-medium text-gray-900 text-base mb-1">College Placement Officer Contact:</h4>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                      <span className="font-medium text-base">{posting?.contactPerson?.name || 'Not specified'}</span>
+                      <span className="text-gray-600 text-sm">({posting?.contactPerson?.designation || 'TPO'})</span>
                     </div>
                   </div>
                 </div>
 
-                {posting?.contactPerson?.linkedin && (
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg flex-shrink-0">
-                      <Linkedin className="h-4 w-4 text-blue-600" />
+                {/* Contact Details in Single Row */}
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                  {posting?.contactPerson?.email && (
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="p-2.5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg flex-shrink-0">
+                        <Mail className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs text-gray-600 mb-1">Email</p>
+                        <a 
+                          href={`mailto:${posting.contactPerson.email}`}
+                          className="font-medium text-blue-600 hover:text-blue-800 text-sm truncate block"
+                        >
+                          {posting.contactPerson.email}
+                        </a>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs md:text-sm text-gray-600">LinkedIn</p>
-                      <a 
-                        href={posting.contactPerson.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-medium text-blue-600 hover:text-blue-800 text-sm md:text-base truncate block"
-                      >
-                        {posting.contactPerson.linkedin}
-                      </a>
+                  )}
+
+                  {posting?.contactPerson?.mobile && (
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="p-2.5 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg flex-shrink-0">
+                        <Phone className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs text-gray-600 mb-1">Phone</p>
+                        <a 
+                          href={`tel:${posting.contactPerson.mobile}`}
+                          className="font-medium text-blue-600 hover:text-blue-800 text-sm block"
+                        >
+                          {posting.contactPerson.mobile}
+                        </a>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+
+                  {posting?.contactPerson?.linkedin && (
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="p-2.5 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg flex-shrink-0">
+                        <Linkedin className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs text-gray-600 mb-1">LinkedIn</p>
+                        <a 
+                          href={posting.contactPerson.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium text-blue-600 hover:text-blue-800 text-sm truncate block"
+                        >
+                          {posting.contactPerson.linkedin}
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -670,25 +684,25 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">
                   Student Batch Details
                 </h3>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto rounded-lg">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gradient-to-r from-gray-50 to-white">
                       <tr>
-                        <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">S.No.</th>
-                        <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Branch</th>
-                        <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">No. of Students</th>
-                        <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Skills</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">S.No.</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Branch</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">No. of Students</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Skills</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {posting.studentStreams.map((stream, index) => (
                         <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                          <td className="px-3 py-2 md:px-4 md:py-3 text-sm font-medium text-gray-900">{index + 1}</td>
-                          <td className="px-3 py-2 md:px-4 md:py-3 text-sm text-gray-700">{stream || 'N/A'}</td>
-                          <td className="px-3 py-2 md:px-4 md:py-3 text-sm text-gray-700">
+                          <td className="px-4 py-3 text-sm font-medium text-gray-900">{index + 1}</td>
+                          <td className="px-4 py-3 text-sm text-gray-700">{stream || 'N/A'}</td>
+                          <td className="px-4 py-3 text-sm text-gray-700">
                             {posting?.numberOfStudent?.[index] || 'N/A'}
                           </td>
-                          <td className="px-3 py-2 md:px-4 md:py-3 text-sm text-gray-700">
+                          <td className="px-4 py-3 text-sm text-gray-700">
                             {posting?.skills?.[index] || 'N/A'}
                           </td>
                         </tr>
@@ -733,34 +747,32 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
 
         {/* Footer */}
         <div className="border-t p-6 bg-gray-50 flex-shrink-0">
-          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 md:gap-4">
-            <div className="flex flex-wrap gap-2 md:gap-3">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
               <button
                 onClick={handleMessageClick}
                 disabled={isSubmitting || !posting?.contactPerson?.email}
-                className="inline-flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-[#667eea] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-[#667eea] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base flex-1 sm:flex-none"
               >
-                <Send size={14} className="md:size-4" />
-                <span className="hidden sm:inline">{isSubmitting ? 'Connecting...' : 'Message Officer'}</span>
-                <span className="sm:hidden">{isSubmitting ? '...' : 'Message'}</span>
+                <Send size={16} className="md:size-4" />
+                <span>{isSubmitting ? 'Connecting...' : 'Message Officer'}</span>
               </button>
 
               <button 
                 onClick={handleAlternateDateClick}
-                className="inline-flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-700 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-sm md:text-base"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-700 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-sm md:text-base flex-1 sm:flex-none"
               >
-                <Calendar size={14} className="md:size-4" />
-                <span className="hidden sm:inline">Alternate Date</span>
-                <span className="sm:hidden">Date</span>
+                <Calendar size={16} className="md:size-4" />
+                <span>Alternate Date</span>
               </button>
             </div>
 
             {!isApplied && (
               <button 
                 onClick={() => handleApply(posting._id)}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-black text-white px-4 py-2.5 md:px-6 md:py-2.5 rounded-xl hover:bg-gray-800 transition-all duration-200 font-medium text-sm md:text-base mt-3 sm:mt-0"
+                className="inline-flex items-center justify-center gap-2 bg-black text-white px-6 py-2.5 rounded-xl hover:bg-gray-800 transition-all duration-200 font-medium text-sm md:text-base w-full sm:w-auto mt-3 sm:mt-0"
               >
-                <CheckCircle size={14} className="md:size-4" />
+                <CheckCircle size={16} className="md:size-4" />
                 Accept Invitation
               </button>
             )}

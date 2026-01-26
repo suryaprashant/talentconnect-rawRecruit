@@ -153,24 +153,6 @@ const RoleSelection = () => {
           <div className="max-w-7xl mx-auto w-full">
             {/* Back Button and Get Started badge in same container */}
             <div className="relative mb-12 mt-12">
-              {/* Back Button on left */}
-              {/* <div className="absolute left-0 top-0">
-                <button
-                  onClick={() => navigate(-1)}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-5 py-2 rounded-full text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300"
-                >
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    viewBox="0 0 24 24" 
-                    fill="currentColor" 
-                    className="w-4 h-4"
-                  >
-                    <path fillRule="evenodd" d="M11.03 3.97a.75.75 0 010 1.06l-6.22 6.22H21a.75.75 0 010 1.5H4.81l6.22 6.22a.75.75 0 11-1.06 1.06l-7.5-7.5a.75.75 0 010-1.06l7.5-7.5a.75.75 0 011.06 0z" clipRule="evenodd" />
-                  </svg>
-                  Back
-                </button>
-              </div> */}
-
               {/* Get Started badge centered */}
               <div className="flex justify-center">
                 <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white px-5 py-2 rounded-full text-sm font-semibold shadow-md">
@@ -193,8 +175,8 @@ const RoleSelection = () => {
               </p>
             </div>
 
-            {/* Role Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8 max-w-6xl mx-auto">
+            {/* Role Cards - Modified grid to show all 5 in a row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8 max-w-7xl mx-auto">
               {roles.map((role) => (
                 <div
                   key={role.key}
@@ -206,8 +188,8 @@ const RoleSelection = () => {
                   onMouseEnter={() => setHoveredRole(role.key)}
                   onMouseLeave={() => setHoveredRole('')}
                   className={`
-                    relative bg-white p-5 rounded-2xl shadow-lg border border-gray-100 
-                    transition-all duration-500 cursor-pointer group h-full flex flex-col
+                    relative bg-white p-4 rounded-2xl shadow-lg border border-gray-100 
+                    transition-all duration-500 cursor-pointer h-full flex flex-col min-h-[320px]
                     ${selectedRole === role.key
                       ? 'ring-2 ring-offset-2 ring-[#667eea] transform scale-[1.02]'
                       : 'hover:shadow-xl hover:-translate-y-1'
@@ -228,24 +210,24 @@ const RoleSelection = () => {
                   )}
 
                   {/* Icon */}
-                  <div className={`mb-4 p-3 rounded-xl bg-gradient-to-br ${role.gradient} w-14 h-14 flex items-center justify-center text-white shadow-md flex-shrink-0`}>
+                  <div className={`mb-3 p-2.5 rounded-xl bg-gradient-to-br ${role.gradient} w-12 h-12 flex items-center justify-center text-white shadow-md flex-shrink-0`}>
                     {role.icon}
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg font-bold text-gray-800 mb-2">{role.title}</h3>
+                  <h3 className="text-base font-bold text-gray-800 mb-2 leading-tight">{role.title}</h3>
 
                   {/* Description */}
-                  <p className="text-gray-600 text-sm mb-4 leading-relaxed flex-grow">
+                  <p className="text-gray-600 text-xs mb-3 leading-relaxed flex-grow">
                     {role.description}
                   </p>
 
                   {/* Features */}
-                  <div className="mb-4">
+                  <div className="mb-3">
                     {role.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center gap-2 mb-1.5 text-xs">
+                      <div key={idx} className="flex items-center gap-1.5 mb-1 text-xs">
                         <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-br ${role.gradient} flex-shrink-0`} />
-                        <span className="text-gray-700">{feature}</span>
+                        <span className="text-gray-700 truncate">{feature}</span>
                       </div>
                     ))}
                   </div>

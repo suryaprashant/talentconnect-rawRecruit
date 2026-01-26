@@ -233,9 +233,16 @@ export function deleteCollegeJob(jobId) {
     .catch(error => error);
 }
 
-// Add this function to your College_AxiosInstance.js
+// In College_AxiosInstance.js, update getCollegePostingForPoolcampus:
 export function getCollegePostingForPoolcampus() {
-  return axiosClient.get(`/api/student-dashboard/pool-campus/college`)
-    .then(response => response)
-    .catch(error => error);
+  // Use the existing route that works
+  return axiosClient.get(`/api/student-dashboard/getAllPoolCampusJobs`)
+    .then(response => {
+      console.log('API Response from getAllPoolCampusJobs:', response);
+      return response;
+    })
+    .catch(error => {
+      console.error('API Error:', error);
+      throw error;
+    });
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import JobCard from '@/components/college/collegeDashboard/poolCampusOpportunity/JobCard';
 import { MapPin, Filter, Search, Briefcase, TrendingUp, Calendar, Users, X, RefreshCw, ChevronDown, ChevronUp, Building, GraduationCap, BookOpen, Tag, DollarSign, Check, Award } from 'lucide-react';
-import { getPoolCampusForCompany } from '@/lib/College_AxiosIntance'; // Use existing function
+import { getCollegePostingForPoolcampus } from '@/lib/College_AxiosIntance';
 import { useMemo } from 'react';
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
@@ -51,7 +51,7 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
     setLoading(true);
     setError(null);
     try {
-      const response = await getPoolCampusForCompany(); // Use existing function
+      const response = await getCollegePostingForPoolcampus(); // Use existing function
 
       console.log('Pool campus response:', response);
 
@@ -70,23 +70,24 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
       }
 
       const mappedJobs = backendJobs.map(backendJob => {
-        // Extract company details
-        const companyName = backendJob.companyPosted?.companyDetails?.companyName || 
-                           backendJob.companyName || 
-                           'N/A';
-        
-        const description = backendJob.description || 
-                           backendJob.companyPosted?.companyDetails?.description || 
-                           'No description provided.';
-        
-        const logo = backendJob.companyPosted?.profileImageUrl || 
-                    backendJob.logo || 
-                    'https://via.placeholder.com/48';
-        
-        // Extract location
-        const location = backendJob.workLocation && backendJob.workLocation.length > 0
-          ? backendJob.workLocation.join(', ')
-          : (backendJob.location || 'Not specified');
+  // Extract company details
+  const companyName = backendJob.companyPosted?.companyDetails?.companyName || 
+                     backendJob.companyName || 
+                     'N/A';
+  
+  const description = backendJob.description || 
+                     backendJob.companyPosted?.companyDetails?.description || 
+                     'No description provided.';
+  
+  // FIX: Use a reliable placeholder or check if logo exists
+  const logo = backendJob.companyPosted?.profileImageUrl || 
+              backendJob.logo || 
+              null; // Set to null instead of broken URL
+  
+  // Extract location
+  const location = backendJob.workLocation && backendJob.workLocation.length > 0
+    ? backendJob.workLocation.join(', ')
+    : (backendJob.location || 'Not specified');
 
         // Extract package details
         const packageDetails = backendJob.packageDetails;

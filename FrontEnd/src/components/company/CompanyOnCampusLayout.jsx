@@ -42,13 +42,13 @@ const CompanyOnCampusLayout = () => {
           </div>
 
           {/* ================= SIDEBAR (Right) ================= */}
-          <div className="w-[320px] h-full bg-white border-l shadow-2xl rounded-r-2xl overflow-y-auto relative">
+          <div className="w-[320px] h-full border-l border-gray-200 shadow-2xl rounded-r-2xl overflow-hidden bg-white relative flex flex-col">
             
             {/* Sidebar header */}
-            <div className="sticky top-0 z-20 bg-white border-b p-6">
+            <div className="sticky top-0 z-20 bg-white border-b border-gray-200 p-6 mt-1">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-800 mb-1">Other Colleges</h2>
+                  <h2 className="text-lg font-semibold text-gray-800 mb-2">Other Opportunities</h2>
                   <p className="text-sm text-gray-600">Browse through other opportunities</p>
                 </div>
 
@@ -64,11 +64,11 @@ const CompanyOnCampusLayout = () => {
             </div>
 
             {/* Sidebar list */}
-            <div className="p-4">
+            <div className="p-4 flex-1 overflow-y-auto rounded-br-2xl">
               <CollegeListingPage 
                 compact={true}
                 onCollegeSelect={handleCollegeSelect}
-                selectedCollegeId={selectedCollege?._id} // Pass selected college ID to filter it out
+                selectedCollegeId={selectedCollege?._id}
               />
             </div>
           </div>

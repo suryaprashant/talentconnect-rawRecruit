@@ -42,36 +42,50 @@ const PoolCampusLayout = () => {
           </div>
 
           {/* ================= SIDEBAR (Right) ================= */}
-          <div className="w-[320px] h-full bg-white border-l shadow-2xl rounded-r-2xl overflow-y-auto relative">
-            
-            {/* Sidebar header */}
-            <div className="sticky top-0 z-20 bg-white border-b p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-800 mb-1">Other Pool Opportunities</h2>
-                  <p className="text-sm text-gray-600">Browse through other pool campus opportunities</p>
-                </div>
+<div className="w-[320px] h-full border-l shadow-2xl rounded-r-2xl overflow-hidden bg-white relative flex flex-col">
 
-                <button
-                  onClick={handleCloseModal}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
+  {/* ===== Sidebar Header ===== */}
+  <div className="h-[88px] flex items-center border-b px-6 bg-white rounded-tr-2xl">
+    <div className="flex items-center justify-between w-full">
+      <div>
+        <h2 className="text-lg font-semibold text-gray-800">
+          Other Pool Opportunities
+        </h2>
+        <p className="text-sm text-gray-600">
+          Browse through other pool campus opportunities
+        </p>
+      </div>
 
-            {/* Sidebar list */}
-            <div className="p-4">
-              <PoolJobListingPage 
-                compact={true}
-                onJobSelect={handleJobSelect}
-                selectedJobId={selectedJob?._id || selectedJob?.id}
-              />
-            </div>
-          </div>
+      <button
+        onClick={handleCloseModal}
+        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+      >
+        <svg
+          className="w-5 h-5 text-gray-500"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  {/* ===== Scroll Area ===== */}
+  <div className="flex-1 overflow-y-auto p-4 rounded-br-2xl">
+    <PoolJobListingPage
+      compact={true}
+      onJobSelect={handleJobSelect}
+      selectedJobId={selectedJob?._id || selectedJob?.id}
+    />
+  </div>
+</div>
         </div>
       </div>
     );

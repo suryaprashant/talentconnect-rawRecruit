@@ -98,12 +98,14 @@ export const createPostingService = async (postingData , authUserId) => {
 export const getJobPostingsByJobTypeService = async (jobType, userId, studentProfile = null) => {
     try {
         const postings = await JobPostingTable.find({ jobType })
-            .populate('companyPosted', 'name logo') // Ensure name is populated
-    .lean(); // Use lean for better performance and easier access
+            .populate({
+                path: 'companyPosted',
+                select: 'companyDetails profileImage profileImageUrl name hiringPreferences', // companyDetails is already in companyPosted
+            })
+            .lean();
 
         const currentDate = new Date();
         
-        // --- STEP 1: Status & Object Conversion (Standard functionality) ---
         let processedPostings = postings.map(posting => {
             let status = posting.jobStatus;
             if (posting.startDate && posting.endDate) {
@@ -114,37 +116,23 @@ export const getJobPostingsByJobTypeService = async (jobType, userId, studentPro
                 else if (currentDate >= startDate && currentDate <= endDate) status = "Open";
                 else status = "Closed";
             }
-            return { ...posting.toObject(), jobStatus: status };
+            return { ...posting, jobStatus: status };
         });
 
-        // --- STEP 2: Candidate Matching (ONLY if studentProfile is provided) ---
-        
-        // if (studentProfile && (studentProfile.jobRoles?.length > 0 || studentProfile.skills?.length > 0)) {
-        //     const studentRoles = (studentProfile.jobRoles || []).map(r => r.toLowerCase());
-        //     const studentSkills = (studentProfile.skills || []).map(s => s.toLowerCase());
-
-        //     processedPostings = processedPostings.filter(job => {
-        //         // Role Match: At least one
-        //         const jobRole = (job.role || "").toLowerCase();
-        //         const hasRoleMatch = studentRoles.some(role => jobRole.includes(role));
-
-        //         if (!hasRoleMatch) return false;
-
-        //         // Skill Match: 40% threshold
-        //         const jobSkills = job.requiredSkills || [];
-        //         if (jobSkills.length === 0) return true; 
-
-        //         const matchedCount = jobSkills.filter(s => 
-        //             studentSkills.includes(s.toLowerCase())
-        //         ).length;
-
-        //         return (matchedCount / jobSkills.length) >= 0.4;
-        //     });
-        // }
-
-        // --- STEP 3: Applied Jobs Filter (Standard functionality) ---
+        // --- STEP 2: Applied Jobs Filter ---
         if (userId) {
-            const applicantId = studentProfile?._id || userId;
+            let applicantId;
+            if (studentProfile && studentProfile._id) {
+                applicantId = studentProfile._id;
+            } else {
+                if (mongoose.Types.ObjectId.isValid(userId)) {
+                    applicantId = userId;
+                } else {
+                    const student = await OnboardingModel.findOne({ userId }).select('_id').lean();
+                    applicantId = student ? student._id : userId;
+                }
+            }
+
             const jobIds = processedPostings.map(p => p._id);
             const applications = await Application.find({
                 applicant: applicantId,
@@ -152,12 +140,22 @@ export const getJobPostingsByJobTypeService = async (jobType, userId, studentPro
             }).select('job').lean();
 
             const appliedJobIds = new Set(applications.map(a => String(a.job)));
-            return processedPostings.filter(p => !appliedJobIds.has(String(p._id)));
+            processedPostings = processedPostings.filter(p => !appliedJobIds.has(String(p._id)));
+        }
+
+        // DEBUG: Log what we're getting
+        if (processedPostings.length > 0) {
+            console.log("Sample posting company data:", {
+                hasCompanyPosted: !!processedPostings[0].companyPosted,
+                companyPostedKeys: processedPostings[0].companyPosted ? Object.keys(processedPostings[0].companyPosted) : 'none',
+                companyDetails: processedPostings[0].companyPosted?.companyDetails,
+                companyName: processedPostings[0].companyPosted?.companyDetails?.companyName
+            });
         }
 
         return processedPostings;
     } catch (error) {
-        console.error("Error in service:", error.message);
+        console.error("Error in getJobPostingsByJobTypeService:", error.message);
         throw error;
     }
 };
