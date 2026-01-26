@@ -285,8 +285,8 @@ import {
 } from 'lucide-react';
 
 const InternshipDetails = ({ job, onClose, isVisited }) => {
-  const jobId = job._id;
-  const jobType = job.jobType;
+  const jobId = job?._id;
+  const jobType = job?.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [applications, setApplications] = useState([]);
