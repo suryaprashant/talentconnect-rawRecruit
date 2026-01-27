@@ -1,9 +1,13 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // NEW: Added useNavigate
+import { useLegacyAuth } from '../../../../context/AuthProvider'; // NEW: Added useAuth
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
 
 export default function EmployerPoolCampus() {
+  const navigate = useNavigate(); 
+  const [authUser] = useLegacyAuth();
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
   const [formData, setFormData] = useState({
@@ -13,8 +17,36 @@ export default function EmployerPoolCampus() {
     acceptTerms: false
   });
 
-  const handleRegisterClick = () => setShowRegistration(true);
-  const handleRequestInfoClick = () => setShowRequestInfo(true);
+ const checkAuthentication = (actionType) => {
+  const token = localStorage.getItem('token');
+  const authUser = localStorage.getItem('ChatAppUser');
+
+  const isAuthenticated = token && authUser;
+  
+  if (!isAuthenticated) {
+    sessionStorage.removeItem('tempSelectedRole');
+    localStorage.setItem('redirectAfterAuth', '/hiring-channels/pool-campus-hiring/employer');
+    localStorage.setItem('intendedAction', actionType);
+    
+    navigate('/userselection');
+    return false;
+  }
+  return true;
+};
+
+  // NEW: Updated click handlers to check authentication
+  const handleRegisterClick = () => {
+    if (checkAuthentication('register')) {
+      setShowRegistration(true);
+    }
+  };
+
+  const handleRequestInfoClick = () => {
+    if (checkAuthentication('requestInfo')) {
+      setShowRequestInfo(true);
+    }
+  };
+
   const handleBackClick = () => {
     setShowRegistration(false);
     setShowRequestInfo(false);

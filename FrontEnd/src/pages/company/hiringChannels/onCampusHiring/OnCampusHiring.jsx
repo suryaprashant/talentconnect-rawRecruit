@@ -105,19 +105,21 @@ export default function OnCampusHiring() {
 
   // NEW: Authentication check for button clicks
   const checkAuthentication = (actionType) => {
-    const isAuthenticated = authUser?.user || localStorage.getItem('token');
+  const token = localStorage.getItem('token');
+  const authUser = localStorage.getItem('ChatAppUser');
+
+  const isAuthenticated = token && authUser;
+  
+  if (!isAuthenticated) {
+    sessionStorage.removeItem('tempSelectedRole');
+    localStorage.setItem('redirectAfterAuth', '/hiring-channels/on-campus-hiring');
+    localStorage.setItem('intendedAction', actionType);
     
-    if (!isAuthenticated) {
-      // Store the current hiring channel route for redirect after auth
-      localStorage.setItem('redirectAfterAuth', '/hiring-channels/on-campus-hiring');
-      // Store the intended action (register or requestInfo)
-      localStorage.setItem('intendedAction', actionType);
-      // Redirect to role selection for signup/login
-      navigate('/userselection');
-      return false;
-    }
-    return true;
-  };
+    navigate('/userselection');
+    return false;
+  }
+  return true;
+};
 
   // NEW: Updated click handlers to check authentication
   const handleRegisterClick = () => {
