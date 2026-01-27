@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom'; // NEW: Added useNavigate
+import { useLegacyAuth } from '../../../../context/AuthProvider'; 
 import MainPage from "./Main";
 import RegisterPage from "./RegisterPage";
 import RequestInfo from "./RequestInfo";
@@ -6,6 +8,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { createWorkforceRequest } from "@/lib/Company_AxiosInstance";
 
 export default function EmployerWorkforce() {
+  const navigate = useNavigate(); 
+  const [authUser] = useLegacyAuth(); 
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
 
@@ -20,9 +24,36 @@ export default function EmployerWorkforce() {
   const [startDate, setStartDate] = useState(null);
 
   // --- Handlers ---
-  const handleRegisterClick = () => {setShowRegistration(true);console.log(showRegistration);
+  const checkAuthentication = (actionType) => {
+    
+  const token = localStorage.getItem('token');
+  const authUser = localStorage.getItem('ChatAppUser');
+
+  const isAuthenticated = token && authUser;
+  
+  if (!isAuthenticated) {
+    sessionStorage.removeItem('tempSelectedRole');
+    localStorage.setItem('redirectAfterAuth', '/service-request/workforce-solution');
+    localStorage.setItem('intendedAction', actionType);
+    
+    navigate('/userselection');
+    return false;
   }
-  const handleRequestInfoClick = () => setShowRequestInfo(true);
+  return true;
+};
+
+  
+  const handleRegisterClick = () => {
+    if (checkAuthentication('register')) {
+      setShowRegistration(true);
+    }
+  };
+
+  const handleRequestInfoClick = () => {
+    if (checkAuthentication('requestInfo')) {
+      setShowRequestInfo(true);
+    }
+  };
 
   const handleBackClick = () => {
     setShowRegistration(false);

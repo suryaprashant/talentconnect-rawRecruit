@@ -1787,7 +1787,7 @@ useEffect(() => {
               {/* Skills */}
               <div ref={skillsRef} className="relative">
                 <label className="block font-medium mb-2 text-sm text-gray-700">Skills <span className="text-red-500">*</span></label>
-                <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
+                <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-hidden">
                   {formData.skills.map(skill => (
                     <div key={skill} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
                       <span>{skill}</span>
@@ -1800,7 +1800,7 @@ useEffect(() => {
                   <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.skills ? "rotate-180" : ""} text-gray-400`} />
                 </div>
                 {dropdownOpen.skills && (
-                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
+                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                     <div className="p-2 border-b border-gray-100 flex">
                       <input
                         type="text"
@@ -1827,7 +1827,7 @@ useEffect(() => {
                         Add
                       </button>
                     </div>
-                    <div className="max-h-40 overflow-auto">
+                    <div>
                       {skillsOptions.map(skill => (
                         <div key={skill} onClick={() => handleMultiSelect('skills', skill)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.skills.includes(skill) ? "bg-blue-50" : ""}`}>
                           <div className="flex items-center justify-between">
