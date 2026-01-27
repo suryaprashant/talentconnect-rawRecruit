@@ -47,58 +47,52 @@ function OffCampusJobDetail() {
     window.history.back();
   };
 
-  // In your non-working OffCampusJobDetail.jsx, update the handleApply and handleSave functions:
-
-const handleApply = async () => {
-  try {
-    const response = await ApplyForOppurtunity(jobId);
-    console.log("Apply response:", response);
-    
-    if (response?.data?.success === true) {
-      toast.success('Application submitted!');
-    } else {
-      // Use response.response.data for error messages
-      const errorMsg = response?.response?.data?.msg || 
-                      response?.data?.msg || 
-                      'Failed to apply. Please try again.';
+  const handleApply = async () => {
+    try {
+      const response = await ApplyForOppurtunity(jobId);
+      console.log("Apply response:", response);
+      
+      if (response?.data?.success === true) {
+        toast.success('Application submitted!');
+      } else {
+        const errorMsg = response?.response?.data?.msg || 
+                        response?.data?.msg || 
+                        'Failed to apply. Please try again.';
+        toast.error(errorMsg);
+      }
+    } catch (err) {
+      console.error('Error applying for job:', err);
+      
+      const errorMsg = err?.response?.data?.msg || 
+                      err?.message || 
+                      'Something went wrong!';
       toast.error(errorMsg);
     }
-  } catch (err) {
-    console.error('Error applying for job:', err);
-    
-    // Handle different error structures
-    const errorMsg = err?.response?.data?.msg || 
-                    err?.message || 
-                    'Something went wrong!';
-    toast.error(errorMsg);
-  }
-};
+  };
 
-const handleSave = async () => {
-  try {
-    const response = await SaveOppurtunity(jobId, jobDetail?.jobType || 'offcampus');
-    console.log("Save response:", response);
-    
-    if (response?.data?.success === true) {
-      toast.success('Job saved!');
-      setIsSaved(true);
-    } else {
-      // Use response.response.data for error messages
-      const errorMsg = response?.response?.data?.msg || 
-                      response?.data?.msg || 
-                      'Failed to save job. Please try again.';
+  const handleSave = async () => {
+    try {
+      const response = await SaveOppurtunity(jobId, jobDetail?.jobType || 'offcampus');
+      console.log("Save response:", response);
+      
+      if (response?.data?.success === true) {
+        toast.success('Job saved!');
+        setIsSaved(true);
+      } else {
+        const errorMsg = response?.response?.data?.msg || 
+                        response?.data?.msg || 
+                        'Failed to save job. Please try again.';
+        toast.error(errorMsg);
+      }
+    } catch (err) {
+      console.error('Error saving job:', err);
+      
+      const errorMsg = err?.response?.data?.msg || 
+                      err?.message || 
+                      'Something went wrong!';
       toast.error(errorMsg);
     }
-  } catch (err) {
-    console.error('Error saving job:', err);
-    
-    // Handle different error structures
-    const errorMsg = err?.response?.data?.msg || 
-                    err?.message || 
-                    'Something went wrong!';
-    toast.error(errorMsg);
-  }
-};
+  };
 
   if (isLoading) {
     return (
@@ -434,52 +428,28 @@ const handleSave = async () => {
           </div>
         </section>
 
-        {/* About the role */}
-<section className="mb-8">
-  <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-    About the Role
-  </h3>
-  {jobDetail.description ? (
-    <ul className="space-y-2 text-gray-700">
-      {jobDetail.description
-        .split(/\n|\.\s+|;\s+/)
-        .filter(point => point.trim().length > 0)
-        .map((point, index) => (
-          <li key={index} className="flex items-start gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] mt-2 flex-shrink-0"></div>
-            <span>{point.trim()}</span>
-          </li>
-        ))}
-    </ul>
-  ) : (
-    <p className="text-gray-700">No description available.</p>
-  )}
-</section>
+        {/* About the role - KEPT AS ORIGINAL TEXT */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            About the Role
+          </h3>
+          <p className="text-gray-700 whitespace-pre-wrap">
+            {jobDetail.description || 'No description available.'}
+          </p>
+        </section>
 
-        {/* Eligibility Criteria */}
-<section className="mb-8">
-  <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-    Eligibility Criteria
-  </h3>
-  {jobDetail.eligibilityCriteria ? (
-    <ul className="space-y-2 text-gray-700">
-      {jobDetail.eligibilityCriteria
-        .split(/\n|\.\s+|;\s+/)
-        .filter(point => point.trim().length > 0)
-        .map((point, index) => (
-          <li key={index} className="flex items-start gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] mt-2 flex-shrink-0"></div>
-            <span>{point.trim()}</span>
-          </li>
-        ))}
-    </ul>
-  ) : (
-    <p className="text-gray-700">No criteria specified.</p>
-  )}
-</section>
+        {/* Eligibility Criteria - KEPT AS ORIGINAL TEXT */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Eligibility Criteria
+          </h3>
+          <p className="text-gray-700 whitespace-pre-wrap">
+            {jobDetail.eligibilityCriteria || 'No criteria specified.'}
+          </p>
+        </section>
 
         {/* Important Dates */}
-        <section>
+        <section className="mb-8">
           <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
             Important Dates
           </h3>
@@ -502,6 +472,21 @@ const handleSave = async () => {
               <div className="text-sm text-[#667eea]">Results</div>
               <div className="font-medium text-gray-700">TBD</div>
             </div>
+          </div>
+        </section>
+
+        {/* Bottom Back Button */}
+        <section className="mt-8 pt-6 border-t border-gray-200">
+          <div className="flex justify-left">
+            <button 
+              onClick={() => handleBackToList()} 
+              className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+              Back
+            </button>
           </div>
         </section>
       </div>
