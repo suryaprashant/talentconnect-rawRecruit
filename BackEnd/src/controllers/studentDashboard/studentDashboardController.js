@@ -40,42 +40,94 @@ export const getOnCampusPostings = async (req, res) => {
     }
 };
 
-export const getOnCampusPostingsForCompany = async (req, res) => {
-    const userId=req.user._id;
-    try {
-        //companyId -> company.data[0]._id
-        const company=await getCompanyService(userId);
+// export const getOnCampusPostingsForCompany = async (req, res) => {
+//     const userId=req.user._id;
+//     try {
+//         //companyId -> company.data[0]._id
+//         const company=await getCompanyService(userId);
 
-        // Get all on-campus postings using the existing service
+//         // Get all on-campus postings using the existing service
+//         const postings = await getJobPostingsByCollegeService("On-campus");
+
+//         // Filter the results to include only those visible to "Company"
+//         const filteredPostings = postings.filter(
+//             (posting) => posting.visibleTo === "Company"
+//         );
+
+//         // If company profile exists, filter out postings the company already applied for
+//         if (company.data && company.data[0]._id) {
+//             try {
+//                 const companyProfileId = company.data[0]._id;
+//                 const jobIds = filteredPostings.map(p => p._id);
+//                 const applications = await Application.find({ applicant: companyProfileId, job: { $in: jobIds } }).select('job').lean();
+//                 const appliedJobIds = new Set(applications.map(a => String(a.job)));
+//                 const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
+//                 return sendResponse(res, 200, { data: finalPostings });
+//             } catch (err) {
+//                 console.error('Error filtering on-campus postings for company:', err.message);
+//                 // fallback to unfiltered list
+//                 return sendResponse(res, 200, { data: filteredPostings });
+//             }
+//         }
+
+//         sendResponse(res, 200, { data: filteredPostings });
+//     } catch (error) {
+//         console.error("Error in getOnCampusPostingsForCompany:", error.message);
+//         sendError(res, 500, "Internal server error");
+//     }
+// };
+
+export const getOnCampusPostingsForCompany = async (req, res) => {
+    // 1. Safely handle guest users
+    const userId = req.user ? req.user._id : null; 
+    
+    try {
+        let company = { data: [] };
+        
+        // 2. Only look up company profile if user is logged in
+        if (userId) {
+            company = await getCompanyService(userId);
+        }
+
+        // Get all on-campus postings
         const postings = await getJobPostingsByCollegeService("On-campus");
 
-        // Filter the results to include only those visible to "Company"
+        // Filter results visible to "Company"
         const filteredPostings = postings.filter(
             (posting) => posting.visibleTo === "Company"
         );
 
-        // If company profile exists, filter out postings the company already applied for
-        if (company.data && company.data[0]._id) {
-            try {
-                const companyProfileId = company.data[0]._id;
-                const jobIds = filteredPostings.map(p => p._id);
-                const applications = await Application.find({ applicant: companyProfileId, job: { $in: jobIds } }).select('job').lean();
-                const appliedJobIds = new Set(applications.map(a => String(a.job)));
-                const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
-                return sendResponse(res, 200, { data: finalPostings });
-            } catch (err) {
-                console.error('Error filtering on-campus postings for company:', err.message);
-                // fallback to unfiltered list
-                return sendResponse(res, 200, { data: filteredPostings });
-            }
+        // 3. Handle guest response immediately if no profile is found
+        if (!company.data || !company.data[0]?._id) {
+            return sendResponse(res, 200, { 
+                data: filteredPostings,
+                message: "Guest view: Showing all available postings."
+            });
         }
 
-        sendResponse(res, 200, { data: filteredPostings });
+        // 4. Apply application filtering for logged-in companies
+        try {
+            const companyProfileId = company.data[0]._id;
+            const jobIds = filteredPostings.map(p => p._id);
+            const applications = await Application.find({ 
+                applicant: companyProfileId, 
+                job: { $in: jobIds } 
+            }).select('job').lean();
+            
+            const appliedJobIds = new Set(applications.map(a => String(a.job)));
+            const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
+            
+            return sendResponse(res, 200, { data: finalPostings });
+        } catch (err) {
+            console.error('Error filtering postings:', err.message);
+            return sendResponse(res, 200, { data: filteredPostings });
+        }
     } catch (error) {
         console.error("Error in getOnCampusPostingsForCompany:", error.message);
         sendError(res, 500, "Internal server error");
     }
 };
+
 export const getOnCampusPostingForCompanybyID = async (req, res) => {
     const { id } = req.params;
     console.log("Fetching On-campus posting for Company by ID:", id);
@@ -220,74 +272,135 @@ export const getOnCampusPostingForCollegebyID = async (req, res) => {
 //     }
 // };
 
-export const getPoolCampusForCollege = async (req, res) => {
-    const userId = req.user._id;
+// export const getPoolCampusForCollege = async (req, res) => {
+//     const userId = req.user._id;
     
+//     try {
+//         console.log("=== getPoolCampusForCollege called ===");
+        
+//         // Get college profile
+//         let collegeProfile = null;
+//         if (userId) {
+//             try {
+//                 const college = await getCollegeService(userId);
+//                 if (college?.success && college?.data?.length > 0) {
+//                     collegeProfile = college.data[0];
+//                     console.log("College Profile ID:", collegeProfile._id);
+//                 }
+//             } catch (collegeError) {
+//                 console.error("Error fetching college:", collegeError.message);
+//             }
+//         }
+
+//         // Get pool-campus postings with proper population
+//         const postings = await getJobPostingsByJobTypeService("Pool-campus", userId);
+//         console.log(`Found ${postings.length} pool-campus postings`);
+
+//         // Filter by visibility to "College"
+//         const filteredPostings = postings.filter(
+//             (posting) => posting.visibleTo === "College"
+//         );
+//         console.log(`After visibility filter: ${filteredPostings.length} postings`);
+
+//         // If college profile exists, filter out already applied postings
+//         if (collegeProfile && collegeProfile._id) {
+//             try {
+//                 // FIX: Use filteredPostings, not postings
+//                 const jobIds = filteredPostings.map(p => p._id);
+//                 console.log(`Checking applications for ${jobIds.length} jobs`);
+                
+//                 const applications = await Application.find({ 
+//                     applicant: collegeProfile._id, 
+//                     job: { $in: jobIds } 
+//                 }).select('job').lean();
+                
+//                 console.log(`Found ${applications.length} existing applications`);
+                
+//                 const appliedJobIds = new Set(applications.map(a => String(a.job)));
+//                 const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
+                
+//                 console.log(`Final postings after filter: ${finalPostings.length}`);
+//                 return sendResponse(res, 200, { 
+//                     data: finalPostings,
+//                     message: "Successfully fetched pool campus postings"
+//                 });
+//             } catch (err) {
+//                 console.error('Error filtering applications:', err.message);
+//                 // Fallback to unfiltered visible postings
+//                 return sendResponse(res, 200, { 
+//                     data: filteredPostings,
+//                     message: "Unable to filter applications"
+//                 });
+//             }
+//         }
+
+//         // No college profile, return all visible postings
+//         sendResponse(res, 200, { 
+//             data: filteredPostings,
+//             message: "No college profile found. Showing all available postings."
+//         });
+        
+//     } catch (error) {
+//         console.error("Error in getPoolCampusForCollege:", error.message);
+//         sendError(res, 500, "Internal server error");
+//     }
+// };
+
+import jwt from 'jsonwebtoken'; // Make sure to import this at the top
+
+export const getPoolCampusForCollege = async (req, res) => {
+    // 1. Manually extract the token from headers
+    const authHeader = req.headers.authorization;
+    let userId = null;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        try {
+            const token = authHeader.split(' ')[1];
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            userId = decoded._id || decoded.id; // Get the user ID if token is valid
+        } catch (err) {
+            console.log("Request by Guest/Invalid Token - proceeding as non-login");
+            // We don't throw an error, we just keep userId as null
+        }
+    }
+
     try {
         console.log("=== getPoolCampusForCollege called ===");
         
-        // Get college profile
-        let collegeProfile = null;
-        if (userId) {
-            try {
-                const college = await getCollegeService(userId);
-                if (college?.success && college?.data?.length > 0) {
-                    collegeProfile = college.data[0];
-                    console.log("College Profile ID:", collegeProfile._id);
-                }
-            } catch (collegeError) {
-                console.error("Error fetching college:", collegeError.message);
-            }
-        }
-
-        // Get pool-campus postings with proper population
+        // 2. Fetch the postings (visible to everyone)
         const postings = await getJobPostingsByJobTypeService("Pool-campus", userId);
-        console.log(`Found ${postings.length} pool-campus postings`);
+        const filteredPostings = postings.filter(p => p.visibleTo === "College");
 
-        // Filter by visibility to "College"
-        const filteredPostings = postings.filter(
-            (posting) => posting.visibleTo === "College"
-        );
-        console.log(`After visibility filter: ${filteredPostings.length} postings`);
-
-        // If college profile exists, filter out already applied postings
-        if (collegeProfile && collegeProfile._id) {
-            try {
-                // FIX: Use filteredPostings, not postings
-                const jobIds = filteredPostings.map(p => p._id);
-                console.log(`Checking applications for ${jobIds.length} jobs`);
+        // 3. Logic for LOGGED IN users only
+        if (userId) {
+            // Your existing logic for filtering applications
+            // Use 'userId' instead of 'req.user._id'
+            let collegeProfile = null;
+            const college = await getCollegeService(userId);
+            
+            if (college?.success && college?.data?.length > 0) {
+                collegeProfile = college.data[0];
                 
+                const jobIds = filteredPostings.map(p => p._id);
                 const applications = await Application.find({ 
                     applicant: collegeProfile._id, 
                     job: { $in: jobIds } 
                 }).select('job').lean();
                 
-                console.log(`Found ${applications.length} existing applications`);
-                
                 const appliedJobIds = new Set(applications.map(a => String(a.job)));
                 const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
                 
-                console.log(`Final postings after filter: ${finalPostings.length}`);
-                return sendResponse(res, 200, { 
-                    data: finalPostings,
-                    message: "Successfully fetched pool campus postings"
-                });
-            } catch (err) {
-                console.error('Error filtering applications:', err.message);
-                // Fallback to unfiltered visible postings
-                return sendResponse(res, 200, { 
-                    data: filteredPostings,
-                    message: "Unable to filter applications"
-                });
+                return sendResponse(res, 200, { data: finalPostings });
             }
         }
 
-        // No college profile, return all visible postings
-        sendResponse(res, 200, { 
+        // 4. Fallback for non-logged in users (Guests)
+        // If no userId or no collegeProfile, just send all visible postings
+        return sendResponse(res, 200, { 
             data: filteredPostings,
-            message: "No college profile found. Showing all available postings."
+            message: "Successfully fetched postings (Guest View)"
         });
-        
+
     } catch (error) {
         console.error("Error in getPoolCampusForCollege:", error.message);
         sendError(res, 500, "Internal server error");
@@ -312,8 +425,9 @@ export const getPoolCampusJobByIdForCollege = async (req, res) => {
 }
 
 export const getPoolCampusForCompany = async (req, res) => {
-    const userId = req.user._id;
-    
+ // Safely handle guest users
+const userId = req.user ? req.user._id : null;
+    console.log('j')
     try {
         // Disable caching
         res.set({
@@ -526,6 +640,7 @@ export const getInternshipPostings = async (req, res) => {
 };
 
 export const getIntershipById = async (req, res) => {
+    console.log('in internship section')
     const { id } = req.params;
     try {
         const response = await JobPostingTable.findById(id)

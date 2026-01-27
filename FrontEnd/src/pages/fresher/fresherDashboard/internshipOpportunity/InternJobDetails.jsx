@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApplyForInternship, getInternshipById, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
-import { ArrowLeft, MapPin, Building2, Users, Calendar, Briefcase, DollarSign, Award, GraduationCap, FileText, Globe, Clock, CheckCircle } from 'lucide-react';
+import { ArrowLeft, MapPin, Building2, Users, Calendar, Briefcase, DollarSign, Award, GraduationCap, FileText, Globe, Clock, CheckCircle , Share2} from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const InternJobDetails = () => {
@@ -16,7 +16,26 @@ const InternJobDetails = () => {
   const [isApplied, setIsApplied] = useState((searchParams.get('isApplied') || '').toLowerCase() === 'true');
   const [isApplying, setIsApplying] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
+  
+  const handleShare = async () => {
+    const shareData = {
+      title: jobDetails.jobTitle,
+      text: `Check out this internship opportunity at ${jobDetails.companyPosted?.companyDetails?.companyName}!`,
+      url: window.location.href, // This captures the current shareable URL
+    };
+  
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: Copy to clipboard if navigator.share is not supported
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Link copied to clipboard!');
+      }
+    } catch (err) {
+      console.error('Error sharing:', err);
+    }
+  };
   useEffect(() => {
     const loadJobDetails = async () => {
       try {
@@ -192,6 +211,14 @@ const InternJobDetails = () => {
             </div>
           </div>
           <div className="flex space-x-2">
+            <button 
+    onClick={handleShare}
+    className="bg-white hover:bg-gray-50 text-[#667eea] font-bold py-2 px-3 rounded-lg transition-all duration-300 border border-[#667eea]/20 shadow-sm flex items-center gap-2"
+    title="Share Internship"
+  >
+    <Share2 className="w-5 h-5" />
+    <span className="hidden sm:inline">Share</span>
+  </button>
             {!isApplied && (
               <>
                 {/* Save Button */}
