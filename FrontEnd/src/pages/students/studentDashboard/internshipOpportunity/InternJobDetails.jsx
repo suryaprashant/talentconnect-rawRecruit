@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApplyForInternship, getInternshipById, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
-import { ArrowLeft, MapPin, Building2, Users, Calendar, Briefcase, DollarSign, Award, GraduationCap, FileText, Globe, Clock, CheckCircle, ChevronLeft } from 'lucide-react';
+import { ArrowLeft, MapPin, Building2, Users, Calendar, Briefcase, DollarSign, Award, GraduationCap, FileText, Globe, Clock, CheckCircle, ChevronLeft ,Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const InternJobDetails = () => {
@@ -37,6 +37,27 @@ const InternJobDetails = () => {
       loadJobDetails();
     }
   }, [jobId]);
+
+  const handleShare = async () => {
+  const shareData = {
+    title: jobDetails.jobTitle,
+    text: `Check out this internship opportunity at ${jobDetails.companyPosted?.companyDetails?.companyName}!`,
+    url: window.location.href,
+  };
+
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData);
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success('Link copied to clipboard!');
+    }
+  } catch (err) {
+    if (err.name !== 'AbortError') {
+      toast.error('Could not share the link');
+    }
+  }
+};
 
   const handleApply = async () => {
     try {
@@ -190,6 +211,13 @@ const InternJobDetails = () => {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <button 
+    onClick={handleShare}
+    className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-bold py-2 px-4 rounded-lg transition-all duration-300 border border-gray-200 text-sm shadow-sm"
+  >
+    <Share2 className="w-4 h-4 text-[#667eea]" />
+    Share
+  </button>
             {!isApplied && (
               <>
                 {/* Save Button */}

@@ -515,7 +515,7 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
                   Pool Campus Opportunities
                 </h1>
                 <p className="text-gray-600 mt-2">
-                  Explore pool campus opportunities from various companies. Apply filters to find your perfect career match.
+                  Explore pool campus opportunities from various companies. Apply filters to find your perfect career match
                 </p>
               </div>
             </div>
