@@ -1,10 +1,14 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // NEW: Added useNavigate
+import { useLegacyAuth } from '../../../../context/AuthProvider'; // NEW: Added useAuth
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
 import axios from 'axios';
 import { createStudentTrainingRequest } from '@/lib/College_AxiosIntance';
 export default function StudentTraining() {
+  const navigate = useNavigate(); 
+  const [authUser] = useLegacyAuth(); 
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
  const initialFormData = {
@@ -14,8 +18,37 @@ export default function StudentTraining() {
     acceptTerms: false
   };
   const [formData, setFormData] = useState(initialFormData);
-  const handleRegisterClick = () => setShowRegistration(true);
-  const handleRequestInfoClick = () => setShowRequestInfo(true);
+  
+  const checkAuthentication = (actionType) => {
+  const token = localStorage.getItem('token');
+  const authUser = localStorage.getItem('ChatAppUser');
+
+  const isAuthenticated = token && authUser;
+  
+  if (!isAuthenticated) {
+    sessionStorage.removeItem('tempSelectedRole');
+    localStorage.setItem('redirectAfterAuth', '/service-request/student-training-programs');
+    localStorage.setItem('intendedAction', actionType);
+    
+    navigate('/userselection');
+    return false;
+  }
+  return true;
+};
+
+  // NEW: Updated click handlers to check authentication
+  const handleRegisterClick = () => {
+    if (checkAuthentication('register')) {
+      setShowRegistration(true);
+    }
+  };
+
+  const handleRequestInfoClick = () => {
+    if (checkAuthentication('requestInfo')) {
+      setShowRequestInfo(true);
+    }
+  };
+
   const handleBackClick = () => {
     setShowRegistration(false);
     setShowRequestInfo(false);

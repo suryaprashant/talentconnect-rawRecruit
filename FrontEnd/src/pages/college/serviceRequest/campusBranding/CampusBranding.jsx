@@ -2,11 +2,15 @@
 
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // NEW: Added useNavigate
+import { useLegacyAuth } from '../../../../context/AuthProvider'; // NEW: Added useAuth
 import MainPage from './MainPage';
 import RegisterPage from './RegisterPage';
 import { createCollegeBrandingRequest } from '@/lib/College_AxiosIntance';
 // Main CampusBranding component
 export default function CampusBranding() {
+  const navigate = useNavigate(); 
+  const [authUser] = useLegacyAuth(); 
   const [showRequestInfo, setShowRequestInfo] = useState(false);
   const [formData, setFormData] = useState({
     date: "",
@@ -17,7 +21,25 @@ export default function CampusBranding() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
-  const handleRequestInfoClick = () => setShowRequestInfo(true);
+  const checkAuthentication = (actionType) => {
+  const token = localStorage.getItem('token');
+  const authUser = localStorage.getItem('ChatAppUser');
+
+  const isAuthenticated = token && authUser;
+  
+  if (!isAuthenticated) {
+    sessionStorage.removeItem('tempSelectedRole');
+    localStorage.setItem('redirectAfterAuth', '/service-request/campus-branding');
+    localStorage.setItem('intendedAction', actionType);
+    
+    navigate('/userselection');
+    return false;
+  }
+  return true;
+};
+
+
+  const handleRequestInfoClick = () => {if (checkAuthentication('requestInfo')) {setShowRequestInfo(true);}}
   const handleBackClick = () => {
     setShowRequestInfo(false);
     setSubmitError('');
