@@ -418,7 +418,7 @@ export const notifyCollegeOnInterviewScheduled = async ({
   time,
 }) => {
   try {
-    await Notification.create({
+    const notification = await Notification.create({
       recipientId: collegeAuthId,
       senderId: companyAuthId,
       type: "INTERVIEW_SCHEDULED",
@@ -426,12 +426,26 @@ export const notifyCollegeOnInterviewScheduled = async ({
       referenceId: applicationId,
       jobId,
       jobType,
-      meta: {
-        date,
-        time,
-      },
+      meta: { date, time },
       read: false,
     });
+    
+    // 🔔 REAL-TIME SOCKET PUSH
+    try {
+      const receiverSocketId = getReceiverSocketId(
+        collegeAuthId.toString() // 🔥 IMPORTANT
+      );
+    
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newNotification", notification);
+        console.log("🚀 Interview notification sent:", collegeAuthId.toString());
+      } else {
+        console.log("❌ Interview recipient offline:", collegeAuthId.toString());
+      }
+    } catch (err) {
+      console.error("Socket emit failed (interview):", err.message);
+    }
+    
   } catch (error) {
     console.error("Interview notification error:", error.message);
   }
