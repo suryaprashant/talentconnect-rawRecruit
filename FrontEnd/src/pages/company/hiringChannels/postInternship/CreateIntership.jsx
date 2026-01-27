@@ -7,7 +7,7 @@ import CreatableSelect from 'react-select/creatable';
 
 export default function PostIntership() {
   const initialState = {
-    jobTitles: [],
+    jobRoles: [],
     description: '',
     location: [],
     workMode: 'On-site',
@@ -112,7 +112,7 @@ export default function PostIntership() {
   const [customStream, setCustomStream] = useState('');
   const [customJobTitle, setCustomJobTitle] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState({
-    jobTitles: false,
+    jobRoles: false,
     skills: false,
     benefits: false,
     studentStreams: false,
@@ -128,7 +128,7 @@ export default function PostIntership() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdownRefs = {
-        jobTitles: jobTitlesRef,
+        jobRoles: jobTitlesRef,
         skills: skillsRef,
         benefits: benefitsRef,
         studentStreams: studentStreamsRef,
@@ -224,7 +224,7 @@ export default function PostIntership() {
     }
 
     const requiredFields = {
-      jobTitles: "Job Title",
+      jobRoles: "Job Title",
       description: "Job Description",
       location: "Location",
       'minPackage.amount': "Stipend Amount",
@@ -323,12 +323,12 @@ export default function PostIntership() {
     
     {/* Selected tags - removed scrolling from here */}
     <div className="flex flex-wrap gap-1 mb-2">
-      {formData.jobTitles.map(title => (
+      {formData.jobRoles.map(title => (
         <div key={title} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
           <span>{title}</span>
           <button
             type="button"
-            onClick={() => removeSelectedItem('jobTitles', title)}
+            onClick={() => removeSelectedItem('jobRoles', title)}
             className="ml-1 text-gray-500 hover:text-gray-700"
           >
             <X size={12} />
@@ -337,14 +337,14 @@ export default function PostIntership() {
       ))}
     </div>
     
-    <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[38px]" onClick={() => toggleDropdown('jobTitles')}>
+    <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[38px]" onClick={() => toggleDropdown('jobRoles')}>
       <span className="text-sm text-gray-500">
-        {formData.jobTitles.length > 0 ? `${formData.jobTitles.length} title(s) selected` : "Select job titles (multiple allowed)"}
+        {formData.jobRoles.length > 0 ? `${formData.jobRoles.length} title(s) selected` : "Select job titles (multiple allowed)"}
       </span>
-      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.jobTitles ? "rotate-180" : ""} text-gray-400`} />
+      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.jobRoles ? "rotate-180" : ""} text-gray-400`} />
     </div>
     
-    {dropdownOpen.jobTitles && (
+    {dropdownOpen.jobRoles && (
       <div className="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
         {/* Custom input section - fixed height, not scrollable */}
         <div className="p-2 border-b border-gray-100 bg-gray-50">
@@ -358,7 +358,7 @@ export default function PostIntership() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  handleCustomAdd('jobTitles', customJobTitle, setCustomJobTitle);
+                  handleCustomAdd('jobRoles', customJobTitle, setCustomJobTitle);
                 }
               }}
               className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
@@ -367,7 +367,7 @@ export default function PostIntership() {
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                handleCustomAdd('jobTitles', customJobTitle, setCustomJobTitle);
+                handleCustomAdd('jobRoles', customJobTitle, setCustomJobTitle);
               }}
               className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
             >
@@ -381,15 +381,15 @@ export default function PostIntership() {
           {jobTitleOptions.map((title, index) => (
             <div
               key={index}
-              onClick={() => handleMultiSelect('jobTitles', title)}
+              onClick={() => handleMultiSelect('jobRoles', title)}
               className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                formData.jobTitles.includes(title) ? "bg-blue-50/50" : ""
+                formData.jobRoles.includes(title) ? "bg-blue-50/50" : ""
               }`}
             >
-              <span className={`text-sm ${formData.jobTitles.includes(title) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+              <span className={`text-sm ${formData.jobRoles.includes(title) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
                 {title}
               </span>
-              {formData.jobTitles.includes(title) && <span className="text-[#667eea] font-bold">✓</span>}
+              {formData.jobRoles.includes(title) && <span className="text-[#667eea] font-bold">✓</span>}
             </div>
           ))}
         </div>

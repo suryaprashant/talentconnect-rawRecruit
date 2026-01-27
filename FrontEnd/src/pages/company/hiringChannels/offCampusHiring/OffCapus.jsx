@@ -79,19 +79,21 @@ export default function OffCampus() {
 
   // NEW: Authentication check for button clicks
   const checkAuthentication = (actionType) => {
-    const isAuthenticated = authUser?.user || localStorage.getItem('token');
+  const token = localStorage.getItem('token');
+  const authUser = localStorage.getItem('ChatAppUser');
+
+  const isAuthenticated = token && authUser;
+  
+  if (!isAuthenticated) {
+    sessionStorage.removeItem('tempSelectedRole');
+    localStorage.setItem('redirectAfterAuth', '/hiring-channels/off-campus-hiring');
+    localStorage.setItem('intendedAction', actionType);
     
-    if (!isAuthenticated) {
-     
-      localStorage.setItem('redirectAfterAuth', '/hiring-channels/off-campus-hiring');
-      // Store the intended action (register or requestInfo)
-      localStorage.setItem('intendedAction', actionType);
-      // Redirect to role selection for signup/login
-      navigate('/userselection');
-      return false;
-    }
-    return true;
-  };
+    navigate('/userselection');
+    return false;
+  }
+  return true;
+};
 
   
   const handleRegisterClick = () => {

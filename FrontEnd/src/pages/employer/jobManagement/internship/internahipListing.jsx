@@ -130,7 +130,7 @@ export default function InternshipListing() {
                     </span>
                     <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                       <Calendar className="h-3 w-3 mr-1.5" />
-                      {selectedJob?.endDate ? new Date(selectedJob.endDate).toLocaleDateString('en-US', { 
+                      {selectedJob?.expireAt  ? new Date(selectedJob.expireAt ).toLocaleDateString('en-US', { 
                         month: 'short', 
                         day: 'numeric',
                         year: 'numeric'
@@ -275,7 +275,7 @@ export default function InternshipListing() {
                       <div className="flex items-center gap-2">
                         <Calendar className="h-3 w-3 text-gray-400" />
                         <span className="text-gray-700 text-sm">
-                          {job?.endDate ? new Date(job.endDate).toLocaleDateString('en-US', { 
+                          {job?.expireAt  ? new Date(job.expireAt ).toLocaleDateString('en-US', { 
                             month: 'short', 
                             day: 'numeric',
                             year: 'numeric'
