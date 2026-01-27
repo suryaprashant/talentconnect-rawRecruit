@@ -1,10 +1,14 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
+import { useLegacyAuth } from '../../../../context/AuthProvider'; 
 import MainPage from './Main';
 import RegisterPage from './RegisterPage';
 import RequestInfo from './RequestInfo';
 import { createEmployeeTrainingRequest } from '@/lib/Company_AxiosInstance';
 
 export default function EmployeeTraining() {
+  const navigate = useNavigate(); 
+  const [authUser] = useLegacyAuth(); 
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRequestInfo, setShowRequestInfo] = useState(false);
   const initialFormData = {
@@ -14,8 +18,37 @@ export default function EmployeeTraining() {
     acceptTerms: false
   };
   const [formData, setFormData] = useState(initialFormData);
-  const handleRegisterClick = () => setShowRegistration(true);
-  const handleRequestInfoClick = () => setShowRequestInfo(true);
+
+  const checkAuthentication = (actionType) => {
+    const token = localStorage.getItem('token');
+    const authUser = localStorage.getItem('ChatAppUser');
+
+    const isAuthenticated = token && authUser;
+    
+    if (!isAuthenticated) {
+      sessionStorage.removeItem('tempSelectedRole');
+      localStorage.setItem('redirectAfterAuth', '/service-request/employee-training');
+      localStorage.setItem('intendedAction', actionType);
+
+      navigate('/userselection');
+      return false;
+    }
+    return true;
+  };
+
+
+    const handleRegisterClick = () => {
+      if (checkAuthentication('register')) {
+        setShowRegistration(true);
+      }
+    };
+
+    const handleRequestInfoClick = () => {
+      if (checkAuthentication('requestInfo')) {
+        setShowRequestInfo(true);
+      }
+    };
+
   const handleBackClick = () => {
     setShowRegistration(false);
     setShowRequestInfo(false);
