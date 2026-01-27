@@ -188,6 +188,7 @@ const JobDetailPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
       <main className="px-6 py-6">
+        {/* Top Back Button */}
         <button onClick={() => handleGoBack()} className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -274,18 +275,14 @@ const JobDetailPage = () => {
             </div>
           </div>
 
-          {/* Description - Removed border, fixed fetching */}
+          {/* Description - Removed border, fixed fetching, KEPT AS ORIGINAL TEXT */}
           <div className="px-6 py-6">
             <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
               {job.lookingFor} Description
             </h2>
-            <div className="text-gray-700">
+            <div className="text-gray-700 whitespace-pre-wrap">
               {job?.description ? (
-                <ul className="list-disc pl-5 space-y-2">
-                  {splitIntoMeaningfulPoints(job.description).map((point, index) => (
-                    <li key={index}>{point}</li>
-                  ))}
-                </ul>
+                job.description
               ) : (
                 <p>No job description provided.</p>
               )}
@@ -568,6 +565,21 @@ const JobDetailPage = () => {
               </div>
             </div>
           )}
+
+          {/* Bottom Back Button */}
+          <div className="px-6 py-6 border-t border-gray-100">
+            <div className="flex justify-left">
+              <button 
+                onClick={() => handleGoBack()} 
+                className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+                Back
+              </button>
+            </div>
+          </div>
         </div>
       </main>
     </div>

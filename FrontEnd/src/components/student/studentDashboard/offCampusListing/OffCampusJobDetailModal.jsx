@@ -81,18 +81,17 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const modalRef = useRef(null);
+  const contentRef = useRef(null);
 
   const loadJobDetails = async () => {
     if (!jobId) return;
     
     try {
       setLoading(true);
-      // Use getJobDetails instead of getOffCampusJobDetail
       const details = await getJobDetails(jobId);
       console.log('Job details response:', details);
       
       if (details && details.data) {
-        // Check different response formats
         const jobData = details.data.data || details.data[0] || details.data;
         if (jobData) {
           setJobDetail(jobData);
@@ -174,7 +173,6 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
     
     setIsSubmitting(true);
     try {
-      // Use ApplyForOppurtunity instead of ApplyForOffCampusJob
       const response = await ApplyForOppurtunity(jobId);
       console.log('Apply response:', response);
       if (response?.data?.success === true) {
@@ -213,7 +211,6 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
     if (!jobDetail?._id) return;
     
     try {
-      // For off-campus jobs, use jobType from jobDetail or default to "Off-campus"
       const jobType = jobDetail?.jobType || "Off-campus";
       const response = await SaveOppurtunity(jobDetail._id, jobType);
       if (response?.data?.success === true) {
@@ -286,12 +283,21 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
     return jobDetail.workMode || 'Not specified';
   };
 
-  // Format location
+  // Format location - improved to handle various formats
   const formatLocation = () => {
     if (Array.isArray(jobDetail.location)) {
       return jobDetail.location.join(', ');
     }
-    return jobDetail.location || 'Not specified';
+    if (jobDetail.location) {
+      return jobDetail.location;
+    }
+    if (jobDetail.workLocation) {
+      if (Array.isArray(jobDetail.workLocation)) {
+        return jobDetail.workLocation.join(', ');
+      }
+      return jobDetail.workLocation;
+    }
+    return 'Not specified';
   };
 
   return (
@@ -311,59 +317,43 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
         )}
 
         {/* Main Content Area - Single scroll container */}
-        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+        <div ref={contentRef} className="flex-1 overflow-y-auto bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
           <div className="p-6">
-            {/* Header Section */}
-            <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4 rounded-xl mb-6">
-              {jobStatus.status === 'Closed' ? (
-                <div className="text-sm font-medium text-[#667eea]">Registrations Completed</div>
-              ) : (
-                <div className="text-sm font-medium text-[#667eea]">Registration Open</div>
-              )}
-
-              <div className="flex items-center mb-2">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 mr-3 flex items-center justify-center rounded-full overflow-hidden">
-                  {jobDetail.companyPosted?.profileImageUrl ? (
-                    <img
-                      src={jobDetail.companyPosted.profileImageUrl}
-                      alt={companyName}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = 'https://placehold.co/48x48/cccccc/000000?text=Logo';
-                      }}
-                    />
-                  ) : (
-                    <Building className="h-6 w-6 text-[#667eea]" />
-                  )}
-                </div>
+            {/* Header Section - Updated with location */}
+            <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-5 rounded-xl mb-6">
+              <div className="flex justify-between items-start">
                 <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm font-medium text-[#667eea]">
+                      {jobStatus.status === 'Closed' ? 'Registrations Completed' : 'Registration Open'}
+                    </span>
+                  </div>
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                    {jobDetail.jobTitle || 'Job Position'} at {companyName}
+                    {companyName}
                   </h1>
-                  <div className="flex items-center text-sm text-gray-600 mt-1">
-                    <Calendar className="h-4 w-4 mr-1 text-[#667eea]" />
-                    <span>Posted: {formatDate(jobDetail?.createdAt)}</span>
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-3">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Calendar className="h-4 w-4 mr-2 text-[#667eea]" />
+                      <span>Posted: {formatDate(jobDetail?.createdAt)}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <MapPin className="h-4 w-4 mr-2 text-[#667eea]" />
+                      <span>{formatLocation()}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Job Type Badge */}
-              <div className="mb-3">
-                <span className="px-3 py-1 bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 text-[#667eea] rounded-full text-sm font-medium border border-[#667eea]/30">
-                  {jobDetail.jobType || 'Full-time'}
-                </span>
-              </div>
-
               {/* Save and Share buttons */}
-              <div className="flex space-x-2 mt-4">
+              <div className="flex space-x-3 mt-4">
                 {!saved && !isApplied && (
                   <button
                     onClick={handleSave}
                     disabled={saved}
                     className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-lg transition-all duration-200`}
                   >
-                    <Save className={`h-5 w-5 mr-1 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} fill={saved ? 'currentColor' : 'none'} />
+                    <Save className={`h-5 w-5 mr-2 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} fill={saved ? 'currentColor' : 'none'} />
                     {saved ? 'Saved' : 'Save'}
                   </button>
                 )}
@@ -371,54 +361,15 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                   onClick={handleShare}
                   className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
                 >
-                  <Share2 className="h-5 w-5 mr-1 text-gray-400" />
+                  <Share2 className="h-5 w-5 mr-2 text-gray-400" />
                   Share
                 </button>
               </div>
             </div>
 
             <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
-              {/* Job Overview */}
-              <div className="px-6 py-6">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                  Job Overview
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <DollarSign className="h-5 w-5 text-[#667eea] mr-2" />
-                      <span className="text-sm font-medium text-[#667eea]">Salary Package</span>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900">{formatSalary()}</div>
-                  </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <Briefcase className="h-5 w-5 text-[#667eea] mr-2" />
-                      <span className="text-sm font-medium text-[#667eea]">Work Mode</span>
-                    </div>
-                    <div className="text-lg font-medium text-gray-900">{formatWorkMode()}</div>
-                  </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <MapPin className="h-5 w-5 text-[#667eea] mr-2" />
-                      <span className="text-sm font-medium text-[#667eea]">Location</span>
-                    </div>
-                    <div className="text-lg font-medium text-gray-900">{formatLocation()}</div>
-                  </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <Calendar className="h-5 w-5 text-[#667eea] mr-2" />
-                      <span className="text-sm font-medium text-[#667eea]">Application Deadline</span>
-                    </div>
-                    <div className="text-lg font-medium text-gray-900">
-                      {jobDetail.applicationDeadline ? formatDate(jobDetail.applicationDeadline) : 'Rolling Basis'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               {/* About Company */}
-              <div className="px-6 py-6 border-t border-gray-100">
+              <div className="px-6 py-6">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   About {companyName}
                 </h2>
@@ -427,6 +378,76 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                    jobDetail.companyDescription || 
                    'No company description available.'}
                 </p>
+                
+                {/* Company stats if available */}
+                {jobDetail.companyPosted?.companyDetails && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+                    {(jobDetail.companyPosted.companyDetails.numberOfEmployees || 
+                      jobDetail.companyPosted.companyDetails.numberOfEmployees === 0) && (
+                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-gray-900 mb-2">
+                          {jobDetail.companyPosted.companyDetails.numberOfEmployees.toLocaleString()}
+                        </div>
+                        <div className="text-sm text-gray-600 font-medium">Employees</div>
+                      </div>
+                    )}
+                    {jobDetail.companyPosted.companyDetails.industryType && (
+                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
+                        <div className="text-xl font-bold text-gray-900 mb-2 truncate">
+                          {jobDetail.companyPosted.companyDetails.industryType}
+                        </div>
+                        <div className="text-sm text-gray-600 font-medium">Industry</div>
+                      </div>
+                    )}
+                    {jobDetail.companyPosted.companyDetails.country && (
+                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
+                        <div className="text-xl font-bold text-gray-900 mb-2">
+                          {jobDetail.companyPosted.companyDetails.country}
+                        </div>
+                        <div className="text-sm text-gray-600 font-medium">Country</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Job Overview */}
+              <div className="px-6 py-6 border-t border-gray-100">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                  Job Overview
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
+                    <div className="flex items-center mb-2">
+                      <DollarSign className="h-5 w-5 text-[#667eea] mr-2" />
+                      <span className="text-sm font-medium text-[#667eea]">Salary Package</span>
+                    </div>
+                    <div className="text-lg font-bold text-gray-900">{formatSalary()}</div>
+                  </div>
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
+                    <div className="flex items-center mb-2">
+                      <Briefcase className="h-5 w-5 text-[#667eea] mr-2" />
+                      <span className="text-sm font-medium text-[#667eea]">Work Mode</span>
+                    </div>
+                    <div className="text-lg font-bold text-gray-900">{formatWorkMode()}</div>
+                  </div>
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
+                    <div className="flex items-center mb-2">
+                      <Calendar className="h-5 w-5 text-[#667eea] mr-2" />
+                      <span className="text-sm font-medium text-[#667eea]">Application Deadline</span>
+                    </div>
+                    <div className="text-lg font-bold text-gray-900">
+                      {jobDetail.applicationDeadline ? formatDate(jobDetail.applicationDeadline) : 'Rolling Basis'}
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
+                    <div className="flex items-center mb-2">
+                      <Tag className="h-5 w-5 text-[#667eea] mr-2" />
+                      <span className="text-sm font-medium text-[#667eea]">Experience Level</span>
+                    </div>
+                    <div className="text-lg font-bold text-gray-900">{jobDetail.experienceLevel || 'Entry Level'}</div>
+                  </div>
+                </div>
               </div>
 
               {/* Job Details */}
@@ -434,30 +455,34 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   Job Details
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Employment Type</div>
-                    {renderTags(jobDetail.employmentType)}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Employment Type</div>
+                      {renderTags(jobDetail.employmentType)}
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Required Skills</div>
+                      {renderTags(jobDetail.skills)}
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Job Roles</div>
+                      {renderTags(jobDetail.jobRoles)}
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Experience Level</div>
-                    <div className="mt-1 text-base text-gray-900">{jobDetail.experienceLevel || 'Entry Level'}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Required Skills</div>
-                    {renderTags(jobDetail.skills)}
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Required Degree</div>
-                    {renderTags(jobDetail.degree)}
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Eligible Streams</div>
-                    {renderTags(jobDetail.studentStreams)}
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-[#667eea]">Job Roles</div>
-                    {renderTags(jobDetail.jobRoles)}
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Required Degree</div>
+                      {renderTags(jobDetail.degree)}
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Eligible Streams</div>
+                      {renderTags(jobDetail.studentStreams)}
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Job Location</div>
+                      <div className="text-base text-gray-900 mt-1">{formatLocation()}</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -468,16 +493,8 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                     Job Description
                   </h2>
-                  <div className="text-gray-700">
-                    {jobDetail.description ? (
-                      <ul className="list-disc pl-5 space-y-2">
-                        {splitIntoBullets(jobDetail.description).map((point, idx) => (
-                          <li key={idx}>{point}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p>No description available.</p>
-                    )}
+                  <div className="text-gray-700 whitespace-pre-wrap">
+                    {jobDetail.description}
                   </div>
                 </div>
               )}
@@ -489,15 +506,33 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                     Key Responsibilities
                   </h2>
                   <div className="text-gray-700">
-                    {jobDetail.responsibilities ? (
-                      <ul className="list-disc pl-5 space-y-2">
-                        {splitIntoBullets(jobDetail.responsibilities).map((point, idx) => (
-                          <li key={idx}>{point}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p>No responsibilities specified.</p>
-                    )}
+                    <ul className="space-y-2">
+                      {splitIntoBullets(jobDetail.responsibilities).map((point, idx) => (
+                        <li key={idx} className="flex items-start">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt-2 mr-3 flex-shrink-0"></div>
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* Required Skills */}
+              {jobDetail?.skills && jobDetail?.skills.length > 0 && (
+                <div className="px-6 py-6 border-t border-gray-100">
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                    Required Skills
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {jobDetail.skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium border border-gray-200"
+                      >
+                        {skill}
+                      </span>
+                    ))}
                   </div>
                 </div>
               )}
@@ -531,8 +566,27 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                     Selection Process
                   </h2>
-                  <div className="text-gray-700">
-                    {renderTags(jobDetail.selectionProcess)}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {Array.isArray(jobDetail.selectionProcess) ? (
+                      jobDetail.selectionProcess.map((step, index) => (
+                        <div 
+                          key={index}
+                          className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#667eea]/30 hover:shadow-sm transition-all duration-200"
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
+                              <span className="text-xs font-bold text-white">{index + 1}</span>
+                            </div>
+                            <p className="text-sm font-medium text-gray-900">Round {index + 1}</p>
+                          </div>
+                          <p className="text-xs text-gray-600 line-clamp-3">{step}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-gray-700">
+                        {renderTags(jobDetail.selectionProcess)}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -564,24 +618,68 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                 </div>
               </div>
 
-              {/* Apply Now Button at Bottom */}
-              {!isApplied && jobStatus.status !== 'Closed' && (
-                <div className="px-6 py-6 bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 border-t border-gray-100">
-                  <div className="flex justify-center">
-                    <button 
-                      className="inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-lg font-medium rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={handleApply}
-                      disabled={isSubmitting}
-                    >
-                      <CheckCircle className="h-5 w-5 mr-2" />
-                      {isSubmitting ? 'Applying...' : 'Apply Now'}
-                    </button>
+              {/* Contact Information if available */}
+              {jobDetail.contactPerson && (
+                <div className="px-6 py-6 border-t border-gray-100">
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                    Contact Person
+                  </h2>
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
+                    <div className="flex items-start">
+                      <div className="mr-3 flex-shrink-0">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center text-[#667eea]">
+                          <Users className="h-6 w-6" />
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-base font-medium text-gray-900">
+                          {jobDetail.contactPerson.name || 'Not Specified'} 
+                          <span className='text-sm text-gray-500 ml-2'>({jobDetail.contactPerson.designation || 'N/A'})</span>
+                        </div>
+                        {jobDetail.contactPerson.email && (
+                          <div className="flex items-center mt-1">
+                            <Mail className="h-4 w-4 text-[#667eea] mr-1" />
+                            <a href={`mailto:${jobDetail.contactPerson.email}`} className="text-[#667eea] hover:text-[#764ba2] text-sm transition-colors">{jobDetail.contactPerson.email}</a>
+                          </div>
+                        )}
+                        {jobDetail.contactPerson.mobile && (
+                          <div className="flex items-center mt-1">
+                            <Phone className="h-4 w-4 text-[#667eea] mr-1" />
+                            <a href={`tel:${jobDetail.contactPerson.mobile}`} className="text-[#667eea] hover:text-[#764ba2] text-sm transition-colors">{jobDetail.contactPerson.mobile}</a>
+                          </div>
+                        )}
+                        {jobDetail.contactPerson.linkedin && (
+                          <a href={jobDetail.contactPerson.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center mt-1 text-[#667eea] hover:text-[#764ba2] transition-colors">
+                            <Linkedin className="h-4 w-4 mr-1" />
+                            <span className="text-sm">LinkedIn</span>
+                          </a>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
             </div>
           </div>
         </div>
+
+        {/* Fixed Footer with Apply Now Button */}
+        {!isApplied && jobStatus.status !== 'Closed' && (
+          <div className="sticky bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-40">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex justify-center">
+                <button 
+                  className="inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleApply}
+                  disabled={isSubmitting}
+                >
+                  <CheckCircle className="h-5 w-5 mr-2" />
+                  {isSubmitting ? 'Applying...' : 'Apply Now'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApplyForInternship, getInternshipById, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
-import { ArrowLeft, MapPin, Building2, Users, Calendar, Briefcase, DollarSign, Award, GraduationCap, FileText, Globe, Clock, CheckCircle, ChevronLeft ,Share2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Building2, Users, Calendar, Briefcase, DollarSign, Award, GraduationCap, FileText, Globe, Clock, CheckCircle, ChevronLeft ,Share2, IndianRupee } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const InternJobDetails = () => {
@@ -39,25 +39,25 @@ const InternJobDetails = () => {
   }, [jobId]);
 
   const handleShare = async () => {
-  const shareData = {
-    title: jobDetails.jobTitle,
-    text: `Check out this internship opportunity at ${jobDetails.companyPosted?.companyDetails?.companyName}!`,
-    url: window.location.href,
-  };
+    const shareData = {
+      title: jobDetails?.jobTitle || 'Internship Opportunity',
+      text: `Check out this internship opportunity at ${jobDetails?.companyPosted?.companyDetails?.companyName || 'this company'}!`,
+      url: window.location.href,
+    };
 
-  try {
-    if (navigator.share) {
-      await navigator.share(shareData);
-    } else {
-      await navigator.clipboard.writeText(window.location.href);
-      toast.success('Link copied to clipboard!');
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Link copied to clipboard!');
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        toast.error('Could not share the link');
+      }
     }
-  } catch (err) {
-    if (err.name !== 'AbortError') {
-      toast.error('Could not share the link');
-    }
-  }
-};
+  };
 
   const handleApply = async () => {
     try {
@@ -129,23 +129,33 @@ const InternJobDetails = () => {
     return <span className="text-gray-700">N/A</span>;
   };
 
-  // Helper function to render bullet points
-  const renderBulletPoints = (text) => {
-    if (!text) return <p className="text-gray-700">No information available.</p>;
+  // Format currency with rupee sign
+  const formatCurrency = (amount, currency) => {
+    if (!amount) return 'Not Specified';
     
-    return (
-      <ul className="space-y-2 text-gray-700">
-        {text
-          .split(/\n|\.\s+|;\s+/)
-          .filter(point => point.trim().length > 0)
-          .map((point, index) => (
-            <li key={index} className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] mt-2 flex-shrink-0"></div>
-              <span>{point.trim()}</span>
-            </li>
-          ))}
-      </ul>
-    );
+    // Convert to Indian Rupee format
+    const formatter = new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: currency || 'INR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+    
+    return formatter.format(amount);
+  };
+
+  // Get company location properly
+  const getCompanyLocation = () => {
+    if (!jobDetails?.companyPosted?.companyDetails) return 'N/A';
+    
+    const { companyLocation, state, country } = jobDetails.companyPosted.companyDetails;
+    
+    const locationParts = [];
+    if (companyLocation) locationParts.push(companyLocation);
+    if (state) locationParts.push(state);
+    if (country) locationParts.push(country);
+    
+    return locationParts.length > 0 ? locationParts.join(', ') : 'N/A';
   };
 
   if (isLoading) {
@@ -175,7 +185,7 @@ const InternJobDetails = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
       <div className="max-w-4xl mx-auto bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 p-6 my-8">
-        {/* Back Button - Top Left */}
+        {/* Top Back Button */}
         <button 
           onClick={handleBackToList} 
           className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors"
@@ -212,12 +222,12 @@ const InternJobDetails = () => {
           </div>
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <button 
-    onClick={handleShare}
-    className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-bold py-2 px-4 rounded-lg transition-all duration-300 border border-gray-200 text-sm shadow-sm"
-  >
-    <Share2 className="w-4 h-4 text-[#667eea]" />
-    Share
-  </button>
+              onClick={handleShare}
+              className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-bold py-2 px-4 rounded-lg transition-all duration-300 border border-gray-200 text-sm shadow-sm"
+            >
+              <Share2 className="w-4 h-4 text-[#667eea]" />
+              Share
+            </button>
             {!isApplied && (
               <>
                 {/* Save Button */}
@@ -274,11 +284,9 @@ const InternJobDetails = () => {
             <span className="text-sm">{jobDetails.internshipDuration}</span>
           </div>
           <div className="flex items-center text-gray-600">
-            <DollarSign className="w-4 h-4 mr-1" />
+            <IndianRupee className="w-4 h-4 mr-1" />
             <span className="text-sm">
-              {jobDetails.minPackage?.amount 
-                ? `${jobDetails.minPackage.amount} ${jobDetails.minPackage.currency}` 
-                : 'Not Specified'}
+              {formatCurrency(jobDetails.minPackage?.amount, jobDetails.minPackage?.currency)}
             </span>
           </div>
         </div>
@@ -340,13 +348,11 @@ const InternJobDetails = () => {
               </div>
             </div>
             <div className="flex items-start">
-              <DollarSign className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
+              <IndianRupee className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" />
               <div>
                 <div className="font-medium text-[#667eea]">Stipend</div>
                 <div className="text-gray-700">
-                  {jobDetails.minPackage?.amount 
-                    ? `${jobDetails.minPackage.amount} ${jobDetails.minPackage.currency}` 
-                    : 'Not Specified'}
+                  {formatCurrency(jobDetails.minPackage?.amount, jobDetails.minPackage?.currency)}
                 </div>
               </div>
             </div>
@@ -360,20 +366,24 @@ const InternJobDetails = () => {
           </div>
         </section>
 
-        {/* Internship Description */}
+        {/* Internship Description - KEPT AS ORIGINAL TEXT */}
         <section className="mb-8">
           <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
             Internship Description
           </h3>
-          {renderBulletPoints(jobDetails.description)}
+          <p className="text-gray-700 whitespace-pre-wrap">
+            {jobDetails.description || 'No description available.'}
+          </p>
         </section>
 
-        {/* Eligibility Criteria */}
+        {/* Eligibility Criteria - KEPT AS ORIGINAL TEXT */}
         <section className="mb-8">
           <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
             Eligibility Criteria
           </h3>
-          {renderBulletPoints(jobDetails.eligibilityCriteria)}
+          <p className="text-gray-700 whitespace-pre-wrap">
+            {jobDetails.eligibilityCriteria || 'No criteria specified.'}
+          </p>
         </section>
 
         {/* Key Skills */}
@@ -427,7 +437,7 @@ const InternJobDetails = () => {
         </section>
 
         {/* Important Dates */}
-        <section>
+        <section className="mb-8">
           <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
             Important Dates
           </h3>
@@ -453,8 +463,8 @@ const InternJobDetails = () => {
           </div>
         </section>
 
-        {/* Company Location */}
-        <section className="mt-8 pt-6 border-t border-gray-200">
+        {/* Company Location - IMPROVED */}
+        <section className="mb-8 pt-6 border-t border-gray-200">
           <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
             Company Location
           </h3>
@@ -462,11 +472,24 @@ const InternJobDetails = () => {
             <MapPin className="w-5 h-5 mt-0.5 mr-3 text-[#667eea] flex-shrink-0" />
             <div>
               <div className="text-gray-700">
-                {`${jobDetails.companyPosted?.companyDetails?.companyLocation || 'N/A'}, 
-                ${jobDetails.companyPosted?.companyDetails?.state || ''}, 
-                ${jobDetails.companyPosted?.companyDetails?.country || ''}`}
+                {getCompanyLocation()}
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Bottom Back Button */}
+        <section className="mt-8 pt-6 border-t border-gray-200">
+          <div className="flex justify-left">
+            <button 
+              onClick={() => handleBackToList()} 
+              className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+              Back
+            </button>
           </div>
         </section>
       </div>
