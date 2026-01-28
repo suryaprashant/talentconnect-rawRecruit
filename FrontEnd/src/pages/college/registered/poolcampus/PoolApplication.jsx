@@ -306,7 +306,7 @@ const handleViewAll = (jobId, e) => {
                   <tr>
                     {/* CHANGED: Job Title to Degree */}
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Degree</th>
-                    {/* <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th> */}
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Deadline</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Views</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">New Applications</th>
