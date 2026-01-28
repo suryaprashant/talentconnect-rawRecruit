@@ -855,62 +855,83 @@ const [formData, setFormData] = useState(() => {
               </div>
             </div>
 
-            {/* Seventh Row: Skills */}
-            <div ref={skillsRef} className="relative">
-              <label className="block font-medium mb-2 text-sm text-gray-700">Skills</label>
-              <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
-                {formData.skills.map(skill => (
-                  <div key={skill} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                    <span>{skill}</span>
-                    <button type="button" onClick={() => removeSelectedItem('skills', skill)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
-                  </div>
-                ))}
-              </div>
-              <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('skills')}>
-                <span className="text-sm text-gray-500">Select skills</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.skills ? "rotate-180" : ""} text-gray-400`} />
-              </div>
-              {dropdownOpen.skills && (
-                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                  <div className="p-2 border-b border-gray-100 flex">
-                    <input
-                      type="text"
-                      placeholder="Add custom skill..."
-                      value={customSkill}
-                      onChange={(e) => setCustomSkill(e.target.value)}
-                      onClick={(e) => e.stopPropagation()}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          handleCustomAdd('skills', customSkill, setCustomSkill);
-                        }
-                      }}
-                      className="w-full p-2 text-sm border border-gray-200 rounded-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCustomAdd('skills', customSkill, setCustomSkill);
-                      }}
-                      className="ml-2 px-3 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-medium"
-                    >
-                      Add
-                    </button>
-                  </div>
-                  <div className="max-h-40 overflow-auto">
-                    {skillsOptions.map(skill => (
-                      <div key={skill} onClick={() => handleMultiSelect('skills', skill)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.skills.includes(skill) ? "bg-blue-50" : ""}`}>
-                        <div className="flex items-center justify-between">
-                          <span className={`text-sm ${formData.skills.includes(skill) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{skill}</span>
-                          {formData.skills.includes(skill) && <span className="text-[#667eea]">✓</span>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Skills */}
+<div ref={skillsRef} className="relative">
+  <label className="block font-medium mb-2 text-sm text-gray-700">Skills</label>
+  
+  {/* Selected skills - removed scrolling */}
+  <div className="flex flex-wrap gap-1 mb-2">
+    {formData.skills.map(skill => (
+      <div key={skill} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+        <span>{skill}</span>
+        <button type="button" onClick={() => removeSelectedItem('skills', skill)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
+      </div>
+    ))}
+  </div>
+  
+  <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('skills')}>
+    <span className="text-sm text-gray-500">Select skills</span>
+    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.skills ? "rotate-180" : ""} text-gray-400`} />
+  </div>
+  
+  {dropdownOpen.skills && (
+    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+      {/* Custom input section */}
+      <div className="p-2 border-b border-gray-100 bg-gray-50">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Add custom skill..."
+            value={customSkill}
+            onChange={(e) => setCustomSkill(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleCustomAdd('skills', customSkill, setCustomSkill);
+              }
+            }}
+            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCustomAdd('skills', customSkill, setCustomSkill);
+            }}
+            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+      
+      {/* Scrollable list ONLY */}
+      <div className="overflow-y-auto max-h-48">
+        {skillsOptions.map(skill => (
+          <div 
+            key={skill} 
+            onClick={() => handleMultiSelect('skills', skill)} 
+            className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+              formData.skills.includes(skill) ? "bg-blue-50/50" : ""
+            }`}
+          >
+            <span className={`text-sm ${formData.skills.includes(skill) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+              {skill}
+            </span>
+            {formData.skills.includes(skill) && <span className="text-[#667eea] font-bold">✓</span>}
+          </div>
+        ))}
+        
+        {skillsOptions.length === 0 && (
+          <div className="p-4 text-center text-gray-400 text-xs italic">
+            No skills found. Add a skill above.
+          </div>
+        )}
+      </div>
+    </div>
+  )}
+</div>
 
             {/* Eighth Row: Eligibility and Description */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
