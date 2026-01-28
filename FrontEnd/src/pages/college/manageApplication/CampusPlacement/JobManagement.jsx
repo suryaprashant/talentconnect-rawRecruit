@@ -154,14 +154,14 @@ function JobManagementApplication() {
     };
 
     // Function to build query parameters
-    
-const buildQueryParams = (jobId, targetStatus, isVisited) => {
-    const customParam = { jobId, jobType, targetStatus };
-    if (isVisited !== undefined && isVisited !== null) {
-        customParam.isVisited = isVisited;
-    }
-    return customParam;
-};
+    const buildQueryParams = (jobId, targetStatus, isVisited) => {
+        const customParam = { jobId, jobType, targetStatus };
+        if (isVisited !== undefined && isVisited !== null) {
+            customParam.isVisited = isVisited;
+        }
+        return customParam;
+    };
+
     // Function to navigate with query parameters
     const navigateWithParams = (jobId, targetStatus, isVisited = false) => {
         const customParam = buildQueryParams(jobId, targetStatus, isVisited);
@@ -179,15 +179,15 @@ const buildQueryParams = (jobId, targetStatus, isVisited) => {
 
     // Handle Eye icon click (without isVisited)
     const handleViewJob = (jobId, targetStatus, e) => {
-        //console.log('ok')
         e.stopPropagation();
         // Navigate without isVisited
         navigateWithParams(jobId, targetStatus, true);
     };
 
     // Handle row click for degree/location - goes to preview
+    // Updated to match acceptedListing.jsx navigation
     const handleRowClick = (jobId) => {
-        navigate(`/college-dashboard/preview/On-campus/${jobId}?isApplied=true`);
+        navigate(`/company-dashboard/preview/On-campus/${jobId}?isApplied=true`);
     };
 
     const handleDelete = async (jobId, e) => {
@@ -301,43 +301,13 @@ const buildQueryParams = (jobId, targetStatus, isVisited) => {
                             </button>
                         </div>
 
-                        {/* Search and Filters */}
-                        {/* <div className="p-6 border-b border-white/50">
-                            <div className="flex flex-col md:flex-row gap-4 items-center">
-                                <div className="relative flex-grow">
-                                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <Search className="w-4 h-4 text-[#3b82f6]" />
-                                    </div>
-                                    <input
-                                        type="text"
-                                        className="w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
-                                        placeholder="Search jobs by degree, type, or location"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                    />
-                                </div>
-
-                                <button
-                                    className="flex items-center gap-2 px-6 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl hover:bg-white/70 transition-all duration-200 text-gray-700 font-medium"
-                                    onClick={() => setShowFilters(!showFilters)}
-                                >
-                                    <Filter className="w-4 h-4 text-[#3b82f6]" />
-                                    Filters
-                                </button>
-
-                                <div className="text-sm text-gray-500 font-medium">
-                                    {totalItems > 0 ? `Showing ${startIndex + 1}-${endIndex} of ${totalItems}` : 'Showing 0-0 of 0'}
-                                </div>
-                            </div>
-                        </div> */}
-
-                        {/* Table */}
+                        {/* Table - 6 Columns as specified */}
                         <div className="overflow-x-auto">
                             <table className="w-full">
                                 <thead className="bg-white/50">
                                     <tr>
                                         <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Degree</th>
-                                        {/* <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th> */}
+                                        <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
                                         <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Deadline</th>
                                         <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Views</th>
                                         <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">New Applications</th>
@@ -378,7 +348,7 @@ const buildQueryParams = (jobId, targetStatus, isVisited) => {
                                                 job.location.join(', ') :
                                                 job.location || 'N/A';
                                             const jobStatus = job.jobStatus || 'Unknown';
-                                            const targetStatus = jobStatus; // Using jobStatus as targetStatus
+                                            const targetStatus = jobStatus;
                                             const deadline = job.endDate || job.deadline;
                                             const views = job?.views ?? 0;
                                             const applications = job.applicationCount || job.applications || 0;
@@ -391,13 +361,19 @@ const buildQueryParams = (jobId, targetStatus, isVisited) => {
                                                     key={jobId}
                                                     className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200"
                                                 >
-                                                    <td className="px-6 py-4 cursor-pointer" onClick={() => handleRowClick(jobId)}>
-  <div className="font-medium text-gray-900 whitespace-normal break-words">{jobDegree}</div>
-  <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-    <MapPin className="w-3 h-3" />
-    {jobLocation}
-  </div>
-</td>
+                                                    {/* Degree Column with Location as subtitle - Updated to match acceptedListing.jsx */}
+                                                    <td 
+                                                        className="px-6 py-4 cursor-pointer" 
+                                                        onClick={() => navigate(`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`)}
+                                                    >
+                                                        <div className="font-medium text-gray-900 whitespace-normal break-words">{jobDegree}</div>
+                                                        <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                                                            <MapPin className="w-3 h-3" />
+                                                            {jobLocation}
+                                                        </div>
+                                                    </td>
+                                                    
+                                                    {/* Status Column */}
                                                     <td className="px-6 py-4">
                                                         <span className={`px-3 py-1 text-xs font-medium rounded-full ${jobStatus === 'Open'
                                                             ? 'bg-gradient-to-r from-[#a7f3d0]/20 to-[#34d399]/20 text-[#059669] border border-[#a7f3d0]/30'
@@ -408,19 +384,24 @@ const buildQueryParams = (jobId, targetStatus, isVisited) => {
                                                             {jobStatus}
                                                         </span>
                                                     </td>
+                                                    
+                                                    {/* Deadline Column */}
                                                     <td className="px-6 py-4">
                                                         <div className="flex items-center gap-1 text-gray-700">
                                                             <Calendar className="w-4 h-4 text-[#3b82f6]" />
                                                             {formatDate(deadline)}
                                                         </div>
                                                     </td>
+                                                    
+                                                    {/* Views Column */}
                                                     <td className="px-6 py-4">
                                                         <div className="flex items-center gap-1 text-gray-700">
                                                             <Eye className="w-4 h-4 text-[#3b82f6]" />
                                                             {views}
                                                         </div>
-                                                        
                                                     </td>
+                                                    
+                                                    {/* New Applications Column */}
                                                     <td className="px-6 py-4">
                                                         <div 
                                                             className="flex items-center gap-1 text-gray-700 cursor-pointer hover:text-[#3b82f6] transition-colors duration-200"
@@ -430,6 +411,8 @@ const buildQueryParams = (jobId, targetStatus, isVisited) => {
                                                             {applications}
                                                         </div>
                                                     </td>
+                                                    
+                                                    {/* Actions Column */}
                                                     <td className="px-6 py-4">
                                                         <div className="flex gap-3">
                                                             <button 
