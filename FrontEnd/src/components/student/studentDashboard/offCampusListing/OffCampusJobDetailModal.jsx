@@ -19,11 +19,7 @@ import {
   BookOpen,
   Tag,
   Clock,
-  FileText,
-  Download,
-  Info,
-  Navigation,
-  ArrowLeft
+  FileText
 } from 'lucide-react';
 import { ApplyForOppurtunity, getJobDetails, SaveOppurtunity } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
@@ -47,14 +43,36 @@ const formatDate = (dateString) => {
   }
 };
 
-// Split long paragraph into meaningful bullet points
-const splitIntoBullets = (text) => {
-  if (!text || typeof text !== "string") return [];
+// ---------- TEXT TO BULLETS ----------
+const splitIntoMeaningfulPoints = (text) => {
+  if (!text || typeof text !== 'string') return [];
 
   return text
-    .split(/[\.\n,+]/)
-    .map(s => s.trim())
-    .filter(s => s.length > 3);
+    .split(/[\.\n;]+/)
+    .map(line => line.trim())
+    .filter(line => line.length > 5);
+};
+
+// Helper function to normalize selection process data
+const normalizeSelectionProcess = (selectionProcess) => {
+  if (!selectionProcess) return [];
+
+  if (Array.isArray(selectionProcess)) {
+    return selectionProcess.flatMap(step =>
+      step.includes('+')
+        ? step.split('+').map(s => s.trim())
+        : splitIntoMeaningfulPoints(step)
+    );
+  }
+
+  if (typeof selectionProcess === 'string') {
+    if (selectionProcess.includes('+')) {
+      return selectionProcess.split('+').map(s => s.trim());
+    }
+    return splitIntoMeaningfulPoints(selectionProcess);
+  }
+
+  return [];
 };
 
 // Helper function to render array data as tags
@@ -261,6 +279,7 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
   const jobStatus = getJobStatus();
   const isApplied = propIsApplied || jobDetail.isApplied || false;
   const companyName = jobDetail?.companyName || jobDetail?.companyPosted?.companyDetails?.companyName || 'Company';
+  const workLocation = jobDetail?.workLocation?.join(', ') || jobDetail?.location || 'Not Specified';
   
   // Format salary
   const formatSalary = () => {
@@ -283,22 +302,8 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
     return jobDetail.workMode || 'Not specified';
   };
 
-  // Format location - improved to handle various formats
-  const formatLocation = () => {
-    if (Array.isArray(jobDetail.location)) {
-      return jobDetail.location.join(', ');
-    }
-    if (jobDetail.location) {
-      return jobDetail.location;
-    }
-    if (jobDetail.workLocation) {
-      if (Array.isArray(jobDetail.workLocation)) {
-        return jobDetail.workLocation.join(', ');
-      }
-      return jobDetail.workLocation;
-    }
-    return 'Not specified';
-  };
+  // Get normalized selection process
+  const selectionProcess = normalizeSelectionProcess(jobDetail.selectionProcess);
 
   return (
     <>
@@ -339,7 +344,7 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                     </div>
                     <div className="flex items-center text-sm text-gray-600">
                       <MapPin className="h-4 w-4 mr-2 text-[#667eea]" />
-                      <span>{formatLocation()}</span>
+                      <span>{workLocation}</span>
                     </div>
                   </div>
                 </div>
@@ -373,7 +378,7 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   About {companyName}
                 </h2>
-                <p className="text-gray-700 mb-6">
+                <p className="text-gray-700 mb-8">
                   {jobDetail.companyPosted?.companyDetails?.description || 
                    jobDetail.companyDescription || 
                    'No company description available.'}
@@ -381,27 +386,27 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                 
                 {/* Company stats if available */}
                 {jobDetail.companyPosted?.companyDetails && (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
                     {(jobDetail.companyPosted.companyDetails.numberOfEmployees || 
                       jobDetail.companyPosted.companyDetails.numberOfEmployees === 0) && (
-                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
-                        <div className="text-2xl font-bold text-gray-900 mb-2">
+                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                        <div className="text-3xl font-bold text-gray-900 mb-2">
                           {jobDetail.companyPosted.companyDetails.numberOfEmployees.toLocaleString()}
                         </div>
                         <div className="text-sm text-gray-600 font-medium">Employees</div>
                       </div>
                     )}
                     {jobDetail.companyPosted.companyDetails.industryType && (
-                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
-                        <div className="text-xl font-bold text-gray-900 mb-2 truncate">
+                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                        <div className="text-3xl font-bold text-gray-900 mb-2 truncate">
                           {jobDetail.companyPosted.companyDetails.industryType}
                         </div>
                         <div className="text-sm text-gray-600 font-medium">Industry</div>
                       </div>
                     )}
                     {jobDetail.companyPosted.companyDetails.country && (
-                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
-                        <div className="text-xl font-bold text-gray-900 mb-2">
+                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                        <div className="text-3xl font-bold text-gray-900 mb-2">
                           {jobDetail.companyPosted.companyDetails.country}
                         </div>
                         <div className="text-sm text-gray-600 font-medium">Country</div>
@@ -409,82 +414,6 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                     )}
                   </div>
                 )}
-              </div>
-
-              {/* Job Overview */}
-              <div className="px-6 py-6 border-t border-gray-100">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                  Job Overview
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <DollarSign className="h-5 w-5 text-[#667eea] mr-2" />
-                      <span className="text-sm font-medium text-[#667eea]">Salary Package</span>
-                    </div>
-                    <div className="text-lg font-bold text-gray-900">{formatSalary()}</div>
-                  </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <Briefcase className="h-5 w-5 text-[#667eea] mr-2" />
-                      <span className="text-sm font-medium text-[#667eea]">Work Mode</span>
-                    </div>
-                    <div className="text-lg font-bold text-gray-900">{formatWorkMode()}</div>
-                  </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <Calendar className="h-5 w-5 text-[#667eea] mr-2" />
-                      <span className="text-sm font-medium text-[#667eea]">Application Deadline</span>
-                    </div>
-                    <div className="text-lg font-bold text-gray-900">
-                      {jobDetail.applicationDeadline ? formatDate(jobDetail.applicationDeadline) : 'Rolling Basis'}
-                    </div>
-                  </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                    <div className="flex items-center mb-2">
-                      <Tag className="h-5 w-5 text-[#667eea] mr-2" />
-                      <span className="text-sm font-medium text-[#667eea]">Experience Level</span>
-                    </div>
-                    <div className="text-lg font-bold text-gray-900">{jobDetail.experienceLevel || 'Entry Level'}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Job Details */}
-              <div className="px-6 py-6 border-t border-gray-100">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                  Job Details
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Employment Type</div>
-                      {renderTags(jobDetail.employmentType)}
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Required Skills</div>
-                      {renderTags(jobDetail.skills)}
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Job Roles</div>
-                      {renderTags(jobDetail.jobRoles)}
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Required Degree</div>
-                      {renderTags(jobDetail.degree)}
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Eligible Streams</div>
-                      {renderTags(jobDetail.studentStreams)}
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Job Location</div>
-                      <div className="text-base text-gray-900 mt-1">{formatLocation()}</div>
-                    </div>
-                  </div>
-                </div>
               </div>
 
               {/* Job Description */}
@@ -499,24 +428,74 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                 </div>
               )}
 
-              {/* Responsibilities */}
-              {jobDetail.responsibilities && (
-                <div className="px-6 py-6 border-t border-gray-100">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                    Key Responsibilities
-                  </h2>
-                  <div className="text-gray-700">
-                    <ul className="space-y-2">
-                      {splitIntoBullets(jobDetail.responsibilities).map((point, idx) => (
-                        <li key={idx} className="flex items-start">
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt-2 mr-3 flex-shrink-0"></div>
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
+              {/* Job Details */}
+              <div className="px-6 py-6 border-t border-gray-100">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                  Job Details
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Employment Type</div>
+                      <div className="text-base text-gray-900">{jobDetail.employmentType?.join(', ') || 'Not Specified'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Job Roles</div>
+                      <div className="text-base text-gray-900">{jobDetail.jobRoles?.join(', ') || 'Not Specified'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Work Mode</div>
+                      <div className="text-base text-gray-900">{formatWorkMode()}</div>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Experience Level</div>
+                      <div className="text-base text-gray-900">{jobDetail.experienceLevel || 'Entry Level'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Job Location</div>
+                      <div className="text-base text-gray-900">{workLocation}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Notice Period</div>
+                      <div className="text-base text-gray-900">{jobDetail.noticePeriod || 'Immediate to 30 days'}</div>
+                    </div>
                   </div>
                 </div>
-              )}
+              </div>
+
+              {/* Job Overview - Stats */}
+              <div className="px-6 py-6 border-t border-gray-100">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                  Job Overview
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <DollarSign className="h-5 w-5 text-[#667eea] mr-2" />
+                      <span className="text-sm font-medium text-[#667eea]">Salary Package</span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">{formatSalary()}</div>
+                  </div>
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <Briefcase className="h-5 w-5 text-[#667eea] mr-2" />
+                      <span className="text-sm font-medium text-[#667eea]">Work Mode</span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">{formatWorkMode()}</div>
+                  </div>
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                    <div className="flex items-center justify-center mb-2">
+                      <Calendar className="h-5 w-5 text-[#667eea] mr-2" />
+                      <span className="text-sm font-medium text-[#667eea]">Application Deadline</span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">
+                      {jobDetail.applicationDeadline ? formatDate(jobDetail.applicationDeadline) : 'Rolling Basis'}
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               {/* Required Skills */}
               {jobDetail?.skills && jobDetail?.skills.length > 0 && (
@@ -537,13 +516,67 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                 </div>
               )}
 
-              {/* Benefits */}
+              {/* Eligibility Criteria */}
               <div className="px-6 py-6 border-t border-gray-100">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                  Benefits
+                  Eligibility Criteria
                 </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Eligible Degrees</div>
+                      <div className="text-base text-gray-900">{jobDetail?.degree?.join(' / ') || 'Not Specified'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Eligible Streams</div>
+                      <div className="text-base text-gray-900">{jobDetail?.studentStreams?.join(', ') || 'Not Specified'}</div>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Experience Level</div>
+                      <div className="text-base text-gray-900">{jobDetail.experienceLevel || 'Entry Level'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Additional Requirements</div>
+                      <div className="text-base text-gray-900">{jobDetail.additionalCriteria || 'None'}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Compensation & Benefits */}
+              <div className="px-6 py-6 border-t border-gray-100">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                  Compensation & Benefits
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                    <div className="text-sm font-medium text-[#667eea] mb-2">Salary Package</div>
+                    <div className="text-2xl font-bold text-gray-900">
+                      {formatSalary()}
+                    </div>
+                  </div>
+                  {jobDetail?.packageDetails?.fixedPay && (
+                    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                      <div className="text-sm font-medium text-[#667eea] mb-2">Fixed Pay</div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {`₹${jobDetail.packageDetails.fixedPay.toLocaleString()}`}
+                      </div>
+                    </div>
+                  )}
+                  {jobDetail?.packageDetails?.joiningBonus && (
+                    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                      <div className="text-sm font-medium text-[#667eea] mb-2">Joining Bonus</div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {`₹${jobDetail.packageDetails.joiningBonus.toLocaleString()}`}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <h3 className="font-medium text-[#667eea] mt-6 mb-3">Benefits Offered</h3>
                 <div className="flex flex-wrap gap-2">
-                  {jobDetail?.benefits?.length > 0 ? (
+                  {jobDetail?.benefits && jobDetail?.benefits.length > 0 ? (
                     jobDetail.benefits.map((benefit, index) => (
                       <span
                         key={index}
@@ -560,36 +593,41 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                 </div>
               </div>
 
-              {/* Selection Process */}
-              {jobDetail.selectionProcess && (
-                <div className="px-6 py-6 border-t border-gray-100">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              {/* Selection Process - Matches on-campus version */}
+              <div className="px-6 py-6 border-t border-gray-100">
+                <div className="mb-4">
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-1">
                     Selection Process
                   </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {Array.isArray(jobDetail.selectionProcess) ? (
-                      jobDetail.selectionProcess.map((step, index) => (
-                        <div 
-                          key={index}
-                          className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#667eea]/30 hover:shadow-sm transition-all duration-200"
-                        >
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
-                              <span className="text-xs font-bold text-white">{index + 1}</span>
-                            </div>
-                            <p className="text-sm font-medium text-gray-900">Round {index + 1}</p>
-                          </div>
-                          <p className="text-xs text-gray-600 line-clamp-3">{step}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-gray-700">
-                        {renderTags(jobDetail.selectionProcess)}
-                      </div>
-                    )}
+                  <div className="text-md text-gray-500">
+                    Number of rounds: {selectionProcess.length}
                   </div>
                 </div>
-              )}
+
+                {selectionProcess.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {selectionProcess.map((step, index) => (
+                      <div 
+                        key={index}
+                        className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#667eea]/30 hover:shadow-sm transition-all duration-200"
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
+                            <span className="text-xs font-bold text-white">{index + 1}</span>
+                          </div>
+                          <p className="text-sm font-medium text-gray-900">Round {index + 1}</p>
+                        </div>
+                        
+                        <p className="text-xs text-gray-600 line-clamp-3">{step}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg p-4">
+                    <p className="text-sm text-gray-500 text-center">Selection process details not provided.</p>
+                  </div>
+                )}
+              </div>
 
               {/* Important Dates */}
               <div className="px-6 py-6 border-t border-gray-100">
@@ -669,7 +707,7 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
             <div className="max-w-4xl mx-auto">
               <div className="flex justify-center">
                 <button 
-                  className="inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleApply}
                   disabled={isSubmitting}
                 >
