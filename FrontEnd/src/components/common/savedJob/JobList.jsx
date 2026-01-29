@@ -351,6 +351,52 @@ const resolveJobTypeRoute = (jobType) => {
   return JOB_TYPE_ROUTE_MAP[jobType] || jobType?.toLowerCase();
 };
 
+// Function to get organization name (same logic as UnifiedJobDetail)
+const getOrganizationName = (job) => {
+  const jobData = job?.job;
+  
+  // 1. Company-posted jobs
+  if (jobData?.companyPosted?.companyDetails?.companyName) {
+    return jobData.companyPosted.companyDetails.companyName;
+  }
+  
+  // 2. College-posted jobs
+  else if (jobData?.collegePosted?.collegeUniversityDetails?.collegeName) {
+    return jobData.collegePosted.collegeUniversityDetails.collegeName;
+  }
+  
+  // 3. Employer-posted jobs
+  else if (jobData?.postedBy === 'employer' && jobData?.employerDetails?.companyName) {
+    return jobData.employerDetails.companyName;
+  }
+  
+  // 4. Direct fields
+  else if (jobData?.companyName) {
+    return jobData.companyName;
+  } 
+  else if (jobData?.collegeName) {
+    return jobData.collegeName;
+  }
+  
+  return "Not Specified";
+};
+
+// Function to get organization logo (same logic as UnifiedJobDetail)
+const getOrganizationLogo = (job) => {
+  const jobData = job?.job;
+  
+  if (jobData?.companyPosted?.companyDetails?.logo) {
+    return jobData.companyPosted.companyDetails.logo;
+  }
+  else if (jobData?.collegePosted?.profileImage) {
+    return jobData.collegePosted.profileImage;
+  }
+  else if (jobData?.employerDetails?.logo) {
+    return jobData.employerDetails.logo;
+  }
+  
+  return null;
+};
 
 const JobList = ({ jobs: initialJobs, onRefresh }) => {
   const { user, loading } = useAuth();
@@ -392,61 +438,32 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
     }
   };
 
-  // Function to get logo URL or initials
+  // Function to get logo URL or initials - UPDATED with unified logic
   const getLogoOrInitials = (job) => {
-    if (isCompany) {
-      // For college
-      const logoUrl = job?.job?.collegePosted?.collegeUniversityDetails?.logo;
-      const collegeName = job?.job?.collegePosted?.collegeUniversityDetails?.collegeName;
-      
-      if (logoUrl) {
-        return (
-          <img 
-            src={logoUrl} 
-            alt={collegeName || "College"} 
-            className="w-10 h-10 rounded-lg object-cover"
-            onError={(e) => {
-              // If image fails to load, show initials
-              e.target.style.display = 'none';
-              e.target.nextSibling.style.display = 'flex';
-            }}
-          />
-        );
-      }
-      
-      // Show initials if no logo
+    const logoUrl = getOrganizationLogo(job);
+    const orgName = getOrganizationName(job);
+    
+    if (logoUrl) {
       return (
-        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-sm">
-          {getInitials(collegeName)}
-        </div>
-      );
-    } else {
-      // For student (viewing company)
-      const logoUrl = job?.job?.companyPosted?.companyDetails?.logo;
-      const companyName = job?.job?.companyPosted?.companyDetails?.companyName;
-      
-      if (logoUrl) {
-        return (
-          <img 
-            src={logoUrl} 
-            alt={companyName || "Company"} 
-            className="w-10 h-10 rounded-lg object-cover"
-            onError={(e) => {
-              // If image fails to load, show initials
-              e.target.style.display = 'none';
-              e.target.nextSibling.style.display = 'flex';
-            }}
-          />
-        );
-      }
-      
-      // Show initials if no logo
-      return (
-        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-sm">
-          {getInitials(companyName)}
-        </div>
+        <img 
+          src={logoUrl} 
+          alt={orgName || "Organization"} 
+          className="w-10 h-10 rounded-lg object-cover"
+          onError={(e) => {
+            // If image fails to load, show initials
+            e.target.style.display = 'none';
+            e.target.nextSibling.style.display = 'flex';
+          }}
+        />
       );
     }
+    
+    // Show initials if no logo
+    return (
+      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-sm">
+        {getInitials(orgName)}
+      </div>
+    );
   };
 
   const resolveLocation = (job) => {
@@ -501,17 +518,14 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
   };
 
   const filteredJobs = jobs?.filter((job) => {
-    const name = isCompany
-      ? job?.job?.collegePosted?.collegeUniversityDetails?.collegeName
-      : job?.job?.companyPosted?.companyDetails?.companyName;
-
+    const orgName = getOrganizationName(job);
     const role = job?.job?.jobRoles?.[0];
 
-    // ✅ if name is missing (employer case), do NOT filter it out
-    if (!name && !role) return true;
+    // ✅ if organization name is missing, still include it
+    if (!orgName && !role) return true;
 
     return (
-      name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      orgName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       role?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }) || [];
@@ -539,12 +553,9 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {sortedJobs.length > 0 ? (
             sortedJobs.map((job) => {
-              const titleName = isCompany
-                ? job?.job?.collegePosted?.collegeUniversityDetails?.collegeName
-                : job?.job?.companyPosted?.companyDetails?.companyName;
-
+              const orgName = getOrganizationName(job);
               const locationText = resolveLocation(job);
-              const roles = isCompany ? [] : job?.job?.jobRoles || [];
+              const roles = job?.job?.jobRoles || [];
 
               return (
                 <Link
@@ -571,7 +582,7 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
 
                           <div>
                             <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#667eea] transition-colors line-clamp-1">
-                              {titleName || "Name"}
+                              {orgName}
                             </h3>
 
                             <div className="flex items-center text-sm text-gray-600 mt-1">
@@ -581,7 +592,7 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
                               </span>
                             </div>
 
-                            {!isCompany && roles.length > 0 && (
+                            {roles.length > 0 && (
                               <div className="flex flex-wrap gap-2 mt-3">
                                 {roles.slice(0, 3).map((role, index) => (
                                   <span
