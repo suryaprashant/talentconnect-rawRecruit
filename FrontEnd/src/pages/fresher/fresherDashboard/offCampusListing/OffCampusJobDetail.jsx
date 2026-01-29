@@ -8,11 +8,56 @@ import {
 } from "@/lib/User_AxiosInstance";
 import { MapPin, ArrowLeft, Building2, Users, Navigation } from "lucide-react";
 import toast from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
+
+
+const splitIntoMeaningfulPoints = (text) => {
+  if (!text || typeof text !== 'string') return [];
+
+  return text
+    .split(/[\.\n;]+/)
+    .map(line => line.trim())
+    .filter(line => line.length > 5);
+};
+
+const normalizeSelectionProcess = (selectionProcess) => {
+  if (!selectionProcess) return [];
+
+  if (Array.isArray(selectionProcess)) {
+    return selectionProcess.flatMap(step =>
+      step.includes('+')
+        ? step.split('+').map(s => s.trim())
+        : splitIntoMeaningfulPoints(step)
+    );
+  }
+
+  if (typeof selectionProcess === 'string') {
+    if (selectionProcess.includes('+')) {
+      return selectionProcess.split('+').map(s => s.trim());
+    }
+    return splitIntoMeaningfulPoints(selectionProcess);
+  }
+
+  return [];
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return 'N/A';
+
+  return date.toLocaleDateString('en-GB');
+};
+
+
 
 function OffCampusJobDetail() {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { isAuthenticated, loading } = useAuth();
+
   
   const [isSaved, setIsSaved] = useState((searchParams.get('isSaved') || '').toLowerCase() === 'true');
   const [isApplied, setIsApplied] = useState((searchParams.get('isApplied') || '').toLowerCase() === 'true');
@@ -48,27 +93,38 @@ function OffCampusJobDetail() {
   };
 
   const handleApply = async () => {
-    try {
-      const response = await ApplyForOppurtunity(jobId);
-      console.log("Apply response:", response);
-      
-      if (response?.data?.success === true) {
-        toast.success('Application submitted!');
-      } else {
-        const errorMsg = response?.response?.data?.msg || 
-                        response?.data?.msg || 
-                        'Failed to apply. Please try again.';
-        toast.error(errorMsg);
-      }
-    } catch (err) {
-      console.error('Error applying for job:', err);
-      
-      const errorMsg = err?.response?.data?.msg || 
-                      err?.message || 
-                      'Something went wrong!';
-      toast.error(errorMsg);
+  // ⏳ Wait until auth check finishes
+  if (loading) return;
+
+  // 🔐 Not logged in
+  if (!isAuthenticated) {
+    toast.error("Please login to apply");
+    navigate("/login", {
+      state: { from: location.pathname },
+    });
+    return;
+  }
+
+  try {
+    setIsApplying(true);
+
+    const res = await ApplyForOppurtunity(jobId);
+
+    if (res?.data?.success) {
+      toast.success("Application submitted successfully");
+      setIsApplied(true);
+    } else {
+      toast.error(res?.data?.message || "Failed to apply");
     }
-  };
+  } catch (err) {
+    toast.error(
+      err?.response?.data?.message || "Failed to apply"
+    );
+  } finally {
+    setIsApplying(false);
+  }
+};
+
 
   const handleSave = async () => {
     try {
@@ -411,10 +467,33 @@ function OffCampusJobDetail() {
               <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
               </svg>
-              <div>
-                <div className="font-medium text-[#667eea]">Selection Process</div>
-                {renderTags(jobDetail.selectionProcess)}
+              <div className="col-span-1 sm:col-span-2">
+                <div className="font-medium text-[#667eea] mb-2">Selection Process</div>
+
+                {normalizeSelectionProcess(jobDetail.selectionProcess)?.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {normalizeSelectionProcess(jobDetail.selectionProcess).map((step, index) => (
+                      <div
+                        key={index}
+                        className="border border-gray-200 rounded-lg p-3 bg-white"
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
+                            <span className="text-xs font-bold text-white">{index + 1}</span>
+                          </div>
+                          <span className="text-sm font-medium text-gray-800">
+                            Round {index + 1}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600">{step}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-gray-700">N/A</span>
+                )}
               </div>
+
             </div>
             <div className="flex items-start">
               <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -457,22 +536,34 @@ function OffCampusJobDetail() {
             <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
               <div className="text-sm text-[#667eea]">Registration Deadline</div>
               <div className="font-medium text-red-600">
-                {jobDetail.endDate ? new Date(jobDetail.endDate).toLocaleDateString('en-GB') : 'N/A'}
+                {formatDate(jobDetail.endDate)}
               </div>
             </div>
+                        
             <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Test Date</div>
-              <div className="font-medium text-gray-700">TBD</div>
+              <div className="text-sm text-[#667eea]">Online Test Date</div>
+              <div className="font-medium text-gray-700">
+                {formatDate(jobDetail.onlineTestDate)}
+              </div>
             </div>
+                        
             <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
               <div className="text-sm text-[#667eea]">Interview Window</div>
-              <div className="font-medium text-gray-700">TBD</div>
+              <div className="font-medium text-gray-700">
+                {jobDetail?.interviewWindow?.start
+                  ? `${formatDate(jobDetail.interviewWindow.start)} - ${formatDate(jobDetail.interviewWindow.end)}`
+                  : 'N/A'}
+              </div>
             </div>
+                
             <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Results</div>
-              <div className="font-medium text-gray-700">TBD</div>
+              <div className="text-sm text-[#667eea]">Offer Rollout</div>
+              <div className="font-medium text-gray-700">
+                {formatDate(jobDetail.offerRolloutDate)}
+              </div>
             </div>
           </div>
+
         </section>
 
         {/* Bottom Back Button */}

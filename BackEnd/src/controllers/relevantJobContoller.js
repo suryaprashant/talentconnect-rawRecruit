@@ -8,14 +8,18 @@ export const getRelevantOffCampusJobs = async (req, res) => {
     // 1. Check if user is logged in
     const userId = req.user?._id; 
     let student = null;
-    let appliedSet = new Set();
+    let appliedJobIds = [];
+
+    //let appliedSet = new Set();
 
     // 2. Only fetch student-specific data if a user exists
     if (userId) {
       student = await Onboarding.findOne({ userId }).lean();
       if (student) {
-        const appliedJobIds = await Application.find({ applicant: student._id }).distinct('job');
-        appliedSet = new Set(appliedJobIds.map(id => id.toString()));
+        appliedJobIds = await Application
+  .find({ applicant: student._id })
+  .distinct("job");
+        //appliedSet = new Set(appliedJobIds.map(id => id.toString()));
       }
     }
    
@@ -24,9 +28,9 @@ export const getRelevantOffCampusJobs = async (req, res) => {
       jobStatus: { $in: ["Open", "Pending"] } 
     };
     
-    if (userId) {
-      query._id = { $nin: Array.from(appliedSet) };
-    }
+    if (userId && appliedJobIds.length > 0) {
+  query._id = { $nin: appliedJobIds };
+}
 
     const jobs = await JobPostingTable.find(query).populate('companyPosted').lean();
 
