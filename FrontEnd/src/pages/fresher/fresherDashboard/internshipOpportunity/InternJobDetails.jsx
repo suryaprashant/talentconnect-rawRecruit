@@ -3,11 +3,13 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApplyForInternship, getInternshipById, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 import { ArrowLeft, MapPin, Building2, Users, Briefcase, DollarSign, GraduationCap, FileText, Globe, Clock, CheckCircle, Share2, IndianRupee } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAuth } from "@/context/AuthContext";
 
 const InternJobDetails = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { isAuthenticated, loading } = useAuth();
   
   const [jobDetails, setJobDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,6 +61,13 @@ const InternJobDetails = () => {
   }, [jobId]);
 
   const handleApply = async () => {
+    if (loading) return;
+
+  // 🔐 Not logged in
+  if (!isAuthenticated) {
+    toast.error("Please login to apply");
+    return;
+  }
     try {
       setIsApplying(true);
       const response = await ApplyForInternship(jobId);

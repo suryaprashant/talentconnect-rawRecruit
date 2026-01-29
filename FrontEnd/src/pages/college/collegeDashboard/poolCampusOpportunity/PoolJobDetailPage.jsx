@@ -4,6 +4,7 @@ import { MapPin, Building, Calendar, Globe, Mail, Phone, Linkedin, CheckCircle, 
 import { ApplyForPoolCampus, SaveOppurtunity, getPoolCampusJobById } from '@/lib/College_AxiosIntance';
 import toast from 'react-hot-toast';
 import { viewed } from '@/lib/User_AxiosInstance';
+import { useAuth } from "@/context/AuthContext";
 
 // Utility function to format date
 const formatDate = (dateString) => {
@@ -61,10 +62,11 @@ const PoolJobDetailsPage = () => {
     const isApplied = (searchParams.get('isApplied') || '').toLowerCase() === 'true';
     const isSaved = (searchParams.get('isSaved') || '').toLowerCase() === 'true';
     const [jobDetails, setJobDetails] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [isloading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [saved, setSaved] = useState(false);
     const navigate = useNavigate();
+    const { isAuthenticated, loading } = useAuth();
     
     const handleGoBack = () => {
         navigate(-1);
@@ -92,6 +94,13 @@ const PoolJobDetailsPage = () => {
     }, [id]);
 
     const handleApply = async () => {
+        if (loading) return;
+
+        // 🔐 Not logged in
+        if (!isAuthenticated) {
+          toast.error("Please login to apply");
+          return;
+        }
         try {
             const response = await ApplyForPoolCampus(id);
             if (response.data?.success === true) toast.success("Applied!");
@@ -150,7 +159,7 @@ const PoolJobDetailsPage = () => {
         }
     };
 
-    if (loading) {
+    if (isloading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 flex items-center justify-center">
                 <div className="text-center">

@@ -3,6 +3,7 @@ import { viewed } from '@/lib/User_AxiosInstance';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from "@/context/AuthContext";
 
 // Utility function to format date
 const formatDate = (dateString) => {
@@ -68,6 +69,7 @@ const JobDetailPage = () => {
   const [job, setJob] = useState(null);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState(null);
+  const { isAuthenticated, loading } = useAuth();
 
   const loadJobDetail = async () => {
     try {
@@ -113,6 +115,13 @@ const JobDetailPage = () => {
   };
 
   const handleApply = async () => {
+    if (loading) return;
+
+  // 🔐 Not logged in
+  if (!isAuthenticated) {
+    toast.error("Please login to apply");
+    return;
+  }
     try {
       const response = await ApplyForOnCampus(id);
       if (response.data?.success === true) toast.success("Applied!");

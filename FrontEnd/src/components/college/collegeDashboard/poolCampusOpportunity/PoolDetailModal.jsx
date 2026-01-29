@@ -27,6 +27,7 @@ import { ApplyForPoolCampus, SaveOppurtunity, getPoolCampusJobById } from '@/lib
 import { viewed } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "@/context/AuthContext";
 
 // Utility function to format date
 const formatDate = (dateString) => {
@@ -79,9 +80,10 @@ const PoolJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, 
   const navigate = useNavigate();
   const [jobDetails, setJobDetails] = useState(null);
   const [saved, setSaved] = useState(propIsSaved || false);
-  const [loading, setLoading] = useState(true);
+  const [isloading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isAuthenticated, loading } = useAuth();
   
   const modalRef = useRef(null);
 
@@ -164,6 +166,13 @@ const PoolJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, 
   };
 
   const handleApply = async () => {
+    if (loading) return;
+
+    // 🔐 Not logged in
+    if (!isAuthenticated) {
+      toast.error("Please login to apply");
+      return;
+    }
     if (!jobId) return;
     
     setIsSubmitting(true);
@@ -220,7 +229,7 @@ const PoolJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, 
 
   if (!isOpen) return null;
 
-  if (loading) {
+  if (isloading) {
     return (
       <div className="relative w-full h-full bg-white flex items-center justify-center rounded-l-2xl">
         <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>

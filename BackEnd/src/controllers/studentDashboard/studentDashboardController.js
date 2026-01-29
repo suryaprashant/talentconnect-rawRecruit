@@ -90,7 +90,7 @@ export const getOnCampusPostingsForCompany = async (req, res) => {
         }
 
         // Get all on-campus postings
-        const postings = await getJobPostingsByCollegeService("On-campus");
+        const postings = await getJobPostingsByCollegeService("On-campus", userId);
 
         // Filter results visible to "Company"
         const filteredPostings = postings.filter(
@@ -171,7 +171,7 @@ export const getOnCampusPostingsForCollege = async (req, res) => {
         // Get all on-campus postings
         let postings;
         try {
-            postings = await getJobPostingsByJobTypeService("On-campus");
+            postings = await getJobPostingsByJobTypeService("On-campus", userId);
             console.log(`Found ${postings.length} on-campus postings`);
         } catch (postingsError) {
             console.error("Error fetching postings:", postingsError.message);
@@ -350,7 +350,7 @@ import jwt from 'jsonwebtoken'; // Make sure to import this at the top
 
 export const getPoolCampusForCollege = async (req, res) => {
     // 1. Manually extract the token from headers
-    const authHeader = req.headers.authorization;
+    {/*const authHeader = req.headers.authorization;
     let userId = null;
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -362,10 +362,14 @@ export const getPoolCampusForCollege = async (req, res) => {
             console.log("Request by Guest/Invalid Token - proceeding as non-login");
             // We don't throw an error, we just keep userId as null
         }
-    }
+    }*/}
 
     try {
         console.log("=== getPoolCampusForCollege called ===");
+        console.log("req.user:", req.user);
+
+        // ✅ ADD THIS (single source of truth)
+        const userId = req.user?._id;
         
         // 2. Fetch the postings (visible to everyone)
         const postings = await getJobPostingsByJobTypeService("Pool-campus", userId);
@@ -424,7 +428,7 @@ export const getPoolCampusJobByIdForCollege = async (req, res) => {
     }
 }
 
-export const getPoolCampusForCompany = async (req, res) => {
+{/*export const getPoolCampusForCompany = async (req, res) => {
  // Safely handle guest users
 const userId = req.user ? req.user._id : null;
     console.log('j')
@@ -557,7 +561,58 @@ const userId = req.user ? req.user._id : null;
         console.error('Error:', err);
         res.status(500).json({ success: false, error: err.message });
     }
-}
+}*/}
+
+export const getPoolCampusForCompany = async (req, res) => {
+    // 1. Safely handle guest users
+    const userId = req.user ? req.user._id : null; 
+    
+    try {
+        let company = { data: [] };
+        
+        // 2. Only look up company profile if user is logged in
+        if (userId) {
+            company = await getCompanyService(userId);
+        }
+
+        // Get all on-campus postings
+        const postings = await getJobPostingsByCollegeService("Pool-campus", userId);
+
+        // Filter results visible to "Company"
+        const filteredPostings = postings.filter(
+            (posting) => posting.visibleTo === "Company"
+        );
+
+        // 3. Handle guest response immediately if no profile is found
+        if (!company.data || !company.data[0]?._id) {
+            return sendResponse(res, 200, { 
+                data: filteredPostings,
+                message: "Guest view: Showing all available postings."
+            });
+        }
+
+        // 4. Apply application filtering for logged-in companies
+        try {
+            const companyProfileId = company.data[0]._id;
+            const jobIds = filteredPostings.map(p => p._id);
+            const applications = await Application.find({ 
+                applicant: companyProfileId, 
+                job: { $in: jobIds } 
+            }).select('job').lean();
+            
+            const appliedJobIds = new Set(applications.map(a => String(a.job)));
+            const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
+            
+            return sendResponse(res, 200, { data: finalPostings });
+        } catch (err) {
+            console.error('Error filtering postings:', err.message);
+            return sendResponse(res, 200, { data: filteredPostings });
+        }
+    } catch (error) {
+        console.error("Error in getOnCampusPostingsForCompany:", error.message);
+        sendError(res, 500, "Internal server error");
+    }
+};
 
 export const getPoolCampusJobByIdForCompany = async (req, res) => {
     const { id } = req.params;
@@ -621,7 +676,9 @@ export const getJobPostings = async (req, res) => {
 //         sendError(res, 500, "Internal server error");
 //     }
 // };
-export const getInternshipPostings = async (req, res) => {
+
+//Backup controller for internship get
+{/*export const getInternshipPostings = async (req, res) => {
     try {
         const userId = req.user._id;
         let studentLocations = [];
@@ -637,7 +694,51 @@ export const getInternshipPostings = async (req, res) => {
     } catch (error) {
         sendError(res, 500, "Internal server error");
     }
+};*/}
+
+export const getInternshipPostings = async (req, res) => {
+    try {
+        const userId = req.user?._id;
+        let studentLocations = [];
+        let appliedJobIds = [];
+
+        const studentProfile = await getStudentService(userId);
+
+        if (
+            studentProfile.success &&
+            studentProfile.data.length > 0
+        ) {
+            const student = studentProfile.data[0];
+            studentLocations = student.locations || [];
+
+            if (userId) {
+                appliedJobIds = await Application
+                    .find({ applicant: student._id })
+                    .distinct("job");
+            }
+        }
+
+        const postings =
+            await getJobPostingsByJobTypeWithLocationBasedService(
+                "Internship",
+                studentLocations,
+                userId
+            );
+
+        const filteredPostings =
+            userId && appliedJobIds.length > 0
+                ? postings.filter(p =>
+                      !appliedJobIds.some(id => id.equals(p._id))
+                  )
+                : postings;
+
+        sendResponse(res, 200, { data: filteredPostings });
+    } catch (error) {
+        console.error("Internship error:", error);
+        sendError(res, 500, "Internal server error");
+    }
 };
+
 
 export const getIntershipById = async (req, res) => {
     console.log('in internship section')
