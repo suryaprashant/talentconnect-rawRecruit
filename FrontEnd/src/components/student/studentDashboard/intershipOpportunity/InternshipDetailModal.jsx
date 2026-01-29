@@ -50,7 +50,7 @@ import {
   IndianRupee,
   BadgePercent
 } from 'lucide-react';
-import { ApplyForOppurtunity, getJobDetails, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
+import { ApplyForInternship, getJobDetails, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 
 // Utility function to format date
@@ -203,7 +203,7 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
     setIsSubmitting(true);
     try {
       console.log("🎯 Applying for internship with jobId:", jobId);
-      const response = await ApplyForOppurtunity(jobId);
+      const response = await ApplyForInternship(jobId);
       console.log("📦 Application response:", response);
 
       if (response?.data?.success === true) {
