@@ -143,16 +143,15 @@ function ApplicationPage() {
   const handlePageClick = (pageNumber) => setCurrentPage(pageNumber);
 
   // Action handlers
- // Add these two specific handlers
-const handleViewNewApplications = (jobId, e) => {
-  e.stopPropagation();
-  navigate(`/registered/on-campus-opportunities/${jobId}/applicants?targetStatus=Shortlisted&isVisited=false`);
-};
+  const handleViewNewApplications = (jobId, e) => {
+    e.stopPropagation();
+    navigate(`/registered/on-campus-opportunities/${jobId}/applicants?targetStatus=Shortlisted&isVisited=false`);
+  };
 
-const handleViewAllApplications = (jobId, e) => {
-  e.stopPropagation();
-  navigate(`/registered/on-campus-opportunities/${jobId}/applicants?targetStatus=Shortlisted`);
-};
+  const handleViewAllApplications = (jobId, e) => {
+    e.stopPropagation();
+    navigate(`/registered/on-campus-opportunities/${jobId}/applicants?targetStatus=Shortlisted`);
+  };
 
   const handleDelete = async (jobId, e) => {
     e.stopPropagation();
@@ -285,44 +284,13 @@ const handleViewAllApplications = (jobId, e) => {
               </button>
             </div>
 
-            {/* Search and Filters */}
-            {/* <div className="p-6 border-b border-white/50">
-              <div className="flex flex-col md:flex-row gap-4 items-center">
-                <div className="relative flex-grow">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <Search className="w-4 h-4 text-[#3b82f6]" />
-                  </div>
-                  <input
-                    type="text"
-                    className="w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
-                    placeholder="Search by degree, location..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-
-                <button
-                  className="flex items-center gap-2 px-6 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl hover:bg-white/70 transition-all duration-200 text-gray-700 font-medium"
-                  onClick={() => setShowFilters(!showFilters)}
-                >
-                  <Filter className="w-4 h-4 text-[#3b82f6]" />
-                  Filters
-                </button>
-
-                <div className="text-sm text-gray-500 font-medium">
-                  {totalItems > 0 ? `Showing ${startIndex + 1}-${endIndex} of ${totalItems}` : 'Showing 0-0 of 0'}
-                </div>
-              </div>
-            </div> */}
-
-            {/* Table */}
+            {/* Table - 6 Columns */}
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-white/50">
                   <tr>
-                    {/* UPDATED HEADER: Degree instead of Job Title */}
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Degree</th>
-                    {/* <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th> */}
+                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Deadline</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Views</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">New Applications</th>
@@ -368,28 +336,23 @@ const handleViewAllApplications = (jobId, e) => {
                       return (
                         <tr
                           key={jobId}
-                          className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200 cursor-pointer"
-                          onClick={() => handleView(jobId)}
+                          className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200"
                         >
-                          {/* UPDATED COLUMN: Degree and Location */}
-<td className="px-6 py-4">
-  <Link
-    to={`/college-dashboard/preview/On-campus/${job._id}?isApplied=true`}
-    disabled={job.applicationCount === 0}
-    className="block hover:bg-white/30 rounded-md -mx-2 px-2 py-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed no-underline"
-    title={job.applicationCount === 0 ? "No applications to view" : "View Job Description"}
-    onClick={e => e.stopPropagation()}
-  >
-    <div className={`font-medium whitespace-normal break-words ${job.applicationCount === 0 ? 'text-black-400' : 'text-gray-900'}`}>
-      {jobDegree}
-    </div>
-    <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-      <MapPin className="w-3 h-3" />
-      {jobLocation}
-    </div>
-  </Link>
-</td>
-
+                          {/* Degree Column - Updated navigation to match acceptedListing.jsx */}
+                          <td 
+                            className="px-6 py-4 cursor-pointer" 
+                            onClick={() => navigate(`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`)}
+                          >
+                            <div className="font-medium text-gray-900 whitespace-normal break-words">
+                              {jobDegree}
+                            </div>
+                            <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                              <MapPin className="w-3 h-3" />
+                              {jobLocation}
+                            </div>
+                          </td>
+                          
+                          {/* Status Column */}
                           <td className="px-6 py-4">
                             <span className={`px-3 py-1 text-xs font-medium rounded-full ${jobStatus === 'Open'
                               ? 'bg-gradient-to-r from-[#a7f3d0]/20 to-[#34d399]/20 text-[#059669] border border-[#a7f3d0]/30'
@@ -400,51 +363,45 @@ const handleViewAllApplications = (jobId, e) => {
                               {jobStatus}
                             </span>
                           </td>
+                          
+                          {/* Deadline Column */}
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-1 text-gray-700">
                               <Calendar className="w-4 h-4 text-[#3b82f6]" />
                               {formatDate(deadline)}
                             </div>
                           </td>
+                          
+                          {/* Views Column */}
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-1 text-gray-700">
                               <Eye className="w-4 h-4 text-[#3b82f6]" />
                               {views}
                             </div>
                           </td>
+                          
+                          {/* New Applications Column */}
                           <td className="px-6 py-4">
-                          <div 
+                            <div 
                               className="flex items-center gap-1 text-gray-700 cursor-pointer hover:text-[#3b82f6]"
-                              onClick={(e) => handleViewNewApplications(jobId, e)} // ✅ VIEW NEW
-                          >
+                              onClick={(e) => handleViewNewApplications(jobId, e)}
+                            >
                               <Users className="w-4 h-4 text-[#3b82f6]" />
                               {applications}
-                          </div>
-                      </td>
-                         
+                            </div>
+                          </td>
+                          
+                          {/* Actions Column */}
                           <td className="px-6 py-4">
                             <div className="flex gap-3">
-                             <button 
-                              onClick={(e) => handleViewAllApplications(jobId, e)} // ✅ VIEW ALL
-                              className="text-gray-500 hover:text-[#3b82f6] transition-all duration-200" 
-                              title="View All Applications"
-                          >
-                              <Eye size={18} />
-                          </button>
-                              {/* <Link
-                                to={`/college-dashboard/preview/On-campus/${job._id}?isApplied=true`}
-                                disabled={job.applicationCount === 0}
-                                className="text-gray-500 hover:text-blue-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="View Job Description"
-                                onClick={e => e.stopPropagation()}
+                              <button 
+                                onClick={(e) => handleViewAllApplications(jobId, e)}
+                                className="text-gray-500 hover:text-[#3b82f6] transition-all duration-200" 
+                                title="View All Applications"
                               >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M11.1 22H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.589 3.588A2.4 2.4 0 0 1 20 8v3.25" />
-                                  <path d="M14 2v5a1 1 0 0 0 1 1h5" />
-                                  <path d="m21 22-2.88-2.88" />
-                                  <circle cx="16" cy="17" r="3" />
-                                </svg>
-                              </Link> */}
+                                <Eye size={18} />
+                              </button>
+                              
                               <button 
                                 onClick={(e) => handleDelete(jobId, e)} 
                                 className={`text-gray-500 hover:text-red-500 transition-all duration-200 ${deletingJobId === jobId ? 'opacity-50 cursor-not-allowed' : ''}`} 
