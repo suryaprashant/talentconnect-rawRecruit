@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Heart, Home } from 'lucide-react';
+import { SaveOppurtunity } from '@/lib/Company_AxiosInstance';
+import toast from 'react-hot-toast';
 
 const pastelColors = [
   // Purple/Indigo gradient variants (primary theme colors)
@@ -232,6 +233,28 @@ const CollegeCard = ({ college, onClick }) => {
     }
   };
 
+  const handleSave = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      const response = await SaveOppurtunity(
+        college._id,
+        "college" // You might need to adjust this based on your API
+      );
+
+      if (response?.data?.success === true) {
+        setIsSaved(!isSaved);
+        toast.success(isSaved ? "Removed from saved" : "Saved");
+      } else {
+        toast.error(response?.response?.data?.msg || "Unable to save");
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+      toast.error("Something went wrong!");
+    }
+  };
+
   const getInitials = (name = '') => {
     if (!name) return '?';
     const words = name.trim().split(' ');
@@ -344,6 +367,9 @@ const CollegeCard = ({ college, onClick }) => {
     );
   };
 
+  // Check if we should show college initials
+  const shouldShowInitials = !logo || imageError;
+
   return (
     <div 
       onClick={handleCardClick}
@@ -351,37 +377,42 @@ const CollegeCard = ({ college, onClick }) => {
         w-full max-w-[350px] mx-auto rounded-2xl 
         border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden
         flex flex-col cursor-pointer h-full hover:scale-[1.02] bg-white
-        min-h-[450px]  /* Increased minimum height */
+        flex-grow
       "
     >
-      {/* TOP SECTION - Pastel background - Increased height */}
-      <div className={`${stableColor} p-4 flex-1 flex flex-col min-h-[320px]`}> {/* Increased from default */}
+      {/* TOP SECTION - Pastel background - Uses flex-grow for equal height */}
+      <div className={`${stableColor} p-4 flex-grow flex flex-col min-h-[280px]`}>
         {/* Degree Type + Save */}
-        <div className="flex justify-between items-start mb-3"> {/* Increased margin */}
+        <div className="flex justify-between items-start mb-2">
           <span className="text-xs bg-white/90 text-gray-700 px-3 py-1 rounded-full font-medium">
             {degreeType}
           </span>
 
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setIsSaved(!isSaved);
-            }}
+            onClick={handleSave}
             className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10 hover:bg-gray-50"
             aria-label={isSaved ? "Remove from saved" : "Save college"}
           >
-            <Heart
+            <svg
               className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
               fill={isSaved ? "currentColor" : "none"}
-            />
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={isSaved ? 0 : 2}
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
           </button>
         </div>
 
-        {/* College Name + Degree Badges - More vertical space */}
-        <div className="flex justify-between items-start gap-2 mb-4"> {/* Increased margin */}
-          <div className="flex-1 pr-2">
-            <h3 className="text-black font-semibold text-lg truncate mb-3"> {/* Increased margin */}
+        {/* College Name + Degree Badges */}
+        <div className="flex justify-between items-start gap-2 mb-3">
+          <div className="flex-1 pr-2 min-w-0">
+            <h3 className="text-black font-semibold text-lg truncate">
               {collegeName}
             </h3>
             
@@ -389,6 +420,7 @@ const CollegeCard = ({ college, onClick }) => {
             {getDegreeBadges()}
           </div>
 
+          {/* Logo/Initials Container */}
           <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border border-gray-300 shrink-0">
             {logo && !imageError ? (
               <img 
@@ -398,8 +430,10 @@ const CollegeCard = ({ college, onClick }) => {
                 onError={() => setImageError(true)}
               />
             ) : (
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                <Home className="h-6 w-6 text-gray-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
+                <span className="text-lg font-bold text-gray-700">
+                  {getInitials(collegeName)}
+                </span>
               </div>
             )}
           </div>
@@ -414,18 +448,18 @@ const CollegeCard = ({ college, onClick }) => {
         {/* Tags Badges */}
         {getTagsBadges()}
 
-        {/* Description - More space and increased line clamp */}
-        <div className="flex-1 mt-2"> {/* Added top margin */}
-          <p className="text-sm text-gray-700 line-clamp-3 leading-relaxed"> {/* Increased to 3 lines */}
+        {/* Description - This will push content and make cards equal height */}
+        <div className="flex-grow mt-3">
+          <p className="text-sm text-gray-700 line-clamp-3 leading-relaxed">
             {description}
           </p>
         </div>
       </div>
 
-      {/* BOTTOM SECTION - White background - Standard height */}
+      {/* BOTTOM SECTION - White background - Fixed height */}
       <div className="p-4 bg-white border-t border-gray-200 h-[90px] flex-shrink-0">
         <div className="flex justify-between items-center h-full">
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             {/* Average Package */}
             <p className="font-semibold text-gray-900 text-sm truncate mb-2">
               {formatPackage()} avg
@@ -448,7 +482,7 @@ const CollegeCard = ({ college, onClick }) => {
 
           <button
             onClick={handleContactClick}
-            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition whitespace-nowrap flex-shrink-0 ml-2 h-fit" /* h-fit for button */
+            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition whitespace-nowrap flex-shrink-0 ml-2 h-fit"
           >
             Contact
           </button>
