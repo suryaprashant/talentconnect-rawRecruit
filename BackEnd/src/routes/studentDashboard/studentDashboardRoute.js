@@ -4,19 +4,19 @@ import secureRoute from '../../middlewares/secureRouteMiddleware.js';
 import { getRelevantOffCampusJobs } from '../../controllers/relevantJobContoller.js';
 const router = express.Router();
 
-router.get('/off-campus', getRelevantOffCampusJobs);
-router.get('/on-campus', getOnCampusPostingsForCompany);
+router.get('/off-campus', secureRoute, getRelevantOffCampusJobs);
+router.get('/on-campus',secureRoute, getOnCampusPostingsForCompany);
 router.get('/on-campus/company/:id', secureRoute, getOnCampusPostingForCompanybyID);
 
-router.get('/on-campus/college', getOnCampusPostingsForCollege)
+router.get('/on-campus/college',secureRoute, getOnCampusPostingsForCollege)
 router.get("/oncampus/college/:id", getOnCampusPostingForCollegebyID);
 // router.get('/pool-campus',secureRoute , getPoolCampusPostings); 
 
-router.get('/getAllPoolCampusJobs', getPoolCampusForCollege);
+router.get('/getAllPoolCampusJobs', secureRoute, getPoolCampusForCollege);
 router.get('/pool-campus/college', secureRoute, getPoolCampusForCollege);
 router.get('/getPoolCampusJob/:id', secureRoute, getPoolCampusJobByIdForCollege);
 
-router.get('/pool-campus/company', getPoolCampusForCompany);
+router.get('/pool-campus/company',secureRoute, getPoolCampusForCompany);
 router.get('/pool-campus/company/:id', secureRoute, getPoolCampusJobByIdForCompany);
 
 router.get('/job-postings', secureRoute, getJobPostings);

@@ -269,7 +269,7 @@ import OffCampusJobs from "./pages/students/studentDashboard/offCampusListing/of
 import OffCampusLayout from "./components/student/studentDashboard/offCampusListing/OffCampusLayout";
 import InternshipLayout from "./components/student/studentDashboard/intershipOpportunity/InternshipLayout";
 import InternshipListingEmployer from "./pages/employer/jobManagement/internship/internahipListing";
-
+import SaveJob from "./components/common/savedJob/JobDetail"
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -326,12 +326,10 @@ function AppRoutes() {
                   }
               />
 
-      <Route
+              <Route
                 path="/student-resume-preview"
                 element={
-                   
                      <StudentResumePreview />
-                    
                   }
               />
 
@@ -363,6 +361,10 @@ function AppRoutes() {
 {/* <Route path="/student-dashboard/Internship" element={<InternshipLayout />} /> */}
 <Route path="/student-dashboard/Internship" element={<InternshipLayout userType="student" />} />
               <Route path="/student-dashboard/Internship/:jobId" element={<InternJobDetails />} />
+              <Route
+                path="/:role-dashboard/job-details"
+                element={<SaveJob />}
+              />
 
               
 

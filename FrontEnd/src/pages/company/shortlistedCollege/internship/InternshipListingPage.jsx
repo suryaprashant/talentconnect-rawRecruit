@@ -54,11 +54,29 @@ export default function InternshipListing() {
         }
     };
 
+    // Helper function to get job role/title from various possible fields
+      const getJobRole = (job) => {
+        // Check multiple possible fields for role/title
+        if (job.jobRoles && Array.isArray(job.jobRoles) && job.jobRoles.length > 0) {
+          return job.jobRoles[0]; // Return first job role from the array
+        }
+        return job.jobTitle || job.lookingFor || job.role || job.title || 'N/A';
+      };
+
+      // Helper function to display all job roles
+      const displayAllJobRoles = (job) => {
+        if (job.jobRoles && Array.isArray(job.jobRoles) && job.jobRoles.length > 0) {
+          return job.jobRoles.join(', ');
+        }
+        return getJobRole(job);
+      };
+
     // Filter jobs based on search query
     const filteredJobs = jobs?.filter(job => {
         if (!searchQuery) return true;
         
         const searchLower = searchQuery.toLowerCase();
+        const jobRole = displayAllJobRoles(job);
         
         // Safely convert values to strings before calling toLowerCase()
         const jobTitleStr = job.jobTitle ? String(job.jobTitle).toLowerCase() : '';
@@ -76,6 +94,11 @@ export default function InternshipListing() {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentJobs = filteredJobs?.slice(startIndex, startIndex + itemsPerPage);
+
+    const displayLocations = (locations) => {
+    if (!locations || locations.length === 0) return 'N/A';
+    return Array.isArray(locations) ? locations.join(', ') : String(locations);
+  };
 
     const handleViewApplications = (job) => {
         setSelectedJob(job);
@@ -110,7 +133,9 @@ export default function InternshipListing() {
                                 </div>
                                 <div>
                                     <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                                        Shortlisted Applications for: {selectedJob?.jobTitle || 'N/A'}
+                                        Shortlisted Applications for: {selectedJob?.jobRoles?.join(', ') ||
+  selectedJob?.jobTitle ||
+  'N/A'}
                                     </h2>
                                     <div className="flex flex-wrap items-center gap-3 mt-2">
                                         <span className={`inline-flex items-center text-sm px-3 py-1.5 rounded-lg ${
@@ -128,11 +153,13 @@ export default function InternshipListing() {
                                         </span>
                                         <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                                             <Calendar className="h-3 w-3 mr-1.5" />
-                                            {selectedJob?.endDate ? new Date(selectedJob.endDate).toLocaleDateString('en-US', { 
-                                                month: 'short', 
-                                                day: 'numeric',
-                                                year: 'numeric'
-                                            }) : 'N/A'}
+                                            {selectedJob?.expireAt
+                                              ? new Date(selectedJob.expireAt).toLocaleDateString('en-US', {
+                                                  month: 'short',
+                                                  day: 'numeric',
+                                                  year: 'numeric'
+                                                })
+                                              : 'N/A'}
                                         </span>
                                         <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                                             <Users className="h-3 w-3 mr-1.5" />
@@ -237,7 +264,14 @@ export default function InternshipListing() {
                                 <p className="text-gray-600">No internships match your search criteria.</p>
                             </div>
                         ) : (
-                            currentJobs?.map(job => (
+                            currentJobs?.map(job => {
+                                const title =
+                                    job?.jobRoles?.length > 0
+                                      ? job.jobRoles.join(', ')
+                                      : job?.jobTitle || 'N/A';
+
+                                  const endDate = job?.expireAt || job?.endDate || null;
+                             return (
                                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                                     <div className="grid grid-cols-12 gap-4 items-center">
                                         {/* Job Title/Role - Original layout */}
@@ -247,7 +281,7 @@ export default function InternshipListing() {
                                                 className="group cursor-pointer"
                                             >
                                                 <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors break-words whitespace-normal">
-                                                    {job?.jobTitle || 'N/A'}
+                                                    {title}
                                                 </h3>
                                                 <div className="flex items-center gap-2 mt-1">
                                                     <FileText className="h-3 w-3 text-gray-400" />
@@ -273,11 +307,13 @@ export default function InternshipListing() {
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="h-3 w-3 text-gray-400" />
                                                 <span className="text-gray-700 text-sm">
-                                                    {job?.endDate ? new Date(job.endDate).toLocaleDateString('en-US', { 
-                                                        month: 'short', 
-                                                        day: 'numeric',
-                                                        year: 'numeric'
-                                                    }) : 'N/A'}
+                                                   {endDate
+                                                     ? new Date(endDate).toLocaleDateString('en-US', {
+                                                         month: 'short',
+                                                         day: 'numeric',
+                                                         year: 'numeric'
+                                                       })
+                                                     : 'N/A'}
                                                 </span>
                                             </div>
                                         </div>
@@ -320,7 +356,8 @@ export default function InternshipListing() {
                                         </div>
                                     </div>
                                 </div>
-                            ))
+                             )
+                            })
                         )}
                     </div>
 

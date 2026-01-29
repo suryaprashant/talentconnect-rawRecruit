@@ -375,7 +375,7 @@ const InternshipDetails = ({ job, onClose }) => {
               </button>
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                  {job?.jobTitle || 'Shortlisted Internship Applications'}
+                  {job?.jobTitle || 'Shortlistead Internship Applications'}
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Manage shortlisted candidate applications for this internship position

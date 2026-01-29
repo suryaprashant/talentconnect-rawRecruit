@@ -26,26 +26,19 @@ import toast from 'react-hot-toast';
 
 // Utility function to format date
 const formatDate = (dateString) => {
-  if (!dateString || dateString === 'Not Specified') return 'Not Specified';
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      return 'Not Specified';
-    }
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  } catch (error) {
-    console.error("Error formatting date:", error);
-    return 'Not Specified';
-  }
+  if (!dateString) return 'N/A';
+
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return 'N/A';
+
+  return date.toLocaleDateString('en-GB');
 };
 
-// ---------- TEXT TO BULLETS ----------
-const splitIntoMeaningfulPoints = (text) => {
-  if (!text || typeof text !== 'string') return [];
+
+
+// Split long paragraph into meaningful bullet points
+const splitIntoBullets = (text) => {
+  if (!text || typeof text !== "string") return [];
 
   return text
     .split(/[\.\n;]+/)
@@ -197,7 +190,7 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
         toast.success('Application submitted successfully!');
         onClose();
       } else {
-        toast.error(response.response?.data?.msg || "Could not apply.");
+        toast.error(response.response?.data?.msg || "Could not appaaly.");
       }
     } catch (error) {
       console.log("Error applying: ", error);
@@ -599,12 +592,34 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-1">
                     Selection Process
                   </h2>
-                  <div className="text-md text-gray-500">
-                    Number of rounds: {selectionProcess.length}
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {normalizeSelectionProcess(jobDetail.selectionProcess)?.length > 0 ? (
+                      normalizeSelectionProcess(jobDetail.selectionProcess).map((step, index) => (
+                        <div
+                          key={index}
+                          className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#667eea]/30 hover:shadow-sm transition-all duration-200"
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
+                              <span className="text-xs font-bold text-white">{index + 1}</span>
+                            </div>
+                            <p className="text-sm font-medium text-gray-900">
+                              Round {index + 1}
+                            </p>
+                          </div>
+                          <p className="text-xs text-gray-600">{step}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-gray-700">
+                        {renderTags(jobDetail.selectionProcess)}
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {selectionProcess.length > 0 ? (
+                {/*{selectionProcess.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {selectionProcess.map((step, index) => (
                       <div 
@@ -626,35 +641,70 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                   <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg p-4">
                     <p className="text-sm text-gray-500 text-center">Selection process details not provided.</p>
                   </div>
-                )}
+                )}*/}
               </div>
 
+
               {/* Important Dates */}
-              <div className="px-6 py-6 border-t border-gray-100">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                  Important Dates
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                    <div className="text-sm font-medium text-[#667eea]">Application Deadline</div>
-                    <div className="mt-1 text-lg font-medium text-gray-900">
-                      {jobDetail.applicationDeadline ? formatDate(jobDetail.applicationDeadline) : 'Rolling Basis'}
-                    </div>
-                  </div>
-                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                    <div className="text-sm font-medium text-[#667eea]">Expected Start Date</div>
-                    <div className="mt-1 text-lg font-medium text-gray-900">
-                      {jobDetail.startDate ? formatDate(jobDetail.startDate) : 'Immediate'}
-                    </div>
-                  </div>
-                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
-                    <div className="text-sm font-medium text-[#667eea]">Notice Period</div>
-                    <div className="mt-1 text-lg font-medium text-gray-900">
-                      {jobDetail.noticePeriod || 'Immediate to 30 days'}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {(jobDetail.endDate ||
+  jobDetail.onlineTestDate ||
+  jobDetail.interviewWindow ||
+  jobDetail.offerRolloutDate) && (
+  <div className="px-6 py-6 border-t border-gray-100">
+    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+      Important Dates
+    </h2>
+
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      
+      {/* Application Deadline */}
+      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 rounded-lg p-4">
+        <p className="text-sm font-medium text-[#667eea]">
+          Application Deadline
+        </p>
+        <p className="mt-1 text-lg font-semibold text-gray-900">
+          {formatDate(jobDetail.endDate)}
+        </p>
+      </div>
+
+      {/* Online Test Date */}
+      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 rounded-lg p-4">
+        <p className="text-sm font-medium text-[#667eea]">
+          Online Test Date
+        </p>
+        <p className="mt-1 text-lg font-semibold text-gray-900">
+          {formatDate(jobDetail.onlineTestDate)}
+        </p>
+      </div>
+
+      {/* Interview Window */}
+      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 rounded-lg p-4">
+        <p className="text-sm font-medium text-[#667eea]">
+          Interview Window
+        </p>
+        <p className="mt-1 text-lg font-semibold text-gray-900">
+          {jobDetail.interviewWindow?.start
+            ? `${formatDate(jobDetail.interviewWindow.start)} - ${formatDate(jobDetail.interviewWindow.end)}`
+            : 'N/A'}
+        </p>
+      </div>
+
+      {/* Offer Rollout */}
+      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 rounded-lg p-4">
+        <p className="text-sm font-medium text-[#667eea]">
+          Offer Rollout
+        </p>
+        <p className="mt-1 text-lg font-semibold text-gray-900">
+          {formatDate(jobDetail.offerRolloutDate)}
+        </p>
+      </div>
+
+    </div>
+  </div>
+)}
+
+
+
 
               {/* Contact Information if available */}
               {jobDetail.contactPerson && (
