@@ -54,7 +54,7 @@ const normalizeSelectionProcess = (selectionProcess) => {
     return selectionProcess.flatMap(step =>
       step.includes('+')
         ? step.split('+').map(s => s.trim())
-        : splitIntoMeaningfulPoints(step)
+        : splitIntoBullets(step)  // Changed from splitIntoMeaningfulPoints to splitIntoBullets
     );
   }
 
@@ -62,7 +62,7 @@ const normalizeSelectionProcess = (selectionProcess) => {
     if (selectionProcess.includes('+')) {
       return selectionProcess.split('+').map(s => s.trim());
     }
-    return splitIntoMeaningfulPoints(selectionProcess);
+    return splitIntoBullets(selectionProcess);  // Changed from splitIntoMeaningfulPoints to splitIntoBullets
   }
 
   return [];
