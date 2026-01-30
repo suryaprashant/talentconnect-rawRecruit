@@ -58,20 +58,24 @@ const DetailRow = ({ icon: Icon, label, value }) => {
     );
 };
 
-const ApplicantDetails = ({ job, isVisited, onClose }) => {
+const ApplicantDetails = ({ job,
+  applications,
+  loading,
+  error,
+  isVisited,
+  onRefresh,
+  onClose,
+ }) => {
   const [jobId, setJobId] = useState(job._id);
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [applications, setApplications] = useState([]);
   const [toggleScheduleInterviewPopup, setToggleScheduleInterviewPopup] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+ 
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
 
-  const getApplicants = async (jobId, jobType, isVisited) => {
+ {/* const getApplicants = async (jobId, jobType, isVisited) => {
     setLoading(true);
     setError(null);
     try {
@@ -89,7 +93,7 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
     } finally {
       setLoading(false);
     }
-  };
+  };*/}
 
   const acceptApplicant = async (applicationId) => {
     setIsSubmitting(true);
@@ -97,7 +101,8 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
       const response = await acceptCandidate(applicationId, job?.jobRoles);
       if (response?.data?.success === true) {
         toast.success("Candidate Accepted!");
-        getApplicants(jobId, jobType, isVisited);
+        //getApplicants(jobId, jobType, isVisited);
+        onRefresh();
       } else {
         toast.error(response.response?.data?.msg || 'Failed to accept candidate');
       }
@@ -115,7 +120,8 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
       const response = await rejectCandidate(applicationId, job?.jobRoles);
       if (response?.data?.success === true) {
         toast.success("Candidate Rejected!");
-        getApplicants(jobId, jobType, isVisited);
+        //getApplicants(jobId, jobType, isVisited);
+        onRefresh();
       } else {
         toast.error(response.response?.data?.msg || 'Failed to reject candidate');
       }
@@ -127,13 +133,13 @@ const ApplicantDetails = ({ job, isVisited, onClose }) => {
     }
   };
 
-  useEffect(() => {
+  {/*useEffect(() => {
     if (isVisited === false) {
       getApplicants(jobId, jobType, false);
     } else {
       getApplicants(jobId, jobType);
     }
-  }, [jobId]);
+  }, [jobId]);*/}
 
   const handleMessageClick = async (applicant) => {
     if (!applicant?.applicant?._id) {

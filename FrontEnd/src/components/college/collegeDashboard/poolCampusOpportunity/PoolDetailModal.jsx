@@ -166,13 +166,13 @@ const PoolJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, 
   };
 
   const handleApply = async () => {
-    if (loading) return;
+    {/*if (loading) return;
 
     // 🔐 Not logged in
     if (!isAuthenticated) {
       toast.error("Please login to apply");
       return;
-    }
+    }*/}
     if (!jobId) return;
     
     setIsSubmitting(true);

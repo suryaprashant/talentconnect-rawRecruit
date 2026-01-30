@@ -53,18 +53,19 @@ const DetailRow = ({ icon: Icon, label, value }) => {
     );
 };
 
-const ApplicantDetails = ({ job, isVisited, onClose, onAccept, onShortlist, onReject }) => {
+const ApplicantDetails = ({ job, applications,
+  loading,
+  error,
+  onRefresh, onClose, onAccept, onShortlist, onReject }) => {
   const [jobId, setJobId] = useState(job._id);
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  
 
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
 
-  const getApplicants = async (jobId, jobType, isVisited) => {
+  {/*const getApplicants = async (jobId, jobType, isVisited) => {
     setLoading(true);
     setError(null);
     try {
@@ -83,7 +84,7 @@ const ApplicantDetails = ({ job, isVisited, onClose, onAccept, onShortlist, onRe
       setLoading(false);
       setIsSubmitting(false);
     }
-  };
+  };*/}
 
   const rejectApplicant = async (applicationId) => {
     setIsSubmitting(true);
@@ -91,7 +92,8 @@ const ApplicantDetails = ({ job, isVisited, onClose, onAccept, onShortlist, onRe
       const response = await rejectCandidate(applicationId, job?.jobRoles);
       if (response?.data?.success === true) {
         toast.success("Candidate Rejected!");
-        getApplicants(jobId, jobType, isVisited);
+        //getApplicants(jobId, jobType, isVisited);
+        onRefresh();
       } else {
         toast.error(response.response?.data?.msg || 'Failed to reject candidate');
       }
@@ -101,13 +103,13 @@ const ApplicantDetails = ({ job, isVisited, onClose, onAccept, onShortlist, onRe
     }
   };
 
-  useEffect(() => {
+  {/*useEffect(() => {
     if (isVisited === false) {
       getApplicants(jobId, jobType, false);
     } else {
       getApplicants(jobId, jobType);
     }
-  }, [jobId]);
+  }, [jobId]);*/}
 
   const handleMessageClick = async (applicant) => {
     if (!applicant?.applicant?._id) {
