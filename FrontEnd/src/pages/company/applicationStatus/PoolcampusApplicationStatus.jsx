@@ -309,17 +309,12 @@ const extractDegree = (job) => {
     const detailedJobs = await Promise.all(
       rawData.map(async (item) => {
         try {
-          const jobId = item.job || item.jobDetails?.[0]?._id || item._id;
-          console.log(`🔍 Fetching job ${jobId}`);
+          const jobId = item.job;
+          const jobDetails = item.jobDetails;
+          const collegeDetails = item.collegeDetails;
+
           
-          const jobResponse = await getPoolCampusJobById(jobId);
-          const jobDetails = jobResponse.data;
-          
-          // CRITICAL: Log the actual structure
-          console.log(`📊 JOB ${jobId} FULL STRUCTURE:`, jobDetails);
-          console.log(`📊 JOB ${jobId} collegePosted:`, jobDetails.collegePosted);
-          console.log(`📊 JOB ${jobId} collegePosted keys:`, jobDetails.collegePosted ? Object.keys(jobDetails.collegePosted) : 'No collegePosted');
-          
+         
           // IMPROVED COLLEGE NAME EXTRACTION
           let collegeName = "College";
 
@@ -396,25 +391,41 @@ const extractDegree = (job) => {
           return {
             ...item,
             id: item._id,
-            jobId: jobId,
-            status: item.currentStatus || item.status || "Applied",
-            date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
-            collegeName: collegeName,
-            collegeLogo: collegeLogo,
-            location: location,
-            degree: degree,
-            employmentType: Array.isArray(jobDetails?.employmentType) && jobDetails.employmentType.length > 0
-              ? jobDetails.employmentType.join(", ")
-              : "Campus Placement",
-            skills: Array.isArray(jobDetails?.skills) ? jobDetails.skills : [],
-            description: jobDetails?.description || "No description available",
-            fullJobDetails: jobDetails,
-            // Add debug info
-            _debug: {
-              collegeNameFound: collegeName !== "College",
-              collegeNameSource: "various"
+            jobId: item.job,
+
+            status: item.currentStatus,
+            date: new Date(item.createdAt).toLocaleDateString(),
+
+            collegeName:
+              collegeDetails?.collegeUniversityDetails?.collegeName || "College",
+
+            collegeLogo: collegeDetails?.profileImage || null,
+
+            location:
+              Array.isArray(jobDetails.location) && jobDetails.location.length > 0
+                ? jobDetails.location.join(", ")
+                : jobDetails.venue || "Location not specified",
+
+            degree:
+              Array.isArray(jobDetails.degree) && jobDetails.degree.length > 0
+                ? jobDetails.degree.join(", ")
+                : "Various Streams",
+
+            employmentType:
+              Array.isArray(jobDetails.employmentType) && jobDetails.employmentType.length > 0
+                ? jobDetails.employmentType.join(", ")
+                : "Campus Placement",
+
+            skills: jobDetails.skills || [],
+            description: jobDetails.description || "No description available",
+
+            // ⭐ THIS is the magic line (page + modal both)
+            fullJobDetails: {
+              ...jobDetails,
+              collegePosted: collegeDetails
             }
           };
+
           
         } catch (jobError) {
           console.error(`❌ Error fetching job ${item.job}:`, jobError);
