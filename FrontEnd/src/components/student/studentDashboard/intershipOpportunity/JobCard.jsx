@@ -366,9 +366,9 @@ const JobCard = ({ job, userType, onClick }) => {
         <div className="flex justify-between items-center">
           <div>
             {/* Package */}
-            <p className="font-semibold text-gray-900 text-sm">
+            {/* <p className="font-semibold text-gray-900 text-sm">
               {formatPackage()}
-            </p>
+            </p> */}
 
             {/* Location and Work Mode */}
             <div className="space-y-1 text-xs text-gray-700 mt-1">
