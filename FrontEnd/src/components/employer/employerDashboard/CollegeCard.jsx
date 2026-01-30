@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MapPin, Heart } from 'lucide-react';
 import { SaveOppurtunity } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 
@@ -63,7 +64,7 @@ const CollegeCard = ({ college, onClick }) => {
 
   if (!college) return null;
 
-  // Extract data with multiple fallbacks
+  // Extract data with multiple fallbacks - from first component
   const getCollegeName = () => {
     if (college.collegePosted?.collegeUniversityDetails?.collegeName) {
       return college.collegePosted.collegeUniversityDetails.collegeName;
@@ -96,17 +97,22 @@ const CollegeCard = ({ college, onClick }) => {
     return '';
   };
 
-  const getDegreeType = () => {
-    if (college.degreeType) {
+  // Get degree type (from second component)
+  const getDegreeTypes = () => {
+    if (college.degreeType && Array.isArray(college.degreeType)) {
       return college.degreeType;
     }
     if (college.collegeType) {
-      return college.collegeType;
+      return Array.isArray(college.collegeType) ? college.collegeType : [college.collegeType];
     }
     if (college.collegePosted?.collegeUniversityDetails?.collegeType) {
-      return college.collegePosted.collegeUniversityDetails.collegeType;
+      const type = college.collegePosted.collegeUniversityDetails.collegeType;
+      return Array.isArray(type) ? type : [type];
     }
-    return 'Degree';
+    if (college.degree) {
+      return Array.isArray(college.degree) ? college.degree : [college.degree];
+    }
+    return [];
   };
 
   const getLocation = () => {
@@ -169,17 +175,46 @@ const CollegeCard = ({ college, onClick }) => {
     return [];
   };
 
-  const getCollegeType = () => {
-    if (college.type) {
-      return college.type;
+  // Get company type (from second component)
+  const getCompanyTypes = () => {
+    if (college.companyType && Array.isArray(college.companyType)) {
+      return college.companyType;
     }
-    if (college.collegeType) {
-      return college.collegeType;
+    if (college.companyTypes && Array.isArray(college.companyTypes)) {
+      return college.companyTypes;
     }
-    if (college.collegePosted?.collegeUniversityDetails?.collegeType) {
-      return college.collegePosted.collegeUniversityDetails.collegeType;
+    if (college.industryType) {
+      return Array.isArray(college.industryType) ? college.industryType : [college.industryType];
     }
-    return null;
+    return [];
+  };
+
+  // Get amenities (from second component)
+  const getAmenities = () => {
+    if (college.amenitiesRequired && Array.isArray(college.amenitiesRequired)) {
+      return college.amenitiesRequired;
+    }
+    if (college.amenities && Array.isArray(college.amenities)) {
+      return college.amenities;
+    }
+    if (college.facilities && Array.isArray(college.facilities)) {
+      return college.facilities;
+    }
+    return [];
+  };
+
+  // Get employment type (from second component)
+  const getEmploymentTypes = () => {
+    if (college.employmentType && Array.isArray(college.employmentType)) {
+      return college.employmentType;
+    }
+    if (college.employmentTypes && Array.isArray(college.employmentTypes)) {
+      return college.employmentTypes;
+    }
+    if (college.jobType) {
+      return Array.isArray(college.jobType) ? college.jobType : [college.jobType];
+    }
+    return [];
   };
 
   const getStats = () => {
@@ -213,6 +248,25 @@ const CollegeCard = ({ college, onClick }) => {
       return college.badges;
     }
     return ['Top Rated', 'Placement Cell', 'Industry Connect'];
+  };
+
+  // Get college status based on dates (from second component)
+  const getCollegeStatus = () => {
+    const now = new Date();
+    const startDate = college.startDate ? new Date(college.startDate) : null;
+    const endDate = college.endDate ? new Date(college.endDate) : null;
+
+    if (!startDate || !endDate) {
+      return { status: 'Not Scheduled', color: 'bg-gray-100 text-gray-700' };
+    }
+
+    if (now < startDate) {
+      return { status: 'Upcoming', color: 'bg-blue-100 text-blue-700' };
+    } else if (now >= startDate && now <= endDate) {
+      return { status: 'Active', color: 'bg-green-100 text-green-700' };
+    } else {
+      return { status: 'Completed', color: 'bg-gray-100 text-gray-700' };
+    }
   };
 
   const handleCardClick = (e) => {
@@ -265,16 +319,19 @@ const CollegeCard = ({ college, onClick }) => {
   // Now extract all data
   const collegeName = getCollegeName();
   const logo = getLogo();
-  const degreeType = getDegreeType();
+  const degreeTypes = getDegreeTypes();
+  const companyTypes = getCompanyTypes();
+  const amenities = getAmenities();
+  const employmentTypes = getEmploymentTypes();
   const location = getLocation();
   const avgPackage = getPackage();
   const description = getDescription();
   const specializations = getSpecializations();
-  const collegeType = getCollegeType();
   const stats = getStats();
   const tags = getTags();
 
   const stableColor = getStableColor(college._id || collegeName);
+  const collegeStatus = getCollegeStatus();
 
   // Format package
   const formatPackage = () => {
@@ -284,9 +341,10 @@ const CollegeCard = ({ college, onClick }) => {
     return 'Not Disclosed';
   };
 
-  // Get degree/specialization badges
+  // Get degree/specialization badges (combined from degreeTypes and specializations)
   const getDegreeBadges = () => {
-    if (specializations.length === 0) return null;
+    const allDegrees = [...new Set([...degreeTypes, ...specializations])];
+    if (allDegrees.length === 0) return null;
     
     const roleColors = [
       "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
@@ -298,7 +356,7 @@ const CollegeCard = ({ college, onClick }) => {
     
     return (
       <div className="flex flex-wrap gap-1 mt-2">
-        {specializations.slice(0, 3).map((item, index) => (
+        {allDegrees.slice(0, 3).map((item, index) => (
           <span 
             key={index} 
             className={`text-sm font-medium px-2 py-0.5 rounded-full border ${roleColors[index % roleColors.length]}`}
@@ -306,24 +364,66 @@ const CollegeCard = ({ college, onClick }) => {
             {item}
           </span>
         ))}
-        {specializations.length > 3 && (
+        {allDegrees.length > 3 && (
           <span className="text-sm font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-0.5 rounded-full border border-gray-200">
-            +{specializations.length - 3}
+            +{allDegrees.length - 3}
           </span>
         )}
       </div>
     );
   };
 
-  // Get college type badge
-  const getCollegeTypeBadge = () => {
-    if (!collegeType) return null;
+  // Get employment type badge (from second component)
+  const getEmploymentTypeBadge = () => {
+    if (employmentTypes.length === 0) return null;
     
     return (
       <div className="mb-3">
         <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
-          {Array.isArray(collegeType) ? collegeType.join(', ') : collegeType}
+          {employmentTypes.join(', ')}
         </span>
+      </div>
+    );
+  };
+
+  // Get amenities as skills (from second component)
+  const getAmenitiesBadges = () => {
+    if (amenities.length === 0) return null;
+    
+    return (
+      <div className="flex flex-wrap gap-2 mb-3">
+        {amenities.slice(0, 3).map((amenity, index) => (
+          <span
+            key={index}
+            className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
+          >
+            {amenity}
+          </span>
+        ))}
+        {amenities.length > 3 && (
+          <span className="px-2 py-1 text-xs text-gray-600">+{amenities.length - 3}</span>
+        )}
+      </div>
+    );
+  };
+
+  // Get company types (from second component)
+  const getCompanyTypesBadges = () => {
+    if (companyTypes.length === 0) return null;
+    
+    return (
+      <div className="flex flex-wrap gap-2 mb-3">
+        {companyTypes.slice(0, 2).map((type, index) => (
+          <span
+            key={index}
+            className="px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs"
+          >
+            {type}
+          </span>
+        ))}
+        {companyTypes.length > 2 && (
+          <span className="px-2 py-1 text-xs text-gray-600">+{companyTypes.length - 2}</span>
+        )}
       </div>
     );
   };
@@ -337,7 +437,7 @@ const CollegeCard = ({ college, onClick }) => {
         {Object.entries(stats).slice(0, 3).map(([key, value], index) => (
           <span
             key={index}
-            className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/60 backdrop-blur-sm"
+            className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
           >
             {value} {key}
           </span>
@@ -355,7 +455,7 @@ const CollegeCard = ({ college, onClick }) => {
         {tags.slice(0, 3).map((tag, index) => (
           <span
             key={index}
-            className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/60 backdrop-blur-sm"
+            className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
           >
             {tag}
           </span>
@@ -380,12 +480,12 @@ const CollegeCard = ({ college, onClick }) => {
         flex-grow
       "
     >
-      {/* TOP SECTION - Pastel background - Uses flex-grow for equal height */}
+      {/* TOP SECTION - Pastel background */}
       <div className={`${stableColor} p-4 flex-grow flex flex-col min-h-[280px]`}>
-        {/* Degree Type + Save */}
+        {/* Status + Save */}
         <div className="flex justify-between items-start mb-2">
-          <span className="text-xs bg-white/90 text-gray-700 px-3 py-1 rounded-full font-medium">
-            {degreeType}
+          <span className={`text-xs ${collegeStatus.color} px-3 py-1 rounded-full font-medium`}>
+            {collegeStatus.status}
           </span>
 
           <button
@@ -393,19 +493,10 @@ const CollegeCard = ({ college, onClick }) => {
             className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10 hover:bg-gray-50"
             aria-label={isSaved ? "Remove from saved" : "Save college"}
           >
-            <svg
+            <Heart
               className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
               fill={isSaved ? "currentColor" : "none"}
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={isSaved ? 0 : 2}
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              />
-            </svg>
+            />
           </button>
         </div>
 
@@ -439,16 +530,22 @@ const CollegeCard = ({ college, onClick }) => {
           </div>
         </div>
 
-        {/* College Type Badge */}
-        {getCollegeTypeBadge()}
+        {/* Employment Type Badge (from second component) */}
+        {getEmploymentTypeBadge()}
+
+        {/* Amenities Badges (from second component) */}
+        {getAmenitiesBadges()}
+
+        {/* Company Types Badges (from second component) */}
+        {getCompanyTypesBadges()}
 
         {/* Stats Badges */}
-        {getStatsBadges()}
+        {/* {getStatsBadges()} */}
 
         {/* Tags Badges */}
         {getTagsBadges()}
 
-        {/* Description - This will push content and make cards equal height */}
+        {/* Description */}
         <div className="flex-grow mt-3">
           <p className="text-sm text-gray-700 line-clamp-3 leading-relaxed">
             {description}
@@ -456,9 +553,9 @@ const CollegeCard = ({ college, onClick }) => {
         </div>
       </div>
 
-      {/* BOTTOM SECTION - White background - Fixed height */}
-      <div className="p-4 bg-white border-t border-gray-200 h-[90px] flex-shrink-0">
-        <div className="flex justify-between items-center h-full">
+      {/* BOTTOM SECTION - White background */}
+      <div className="p-4 bg-white border-t border-gray-200">
+        <div className="flex justify-between items-center">
           <div className="min-w-0 flex-1">
             {/* Average Package */}
             <p className="font-semibold text-gray-900 text-sm truncate mb-2">
@@ -467,13 +564,7 @@ const CollegeCard = ({ college, onClick }) => {
 
             {/* Location */}
             <div className="flex items-center gap-1 text-gray-700 text-xs">
-              <svg 
-                className="h-4 w-4 text-gray-500 flex-shrink-0" 
-                fill="currentColor" 
-                viewBox="0 0 20 20"
-              >
-                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-              </svg>
+              <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
               <span className="line-clamp-1 truncate">
                 {location}
               </span>

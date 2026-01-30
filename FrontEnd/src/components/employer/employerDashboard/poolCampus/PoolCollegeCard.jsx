@@ -158,30 +158,44 @@ const PoolCollegeCard = ({ college, onClick }) => {
     }
   };
 
-  // Format location with multiple fallbacks
   const formatLocation = () => {
-    // First: Root level location (from EmployerPoolDetailsModal)
-    if (college.location) {
-      if (Array.isArray(college.location)) {
-        return college.location.slice(0, 2).join(', ');
-      }
-      return college.location;
+  // Log for debugging
+  console.log('PoolCollegeCard college data:', college);
+  
+  // Exact same logic as EmployerPoolDetailsModal
+  const collegeDetails = college.collegePosted;
+  const collegeUniDetails = collegeDetails?.collegeUniversityDetails || {};
+  const city = collegeUniDetails.city || '';
+  
+  console.log('College details:', collegeDetails);
+  console.log('College Uni details:', collegeUniDetails);
+  console.log('City found:', city);
+  
+  // Return city if found
+  if (city) {
+    return city;
+  }
+  
+  // If no city, check other possible locations
+  if (college.location) {
+    if (Array.isArray(college.location)) {
+      return college.location[0];
     }
-    
-    // Second: From collegePosted details
-    const collegeDetails = college.collegePosted?.collegeUniversityDetails || {};
-    const locationParts = [
-      collegeDetails.city,
-      collegeDetails.state,
-      collegeDetails.country
-    ].filter(Boolean);
-    
-    if (locationParts.length > 0) {
-      return locationParts.join(', ');
+    return college.location;
+  }
+  
+  if (college.companyDetails?.city) {
+    return college.companyDetails.city;
+  }
+  
+  if (college.hiringLocations && Array.isArray(college.hiringLocations)) {
+    if (college.hiringLocations.length > 0) {
+      return college.hiringLocations[0];
     }
-    
-    return 'Location not specified';
-  };
+  }
+  
+  return 'Location not specified';
+};
 
   const getInitials = (name) => {
     if (!name) return '?';
