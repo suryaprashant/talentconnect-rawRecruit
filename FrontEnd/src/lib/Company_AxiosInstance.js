@@ -693,29 +693,3 @@ export function getAcceptedCandidates() {
       return { data: { success: false, data: [] } };
     });
 }
-
-// Add this function to your Company_AxiosInstance.js file
-// export const getInternshipApplicationsForJob = async (jobId, jobType, status, isVisited = null) => {
-//   try {
-//     let url = `${BASE_URL}/api/company/application/${jobId}`;
-//     const params = new URLSearchParams();
-    
-//     if (jobType) params.append('jobType', jobType);
-//     if (status) params.append('status', status);
-//     if (isVisited !== null) params.append('isVisited', isVisited);
-    
-//     if (params.toString()) {
-//       url += `?${params.toString()}`;
-//     }
-    
-//     const response = await axios.get(url, {
-//       headers: {
-//         'Authorization': `Bearer ${localStorage.getItem('companyToken')}`
-//       }
-//     });
-    
-//     return response.data;
-//   } catch (error) {
-//     throw error;
-//   }
-// };

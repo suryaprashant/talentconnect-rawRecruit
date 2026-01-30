@@ -272,11 +272,11 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
     }
   };
 
+  // Update tabs to remove 'process' tab
   const tabs = [
     { id: 'overview', label: 'Overview', icon: <Info className="h-4 w-4" /> },
     { id: 'requirements', label: 'Requirements', icon: <Target className="h-4 w-4" /> },
     { id: 'benefits', label: 'Compensation', icon: <IndianRupee className="h-4 w-4" /> },
-    { id: 'process', label: 'Process', icon: <TrendingUpIcon className="h-4 w-4" /> },
   ];
 
   // Format stipend with rupee sign
@@ -681,14 +681,15 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                 </div>
               )}
 
-              {/* Process Tab */}
+              {/* 
+              // Process Tab - COMMENTED OUT (KEEPING FOR FUTURE USE)
               {activeTab === 'process' && (
                 <div className="px-6 py-6">
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                     Application Process
                   </h2>
 
-                  {/* Selection Process */}
+                  {/* Selection Process *
                   {jobDetail.selectionProcess && (
                     <div className="mb-8">
                       <div className="text-sm font-medium text-[#667eea] mb-3">Selection Process</div>
@@ -722,7 +723,7 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                     </div>
                   )}
 
-                  {/* Important Dates */}
+                  {/* Important Dates *
                   <div className="px-6 py-6 border-t border-gray-100">
                     <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                       Important Dates
@@ -750,6 +751,8 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                   </div>
                 </div>
               )}
+              */}
+
             </div>
           </div>
         </div>

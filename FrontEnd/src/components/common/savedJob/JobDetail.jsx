@@ -249,7 +249,7 @@ import {
 } from "@/lib/User_AxiosInstance";
 
 
-// Utility functions
+// Utility functions - keep all existing utility functions
 const splitIntoMeaningfulPoints = (text) => {
   if (!text || typeof text !== 'string') return [];
 
@@ -281,12 +281,16 @@ const normalizeSelectionProcess = (selectionProcess) => {
 };
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A';
+  if (!dateString) return 'Not Specified';
 
   const date = new Date(dateString);
-  if (isNaN(date.getTime())) return 'N/A';
+  if (isNaN(date.getTime())) return 'Not Specified';
 
-  return date.toLocaleDateString('en-GB');
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
 };
 
 // Helper function to check if an array has valid data
@@ -294,9 +298,9 @@ const hasValidData = (arr) => {
   return arr && Array.isArray(arr) && arr.length > 0;
 };
 
-// Helper function to check if a value is meaningful (not null, undefined, 0, empty string, or 'N/A')
+// Helper function to check if a value is meaningful
 const hasValue = (value) => {
-  if (value === null || value === undefined || value === '' || value === 'N/A') return false;
+  if (value === null || value === undefined || value === '' || value === 'N/A' || value === 'Not Specified') return false;
   if (typeof value === 'number' && value === 0) return false;
   if (typeof value === 'string' && value.trim() === '') return false;
   return true;
@@ -311,9 +315,10 @@ const hasValidObject = (obj, keys = []) => {
   return keys.some(key => hasValue(obj[key]));
 };
 
+// Render tags function
 const renderTags = (items) => {
   if (!items || items.length === 0) {
-    return <span className="text-gray-500">N/A</span>;
+    return <span className="text-gray-500">Not Specified</span>;
   }
 
   return (
@@ -321,7 +326,7 @@ const renderTags = (items) => {
       {items.map((item, index) => (
         <span
           key={index}
-          className="px-3 py-1 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full text-sm border border-[#667eea]/20"
+          className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
         >
           {item}
         </span>
@@ -330,10 +335,35 @@ const renderTags = (items) => {
   );
 };
 
-// Normalization function for all three dashboard types
+// Update the normalizeJobData function in your UnifiedJobDetail component
 const normalizeJobData = (savedJob, userType) => {
-  // savedJob could be from company, college, or student dashboard
   const job = savedJob?.job || savedJob;
+  
+  // Determine organization name based on available data
+  let organizationName = 'Not Specified';
+  let organizationLogo = null;
+  
+  // Check for company data first
+  if (job?.companyPosted?.companyDetails?.companyName) {
+    organizationName = job.companyPosted.companyDetails.companyName;
+    organizationLogo = job.companyPosted.companyDetails.logo;
+  } 
+  // Check for college data
+  else if (job?.collegePosted?.collegeUniversityDetails?.collegeName) {
+    organizationName = job.collegePosted.collegeUniversityDetails.collegeName;
+    organizationLogo = job.collegePosted.profileImage;
+  }
+  // Check for employer data (if job is posted by employer)
+  else if (job?.postedBy === 'employer' && job?.employerDetails?.companyName) {
+    organizationName = job.employerDetails.companyName;
+    organizationLogo = job.employerDetails.logo;
+  }
+  // Fallback to direct fields
+  else if (job?.companyName) {
+    organizationName = job.companyName;
+  } else if (job?.collegeName) {
+    organizationName = job.collegeName;
+  }
   
   return {
     // Basic Info
@@ -342,20 +372,9 @@ const normalizeJobData = (savedJob, userType) => {
     jobStatus: job?.jobStatus || 'Pending',
     lookingFor: job?.lookingFor || 'Job',
     
-    // Company/College Info
-    companyName: job?.companyPosted?.companyDetails?.companyName || null,
-    collegeName: job?.collegePosted?.collegeUniversityDetails?.collegeName || null,
-    companyLogo: job?.companyPosted?.companyDetails?.logo || null,
-    collegeLogo: job?.collegePosted?.profileImage || null,
-    
-    // Display name based on user type
-    organizationName: userType === 'company' 
-      ? job?.collegePosted?.collegeUniversityDetails?.collegeName
-      : job?.companyPosted?.companyDetails?.companyName,
-    
-    organizationLogo: userType === 'company'
-      ? job?.collegePosted?.profileImage
-      : job?.companyPosted?.companyDetails?.logo,
+    // Organization Info - Use the determined values
+    organizationName: organizationName,
+    organizationLogo: organizationLogo,
     
     // Job Details
     jobRoles: job?.jobRoles || [],
@@ -475,20 +494,17 @@ const UnifiedJobDetail = () => {
   const savedJob = location.state?.job;
 
   useEffect(() => {
-    // Case 1: coming from Saved Opportunities
     if (savedJob) {
       setJob(normalizeJobData(savedJob, userType));
       setLoading(false);
       return;
     }
 
-    // Case 2: direct access / normal job listing
     if (id) {
       fetchJobById(id);
       return;
     }
 
-    // Invalid access
     navigate(-1);
   }, [id, savedJob, userType]);
 
@@ -521,19 +537,13 @@ const UnifiedJobDetail = () => {
     
     try {
       setIsSaving(true);
-      // Add your unsave API call here - replace with your actual API function
-       const response = await UnsaveOppurtunity(job._id);
-       if (response?.data?.success) {
-         toast.success("Opportunity Unsaved");
-         //window.location.reload(); // or use your refresh function
-         
-       } else {
-         toast.error("Failed to unsave");
-       }
-      
-      // Temporary success message - remove when you add real API
-      //toast.success('Job removed from saved list!');
-      setTimeout(() => handleBackToList(), 1000);
+      const response = await UnsaveOppurtunity(job._id);
+      if (response?.data?.success) {
+        toast.success("Opportunity Unsaved");
+        setTimeout(() => handleBackToList(), 1000);
+      } else {
+        toast.error("Failed to unsave");
+      }
     } catch (err) {
       console.error('Error unsaving job:', err);
       toast.error('Something went wrong');
@@ -568,6 +578,7 @@ const UnifiedJobDetail = () => {
 
       setIsApplying(true);
 
+
       // internship uses internshipId, others use jobId
       const payloadId =
         job.jobType === "internship" ? job._id : job._id;
@@ -595,22 +606,40 @@ const UnifiedJobDetail = () => {
     }
   };
 
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `${job?.jobRoles?.[0] || 'Opportunity'} at ${job?.organizationName}`,
+        text: `Check out this opportunity for ${job?.jobRoles?.[0] || 'job'} at ${job?.organizationName}!`,
+        url: window.location.href,
+      })
+        .catch((error) => console.log('Error sharing', error));
+    } else {
+      navigator.clipboard.writeText(window.location.href)
+        .then(() => toast.success('Link copied to clipboard!'))
+        .catch(() => toast.error('Failed to copy link'));
+    }
+  };
+
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#667eea]"></div>
+      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#667eea] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading opportunity details...</p>
+        </div>
       </div>
     );
   }
 
   if (error || !job) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
-        <div className="text-center p-4">
-          <p className="text-xl font-semibold text-red-500">{error || "Job not found"}</p>
+      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-xl font-semibold text-red-500">{error || "Opportunity not found"}</p>
           <button
-            className="mt-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] hover:shadow-lg hover:shadow-[#667eea]/30 text-white px-4 py-2 rounded-lg transition-all duration-200"
+            className="mt-4 px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200"
             onClick={() => fetchJobById(id)}
           >
             Try Again
@@ -626,430 +655,416 @@ const UnifiedJobDetail = () => {
     );
   }
 
-  let headerStatusClasses = '';
-  switch (job.jobStatus) {
-    case 'Open':
-      headerStatusClasses = 'text-green-600';
-      break;
-    case 'Closed':
-      headerStatusClasses = 'text-red-600';
-      break;
-    case 'Pending':
-      headerStatusClasses = 'text-yellow-600';
-      break;
-    default:
-      headerStatusClasses = 'text-gray-600';
-  }
-
   const displayTitle = job.jobRoles?.[0] || job.jobType || job.lookingFor || 'Opportunity';
   const displayLocations = [...new Set([...job.location, ...job.workLocation])].filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 p-4 md:p-6 lg:p-8">
-      <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
-        {/* Header Section */}
-        <div className="bg-gradient-to-r from-[#667eea] to-[#764ba2] p-6 md:p-8 text-white">
-          <button
-            onClick={handleBackToList}
-            className="mb-4 flex items-center text-white/90 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Back to Jobs
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+      <main className="px-6 py-6">
+        {/* Top Back Button */}
+        <button onClick={handleBackToList} className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+          </svg>
+          Back
+        </button>
 
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-                {job.organizationLogo ? (
-                  <img
-                    src={job.organizationLogo}
-                    alt={job.organizationName}
-                    className="w-12 h-12 object-contain"
-                  />
-                ) : (
-                  <Building2 className="w-8 h-8 text-[#667eea]" />
-                )}
-              </div>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold mb-2">{displayTitle}</h1>
-                <p className="text-white/90 text-lg mb-2">{job.organizationName || 'N/A'}</p>
-                <div className="flex flex-wrap gap-3 text-sm">
-                  {displayLocations.length > 0 && (
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
-                      <span>{displayLocations.join(', ')}</span>
-                    </div>
-                  )}
-                  {job.employmentType?.[0] && (
-                    <div className="flex items-center gap-1">
-                      <Briefcase className="w-4 h-4" />
-                      <span>{job.employmentType.join(', ')}</span>
-                    </div>
-                  )}
-                  {job.workMode?.[0] && (
-                    <span className="px-3 py-1 bg-white/20 rounded-full">
-                      {job.workMode.join(', ')}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
+        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
+          {/* Header Section */}
+<div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4">
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-2">
+    <div className="flex items-center">
+      <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
+        {job.organizationLogo ? (
+          <img
+            src={job.organizationLogo}
+            alt={job.organizationName}
+            className="w-10 h-10 object-contain"
+          />
+        ) : (
+          <Building2 className="w-8 h-8 text-[#667eea]" />
+        )}
+      </div>
+      <div>
+        {/* Company Name - Highlighted and bold */}
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+          {job.organizationName || 'Not Specified'}
+        </h1>
+        {/* Job Role - Slightly less bold */}
+        <p className="text-xl font-semibold text-gray-800 mt-1">
+          {displayTitle}
+        </p>
+      </div>
+    </div>
+  </div>
 
-            <div className="flex flex-col gap-2 w-full md:w-auto">
-              <span className={`px-4 py-2 rounded-lg text-center font-medium bg-white/20 ${headerStatusClasses}`}>
-                {job.jobStatus}
-              </span>
-              {job.currentStatus && (
-                <span className="px-4 py-2 rounded-lg text-center font-medium bg-white/20">
-                  {job.currentStatus}
-                </span>
-              )}
-            </div>
-          </div>
+  {/* Location below the date */}
+  <div className="flex items-center text-sm text-gray-600 mt-4">
+    <Calendar className="h-5 w-5 mr-1 text-[#667eea]" />
+    <span className="mr-4">
+      {hasValue(job.startDate) ? `${formatDate(job.startDate)} - ${formatDate(job.endDate)}` : 'Not Specified'}
+    </span>
+    {displayLocations.length > 0 && (
+      <>
+        <MapPin className="h-5 w-5 mr-1 text-[#667eea]" />
+        <span>{displayLocations.join(', ')}</span>
+      </>
+    )}
+  </div>
 
-          {/* Action Buttons */}
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button
-              onClick={handleApply}
-              disabled={isApplying || job.currentStatus === 'Applied'}
-              className="px-6 py-3 bg-white text-[#667eea] rounded-xl font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex-grow sm:flex-grow-0"
-            >
-              {isApplying ? 'Applying...' : job.currentStatus === 'Applied' ? 'Already Applied' : 'Apply Now'}
-            </button>
-            <button
-              onClick={handleUnsave}
-              disabled={isSaving}
-              className="px-6 py-3 bg-white/20 text-white border border-white/50 rounded-xl font-semibold hover:bg-white/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex-grow sm:flex-grow-0"
-            >
-              {isSaving ? 'Removing...' : 'Unsave'}
-            </button>
-          </div>
-        </div>
+  {/* Action Buttons */}
+  <div className="flex flex-wrap gap-2 mt-4">
+    {job.currentStatus !== 'Applied' && (
+      <button
+        onClick={handleApply}
+        disabled={isApplying}
+        className="inline-flex items-center justify-center px-6 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-sm font-medium rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200"
+      >
+        <Briefcase className="h-4 w-4 mr-2" />
+        {isApplying ? 'Applying...' : 'Apply Now'}
+      </button>
+    )}
+    <button
+      onClick={handleUnsave}
+      disabled={isSaving}
+      className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 mr-1 ${isSaving ? 'text-[#667eea]' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={isSaving ? 'currentColor' : 'none'} stroke="currentColor">
+        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+      </svg>
+      {isSaving ? 'Removing...' : 'Unsave'}
+    </button>
+    <button
+      onClick={handleShare}
+      className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+      </svg>
+      Share
+    </button>
+  </div>
+</div>
 
-        {/* Content Section */}
-        <div className="p-6 md:p-8">
           {/* Job Type Badge */}
-          <div className="mb-6">
+          <div className="px-6 py-4">
             <span className="inline-block px-4 py-2 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] rounded-full text-sm font-semibold border border-[#667eea]/20">
               {job.jobType} • {job.lookingFor}
             </span>
           </div>
 
-          {/* Quick Stats */}
-          {(hasValidData(job.degree) || hasValidData(job.studentStreams) || hasValidData(job.skills)) && (
-            <section className="mb-8">
-              <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                Quick Overview
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {hasValidData(job.degree) && (
-                  <div className="flex items-start">
-                    <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                    </svg>
-                    <div>
-                      <div className="font-medium text-[#667eea]">Degree</div>
-                      {renderTags(job.degree)}
-                    </div>
-                  </div>
-                )}
-                {hasValidData(job.studentStreams) && (
-                  <div className="flex items-start">
-                    <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                    </svg>
-                    <div>
-                      <div className="font-medium text-[#667eea]">Eligible Streams</div>
-                      {renderTags(job.studentStreams)}
-                    </div>
-                  </div>
-                )}
-                {hasValidData(job.skills) && (
-                  <div className="flex items-start col-span-1 sm:col-span-2">
-                    <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                    <div>
-                      <div className="font-medium text-[#667eea]">Required Skills</div>
-                      {renderTags(job.skills)}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
-
-          {/* Compensation & Benefits */}
-          {(hasValue(job.packageDetails?.totalCTC) || hasValue(job.packageDetails?.fixedPay) || hasValue(job.packageDetails?.joiningBonus) || hasValue(job.internshipDuration) || hasValue(job.numberOfOpenings) || hasValidData(job.benefits)) && (
-            <section className="mb-8">
-              <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                Compensation & Benefits
-              </h3>
-              {(hasValue(job.packageDetails?.totalCTC) || hasValue(job.packageDetails?.fixedPay) || hasValue(job.packageDetails?.joiningBonus)) && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  {hasValue(job.packageDetails?.totalCTC) && (
-                    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg border border-gray-200">
-                      <div className="text-sm font-medium text-[#667eea]">Total CTC</div>
-                      <div className="text-lg font-bold text-gray-900">
-                        {job.packageDetails.currency || 'INR'} {job.packageDetails.totalCTC.toLocaleString()}
-                      </div>
-                    </div>
-                  )}
-                  {hasValue(job.packageDetails?.fixedPay) && (
-                    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg border border-gray-200">
-                      <div className="text-sm font-medium text-[#667eea]">Fixed Pay</div>
-                      <div className="text-lg font-bold text-gray-900">
-                        {job.packageDetails.currency || 'INR'} {job.packageDetails.fixedPay.toLocaleString()}
-                      </div>
-                    </div>
-                  )}
-                  {hasValue(job.packageDetails?.joiningBonus) && (
-                    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg border border-gray-200">
-                      <div className="text-sm font-medium text-[#667eea]">Variable Pay</div>
-                      <div className="text-lg font-bold text-gray-900">
-                        {job.packageDetails.currency || 'INR'} {job.packageDetails.joiningBonus.toLocaleString()}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-              {hasValue(job.internshipDuration) && (
-                <div className="mb-4 p-4 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg border border-gray-200">
-                  <div className="text-sm font-medium text-[#667eea]">Internship Duration</div>
-                  <div className="text-lg font-bold text-gray-900">{job.internshipDuration}</div>
-                </div>
-              )}
-              {hasValue(job.numberOfOpenings) && (
-                <div className="mb-4 p-4 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg border border-gray-200">
-                  <div className="text-sm font-medium text-[#667eea]">Number of Openings</div>
-                  <div className="text-lg font-bold text-gray-900">{job.numberOfOpenings}</div>
-                </div>
-              )}
-              {hasValidData(job.benefits) && (
-                <>
-                  <h4 className="font-medium text-[#667eea] mb-2">Benefits Offered</h4>
-                  {renderTags(job.benefits)}
-                </>
-              )}
-            </section>
-          )}
-
-          {/* Hiring Process */}
-          {(normalizeSelectionProcess(job.selectionProcess)?.length > 0 || hasValidData(job.rounds)) && (
-            <section className="mb-8">
-              <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                Hiring Process
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {normalizeSelectionProcess(job.selectionProcess)?.length > 0 && (
-                  <div className="flex items-start">
-                    <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                    </svg>
-                    <div className="col-span-1 sm:col-span-2">
-                      <div className="font-medium text-[#667eea] mb-2">Selection Process</div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {normalizeSelectionProcess(job.selectionProcess).map((step, index) => (
-                          <div
-                            key={index}
-                            className="border border-gray-200 rounded-lg p-3 bg-white"
-                          >
-                            <div className="flex items-center gap-2 mb-1">
-                              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
-                                <span className="text-xs font-bold text-white">{index + 1}</span>
-                              </div>
-                              <span className="text-sm font-medium text-gray-800">
-                                Round {index + 1}
-                              </span>
-                            </div>
-                            <p className="text-xs text-gray-600">{step}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {hasValidData(job.rounds) && (
-                  <div className="flex items-start">
-                    <svg className="w-5 h-5 mt-1 mr-3 text-[#667eea] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                    <div>
-                      <div className="font-medium text-[#667eea]">Number of Rounds</div>
-                      <div className="text-gray-700">{job.rounds.join(', ')}</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
-
           {/* About the Role */}
           {hasValue(job.description) && job.description !== 'No description provided' && (
-            <section className="mb-8">
-              <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            <div className="px-6 py-6">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                 About the Role
-              </h3>
+              </h2>
               <p className="text-gray-700 whitespace-pre-wrap">
                 {job.description}
               </p>
-            </section>
+            </div>
           )}
 
-          {/* Eligibility Criteria */}
-          {(hasValue(job.eligibilityCriteria) || (job.cgpa && job.cgpa > 0)) && (
-            <section className="mb-8">
-              <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                Eligibility Criteria
-              </h3>
-              {hasValue(job.eligibilityCriteria) && (
-                <p className="text-gray-700 whitespace-pre-wrap mb-3">
-                  {job.eligibilityCriteria}
-                </p>
-              )}
-              {job.cgpa && job.cgpa > 0 && (
-                <div className="p-3 bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg border border-gray-200">
-                  <span className="text-sm font-medium text-[#667eea]">Minimum CGPA: </span>
-                  <span className="text-gray-900 font-bold">{job.cgpa}</span>
+          {/* Quick Overview */}
+          <div className="px-6 py-6">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              Quick Overview
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+              {hasValidData(job.degree) && (
+                <div>
+                  <div className="text-sm font-medium text-[#667eea]">Degree</div>
+                  <div className="mt-1 text-base text-gray-900">{job.degree.join(' / ') || 'Not Specified'}</div>
                 </div>
               )}
-            </section>
+              {hasValidData(job.studentStreams) && (
+                <div>
+                  <div className="text-sm font-medium text-[#667eea]">Eligible Streams</div>
+                  <div className="mt-1 text-base text-gray-900">{job.studentStreams.join(', ') || 'Not Specified'}</div>
+                </div>
+              )}
+              {hasValidData(job.employmentType) && (
+                <div>
+                  <div className="text-sm font-medium text-[#667eea]">Employment Type</div>
+                  <div className="mt-1 text-base text-gray-900">{job.employmentType.join(', ') || 'Not Specified'}</div>
+                </div>
+              )}
+              {hasValidData(job.workMode) && (
+                <div>
+                  <div className="text-sm font-medium text-[#667eea]">Work Mode</div>
+                  <div className="mt-1 text-base text-gray-900">{job.workMode.join(', ') || 'Not Specified'}</div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Required Skills */}
+          {hasValidData(job.skills) && (
+            <div className="px-6 py-6">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                Required Skills
+              </h2>
+              {renderTags(job.skills)}
+            </div>
           )}
 
-          {/* Additional Requirements */}
-          {(hasValidData(job.certifications) || hasValue(job.minEducation) || hasValue(job.workAuthorization)) && (
-            <section className="mb-8">
-              <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                Additional Requirements
-              </h3>
-              <div className="space-y-4">
-                {hasValidData(job.certifications) && (
-                  <div>
-                    <div className="font-medium text-[#667eea] mb-2">Certifications</div>
-                    {renderTags(job.certifications)}
+          {/* Compensation & Benefits */}
+          <div className="px-6 py-6">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              Compensation & Benefits
+            </h2>
+            {(hasValue(job.packageDetails?.totalCTC) || hasValue(job.packageDetails?.fixedPay) || hasValue(job.packageDetails?.joiningBonus)) && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                {hasValue(job.packageDetails?.totalCTC) && (
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
+                    <div className="text-sm font-medium text-[#667eea]">Total CTC</div>
+                    <div className="text-xl font-bold text-gray-900">
+                      {job.packageDetails.currency || 'INR'} {job.packageDetails.totalCTC?.toLocaleString() || 'Not Specified'}
+                    </div>
                   </div>
                 )}
-                {hasValue(job.minEducation) && (
-                  <div>
-                    <div className="font-medium text-[#667eea] mb-2">Minimum Education</div>
-                    <p className="text-gray-700">{job.minEducation}</p>
+                {hasValue(job.packageDetails?.fixedPay) && (
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
+                    <div className="text-sm font-medium text-[#667eea]">Fixed Pay</div>
+                    <div className="text-xl font-bold text-gray-900">
+                      {job.packageDetails.currency || 'INR'} {job.packageDetails.fixedPay?.toLocaleString() || 'N/A'}
+                    </div>
                   </div>
                 )}
-                {hasValue(job.workAuthorization) && (
-                  <div>
-                    <div className="font-medium text-[#667eea] mb-2">Work Authorization</div>
-                    <p className="text-gray-700">{job.workAuthorization}</p>
+                {hasValue(job.packageDetails?.joiningBonus) && (
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
+                    <div className="text-sm font-medium text-[#667eea]">Variable Pay</div>
+                    <div className="text-xl font-bold text-gray-900">
+                      {job.packageDetails.currency || 'INR'} {job.packageDetails.joiningBonus?.toLocaleString() || 'N/A'}
+                    </div>
                   </div>
                 )}
               </div>
-            </section>
+            )}
+            {hasValue(job.internshipDuration) && (
+              <div className="mb-4">
+                <div className="text-sm font-medium text-[#667eea]">Internship Duration</div>
+                <div className="text-base text-gray-900">{job.internshipDuration}</div>
+              </div>
+            )}
+            {hasValue(job.numberOfOpenings) && (
+              <div className="mb-4">
+                <div className="text-sm font-medium text-[#667eea]">Number of Openings</div>
+                <div className="text-base text-gray-900">{job.numberOfOpenings}</div>
+              </div>
+            )}
+            {hasValidData(job.benefits) && (
+              <div>
+                <h3 className="font-medium text-[#667eea] mt-6 mb-3">Benefits Offered</h3>
+                {renderTags(job.benefits)}
+              </div>
+            )}
+          </div>
+
+          {/* Eligibility Criteria */}
+          {(hasValue(job.eligibilityCriteria) || (job.cgpa && job.cgpa > 0) || hasValue(job.minEducation) || hasValue(job.workAuthorization)) && (
+            <div className="px-6 py-6">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                Eligibility Criteria
+              </h2>
+              {hasValue(job.eligibilityCriteria) && (
+                <div className="mb-4">
+                  <div className="text-sm font-medium text-[#667eea]">Additional Criteria</div>
+                  <p className="text-gray-700 whitespace-pre-wrap mt-1">
+                    {job.eligibilityCriteria}
+                  </p>
+                </div>
+              )}
+              {job.cgpa && job.cgpa > 0 && (
+                <div className="mb-4">
+                  <div className="text-sm font-medium text-[#667eea]">Minimum CGPA</div>
+                  <div className="text-base text-gray-900">{job.cgpa}</div>
+                </div>
+              )}
+              {hasValue(job.minEducation) && (
+                <div className="mb-4">
+                  <div className="text-sm font-medium text-[#667eea]">Minimum Education</div>
+                  <div className="text-base text-gray-900">{job.minEducation}</div>
+                </div>
+              )}
+              {hasValue(job.workAuthorization) && (
+                <div className="mb-4">
+                  <div className="text-sm font-medium text-[#667eea]">Work Authorization</div>
+                  <div className="text-base text-gray-900">{job.workAuthorization}</div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Additional Requirements */}
+          {hasValidData(job.certifications) && (
+            <div className="px-6 py-6">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                Additional Requirements
+              </h2>
+              <div>
+                <div className="text-sm font-medium text-[#667eea]">Certifications</div>
+                {renderTags(job.certifications)}
+              </div>
+            </div>
+          )}
+
+          {/* Selection Process */}
+          {(normalizeSelectionProcess(job.selectionProcess)?.length > 0 || hasValidData(job.rounds)) && (
+            <div className="px-6 py-6">
+              <div className="mb-4">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-1">
+                  Selection Process
+                </h2>
+                <div className="text-md text-gray-500">
+                  Number of rounds: {job?.rounds || job?.selectionProcess?.length || 0}
+                </div>
+              </div>
+
+              {normalizeSelectionProcess(job.selectionProcess)?.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {normalizeSelectionProcess(job.selectionProcess).map((step, index) => (
+                    <div 
+                      key={index}
+                      className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#667eea]/30 hover:shadow-sm transition-all duration-200"
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
+                          <span className="text-xs font-bold text-white">{index + 1}</span>
+                        </div>
+                        <p className="text-sm font-medium text-gray-900">Round {index + 1}</p>
+                      </div>
+                      <p className="text-xs text-gray-600 line-clamp-3">{step}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 rounded-lg p-4">
+                  <p className="text-sm text-gray-500 text-center">Selection process details not provided.</p>
+                </div>
+              )}
+            </div>
           )}
 
           {/* Important Dates */}
           {(hasValue(job.endDate) || hasValue(job.onlineTestDate) || hasValue(job.interviewWindow?.start) || hasValue(job.offerRolloutDate)) && (
-            <section className="mb-8">
-              <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            <div className="px-6 py-6">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                 Important Dates
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {hasValue(job.endDate) && formatDate(job.endDate) !== 'N/A' && (
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-                    <div className="text-sm text-[#667eea]">Registration Deadline</div>
-                    <div className="font-medium text-red-600">
-                      {formatDate(job.endDate)}
-                    </div>
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {hasValue(job.endDate) && formatDate(job.endDate) !== 'Not Specified' && (
+                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
+                    <div className="text-sm font-medium text-[#667eea]">Registration Deadline</div>
+                    <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(job.endDate)}</div>
                   </div>
                 )}
                 
-                {hasValue(job.onlineTestDate) && formatDate(job.onlineTestDate) !== 'N/A' && (
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-                    <div className="text-sm text-[#667eea]">Online Test Date</div>
-                    <div className="font-medium text-gray-700">
-                      {formatDate(job.onlineTestDate)}
-                    </div>
+                {hasValue(job.onlineTestDate) && formatDate(job.onlineTestDate) !== 'Not Specified' && (
+                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
+                    <div className="text-sm font-medium text-[#667eea]">Online Test Date</div>
+                    <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(job.onlineTestDate)}</div>
                   </div>
                 )}
                 
                 {hasValue(job.interviewWindow?.start) && (
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-                    <div className="text-sm text-[#667eea]">Interview Window</div>
-                    <div className="font-medium text-gray-700">
-                      {formatDate(job.interviewWindow.start)} - {formatDate(job.interviewWindow.end)}
+                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
+                    <div className="text-sm font-medium text-[#667eea]">Interview Window</div>
+                    <div className="mt-1 text-lg font-medium text-gray-900">
+                      {formatDate(job.interviewWindow.start) === 'Not Specified' ? 'N/A' : `${formatDate(job.interviewWindow.start)} - ${formatDate(job.interviewWindow.end)}`}
                     </div>
                   </div>
                 )}
                 
-                {hasValue(job.offerRolloutDate) && formatDate(job.offerRolloutDate) !== 'N/A' && (
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-                    <div className="text-sm text-[#667eea]">Offer Rollout</div>
-                    <div className="font-medium text-gray-700">
-                      {formatDate(job.offerRolloutDate)}
-                    </div>
+                {hasValue(job.offerRolloutDate) && formatDate(job.offerRolloutDate) !== 'Not Specified' && (
+                  <div className="border border-gray-300 rounded-lg p-4 text-center bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5">
+                    <div className="text-sm font-medium text-[#667eea]">Offer Rollout</div>
+                    <div className="mt-1 text-lg font-medium text-gray-900">{formatDate(job.offerRolloutDate)}</div>
                   </div>
                 )}
               </div>
-            </section>
+            </div>
           )}
 
           {/* Tags */}
           {hasValidData(job.tags) && (
-            <section className="mb-8">
-              <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            <div className="px-6 py-6">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                 Tags
-              </h3>
+              </h2>
               {renderTags(job.tags)}
-            </section>
+            </div>
           )}
 
-          {/* Amenities Required (for on-campus) */}
+          {/* Amenities Required */}
           {hasValidData(job.amenitiesRequired) && (
-            <section className="mb-8">
-              <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            <div className="px-6 py-6">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                 Amenities Required
-              </h3>
-              {renderTags(job.amenitiesRequired)}
-            </section>
+              </h2>
+              <div className="text-base text-gray-900">{job.amenitiesRequired.join(', ') || 'None'}</div>
+            </div>
           )}
 
           {/* Contact Person */}
           {hasValidObject(job.contactPerson, ['name', 'email', 'mobile', 'designation']) && (
-            <section className="mb-8">
-              <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            <div className="px-6 py-6">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                 Contact Person
-              </h3>
-              <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg border border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {hasValue(job.contactPerson.name) && (
-                    <div>
-                      <div className="text-sm font-medium text-[#667eea]">Name</div>
-                      <div className="text-gray-900">{job.contactPerson.name}</div>
+              </h2>
+              <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
+                <div className="flex items-start">
+                  <div className="mr-3 flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center text-[#667eea]">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
                     </div>
-                  )}
-                  {hasValue(job.contactPerson.designation) && (
-                    <div>
-                      <div className="text-sm font-medium text-[#667eea]">Designation</div>
-                      <div className="text-gray-900">{job.contactPerson.designation}</div>
+                  </div>
+                  <div>
+                    <div className="text-base font-medium text-gray-900">
+                      {job.contactPerson.name || 'Not Specified'} 
+                      <span className='text-sm text-gray-500 ml-2'>({job.contactPerson.designation || 'N/A'})</span>
                     </div>
-                  )}
-                  {hasValue(job.contactPerson.email) && (
-                    <div>
-                      <div className="text-sm font-medium text-[#667eea]">Email</div>
-                      <div className="text-gray-900">{job.contactPerson.email}</div>
-                    </div>
-                  )}
-                  {hasValue(job.contactPerson.mobile) && (
-                    <div>
-                      <div className="text-sm font-medium text-[#667eea]">Mobile</div>
-                      <div className="text-gray-900">{job.contactPerson.mobile}</div>
-                    </div>
-                  )}
+                    {job.contactPerson.email && (
+                      <div className="flex items-center mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#667eea] mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <a href={`mailto:${job.contactPerson.email}`} className="text-[#667eea] hover:text-[#764ba2] text-sm transition-colors">{job.contactPerson.email}</a>
+                      </div>
+                    )}
+                    {job.contactPerson.mobile && (
+                      <div className="flex items-center mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#667eea] mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        <a href={`tel:${job.contactPerson.mobile}`} className="text-[#667eea] hover:text-[#764ba2] text-sm transition-colors">{job.contactPerson.mobile}</a>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </section>
+            </div>
+          )}
+
+          {/* Apply Now Button at Bottom */}
+          {job.currentStatus !== 'Applied' && job.jobStatus === 'Open' && (
+            <div className="px-6 py-6 bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5">
+              <div className="flex justify-center">
+                <button 
+                  className="inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-lg font-medium rounded-xl hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200"
+                  onClick={handleApply}
+                  disabled={isApplying}
+                >
+                  {isApplying ? 'Applying...' : 'Apply Now'}
+                </button>
+              </div>
+            </div>
           )}
 
           {/* Bottom Back Button */}
-          <section className="mt-8 pt-6 border-t border-gray-200">
+          <div className="px-6 py-6 border-t border-gray-100">
             <div className="flex justify-left">
               <button 
                 onClick={handleBackToList} 
@@ -1061,9 +1076,9 @@ const UnifiedJobDetail = () => {
                 Back
               </button>
             </div>
-          </section>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
