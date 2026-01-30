@@ -232,8 +232,12 @@ export async function createOffcampusApplication(req, res) {
 
   try {
     const user = await getStudentService(userId);
-    if (!jobId || !user || !user.data?.length) {
-      return res.status(404).json({ msg: "User or Job not found!" });
+    if (!jobId) {
+      return res.status(404).json({ msg: "Job not found!" });
+    }
+
+    if ( !user || !user.data?.length) {
+      return res.status(404).json({ msg: "User not found!" });
     }
 
     const actorProfile = user.data[0];
@@ -511,6 +515,9 @@ export async function createReferralApplication(req, res) {
 
 // oncampus -> notification done
 export async function createOncampusApplication(req, res) {
+  if (!req.user) {
+    return res.status(401).json({ msg: "User not logged in!" });
+  }
   const { jobId } = req.body;
   const userId = req.user._id;
   const userType = req.user.userType;
@@ -532,8 +539,12 @@ export async function createOncampusApplication(req, res) {
         return res.status(400).json({ msg: "Invalid user type" });
     }
 
-    if (!user || !user.data || user.data.length === 0 || !jobId) {
-      return res.status(404).json({ msg: "User or job not found!" });
+    if (!jobId) {
+      return res.status(404).json({ msg: "job not found!" });
+    }
+
+    if (!user || !user.data || user.data.length === 0 ) {
+      return res.status(404).json({ msg: "User not found!" });
     }
 
     const actorProfile = user.data[0];

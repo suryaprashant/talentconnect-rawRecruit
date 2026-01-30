@@ -149,6 +149,23 @@ export function getCollegeApplicationsForJob(
   });
 }
 
+export function getOffCampusApplicationsForJob(
+  jobId,
+  jobType,
+  targetStatus,
+  isVisited
+) {
+  return axiosClient.get(`/application/manage`, {
+    params: {
+      jobId,
+      jobType,
+      targetStatus,
+      isVisited, // 🔥 THIS WAS MISSING
+    },
+  });
+}
+
+
 
 // get shortlisted applicant
 export function getShorlistedCandidateByCompany(applicantType, jobType) {

@@ -167,7 +167,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
         toast.success("Applied");
         onClose();
       } else {
-        toast.error(response?.response?.data?.msg || "Failed to apply");
+        toast.error(response?.data?.msg || "Failed to apply");
       }
     } catch (error) {
       console.log("Error: ", error);
