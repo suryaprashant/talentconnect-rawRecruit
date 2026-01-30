@@ -4,7 +4,7 @@ import {
     MapPin, Calendar, FileText, AlertCircle, Briefcase
 } from 'lucide-react';
 import ApplicantDetails from './ApplicantDetails';
-import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
+import { deleteJobById, getPostedJobs, getOffCampusApplicationsForJob } from '@/lib/Company_AxiosInstance';
 import { useNavigate } from 'react-router-dom';
 
 export default function OffCampusJobManagement() {
@@ -18,6 +18,10 @@ export default function OffCampusJobManagement() {
     const [showJobDetail, setShowJobDetail] = useState(false);
     const [isVisited, setIsVisited] = useState();
     const [error, setError] = useState(null);
+    const [applications, setApplications] = useState([]);
+    const [applicationsLoading, setApplicationsLoading] = useState(false);
+    const [applicationsError, setApplicationsError] = useState(null);
+
     const navigate = useNavigate();
 
     const itemsPerPage = 10;
@@ -39,6 +43,29 @@ export default function OffCampusJobManagement() {
             setLoading(false);
         }
     };
+
+    const fetchApplicationsForJob = async (jobId, isVisited) => {
+        setApplicationsLoading(true);
+        setApplicationsError(null);
+
+        try {
+            const res = await getOffCampusApplicationsForJob(
+                jobId,
+                "Off-campus",
+                "Accepted",
+                isVisited
+            );
+
+            setApplications(res?.data || []);
+        } catch (err) {
+            console.error(err);
+            setApplications([]);
+            setApplicationsError("Failed to fetch applications");
+        } finally {
+            setApplicationsLoading(false);
+        }
+    };
+
 
     useEffect(() => {
         fetchJobs();
@@ -72,20 +99,33 @@ export default function OffCampusJobManagement() {
     const currentJobs = filteredJobs.slice(startIndex, startIndex + itemsPerPage);
 
     // Action handlers
-    const handleView = (job) => {
+    const handleView = async (job) => {
+      try {
+        await markApplicationsVisited(job._id, "Off-campus", "Accepted");
+        await fetchJobs(); // update counts
+
         setSelectedJob(job);
+        setIsVisited("false"); // show ALL
+        await fetchApplicationsForJob(job._id, true);
+
         setShowJobDetail(true);
+      } catch (err) {
+        setSelectedJob(job);
+        setIsVisited("false");
+        await fetchApplicationsForJob(job._id, true);
+        setShowJobDetail(true);
+      }
     };
 
     const showNewApplication = async (job) => {
-        try {
-            setSelectedJob(job);
-            setShowJobDetail(true);
-            setIsVisited(false);
-        } catch (error) {
-            console.log(error);
-        }
-    }
+      setSelectedJob(job);
+      setIsVisited("true"); // frontend flag for ApplicantDetails
+
+      // backend filter
+      await fetchApplicationsForJob(job._id, false);
+
+      setShowJobDetail(true);
+    };
 
     const handleDelete = async (jobId) => {
         try {
@@ -124,7 +164,16 @@ export default function OffCampusJobManagement() {
         return (
             <ApplicantDetails
                 job={selectedJob}
+                applications={applications}          // 🔥 ADD
+                loading={applicationsLoading}         // 🔥 ADD
+                error={applicationsError}             // 🔥 ADD
                 isVisited={isVisited}
+                onRefresh={() =>
+                  fetchApplicationsForJob(
+                    selectedJob._id,
+                    isVisited === "true" ? false : true
+                  )
+                }
                 onClose={() => onClose()}
                 onAccept={() => console.log(`Accept drive for job ID: ${selectedJob._id}`)}
                 onShortlist={() => console.log(`Shortlist drive for job ID: ${selectedJob._id}`)}

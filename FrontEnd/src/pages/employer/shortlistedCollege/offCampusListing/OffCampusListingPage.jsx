@@ -781,7 +781,7 @@ import {
     MapPin, Calendar, Briefcase, FileText
 } from 'lucide-react';
 import ApplicantDetails from './ApplicantDetails';
-import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
+import { deleteJobById, getPostedJobs, getOffCampusApplicationsForJob } from '@/lib/Company_AxiosInstance';
 import { useNavigate } from 'react-router-dom';
 
 export default function OffCampusJobManagement() {
@@ -794,6 +794,10 @@ export default function OffCampusJobManagement() {
     const [selectedJob, setSelectedJob] = useState(null);
     const [showJobDetail, setShowJobDetail] = useState(false);
     const [isVisited, setIsVisited] = useState();
+    const [applications, setApplications] = useState([]);
+    const [applicationsLoading, setApplicationsLoading] = useState(false);
+    const [applicationsError, setApplicationsError] = useState(null);
+
     const navigate = useNavigate();
 
     const itemsPerPage = 10; // Changed to 10 for better fit with 6 columns
@@ -812,6 +816,29 @@ export default function OffCampusJobManagement() {
         }
         setLoading(false);
     };
+
+    const fetchApplicationsForJob = async (jobId, isVisited) => {
+      setApplicationsLoading(true);
+      setApplicationsError(null);
+
+      try {
+        const res = await getOffCampusApplicationsForJob(
+          jobId,
+          "Off-campus",
+          "Shortlisted",
+          isVisited
+        );
+
+        setApplications(res?.data || []);
+      } catch (err) {
+        console.error(err);
+        setApplications([]);
+        setApplicationsError("Failed to fetch applications");
+      } finally {
+        setApplicationsLoading(false);
+      }
+    };
+
 
     useEffect(() => {
         fetchJobs();
@@ -851,20 +878,41 @@ export default function OffCampusJobManagement() {
     };
 
     // Action handlers
-    const handleView = (job) => {
+    {/*const handleView = (job) => {
         setSelectedJob(job);
         setShowJobDetail(true);
+    };*/}
+
+    const handleView = async (job) => {
+      try {
+        await markApplicationsVisited(job._id, "Off-campus", "Shortlisted");
+        await fetchJobs(); // update counts
+
+        setSelectedJob(job);
+        setIsVisited("false"); // show ALL
+        await fetchApplicationsForJob(job._id, true);
+
+        setShowJobDetail(true);
+      } catch (err) {
+        setSelectedJob(job);
+        setIsVisited("false");
+        await fetchApplicationsForJob(job._id, true);
+        setShowJobDetail(true);
+      }
     };
 
+
+
     const showNewApplication = async (job) => {
-        try {
-            setSelectedJob(job);
-            setShowJobDetail(true);
-            setIsVisited(false);
-        } catch (error) {
-            console.log(error);
-        }
-    }
+      setSelectedJob(job);
+      setIsVisited("true"); // frontend flag for ApplicantDetails
+
+      // backend filter
+      await fetchApplicationsForJob(job._id, false);
+
+      setShowJobDetail(true);
+    };
+
 
     const handleDelete = async (jobId) => {
         try {
@@ -905,13 +953,23 @@ export default function OffCampusJobManagement() {
     if (showJobDetail && selectedJob) {
         return (
             <ApplicantDetails
-                job={selectedJob}
-                isVisited={isVisited}
-                onClose={() => onClose()}
-                onAccept={() => handleAcceptDrive(selectedJob._id)}
-                onShortlist={() => handleShortlistDrive(selectedJob._id)}
-                onReject={() => handleRejectDrive(selectedJob._id)}
+              job={selectedJob}
+              applications={applications}          // 🔥 ADD
+              loading={applicationsLoading}         // 🔥 ADD
+              error={applicationsError}             // 🔥 ADD
+              isVisited={isVisited}
+              onRefresh={() =>
+                fetchApplicationsForJob(
+                  selectedJob._id,
+                  isVisited === "true" ? false : true
+                )
+              }
+              onClose={() => onClose()}
+              onAccept={() => handleAcceptDrive(selectedJob._id)}
+              onShortlist={() => handleShortlistDrive(selectedJob._id)}
+              onReject={() => handleRejectDrive(selectedJob._id)}
             />
+
         );
     }
 
@@ -996,25 +1054,25 @@ export default function OffCampusJobManagement() {
                                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                                     <div className="grid grid-cols-12 gap-4 items-center">
                                         {/* Job Roles - col-span-3 */}
-<div className="col-span-3">
-  <div 
-    onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}
-    className="group cursor-pointer"
-  >
-    <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
-      {Array.isArray(job?.jobRoles) 
-        ? job.jobRoles.join(', ') 
-        : job?.jobRoles || 'Untitled Job'
-      }
-    </h3>
-    <div className="flex items-center gap-2 mt-1">
-      <Briefcase className="h-3 w-3 text-gray-400" />
-      <span className="text-sm text-gray-500 capitalize">
-        {job?.workMode || 'N/A'} • {job?.venue || 'N/A'}
-      </span>
-    </div>
-  </div>
-</div>
+                                        <div className="col-span-3">
+                                          <div 
+                                            onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}
+                                            className="group cursor-pointer"
+                                          >
+                                            <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
+                                              {Array.isArray(job?.jobRoles) 
+                                                ? job.jobRoles.join(', ') 
+                                                : job?.jobRoles || 'Untitled Job'
+                                              }
+                                            </h3>
+                                            <div className="flex items-center gap-2 mt-1">
+                                              <Briefcase className="h-3 w-3 text-gray-400" />
+                                              <span className="text-sm text-gray-500 capitalize">
+                                                {job?.workMode || 'N/A'} • {job?.venue || 'N/A'}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
 
                                         {/* Work Locations - col-span-3 */}
                                         <div className="col-span-3">

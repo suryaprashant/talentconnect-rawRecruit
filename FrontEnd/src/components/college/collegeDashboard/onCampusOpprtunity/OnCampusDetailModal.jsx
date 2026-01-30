@@ -170,13 +170,13 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
   };
 
   const handleApply = async () => {
-    if (loading) return;
+    {/*if (loading) return;
 
   // 🔐 Not logged in
   if (!isAuthenticated) {
     toast.error("Please login to apply");
     return;
-  }
+  }*/}
     if (!jobId) return;
     
     setIsSubmitting(true);

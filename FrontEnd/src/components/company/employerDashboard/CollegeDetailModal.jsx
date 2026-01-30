@@ -271,7 +271,7 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
         toast.success("Applied successfully!");
         setPosting(prev => ({ ...prev, isApplied: true }));
       } else {
-        toast.error(response?.response?.data?.msg || "Failed to apply");
+        toast.error(response?.data?.msg || "Failed to apply");
       }
     } catch (error) {
       console.log("Error: ", error);

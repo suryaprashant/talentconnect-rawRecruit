@@ -489,7 +489,7 @@ function AppRoutes() {
               {/* Find your Company On-campus routes and update them to this: */}
               <Route path="/company-dashboard/on-campus">
 
-  <Route index element={<CompanyOnCampusLayout />} />
+              <Route index element={<CompanyOnCampusLayout />} />
 {/* <Route path="/company-dashboard/on-campus/:collegeId" element={<AppliedCollegeDetails />} /> */}
 {/* <Route path="application-status/on-campus" element={<OncampusApplicationStatus />} /> */}
 
@@ -660,9 +660,9 @@ function AppRoutes() {
               <Route path="/college/saved-jobs/*" element={<JobRoutes />} />
 
               {/* College Dashboard Routes */}
-<Route path="/college-dashboard/on-campus" element={<OnCampusLayout />}>
-  <Route index element={<JobsListingPage />} />
-  {/* No separate detail route needed */}
+              <Route path="/college-dashboard/on-campus" element={<OnCampusLayout />}>
+                <Route index element={<JobsListingPage />} />
+                {/* No separate detail route needed */}
 </Route>
 
               <Route path="/college-dashboard/Internship" element={<InternJobsListingPage />} />
