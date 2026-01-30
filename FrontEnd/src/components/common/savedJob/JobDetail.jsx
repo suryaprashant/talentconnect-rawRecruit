@@ -231,6 +231,23 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { MapPin, Building2, Briefcase, Calendar, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import { UnsaveOppurtunity } from '@/lib/Company_AxiosInstance';
+import {useAuth} from "@/context/AuthContext";
+import {
+  ApplyForOncampusOppurtunity,
+  ApplyForPoolcampusOppurtunity,
+} from "@/lib/Company_AxiosInstance";
+
+import {
+  ApplyForOnCampus,
+  ApplyForPoolCampus,
+} from '@/lib/College_AxiosIntance';
+
+// student / fresher
+import {
+  ApplyForOppurtunity,
+  ApplyForInternship,
+} from "@/lib/User_AxiosInstance";
+
 
 // Utility functions
 const splitIntoMeaningfulPoints = (text) => {
@@ -399,7 +416,53 @@ const normalizeJobData = (savedJob, userType) => {
   };
 };
 
-const UnifiedJobDetail = ({ userType = 'student' }) => {
+const normalizeJobType = (jobType) => {
+  if (!jobType) return null;
+
+  const type = jobType
+    .toLowerCase()
+    .replace(/[\s-_]/g, ""); // remove space, dash, underscore
+
+  if (type.includes("oncampus")) return "oncampus";
+  if (type.includes("poolcampus")) return "poolcampus";
+  if (type.includes("offcampus")) return "offcampus";
+  if (type.includes("intern")) return "internship";
+
+  return null;
+};
+
+
+const resolveApplyApi = ({ userType, jobType }) => {
+  const normalizedJobType = normalizeJobType(jobType);
+  const normalizedUserType = userType?.toLowerCase();
+
+  if (!normalizedUserType || !normalizedJobType) return null;
+
+  // Company / Employer
+  if (["company", "employer"].includes(normalizedUserType)) {
+    if (normalizedJobType === "oncampus") return ApplyForOncampusOppurtunity;
+    if (normalizedJobType === "poolcampus") return ApplyForPoolcampusOppurtunity;
+  }
+
+  // College
+  if (normalizedUserType === "college") {
+    if (normalizedJobType === "oncampus") return ApplyForOnCampus;
+    if (normalizedJobType === "poolcampus") return ApplyForPoolCampus;
+  }
+
+  // Student / Fresher
+  if (["student", "fresher"].includes(normalizedUserType)) {
+    if (normalizedJobType === "offcampus") return ApplyForOppurtunity;
+    if (normalizedJobType === "internship") return ApplyForInternship;
+  }
+
+  return null;
+};
+
+
+
+const UnifiedJobDetail = () => {
+  const { role: userType } = useAuth();
   const { id } = useParams();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -481,17 +544,57 @@ const UnifiedJobDetail = ({ userType = 'student' }) => {
 
   const handleApply = async () => {
     try {
+      if (!userType) {
+        toast.error("Please login to apply");
+        return;
+      }
+
+      const applyApi = resolveApplyApi({
+        userType,
+        jobType: job.jobType,
+      });
+
+      console.log("DEBUG APPLY →", {
+        userType,
+        jobType: job.jobType,
+        fullJob: job,
+      });
+
+
+      if (!applyApi) {
+        toast.error("You are not allowed to apply for this opportunity");
+        return;
+      }
+
       setIsApplying(true);
-      // Add your apply API call here
-      // const res = await applyForJob(job._id);
-      toast.success('Application submitted successfully!');
+
+      // internship uses internshipId, others use jobId
+      const payloadId =
+        job.jobType === "internship" ? job._id : job._id;
+
+      const response = await applyApi(payloadId);
+
+      if (response?.data?.success) {
+        toast.success("Applied successfully 🎉");
+
+        // optional: update UI status immediately
+        setJob(prev => ({
+          ...prev,
+          currentStatus: "Applied",
+        }));
+      } else {
+        toast.error(
+          response?.response?.data?.message || "Failed to apply"
+        );
+      }
     } catch (err) {
-      console.error('Error applying for job:', err);
-      toast.error('Failed to apply. Please try again.');
+      console.error("Apply error:", err);
+      toast.error("Something went wrong");
     } finally {
       setIsApplying(false);
     }
   };
+
 
   if (loading) {
     return (

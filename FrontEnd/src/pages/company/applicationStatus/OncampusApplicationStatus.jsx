@@ -93,128 +93,67 @@ export default function OncampusApplicationStatus() {
     console.log(`🔍 Valid jobs after filtering: ${validJobs.length}`);
     
     const detailedJobs = await Promise.all(
-      validJobs.map(async (item, index) => {
-        try {
-          const jobId = item.job || item.jobDetails?.[0]?._id || item._id;
-          console.log(`🔍 [${index + 1}/${validJobs.length}] Fetching on-campus job details for jobId: ${jobId}`);
-          
-          let jobDetails = null;
-          try {
-            const jobResponse = await getOnCampusJobById(jobId);
-            if (jobResponse.data) {
-              jobDetails = jobResponse.data;
-            }
-          } catch (apiError) {
-            console.warn(`⚠️ API error for job ${jobId}:`, apiError.message);
-            // Continue with minimal data instead of failing completely
-          }
-          
-          // Create basic job object even if API call fails
-          const basicJobInfo = {
-            ...item,
-            id: item._id,
-            jobId: jobId,
-            status: item.currentStatus || item.status || "Applied",
-            date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
-            collegeName: "College Drive",
-            collegeLogo: null,
-            location: "Location not specified",
-            degree: "Various Streams",
-            employmentType: "Full-time",
-            skills: [],
-            description: "No description available",
-            fullJobDetails: null,
-          };
-          
-          // If we got job details, enhance the object
-          if (jobDetails) {
-            // Safely extract all necessary data
-            const collegeName = extractCollegeName(jobDetails);
-            const collegeLogo = extractCollegeLogo(jobDetails);
-            const degree = extractDegree(jobDetails);
-            
-            // Get location safely
-            let location = "Location not specified";
-            if (Array.isArray(jobDetails.location) && jobDetails.location.length > 0) {
-              location = jobDetails.location.join(", ");
-            } else if (jobDetails.venue) {
-              location = jobDetails.venue;
-            } else if (Array.isArray(jobDetails.workLocation) && jobDetails.workLocation.length > 0) {
-              location = jobDetails.workLocation.join(", ");
-            }
-            
-            // Get employment type safely
-            let employmentType = "Full-time";
-            if (Array.isArray(jobDetails.employmentType) && jobDetails.employmentType.length > 0) {
-              employmentType = jobDetails.employmentType.join(", ");
-            } else if (jobDetails.employmentType) {
-              employmentType = jobDetails.employmentType;
-            }
-            
-            // Safely prepare jobDetails with defaults
-            const safeJobDetails = {
-              ...jobDetails,
-              _id: jobId,
-              contactPerson: jobDetails.contactPerson || {
-                name: "Not specified",
-                designation: "Placement Officer",
-                email: "",
-                mobile: ""
-              },
-              collegePosted: jobDetails.collegePosted || {
-                collegeUniversityDetails: {
-                  collegeName: collegeName || "College",
-                  collegeType: jobDetails.collegeType || "Not Specified",
-                  universityName: jobDetails.university || "Not Specified",
-                  city: jobDetails.city || "Not Specified",
-                  state: jobDetails.state || "Not Specified",
-                  country: jobDetails.country || "Not Specified"
-                },
-                profileImage: collegeLogo || null,
-                userId: jobDetails.userId
-              },
-              packageDetails: jobDetails.packageDetails || {
-                totalCTC: 0,
-                currency: "₹"
-              }
-            };
-            
-            return {
-              ...basicJobInfo,
-              collegeName,
-              collegeLogo,
-              location,
-              degree,
-              employmentType,
-              skills: Array.isArray(jobDetails?.skills) ? jobDetails.skills : [],
-              description: jobDetails?.description || "No description available",
-              fullJobDetails: safeJobDetails,
-            };
-          }
-          
-          // Return basic info if no job details
-          return basicJobInfo;
-          
-        } catch (jobError) {
-          console.error(`❌ Error processing job ${item.job || item._id}:`, jobError);
-          return {
-            ...item,
-            id: item._id,
-            jobId: item.job || item._id,
-            status: item.currentStatus || item.status || "Applied",
-            date: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "N/A",
-            collegeName: "College",
-            collegeLogo: null,
-            location: "Location not specified",
-            degree: "Various Streams",
-            employmentType: "Full-time",
-            skills: [],
-            description: "No description available",
-            fullJobDetails: null,
-          };
+  validJobs.map(async (item, index) => {
+    try {
+      const jobDetails = item.jobDetails;
+      const collegeDetails = item.collegeDetails;
+
+      // 🔒 safety check
+      if (!jobDetails || !collegeDetails) {
+        console.warn("Missing job or college details", item);
+        return null;
+      }
+
+      const collegeName =
+        collegeDetails?.collegeUniversityDetails?.collegeName || "College";
+
+      const location =
+        Array.isArray(jobDetails.location) && jobDetails.location.length > 0
+          ? jobDetails.location.join(", ")
+          : "Location not specified";
+
+      const degree =
+        Array.isArray(jobDetails.degree) && jobDetails.degree.length > 0
+          ? jobDetails.degree.join(", ")
+          : "Various Streams";
+
+      const employmentType =
+        Array.isArray(jobDetails.employmentType) && jobDetails.employmentType.length > 0
+          ? jobDetails.employmentType.join(", ")
+          : "Full-time";
+
+      return {
+        ...item,
+        id: item._id,
+        jobId: item.job,
+
+        status: item.currentStatus,
+        date: new Date(item.createdAt).toLocaleDateString(),
+
+        collegeName,
+        collegeLogo: collegeDetails.profileImage || null,
+
+        location,
+        degree,
+        employmentType,
+
+        skills: jobDetails.skills || [],
+        description: jobDetails.description || "No description available",
+
+        // ⭐ THIS feeds BOTH page + modal
+        fullJobDetails: {
+          ...jobDetails,
+          collegePosted: collegeDetails
         }
-      })
-    );
+      };
+
+    } catch (error) {
+      console.error("❌ Error mapping application:", error);
+      return null;
+    }
+  })
+);
+
     
     console.log("✅ Step 3 - Final detailed on-campus jobs:", detailedJobs);
     
@@ -264,111 +203,21 @@ export default function OncampusApplicationStatus() {
   };
 
   const handleViewFullDetails = (job) => {
-  console.log('🔍 handleViewFullDetails called with job:', job);
-  
-  // Try to get job details from multiple possible sources
-  const jobToUse = job || selectedJob;
-  
-  if (!jobToUse) {
-    console.error('No job provided');
-    alert('Unable to load college details. No job information available.');
+  if (!job?.fullJobDetails) {
+    alert("College details not available");
     return;
   }
-  
-  // Debug: Log all available data
-  console.log('🔍 Job object structure:', {
-    id: jobToUse.id,
-    jobId: jobToUse.jobId,
-    collegeName: jobToUse.collegeName,
-    hasFullJobDetails: !!jobToUse.fullJobDetails,
-    keys: Object.keys(jobToUse)
+
+  setModalCollege({
+    ...job.fullJobDetails,
+    isApplied: true,
+    currentStatus: job.status,
+    applicationDate: job.date
   });
-  
-  // Try to construct modal data from whatever information is available
-  let collegeForModal = null;
-  
-  if (jobToUse.fullJobDetails) {
-    console.log('🔍 Using existing fullJobDetails');
-    collegeForModal = {
-      ...jobToUse.fullJobDetails,
-      _id: jobToUse.jobId || jobToUse.fullJobDetails._id,
-      isApplied: true,
-      currentStatus: jobToUse.status,
-      applicationDate: jobToUse.date,
-      // Add missing fields if not present
-      contactPerson: jobToUse.fullJobDetails.contactPerson || {
-        name: "Not specified",
-        designation: "Placement Officer",
-        email: "",
-        mobile: ""
-      },
-      collegePosted: jobToUse.fullJobDetails.collegePosted || {
-        collegeUniversityDetails: {
-          collegeName: jobToUse.collegeName || "College",
-          collegeType: jobToUse.fullJobDetails.collegeType || "Not Specified",
-          universityName: jobToUse.fullJobDetails.university || "Not Specified",
-          city: jobToUse.fullJobDetails.city || "Not Specified",
-          state: jobToUse.fullJobDetails.state || "Not Specified",
-          country: jobToUse.fullJobDetails.country || "Not Specified"
-        }
-      }
-    };
-  } else {
-    console.log('🔍 Constructing modal data from basic job info');
-    // Build modal data from what we have in jobToUse
-    collegeForModal = {
-      _id: jobToUse.jobId || jobToUse.id,
-      isApplied: true,
-      currentStatus: jobToUse.status,
-      applicationDate: jobToUse.date,
-      title: jobToUse.collegeName || "College Drive",
-      description: jobToUse.description || "No description available",
-      skills: jobToUse.skills || [],
-      employmentType: jobToUse.employmentType || "Full-time",
-      location: Array.isArray(jobToUse.location) ? jobToUse.location : [jobToUse.location || "Not specified"],
-      degree: Array.isArray(jobToUse.degree) ? jobToUse.degree : [jobToUse.degree || "Various Streams"],
-      packageDetails: {
-        totalCTC: 0,
-        currency: "₹"
-      },
-      contactPerson: {
-        name: "Not specified",
-        designation: "Placement Officer",
-        email: "",
-        mobile: ""
-      },
-      collegePosted: {
-        collegeUniversityDetails: {
-          collegeName: jobToUse.collegeName || "College",
-          collegeType: "Educational Institution",
-          universityName: "University",
-          city: "Not Specified",
-          state: "Not Specified",
-          country: "Not Specified"
-        },
-        profileImage: jobToUse.collegeLogo || null,
-        placementCoordinatorDetails: {
-          officialEmail: ""
-        },
-        profileAchievements: {
-          collegeWebsite: ""
-        }
-      },
-      // Add any other properties that CollegeDetailModal might expect
-      _source: "on-campus-application-constructed"
-    };
-  }
-  
-  // Log the final structure
-  console.log('🔍 Final collegeForModal structure:', {
-    hasCollegePosted: !!collegeForModal.collegePosted,
-    hasCollegeUniversityDetails: !!collegeForModal.collegePosted?.collegeUniversityDetails,
-    collegeName: collegeForModal.collegePosted?.collegeUniversityDetails?.collegeName
-  });
-  
-  setModalCollege(collegeForModal);
+
   setIsModalOpen(true);
 };
+
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
