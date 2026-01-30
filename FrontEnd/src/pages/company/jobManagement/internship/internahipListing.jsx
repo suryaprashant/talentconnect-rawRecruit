@@ -4,7 +4,7 @@ import {
   Calendar, Users, FileText, AlertCircle, Briefcase
 } from 'lucide-react';
 import ApplicantDetails from './internDetails';
-import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
+import { deleteJobById, getPostedJobs, getOffCampusApplicationsForJob } from '@/lib/Company_AxiosInstance';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -17,6 +17,10 @@ export default function InternshipListing() {
   const [selectedJob, setSelectedJob] = useState(null);
   const [showJobDetail, setShowJobDetail] = useState(false);
   const [error, setError] = useState(null);
+  const [applications, setApplications] = useState([]);
+  const [applicationsLoading, setApplicationsLoading] = useState(false);
+  const [applicationsError, setApplicationsError] = useState(null);
+  const [isVisited, setIsVisited] = useState();
   const navigate = useNavigate();
 
   const itemsPerPage = 10;
@@ -40,6 +44,29 @@ export default function InternshipListing() {
   useEffect(() => {
     fetchJobs();
   }, []);
+
+  const fetchApplicationsForJob = async (jobId, isVisited) => {
+    setApplicationsLoading(true);
+    setApplicationsError(null);
+
+    try {
+      const res = await getOffCampusApplicationsForJob(
+        jobId,
+        "Internship",
+        "Applied",
+        isVisited
+      );
+
+      setApplications(res?.data || []);
+    } catch (err) {
+      console.error(err);
+      setApplications([]);
+      setApplicationsError("Failed to fetch applications");
+    } finally {
+      setApplicationsLoading(false);
+    }
+  };
+
 
   const handleDelete = async (jobId) => {
     try {
@@ -100,15 +127,21 @@ export default function InternshipListing() {
     return Array.isArray(locations) ? locations.join(', ') : String(locations);
   };
 
-  const handleViewApplications = (job) => {
+  const handleViewApplications = async (job) => {
     setSelectedJob(job);
+    setIsVisited("false"); // frontend flag = past
+    await fetchApplicationsForJob(job._id, true); // backend filter
     setShowJobDetail(true);
   };
 
-  const showNewApplications = (job) => {
+
+  const showNewApplications = async (job) => {
     setSelectedJob(job);
+    setIsVisited("true"); // frontend flag = new
+    await fetchApplicationsForJob(job._id, false);
     setShowJobDetail(true);
   };
+
 
   const handleBackToList = () => {
     setSelectedJob(null);
@@ -180,6 +213,16 @@ export default function InternshipListing() {
             {/* Load Applicant Details Component */}
             <ApplicantDetails
               job={selectedJob}
+              applications={applications}
+              loading={applicationsLoading}
+              error={applicationsError}
+              isVisited={isVisited}
+              onRefresh={() =>
+                fetchApplicationsForJob(
+                  selectedJob._id,
+                  isVisited === "true" ? false : true
+                )
+              }
               onClose={handleBackToList}
             />
           </div>
@@ -312,7 +355,7 @@ export default function InternshipListing() {
                       {/* New Applications */}
                       <div 
                         className="col-span-1 text-center cursor-pointer group"
-                        onClick={() => handleViewApplications(job)}
+                        onClick={() => showNewApplications(job)}
                       >
                         <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
                           {job?.applicationCount || 0}
