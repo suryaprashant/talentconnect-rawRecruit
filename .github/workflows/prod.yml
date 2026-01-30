@@ -1,9 +1,9 @@
-name: Deploy to VPS (Test)
+name: Deploy to VPS (Production)
 
 on:
-  push:
+  mergere_request:
     branches:
-      - test
+      - preprod
 
 jobs:
   deploy:
@@ -45,10 +45,10 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             set -e
-            cd /var/www/rr-test/talentconnect-rawRecruit
+            cd 
             git fetch origin
-            git checkout test
-            git pull origin test
+            git checkout preprod
+            git pull origin preprod
 
             cd FrontEnd
             npm install
@@ -56,4 +56,4 @@ jobs:
 
             cd ../BackEnd
             npm install
-            pm2 reload rawrecruit-test || pm2 start src/app.js --name rawrecruit-test
+            pm2 reload rawrecruit-api || pm2 start src/app.js --name rawrecruit-api
