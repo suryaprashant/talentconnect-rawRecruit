@@ -13,20 +13,26 @@ import {
   CheckCircle, Clock, AlertCircle, CalendarClock
 } from 'lucide-react';
 
-const InternshipDetails = ({ job, onClose }) => {
+const InternshipDetails = ({ job,
+  applications,
+  loading,
+  error,
+  isVisited,
+  onRefresh,
+  onClose, }) => {
   const jobId = job._id;
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [toggleScheduleInterviewPopup, setToggleScheduleInterviewPopup] = useState(false);
   const [selectedApplicantForInterview, setSelectedApplicantForInterview] = useState(null);
-  const [applications, setApplications] = useState([]);
+
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [showApplicantModal, setShowApplicantModal] = useState(false);
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
 
-  const getApplicants = async (jobId, jobType) => {
+  {/*const getApplicants = async (jobId, jobType) => {
     setIsSubmitting(true);
     try {
       const response = await getApplicationsForJob(jobId, jobType, "Shortlisted");
@@ -36,14 +42,14 @@ const InternshipDetails = ({ job, onClose }) => {
       toast.error('Failed to load shortlisted applications');
     }
     setIsSubmitting(false);
-  };
+  };*/}
 
   const handleAction = async (actionCallback, applicantId, actionName) => {
     setIsSubmitting(true);
     try {
       await actionCallback(applicantId);
       // Refresh applications after action
-      getApplicants(jobId, jobType);
+      onRefresh();
     } catch (error) {
       console.log("Action error: ", error);
     } finally {
@@ -56,6 +62,7 @@ const InternshipDetails = ({ job, onClose }) => {
       const response = await acceptCandidate(applicationId, job?.jobTitle);
       if (response?.data?.success === true) {
         toast.success("Candidate Accepted!");
+        onRefresh();
       } else {
         toast.error(response.response?.data?.msg || 'Failed to accept candidate');
       }
@@ -70,6 +77,7 @@ const InternshipDetails = ({ job, onClose }) => {
       const response = await rejectCandidate(applicationId, job?.jobTitle);
       if (response?.data?.success === true) {
         toast.success("Candidate Rejected!");
+        onRefresh();
       } else {
         toast.error(response.response?.data?.msg || 'Failed to reject candidate');
       }
@@ -79,9 +87,9 @@ const InternshipDetails = ({ job, onClose }) => {
     }
   };
 
-  useEffect(() => {
+  {/*useEffect(() => {
     getApplicants(jobId, jobType);
-  }, [jobId, jobType]);
+  }, [jobId, jobType]);*/}
 
   const handleMessageClick = async (applicant) => {
     if (!applicant?.applicant?._id) {

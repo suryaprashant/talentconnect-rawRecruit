@@ -12,18 +12,24 @@ import {
   CheckCircle, Clock, AlertCircle, Check
 } from 'lucide-react';
 
-const InternshipDetails = ({ job, onClose, isVisited }) => {
+const InternshipDetails = ({ job,
+  applications,
+  loading,
+  error,
+  isVisited,
+  onRefresh,
+  onClose, }) => {
   const jobId = job._id;
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [applications, setApplications] = useState([]);
+
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [showApplicantModal, setShowApplicantModal] = useState(false);
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
 
-  const getApplicants = async (jobId, jobType, isVisited) => {
+ {/* const getApplicants = async (jobId, jobType, isVisited) => {
     setIsSubmitting(true);
     try {
       let response;
@@ -38,14 +44,14 @@ const InternshipDetails = ({ job, onClose, isVisited }) => {
       toast.error('Failed to load accepted applications');
     }
     setIsSubmitting(false);
-  };
+  };*/}
 
   const handleAction = async (actionCallback, applicantId, actionName) => {
     setIsSubmitting(true);
     try {
       await actionCallback(applicantId);
       // Refresh applications after action
-      getApplicants(jobId, jobType, isVisited);
+      onRefresh()
     } catch (error) {
       console.log("Action error: ", error);
     } finally {
@@ -58,6 +64,7 @@ const InternshipDetails = ({ job, onClose, isVisited }) => {
       const response = await rejectCandidate(applicationId, job?.jobTitle);
       if (response?.data?.success === true) {
         toast.success("Candidate Rejected!");
+        onRefresh()
       } else {
         toast.error(response.response?.data?.msg || 'Failed to reject candidate');
       }
@@ -67,13 +74,13 @@ const InternshipDetails = ({ job, onClose, isVisited }) => {
     }
   };
 
-  useEffect(() => {
+  {/*useEffect(() => {
     if (isVisited === false) {
       getApplicants(jobId, jobType, false);
     } else {
       getApplicants(jobId, jobType, isVisited);
     }
-  }, [jobId, jobType, isVisited]);
+  }, [jobId, jobType, isVisited]);*/}
 
   const handleMessageClick = async (applicant) => {
     if (!applicant?.applicant?._id) {
