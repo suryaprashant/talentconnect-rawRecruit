@@ -3,7 +3,7 @@ import { Search, MapPin, Clock, Calendar, Briefcase, Award, CheckCircle, ArrowRi
 import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
 import { getJobDetails } from '@/lib/User_AxiosInstance';
 import { useAuth } from "@/context/AuthContext";
-import OffCampusJobDetailModal from './../../studentDashboard/offCampusListing/OffCampusJobDetailModal';
+import InternshipDetailModal from './../../studentDashboard/intershipOpportunity/InternshipDetailModal';
 
 const InternshipStatus = () => {
   const { user, loading } = useAuth();

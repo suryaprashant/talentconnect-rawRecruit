@@ -408,7 +408,7 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
               </div>
             </div>
 
-            <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl">
+            {/* <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Pool Campus Information</h3>
               <p className="text-gray-700 mb-3">
                 This college serves as the lead institution for the pool campus drive. 
@@ -425,7 +425,7 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
                   Centralized Recruitment
                 </span>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

@@ -584,7 +584,7 @@ const [formData, setFormData] = useState(() => {
               </div>
 
               {/* Preferred Hiring Locations */}
-              <div>
+              <div className="mt-1">
                 <label className="block font-medium mb-2 text-sm text-gray-700">Preferred Locations</label>
                 <CreatableSelect
                   isMulti
@@ -735,125 +735,139 @@ const [formData, setFormData] = useState(() => {
             </div>
 
             {/* Sixth Row: Job Roles and Work Location */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Job Roles */}
-              <div ref={jobRolesRef} className="relative">
-  <label className="block font-medium mb-2 text-sm text-gray-700">Job Roles</label>
-  <div className="flex flex-wrap gap-1 mb-2 max-h-20 overflow-y-auto">
-    {formData.jobRoles.map(role => (
-      <div key={role} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-        <span>{role}</span>
-        <button type="button" onClick={() => removeSelectedItem('jobRoles', role)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
-      </div>
-    ))}
-  </div>
-  <div className="flex items-center justify-between p-3 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('jobRoles')}>
-    <span className="text-sm text-gray-500">Select job roles</span>
-    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.jobRoles ? "rotate-180" : ""} text-gray-400`} />
-  </div>
-  {dropdownOpen.jobRoles && (
-    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-      {/* Add custom role section */}
-      <div className="p-2 border-b border-gray-100 bg-gray-50">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Add custom role..."
-            value={customJobRole}
-            onChange={(e) => setCustomJobRole(e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleCustomAdd('jobRoles', customJobRole, setCustomJobRole);
-              }
-            }}
-            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-          />
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleCustomAdd('jobRoles', customJobRole, setCustomJobRole);
-            }}
-            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-          >
-            Add
-          </button>
-        </div>
-      </div>
-      
-      {/* Scrollable list of job roles */}
-      <div className="overflow-y-auto max-h-48">
-        {jobRoleOptions.map(role => (
-          <div 
-            key={role} 
-            onClick={() => handleMultiSelect('jobRoles', role)} 
-            className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-              formData.jobRoles.includes(role) ? "bg-blue-50/50" : ""
-            }`}
-          >
-            <span className={`text-sm ${formData.jobRoles.includes(role) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-              {role}
-            </span>
-            {formData.jobRoles.includes(role) && <span className="text-[#667eea] font-bold">✓</span>}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+  {/* Job Roles */}
+  <div>
+    <label className="block font-medium mb-2 text-sm text-gray-700">Job Roles</label>
+    <div ref={jobRolesRef} className="relative">
+      <div className={`flex flex-wrap gap-1 mb-2 max-h-20 overflow-y-auto ${formData.jobRoles.length > 0 ? 'min-h-[28px]' : ''}`}>
+        {formData.jobRoles.map(role => (
+          <div key={role} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+            <span>{role}</span>
+            <button type="button" onClick={() => removeSelectedItem('jobRoles', role)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
           </div>
         ))}
-        
-        {jobRoleOptions.length === 0 && (
-          <div className="p-4 text-center text-gray-400 text-xs italic">
-            No job roles found. Add a role above.
-          </div>
-        )}
       </div>
-    </div>
-  )}
-</div>
-
-              {/* Work Location */}
-              <div>
-                <label className="block font-medium mb-2 text-sm text-gray-700">Work Location <span className="text-red-500">*</span></label>
-                <CreatableSelect
-                  isMulti
-                  options={cityOptions}
-                  value={formData.workLocation.map(location => ({ value: location, label: location }))}
-                  onChange={(selectedOptions) => handleLocationChange('workLocation', selectedOptions)}
-                  placeholder="Select work locations..."
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      borderColor: '#e5e7eb',
-                      minHeight: '38px',
-                      fontSize: '14px',
-                      borderRadius: '0.5rem',
-                      backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
-                      backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      borderRadius: '0.5rem',
-                      fontSize: '14px',
-                      border: '1px solid #e5e7eb',
-                    }),
-                    multiValue: (base) => ({
-                      ...base,
-                      fontSize: '12px',
-                      backgroundColor: '#f3f4f6',
-                      borderRadius: '9999px',
-                    }),
-                    multiValueRemove: (base) => ({
-                      ...base,
-                      fontSize: '12px',
-                      color: '#6b7280',
-                      ':hover': {
-                        backgroundColor: '#e5e7eb',
-                        color: '#374151',
-                      },
-                    }),
-                  }}
-                />
-              </div>
+      <div className="flex items-center justify-between p-3 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('jobRoles')}>
+        <span className="text-sm text-gray-500">Select job roles</span>
+        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.jobRoles ? "rotate-180" : ""} text-gray-400`} />
+      </div>
+      {dropdownOpen.jobRoles && (
+        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+          {/* Add custom role section */}
+          <div className="p-2 border-b border-gray-100 bg-gray-50">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Add custom role..."
+                value={customJobRole}
+                onChange={(e) => setCustomJobRole(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleCustomAdd('jobRoles', customJobRole, setCustomJobRole);
+                  }
+                }}
+                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCustomAdd('jobRoles', customJobRole, setCustomJobRole);
+                }}
+                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+              >
+                Add
+              </button>
             </div>
+          </div>
+          
+          {/* Scrollable list of job roles */}
+          <div className="overflow-y-auto max-h-48">
+            {jobRoleOptions.map(role => (
+              <div 
+                key={role} 
+                onClick={() => handleMultiSelect('jobRoles', role)} 
+                className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+                  formData.jobRoles.includes(role) ? "bg-blue-50/50" : ""
+                }`}
+              >
+                <span className={`text-sm ${formData.jobRoles.includes(role) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                  {role}
+                </span>
+                {formData.jobRoles.includes(role) && <span className="text-[#667eea] font-bold">✓</span>}
+              </div>
+            ))}
+            
+            {jobRoleOptions.length === 0 && (
+              <div className="p-4 text-center text-gray-400 text-xs italic">
+                No job roles found. Add a role above.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+
+  {/* Work Location */}
+  <div className='mt-2'>
+    <label className="block font-medium mb-2 text-sm text-gray-700">Work Location <span className="text-red-500">*</span></label>
+    <CreatableSelect
+      isMulti
+      options={cityOptions}
+      value={formData.workLocation.map(location => ({ value: location, label: location }))}
+      onChange={(selectedOptions) => handleLocationChange('workLocation', selectedOptions)}
+      placeholder="Select work locations..."
+      styles={{
+        control: (base) => ({
+          ...base,
+          borderColor: '#e5e7eb',
+          minHeight: '44px',
+          fontSize: '14px',
+          borderRadius: '0.5rem',
+          backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
+          backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
+          paddingTop: '4px',
+          paddingBottom: '4px',
+        }),
+        valueContainer: (base) => ({
+          ...base,
+          padding: '0 8px',
+          minHeight: '36px',
+        }),
+        multiValue: (base) => ({
+          ...base,
+          fontSize: '12px',
+          backgroundColor: '#f3f4f6',
+          borderRadius: '9999px',
+          margin: '2px',
+        }),
+        multiValueLabel: (base) => ({
+          ...base,
+          padding: '2px 6px',
+        }),
+        multiValueRemove: (base) => ({
+          ...base,
+          fontSize: '12px',
+          color: '#6b7280',
+          ':hover': {
+            backgroundColor: '#e5e7eb',
+            color: '#374151',
+          },
+        }),
+        menu: (base) => ({
+          ...base,
+          borderRadius: '0.5rem',
+          fontSize: '14px',
+          border: '1px solid #e5e7eb',
+        }),
+      }}
+    />
+  </div>
+</div>
 
             {/* Skills */}
 <div ref={skillsRef} className="relative">
@@ -934,40 +948,42 @@ const [formData, setFormData] = useState(() => {
 </div>
 
             {/* Eighth Row: Eligibility and Description */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Eligibility Criteria */}
-              <div>
-                <label htmlFor="eligibilityCriteria" className="block mb-2 font-medium text-sm text-gray-700">Eligibility Criteria</label>
-                <textarea 
-                  id="eligibilityCriteria" 
-                  name="eligibilityCriteria" 
-                  rows="3" 
-                  placeholder="e.g., Minimum 60%, no backlogs..." 
-                  className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white" 
-                  value={formData.eligibilityCriteria} 
-                  onChange={handleInputChange} 
-                />
-              </div>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {/* Eligibility Criteria */}
+  <div>
+    <label htmlFor="eligibilityCriteria" className="block mb-2 font-medium text-sm text-gray-700">Eligibility Criteria</label>
+    <textarea 
+      id="eligibilityCriteria" 
+      name="eligibilityCriteria" 
+      rows="3" 
+      placeholder="e.g., Minimum 60%, no backlogs..." 
+      className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24" 
+      value={formData.eligibilityCriteria} 
+      onChange={handleInputChange} 
+    />
+    {/* Add empty div for spacing alignment */}
+    <div className="h-5 mt-1"></div>
+  </div>
 
-              {/* Description */}
-              <div>
-                <label className="block mb-1 font-medium text-sm text-gray-700">Job Description <span className="text-red-500">*</span></label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Provide job description..."
-                  className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24"
-                  maxLength={500}
-                  required
-                />
-                <div className="flex justify-between text-xs mt-1">
-                  <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
-                    {descriptionError ? descriptionError : `${formData.description.length}/500`}
-                  </span>
-                </div>
-              </div>
-            </div>
+  {/* Description */}
+  <div>
+    <label className="block mb-1 font-medium text-sm text-gray-700">Job Description <span className="text-red-500">*</span></label>
+    <textarea
+      name="description"
+      value={formData.description}
+      onChange={handleInputChange}
+      placeholder="Provide job description..."
+      className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24"
+      maxLength={500}
+      required
+    />
+    <div className="flex justify-between text-xs mt-1">
+      <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
+        {descriptionError ? descriptionError : `${formData.description.length}/500`}
+      </span>
+    </div>
+  </div>
+</div>
 
             {/* Ninth Row: Amenities and Benefits */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1031,84 +1047,88 @@ const [formData, setFormData] = useState(() => {
             </div>
 
             {/* Tenth Row: Tags and Package Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Tags */}
-              <div ref={tagsRef} className="relative">
-                <label className="block font-medium mb-2 text-sm text-gray-700">Tags</label>
-                <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
-                  {formData.tags.map(tag => (
-                    <div key={tag} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                      <span>{tag}</span>
-                      <button type="button" onClick={() => removeSelectedItem('tags', tag)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('tags')}>
-                  <span className="text-sm text-gray-500">Select tags</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.tags ? "rotate-180" : ""} text-gray-400`} />
-                </div>
-                {dropdownOpen.tags && (
-                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                    {tagsOptions.map(tag => (
-                      <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.tags.includes(tag) ? "bg-blue-50" : ""}`}>
-                        <div className="flex items-center justify-between">
-                          <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{tag}</span>
-                          {formData.tags.includes(tag) && <span className="text-[#667eea]">✓</span>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Package Details */}
-              <div>
-                <label className="block mb-2 font-medium text-sm text-gray-700">Package Details <span className="text-red-500">*</span></label>
-                <div className="flex mb-2">
-                  <div className="relative w-20">
-                    <select
-                      name="currency"
-                      className="w-full h-full p-2 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none"
-                      value={formData.packageDetails.currency}
-                      onChange={handlePackageDetailsChange}
-                    >
-                      <option value="INR">INR</option>
-                      <option value="USD">USD</option>
-                      <option value="EUR">EUR</option>
-                      <option value="GBP">GBP</option>
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                  </div>
-                  <input
-                    type="number"
-                    name="totalCTC"
-                    value={formData.packageDetails.totalCTC}
-                    onChange={handlePackageDetailsChange}
-                    placeholder="Total CTC"
-                    className="flex-1 p-2 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                    required
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="number"
-                    name="fixedPay"
-                    value={formData.packageDetails.fixedPay}
-                    onChange={handlePackageDetailsChange}
-                    placeholder="Fixed Pay"
-                    className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                  />
-                  <input
-                    type="number"
-                    name="joiningBonus"
-                    value={formData.packageDetails.joiningBonus}
-                    onChange={handlePackageDetailsChange}
-                    placeholder="Variable Pay"
-                    className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                  />
-                </div>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+  {/* Tags */}
+  <div>
+    <label className="block font-medium mb-2 text-sm text-gray-700">Tags</label>
+    <div ref={tagsRef} className="relative">
+      <div className={`flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto ${formData.tags.length > 0 ? 'min-h-[24px]' : ''}`}>
+        {formData.tags.map(tag => (
+          <div key={tag} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+            <span>{tag}</span>
+            <button type="button" onClick={() => removeSelectedItem('tags', tag)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[40px]" onClick={() => toggleDropdown('tags')}>
+        <span className="text-sm text-gray-500">Select tags</span>
+        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.tags ? "rotate-180" : ""} text-gray-400`} />
+      </div>
+      {dropdownOpen.tags && (
+        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
+          {tagsOptions.map(tag => (
+            <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.tags.includes(tag) ? "bg-blue-50" : ""}`}>
+              <div className="flex items-center justify-between">
+                <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{tag}</span>
+                {formData.tags.includes(tag) && <span className="text-[#667eea]">✓</span>}
               </div>
             </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+
+  {/* Package Details */}
+  <div className='mt-1'>
+    <label className="block mb-2 font-medium text-sm text-gray-700">Package Details <span className="text-red-500">*</span></label>
+    <div className="space-y-2">
+      <div className="flex">
+        <div className="relative w-20">
+          <select
+            name="currency"
+            className="w-full h-full p-2 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none min-h-[40px]"
+            value={formData.packageDetails.currency}
+            onChange={handlePackageDetailsChange}
+          >
+            <option value="INR">INR</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+          </select>
+          <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+        </div>
+        <input
+          type="number"
+          name="totalCTC"
+          value={formData.packageDetails.totalCTC}
+          onChange={handlePackageDetailsChange}
+          placeholder="Total CTC"
+          className="flex-1 p-2 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white min-h-[40px]"
+          required
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <input
+          type="number"
+          name="fixedPay"
+          value={formData.packageDetails.fixedPay}
+          onChange={handlePackageDetailsChange}
+          placeholder="Fixed Pay"
+          className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white min-h-[40px]"
+        />
+        <input
+          type="number"
+          name="joiningBonus"
+          value={formData.packageDetails.joiningBonus}
+          onChange={handlePackageDetailsChange}
+          placeholder="Variable Pay"
+          className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white min-h-[40px]"
+        />
+      </div>
+    </div>
+  </div>
+</div>
 
             {/* Eleventh Row: Application Dates */}
 <div>
