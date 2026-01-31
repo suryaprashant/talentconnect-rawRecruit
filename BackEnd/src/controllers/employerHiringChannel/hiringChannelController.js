@@ -287,6 +287,12 @@ export const createInternshipPosting = async (req, res) => {
             ...req.body,
             companyPosted: companyId,
             jobType: "Internship",
+             packageDetails: {
+              currency: req.body.minPackage?.currency,
+              totalCTC: req.body.minPackage?.amount, // 👈 map stipend here
+              fixedPay: 0,
+              joiningBonus: 0
+            }
         };
 
         const newPosting = await createPostingService(postingData, userId);

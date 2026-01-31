@@ -4,7 +4,7 @@ import {
   Calendar, Users, FileText, AlertCircle, Briefcase
 } from 'lucide-react';
 import ApplicantDetails from './internDetails';
-import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
+import { deleteJobById, getPostedJobs, getOffCampusApplicationsForJob } from '@/lib/Company_AxiosInstance';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -17,6 +17,10 @@ export default function InternshipListing() {
   const [selectedJob, setSelectedJob] = useState(null);
   const [showJobDetail, setShowJobDetail] = useState(false);
   const [error, setError] = useState(null);
+  const [applications, setApplications] = useState([]);
+  const [applicationsLoading, setApplicationsLoading] = useState(false);
+  const [applicationsError, setApplicationsError] = useState(null);
+  const [isVisited, setIsVisited] = useState();
   const navigate = useNavigate();
 
   const itemsPerPage = 10;
@@ -40,6 +44,29 @@ export default function InternshipListing() {
   useEffect(() => {
     fetchJobs();
   }, []);
+
+  const fetchApplicationsForJob = async (jobId, isVisited) => {
+    setApplicationsLoading(true);
+    setApplicationsError(null);
+
+    try {
+      const res = await getOffCampusApplicationsForJob(
+        jobId,
+        "Internship",
+        "Applied",
+        isVisited
+      );
+
+      setApplications(res?.data || []);
+    } catch (err) {
+      console.error(err);
+      setApplications([]);
+      setApplicationsError("Failed to fetch applications");
+    } finally {
+      setApplicationsLoading(false);
+    }
+  };
+
 
   const handleDelete = async (jobId) => {
     try {
@@ -72,43 +99,6 @@ export default function InternshipListing() {
     return getJobRole(job);
   };
 
-  // Helper function to calculate expireAt if missing (matches backend logic)
-  const calculateExpireAt = (job) => {
-    // If expireAt exists, return it
-    if (job.expireAt) {
-      return job.expireAt;
-    }
-    
-    // If no expireAt but has createdAt, calculate 29 days from creation
-    if (job.createdAt) {
-      const createdAt = new Date(job.createdAt);
-      const expireDate = new Date(createdAt.getTime() + (29 * 24 * 60 * 60 * 1000));
-      return expireDate.toISOString();
-    }
-    
-    // Default fallback: 29 days from now
-    const defaultExpire = new Date(Date.now() + (29 * 24 * 60 * 60 * 1000));
-    return defaultExpire.toISOString();
-  };
-
-  // Helper function to format expireAt date - IMPROVED VERSION
-  const formatExpireDate = (job) => {
-    try {
-      // Calculate expireAt if missing
-      const expireAt = calculateExpireAt(job);
-      
-      // Format the date
-      return new Date(expireAt).toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric',
-        year: 'numeric'
-      });
-    } catch (error) {
-      console.error("Error formatting expireAt:", error, "for job:", job._id);
-      return 'N/A';
-    }
-  };
-
   // Filter jobs based on search query
   const filteredJobs = jobs?.filter(job => {
     const searchLower = searchQuery.toLowerCase();
@@ -137,15 +127,21 @@ export default function InternshipListing() {
     return Array.isArray(locations) ? locations.join(', ') : String(locations);
   };
 
-  const handleViewApplications = (job) => {
+  const handleViewApplications = async (job) => {
     setSelectedJob(job);
+    setIsVisited("false"); // frontend flag = past
+    await fetchApplicationsForJob(job._id, true); // backend filter
     setShowJobDetail(true);
   };
 
-  const showNewApplications = (job) => {
+
+  const showNewApplications = async (job) => {
     setSelectedJob(job);
+    setIsVisited("true"); // frontend flag = new
+    await fetchApplicationsForJob(job._id, false);
     setShowJobDetail(true);
   };
+
 
   const handleBackToList = () => {
     setSelectedJob(null);
@@ -195,7 +191,11 @@ export default function InternshipListing() {
                     </span>
                     <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                       <Calendar className="h-3 w-3 mr-1.5" />
-                      {formatExpireDate(selectedJob)}
+                      {selectedJob?.expireAt  ? new Date(selectedJob.expireAt ).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric'
+                      }) : 'N/A'}
                     </span>
                     <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                       <Users className="h-3 w-3 mr-1.5" />
@@ -213,6 +213,16 @@ export default function InternshipListing() {
             {/* Load Applicant Details Component */}
             <ApplicantDetails
               job={selectedJob}
+              applications={applications}
+              loading={applicationsLoading}
+              error={applicationsError}
+              isVisited={isVisited}
+              onRefresh={() =>
+                fetchApplicationsForJob(
+                  selectedJob._id,
+                  isVisited === "true" ? false : true
+                )
+              }
               onClose={handleBackToList}
             />
           </div>
@@ -239,20 +249,6 @@ export default function InternshipListing() {
               <p className="text-gray-600">
                 Track Your Internship Listings and Streamline Candidate Applications
               </p>
-            </div>
-            
-            {/* Search Bar */}
-            <div className="relative w-full md:w-96">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200"
-                placeholder="Search by job title, status, or location"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
             </div>
           </div>
         </div>
@@ -302,14 +298,7 @@ export default function InternshipListing() {
             ) : (
               currentJobs?.map(job => {
                 const jobRole = displayAllJobRoles(job);
-                
-                // Debug log
-                console.log(`Job ${job._id}:`, {
-                  hasExpireAt: !!job.expireAt,
-                  expireAt: job.expireAt,
-                  createdAt: job.createdAt,
-                  calculatedExpireAt: calculateExpireAt(job)
-                });
+                console.log("Job data:", job); // Debug log to see the structure
                 
                 return (
                   <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
@@ -342,12 +331,16 @@ export default function InternshipListing() {
                         </div>
                       </div>
 
-                      {/* End Date - USING THE HELPER FUNCTION */}
+                      {/* End Date */}
                       <div className="col-span-2">
                         <div className="flex items-center gap-2">
                           <Calendar className="h-3 w-3 text-gray-400" />
                           <span className="text-gray-700 text-sm">
-                            {formatExpireDate(job)}
+                            {job?.expireAt ? new Date(job.expireAt).toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric',
+                              year: 'numeric'
+                            }) : 'N/A'}
                           </span>
                         </div>
                       </div>
@@ -362,7 +355,7 @@ export default function InternshipListing() {
                       {/* New Applications */}
                       <div 
                         className="col-span-1 text-center cursor-pointer group"
-                        onClick={() => handleViewApplications(job)}
+                        onClick={() => showNewApplications(job)}
                       >
                         <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
                           {job?.applicationCount || 0}

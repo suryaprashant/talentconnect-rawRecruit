@@ -281,21 +281,27 @@ import {
   Calendar, MapPin, Target, FileText, Building2, Globe, 
   ArrowUpRight, ClipboardList, Users, Award, ChevronLeft,
   Github, Linkedin, ExternalLink, X, GraduationCap, Globe as GlobeIcon,
-  CheckCircle, Clock, AlertCircle, Eye
+  CheckCircle, Clock, AlertCircle
 } from 'lucide-react';
 
-const InternshipDetails = ({ job, onClose, isVisited }) => {
-  const jobId = job?._id;
-  const jobType = job?.jobType;
+const InternshipDetails = ({  job,
+  applications,
+  loading,
+  error,
+  isVisited,
+  onRefresh,
+  onClose,}) => {
+  const jobId = job._id;
+  const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [applications, setApplications] = useState([]);
+  
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [showApplicantModal, setShowApplicantModal] = useState(false);
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
 
-  const getApplicants = async (jobId, jobType, isVisited) => {
+  {/*const getApplicants = async (jobId, jobType, isVisited) => {
     setIsSubmitting(true);
     try {
       let response;
@@ -310,14 +316,14 @@ const InternshipDetails = ({ job, onClose, isVisited }) => {
       toast.error('Failed to load applications');
     }
     setIsSubmitting(false);
-  };
+  };*/}
 
   const handleAction = async (actionCallback, applicantId, actionName) => {
     setIsSubmitting(true);
     try {
       await actionCallback(applicantId);
       // Refresh applications after action
-      getApplicants(jobId, jobType, isVisited);
+      onRefresh()
     } catch (error) {
       console.log("Action error: ", error);
     } finally {
@@ -330,6 +336,7 @@ const InternshipDetails = ({ job, onClose, isVisited }) => {
       const response = await acceptCandidate(applicationId, job?.jobTitle);
       if (response?.data?.success === true) {
         toast.success("Candidate Accepted!");
+        onRefresh();
       } else {
         toast.error(response.response?.data?.msg || 'Failed to accept candidate');
       }
@@ -344,6 +351,7 @@ const InternshipDetails = ({ job, onClose, isVisited }) => {
       const response = await shortlistCandidate(applicationId, job?.jobTitle);
       if (response?.data?.success === true) {
         toast.success("Candidate Shortlisted!");
+        onRefresh();
       } else {
         toast.error(response.response?.data?.msg || 'Failed to shortlist candidate');
       }
@@ -358,6 +366,7 @@ const InternshipDetails = ({ job, onClose, isVisited }) => {
       const response = await rejectCandidate(applicationId, job?.jobTitle);
       if (response?.data?.success === true) {
         toast.success("Candidate Rejected!");
+        onRefresh();
       } else {
         toast.error(response.response?.data?.msg || 'Failed to reject candidate');
       }
@@ -367,13 +376,13 @@ const InternshipDetails = ({ job, onClose, isVisited }) => {
     }
   };
 
-  useEffect(() => {
+  {/*useEffect(() => {
     if (isVisited === false) {
       getApplicants(jobId, jobType, false);
     } else {
       getApplicants(jobId, jobType, isVisited);
     }
-  }, [jobId, jobType, isVisited]);
+  }, [jobId, jobType, isVisited]);*/}
 
   const handleMessageClick = async (applicant) => {
     if (!applicant?.applicant?._id) {
@@ -588,50 +597,40 @@ const InternshipDetails = ({ job, onClose, isVisited }) => {
               </div>
             </div>
 
-            {/* Action Buttons - Updated to match main layout */}
-            <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-gray-200">
-              <button
-                onClick={() => handleViewApplicantDetails(selectedApplicant)}
-                className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
-                title="View Details"
-              >
-                <Eye size={16} />
-              </button>
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-gray-200">
               <button 
                 onClick={() => handleMessageClick(selectedApplicant)}
                 disabled={isProcessing}
-                className="p-2 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 text-blue-600 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-200 disabled:opacity-50"
-                title="Message"
+                className="flex items-center justify-center flex-1 py-3 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 text-blue-600 rounded-xl hover:bg-blue-100 transition-all duration-200 disabled:opacity-50"
               >
-                <Send size={16} />
+                <Send size={18} className="mr-2" />
+                {isProcessing ? 'Processing...' : 'Message Candidate'}
               </button>
-              {currentStatus !== 'Accepted' && (
-                <button
-                  onClick={() => acceptApplicant(selectedApplicant._id)}
-                  disabled={isSubmitting}
-                  className="px-4 py-2 bg-gradient-to-r from-green-100 to-green-50 border border-green-200 text-green-700 rounded-lg hover:bg-green-100 hover:text-green-800 transition-all duration-200 disabled:opacity-50"
-                >
-                  Accept
-                </button>
-              )}
-              {currentStatus !== 'Shortlisted' && currentStatus !== 'Accepted' && (
-                <button
-                  onClick={() => shortlistApplicant(selectedApplicant._id)}
-                  disabled={isSubmitting}
-                  className="px-4 py-2 bg-gradient-to-r from-yellow-100 to-yellow-50 border border-yellow-200 text-yellow-700 rounded-lg hover:bg-yellow-100 hover:text-yellow-800 transition-all duration-200 disabled:opacity-50"
-                >
-                  Shortlist
-                </button>
-              )}
-              {currentStatus !== 'Rejected' && (
-                <button
-                  onClick={() => rejectApplicant(selectedApplicant._id)}
-                  disabled={isSubmitting}
-                  className="px-4 py-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-700 rounded-lg hover:bg-red-100 hover:text-red-800 transition-all duration-200 disabled:opacity-50"
-                >
-                  Reject
-                </button>
-              )}
+              <button
+                onClick={() => acceptApplicant(selectedApplicant._id)}
+                disabled={isSubmitting}
+                className="flex items-center justify-center flex-1 py-3 bg-gradient-to-r from-green-100 to-green-50 border border-green-200 text-green-700 rounded-xl hover:bg-green-100 transition-all duration-200 disabled:opacity-50"
+              >
+                <CheckCircle size={18} className="mr-2" />
+                Accept Candidate
+              </button>
+              <button
+                onClick={() => shortlistApplicant(selectedApplicant._id)}
+                disabled={isSubmitting}
+                className="flex items-center justify-center flex-1 py-3 bg-gradient-to-r from-yellow-100 to-yellow-50 border border-yellow-200 text-yellow-700 rounded-xl hover:bg-yellow-100 transition-all duration-200 disabled:opacity-50"
+              >
+                <Clock size={18} className="mr-2" />
+                Shortlist Candidate
+              </button>
+              <button
+                onClick={() => rejectApplicant(selectedApplicant._id)}
+                disabled={isSubmitting}
+                className="flex items-center justify-center flex-1 py-3 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-700 rounded-xl hover:bg-red-100 transition-all duration-200 disabled:opacity-50"
+              >
+                <X size={18} className="mr-2" />
+                Reject Application
+              </button>
             </div>
           </div>
         </div>
@@ -751,14 +750,14 @@ const InternshipDetails = ({ job, onClose, isVisited }) => {
                         </div>
                       </div>
 
-                      {/* Action Buttons - Updated to match consistent style */}
+                      {/* Action Buttons */}
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleViewApplicantDetails(application)}
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
                           title="View Details"
                         >
-                          <Eye size={16} />
+                          <User size={16} />
                         </button>
                         <button
                           onClick={() => handleMessageClick(application)}
