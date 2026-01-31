@@ -849,125 +849,163 @@ export default function PoolCampusHiringForm() {
             </div>
 
             {/* Seventh Row: Work Location and Job Roles */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Work Location */}
-              <div>
-                <label className="block font-medium mb-2 text-sm text-gray-700">Work Location <span className="text-red-500">*</span></label>
-                <CreatableSelect
-                  isMulti
-                  options={cityOptions}
-                  value={formData.workLocation}
-                  onChange={handleWorkLocationChange}
-                  placeholder="Select work locations..."
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      borderColor: '#e5e7eb',
-                      minHeight: '38px',
-                      fontSize: '14px',
-                      borderRadius: '0.5rem',
-                      backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
-                      backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      borderRadius: '0.5rem',
-                      fontSize: '14px',
-                      border: '1px solid #e5e7eb',
-                    }),
-                    multiValue: (base) => ({
-                      ...base,
-                      fontSize: '12px',
-                      backgroundColor: '#f3f4f6',
-                      borderRadius: '9999px',
-                    }),
-                    multiValueRemove: (base) => ({
-                      ...base,
-                      fontSize: '12px',
-                      color: '#6b7280',
-                      ':hover': {
-                        backgroundColor: '#e5e7eb',
-                        color: '#374151',
-                      },
-                    }),
-                  }}
-                />
-              </div>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+  {/* Work Location */}
+  <div className='mt-1'>
+    <label className="block font-medium mb-2 text-sm text-gray-700">Work Location <span className="text-red-500">*</span></label>
+    <CreatableSelect
+      isMulti
+      options={cityOptions}
+      value={formData.workLocation}
+      onChange={handleWorkLocationChange}
+      placeholder="Select work locations..."
+      styles={{
+        control: (base, state) => ({
+          ...base,
+          borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+          minHeight: '44px',
+          height: '44px',
+          fontSize: '14px',
+          borderRadius: '0.5rem',
+          backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
+          backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
+          paddingTop: '2px',
+          paddingBottom: '2px',
+          boxShadow: state.isFocused ? '0 0 0 2px rgba(102, 126, 234, 0.1)' : 'none',
+        }),
+        valueContainer: (base) => ({
+          ...base,
+          padding: '0 10px',
+          height: '40px',
+          alignItems: 'center',
+        }),
+        placeholder: (base) => ({
+          ...base,
+          color: '#9ca3af',
+          margin: 0,
+        }),
+        input: (base) => ({
+          ...base,
+          margin: 0,
+          padding: 0,
+        }),
+        multiValue: (base) => ({
+          ...base,
+          fontSize: '12px',
+          backgroundColor: '#f3f4f6',
+          borderRadius: '9999px',
+          margin: '2px',
+          height: '24px',
+        }),
+        multiValueLabel: (base) => ({
+          ...base,
+          padding: '2px 6px',
+          lineHeight: '20px',
+        }),
+        multiValueRemove: (base) => ({
+          ...base,
+          fontSize: '12px',
+          color: '#6b7280',
+          borderRadius: '0 9999px 9999px 0',
+          ':hover': {
+            backgroundColor: '#e5e7eb',
+            color: '#374151',
+          },
+        }),
+        indicatorsContainer: (base) => ({
+          ...base,
+          height: '40px',
+        }),
+        menu: (base) => ({
+          ...base,
+          borderRadius: '0.5rem',
+          fontSize: '14px',
+          border: '1px solid #e5e7eb',
+          marginTop: '4px',
+        }),
+      }}
+    />
+  </div>
 
-              {/* Job Roles */}
-<div ref={jobRolesRef} className="relative">
-  <label className="block font-medium mb-2 text-sm text-gray-700">Job Role <span className="text-red-500">*</span></label>
-  <div className="flex flex-wrap gap-1 mb-2 max-h-20 overflow-y-auto">
-    {formData.jobRoles.map(role => (
-      <div key={role} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-        <span>{role}</span>
-        <button type="button" onClick={() => removeSelectedItem('jobRoles', role)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
-      </div>
-    ))}
-  </div>
-  <div onClick={() => toggleDropdown('jobRoles')} className="flex items-center justify-between p-3 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white">
-    <span className="text-sm text-gray-500">Select job roles</span>
-    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.jobRoles ? "rotate-180" : ""} text-gray-400`} />
-  </div>
-  {dropdownOpen.jobRoles && (
-    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-      {/* Add custom role section */}
-      <div className="p-2 border-b border-gray-100 bg-gray-50">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Add custom role..."
-            value={customJobRole}
-            onChange={(e) => setCustomJobRole(e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
-              }
-            }}
-            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-          />
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
-            }}
-            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-          >
-            Add
-          </button>
-        </div>
-      </div>
-      
-      {/* Scrollable list of job roles */}
-      <div className="overflow-y-auto max-h-48">
-        {jobRoles.map(role => (
-          <div 
-            key={role} 
-            onClick={() => handleMultiSelect('jobRoles', role)} 
-            className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-              formData.jobRoles.includes(role) ? "bg-blue-50/50" : ""
-            }`}
-          >
-            <span className={`text-sm ${formData.jobRoles.includes(role) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-              {role}
-            </span>
-            {formData.jobRoles.includes(role) && <span className="text-[#667eea] font-bold">✓</span>}
+  {/* Job Roles */}
+  <div>
+    <label className="block font-medium mb-2 text-sm text-gray-700">Job Role <span className="text-red-500">*</span></label>
+    <div ref={jobRolesRef} className="relative">
+      <div className={`flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto ${formData.jobRoles.length > 0 ? 'min-h-[20px]' : ''}`}>
+        {formData.jobRoles.map(role => (
+          <div key={role} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+            <span>{role}</span>
+            <button type="button" onClick={() => removeSelectedItem('jobRoles', role)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
           </div>
         ))}
-        
-        {jobRoles.length === 0 && (
-          <div className="p-4 text-center text-gray-400 text-xs italic">
-            No job roles found. Add a role above.
-          </div>
-        )}
       </div>
-    </div>
-  )}
-</div>
+      <div 
+        onClick={() => toggleDropdown('jobRoles')} 
+        className="flex items-center justify-between w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[44px] h-[44px] px-3"
+      >
+        <span className="text-sm text-gray-500">Select job roles</span>
+        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.jobRoles ? "rotate-180" : ""} text-gray-400`} />
+      </div>
+      {dropdownOpen.jobRoles && (
+        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+          {/* Add custom role section */}
+          <div className="p-2 border-b border-gray-100 bg-gray-50">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Add custom role..."
+                value={customJobRole}
+                onChange={(e) => setCustomJobRole(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
+                  }
+                }}
+                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
+                }}
+                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+              >
+                Add
+              </button>
             </div>
+          </div>
+          
+          {/* Scrollable list of job roles */}
+          <div className="overflow-y-auto max-h-48">
+            {jobRoles.map(role => (
+              <div 
+                key={role} 
+                onClick={() => handleMultiSelect('jobRoles', role)} 
+                className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+                  formData.jobRoles.includes(role) ? "bg-blue-50/50" : ""
+                }`}
+              >
+                <span className={`text-sm ${formData.jobRoles.includes(role) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                  {role}
+                </span>
+                {formData.jobRoles.includes(role) && <span className="text-[#667eea] font-bold">✓</span>}
+              </div>
+            ))}
+            
+            {jobRoles.length === 0 && (
+              <div className="p-4 text-center text-gray-400 text-xs italic">
+                No job roles found. Add a role above.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+</div>
 
             {/* Eighth Row: Work Mode and Employment Type */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1007,41 +1045,49 @@ export default function PoolCampusHiringForm() {
             </div>
 
             {/* Ninth Row: College Categories and Preferred Hiring Mode */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* College Categories */}
-              <div>
-                <label className="block mb-2 font-medium text-sm text-gray-700">College Categories <span className="text-red-500">*</span></label>
-                <div className="grid grid-cols-2 gap-2">
-                  {collegeCategoryOptions.map(category => (
-                    <button 
-                      key={category} 
-                      type="button" 
-                      onClick={() => handleMultiSelect('collegeCategories', category)} 
-                      className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.collegeCategories.includes(category) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
-                    >
-                      {category}
-                    </button>
-                  ))}
-                </div>
-              </div>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+  {/* College Categories */}
+  <div>
+    <label className="block mb-2 font-medium text-sm text-gray-700">College Categories <span className="text-red-500">*</span></label>
+    <div className="grid grid-cols-2 gap-2">
+      {collegeCategoryOptions.map(category => (
+        <button 
+          key={category} 
+          type="button" 
+          onClick={() => handleMultiSelect('collegeCategories', category)} 
+          className={`px-3 py-1.5 text-sm border rounded-lg transition-colors flex items-center justify-center min-h-[38px] ${
+            formData.collegeCategories.includes(category) 
+              ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' 
+              : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-gray-300'
+          }`}
+        >
+          <span className="text-center">{category}</span>
+        </button>
+      ))}
+    </div>
+  </div>
 
-              {/* Preferred Hiring Mode */}
-              <div>
-                <label className="block mb-2 font-medium text-sm text-gray-700">Hiring Mode <span className="text-red-500">*</span></label>
-                <div className="grid grid-cols-2 gap-2">
-                  {preferredHiringModeOptions.map(mode => (
-                    <button 
-                      key={mode} 
-                      type="button" 
-                      onClick={() => setFormData(prev => ({ ...prev, preferredHiringMode: mode }))} 
-                      className={`px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.preferredHiringMode === mode ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
-                    >
-                      {mode}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+  {/* Preferred Hiring Mode */}
+  <div>
+    <label className="block mb-2 font-medium text-sm text-gray-700">Hiring Mode <span className="text-red-500">*</span></label>
+    <div className="grid grid-cols-2 gap-2">
+      {preferredHiringModeOptions.map(mode => (
+        <button 
+          key={mode} 
+          type="button" 
+          onClick={() => setFormData(prev => ({ ...prev, preferredHiringMode: mode }))} 
+          className={`px-3 py-1.5 text-sm border rounded-lg transition-colors flex items-center justify-center min-h-[38px] ${
+            formData.preferredHiringMode === mode 
+              ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' 
+              : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-gray-300'
+          }`}
+        >
+          <span className="text-center">{mode}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+</div>
 
             {/* Tenth Row: Placement Dates */}
 <div>
