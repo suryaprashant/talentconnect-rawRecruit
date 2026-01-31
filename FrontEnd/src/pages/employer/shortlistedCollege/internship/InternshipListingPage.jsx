@@ -342,11 +342,11 @@ export default function EmployerInternshipListing() {
 
 import { useState, useEffect } from 'react';
 import {
-    Search, Eye, ChevronLeft, ChevronRight, Trash, Building2, Calendar,
-    AlertCircle, Users, MapPin, FileText
+    Search, Eye, Edit, Users, FileText, Trash,
+    ChevronLeft, ChevronRight, Filter, X, Building2, Calendar, AlertCircle, MapPin
 } from 'lucide-react';
 import ApplicantDetails from './internDetails';
-import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
+import { deleteJobById, getPostedJobs, getOffCampusApplicationsForJob } from '@/lib/Company_AxiosInstance';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -359,6 +359,10 @@ export default function InternshipListing() {
     const [selectedJob, setSelectedJob] = useState(null);
     const [showJobDetail, setShowJobDetail] = useState(false);
     const [error, setError] = useState(null);
+    const [applications, setApplications] = useState([]);
+    const [applicationsLoading, setApplicationsLoading] = useState(false);
+    const [applicationsError, setApplicationsError] = useState(null);
+    const [isVisited, setIsVisited] = useState();
     const navigate = useNavigate();
 
     const itemsPerPage = 10;
@@ -368,7 +372,6 @@ export default function InternshipListing() {
         setError(null);
         try {
             const response = await getPostedJobs("Internship", "Shortlisted");
-            console.log("Fetched shortlisted internships:", response?.data); // Debug log
             setJobs(response?.data || []);
         } catch (err) {
             console.error("Error fetching internships:", err);
@@ -382,6 +385,28 @@ export default function InternshipListing() {
     useEffect(() => {
         fetchJobs();
     }, []);
+
+    const fetchApplicationsForJob = async (jobId, isVisited) => {
+    setApplicationsLoading(true);
+    setApplicationsError(null);
+
+    try {
+      const res = await getOffCampusApplicationsForJob(
+        jobId,
+        "Internship",
+        "Shortlisted",
+        isVisited
+      );
+
+      setApplications(res?.data || []);
+    } catch (err) {
+      console.error(err);
+      setApplications([]);
+      setApplicationsError("Failed to fetch applications");
+    } finally {
+      setApplicationsLoading(false);
+    }
+  };
 
     const handleDelete = async (jobId) => {
         try {
@@ -398,116 +423,38 @@ export default function InternshipListing() {
     };
 
     // Helper function to get job role/title from various possible fields
-    const getJobRole = (job) => {
+      const getJobRole = (job) => {
         // Check multiple possible fields for role/title
         if (job.jobRoles && Array.isArray(job.jobRoles) && job.jobRoles.length > 0) {
-            return job.jobRoles[0]; // Return first job role from the array
+          return job.jobRoles[0]; // Return first job role from the array
         }
         return job.jobTitle || job.lookingFor || job.role || job.title || 'N/A';
-    };
+      };
 
-    // Helper function to display all job roles
-    const displayAllJobRoles = (job) => {
+      // Helper function to display all job roles
+      const displayAllJobRoles = (job) => {
         if (job.jobRoles && Array.isArray(job.jobRoles) && job.jobRoles.length > 0) {
-            return job.jobRoles.join(', ');
+          return job.jobRoles.join(', ');
         }
         return getJobRole(job);
-    };
-
-    // Helper function to calculate expireAt if missing (matches backend logic)
-    const calculateExpireAt = (job) => {
-        // If expireAt exists, return it
-        if (job.expireAt) {
-            return job.expireAt;
-        }
-        
-        // If no expireAt but has createdAt, calculate 29 days from creation
-        if (job.createdAt) {
-            const createdAt = new Date(job.createdAt);
-            const expireDate = new Date(createdAt.getTime() + (29 * 24 * 60 * 60 * 1000));
-            return expireDate.toISOString();
-        }
-        
-        // Default fallback: 29 days from now
-        const defaultExpire = new Date(Date.now() + (29 * 24 * 60 * 60 * 1000));
-        return defaultExpire.toISOString();
-    };
-
-    // Helper function to format expireAt date
-    const formatExpireDate = (job) => {
-        try {
-            // Calculate expireAt if missing
-            const expireAt = calculateExpireAt(job);
-            
-            // Format the date
-            return new Date(expireAt).toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric',
-                year: 'numeric'
-            });
-        } catch (error) {
-            console.error("Error formatting expireAt:", error, "for job:", job._id);
-            return 'N/A';
-        }
-    };
-
-    // Helper function to get internship duration
-    const getInternshipDuration = (job) => {
-        if (job.internshipDuration) {
-            return job.internshipDuration;
-        }
-        if (job.duration) {
-            return job.duration;
-        }
-        if (job.timePeriod) {
-            return job.timePeriod;
-        }
-        return 'N/A Duration';
-    };
-
-    // Helper function to display locations
-    const displayLocations = (locations) => {
-        if (!locations || locations.length === 0) return 'No Location';
-        return Array.isArray(locations) ? locations.join(', ') : String(locations);
-    };
+      };
 
     // Filter jobs based on search query
     const filteredJobs = jobs?.filter(job => {
         if (!searchQuery) return true;
         
         const searchLower = searchQuery.toLowerCase();
+        const jobRole = displayAllJobRoles(job);
         
-        // Get job role for search
-        const jobRole = displayAllJobRoles(job).toLowerCase();
-        
-        // Check locations
-        let locationsMatch = false;
-        if (job.location) {
-            if (Array.isArray(job.location)) {
-                locationsMatch = job.location.some(location => 
-                    location && String(location).toLowerCase().includes(searchLower)
-                );
-            } else {
-                locationsMatch = String(job.location).toLowerCase().includes(searchLower);
-            }
-        }
-        
-        // Check work mode - handle both array and string
-        let workModeMatch = false;
-        if (job.workMode) {
-            if (Array.isArray(job.workMode)) {
-                workModeMatch = job.workMode.some(mode => 
-                    mode && String(mode).toLowerCase().includes(searchLower)
-                );
-            } else {
-                workModeMatch = String(job.workMode).toLowerCase().includes(searchLower);
-            }
-        }
+        // Safely convert values to strings before calling toLowerCase()
+        const jobTitleStr = job.jobTitle ? String(job.jobTitle).toLowerCase() : '';
+        const workModeStr = job.workMode ? String(job.workMode).toLowerCase() : '';
+        const locationStr = job.location?.[0] ? String(job.location[0]).toLowerCase() : '';
         
         return (
-            jobRole.includes(searchLower) ||
-            locationsMatch ||
-            workModeMatch
+            jobTitleStr.includes(searchLower) ||
+            workModeStr.includes(searchLower) ||
+            locationStr.includes(searchLower)
         );
     });
 
@@ -516,9 +463,23 @@ export default function InternshipListing() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentJobs = filteredJobs?.slice(startIndex, startIndex + itemsPerPage);
 
-    const handleViewApplications = (job) => {
-        setSelectedJob(job);
-        setShowJobDetail(true);
+    const displayLocations = (locations) => {
+    if (!locations || locations.length === 0) return 'N/A';
+    return Array.isArray(locations) ? locations.join(', ') : String(locations);
+  };
+
+    const handleViewApplications = async (job) => {
+      setSelectedJob(job);
+      setIsVisited("false"); // frontend flag = past
+      await fetchApplicationsForJob(job._id, true); // backend filter
+      setShowJobDetail(true);
+    };
+
+    const showNewApplications = async (job) => {
+      setSelectedJob(job);
+      setIsVisited("true"); // frontend flag = new
+      await fetchApplicationsForJob(job._id, false);
+      setShowJobDetail(true);
     };
 
     const handleBackToList = () => {
@@ -528,8 +489,6 @@ export default function InternshipListing() {
 
     // If showing job detail, render the detail view
     if (showJobDetail && selectedJob) {
-        const jobRole = displayAllJobRoles(selectedJob);
-        
         return (
             <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
                 <div className="container mx-auto px-4 py-8 pt-20">
@@ -551,7 +510,9 @@ export default function InternshipListing() {
                                 </div>
                                 <div>
                                     <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                                        Shortlisted Applications for: {jobRole}
+                                        Shortlisted Applications for: {selectedJob?.jobRoles?.join(', ') ||
+  selectedJob?.jobTitle ||
+  'N/A'}
                                     </h2>
                                     <div className="flex flex-wrap items-center gap-3 mt-2">
                                         <span className={`inline-flex items-center text-sm px-3 py-1.5 rounded-lg ${
@@ -565,11 +526,17 @@ export default function InternshipListing() {
                                         </span>
                                         <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                                             <MapPin className="h-3 w-3 mr-1.5" />
-                                            {displayLocations(selectedJob?.location)}
+                                            {selectedJob?.location?.[0] || 'No Location'}
                                         </span>
                                         <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                                             <Calendar className="h-3 w-3 mr-1.5" />
-                                            {formatExpireDate(selectedJob)}
+                                            {selectedJob?.expireAt
+                                              ? new Date(selectedJob.expireAt).toLocaleDateString('en-US', {
+                                                  month: 'short',
+                                                  day: 'numeric',
+                                                  year: 'numeric'
+                                                })
+                                              : 'N/A'}
                                         </span>
                                         <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                                             <Users className="h-3 w-3 mr-1.5" />
@@ -587,6 +554,16 @@ export default function InternshipListing() {
                         {/* Load Applicant Details Component */}
                         <ApplicantDetails
                             job={selectedJob}
+                            applications={applications}
+                            loading={applicationsLoading}
+                            error={applicationsError}
+                            isVisited={isVisited}
+                            onRefresh={() =>
+                              fetchApplicationsForJob(
+                                selectedJob._id,
+                                isVisited === "true" ? false : true
+                              )
+                            }
                             onClose={handleBackToList}
                         />
                     </div>
@@ -675,89 +652,98 @@ export default function InternshipListing() {
                             </div>
                         ) : (
                             currentJobs?.map(job => {
-                                const jobRole = displayAllJobRoles(job);
-                                const internshipDuration = getInternshipDuration(job);
-                                
-                                return (
-                                    <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
-                                        <div className="grid grid-cols-12 gap-4 items-center">
-                                            {/* Job Title/Role - Updated to use jobRole */}
-                                            <div className="col-span-3">
-                                                <div 
-                                                    onClick={() => navigate(`/company-dashboard/Internship/${job._id}?isApplied=true`)}
-                                                    className="group cursor-pointer"
-                                                >
-                                                    <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors break-words whitespace-normal">
-                                                        {jobRole}
-                                                    </h3>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        <FileText className="h-3 w-3 text-gray-400" />
-                                                        <span className="text-sm text-gray-500">
-                                                            {internshipDuration}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                const title =
+                                    job?.jobRoles?.length > 0
+                                      ? job.jobRoles.join(', ')
+                                      : job?.jobTitle || 'N/A';
 
-                                            {/* Location - Updated to use displayLocations */}
-                                            <div className="col-span-3">
-                                                <div className="flex items-center gap-2">
-                                                    <MapPin className="h-3 w-3 text-gray-400 flex-shrink-0" />
-                                                    <span className="text-gray-700 text-sm truncate">
-                                                        {displayLocations(job?.location)}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            {/* End Date - Updated to use formatExpireDate */}
-                                            <div className="col-span-2">
-                                                <div className="flex items-center gap-2">
-                                                    <Calendar className="h-3 w-3 text-gray-400" />
-                                                    <span className="text-gray-700 text-sm">
-                                                        {formatExpireDate(job)}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            {/* Views - Original layout */}
-                                            <div className="col-span-1 text-center">
-                                                <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
-                                                    {job?.views || 0}
-                                                </span>
-                                            </div>
-
-                                            {/* Shortlisted Applications - Original layout */}
+                                  const endDate = job?.expireAt || job?.endDate || null;
+                             return (
+                                <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
+                                    <div className="grid grid-cols-12 gap-4 items-center">
+                                        {/* Job Title/Role - Original layout */}
+                                        <div className="col-span-3">
                                             <div 
-                                                className="col-span-1 text-center cursor-pointer group"
-                                                onClick={() => handleViewApplications(job)}
+                                                onClick={() => navigate(`/company-dashboard/Internship/${job._id}?isApplied=true`)}
+                                                className="group cursor-pointer"
                                             >
-                                                <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
-                                                    {job?.applicationCount || 0}
-                                                </span>
-                                            </div>
-
-                                            {/* Actions - Original layout */}
-                                            <div className="col-span-2">
-                                                <div className="flex items-center justify-center gap-2">
-                                                    <button
-                                                        onClick={() => handleViewApplications(job)}
-                                                        className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
-                                                        title="View Applications"
-                                                    >
-                                                        <Eye size={16} />
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => handleDelete(job._id)}
-                                                        className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
-                                                        title="Delete Internship"
-                                                    >
-                                                        <Trash size={16} />
-                                                    </button>
+                                                <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors break-words whitespace-normal">
+                                                    {title}
+                                                </h3>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <FileText className="h-3 w-3 text-gray-400" />
+                                                    <span className="text-sm text-gray-500">
+                                                        {job?.internshipDuration || job?.duration || 'N/A Duration'}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {/* Location - Original layout */}
+                                        <div className="col-span-3">
+                                            <div className="flex items-center gap-2">
+                                                <MapPin className="h-3 w-3 text-gray-400 flex-shrink-0" />
+                                                <span className="text-gray-700 text-sm truncate">
+                                                    {job?.location?.[0] || 'No Location'}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* End Date - Original layout */}
+                                        <div className="col-span-2">
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="h-3 w-3 text-gray-400" />
+                                                <span className="text-gray-700 text-sm">
+                                                   {endDate
+                                                     ? new Date(endDate).toLocaleDateString('en-US', {
+                                                         month: 'short',
+                                                         day: 'numeric',
+                                                         year: 'numeric'
+                                                       })
+                                                     : 'N/A'}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Views - Original layout */}
+                                        <div className="col-span-1 text-center">
+                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                                                {job?.views || 0}
+                                            </span>
+                                        </div>
+
+                                        {/* New Applications - Original layout */}
+                                        <div 
+                                            className="col-span-1 text-center cursor-pointer group"
+                                            onClick={() => showNewApplications(job)}
+                                        >
+                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
+                                                {job?.applicationCount || 0}
+                                            </span>
+                                        </div>
+
+                                        {/* Actions - Original layout */}
+                                        <div className="col-span-2">
+                                            <div className="flex items-center justify-center gap-2">
+                                                <button
+                                                    onClick={() => handleViewApplications(job)}
+                                                    className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
+                                                    title="View Applications"
+                                                >
+                                                    <Eye size={16} />
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleDelete(job._id)}
+                                                    className="p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
+                                                    title="Delete Internship"
+                                                >
+                                                    <Trash size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                );
+                                </div>
+                             )
                             })
                         )}
                     </div>

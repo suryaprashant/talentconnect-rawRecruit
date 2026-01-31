@@ -1,46 +1,57 @@
 import { useEffect, useState } from 'react';
-import { getApplicationsForJob, rejectCandidate } from '@/lib/Company_AxiosInstance';
+import { useNavigate } from 'react-router-dom';
+import { acceptCandidate, getApplicationsForJob, rejectCandidate, shortlistCandidate } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 import useConversation from '@/statemanage/useConversation';
-import { useNavigate } from 'react-router-dom';
+import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 import { 
   Send, User, Mail, Phone, Link, Briefcase, DollarSign, 
   Calendar, MapPin, Target, FileText, Building2, Globe, 
   ArrowUpRight, ClipboardList, Users, Award, ChevronLeft,
-  Github, Linkedin, ExternalLink, X, CheckCircle, XCircle,
-  MessageSquare
+  Github, Linkedin, ExternalLink, X, GraduationCap, Globe as GlobeIcon,
+  CheckCircle, Clock, AlertCircle, Check
 } from 'lucide-react';
 
-const InternshipDetails = ({ job, onClose }) => {
+const InternshipDetails = ({ job,
+  applications,
+  loading,
+  error,
+  isVisited,
+  onRefresh,
+  onClose, }) => {
   const jobId = job._id;
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [applications, setApplications] = useState([]);
+
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [showApplicantModal, setShowApplicantModal] = useState(false);
-
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
 
-  const getApplicants = async (jobId, jobType) => {
+ {/* const getApplicants = async (jobId, jobType, isVisited) => {
     setIsSubmitting(true);
     try {
-      const response = await getApplicationsForJob(jobId, jobType, "Accepted");
+      let response;
+      if (isVisited === false) {
+        response = await getApplicationsForJob(jobId, jobType, "Accepted", isVisited);
+      } else {
+        response = await getApplicationsForJob(jobId, jobType, "Accepted");
+      }
       setApplications(response.data);
     } catch (error) {
       console.log("Error: ", error);
-      toast.error('Failed to load accepted applicants');
+      toast.error('Failed to load accepted applications');
     }
     setIsSubmitting(false);
-  };
+  };*/}
 
   const handleAction = async (actionCallback, applicantId, actionName) => {
     setIsSubmitting(true);
     try {
       await actionCallback(applicantId);
       // Refresh applications after action
-      getApplicants(jobId, jobType);
+      onRefresh()
     } catch (error) {
       console.log("Action error: ", error);
     } finally {
@@ -53,6 +64,7 @@ const InternshipDetails = ({ job, onClose }) => {
       const response = await rejectCandidate(applicationId, job?.jobTitle);
       if (response?.data?.success === true) {
         toast.success("Candidate Rejected!");
+        onRefresh()
       } else {
         toast.error(response.response?.data?.msg || 'Failed to reject candidate');
       }
@@ -62,9 +74,13 @@ const InternshipDetails = ({ job, onClose }) => {
     }
   };
 
-  useEffect(() => {
-    getApplicants(jobId, jobType);
-  }, [jobId, jobType]);
+  {/*useEffect(() => {
+    if (isVisited === false) {
+      getApplicants(jobId, jobType, false);
+    } else {
+      getApplicants(jobId, jobType, isVisited);
+    }
+  }, [jobId, jobType, isVisited]);*/}
 
   const handleMessageClick = async (applicant) => {
     if (!applicant?.applicant?._id) {
@@ -153,9 +169,9 @@ const InternshipDetails = ({ job, onClose }) => {
 
             {/* Status Badge */}
             <div className="mb-6">
-              <span className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-100 to-green-50 text-green-700 border border-green-200 rounded-full text-sm font-medium">
-                <CheckCircle size={16} className="mr-2" />
-                Status: Accepted
+              <span className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium border border-green-200">
+                <Check size={16} className="mr-2" />
+                Accepted Candidate
               </span>
             </div>
 
@@ -167,7 +183,7 @@ const InternshipDetails = ({ job, onClose }) => {
                   <h3 className="font-semibold text-gray-800">Current Salary</h3>
                 </div>
                 <p className="text-2xl font-bold text-gray-900">
-                  {applicant.currentSalaryCurrency || 'N/A'} {applicant.currentSalaryAmount || '0'}
+                  {applicant.currentSalaryCurrency} {applicant.currentSalaryAmount || '0'}
                 </p>
               </div>
               <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
@@ -176,7 +192,7 @@ const InternshipDetails = ({ job, onClose }) => {
                   <h3 className="font-semibold text-gray-800">Expected Salary</h3>
                 </div>
                 <p className="text-2xl font-bold text-gray-900">
-                  {applicant.expectedSalaryCurrency || 'N/A'} {applicant.expectedSalaryAmount || '0'}
+                  {applicant.expectedSalaryCurrency} {applicant.expectedSalaryAmount || '0'}
                 </p>
               </div>
             </div>
@@ -189,7 +205,7 @@ const InternshipDetails = ({ job, onClose }) => {
                   <div className="flex items-center">
                     <Mail size={16} className="mr-2 text-gray-500 flex-shrink-0" />
                     <a href={`mailto:${applicant.email}`} className="text-blue-600 hover:underline">
-                      {applicant.email || 'Not specified'}
+                      {applicant.email}
                     </a>
                   </div>
                   <div className="flex items-center">
@@ -206,11 +222,11 @@ const InternshipDetails = ({ job, onClose }) => {
                     <span>Industry: {applicant.industry || 'Not specified'}</span>
                   </div>
                   <div className="flex items-center">
-                    <ClipboardList size={16} className="mr-2 text-gray-500 flex-shrink-0" />
-                    <span>Designation: {applicant.designation || 'Not specified'}</span>
+                    <GraduationCap size={16} className="mr-2 text-gray-500 flex-shrink-0" />
+                    <span>Degree: {applicant.degree} ({applicant.specialization})</span>
                   </div>
                   <div className="flex items-center">
-                    <Award size={16} className="mr-2 text-gray-500 flex-shrink-0" />
+                    <ClipboardList size={16} className="mr-2 text-gray-500 flex-shrink-0" />
                     <span>Language: {applicant.language || 'Not specified'}</span>
                   </div>
                 </div>
@@ -252,7 +268,7 @@ const InternshipDetails = ({ job, onClose }) => {
                     rel="noopener noreferrer"
                     className="inline-flex items-center px-4 py-2 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors"
                   >
-                    <Link size={16} className="mr-2" />
+                    <GlobeIcon size={16} className="mr-2" />
                     Portfolio
                     <ExternalLink size={14} className="ml-1" />
                   </a>
@@ -297,12 +313,12 @@ const InternshipDetails = ({ job, onClose }) => {
                 <Send size={18} className="mr-2" />
                 {isProcessing ? 'Processing...' : 'Message Candidate'}
               </button>
-              <button 
+              <button
                 onClick={() => handleAction(() => rejectApplicant(selectedApplicant._id), selectedApplicant._id, 'reject')}
                 disabled={isSubmitting}
-                className="flex items-center justify-center flex-1 py-3 bg-gradient-to-r from-red-50 to-red-100 border border-red-200 text-red-600 rounded-xl hover:bg-red-100 transition-all duration-200 disabled:opacity-50"
+                className="flex items-center justify-center flex-1 py-3 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 text-red-700 rounded-xl hover:bg-red-100 transition-all duration-200 disabled:opacity-50"
               >
-                <XCircle size={18} className="mr-2" />
+                <X size={18} className="mr-2" />
                 Reject Application
               </button>
             </div>
@@ -328,10 +344,10 @@ const InternshipDetails = ({ job, onClose }) => {
               </button>
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                  Accepted Internship Applicants
+                  {job?.jobTitle || 'Accepted Internship Applications'}
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  Manage accepted candidates for: {job?.jobTitle}
+                  Manage accepted candidate applications for this internship position
                 </p>
               </div>
             </div>
@@ -344,14 +360,14 @@ const InternshipDetails = ({ job, onClose }) => {
           {isSubmitting && applications.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#667eea]"></div>
-              <p className="mt-4 text-gray-600">Loading accepted applicants...</p>
+              <p className="mt-4 text-gray-600">Loading accepted applications...</p>
             </div>
           ) : applications.length === 0 ? (
             <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-200 rounded-xl p-12 text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-4">
                 <Users className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No accepted applicants</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No accepted candidates yet</h3>
               <p className="text-gray-600">No candidates have been accepted for this internship yet.</p>
             </div>
           ) : (
@@ -388,14 +404,19 @@ const InternshipDetails = ({ job, onClose }) => {
                           >
                             <h3 className="font-semibold text-gray-900 text-lg">{applicant.name}</h3>
                             <div className="flex items-center text-gray-600 text-sm mt-1">
-                              <Briefcase size={14} className="mr-2" />
+                              <GraduationCap size={14} className="mr-2" />
                               <span className="truncate">{applicant.degree} ({applicant.specialization})</span>
                             </div>
                           </div>
                           <div className="flex items-center text-gray-500 text-sm mt-2">
-                            <span className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-green-100 to-green-50 text-green-700 border border-green-200 rounded-full text-xs font-medium">
-                              <CheckCircle size={12} className="mr-1" />
-                              Accepted
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              currentStatus === 'Accepted' 
+                                ? 'bg-gradient-to-r from-green-100 to-green-50 text-green-700 border border-green-200' 
+                                : currentStatus === 'Rejected'
+                                ? 'bg-gradient-to-r from-red-100 to-red-50 text-red-700 border border-red-200'
+                                : 'bg-gradient-to-r from-green-100 to-green-50 text-green-700 border border-green-200'
+                            }`}>
+                              {currentStatus}
                             </span>
                           </div>
                         </div>
@@ -405,21 +426,15 @@ const InternshipDetails = ({ job, onClose }) => {
                       <div className="flex flex-wrap gap-4 text-sm">
                         <div className="text-center">
                           <div className="font-semibold text-gray-800">
-                            {applicant.currentSalaryCurrency || 'N/A'} {applicant.currentSalaryAmount || '0'}
+                            {applicant.currentSalaryCurrency} {applicant.currentSalaryAmount || '0'}
                           </div>
                           <div className="text-xs text-gray-500">Current</div>
                         </div>
                         <div className="text-center">
                           <div className="font-semibold text-gray-800">
-                            {applicant.expectedSalaryCurrency || 'N/A'} {applicant.expectedSalaryAmount || '0'}
+                            {applicant.expectedSalaryCurrency} {applicant.expectedSalaryAmount || '0'}
                           </div>
                           <div className="text-xs text-gray-500">Expected</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-semibold text-gray-800">
-                            {applicant.locations || 'N/A'}
-                          </div>
-                          <div className="text-xs text-gray-500">Location</div>
                         </div>
                       </div>
 
