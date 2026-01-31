@@ -3,7 +3,7 @@ name: Deploy to VPS (Test)
 on:
   push:
     branches:
-      - test
+      - stage
 
 jobs:
   deploy:
@@ -47,8 +47,8 @@ jobs:
             set -e
             cd /var/www/rr-test/talentconnect-rawRecruit
             git fetch origin
-            git checkout test
-            git pull origin test
+            git checkout stage
+            git pull origin stage
 
             cd FrontEnd
             npm install

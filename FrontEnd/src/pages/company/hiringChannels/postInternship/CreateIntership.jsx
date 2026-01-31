@@ -256,7 +256,7 @@ export default function PostIntership() {
       };
 
       const response = await axios.post(
-        `${import.meta.env.VITE_Backend_URL}/api/hiring-channels/internship-posting`,
+        `${import.meta.env.VITE_Backend_URL}/api/employer/hiring-channel/create-internship-posting`,
         payload,
         {
           headers: {
