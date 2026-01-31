@@ -19,20 +19,43 @@ export default function OnCampusJobManagement() {
 
   const itemsPerPage = 10;
 
-  const fetchJobs = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await getPostedJobs("On-campus", "Applied");
-      setJobs(response?.data);
-    } catch (err) {
-      console.error("Error fetching jobs:", err);
-      setError(err.response?.data?.message || err.message || "Failed to fetch drives.");
-      setJobs([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+ const fetchJobs = async () => {
+  console.log("🔥 fetchJobs CALLED");
+
+  setLoading(true);
+  setError(null);
+
+  try {
+    console.log("➡️ calling getPostedJobs");
+    const response = await getPostedJobs("On-campus", "Applied");
+
+    console.log("✅ RAW response:", response);
+    console.log("📦 response.data:", response?.data);
+
+    const jobsData =
+      Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.data?.jobs)
+          ? response.data.jobs
+          : Array.isArray(response?.data?.data)
+            ? response.data.data
+            : [];
+
+    console.log("🧠 normalized jobsData:", jobsData);
+
+    setJobs(jobsData);
+  } catch (err) {
+    console.error("❌ API ERROR:", err);
+    setError(
+      err.response?.data?.message ||
+      err.message ||
+      "Failed to fetch drives."
+    );
+    setJobs([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const fetchCollegesForJob = async (jobId, jobType, isVisited) => {
     setCollegesLoading(true);
@@ -96,19 +119,23 @@ export default function OnCampusJobManagement() {
     fetchJobs();
   }, []);
 
-  const filteredJobs = jobs?.filter(job => {
-    const searchLower = searchQuery.toLowerCase();
-    const locationsMatch = Array.isArray(job.location)
-      ? job.location.some(location =>
-        location?.toLowerCase().includes(searchLower))
-      : false;
+  const filteredJobs = Array.isArray(jobs)
+  ? jobs.filter(job => {
+      const searchLower = searchQuery.toLowerCase();
 
-    return (
-      (job.lookingFor?.toLowerCase().includes(searchLower)) ||
-      locationsMatch ||
-      (job._id?.toLowerCase().includes(searchLower))
-    );
-  });
+      const locationsMatch = Array.isArray(job.location)
+        ? job.location.some(location =>
+            location?.toLowerCase().includes(searchLower)
+          )
+        : false;
+
+      return (
+        job.lookingFor?.toLowerCase().includes(searchLower) ||
+        locationsMatch ||
+        job._id?.toLowerCase().includes(searchLower)
+      );
+    })
+  : [];
 
   const totalItems = filteredJobs?.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
