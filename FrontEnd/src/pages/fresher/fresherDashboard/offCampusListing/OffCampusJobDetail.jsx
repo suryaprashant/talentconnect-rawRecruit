@@ -44,12 +44,19 @@ const normalizeSelectionProcess = (selectionProcess) => {
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
 
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return 'N/A';
-
-  return date.toLocaleDateString('en-GB');
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'N/A';
+    
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  } catch (error) {
+    return 'N/A';
+  }
 };
-
 
 
 function OffCampusJobDetail() {
@@ -89,7 +96,7 @@ function OffCampusJobDetail() {
   }, [jobId]);
 
   const handleBackToList = () => {
-    window.history.back();
+    navigate('/job-management/Off-campus');
   };
 
   const handleApply = async () => {
@@ -226,7 +233,7 @@ function OffCampusJobDetail() {
         {/* Header */}
         <div className="flex justify-between items-start mb-6">
           <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 mr-4 flex items-center justify-center rounded-full overflow-hidden">
+            {/* <div className="w-12 h-12 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 mr-4 flex items-center justify-center rounded-full overflow-hidden">
               {jobDetail.companyPosted?.profileImage ? (
                 <img
                   src={jobDetail.companyPosted.profileImage}
@@ -242,7 +249,7 @@ function OffCampusJobDetail() {
                   <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                 </svg>
               )}
-            </div>
+            </div> */}
             <div>
               <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
                 {jobDetail.companyPosted?.companyDetails?.companyName || "N/A"} - 
@@ -528,43 +535,46 @@ function OffCampusJobDetail() {
         </section>
 
         {/* Important Dates */}
-        <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-            Important Dates
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Registration Deadline</div>
-              <div className="font-medium text-red-600">
-                {formatDate(jobDetail.endDate)}
-              </div>
-            </div>
-                        
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Online Test Date</div>
-              <div className="font-medium text-gray-700">
-                {formatDate(jobDetail.onlineTestDate)}
-              </div>
-            </div>
-                        
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Interview Window</div>
-              <div className="font-medium text-gray-700">
-                {jobDetail?.interviewWindow?.start
-                  ? `${formatDate(jobDetail.interviewWindow.start)} - ${formatDate(jobDetail.interviewWindow.end)}`
-                  : 'N/A'}
-              </div>
-            </div>
-                
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Offer Rollout</div>
-              <div className="font-medium text-gray-700">
-                {formatDate(jobDetail.offerRolloutDate)}
-              </div>
-            </div>
-          </div>
+<section className="mb-8">
+  <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+    Important Dates
+  </h3>
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    {/* Application Deadline */}
+    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+      <div className="text-sm text-[#667eea]">Registration Deadline</div>
+      <div className="font-medium text-red-600">
+        {formatDate(jobDetail.endDate)}
+      </div>
+    </div>
 
-        </section>
+    {/* Online Test Date */}
+    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+      <div className="text-sm text-[#667eea]">Test Date</div>
+      <div className="font-medium text-gray-700">
+        {formatDate(jobDetail.onlineTestDate)}
+      </div>
+    </div>
+
+    {/* Interview Window */}
+    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+      <div className="text-sm text-[#667eea]">Interview Window</div>
+      <div className="font-medium text-gray-700">
+        {jobDetail.interviewWindow?.start
+          ? `${formatDate(jobDetail.interviewWindow.start)} - ${formatDate(jobDetail.interviewWindow.end)}`
+          : 'N/A'}
+      </div>
+    </div>
+
+    {/* Offer Rollout */}
+    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+      <div className="text-sm text-[#667eea]">Results</div>
+      <div className="font-medium text-gray-700">
+        {formatDate(jobDetail.offerRolloutDate)}
+      </div>
+    </div>
+  </div>
+</section>
 
         {/* Bottom Back Button */}
         <section className="mt-8 pt-6 border-t border-gray-200">
