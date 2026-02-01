@@ -20,7 +20,6 @@ export default function InternshipListing() {
   const [applications, setApplications] = useState([]);
   const [applicationsLoading, setApplicationsLoading] = useState(false);
   const [applicationsError, setApplicationsError] = useState(null);
-  const [isVisited, setIsVisited] = useState();
   const navigate = useNavigate();
 
   const itemsPerPage = 10;
@@ -45,7 +44,7 @@ export default function InternshipListing() {
     fetchJobs();
   }, []);
 
-  const fetchApplicationsForJob = async (jobId, isVisited) => {
+  const fetchApplicationsForJob = async (jobId, visitedStatus) => {
     setApplicationsLoading(true);
     setApplicationsError(null);
 
@@ -54,7 +53,7 @@ export default function InternshipListing() {
         jobId,
         "Internship",
         "Applied",
-        isVisited
+        visitedStatus
       );
 
       setApplications(res?.data || []);
@@ -66,7 +65,6 @@ export default function InternshipListing() {
       setApplicationsLoading(false);
     }
   };
-
 
   const handleDelete = async (jobId) => {
     try {
@@ -134,14 +132,12 @@ export default function InternshipListing() {
     setShowJobDetail(true);
   };
 
-
   const showNewApplications = async (job) => {
     setSelectedJob(job);
     setIsVisited("true"); // frontend flag = new
     await fetchApplicationsForJob(job._id, false);
     setShowJobDetail(true);
   };
-
 
   const handleBackToList = () => {
     setSelectedJob(null);
@@ -354,8 +350,12 @@ export default function InternshipListing() {
 
                       {/* New Applications */}
                       <div 
-                        className="col-span-1 text-center cursor-pointer group"
-                        onClick={() => showNewApplications(job)}
+
+                        className="col-span-2 text-center cursor-pointer group"
+                        onClick={() => handleView(job)}
+
+                        // className="col-span-1 text-center cursor-pointer group"
+                        // onClick={() => showNewApplications(job)}
                       >
                         <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
                           {job?.applicationCount || 0}
