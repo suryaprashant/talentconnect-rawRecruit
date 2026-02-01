@@ -76,11 +76,32 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
   const [dateError, setDateError] = useState('');
   
   const [showCollegeModal, setShowCollegeModal] = useState(false);
+  
+  // Add state for image error handling (same as CollegeCard)
+  const [imageError, setImageError] = useState(false);
 
   const modalRef = useRef(null);
   const contentRef = useRef(null);
   
   const { setSelectedConversation } = useConversation();  
+
+  // Helper function to get college initials (same as CollegeCard)
+  const getInitials = (name) => {
+    if (!name) return '?';
+    const words = name.trim().split(' ');
+    if (words.length === 1) return words[0][0].toUpperCase();
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+  };
+
+  // Get college logo using the same logic as CollegeCard
+  const getCollegeLogo = () => {
+    if (!posting) return 'https://via.placeholder.com/48';
+    
+    const collegeDetails = posting.collegePosted;
+    const logo = collegeDetails?.profileImage || posting.collegeLogo || 'https://via.placeholder.com/48';
+    
+    return logo;
+  };
 
   const fetchPostingDetails = async () => {
     if (!college?._id) return;
@@ -498,6 +519,9 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
   const isApplied = propIsApplied || posting.isApplied || false;
   const isSaved = propIsSaved || posting.isSaved || false;
 
+  // Get the logo using the same logic as CollegeCard
+  const logo = getCollegeLogo();
+
   return (
     <>
       <div
@@ -507,9 +531,25 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
         {/* Modal Header */}
         <div className="flex items-center justify-between p-8 border-b bg-gradient-to-r from-gray-50 to-white flex-shrink-0">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
-                 onClick={() => setShowCollegeModal(true)}>
-              <Building2 className="h-6 w-6 text-[#667eea]" />
+            {/* College Logo - Same logic as CollegeCard */}
+            <div 
+              className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() => setShowCollegeModal(true)}
+            >
+              {logo && !imageError ? (
+                <img 
+                  src={logo} 
+                  alt={`${collegeName} logo`}
+                  className="w-12 h-12 object-cover"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-semibold text-gray-700">
+                    {getInitials(collegeName)}
+                  </span>
+                </div>
+              )}
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"

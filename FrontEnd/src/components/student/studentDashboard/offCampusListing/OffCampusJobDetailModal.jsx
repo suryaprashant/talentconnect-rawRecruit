@@ -438,6 +438,16 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
     setShowCompanyDetails(true);
   };
 
+  const fixedPay =
+  jobDetail?.packageDetails?.fixedPay ?? null;
+
+const variablePay =
+  jobDetail?.packageDetails?.variablePay ??
+  jobDetail?.packageDetails?.variable ??
+  jobDetail?.packageDetails?.joiningBonus ??
+  null;
+
+
   if (!isOpen) return null;
 
   // Render loading state
@@ -818,52 +828,71 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
               </div>
 
               {/* Compensation & Benefits */}
-              <div className="px-6 py-6 border-t border-gray-100">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                  Compensation & Benefits
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                    <div className="text-sm font-medium text-[#667eea] mb-2">Salary Package</div>
-                    <div className="text-2xl font-bold text-gray-900">
-                      {formatSalary()}
-                    </div>
-                  </div>
-                  {jobDetail?.packageDetails?.fixedPay && (
-                    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                      <div className="text-sm font-medium text-[#667eea] mb-2">Fixed Pay</div>
-                      <div className="text-2xl font-bold text-gray-900">
-                        {`₹${jobDetail.packageDetails.fixedPay.toLocaleString()}`}
-                      </div>
-                    </div>
-                  )}
-                  {jobDetail?.packageDetails?.joiningBonus && (
-                    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                      <div className="text-sm font-medium text-[#667eea] mb-2">Joining Bonus</div>
-                      <div className="text-2xl font-bold text-gray-900">
-                        {`₹${jobDetail.packageDetails.joiningBonus.toLocaleString()}`}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <h3 className="font-medium text-[#667eea] mt-6 mb-3">Benefits Offered</h3>
-                <div className="flex flex-wrap gap-2">
-                  {jobDetail?.benefits && jobDetail?.benefits.length > 0 ? (
-                    jobDetail.benefits.map((benefit, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
-                      >
-                        {benefit}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="px-3 py-1.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-full text-sm">
-                      Competitive salary, Health insurance, Flexible work hours
-                    </span>
-                  )}
-                </div>
-              </div>
+<div className="px-6 py-6 border-t border-gray-100">
+  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+    Compensation & Benefits
+  </h2>
+
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+
+    {/* Salary Package */}
+    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+      <div className="text-sm font-medium text-[#667eea] mb-2">
+        Salary Package
+      </div>
+      <div className="text-2xl font-bold text-gray-900">
+        {formatSalary()}
+      </div>
+    </div>
+
+    {/* Fixed Pay */}
+    {fixedPay !== null && (
+      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+        <div className="text-sm font-medium text-[#667eea] mb-2">
+          Fixed Pay
+        </div>
+        <div className="text-2xl font-bold text-gray-900">
+          ₹{Number(fixedPay).toLocaleString()}
+        </div>
+      </div>
+    )}
+
+    {/* Variable Pay */}
+    {variablePay !== null && (
+      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+        <div className="text-sm font-medium text-[#667eea] mb-2">
+          Variable Pay
+        </div>
+        <div className="text-2xl font-bold text-gray-900">
+          ₹{Number(variablePay).toLocaleString()}
+        </div>
+      </div>
+    )}
+
+  </div>
+
+  <h3 className="font-medium text-[#667eea] mt-6 mb-3">
+    Benefits Offered
+  </h3>
+
+  <div className="flex flex-wrap gap-2">
+    {jobDetail?.benefits?.length > 0 ? (
+      jobDetail.benefits.map((benefit, index) => (
+        <span
+          key={index}
+          className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
+        >
+          {benefit}
+        </span>
+      ))
+    ) : (
+      <span className="px-3 py-1.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-full text-sm">
+        Competitive salary, Health insurance, Flexible work hours
+      </span>
+    )}
+  </div>
+</div>
+
 
               {/* Selection Process - Matches on-campus version */}
               <div className="px-6 py-6 border-t border-gray-100">

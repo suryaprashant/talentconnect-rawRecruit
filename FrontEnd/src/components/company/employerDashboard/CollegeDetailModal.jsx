@@ -58,9 +58,20 @@ const normalizeCollegeData = (collegeData) => {
   
   console.log("🔧 Raw collegeData for normalization:", collegeData);
   
+  // Get college logo using the same logic as CollegeCard
+  const collegeDetails = collegeData.collegePosted;
+  const logo = collegeDetails?.profileImage || collegeData.collegeLogo || 'https://via.placeholder.com/48';
+  
   if (collegeData.collegePosted?.collegeUniversityDetails?.collegeName) {
     console.log("✅ Already has proper collegePosted structure");
-    return collegeData;
+    return {
+      ...collegeData,
+      // Ensure logo is included in the normalized structure
+      collegePosted: {
+        ...collegeData.collegePosted,
+        profileImage: logo
+      }
+    };
   }
   
   console.log("🔄 Need to create/repair collegePosted structure");
@@ -101,9 +112,8 @@ const normalizeCollegeData = (collegeData) => {
                 "Not Specified"
       },
       
-      profileImage: collegeData.collegePosted?.profileImage || 
-                   collegeData.collegeLogo || 
-                   null,
+      // Use the same logo logic as CollegeCard
+      profileImage: logo,
       
       userId: collegeData.collegePosted?.userId || collegeData.userId,
       
@@ -119,6 +129,7 @@ const normalizeCollegeData = (collegeData) => {
   
   console.log("✅ Normalized college data:", normalized);
   console.log("✅ College name in normalized data:", normalized.collegePosted.collegeUniversityDetails.collegeName);
+  console.log("✅ College logo in normalized data:", normalized.collegePosted.profileImage);
   
   return normalized;
 };
@@ -132,6 +143,9 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Add state for image error handling (same as CollegeCard)
+  const [imageError, setImageError] = useState(false);
   
   const [showAlternateDateModal, setShowAlternateDateModal] = useState(false);
   const [selectedStartDate, setSelectedStartDate] = useState('');
@@ -170,6 +184,7 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
     
     console.log("✅ Normalized college data:", normalizedCollege);
     console.log("✅ College name after normalization:", normalizedCollege.collegePosted?.collegeUniversityDetails?.collegeName);
+    console.log("✅ College logo after normalization:", normalizedCollege.collegePosted?.profileImage);
     
     setPosting(normalizedCollege);
     
@@ -232,6 +247,24 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onClose]);
+
+  // Helper function to get college initials (same as CollegeCard)
+  const getInitials = (name) => {
+    if (!name) return '?';
+    const words = name.trim().split(' ');
+    if (words.length === 1) return words[0][0].toUpperCase();
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+  };
+
+  // Get college logo using the same logic as CollegeCard
+  const getCollegeLogo = () => {
+    if (!posting) return 'https://via.placeholder.com/48';
+    
+    const collegeDetails = posting.collegePosted;
+    const logo = collegeDetails?.profileImage || posting.collegeLogo || 'https://via.placeholder.com/48';
+    
+    return logo;
+  };
 
   const handleShare = () => {
     if (navigator.share) {
@@ -602,6 +635,9 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
   const postingIsApplied = posting.isApplied || false;
   const isSaved = posting.isSaved || false;
 
+  // Get the logo using the same logic as CollegeCard
+  const logo = getCollegeLogo();
+
   return (
     <>
       <div
@@ -611,9 +647,25 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
         {/* Modal Header */}
         <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-gray-50 to-white flex-shrink-0">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
-                 onClick={() => setShowCollegeModal(true)}>
-              <Building2 className="h-6 w-6 text-[#667eea]" />
+            {/* College Logo - Same logic as CollegeCard */}
+            <div 
+              className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() => setShowCollegeModal(true)}
+            >
+              {logo && !imageError ? (
+                <img 
+                  src={logo} 
+                  alt={`${collegeName} logo`}
+                  className="w-12 h-12 object-cover"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-semibold text-gray-700">
+                    {getInitials(collegeName)}
+                  </span>
+                </div>
+              )}
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
