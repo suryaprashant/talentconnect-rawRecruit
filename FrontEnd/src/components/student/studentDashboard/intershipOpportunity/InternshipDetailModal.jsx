@@ -58,6 +58,7 @@ import {
 import { ApplyForInternship, getJobDetails, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 
+
 // Utility function to format date
 const formatDate = (dateString) => {
   if (!dateString || dateString === 'Not Specified') return 'Not Specified';
