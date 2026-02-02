@@ -484,26 +484,26 @@ const variablePay =
   const jobStatus = getJobStatus();
   const isApplied = propIsApplied || jobDetail.isApplied || false;
   const companyName = jobDetail?.companyName || jobDetail?.companyPosted?.companyDetails?.companyName || 'Company';
-  const companyLogo = jobDetail?.companyPosted?.companyDetails?.companyLogo || null;
+  const companyLogo = jobDetail?.companyPosted?.profileImageUrl || null;
   const companyLocation = jobDetail?.companyPosted?.companyDetails?.location || jobDetail?.location || 'Not Specified';
   const workLocation = jobDetail?.workLocation?.join(', ') || jobDetail?.location || 'Not Specified';
   
   // Prepare company data for modal
   const companyData = {
-    name: companyName,
-    logo: companyLogo,
-    location: companyLocation,
-    description: jobDetail.companyPosted?.companyDetails?.description || jobDetail.companyDescription,
-    industry: jobDetail.companyPosted?.companyDetails?.industryType,
-    employees: jobDetail.companyPosted?.companyDetails?.numberOfEmployees,
-    website: jobDetail.companyPosted?.companyDetails?.website,
-    country: jobDetail.companyPosted?.companyDetails?.country,
-    city: jobDetail.companyPosted?.companyDetails?.city,
-    state: jobDetail.companyPosted?.companyDetails?.state,
-    pincode: jobDetail.companyPosted?.companyDetails?.pincode,
-    email: jobDetail.companyPosted?.companyDetails?.email,
-    phone: jobDetail.companyPosted?.companyDetails?.phone
-  };
+  name: companyName,
+  logo: companyLogo, // Use the fixed logo
+  location: companyLocation,
+  description: jobDetail.companyPosted?.companyDetails?.description || jobDetail.companyDescription,
+  industry: jobDetail.companyPosted?.companyDetails?.industryType,
+  employees: jobDetail.companyPosted?.companyDetails?.numberOfEmployees,
+  website: jobDetail.companyPosted?.companyDetails?.website,
+  country: jobDetail.companyPosted?.companyDetails?.country,
+  city: jobDetail.companyPosted?.companyDetails?.city,
+  state: jobDetail.companyPosted?.companyDetails?.state,
+  pincode: jobDetail.companyPosted?.companyDetails?.pincode,
+  email: jobDetail.companyPosted?.companyDetails?.email,
+  phone: jobDetail.companyPosted?.companyDetails?.phone
+};
 
   // Format salary
   const formatSalary = () => {

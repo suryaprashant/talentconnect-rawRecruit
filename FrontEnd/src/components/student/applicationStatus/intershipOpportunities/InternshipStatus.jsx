@@ -4,6 +4,7 @@ import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
 import { getJobDetails } from '@/lib/User_AxiosInstance';
 import { useAuth } from "@/context/AuthContext";
 import InternshipDetailModal from './../../studentDashboard/intershipOpportunity/InternshipDetailModal';
+import { toast } from 'react-hot-toast'; // Add this import if you're using toast
 
 const InternshipStatus = () => {
   const { user, loading } = useAuth();
@@ -77,11 +78,27 @@ const InternshipStatus = () => {
             const companyName = 
               jobDetails.companyPosted?.companyDetails?.companyName || 
               jobDetails.companyDetails?.companyName || 
-              item.companyDetails?.companyName || 
+              item.companyDetails?.companyName ||
+              item.companyProfile?.companyDetails?.companyName || 
               "Company";
             
-            const companyLogo = jobDetails.companyPosted?.profileImageUrl || null;
+            // Extract company logo from multiple possible sources - FIXED HERE
+            const companyLogo = 
+              jobDetails.companyPosted?.profileImageUrl || 
+              jobDetails.companyDetails?.profileImageUrl ||
+              item.companyProfile?.profileImage ||
+              item.companyProfile?.profileImageUrl ||
+              jobDetails.profileImageUrl ||
+              null;
             
+            console.log('📸 Logo URL for internship:', {
+              fromJobDetails: jobDetails.companyPosted?.profileImageUrl,
+              fromCompanyDetails: jobDetails.companyDetails?.profileImageUrl,
+              fromItem: item.companyProfile?.profileImage || item.companyProfile?.profileImageUrl,
+              fromJobProfile: jobDetails.profileImageUrl,
+              finalLogo: companyLogo
+            });
+
             // Extract job title from multiple possible sources
             const jobTitle = 
               jobDetails.jobTitle || 
@@ -110,7 +127,11 @@ const InternshipStatus = () => {
             // Extract stipend/salary
             let stipend = "Not specified";
             if (jobDetails?.stipend) {
-              stipend = `${jobDetails.stipend.currency || ''} ${jobDetails.stipend.amount || jobDetails.stipend}${jobDetails.stipend.frequency ? '/' + jobDetails.stipend.frequency : ''}`;
+              if (typeof jobDetails.stipend === 'object') {
+                stipend = `${jobDetails.stipend.currency || ''} ${jobDetails.stipend.amount || jobDetails.stipend}${jobDetails.stipend.frequency ? '/' + jobDetails.stipend.frequency : ''}`;
+              } else {
+                stipend = jobDetails.stipend;
+              }
             } else if (jobDetails?.salary) {
               stipend = jobDetails.salary;
             }
@@ -147,7 +168,8 @@ const InternshipStatus = () => {
               _debug: {
                 jobId: jobId,
                 companyNameFound: companyName !== "Company",
-                jobTitleFound: jobTitle !== "Internship Position"
+                jobTitleFound: jobTitle !== "Internship Position",
+                logoUrl: companyLogo
               }
             };
             
@@ -298,6 +320,13 @@ const InternshipStatus = () => {
             jobDetails.companyDetails?.companyName || 
             job.company;
           
+          // Extract company logo from multiple sources - UPDATED
+          const companyLogo = 
+            jobDetails.companyPosted?.profileImageUrl || 
+            jobDetails.companyDetails?.profileImageUrl ||
+            job.companyLogo ||
+            null;
+          
           const jobTitle = 
             jobDetails.jobTitle || 
             jobDetails.position || 
@@ -310,7 +339,7 @@ const InternshipStatus = () => {
           return {
             ...job,
             company: companyName,
-            companyLogo: jobDetails.companyPosted?.profileImageUrl,
+            companyLogo: companyLogo,
             jobTitle: jobTitle,
             internshipRole: internshipRole,
             workMode: Array.isArray(jobDetails?.workMode) && jobDetails.workMode.length > 0
@@ -337,6 +366,41 @@ const InternshipStatus = () => {
     } catch (error) {
       console.error(`❌ Failed to retry internship ${jobId}:`, error);
     }
+  };
+
+  // Fix image rendering in JSX - Updated to match on-campus code structure
+  const renderCompanyLogo = (job, isLarge = false) => {
+    const sizeClass = isLarge ? 'w-12 h-12' : 'w-9 h-9';
+    const logoContainerClass = isLarge ? 'w-12 h-12 flex-shrink-0' : 'w-9 h-9 flex-shrink-0';
+    
+    return (
+      <div className={logoContainerClass}>
+        {job.companyLogo ? (
+          <img 
+            src={job.companyLogo} 
+            alt={job.company}
+            className={`${sizeClass} rounded-lg object-cover border border-white/60`}
+            onError={(e) => { 
+              e.target.style.display = 'none'; 
+              const fallback = e.target.nextSibling;
+              if (fallback) fallback.style.display = 'flex'; 
+            }}
+          />
+        ) : null}
+        <div 
+          className={`${job.companyLogo ? 'hidden' : 'flex'} ${sizeClass} rounded-lg items-center justify-center font-bold ${
+            isLarge ? 'text-lg' : 'text-xs'
+          } ${
+            selectedJob?.id === job.id 
+              ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
+              : 'bg-white/50 border border-white/60 text-[#667eea]'
+          }`}
+          style={job.companyLogo ? {} : { display: job.companyLogo ? 'none' : 'flex' }}
+        >
+          {getCompanyInitials(job.company)}
+        </div>
+      </div>
+    );
   };
 
   if (isLoading) {
@@ -464,26 +528,7 @@ const InternshipStatus = () => {
                         }`}
                       >
                         <div className="flex items-start gap-3">
-                          {job.companyLogo ? (
-                            <img 
-                              src={job.companyLogo} 
-                              alt={job.company}
-                              className="w-9 h-9 rounded-lg object-cover border border-white/60"
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                if (e.target.nextSibling) {
-                                  e.target.nextSibling.style.display = 'flex';
-                                }
-                              }}
-                            />
-                          ) : null}
-                          <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                            selectedJob?.id === job.id 
-                              ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
-                              : 'bg-white/50 border border-white/60 text-[#667eea]'
-                          }`}>
-                            <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
-                          </div>
+                          {renderCompanyLogo(job, false)}
                           <div className="flex-1 min-w-0">
                             <h3 className="text-sm font-semibold text-gray-900 truncate">{job.company}</h3>
                             <p className="text-xs text-gray-600 truncate">{job.jobTitle}</p>
@@ -545,11 +590,7 @@ const InternshipStatus = () => {
                       <h2 className="text-lg font-bold text-gray-900">{selectedJob.company}</h2>
                       <p className="text-sm text-gray-600">{selectedJob.internshipRole}</p>
                     </div>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center border border-white/60">
-                      <span className="text-lg font-bold text-[#667eea]">
-                        {getCompanyInitials(selectedJob.company)}
-                      </span>
-                    </div>
+                    {renderCompanyLogo(selectedJob, true)}
                   </div>
                   
                   {/* Updated Progress Bar for Internship */}
@@ -766,27 +807,30 @@ const InternshipStatus = () => {
         </div>
       </div>
       {isModalOpen && modalJobId && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div 
-      className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
-      onClick={handleCloseModal}
-    />
-    <div className="relative z-10 w-full max-w-6xl h-[90vh] overflow-y-auto rounded-2xl bg-white">
-      <InternshipDetailModal
-        jobId={modalJobId}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        isApplied={true} // Since we're in status page, user has already applied
-        onApplySuccess={(applicationData) => {
-          // Refresh the applications list when a new application is made
-          console.log("✅ New internship application submitted:", applicationData);
-          toast.success("Application submitted successfully!");
-          fetchApplication(); // Refresh the list
-        }}
-      />
-    </div>
-  </div>
-)}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+            onClick={handleCloseModal}
+          />
+          <div className="relative z-10 w-full max-w-6xl h-[90vh] overflow-y-auto rounded-2xl bg-white">
+            <InternshipDetailModal
+              jobId={modalJobId}
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+              isApplied={true} // Since we're in status page, user has already applied
+              onApplySuccess={(applicationData) => {
+                // Refresh the applications list when a new application is made
+                console.log("✅ New internship application submitted:", applicationData);
+                // If you're using react-hot-toast
+                if (typeof toast !== 'undefined') {
+                  toast.success("Application submitted successfully!");
+                }
+                fetchApplication(); // Refresh the list
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

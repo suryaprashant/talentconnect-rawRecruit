@@ -94,7 +94,8 @@ function PoolApplicationsPage() {
     return jobs.filter(job => {
       const jobTitle = job.jobTitle || '';
       const degree = Array.isArray(job.degree) ? job.degree.join(', ') : '';
-      const location = Array.isArray(job.location) ? job.location.join(', ') : job.location || '';
+      // FIX: Use venue field for location (same as second component)
+      const location = job.venue || '';
 
       const matchesSearch =
         jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -269,42 +270,11 @@ const handleViewAll = (jobId, e) => {
               </button>
             </div>
 
-            {/* Search and Filters */}
-            {/* <div className="p-6 border-b border-white/50">
-              <div className="flex flex-col md:flex-row gap-4 items-center">
-                <div className="relative flex-grow">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <Search className="w-4 h-4 text-[#3b82f6]" />
-                  </div>
-                  <input
-                    type="text"
-                    className="w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
-                    placeholder="Search by title, degree, location..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-
-                <button
-                  className="flex items-center gap-2 px-6 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl hover:bg-white/70 transition-all duration-200 text-gray-700 font-medium"
-                  onClick={() => setShowFilters(!showFilters)}
-                >
-                  <Filter className="w-4 h-4 text-[#3b82f6]" />
-                  Filters
-                </button>
-
-                <div className="text-sm text-gray-500 font-medium">
-                  {totalItems > 0 ? `Showing ${startIndex + 1}-${endIndex} of ${totalItems}` : 'Showing 0-0 of 0'}
-                </div>
-              </div>
-            </div> */}
-
             {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-white/50">
                   <tr>
-                    {/* CHANGED: Job Title to Degree */}
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Degree</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Deadline</th>
@@ -344,7 +314,8 @@ const handleViewAll = (jobId, e) => {
                       const jobId = job._id || job.id;
                       const jobTitle = job.jobTitle || 'N/A';
                       const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : job.degree || 'N/A';
-                      const jobLocation = Array.isArray(job.location) ? job.location.join(', ') : job.location || 'N/A';
+                      // FIX: Use venue field for location
+                      const jobLocation = job.venue || 'N/A';
                       const jobStatus = job.jobStatus || 'Unknown';
                       const deadline = job.endDate || job.deadline;
                       const views = job.views || 0;
@@ -359,16 +330,15 @@ const handleViewAll = (jobId, e) => {
                           className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200"
                         >
                           <td 
-  className="px-6 py-4 cursor-pointer" 
-  onClick={() => navigate(`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}
->
-  {/* UPDATED: Display Degree and Location */}
-  <div className="font-medium text-gray-900 whitespace-normal break-words">{jobDegree}</div>
-  <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-    <MapPin className="w-3 h-3" />
-    {jobLocation}
-  </div>
-</td>
+                            className="px-6 py-4 cursor-pointer" 
+                            onClick={() => navigate(`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}
+                          >
+                            <div className="font-medium text-gray-900 whitespace-normal break-words">{jobDegree}</div>
+                            <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                              <MapPin className="w-3 h-3" />
+                              {jobLocation}
+                            </div>
+                          </td>
                           <td className="px-6 py-4">
                             <span className={`px-3 py-1 text-xs font-medium rounded-full ${jobStatus === 'Open'
                               ? 'bg-gradient-to-r from-[#a7f3d0]/20 to-[#34d399]/20 text-[#059669] border border-[#a7f3d0]/30'
@@ -393,18 +363,18 @@ const handleViewAll = (jobId, e) => {
                           </td>
                           
                           <td className="px-6 py-4">
-  <button
-    onClick={(e) => {
-      e.stopPropagation();
-      handleView(jobId);
-    }}
-    className={`flex items-center gap-1 text-gray-700 hover:bg-white/30 rounded-md -mx-2 px-2 py-2 transition-all duration-200 w-full text-left cursor-pointer ${isViewDisabled ? 'opacity-70 hover:opacity-100' : ''}`}
-    title={isViewDisabled ? "No applications to view (Click to refresh)" : "View Shortlisted"}
-  >
-    <Users className="w-4 h-4 text-[#3b82f6]" />
-    {applications}
-  </button>
-</td>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleView(jobId);
+                              }}
+                              className={`flex items-center gap-1 text-gray-700 hover:bg-white/30 rounded-md -mx-2 px-2 py-2 transition-all duration-200 w-full text-left cursor-pointer ${isViewDisabled ? 'opacity-70 hover:opacity-100' : ''}`}
+                              title={isViewDisabled ? "No applications to view (Click to refresh)" : "View Shortlisted"}
+                            >
+                              <Users className="w-4 h-4 text-[#3b82f6]" />
+                              {applications}
+                            </button>
+                          </td>
 
                           <td className="px-6 py-4">
                             <div className="flex gap-3">
@@ -419,19 +389,6 @@ const handleViewAll = (jobId, e) => {
                               >
                                 <Eye size={18} />
                               </button>
-                              {/* <Link
-                                to={`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`}
-                                className="text-gray-500 hover:text-blue-600 transition-all duration-200"
-                                title="View Job Description"
-                                onClick={e => e.stopPropagation()}
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M11.1 22H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.589 3.588A2.4 2.4 0 0 1 20 8v3.25" />
-                                  <path d="M14 2v5a1 1 0 0 0 1 1h5" />
-                                  <path d="m21 22-2.88-2.88" />
-                                  <circle cx="16" cy="17" r="3" />
-                                </svg>
-                              </Link> */}
                               <button 
                                 onClick={(e) => handleDelete(jobId, e)} 
                                 className={`text-gray-500 hover:text-red-500 transition-all duration-200 ${deletingJobId === jobId ? 'opacity-50 cursor-not-allowed' : ''}`} 

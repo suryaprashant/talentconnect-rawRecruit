@@ -292,27 +292,41 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
   const contentRef = useRef(null);
 
   const loadJobDetail = async () => {
-    if (!jobId) return;
+  if (!jobId) return;
+  
+  try {
+    setLoading(true);
+    const response = await getCompanyPostingForOncampusDetail(jobId);
     
-    try {
-      setLoading(true);
-      const response = await getCompanyPostingForOncampusDetail(jobId);
-      
-      if (response && response.data) {
-        setJob(response.data);
-        await viewed(response.data?._id);
-        setError(null);
-      } else {
-        setError("Job details not found.");
+    // ADD THIS DEBUG LOG
+    console.log('🔍 FRONTEND: Job Detail Response:', {
+      success: !!response.data,
+      jobId: response.data?._id,
+      companyPosted: response.data?.companyPosted,
+      profileImageUrl: response.data?.companyPosted?.profileImageUrl,
+      companyDetails: response.data?.companyPosted?.companyDetails,
+      // Check if the structure matches what we expect
+      responseStructure: {
+        'job.companyPosted.profileImageUrl': response.data?.companyPosted?.profileImageUrl,
+        'job.companyPosted.companyDetails.companyName': response.data?.companyPosted?.companyDetails?.companyName
       }
-    } catch (error) {
-      console.error("Error loading job detail: ", error);
-      setError("Failed to load job details. Please try again later.");
-      setJob(null);
-    } finally {
-      setLoading(false);
+    });
+    
+    if (response && response.data) {
+      setJob(response.data);
+      await viewed(response.data?._id);
+      setError(null);
+    } else {
+      setError("Job details not found.");
     }
-  };
+  } catch (error) {
+    console.error("Error loading job detail: ", error);
+    setError("Failed to load job details. Please try again later.");
+    setJob(null);
+  } finally {
+    setLoading(false);
+  }
+};
   
   useEffect(() => {
     if (isOpen && jobId) {
@@ -462,26 +476,26 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
   const jobStatus = getJobStatus();
   const isApplied = propIsApplied || job.isApplied || false;
   const companyName = job?.companyPosted?.companyDetails?.companyName || 'Company';
-  const companyLogo = job?.companyPosted?.companyDetails?.companyLogo || null;
+  const companyLogo = job?.companyPosted?.profileImageUrl || null;
   const companyLocation = job?.companyPosted?.companyDetails?.location || job?.workLocation?.[0] || 'Not Specified';
   const workLocation = job?.workLocation?.join(', ') || 'Not Specified';
 
   // Prepare company data for modal
   const companyData = {
-    name: companyName,
-    logo: companyLogo,
-    location: companyLocation,
-    description: job?.companyPosted?.companyDetails?.description,
-    industry: job?.companyPosted?.companyDetails?.industryType,
-    employees: job?.companyPosted?.companyDetails?.numberOfEmployees,
-    website: job?.companyPosted?.companyDetails?.website,
-    country: job?.country || job?.companyPosted?.companyDetails?.country,
-    city: job?.companyPosted?.companyDetails?.city,
-    state: job?.companyPosted?.companyDetails?.state,
-    pincode: job?.companyPosted?.companyDetails?.pincode,
-    email: job?.companyPosted?.companyDetails?.email,
-    phone: job?.companyPosted?.companyDetails?.phone
-  };
+  name: companyName,
+  logo: companyLogo, // Use the correct logo
+  location: companyLocation,
+  description: job?.companyPosted?.companyDetails?.description,
+  industry: job?.companyPosted?.companyDetails?.industryType,
+  employees: job?.companyPosted?.companyDetails?.numberOfEmployees,
+  website: job?.companyPosted?.companyDetails?.website,
+  country: job?.country || job?.companyPosted?.companyDetails?.country,
+  city: job?.companyPosted?.companyDetails?.city,
+  state: job?.companyPosted?.companyDetails?.state,
+  pincode: job?.companyPosted?.companyDetails?.pincode,
+  email: job?.companyPosted?.companyDetails?.email,
+  phone: job?.companyPosted?.companyDetails?.phone
+};
 
   return (
     <>

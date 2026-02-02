@@ -58,26 +58,26 @@ function StudentSidebar({ activePath }) {
         /> */}
       </SidebarNavGroup>
 
-      <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>
+      {/* <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>
         <SidebarNavItem 
           to="/student-events/casestudy" 
           icon={<FiBookmark />} 
           label="Case Studies" 
           active={activePath === '/student-events/casestudy'} 
         />
-        {/* <SidebarNavItem 
+        <SidebarNavItem 
           to="/student-events/hackathon" 
           icon={<FiAward />} 
           label="Hackathon" 
           active={activePath === '/student-events/hackathon'} 
-        /> */}
+        />
         <SidebarNavItem 
           to="/student-events/workshop" 
           icon={<FiTool/>} 
           label="Workshop" 
           active={activePath === '/student-events/workshop'} 
         />
-      </SidebarNavGroup>
+      </SidebarNavGroup> */}
 
       <SidebarNavGroup label="Service Request" icon={<FiClipboard />} active={activePath.includes('/service-request')}>
         <SidebarNavItem 
