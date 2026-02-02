@@ -458,26 +458,26 @@ const PoolJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, 
   const jobStatus = getJobStatus();
   const isApplied = propIsApplied || jobDetails.isApplied || false;
   const companyName = jobDetails?.companyPosted?.companyDetails?.companyName || 'Company';
-  const companyLogo = jobDetails?.companyPosted?.companyDetails?.companyLogo || null;
+  const companyLogo = jobDetails?.companyPosted?.profileImageUrl || null;
   const companyLocation = jobDetails?.companyPosted?.companyDetails?.location || jobDetails?.workLocation?.[0] || 'Not Specified';
   const workLocation = jobDetails?.workLocation?.join(', ') || 'Not Specified';
 
   // Prepare company data for modal
   const companyData = {
-    name: companyName,
-    logo: companyLogo,
-    location: companyLocation,
-    description: jobDetails?.companyPosted?.companyDetails?.description,
-    industry: jobDetails?.companyPosted?.companyDetails?.industryType,
-    employees: jobDetails?.companyPosted?.companyDetails?.numberOfEmployees,
-    website: jobDetails?.companyPosted?.companyDetails?.website,
-    country: jobDetails?.companyPosted?.companyDetails?.country,
-    city: jobDetails?.companyPosted?.companyDetails?.city,
-    state: jobDetails?.companyPosted?.companyDetails?.state,
-    pincode: jobDetails?.companyPosted?.companyDetails?.pincode,
-    email: jobDetails?.companyPosted?.companyDetails?.email,
-    phone: jobDetails?.companyPosted?.companyDetails?.phone
-  };
+  name: companyName,
+  logo: companyLogo, // Use the fixed logo here
+  location: companyLocation,
+  description: jobDetails?.companyPosted?.companyDetails?.description,
+  industry: jobDetails?.companyPosted?.companyDetails?.industryType,
+  employees: jobDetails?.companyPosted?.companyDetails?.numberOfEmployees,
+  website: jobDetails?.companyPosted?.companyDetails?.website,
+  country: jobDetails?.companyPosted?.companyDetails?.country,
+  city: jobDetails?.companyPosted?.companyDetails?.city,
+  state: jobDetails?.companyPosted?.companyDetails?.state,
+  pincode: jobDetails?.companyPosted?.companyDetails?.pincode,
+  email: jobDetails?.companyPosted?.companyDetails?.email,
+  phone: jobDetails?.companyPosted?.companyDetails?.phone
+};
 
   return (
     <>

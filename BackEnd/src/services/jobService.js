@@ -8,11 +8,11 @@ export async function fetchOpportunityService(query) {
         const response = await JobPostingTable.find(query)
             .populate({
                 path: 'companyPosted',
-                select: 'companyDetails'
+                select: 'companyDetails profileImageUrl' // FIXED: Added profileImageUrl
             })
             .lean();
 
-        // cal status
+        // Calculate status
         const now = Date.now();
         const newResponse = response.map(item => {
             const start = new Date(item.hiringStartDate).getTime();
@@ -24,12 +24,23 @@ export async function fetchOpportunityService(query) {
             };
         });
 
+        // Debug log
+        console.log('🔍 Off Campus Service Response:', {
+            count: newResponse.length,
+            firstItem: newResponse[0] ? {
+                hasCompanyPosted: !!newResponse[0].companyPosted,
+                profileImageUrl: newResponse[0].companyPosted?.profileImageUrl,
+                companyName: newResponse[0].companyPosted?.companyDetails?.companyName
+            } : 'No items'
+        });
+
         return { success: true, data: newResponse };
     } catch (error) {
         console.log("Error: ", error.message);
         throw new Error("Failed to fetch");
     }
 }
+
 export async function fetchReferalOpportunityService(query) {
     try {
         const response = await JobPostingTable.find(query)

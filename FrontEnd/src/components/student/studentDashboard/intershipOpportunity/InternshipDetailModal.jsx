@@ -542,7 +542,7 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
   const jobStatus = getJobStatus();
   const isApplied = propIsApplied || jobDetail.isApplied || false;
   const companyName = jobDetail?.companyPosted?.companyDetails?.companyName || jobDetail?.companyName || 'Company';
-  const companyLogo = jobDetail?.companyPosted?.companyDetails?.companyLogo || null;
+  const companyLogo = jobDetail?.companyPosted?.profileImageUrl || null;
   const companyLocation = jobDetail?.companyPosted?.companyDetails?.location || jobDetail?.location?.[0] || 'Not Specified';
   
   const internshipRole = Array.isArray(jobDetail.jobRoles) && jobDetail.jobRoles.length > 0 
@@ -556,20 +556,20 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
 
   // Prepare company data for modal
   const companyData = {
-    name: companyName,
-    logo: companyLogo,
-    location: companyLocation,
-    description: jobDetail.companyPosted?.companyDetails?.description || jobDetail.companyDescription,
-    industry: jobDetail.companyPosted?.companyDetails?.industryType,
-    employees: jobDetail.companyPosted?.companyDetails?.numberOfEmployees,
-    website: jobDetail.companyPosted?.companyDetails?.website,
-    country: jobDetail.companyPosted?.companyDetails?.country,
-    city: jobDetail.companyPosted?.companyDetails?.city,
-    state: jobDetail.companyPosted?.companyDetails?.state,
-    pincode: jobDetail.companyPosted?.companyDetails?.pincode,
-    email: jobDetail.companyPosted?.companyDetails?.email,
-    phone: jobDetail.companyPosted?.companyDetails?.phone
-  };
+  name: companyName,
+  logo: companyLogo, // Use the fixed logo here
+  location: companyLocation,
+  description: jobDetail.companyPosted?.companyDetails?.description || jobDetail.companyDescription,
+  industry: jobDetail.companyPosted?.companyDetails?.industryType,
+  employees: jobDetail.companyPosted?.companyDetails?.numberOfEmployees,
+  website: jobDetail.companyPosted?.companyDetails?.website,
+  country: jobDetail.companyPosted?.companyDetails?.country,
+  city: jobDetail.companyPosted?.companyDetails?.city,
+  state: jobDetail.companyPosted?.companyDetails?.state,
+  pincode: jobDetail.companyPosted?.companyDetails?.pincode,
+  email: jobDetail.companyPosted?.companyDetails?.email,
+  phone: jobDetail.companyPosted?.companyDetails?.phone
+};
 
   return (
     <>
@@ -815,32 +815,29 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                     Internship Requirements
                   </h2>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div className="space-y-4">
-                      <div>
-                        <div className="text-sm font-medium text-[#667eea] mb-1">Required Degrees</div>
-                        {renderTags(jobDetail.degree)}
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-[#667eea] mb-1">Eligible Streams</div>
-                        {renderTags(jobDetail.studentStreams)}
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="text-sm font-medium text-[#667eea] mb-1">Year of Study</div>
-                        <div className="text-base text-gray-900">
-                          {jobDetail.yearOfStudy || 'All years'}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-[#667eea] mb-1">Experience Level</div>
-                        <div className="text-base text-gray-900">
-                          {jobDetail.experienceLevel || 'Fresher'}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <div className="space-y-6 mb-8">
+  {/* Two-column layout for Year of Study and Experience Level */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <div className="text-sm font-medium text-[#667eea] mb-1">Year of Study</div>
+      <div className="text-base text-gray-900">
+        {jobDetail.yearOfStudy || 'All years'}
+      </div>
+    </div>
+    <div>
+      <div className="text-sm font-medium text-[#667eea] mb-1">Experience Level</div>
+      <div className="text-base text-gray-900">
+        {jobDetail.experienceLevel || 'Fresher'}
+      </div>
+    </div>
+  </div>
+  
+  {/* Eligible Streams section */}
+  <div>
+    <div className="text-sm font-medium text-[#667eea] mb-1">Eligible Streams</div>
+    {renderTags(jobDetail.studentStreams)}
+  </div>
+</div>
 
                   {/* Required Skills */}
                   {jobDetail?.skills && jobDetail?.skills.length > 0 && (

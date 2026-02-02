@@ -153,6 +153,45 @@ function ApplicationPage() {
     navigate(`/registered/on-campus-opportunities/${jobId}/applicants?targetStatus=Shortlisted`);
   };
 
+  // Handle Degree column click - Navigate to CollegeDetailPage
+  const handleDegreeClick = (job) => {
+    // Prepare data structure for CollegeDetailPage
+    const collegeData = {
+      // The structure expected by CollegeDetailPage
+      _id: job._id,
+      isApplied: false,
+      isSaved: false,
+      collegePosted: job.collegePosted || job.collegeDetails,
+      company: job.companyName || job.company,
+      description: job.description,
+      location: job.location,
+      jobTitle: job.jobTitle,
+      employmentType: job.employmentType,
+      packageDetails: job.packageDetails,
+      noOfplacedStudents: job.noOfplacedStudents || job.noOfStudents,
+      lookingFor: job.lookingFor || job.jobTitle,
+      proposedSchedule: job.proposedSchedule,
+      companyType: job.companyType,
+      roundDetails: job.roundDetails,
+      studentStreams: job.studentStreams,
+      numberOfStudent: job.numberOfStudent,
+      amenitiesRequired: job.amenitiesRequired,
+      contactPerson: job.contactPerson,
+      startDate: job.startDate,
+      endDate: job.endDate,
+      jobType: job.jobType || 'On-campus'
+    };
+    
+    // Navigate to CollegeDetailPage with state data
+    navigate(`/company/employerDashboard/college-detail/${job._id}`, {
+      state: {
+        applicationData: collegeData,
+        isApplied: false,
+        isSaved: false
+      }
+    });
+  };
+
   const handleDelete = async (jobId, e) => {
     e.stopPropagation();
     
@@ -338,10 +377,10 @@ function ApplicationPage() {
                           key={jobId}
                           className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200"
                         >
-                          {/* Degree Column - Updated navigation to match acceptedListing.jsx */}
+                          {/* Degree Column - Navigates to CollegeDetailPage */}
                           <td 
                             className="px-6 py-4 cursor-pointer" 
-                            onClick={() => navigate(`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`)}
+                            onClick={() => handleDegreeClick(job)}
                           >
                             <div className="font-medium text-gray-900 whitespace-normal break-words">
                               {jobDegree}

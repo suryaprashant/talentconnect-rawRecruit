@@ -184,11 +184,14 @@ export default function PoolCampusJobManagement() {
     return jobs.filter(job => {
       const degree = displayDegree(job);
       const jobTitle = job.jobTitle || '';
+      // FIXED: Use venue field for location
+      const location = job.venue || '';
 
-      // Comprehensive search across degree and job title
+      // Comprehensive search across degree and job title and location
       const matchesSearch =
         degree.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        jobTitle.toLowerCase().includes(searchQuery.toLowerCase());
+        jobTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        location.toLowerCase().includes(searchQuery.toLowerCase());
 
       const status = job.jobStatus || '';
 
@@ -698,46 +701,6 @@ export default function PoolCampusJobManagement() {
               </button>
             </div>
 
-            {/* Search and Filters */}
-            {/* <div className="p-6 border-b border-white/50">
-              <div className="flex flex-col md:flex-row gap-4 items-center">
-                <div className="relative flex-grow">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <Search className="w-4 h-4 text-[#3b82f6]" />
-                  </div>
-                  <input
-                    type="text"
-                    className="w-full pl-10 pr-4 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200"
-                    placeholder="Search by degree or job title..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-
-                <button
-                  className="flex items-center gap-2 px-6 py-3 bg-white/50 backdrop-blur-sm border border-white/50 rounded-xl hover:bg-white/70 transition-all duration-200 text-gray-700 font-medium"
-                  onClick={() => setShowFilters(!showFilters)}
-                >
-                  <Filter className="w-4 h-4 text-[#3b82f6]" />
-                  Filters
-                </button>
-
-                <div className="text-sm text-gray-500 font-medium">
-                  {totalItems > 0 ? `Showing ${startIndex + 1}-${endIndex} of ${totalItems}` : 'Showing 0-0 of 0'}
-                </div>
-              </div>
-            </div> */}
-
-            {/* Error Alert */}
-            {error && (
-              <div className="m-6 p-4 text-red-700 bg-gradient-to-r from-red-50/80 to-red-100/80 backdrop-blur-sm border border-red-200 rounded-xl">
-                <div className="flex items-center gap-3">
-                  <AlertCircle className="w-5 h-5" />
-                  <span>{error}</span>
-                </div>
-              </div>
-            )}
-
             {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -772,25 +735,29 @@ export default function PoolCampusJobManagement() {
                     currentJobs.map(job => {
                       const jobId = job._id;
                       const degree = displayDegree(job);
+                      // FIXED: Fetch venue location
+                      const jobLocation = job.venue || 'N/A';
                       const jobStatus = job.jobStatus || 'Unknown';
                       const deadline = job.endDate;
                       const views = job.views || 0;
                       const applications = job.applicationCount || 0;
-                      
-                      // NOTE: View disabled logic removed here
-                      const viewButtonClass = "transition-all duration-200 text-gray-500 hover:text-[#3b82f6]";
                       
                       return (
                         <tr
                           key={jobId}
                           className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200"
                         >
+                          {/* FIXED: Degree Column with Venue as subtitle and correct navigation */}
                           <td 
-  className="px-6 py-4 cursor-pointer" 
-  onClick={() => navigate(`/company-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}
->
-  <div className="font-medium text-gray-900 whitespace-normal break-words">{degree}</div>
-</td>
+                            className="px-6 py-4 cursor-pointer" 
+                            onClick={() => navigate(`/college-dashboard/preview/Pool-campus/${job._id}?isApplied=true`)}
+                          >
+                            <div className="font-medium text-gray-900 whitespace-normal break-words">{degree}</div>
+                            <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                              <MapPin className="w-3 h-3" />
+                              {jobLocation}
+                            </div>
+                          </td>
                           <td className="px-6 py-4">
                             <span className={`px-3 py-1 text-xs font-medium rounded-full ${jobStatus === 'Open'
                               ? 'bg-gradient-to-r from-[#a7f3d0]/20 to-[#34d399]/20 text-[#059669] border border-[#a7f3d0]/30'
@@ -832,7 +799,7 @@ export default function PoolCampusJobManagement() {
                                   e.stopPropagation(); 
                                   handleViewAllCompanies(job); 
                                 }} 
-                                className={viewButtonClass} 
+                                className="transition-all duration-200 text-gray-500 hover:text-[#3b82f6]" 
                                 title="View Company Applications"
                               >
                                 <Eye size={18} />

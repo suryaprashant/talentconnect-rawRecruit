@@ -687,7 +687,8 @@ function AppRoutes() {
 
               <Route path="/manage-application/campus-placement" element={<JobProvider><JobManagementApplication /> </JobProvider>} />
               <Route path="/manage-application/campus-placement/:jobId" element={<JobProvider><JobDetail status="Applied" /> </JobProvider>} />
-              <Route path="/college-dashboard/preview/On-campus/:id" element={<CollegeDetailsPage />} />
+              {/* <Route path="/college-dashboard/preview/On-campus/:id" element={<CollegeDetailsPage />} /> */}
+              <Route path="/company/employerDashboard/college-detail/:id" element={<CollegeDetailPage />} />
 
               <Route path="/manage-application/PoolCampus-placement" element={<JobProvider><JobManagementForPool /></JobProvider>} />
               <Route path="/manage-application/PoolCampus-placement/:jobId" element={<JobProvider><JobDetailForPool status="Applied" /> </JobProvider>} />

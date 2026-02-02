@@ -184,11 +184,29 @@ function JobManagementApplication() {
         navigateWithParams(jobId, targetStatus, true);
     };
 
-    // Handle row click for degree/location - goes to preview
-    // Updated to match acceptedListing.jsx navigation
+    // Handle row click for degree/location - navigate to college detail page
     const handleRowClick = (jobId) => {
-        navigate(`/company-dashboard/preview/On-campus/${jobId}?isApplied=true`);
-    };
+  // Get the job data
+  const job = jobs.find(j => j._id === jobId);
+  
+  if (!job) return;
+  
+  // Prepare data for CollegeDetailPage
+  const jobData = {
+    applicationData: {
+      ...job,
+      isApplied: false,
+      isSaved: false
+    },
+    isApplied: false,
+    isSaved: false
+  };
+  
+  // Navigate with state
+  navigate(`/company/employerDashboard/college-detail/${jobId}`, {
+    state: jobData
+  });
+};
 
     const handleDelete = async (jobId, e) => {
         e.stopPropagation();
@@ -352,6 +370,7 @@ function JobManagementApplication() {
                                             const deadline = job.endDate || job.deadline;
                                             const views = job?.views ?? 0;
                                             const applications = job.applicationCount || job.applications || 0;
+                                            const collegeId = job.collegeId || job.college?._id || jobId; // Adjust based on your data structure
                                             
                                             const isViewDisabled = false;
                                             const viewButtonClass = `transition-all duration-200 ${isViewDisabled ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-[#3b82f6]'}`;
@@ -361,10 +380,10 @@ function JobManagementApplication() {
                                                     key={jobId}
                                                     className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200"
                                                 >
-                                                    {/* Degree Column with Location as subtitle - Updated to match acceptedListing.jsx */}
+                                                    {/* Degree Column with Location as subtitle - Updated to navigate to college detail page */}
                                                     <td 
                                                         className="px-6 py-4 cursor-pointer" 
-                                                        onClick={() => navigate(`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`)}
+                                                        onClick={() => handleRowClick(jobId, collegeId)}
                                                     >
                                                         <div className="font-medium text-gray-900 whitespace-normal break-words">{jobDegree}</div>
                                                         <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
