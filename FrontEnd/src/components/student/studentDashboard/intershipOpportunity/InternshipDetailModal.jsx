@@ -78,16 +78,6 @@ const formatDate = (dateString) => {
   }
 };
 
-// Split long paragraph into meaningful bullet points
-const splitIntoBullets = (text) => {
-  if (!text || typeof text !== "string") return [];
-
-  return text
-    .split(/[\.\n,+]/)
-    .map(s => s.trim())
-    .filter(s => s.length > 3);
-};
-
 // Helper function to render array data as tags
 const renderTags = (data) => {
   if (Array.isArray(data) && data.length > 0) {
@@ -705,24 +695,17 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
               </div>
             </div>
 
-            <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
+            <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg">
               
               {/* Overview Tab */}
               {activeTab === 'overview' && (
-                <div className="px-6 py-6">
+                <div className="p-6">
                   {/* About Company */}
                   <div className="mb-8">
                     <div className="flex justify-between items-center mb-4">
                       <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
                         About {companyName}
                       </h2>
-                      {/* <button
-                        onClick={handleCompanyClick}
-                        className="inline-flex items-center text-sm text-[#667eea] hover:text-[#764ba2] transition-colors"
-                      >
-                        View Company Details
-                        <ExternalLink className="h-4 w-4 ml-1" />
-                      </button> */}
                     </div>
                     <p className="text-gray-700 mb-8">
                       {jobDetail.companyPosted?.companyDetails?.description || 
@@ -730,22 +713,22 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                        'No company description available.'}
                     </p>
                     
-                    {/* Company Stats */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                        <div className="text-3xl font-bold text-gray-900 mb-2">
+                    {/* Company Stats - Reduced space */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-gray-900 mb-2">
                           {jobDetail.companyPosted?.companyDetails?.numberOfEmployees?.toLocaleString() || 'N/A'}
                         </div>
                         <div className="text-sm text-gray-600 font-medium">Employees</div>
                       </div>
-                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                        <div className="text-3xl font-bold text-gray-900 mb-2">
+                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-gray-900 mb-2">
                           {jobDetail.companyPosted?.companyDetails?.industryType || 'N/A'}
                         </div>
                         <div className="text-sm text-gray-600 font-medium">Industry</div>
                       </div>
-                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                        <div className="text-3xl font-bold text-gray-900 mb-2">
+                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-gray-900 mb-2">
                           {jobDetail.companyPosted?.companyDetails?.country || 'N/A'}
                         </div>
                         <div className="text-sm text-gray-600 font-medium">Country</div>
@@ -753,13 +736,13 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                     </div>
                   </div>
 
-                  {/* Internship Details */}
-                  <div className="px-6 py-6 border-t border-gray-100">
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                  {/* Internship Details - Improved spacing */}
+                  <div className="mb-8">
+                    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
                       Internship Details
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
+                      <div className="space-y-5">
                         <div>
                           <div className="text-sm font-medium text-[#667eea] mb-1">Internship Role</div>
                           {renderTags(jobDetail.jobRoles)}
@@ -773,7 +756,7 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                           {renderTags(jobDetail.workMode)}
                         </div>
                       </div>
-                      <div className="space-y-4">
+                      <div className="space-y-5">
                         <div>
                           <div className="text-sm font-medium text-[#667eea] mb-1">Duration</div>
                           <div className="text-base text-gray-900">{duration}</div>
@@ -796,8 +779,8 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
 
                   {/* About the Internship */}
                   {jobDetail.description && (
-                    <div className="px-6 py-6 border-t border-gray-100">
-                      <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                    <div>
+                      <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
                         About the Internship
                       </h2>
                       <div className="text-gray-700 whitespace-pre-wrap">
@@ -810,39 +793,39 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
 
               {/* Requirements Tab */}
               {activeTab === 'requirements' && (
-                <div className="px-6 py-6">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                <div className="p-6">
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
                     Internship Requirements
                   </h2>
                   
                   <div className="space-y-6 mb-8">
-  {/* Two-column layout for Year of Study and Experience Level */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-      <div className="text-sm font-medium text-[#667eea] mb-1">Year of Study</div>
-      <div className="text-base text-gray-900">
-        {jobDetail.yearOfStudy || 'All years'}
-      </div>
-    </div>
-    <div>
-      <div className="text-sm font-medium text-[#667eea] mb-1">Experience Level</div>
-      <div className="text-base text-gray-900">
-        {jobDetail.experienceLevel || 'Fresher'}
-      </div>
-    </div>
-  </div>
-  
-  {/* Eligible Streams section */}
-  <div>
-    <div className="text-sm font-medium text-[#667eea] mb-1">Eligible Streams</div>
-    {renderTags(jobDetail.studentStreams)}
-  </div>
-</div>
+                    {/* Two-column layout for Year of Study and Experience Level */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <div className="text-sm font-medium text-[#667eea] mb-1">Year of Study</div>
+                        <div className="text-base text-gray-900">
+                          {jobDetail.yearOfStudy || 'All years'}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-[#667eea] mb-1">Experience Level</div>
+                        <div className="text-base text-gray-900">
+                          {jobDetail.experienceLevel || 'Fresher'}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Eligible Streams section */}
+                    <div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Eligible Streams</div>
+                      {renderTags(jobDetail.studentStreams)}
+                    </div>
+                  </div>
 
                   {/* Required Skills */}
                   {jobDetail?.skills && jobDetail?.skills.length > 0 && (
-                    <div className="px-6 py-6 border-t border-gray-100">
-                      <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                    <div>
+                      <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
                         Required Skills
                       </h2>
                       <div className="flex flex-wrap gap-2">
@@ -862,65 +845,65 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
 
               {/* Compensation Tab - FIXED */}
               {activeTab === 'benefits' && (
-                <div className="px-6 py-6">
+                <div className="p-6">
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
                     Compensation & Benefits
                   </h2>
 
-                  {/* Stipend Details */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  {/* Stipend Details - Compact layout */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                     {/* Stipend Card */}
-                    <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-xl p-5">
-                      <div className="flex items-center mb-3">
-                        <div className="p-2 bg-emerald-100 rounded-lg mr-3">
-                          <IndianRupee className="h-6 w-6 text-emerald-600" />
+                    <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-xl p-4">
+                      <div className="flex items-center mb-2">
+                        <div className="p-2 bg-emerald-100 rounded-lg mr-2">
+                          <IndianRupee className="h-5 w-5 text-emerald-600" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-emerald-800">Monthly Stipend</h3>
-                          <p className="text-sm text-emerald-600">During internship</p>
+                          <h3 className="font-semibold text-emerald-800 text-sm">Monthly Stipend</h3>
+                          <p className="text-xs text-emerald-600">During internship</p>
                         </div>
                       </div>
-                      <div className="text-2xl font-bold text-emerald-900">
+                      <div className="text-xl font-bold text-emerald-900 mt-2">
                         {formatStipend()}
                       </div>
                     </div>
 
                     {/* Certificate Card */}
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-5">
-                      <div className="flex items-center mb-3">
-                        <div className="p-2 bg-blue-100 rounded-lg mr-3">
-                          <Award className="h-6 w-6 text-blue-600" />
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4">
+                      <div className="flex items-center mb-2">
+                        <div className="p-2 bg-blue-100 rounded-lg mr-2">
+                          <Award className="h-5 w-5 text-blue-600" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-blue-800">Certificate</h3>
-                          <p className="text-sm text-blue-600">Upon completion</p>
+                          <h3 className="font-semibold text-blue-800 text-sm">Certificate</h3>
+                          <p className="text-xs text-blue-600">Upon completion</p>
                         </div>
                       </div>
-                      <div className="text-lg font-medium text-blue-900">
+                      <div className="text-lg font-medium text-blue-900 mt-2">
                         Provided
                       </div>
                     </div>
 
                     {/* Letter of Recommendation Card */}
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-5">
-                      <div className="flex items-center mb-3">
-                        <div className="p-2 bg-purple-100 rounded-lg mr-3">
-                          <FileText className="h-6 w-6 text-purple-600" />
+                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-4">
+                      <div className="flex items-center mb-2">
+                        <div className="p-2 bg-purple-100 rounded-lg mr-2">
+                          <FileText className="h-5 w-5 text-purple-600" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-purple-800">Letter of Recommendation</h3>
-                          <p className="text-sm text-purple-600">Performance based</p>
+                          <h3 className="font-semibold text-purple-800 text-sm">Letter of Recommendation</h3>
+                          <p className="text-xs text-purple-600">Performance based</p>
                         </div>
                       </div>
-                      <div className="text-lg font-medium text-purple-900">
+                      <div className="text-lg font-medium text-purple-900 mt-2">
                         Available
                       </div>
                     </div>
                   </div>
 
                   {/* Additional Benefits */}
-                  <div className="px-6 py-6 border-t border-gray-100">
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                  <div>
+                    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
                       Internship Benefits
                     </h2>
                     <div className="flex flex-wrap gap-2">

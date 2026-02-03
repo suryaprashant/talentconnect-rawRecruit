@@ -438,15 +438,8 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
     setShowCompanyDetails(true);
   };
 
-  const fixedPay =
-  jobDetail?.packageDetails?.fixedPay ?? null;
-
-const variablePay =
-  jobDetail?.packageDetails?.variablePay ??
-  jobDetail?.packageDetails?.variable ??
-  jobDetail?.packageDetails?.joiningBonus ??
-  null;
-
+  const fixedPay = jobDetail?.packageDetails?.fixedPay ?? null;
+  const variablePay = jobDetail?.packageDetails?.variablePay ?? jobDetail?.packageDetails?.variable ?? jobDetail?.packageDetails?.joiningBonus ?? null;
 
   if (!isOpen) return null;
 
@@ -490,20 +483,20 @@ const variablePay =
   
   // Prepare company data for modal
   const companyData = {
-  name: companyName,
-  logo: companyLogo, // Use the fixed logo
-  location: companyLocation,
-  description: jobDetail.companyPosted?.companyDetails?.description || jobDetail.companyDescription,
-  industry: jobDetail.companyPosted?.companyDetails?.industryType,
-  employees: jobDetail.companyPosted?.companyDetails?.numberOfEmployees,
-  website: jobDetail.companyPosted?.companyDetails?.website,
-  country: jobDetail.companyPosted?.companyDetails?.country,
-  city: jobDetail.companyPosted?.companyDetails?.city,
-  state: jobDetail.companyPosted?.companyDetails?.state,
-  pincode: jobDetail.companyPosted?.companyDetails?.pincode,
-  email: jobDetail.companyPosted?.companyDetails?.email,
-  phone: jobDetail.companyPosted?.companyDetails?.phone
-};
+    name: companyName,
+    logo: companyLogo,
+    location: companyLocation,
+    description: jobDetail.companyPosted?.companyDetails?.description || jobDetail.companyDescription,
+    industry: jobDetail.companyPosted?.companyDetails?.industryType,
+    employees: jobDetail.companyPosted?.companyDetails?.numberOfEmployees,
+    website: jobDetail.companyPosted?.companyDetails?.website,
+    country: jobDetail.companyPosted?.companyDetails?.country,
+    city: jobDetail.companyPosted?.companyDetails?.city,
+    state: jobDetail.companyPosted?.companyDetails?.state,
+    pincode: jobDetail.companyPosted?.companyDetails?.pincode,
+    email: jobDetail.companyPosted?.companyDetails?.email,
+    phone: jobDetail.companyPosted?.companyDetails?.phone
+  };
 
   // Format salary
   const formatSalary = () => {
@@ -555,7 +548,7 @@ const variablePay =
         {/* Main Content Area - Single scroll container */}
         <div ref={contentRef} className="flex-1 overflow-y-auto bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
           <div className="p-6">
-            {/* Header Section - Updated with company logo and location */}
+            {/* Header Section */}
             <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-5 rounded-xl mb-6">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
@@ -645,20 +638,13 @@ const variablePay =
               </div>
             </div>
 
-            <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
+            <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg">
               {/* About Company */}
-              <div className="px-6 py-6">
+              <div className="p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
                     About {companyName}
                   </h2>
-                  {/* <button
-                    onClick={handleCompanyClick}
-                    className="inline-flex items-center text-sm text-[#667eea] hover:text-[#764ba2] transition-colors"
-                  >
-                    View Company Details
-                    <ExternalLink className="h-4 w-4 ml-1" />
-                  </button> */}
                 </div>
                 <p className="text-gray-700 mb-8">
                   {jobDetail.companyPosted?.companyDetails?.description || 
@@ -668,27 +654,27 @@ const variablePay =
                 
                 {/* Company stats if available */}
                 {jobDetail.companyPosted?.companyDetails && (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                     {(jobDetail.companyPosted.companyDetails.numberOfEmployees || 
                       jobDetail.companyPosted.companyDetails.numberOfEmployees === 0) && (
-                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                        <div className="text-3xl font-bold text-gray-900 mb-2">
+                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-gray-900 mb-2">
                           {jobDetail.companyPosted.companyDetails.numberOfEmployees.toLocaleString()}
                         </div>
                         <div className="text-sm text-gray-600 font-medium">Employees</div>
                       </div>
                     )}
                     {jobDetail.companyPosted.companyDetails.industryType && (
-                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                        <div className="text-3xl font-bold text-gray-900 mb-2 truncate">
+                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-gray-900 mb-2 truncate">
                           {jobDetail.companyPosted.companyDetails.industryType}
                         </div>
                         <div className="text-sm text-gray-600 font-medium">Industry</div>
                       </div>
                     )}
                     {jobDetail.companyPosted.companyDetails.country && (
-                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                        <div className="text-3xl font-bold text-gray-900 mb-2">
+                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-gray-900 mb-2">
                           {jobDetail.companyPosted.companyDetails.country}
                         </div>
                         <div className="text-sm text-gray-600 font-medium">Country</div>
@@ -700,8 +686,8 @@ const variablePay =
 
               {/* Job Description */}
               {jobDetail.description && (
-                <div className="px-6 py-6 border-t border-gray-100">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                <div className="p-6">
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
                     Job Description
                   </h2>
                   <div className="text-gray-700 whitespace-pre-wrap">
@@ -711,8 +697,8 @@ const variablePay =
               )}
 
               {/* Job Details */}
-              <div className="px-6 py-6 border-t border-gray-100">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <div className="p-6">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
                   Job Details
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -748,31 +734,31 @@ const variablePay =
               </div>
 
               {/* Job Overview - Stats */}
-              <div className="px-6 py-6 border-t border-gray-100">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <div className="p-6">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
                   Job Overview
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
                     <div className="flex items-center justify-center mb-2">
                       <DollarSign className="h-5 w-5 text-[#667eea] mr-2" />
                       <span className="text-sm font-medium text-[#667eea]">Salary Package</span>
                     </div>
-                    <div className="text-2xl font-bold text-gray-900">{formatSalary()}</div>
+                    <div className="text-xl font-bold text-gray-900">{formatSalary()}</div>
                   </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
                     <div className="flex items-center justify-center mb-2">
                       <Briefcase className="h-5 w-5 text-[#667eea] mr-2" />
                       <span className="text-sm font-medium text-[#667eea]">Work Mode</span>
                     </div>
-                    <div className="text-2xl font-bold text-gray-900">{formatWorkMode()}</div>
+                    <div className="text-xl font-bold text-gray-900">{formatWorkMode()}</div>
                   </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
                     <div className="flex items-center justify-center mb-2">
                       <Calendar className="h-5 w-5 text-[#667eea] mr-2" />
                       <span className="text-sm font-medium text-[#667eea]">Application Deadline</span>
                     </div>
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-xl font-bold text-gray-900">
                       {jobDetail.applicationDeadline ? formatDate(jobDetail.applicationDeadline) : 'Rolling Basis'}
                     </div>
                   </div>
@@ -781,8 +767,8 @@ const variablePay =
 
               {/* Required Skills */}
               {jobDetail?.skills && jobDetail?.skills.length > 0 && (
-                <div className="px-6 py-6 border-t border-gray-100">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                <div className="p-6">
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
                     Required Skills
                   </h2>
                   <div className="flex flex-wrap gap-2">
@@ -799,11 +785,11 @@ const variablePay =
               )}
 
               {/* Eligibility Criteria */}
-              <div className="px-6 py-6 border-t border-gray-100">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+              <div className="p-6">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
                   Eligibility Criteria
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-4">
                     <div>
                       <div className="text-sm font-medium text-[#667eea] mb-1">Eligible Degrees</div>
@@ -828,103 +814,98 @@ const variablePay =
               </div>
 
               {/* Compensation & Benefits */}
-<div className="px-6 py-6 border-t border-gray-100">
-  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-    Compensation & Benefits
-  </h2>
+              <div className="p-6">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
+                  Compensation & Benefits
+                </h2>
 
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-
-    {/* Salary Package */}
-    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-      <div className="text-sm font-medium text-[#667eea] mb-2">
-        Salary Package
-      </div>
-      <div className="text-2xl font-bold text-gray-900">
-        {formatSalary()}
-      </div>
-    </div>
-
-    {/* Fixed Pay */}
-    {fixedPay !== null && (
-      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-        <div className="text-sm font-medium text-[#667eea] mb-2">
-          Fixed Pay
-        </div>
-        <div className="text-2xl font-bold text-gray-900">
-          ₹{Number(fixedPay).toLocaleString()}
-        </div>
-      </div>
-    )}
-
-    {/* Variable Pay */}
-    {variablePay !== null && (
-      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-        <div className="text-sm font-medium text-[#667eea] mb-2">
-          Variable Pay
-        </div>
-        <div className="text-2xl font-bold text-gray-900">
-          ₹{Number(variablePay).toLocaleString()}
-        </div>
-      </div>
-    )}
-
-  </div>
-
-  <h3 className="font-medium text-[#667eea] mt-6 mb-3">
-    Benefits Offered
-  </h3>
-
-  <div className="flex flex-wrap gap-2">
-    {jobDetail?.benefits?.length > 0 ? (
-      jobDetail.benefits.map((benefit, index) => (
-        <span
-          key={index}
-          className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
-        >
-          {benefit}
-        </span>
-      ))
-    ) : (
-      <span className="px-3 py-1.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-full text-sm">
-        Competitive salary, Health insurance, Flexible work hours
-      </span>
-    )}
-  </div>
-</div>
-
-
-              {/* Selection Process - Matches on-campus version */}
-              <div className="px-6 py-6 border-t border-gray-100">
-                <div className="mb-4">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-1">
-                    Selection Process
-                  </h2>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {normalizeSelectionProcess(jobDetail.selectionProcess)?.length > 0 ? (
-                      normalizeSelectionProcess(jobDetail.selectionProcess).map((step, index) => (
-                        <div
-                          key={index}
-                          className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#667eea]/30 hover:shadow-sm transition-all duration-200"
-                        >
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
-                              <span className="text-xs font-bold text-white">{index + 1}</span>
-                            </div>
-                            <p className="text-sm font-medium text-gray-900">
-                              Round {index + 1}
-                            </p>
-                          </div>
-                          <p className="text-xs text-gray-600">{step}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-gray-700">
-                        {renderTags(jobDetail.selectionProcess)}
-                      </div>
-                    )}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  {/* Salary Package */}
+                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
+                    <div className="text-sm font-medium text-[#667eea] mb-2">
+                      Salary Package
+                    </div>
+                    <div className="text-xl font-bold text-gray-900">
+                      {formatSalary()}
+                    </div>
                   </div>
+
+                  {/* Fixed Pay */}
+                  {fixedPay !== null && (
+                    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
+                      <div className="text-sm font-medium text-[#667eea] mb-2">
+                        Fixed Pay
+                      </div>
+                      <div className="text-xl font-bold text-gray-900">
+                        ₹{Number(fixedPay).toLocaleString()}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Variable Pay */}
+                  {variablePay !== null && (
+                    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg text-center">
+                      <div className="text-sm font-medium text-[#667eea] mb-2">
+                        Variable Pay
+                      </div>
+                      <div className="text-xl font-bold text-gray-900">
+                        ₹{Number(variablePay).toLocaleString()}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <h3 className="font-medium text-[#667eea] mb-4">
+                  Benefits Offered
+                </h3>
+
+                <div className="flex flex-wrap gap-2">
+                  {jobDetail?.benefits?.length > 0 ? (
+                    jobDetail.benefits.map((benefit, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
+                      >
+                        {benefit}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="px-3 py-1.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-full text-sm">
+                      Competitive salary, Health insurance, Flexible work hours
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Selection Process */}
+              <div className="p-6">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
+                  Selection Process
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {normalizeSelectionProcess(jobDetail.selectionProcess)?.length > 0 ? (
+                    normalizeSelectionProcess(jobDetail.selectionProcess).map((step, index) => (
+                      <div
+                        key={index}
+                        className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#667eea]/30 hover:shadow-sm transition-all duration-200"
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
+                            <span className="text-xs font-bold text-white">{index + 1}</span>
+                          </div>
+                          <p className="text-sm font-medium text-gray-900">
+                            Round {index + 1}
+                          </p>
+                        </div>
+                        <p className="text-xs text-gray-600">{step}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-gray-700">
+                      {renderTags(jobDetail.selectionProcess)}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -933,8 +914,8 @@ const variablePay =
                 jobDetail.onlineTestDate ||
                 jobDetail.interviewWindow ||
                 jobDetail.offerRolloutDate) && (
-                <div className="px-6 py-6 border-t border-gray-100">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                <div className="p-6">
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
                     Important Dates
                   </h2>
 
@@ -988,8 +969,8 @@ const variablePay =
 
               {/* Contact Information if available */}
               {jobDetail.contactPerson && (
-                <div className="px-6 py-6 border-t border-gray-100">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+                <div className="p-6">
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
                     Contact Person
                   </h2>
                   <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">

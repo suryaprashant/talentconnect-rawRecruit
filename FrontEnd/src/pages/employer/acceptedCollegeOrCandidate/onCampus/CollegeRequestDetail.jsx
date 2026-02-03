@@ -305,7 +305,7 @@ const CollegeDetailsModal = () => (
         <>
             <div className="bg-white p-6 rounded-lg shadow-sm mb-6 border border-gray-200">
                 {/* College Header */}
-                <div className="pb-4 border-b border-gray-200 mb-4">
+                <div className="pb-4 mb-4">
                     <div className="flex items-center">
                         {profileImage ? (
                             <img 
@@ -388,7 +388,7 @@ const CollegeDetailsModal = () => (
                 {(placementRate || highestPackage || averagePackage) && (
                     <div className="mb-6">
                         <h3 className="text-lg font-bold mb-4 text-gray-800">Placement Statistics</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {placementRate && (
                                 <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
                                     <div className="text-2xl font-bold text-blue-600">{placementRate}%</div>
@@ -407,7 +407,7 @@ const CollegeDetailsModal = () => (
                                     <div className="text-sm text-gray-600 mt-1">Average Package</div>
                                 </div>
                             )}
-                        </div>
+                        </div> */}
                     </div>
                 )}
 

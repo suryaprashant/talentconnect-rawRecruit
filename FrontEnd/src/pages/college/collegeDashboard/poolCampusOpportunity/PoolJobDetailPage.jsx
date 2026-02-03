@@ -586,7 +586,7 @@ const PoolJobDetailsPage = () => {
                     )}
 
                     {/* Bottom Back Button */}
-                    <div className="px-6 py-6 border-t border-gray-100">
+                    <div className="px-6 py-6">
                         <div className="flex justify-left">
                             <button 
                                 onClick={() => handleGoBack()} 

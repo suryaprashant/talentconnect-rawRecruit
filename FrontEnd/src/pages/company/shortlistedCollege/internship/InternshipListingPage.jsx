@@ -96,6 +96,17 @@ export default function InternshipListing() {
         }
         return getJobRole(job);
       };
+    
+    // Function to calculate end date (30 days after posting)
+    const calculateEndDate = (createdAt) => {
+        if (!createdAt) return null;
+        
+        const postDate = new Date(createdAt);
+        const endDate = new Date(postDate);
+        endDate.setDate(endDate.getDate() + 30); // Add 30 days
+        
+        return endDate;
+    };
 
     // Filter jobs based on search query
     const filteredJobs = jobs?.filter(job => {
@@ -188,13 +199,16 @@ export default function InternshipListing() {
                                         </span>
                                         <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                                             <Calendar className="h-3 w-3 mr-1.5" />
-                                            {selectedJob?.expireAt
-                                              ? new Date(selectedJob.expireAt).toLocaleDateString('en-US', {
-                                                  month: 'short',
-                                                  day: 'numeric',
-                                                  year: 'numeric'
-                                                })
-                                              : 'N/A'}
+                                            {(() => {
+                                                const endDate = calculateEndDate(selectedJob?.createdAt);
+                                                return endDate
+                                                    ? endDate.toLocaleDateString('en-US', {
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        year: 'numeric'
+                                                    })
+                                                    : 'N/A';
+                                            })()}
                                         </span>
                                         <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
                                             <Users className="h-3 w-3 mr-1.5" />
@@ -315,7 +329,7 @@ export default function InternshipListing() {
                                       ? job.jobRoles.join(', ')
                                       : job?.jobTitle || 'N/A';
 
-                                  const endDate = job?.expireAt || job?.endDate || null;
+                                  const endDate = calculateEndDate(job?.createdAt);
                              return (
                                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                                     <div className="grid grid-cols-12 gap-4 items-center">
@@ -353,7 +367,7 @@ export default function InternshipListing() {
                                                 <Calendar className="h-3 w-3 text-gray-400" />
                                                 <span className="text-gray-700 text-sm">
                                                    {endDate
-                                                     ? new Date(endDate).toLocaleDateString('en-US', {
+                                                     ? endDate.toLocaleDateString('en-US', {
                                                          month: 'short',
                                                          day: 'numeric',
                                                          year: 'numeric'

@@ -482,6 +482,27 @@ export default function InternshipListing() {
       setShowJobDetail(true);
     };
 
+    // Function to calculate end date (30 days after posting)
+const calculateEndDate = (createdAt) => {
+  if (!createdAt) return 'N/A';
+  
+  try {
+    const postDate = new Date(createdAt);
+    const endDate = new Date(postDate);
+    endDate.setDate(endDate.getDate() + 30);
+    
+    // Format the date
+    return endDate.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      year: 'numeric'
+    });
+  } catch (error) {
+    console.error('Error calculating end date:', error);
+    return 'N/A';
+  }
+};
+
     const handleBackToList = () => {
         setSelectedJob(null);
         setShowJobDetail(false);
@@ -690,20 +711,14 @@ export default function InternshipListing() {
                                         </div>
 
                                         {/* End Date - Original layout */}
-                                        <div className="col-span-2">
-                                            <div className="flex items-center gap-2">
-                                                <Calendar className="h-3 w-3 text-gray-400" />
-                                                <span className="text-gray-700 text-sm">
-                                                   {endDate
-                                                     ? new Date(endDate).toLocaleDateString('en-US', {
-                                                         month: 'short',
-                                                         day: 'numeric',
-                                                         year: 'numeric'
-                                                       })
-                                                     : 'N/A'}
-                                                </span>
-                                            </div>
-                                        </div>
+<div className="col-span-2">
+  <div className="flex items-center gap-2">
+    <Calendar className="h-3 w-3 text-gray-400" />
+    <span className="text-gray-700 text-sm">
+      {calculateEndDate(job?.createdAt)}
+    </span>
+  </div>
+</div>
 
                                         {/* Views - Original layout */}
                                         <div className="col-span-1 text-center">
