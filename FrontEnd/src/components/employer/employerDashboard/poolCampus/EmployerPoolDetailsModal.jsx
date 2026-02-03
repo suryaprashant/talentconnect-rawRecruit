@@ -26,6 +26,7 @@ import { format } from 'date-fns';
 
 const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
   const modalRef = useRef(null);
+  const poolModalRef = useRef(null); // Ref for pool details modal
   const contentRef = useRef(null); // Added contentRef for scrollable area
   
   const [posting, setPosting] = useState(null);
@@ -109,11 +110,19 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
   // Close modal on Escape key
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        if (showPoolModal) {
+          setShowPoolModal(false);
+        } else if (showAlternateDateModal) {
+          setShowAlternateDateModal(false);
+        } else {
+          onClose();
+        }
+      }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
+  }, [onClose, showPoolModal, showAlternateDateModal]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -127,18 +136,25 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  // Close modal when clicking outside
+  // Close main modal when clicking outside - updated to handle nested modals
   useEffect(() => {
     const handleClickOutside = (e) => {
+      // Don't close if pool modal is open
+      if (showPoolModal || showAlternateDateModal) return;
+      
+      // Don't close if clicking on pool modal or alternate date modal
+      if (poolModalRef.current?.contains(e.target)) return;
+      
       if (modalRef.current && !modalRef.current.contains(e.target)) {
         onClose();
       }
     };
+    
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, showPoolModal, showAlternateDateModal]);
 
   // Handle share
   const handleShare = () => {
@@ -226,9 +242,14 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
     setShowAlternateDateModal(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseAlternateModal = () => {
     setShowAlternateDateModal(false);
     setDateError('');
+  };
+
+  // Pool modal handler
+  const handleClosePoolModal = () => {
+    setShowPoolModal(false);
   };
 
   const validateDates = () => {
@@ -288,11 +309,14 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
 
     return (
       <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 max-w-md w-full">
+        <div 
+          ref={poolModalRef}
+          className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 max-w-md w-full"
+        >
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Suggest Alternate Dates</h3>
             <button
-              onClick={handleCloseModal}
+              onClick={handleCloseAlternateModal}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X size={20} />
@@ -345,7 +369,7 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
           
           <div className="flex justify-end gap-3">
             <button
-              onClick={handleCloseModal}
+              onClick={handleCloseAlternateModal}
               className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gradient-to-r from-gray-100 to-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-200"
             >
               Cancel
@@ -372,7 +396,10 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
     
     return (
       <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div 
+          ref={poolModalRef}
+          className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        >
           <div className="p-6">
             <div className="flex justify-between items-start mb-6">
               <div>
@@ -384,7 +411,7 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
                 </div>
               </div>
               <button
-                onClick={() => setShowPoolModal(false)}
+                onClick={handleClosePoolModal}
                 className="text-gray-500 hover:text-gray-700 text-xl p-1"
               >
                 ✕
@@ -428,25 +455,6 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
                 </div>
               </div>
             </div>
-
-            {/* <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Pool Campus Information</h3>
-              <p className="text-gray-700 mb-3">
-                This college serves as the lead institution for the pool campus drive. 
-                Multiple colleges will participate in this shared recruitment drive.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <span className="px-3 py-1 bg-white text-blue-700 border border-blue-200 rounded-full text-sm">
-                  Lead College
-                </span>
-                <span className="px-3 py-1 bg-white text-green-700 border border-green-200 rounded-full text-sm">
-                  Multiple Colleges
-                </span>
-                <span className="px-3 py-1 bg-white text-purple-700 border border-purple-200 rounded-full text-sm">
-                  Centralized Recruitment
-                </span>
-              </div>
-            </div> */}
           </div>
         </div>
       </div>
@@ -531,8 +539,10 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
               )}
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
-                  onClick={() => setShowPoolModal(true)}>
+              <h2 
+                className="text-2xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
+                onClick={() => setShowPoolModal(true)}
+              >
                 {collegeName}
               </h2>
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mt-1">
@@ -546,11 +556,6 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
                   <span>{location}</span>
                 </div>
               </div>
-              {/* <div className="mt-1">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
-                  Pool Campus Drive
-                </span>
-              </div> */}
             </div>
           </div>
           
@@ -589,7 +594,7 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
           style={{ borderRadius: '0 0 0 1rem' }}
         >
           {/* Statistics Cards - Horizontal Layout */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-6">
             {/* Min Package Card */}
             <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
               <div className="flex items-center gap-3">
@@ -608,6 +613,21 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
               </div>
             </div>
             
+            {/* Students to Place Card */}
+            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg">
+                  <Users className="h-5 w-5 text-green-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-gray-600 mb-1">Students to Place</p>
+                  <p className="text-base font-bold text-green-600 truncate">
+                    {posting.noOfplacedStudents || 'N/A'}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
             {/* Employment Type Card */}
             <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
               <div className="flex items-center gap-3">
@@ -618,36 +638,6 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
                   <p className="text-xs text-gray-600 mb-1">Employment Type</p>
                   <p className="text-sm font-medium text-purple-600 truncate">
                     {posting.employmentType || 'N/A'}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Number of Openings Card */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg">
-                  <Users className="h-5 w-5 text-green-600" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-gray-600 mb-1">Openings</p>
-                  <p className="text-base font-bold text-green-600 truncate">
-                    {posting.numberOfOpenings || 'N/A'}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Work Mode Card */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg">
-                  <Clock className="h-5 w-5 text-yellow-600" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-gray-600 mb-1">Work Mode</p>
-                  <p className="text-sm font-medium text-yellow-600 truncate">
-                    {posting.workMode || 'N/A'}
                   </p>
                 </div>
               </div>
@@ -782,7 +772,7 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
             )}
 
             {/* Job Details */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">
+            {/* <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">
               <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">
                 Job Details
               </h3>
@@ -812,7 +802,7 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
                   </p>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Proposed Schedule */}
             <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">

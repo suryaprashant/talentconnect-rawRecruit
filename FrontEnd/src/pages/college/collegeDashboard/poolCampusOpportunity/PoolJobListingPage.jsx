@@ -1007,7 +1007,7 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
         </div>
 
         {/* Results Header */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
@@ -1031,7 +1031,7 @@ const PoolJobListingPage = ({ compact = false, onJobSelect, selectedJobId }) => 
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Job Cards Grid */}
         <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">

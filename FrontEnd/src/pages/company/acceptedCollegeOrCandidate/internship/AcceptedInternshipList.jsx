@@ -302,11 +302,11 @@ export default function InternshipListing() {
                     <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
                         <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
                             <div className="col-span-3">Internship Role</div>
-                            <div className="col-span-3">Location</div>
+                            <div className="col-span-2">Location</div>
                             <div className="col-span-2">End Date</div>
                             <div className="col-span-1 text-center">Views</div>
-                            <div className="col-span-1 text-center">New Applications</div>
-                            <div className="col-span-2 text-center">Actions</div>
+                            <div className="col-span-3 text-center">New Applications</div>
+                            <div className="col-span-1 text-center">Actions</div>
                         </div>
                     </div>
 
@@ -355,7 +355,7 @@ export default function InternshipListing() {
                                         </div>
 
                                         {/* Location - Original layout */}
-                                        <div className="col-span-3">
+                                        <div className="col-span-2">
                                             <div className="flex items-center gap-2">
                                                 <MapPin className="h-3 w-3 text-gray-400 flex-shrink-0" />
                                                 <span className="text-gray-700 text-sm truncate">
@@ -389,7 +389,7 @@ export default function InternshipListing() {
 
                                         {/* Accepted Applications - Original layout */}
                                         <div 
-                                            className="col-span-1 text-center cursor-pointer group"
+                                            className="col-span-3 text-center cursor-pointer group"
                                             onClick={() => showNewApplications(job)}
                                         >
                                             <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
@@ -398,7 +398,7 @@ export default function InternshipListing() {
                                         </div>
 
                                         {/* Actions - Original layout */}
-                                        <div className="col-span-2">
+                                        <div className="col-span-1">
                                             <div className="flex items-center justify-center gap-2">
                                                 <button
                                                     onClick={() => handleViewApplications(job)}

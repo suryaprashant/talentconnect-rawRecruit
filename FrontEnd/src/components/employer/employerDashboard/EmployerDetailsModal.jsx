@@ -26,6 +26,7 @@ import { format } from 'date-fns';
 
 const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
   const modalRef = useRef(null);
+  const collegeModalRef = useRef(null); // Ref for college details modal
   const contentRef = useRef(null); // Added contentRef for scrollable area
   
   const [posting, setPosting] = useState(null);
@@ -109,11 +110,19 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
   // Close modal on Escape key
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        if (showCollegeModal) {
+          setShowCollegeModal(false);
+        } else if (showAlternateDateModal) {
+          setShowAlternateDateModal(false);
+        } else {
+          onClose();
+        }
+      }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
+  }, [onClose, showCollegeModal, showAlternateDateModal]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -127,18 +136,25 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  // Close modal when clicking outside
+  // Close main modal when clicking outside - updated to handle nested modals
   useEffect(() => {
     const handleClickOutside = (e) => {
+      // Don't close if college modal is open
+      if (showCollegeModal || showAlternateDateModal) return;
+      
+      // Don't close if clicking on college modal or alternate date modal
+      if (collegeModalRef.current?.contains(e.target)) return;
+      
       if (modalRef.current && !modalRef.current.contains(e.target)) {
         onClose();
       }
     };
+    
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, showCollegeModal, showAlternateDateModal]);
 
   // Handle share
   const handleShare = () => {
@@ -226,9 +242,14 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
     setShowAlternateDateModal(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseAlternateModal = () => {
     setShowAlternateDateModal(false);
     setDateError('');
+  };
+
+  // College modal handler
+  const handleCloseCollegeModal = () => {
+    setShowCollegeModal(false);
   };
 
   const validateDates = () => {
@@ -288,11 +309,14 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
 
     return (
       <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 max-w-md w-full">
+        <div 
+          ref={collegeModalRef}
+          className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 max-w-md w-full"
+        >
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Suggest Alternate Dates</h3>
             <button
-              onClick={handleCloseModal}
+              onClick={handleCloseAlternateModal}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X size={20} />
@@ -345,7 +369,7 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
           
           <div className="flex justify-end gap-3">
             <button
-              onClick={handleCloseModal}
+              onClick={handleCloseAlternateModal}
               className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gradient-to-r from-gray-100 to-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-200"
             >
               Cancel
@@ -372,14 +396,17 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
     
     return (
       <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div 
+          ref={collegeModalRef}
+          className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        >
           <div className="p-6">
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">{collegeUniDetails.collegeName || 'College'}</h2>
               </div>
               <button
-                onClick={() => setShowCollegeModal(false)}
+                onClick={handleCloseCollegeModal}
                 className="text-gray-500 hover:text-gray-700 text-xl p-1"
               >
                 ✕
@@ -507,8 +534,10 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
               )}
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
-                  onClick={() => setShowCollegeModal(true)}>
+              <h2 
+                className="text-2xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
+                onClick={() => setShowCollegeModal(true)}
+              >
                 {collegeName}
               </h2>
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mt-1">
@@ -560,7 +589,7 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
           style={{ borderRadius: '0 0 0 1rem' }}
         >
           {/* Statistics Cards - Horizontal Layout */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-6">
             {/* Min Package Card */}
             <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
               <div className="flex items-center gap-3">
@@ -579,6 +608,21 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
               </div>
             </div>
             
+            {/* Students to Place Card */}
+            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg">
+                  <Users className="h-5 w-5 text-green-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-gray-600 mb-1">Students to Place</p>
+                  <p className="text-base font-bold text-green-600 truncate">
+                    {posting.noOfplacedStudents || 'N/A'}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
             {/* Employment Type Card */}
             <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
               <div className="flex items-center gap-3">
@@ -589,36 +633,6 @@ const EmployerDetailsModal = ({ college, isOpen, onClose }) => {
                   <p className="text-xs text-gray-600 mb-1">Employment Type</p>
                   <p className="text-sm font-medium text-purple-600 truncate">
                     {posting.employmentType || 'N/A'}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Job Type Card */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-gradient-to-br from-green-100 to-green-50 rounded-lg">
-                  <Award className="h-5 w-5 text-green-600" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-gray-600 mb-1">Job Type</p>
-                  <p className="text-sm font-medium text-green-600 truncate">
-                    {posting.jobType || 'N/A'}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Work Mode Card */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg">
-                  <Clock className="h-5 w-5 text-yellow-600" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-gray-600 mb-1">Work Mode</p>
-                  <p className="text-sm font-medium text-yellow-600 truncate">
-                    {posting.workMode || 'N/A'}
                   </p>
                 </div>
               </div>
