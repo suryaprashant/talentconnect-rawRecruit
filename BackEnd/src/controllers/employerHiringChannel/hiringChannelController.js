@@ -287,6 +287,8 @@ export const createInternshipPosting = async (req, res) => {
             ...req.body,
             companyPosted: companyId,
             jobType: "Internship",
+            startDate: req.body.startDate || null,
+             onlineTestDate: req.body.onlineTestDate || null,
              packageDetails: {
               currency: req.body.minPackage?.currency,
               totalCTC: req.body.minPackage?.amount, // 👈 map stipend here
