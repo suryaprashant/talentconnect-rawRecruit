@@ -1068,7 +1068,7 @@ export default function OffCampusJobManagement() {
                                             <div className="flex items-center gap-2 mt-1">
                                               <Briefcase className="h-3 w-3 text-gray-400" />
                                               <span className="text-sm text-gray-500 capitalize">
-                                                {job?.workMode || 'N/A'} • {job?.venue || 'N/A'}
+                                                {job?.workMode || 'N/A'}
                                               </span>
                                             </div>
                                           </div>

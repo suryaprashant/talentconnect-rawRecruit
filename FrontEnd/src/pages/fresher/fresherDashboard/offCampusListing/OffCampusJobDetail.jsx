@@ -233,23 +233,23 @@ function OffCampusJobDetail() {
         {/* Header */}
         <div className="flex justify-between items-start mb-6">
           <div className="flex items-center">
-            {/* <div className="w-12 h-12 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 mr-4 flex items-center justify-center rounded-full overflow-hidden">
-              {jobDetail.companyPosted?.profileImage ? (
-                <img
-                  src={jobDetail.companyPosted.profileImage}
-                  alt={jobDetail.companyPosted.companyDetails.companyName || "Company Logo"}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = 'https://placehold.co/48x48/cccccc/000000?text=Logo';
-                  }}
-                />
-              ) : (
-                <svg className="w-8 h-8 text-[#667eea]" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div> */}
+            <div className="w-12 h-12 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 mr-4 flex items-center justify-center rounded-full overflow-hidden">
+  {jobDetail.companyPosted?.profileImageUrl ? (
+    <img
+      src={jobDetail.companyPosted.profileImageUrl}
+      alt={jobDetail.companyPosted?.companyDetails?.companyName || "Company Logo"}
+      className="w-full h-full object-cover"
+      onError={(e) => {
+        e.target.onerror = null;
+        e.target.src = 'https://placehold.co/48x48/cccccc/000000?text=Logo';
+      }}
+    />
+  ) : (
+    <svg className="w-8 h-8 text-[#667eea]" fill="currentColor" viewBox="0 0 20 20">
+      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+    </svg>
+  )}
+</div>
             <div>
               <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
                 {jobDetail.companyPosted?.companyDetails?.companyName || "N/A"} - 
@@ -576,20 +576,20 @@ function OffCampusJobDetail() {
   </div>
 </section>
 
-        {/* Bottom Back Button */}
-        <section className="mt-8 pt-6 border-t border-gray-200">
-          <div className="flex justify-left">
-            <button 
-              onClick={() => handleBackToList()} 
-              className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-              </svg>
-              Back
-            </button>
-          </div>
-        </section>
+{/* Bottom Back Button - REMOVED BORDER */}
+<section className="mt-8 pt-6">
+  <div className="flex justify-left">
+    <button 
+      onClick={() => handleBackToList()} 
+      className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+      </svg>
+      Back
+    </button>
+  </div>
+</section>
       </div>
     </div>
   );

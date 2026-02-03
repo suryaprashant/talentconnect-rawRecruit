@@ -516,52 +516,52 @@ const InternJobDetails = () => {
         </section>
 
         {/* Important Dates - UPDATED with calculated deadline */}
-        <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-            Important Dates
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Application Deadline</div>
-              <div className="font-medium text-red-600">
-                {applicationDeadline 
-                  ? applicationDeadline.toLocaleDateString('en-GB', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric'
-                    })
-                  : 'N/A'}
-              </div>
-            </div>
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Internship Start</div>
-              <div className="font-medium text-gray-700">Flexible</div>
-            </div>
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Interview Dates</div>
-              <div className="font-medium text-gray-700">To be scheduled</div>
-            </div>
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-              <div className="text-sm text-[#667eea]">Results</div>
-              <div className="font-medium text-gray-700">Rolling basis</div>
-            </div>
-          </div>
-        </section>
+<section className="mb-8">
+  <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+    Important Dates
+  </h3>
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+      <div className="text-sm text-[#667eea]">Application Deadline</div>
+      <div className="font-medium text-red-600">
+        {applicationDeadline 
+          ? applicationDeadline.toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric'
+            })
+          : 'N/A'}
+      </div>
+    </div>
+    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+      <div className="text-sm text-[#667eea]">Internship Start</div>
+      <div className="font-medium text-gray-700">Flexible</div>
+    </div>
+    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+      <div className="text-sm text-[#667eea]">Interview Dates</div>
+      <div className="font-medium text-gray-700">To be scheduled</div>
+    </div>
+    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+      <div className="text-sm text-[#667eea]">Results</div>
+      <div className="font-medium text-gray-700">Rolling basis</div>
+    </div>
+  </div>
+</section>
 
-        {/* Bottom Back Button */}
-        <section className="mt-8 pt-6 border-t border-gray-200">
-          <div className="flex justify-left">
-            <button 
-              onClick={() => handleBackToList()} 
-              className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-              </svg>
-              Back
-            </button>
-          </div>
-        </section>
+{/* Bottom Back Button - REMOVED BORDER-TOP */}
+<section className="mt-8">
+  <div className="flex justify-left">
+    <button 
+      onClick={() => handleBackToList()} 
+      className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+      </svg>
+      Back
+    </button>
+  </div>
+</section>
       </div>
     </div>
   );

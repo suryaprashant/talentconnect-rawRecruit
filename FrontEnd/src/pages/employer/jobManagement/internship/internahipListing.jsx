@@ -134,6 +134,27 @@ export default function InternshipListing() {
     setShowJobDetail(true);
   };
 
+  // Function to calculate end date (30 days after posting)
+const calculateEndDate = (createdAt) => {
+  if (!createdAt) return 'N/A';
+  
+  try {
+    const postDate = new Date(createdAt);
+    const endDate = new Date(postDate);
+    endDate.setDate(endDate.getDate() + 30);
+    
+    // Format the date
+    return endDate.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      year: 'numeric'
+    });
+  } catch (error) {
+    console.error('Error calculating end date:', error);
+    return 'N/A';
+  }
+};
+
 
   const showNewApplications = async (job) => {
     setSelectedJob(job);
@@ -332,18 +353,24 @@ export default function InternshipListing() {
                       </div>
 
                       {/* End Date */}
-                      <div className="col-span-2">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-3 w-3 text-gray-400" />
-                          <span className="text-gray-700 text-sm">
-                            {job?.expireAt ? new Date(job.expireAt).toLocaleDateString('en-US', { 
-                              month: 'short', 
-                              day: 'numeric',
-                              year: 'numeric'
-                            }) : 'N/A'}
-                          </span>
-                        </div>
-                      </div>
+<div className="col-span-2">
+  <div className="flex items-center gap-2">
+    <Calendar className="h-3 w-3 text-gray-400" />
+    <div className="flex flex-col">
+      <span className="text-gray-700 text-sm">
+        {calculateEndDate(job?.createdAt)}
+      </span>
+      {job?.expireAt && (
+        <span className="text-xs text-gray-500">
+          (Custom: {new Date(job.expireAt).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric'
+          })})
+        </span>
+      )}
+    </div>
+  </div>
+</div>
 
                       {/* Views */}
                       <div className="col-span-1 text-center">
