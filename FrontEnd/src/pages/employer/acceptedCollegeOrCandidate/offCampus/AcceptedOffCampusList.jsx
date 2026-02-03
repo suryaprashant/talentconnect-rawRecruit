@@ -154,11 +154,11 @@ export default function OffCampusJobManagement() {
                     {/* Table Header */}
                     <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
                         <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
-                            <div className="col-span-4">Job Title</div>
+                            <div className="col-span-3">Job Title</div>
                             <div className="col-span-2">Work Locations</div>
                             <div className="col-span-2">Deadline</div>
-                            <div className="col-span-1 text-center">New Applications</div>
-                            <div className="col-span-3 text-center">Actions</div>
+                            <div className="col-span-3 text-center">New Applications</div>
+                            <div className="col-span-2 text-center">Actions</div>
                         </div>
                     </div>
 
@@ -185,7 +185,7 @@ export default function OffCampusJobManagement() {
                                 >
                                     <div className="grid grid-cols-12 gap-4 items-center">
                                         {/* Job Title - Clickable Link for Job Preview */}
-<div className="col-span-4">
+<div className="col-span-3">
   <Link
     to={`/company-dashboard/Off-campus/${job._id}?isApplied=true`}
     className="group cursor-pointer block"
@@ -224,7 +224,7 @@ export default function OffCampusJobManagement() {
                                         </div>
 
                                         {/* Applications - Clickable to View Applicants */}
-                                        <div className="col-span-1 text-center">
+                                        <div className="col-span-3 text-center">
                                             <div
                                                 onClick={() => handleView(job._id)}
                                                 className="inline-flex items-center justify-center w-8 h-8 text-sm font-medium rounded-full transition-all duration-200 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 hover:bg-gradient-to-r hover:from-blue-200 hover:to-blue-100 hover:shadow-md hover:shadow-blue-100 cursor-pointer"
@@ -235,7 +235,7 @@ export default function OffCampusJobManagement() {
                                         </div>
 
                                         {/* Actions - Only Eye and Trash buttons */}
-                                        <div className="col-span-3">
+                                        <div className="col-span-2">
                                             <div className="flex items-center justify-center gap-2">
                                                 <button 
                                                     onClick={() => handleView(job._id)}

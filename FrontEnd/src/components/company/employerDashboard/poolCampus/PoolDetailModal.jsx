@@ -81,6 +81,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
   const [imageError, setImageError] = useState(false);
 
   const modalRef = useRef(null);
+  const collegeModalRef = useRef(null); // Ref for college details modal
   const contentRef = useRef(null);
   
   const { setSelectedConversation } = useConversation();  
@@ -124,13 +125,22 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
     }
   }, [isOpen, college]);
 
+  // Close modal on Escape key
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        if (showCollegeModal) {
+          setShowCollegeModal(false);
+        } else if (showAlternateDateModal) {
+          setShowAlternateDateModal(false);
+        } else {
+          onClose();
+        }
+      }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
+  }, [onClose, showCollegeModal, showAlternateDateModal]);
 
   useEffect(() => {
     if (isOpen) {
@@ -143,17 +153,25 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
     };
   }, [isOpen]);
 
+  // Close main modal when clicking outside - updated to handle nested modals
   useEffect(() => {
     const handleClickOutside = (e) => {
+      // Don't close if college modal is open
+      if (showCollegeModal || showAlternateDateModal) return;
+      
+      // Don't close if clicking on college modal or alternate date modal
+      if (collegeModalRef.current?.contains(e.target)) return;
+      
       if (modalRef.current && !modalRef.current.contains(e.target)) {
         onClose();
       }
     };
+    
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, showCollegeModal, showAlternateDateModal]);
 
   const handleShare = () => {
     if (navigator.share) {
@@ -237,6 +255,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
     }
   };
 
+  // Alternate date modal handlers
   const handleAlternateDateClick = () => {
     setSelectedStartDate('');
     setSelectedEndDate('');
@@ -244,9 +263,14 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
     setShowAlternateDateModal(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseAlternateModal = () => {
     setShowAlternateDateModal(false);
     setDateError('');
+  };
+
+  // College modal handler
+  const handleCloseCollegeModal = () => {
+    setShowCollegeModal(false);
   };
 
   const validateDates = () => {
@@ -305,11 +329,14 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
 
     return (
       <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 max-w-md w-full">
+        <div 
+          ref={collegeModalRef}
+          className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 max-w-md w-full"
+        >
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Suggest Alternate Dates</h3>
             <button
-              onClick={handleCloseModal}
+              onClick={handleCloseAlternateModal}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X size={20} />
@@ -362,7 +389,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
           
           <div className="flex justify-end gap-3">
             <button
-              onClick={handleCloseModal}
+              onClick={handleCloseAlternateModal}
               className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gradient-to-r from-gray-100 to-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-200"
             >
               Cancel
@@ -397,14 +424,17 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
 
     return (
       <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div 
+          ref={collegeModalRef}
+          className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        >
           <div className="p-6">
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">{collegeName}</h2>
               </div>
               <button
-                onClick={() => setShowCollegeModal(false)}
+                onClick={handleCloseCollegeModal}
                 className="text-gray-500 hover:text-gray-700 text-xl p-1"
               >
                 ✕
@@ -552,8 +582,10 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
               )}
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
-                  onClick={() => setShowCollegeModal(true)}>
+              <h2 
+                className="text-2xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
+                onClick={() => setShowCollegeModal(true)}
+              >
                 {collegeName}
               </h2>
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mt-1">
@@ -605,7 +637,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
           style={{ borderRadius: '0 0 0 1rem' }}
         >
           {/* Statistics Cards - Horizontal Layout */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-6">
             {/* Min Package Card */}
             <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
               <div className="flex items-center gap-3">
@@ -649,21 +681,6 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
                   <p className="text-xs text-gray-600 mb-1">Employment Type</p>
                   <p className="text-sm font-medium text-purple-600 truncate">
                     {posting.employmentType?.join(', ') || 'N/A'}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Looking For Card */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg">
-                  <Award className="h-5 w-5 text-yellow-600" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-gray-600 mb-1">Looking For</p>
-                  <p className="text-sm font-medium text-yellow-600 truncate">
-                    {posting.lookingFor || 'N/A'}
                   </p>
                 </div>
               </div>

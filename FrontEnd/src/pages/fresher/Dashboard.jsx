@@ -3,8 +3,7 @@ import { FiPlus } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import { useEffect, useState } from 'react'
-// Update this import - you might need to create this function
-// import { getFresherDashboardMetrics } from '@/lib/User_AxiosInstance'
+import { getUserApplicationStatus } from '@/lib/User_AxiosInstance'
 
 function FresherDashboard() {
   const [authuser, setAuthUser] = useLegacyAuth();
@@ -12,15 +11,25 @@ function FresherDashboard() {
   
   const [dashboardData, setDashboardData] = useState({
     stats: {
-      'Applied': 0,
-      'Shortlisted': 0,
-      'Accepted': 0,
-      'Rejected': 0
+      'Off-Campus': 0,
+      'Internship': 0,
+      'Counselling': 0,
+      'Career Craft': 0,
+      'Mock Interview': 0
     },
     byCategory: {
-      'On-campus': 0,
-      'Pool-campus': 0,
-      'Off-campus': 0
+      'Off-Campus': {
+        'Applied': 0,
+        'Shortlisted': 0,
+        'Accepted': 0,
+        'Rejected': 0
+      },
+      'Internship': {
+        'Applied': 0,
+        'Shortlisted': 0,
+        'Accepted': 0,
+        'Rejected': 0
+      }
     },
     recentApplications: [],
     upcomingInterviews: [],
@@ -34,323 +43,89 @@ function FresherDashboard() {
   const fetchDashboardData = async () => {
     try {
       setDashboardData(prev => ({ ...prev, loading: true }))
+
+      // Fetch data for Off-Campus and Internship separately
+      const [offCampusRes, internshipRes] = await Promise.all([
+        getUserApplicationStatus("Off-campus").catch(() => ({ data: { data: [] } })),
+        getUserApplicationStatus("Internship").catch(() => ({ data: { data: [] } }))
+      ])
+
+      const offCampusApps = offCampusRes.data?.data || []
+      const internshipApps = internshipRes.data?.data || []
       
-      // TODO: Replace with actual API call for fresher
-      // const response = await getFresherDashboardMetrics()
-      
-      // For now, use the same logic as student dashboard but fetch fresher data
-      const fallbackData = await fetchFallbackData()
+      // Calculate stats for each category
+      const offCampusStats = calculateCategoryStats(offCampusApps)
+      const internshipStats = calculateCategoryStats(internshipApps)
+
+      // Calculate main stats (count of applications)
+      const stats = {
+        'Off-Campus': offCampusApps.length,
+        'Internship': internshipApps.length,
+        'Counselling': 0, // Placeholder - you'll need to fetch this data separately
+        'Career Craft': 0, // Placeholder - you'll need to fetch this data separately
+        'Mock Interview': 0 // Placeholder - you'll need to fetch this data separately
+      }
+
+      // Format recent applications
+      const allApplications = [...offCampusApps, ...internshipApps]
+      const formattedRecentApps = allApplications
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5)
+        .map(app => ({
+          ...app,
+          date: new Date(app.date || app.createdAt).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+          }),
+          category: app.jobType || 'Off-Campus'
+        }))
+
       setDashboardData({
-        ...fallbackData,
+        stats,
+        byCategory: {
+          'Off-Campus': offCampusStats,
+          'Internship': internshipStats
+        },
+        recentApplications: formattedRecentApps,
+        upcomingInterviews: [],
         loading: false
       })
-      
+
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
       setDashboardData(prev => ({ ...prev, loading: false }))
     }
   }
 
-  // Fallback function - aggregates data from your existing APIs
-  const fetchFallbackData = async () => {
-    try {
-      // Import the individual API functions for fresher
-      // Note: You might need different API endpoints for fresher
-      // For now, using the same as student
-      const { getUserApplicationStatus, getJobDetails } = await import('@/lib/User_AxiosInstance')
-      
-      // Fetch all application types for fresher
-      // Note: You might need a different API or pass userType as parameter
-      const [onCampusRes, poolCampusRes, offCampusRes] = await Promise.all([
-        getUserApplicationStatus("On-campus").catch(() => ({ data: { data: [] } })),
-        getUserApplicationStatus("Pool-campus").catch(() => ({ data: { data: [] } })),
-        getUserApplicationStatus("Off-campus").catch(() => ({ data: { data: [] } }))
-      ])
-
-      const onCampusApps = onCampusRes.data?.data || []
-      const poolCampusApps = poolCampusRes.data?.data || []
-      const offCampusApps = offCampusRes.data?.data || []
-      
-      const allApplications = [...onCampusApps, ...poolCampusApps, ...offCampusApps]
-
-      // Calculate stats
-      const stats = { Applied: 0, Shortlisted: 0, Accepted: 0, Rejected: 0 }
-      const byCategory = {
-        'On-campus': onCampusApps.length,
-        'Pool-campus': poolCampusApps.length,
-        'Off-campus': offCampusApps.length
-      }
-
-      // Count statuses
-      allApplications.forEach(app => {
-        const status = app.currentStatus || app.status || 'Applied'
-        const normalized = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
-        
-        if (stats[normalized] !== undefined) {
-          stats[normalized]++
-        } else {
-          stats.Applied++
-        }
-      })
-
-      // Get recent apps (last 5) - Fetch job details for each
-      const recentApplicationsPromises = allApplications
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 5)
-        .map(async (app) => {
-          try {
-            // Extract company and position from application
-            let company = "Company"
-            let position = "Position"
-            
-            // Try to get job details if jobId exists
-            const jobId = app.job || app.jobDetails?.[0]?._id || app._id
-            
-            if (jobId) {
-              try {
-                const jobResponse = await getJobDetails(jobId)
-                const jobDetails = jobResponse.data?.[0] || jobResponse.data
-                
-                if (jobDetails) {
-                  // Extract company name (same logic as OffcampusStatus)
-                  company = jobDetails.companyPosted?.companyDetails?.companyName || 
-                           jobDetails.company || 
-                           "Company"
-                  
-                  // Extract position (same logic as OffcampusStatus)
-                  if (Array.isArray(jobDetails.jobRoles) && jobDetails.jobRoles.length > 0) {
-                    position = jobDetails.jobRoles[0]
-                  } else if (jobDetails.jobTitle) {
-                    position = jobDetails.jobTitle
-                  } else {
-                    position = "Position"
-                  }
-                }
-              } catch (jobError) {
-                console.warn(`Could not fetch job details for ${jobId}:`, jobError)
-                // Use fallback extraction
-                company = extractCompanyName(app)
-                position = extractPosition(app)
-              }
-            } else {
-              // Use fallback extraction if no jobId
-              company = extractCompanyName(app)
-              position = extractPosition(app)
-            }
-            
-            return {
-              company,
-              position,
-              date: new Date(app.createdAt).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric'
-              }),
-              status: app.currentStatus || app.status || 'Applied',
-              _id: app._id,
-              jobId: jobId
-            }
-          } catch (error) {
-            console.error("Error processing application:", error)
-            // Return basic info if there's an error
-            return {
-              company: extractCompanyName(app),
-              position: extractPosition(app),
-              date: new Date(app.createdAt).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric'
-              }),
-              status: app.currentStatus || app.status || 'Applied',
-              _id: app._id
-            }
-          }
-        })
-
-      // Wait for all job details to be fetched
-      const recentApplications = await Promise.all(recentApplicationsPromises)
-
-      return {
-        stats,
-        byCategory,
-        recentApplications,
-        upcomingInterviews: [] // Need separate API for this
-      }
-
-    } catch (error) {
-      console.error("Fallback data error:", error)
-      // Return empty data if there's an error
-      return {
-        stats: { Applied: 0, Shortlisted: 0, Accepted: 0, Rejected: 0 },
-        byCategory: { 'On-campus': 0, 'Pool-campus': 0, 'Off-campus': 0 },
-        recentApplications: [],
-        upcomingInterviews: []
-      }
-    }
-  }
-
-  // Helper functions to extract data from application objects
-  const extractCompanyName = (app) => {
-    if (app.company) return app.company
-    if (app.job?.company) return app.job.company
-    if (app.jobDetails?.[0]?.company) return app.jobDetails[0].company
-    if (app.fullJobDetails?.companyPosted?.companyDetails?.companyName) 
-      return app.fullJobDetails.companyPosted.companyDetails.companyName
-    if (app.fullJobDetails?.company) return app.fullJobDetails.company
-    return "Company"
-  }
-
-  const extractPosition = (app) => {
-    if (app.jobTitle) return app.jobTitle
-    if (app.position) return app.position
-    if (app.job?.jobTitle) return app.job.jobTitle
-    if (app.jobDetails?.[0]?.jobTitle) return app.jobDetails[0].jobTitle
-    if (app.fullJobDetails?.jobRoles?.[0]) return app.fullJobDetails.jobRoles[0]
-    if (app.fullJobDetails?.jobTitle) return app.fullJobDetails.jobTitle
-    return "Position"
-  }
-
-  // Add this helper function to get status counts from your existing APIs
-  const getAllApplicationStats = async () => {
-    try {
-      // Import the API functions
-      const { getUserApplicationStatus, getJobDetails } = await import('@/lib/User_AxiosInstance')
-      
-      // Fetch applications from all categories
-      const [onCampusRes, poolCampusRes, offCampusRes] = await Promise.all([
-        getUserApplicationStatus("On-campus").catch(() => ({ data: { data: [] } })),
-        getUserApplicationStatus("Pool-campus").catch(() => ({ data: { data: [] } })),
-        getUserApplicationStatus("Off-campus").catch(() => ({ data: { data: [] } }))
-      ])
-      
-      const allApplications = [
-        ...(onCampusRes.data?.data || []),
-        ...(poolCampusRes.data?.data || []),
-        ...(offCampusRes.data?.data || [])
-      ]
-      
-      // Calculate stats
-      const stats = {
-        'Applied': 0,
-        'Shortlisted': 0,
-        'Accepted': 0,
-        'Rejected': 0
-      }
-      
-      const byCategory = {
-        'On-campus': onCampusRes.data?.data?.length || 0,
-        'Pool-campus': poolCampusRes.data?.data?.length || 0,
-        'Off-campus': offCampusRes.data?.data?.length || 0
-      }
-      
-      allApplications.forEach(app => {
-        const status = app.currentStatus || app.status || 'Applied'
-        const normalizedStatus = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
-        
-        if (stats[normalizedStatus] !== undefined) {
-          stats[normalizedStatus]++
-        } else {
-          stats['Applied']++
-        }
-      })
-      
-      // Get recent applications (last 5) - with proper company/position extraction
-      const recentApplicationsPromises = allApplications
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 5)
-        .map(async (app) => {
-          try {
-            // Get job details for company and position
-            const jobId = app.job || app.jobDetails?.[0]?._id || app._id
-            let company = "Company"
-            let position = "Position"
-            
-            if (jobId) {
-              try {
-                const jobResponse = await getJobDetails(jobId)
-                const jobDetails = jobResponse.data?.[0] || jobResponse.data
-                
-                if (jobDetails) {
-                  company = jobDetails.companyPosted?.companyDetails?.companyName || 
-                           jobDetails.company || 
-                           "Company"
-                  
-                  if (Array.isArray(jobDetails.jobRoles) && jobDetails.jobRoles.length > 0) {
-                    position = jobDetails.jobRoles[0]
-                  } else if (jobDetails.jobTitle) {
-                    position = jobDetails.jobTitle
-                  }
-                }
-              } catch (jobError) {
-                console.warn(`Could not fetch job details for recent app ${jobId}:`, jobError)
-              }
-            }
-            
-            return {
-              company,
-              position,
-              date: new Date(app.createdAt).toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric' 
-              }),
-              status: app.currentStatus || app.status || 'Applied'
-            }
-          } catch (error) {
-            console.error("Error processing recent application:", error)
-            return {
-              company: "Company",
-              position: "Position",
-              date: new Date(app.createdAt).toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric' 
-              }),
-              status: app.currentStatus || app.status || 'Applied'
-            }
-          }
-        })
-      
-      const recentApplications = await Promise.all(recentApplicationsPromises)
-      
-      return {
-        stats,
-        byCategory,
-        recentApplications,
-        upcomingInterviews: [] // You'll need to fetch this separately
-      }
-      
-    } catch (error) {
-      console.error("Error fetching all application stats:", error)
-      return null
-    }
-  }
-
-  // Update the useEffect to use the new function
-  useEffect(() => {
-    const loadData = async () => {
-      setDashboardData(prev => ({ ...prev, loading: true }))
-      
-      try {
-        // Try to get all stats from existing APIs
-        const allStats = await getAllApplicationStats()
-        
-        if (allStats) {
-          setDashboardData({
-            stats: allStats.stats,
-            byCategory: allStats.byCategory,
-            recentApplications: allStats.recentApplications,
-            upcomingInterviews: allStats.upcomingInterviews,
-            loading: false
-          })
-        } else {
-          // Fallback to the original method
-          fetchDashboardData()
-        }
-      } catch (error) {
-        console.error("Error loading dashboard data:", error)
-        setDashboardData(prev => ({ ...prev, loading: false }))
-      }
+  const calculateCategoryStats = (applications) => {
+    const stats = {
+      'Applied': 0,
+      'Shortlisted': 0,
+      'Accepted': 0,
+      'Rejected': 0
     }
     
-    loadData()
-  }, [])
+    applications.forEach(app => {
+      const status = app.currentStatus || app.status || 'Applied'
+      const normalizedStatus = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+      
+      if (stats[normalizedStatus] !== undefined) {
+        stats[normalizedStatus]++
+      } else {
+        stats['Applied']++ // Default to Applied if status not in our list
+      }
+    })
+    
+    return stats
+  }
+
+  const getTotalForStatus = (status) => {
+    let total = 0
+    Object.values(dashboardData.byCategory).forEach(category => {
+      total += category[status] || 0
+    })
+    return total
+  }
 
   if (dashboardData.loading) {
     return (
@@ -384,12 +159,12 @@ function FresherDashboard() {
           </div>
         </div>
 
-        {/* Key Metrics Cards - 5 Cards in a Row */}
+        {/* Key Metrics Cards - 5 New Cards in a Row */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 auto-rows-fr gap-3 mb-8">
-          {/* Applications Card */}
+          {/* Off-Campus Card */}
           <div
             className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-            onClick={() => navigate('/applications')}
+            onClick={() => navigate('/application-status/Off-campus')}
           >
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#9333ea] to-[#7c3aed] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="absolute inset-0 bg-gradient-to-br from-[#9333ea]/10 via-transparent to-[#7c3aed]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
@@ -404,7 +179,7 @@ function FresherDashboard() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Applied</h3>
+                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Off-Campus</h3>
                   </div>
                 </div>
                 <div className="p-1 bg-gradient-to-r from-[#9333ea] to-[#7c3aed] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
@@ -415,16 +190,16 @@ function FresherDashboard() {
               </div>
 
               <div className="flex items-baseline space-x-1 mt-auto">
-                <p className="text-xl font-bold text-[#9333ea]">{dashboardData.stats.Applied}</p>
+                <p className="text-xl font-bold text-[#9333ea]">{dashboardData.stats['Off-Campus']}</p>
                 <span className="text-xs text-gray-500">jobs</span>
               </div>
             </div>
           </div>
 
-          {/* Shortlisted Card */}
+          {/* Internship Card */}
           <div
             className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-            onClick={() => navigate('/shortlisted')}
+            onClick={() => navigate('/application-status/Internship')}
           >
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#7c3aed] to-[#6d28d9] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="absolute inset-0 bg-gradient-to-br from-[#7c3aed]/10 via-transparent to-[#6d28d9]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
@@ -439,7 +214,7 @@ function FresherDashboard() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Shortlisted</h3>
+                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Internship</h3>
                   </div>
                 </div>
                 <div className="p-1 bg-gradient-to-r from-[#7c3aed] to-[#6d28d9] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
@@ -450,16 +225,16 @@ function FresherDashboard() {
               </div>
 
               <div className="flex items-baseline space-x-1 mt-auto">
-                <p className="text-xl font-bold text-[#7c3aed]">{dashboardData.stats.Shortlisted}</p>
-                <span className="text-xs text-gray-500">jobs</span>
+                <p className="text-xl font-bold text-[#7c3aed]">{dashboardData.stats['Internship']}</p>
+                <span className="text-xs text-gray-500">internships</span>
               </div>
             </div>
           </div>
 
-          {/* Accepted Card */}
+          {/* Counselling Card */}
           <div
             className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-            onClick={() => navigate('/accepted')}
+            onClick={() => navigate('/fresher-dashboard/service-request/counselling')}
           >
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#6d28d9] to-[#5b21b6] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="absolute inset-0 bg-gradient-to-br from-[#6d28d9]/10 via-transparent to-[#5b21b6]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
@@ -474,7 +249,7 @@ function FresherDashboard() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Accepted</h3>
+                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Counselling</h3>
                   </div>
                 </div>
                 <div className="p-1 bg-gradient-to-r from-[#6d28d9] to-[#5b21b6] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
@@ -485,16 +260,16 @@ function FresherDashboard() {
               </div>
 
               <div className="flex items-baseline space-x-1 mt-auto">
-                <p className="text-xl font-bold text-[#6d28d9]">{dashboardData.stats.Accepted}</p>
-                <span className="text-xs text-gray-500">offers</span>
+                <p className="text-xl font-bold text-[#6d28d9]">{dashboardData.stats['Counselling']}</p>
+                <span className="text-xs text-gray-500">sessions</span>
               </div>
             </div>
           </div>
 
-          {/* Rejected Card */}
+          {/* Career Craft Card */}
           <div
             className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-            onClick={() => navigate('/applications')}
+            onClick={() => navigate('/fresher-dashboard/service-request/career-craft')}
           >
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#5b21b6] to-[#4c1d95] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="absolute inset-0 bg-gradient-to-br from-[#5b21b6]/10 via-transparent to-[#4c1d95]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
@@ -509,7 +284,7 @@ function FresherDashboard() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Rejected</h3>
+                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Career Craft</h3>
                   </div>
                 </div>
                 <div className="p-1 bg-gradient-to-r from-[#5b21b6] to-[#4c1d95] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
@@ -520,16 +295,16 @@ function FresherDashboard() {
               </div>
 
               <div className="flex items-baseline space-x-1 mt-auto">
-                <p className="text-xl font-bold text-[#5b21b6]">{dashboardData.stats.Rejected}</p>
-                <span className="text-xs text-gray-500">jobs</span>
+                <p className="text-xl font-bold text-[#5b21b6]">{dashboardData.stats['Career Craft']}</p>
+                <span className="text-xs text-gray-500">activities</span>
               </div>
             </div>
           </div>
 
-          {/* Status Card - Showing only Off-Campus */}
+          {/* Mock Interview Card */}
           <div
             className="group relative overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-lg p-3 cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full aspect-video"
-            onClick={() => navigate('/application-status/Off-campus')}
+            onClick={() => navigate('/fresher-dashboard/service-request/mock-interview')}
           >
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#4c1d95] to-[#3b0764] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="absolute inset-0 bg-gradient-to-br from-[#4c1d95]/10 via-transparent to-[#3b0764]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
@@ -544,7 +319,7 @@ function FresherDashboard() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Off-Campus</h3>
+                    <h3 className="text-xs font-semibold text-gray-900 leading-tight">Mock Interview</h3>
                   </div>
                 </div>
                 <div className="p-1 bg-gradient-to-r from-[#4c1d95] to-[#3b0764] rounded-full group-hover:translate-x-0.5 transition-transform duration-200">
@@ -555,155 +330,61 @@ function FresherDashboard() {
               </div>
 
               <div className="flex items-baseline space-x-1 mt-auto">
-                <p className="text-xl font-bold text-[#4c1d95] mb-1">{dashboardData.byCategory['Off-campus']}</p>
-                <span className="text-xs text-gray-500">applied</span>
+                <p className="text-xl font-bold text-[#4c1d95]">{dashboardData.stats['Mock Interview']}</p>
+                <span className="text-xs text-gray-500">interviews</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Main Content Sections */}
-        {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          Recent Applications
-          <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Recent Applications</h2>
-              <button
-                onClick={() => navigate('/applications')}
-                className="text-sm text-[#667eea] hover:text-[#764ba2] font-medium"
-              >
-                View All →
-              </button>
-            </div>
-            {dashboardData.recentApplications.length > 0 ? (
-              <div className="space-y-3">
-                {dashboardData.recentApplications.map((application, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50/50 to-transparent rounded-lg">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold mr-3">
-                        {application.company?.charAt(0) || 'C'}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{application.position || 'Position'}</p>
-                        <p className="text-xs text-gray-500">{application.company || 'Company'} • {application.date}</p>
-                      </div>
-                    </div>
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      application.status === 'Shortlisted' 
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : application.status === 'Accepted'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {application.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-500">No recent applications</p>
-                <p className="text-xs text-gray-400 mt-2">Apply to jobs to see them here</p>
-              </div>
-            )}
+        {/* Applications by Type - Updated to include Internship */}
+        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">Applications by Type</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 text-sm">
+              <thead>
+                <tr className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5">
+                  <th className="px-4 py-3 text-left font-medium text-gray-600">Job Type</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-600">Applied</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-600">Shortlisted</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-600">Accepted</th>
+                  <th className="px-4 py-3 text-left font-medium text-gray-600">Rejected</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {/* Off-Campus Row */}
+                <tr className="hover:bg-gradient-to-r from-[#9333ea]/5 to-transparent">
+                  <td className="px-4 py-3 font-medium text-gray-800">Off-Campus</td>
+                  <td className="px-4 py-3 text-[#9333ea] font-semibold">{dashboardData.byCategory['Off-Campus']?.Applied || 0}</td>
+                  <td className="px-4 py-3 text-yellow-600 font-semibold">{dashboardData.byCategory['Off-Campus']?.Shortlisted || 0}</td>
+                  <td className="px-4 py-3 text-green-600 font-semibold">{dashboardData.byCategory['Off-Campus']?.Accepted || 0}</td>
+                  <td className="px-4 py-3 text-red-600 font-semibold">{dashboardData.byCategory['Off-Campus']?.Rejected || 0}</td>
+                </tr>
+                
+                {/* Internship Row */}
+                <tr className="hover:bg-gradient-to-r from-[#7c3aed]/5 to-transparent">
+                  <td className="px-4 py-3 font-medium text-gray-800">Internship</td>
+                  <td className="px-4 py-3 text-[#7c3aed] font-semibold">{dashboardData.byCategory['Internship']?.Applied || 0}</td>
+                  <td className="px-4 py-3 text-yellow-600 font-semibold">{dashboardData.byCategory['Internship']?.Shortlisted || 0}</td>
+                  <td className="px-4 py-3 text-green-600 font-semibold">{dashboardData.byCategory['Internship']?.Accepted || 0}</td>
+                  <td className="px-4 py-3 text-red-600 font-semibold">{dashboardData.byCategory['Internship']?.Rejected || 0}</td>
+                </tr>
+                
+                {/* Totals Row */}
+                <tr className="hover:bg-gradient-to-r from-gray-100 to-transparent font-semibold bg-gray-50/50">
+                  <td className="px-4 py-3 font-medium text-gray-900">Total</td>
+                  <td className="px-4 py-3 text-[#667eea]">{getTotalForStatus('Applied')}</td>
+                  <td className="px-4 py-3 text-yellow-600">{getTotalForStatus('Shortlisted')}</td>
+                  <td className="px-4 py-3 text-green-600">{getTotalForStatus('Accepted')}</td>
+                  <td className="px-4 py-3 text-red-600">{getTotalForStatus('Rejected')}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-
-          Upcoming Interviews
-          <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Upcoming Interviews</h2>
-              <button
-                onClick={() => navigate('/fresher-interviews')}
-                className="text-sm text-[#667eea] hover:text-[#764ba2] font-medium"
-              >
-                View All →
-              </button>
-            </div>
-            {dashboardData.upcomingInterviews.length > 0 ? (
-              <div className="space-y-3">
-                {dashboardData.upcomingInterviews.map((interview, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50/50 to-transparent rounded-lg">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold mr-3">
-                        {interview.company?.charAt(0) || 'C'}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{interview.position || 'Position'}</p>
-                        <p className="text-xs text-gray-500">{interview.date} • {interview.time}</p>
-                      </div>
-                    </div>
-                    <span className="text-xs px-2 py-1 bg-purple-100 text-purple-800 rounded-full font-medium">
-                      Scheduled
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-500">No upcoming interviews</p>
-                <p className="text-xs text-gray-400 mt-2">Interview schedules will appear here</p>
-              </div>
-            )}
+          <div className="mt-4 text-xs text-gray-500">
+            Applications are tracked by type and status for better career management.
           </div>
-        </div> */}
-
-        {/* Applications by Type */}
-<div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 mb-8">
-  <h2 className="mb-4 text-lg font-semibold text-gray-900">Applications by Type</h2>
-  <div className="overflow-x-auto">
-    <table className="min-w-full divide-y divide-gray-200 text-sm">
-      <thead>
-        <tr className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5">
-          <th className="px-4 py-3 text-left font-medium text-gray-600">Job Type</th>
-          <th className="px-4 py-3 text-left font-medium text-gray-600">Applied</th>
-          <th className="px-4 py-3 text-left font-medium text-gray-600">Shortlisted</th>
-          <th className="px-4 py-3 text-left font-medium text-gray-600">Accepted</th>
-          <th className="px-4 py-3 text-left font-medium text-gray-600">Rejected</th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-gray-100">
-        {/* On-Campus Row - Commented */}
-        {/* <tr className="hover:bg-gradient-to-r from-[#667eea]/5 to-transparent">
-          <td className="px-4 py-3 font-medium text-gray-800">On-Campus</td>
-          <td className="px-4 py-3 text-[#667eea] font-semibold">{dashboardData.byCategory['On-campus']}</td>
-          <td className="px-4 py-3 text-yellow-600 font-semibold">0</td>
-          <td className="px-4 py-3 text-green-600 font-semibold">0</td>
-          <td className="px-4 py-3 text-red-600 font-semibold">0</td>
-        </tr> */}
-        
-        {/* Pool-Campus Row - Commented */}
-        {/* <tr className="hover:bg-gradient-to-r from-[#f093fb]/5 to-transparent">
-          <td className="px-4 py-3 font-medium text-gray-800">Pool-Campus</td>
-          <td className="px-4 py-3 text-[#f093fb] font-semibold">{dashboardData.byCategory['Pool-campus']}</td>
-          <td className="px-4 py-3 text-yellow-600 font-semibold">0</td>
-          <td className="px-4 py-3 text-green-600 font-semibold">0</td>
-          <td className="px-4 py-3 text-red-600 font-semibold">0</td>
-        </tr> */}
-        
-        {/* Off-Campus Row - Keep only this one */}
-        <tr className="hover:bg-gradient-to-r from-[#4facfe]/5 to-transparent">
-          <td className="px-4 py-3 font-medium text-gray-800">Off-Campus</td>
-          <td className="px-4 py-3 text-[#4facfe] font-semibold">{dashboardData.byCategory['Off-campus']}</td>
-          <td className="px-4 py-3 text-yellow-600 font-semibold">0</td>
-          <td className="px-4 py-3 text-green-600 font-semibold">0</td>
-          <td className="px-4 py-3 text-red-600 font-semibold">0</td>
-        </tr>
-        
-        {/* Totals Row - Keep this for total calculations */}
-        <tr className="hover:bg-gradient-to-r from-gray-100 to-transparent font-semibold bg-gray-50/50">
-          <td className="px-4 py-3 font-medium text-gray-900">Total</td>
-          <td className="px-4 py-3 text-[#667eea]">{dashboardData.stats.Applied}</td>
-          <td className="px-4 py-3 text-yellow-600">{dashboardData.stats.Shortlisted}</td>
-          <td className="px-4 py-3 text-green-600">{dashboardData.stats.Accepted}</td>
-          <td className="px-4 py-3 text-red-600">{dashboardData.stats.Rejected}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <div className="mt-4 text-xs text-gray-500">
-    Applications are categorized by campus type and status.
-  </div>
-</div>
+        </div>
 
         {/* Quick Actions */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">

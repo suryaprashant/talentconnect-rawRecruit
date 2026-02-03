@@ -289,6 +289,7 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
   const { isAuthenticated, loading } = useAuth();
   
   const modalRef = useRef(null);
+  const companyModalRef = useRef(null); // Ref for company details modal
   const contentRef = useRef(null);
 
   const loadJobDetail = async () => {
@@ -337,11 +338,17 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
   // Close modal on Escape key
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        if (showCompanyDetails) {
+          setShowCompanyDetails(false);
+        } else {
+          onClose();
+        }
+      }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
+  }, [onClose, showCompanyDetails]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -355,18 +362,25 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
     };
   }, [isOpen]);
 
-  // Close modal when clicking outside
+  // Close main modal when clicking outside - updated to handle nested modals
   useEffect(() => {
     const handleClickOutside = (e) => {
+      // Don't close if company modal is open
+      if (showCompanyDetails) return;
+      
+      // Don't close if clicking on company modal
+      if (companyModalRef.current?.contains(e.target)) return;
+      
       if (modalRef.current && !modalRef.current.contains(e.target)) {
         onClose();
       }
     };
+    
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, showCompanyDetails]);
 
   const handleShare = () => {
     if (navigator.share) {
@@ -438,8 +452,14 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
     }
   };
 
+  // Company modal handler
   const handleCompanyClick = () => {
     setShowCompanyDetails(true);
+  };
+
+  // Company modal close handler
+  const handleCloseCompanyModal = () => {
+    setShowCompanyDetails(false);
   };
 
   if (!isOpen) return null;
@@ -482,20 +502,20 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
 
   // Prepare company data for modal
   const companyData = {
-  name: companyName,
-  logo: companyLogo, // Use the correct logo
-  location: companyLocation,
-  description: job?.companyPosted?.companyDetails?.description,
-  industry: job?.companyPosted?.companyDetails?.industryType,
-  employees: job?.companyPosted?.companyDetails?.numberOfEmployees,
-  website: job?.companyPosted?.companyDetails?.website,
-  country: job?.country || job?.companyPosted?.companyDetails?.country,
-  city: job?.companyPosted?.companyDetails?.city,
-  state: job?.companyPosted?.companyDetails?.state,
-  pincode: job?.companyPosted?.companyDetails?.pincode,
-  email: job?.companyPosted?.companyDetails?.email,
-  phone: job?.companyPosted?.companyDetails?.phone
-};
+    name: companyName,
+    logo: companyLogo, // Use the correct logo
+    location: companyLocation,
+    description: job?.companyPosted?.companyDetails?.description,
+    industry: job?.companyPosted?.companyDetails?.industryType,
+    employees: job?.companyPosted?.companyDetails?.numberOfEmployees,
+    website: job?.companyPosted?.companyDetails?.website,
+    country: job?.country || job?.companyPosted?.companyDetails?.country,
+    city: job?.companyPosted?.companyDetails?.city,
+    state: job?.companyPosted?.companyDetails?.state,
+    pincode: job?.companyPosted?.companyDetails?.pincode,
+    email: job?.companyPosted?.companyDetails?.email,
+    phone: job?.companyPosted?.companyDetails?.phone
+  };
 
   return (
     <>
@@ -503,7 +523,7 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
       <CompanyDetailsModal
         company={companyData}
         isOpen={showCompanyDetails}
-        onClose={() => setShowCompanyDetails(false)}
+        onClose={handleCloseCompanyModal}
       />
 
       <div
@@ -522,130 +542,96 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
         <div ref={contentRef} className="flex-1 overflow-y-auto bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
           <div className="p-6">
             {/* Header Section */}
-            <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-5 rounded-xl mb-6">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm font-medium text-[#667eea]">
-                      {jobStatus.status === 'Completed' ? 'Registrations Completed' : 'Registration Open'}
-                    </span>
-                  </div>
-                  
-                  {/* Company Logo and Name Section */}
-                  <div className="flex items-center gap-3 mb-4">
-                    {/* Company Logo with first letter fallback */}
-                    <button
-                      onClick={handleCompanyClick}
-                      className="group flex items-center gap-3 text-left hover:opacity-90 transition-opacity"
-                    >
-                      {companyLogo ? (
-                        <div className="flex-shrink-0">
-                          <img 
-                            src={companyLogo} 
-                            alt={`${companyName} logo`}
-                            className="w-12 h-12 rounded-lg object-cover border border-gray-200 shadow-sm group-hover:shadow-md transition-shadow"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.style.display = 'none';
-                              e.target.nextElementSibling.style.display = 'flex';
-                            }}
-                          />
-                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 border border-gray-200 shadow-sm hidden items-center justify-center">
-                            <span className="text-lg font-bold text-[#667eea]">
-                              {companyName?.charAt(0)?.toUpperCase() || 'C'}
-                            </span>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 border border-gray-200 shadow-sm flex items-center justify-center flex-shrink-0 group-hover:shadow-md transition-shadow">
-                          <span className="text-lg font-bold text-[#667eea]">
-                            {companyName?.charAt(0)?.toUpperCase() || 'C'}
-                          </span>
-                        </div>
-                      )}
-                      
-                      {/* Company Name and Location */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent truncate">
-                            {companyName}
-                          </h1>
-                          <ExternalLink className="h-5 w-5 text-[#667eea] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600 mt-1">
-                          <MapPin className="h-4 w-4 mr-2 text-[#667eea] flex-shrink-0" />
-                          <span className="truncate">{companyLocation}</span>
-                        </div>
-                      </div>
-                    </button>
-                  </div>
-                  
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-3">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Calendar className="h-4 w-4 mr-2 text-[#667eea]" />
-                      <span>{formatDate(job?.startDate)} - {formatDate(job?.endDate)}</span>
-                    </div>
-                  </div>
+<div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-5 rounded-xl mb-6">
+  <div className="flex justify-between items-start">
+    <div className="flex-1">
+      {/* Company name and action buttons in same row */}
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center gap-3 flex-1">
+          {/* Company Logo with first letter fallback */}
+          <button
+            onClick={handleCompanyClick}
+            className="group flex items-center gap-3 text-left hover:opacity-90 transition-opacity"
+          >
+            {companyLogo ? (
+              <div className="flex-shrink-0">
+                <img 
+                  src={companyLogo} 
+                  alt={`${companyName} logo`}
+                  className="w-12 h-12 rounded-lg object-cover border border-gray-200 shadow-sm group-hover:shadow-md transition-shadow"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.style.display = 'none';
+                    e.target.nextElementSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 border border-gray-200 shadow-sm hidden items-center justify-center">
+                  <span className="text-lg font-bold text-[#667eea]">
+                    {companyName?.charAt(0)?.toUpperCase() || 'C'}
+                  </span>
                 </div>
               </div>
-
-              {/* Save and Share buttons */}
-              <div className="flex space-x-3 mt-4">
-                {!saved && !isApplied && (
-                  <button
-                    onClick={handleSave}
-                    disabled={saved}
-                    className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-lg transition-all duration-200`}
-                  >
-                    <Save className={`h-5 w-5 mr-2 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} fill={saved ? 'currentColor' : 'none'} />
-                    {saved ? 'Saved' : 'Save'}
-                  </button>
-                )}
-                <button
-                  onClick={handleShare}
-                  className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
-                >
-                  <Share2 className="h-5 w-5 mr-2 text-gray-400" />
-                  Share
-                </button>
+            ) : (
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 border border-gray-200 shadow-sm flex items-center justify-center flex-shrink-0 group-hover:shadow-md transition-shadow">
+                <span className="text-lg font-bold text-[#667eea]">
+                  {companyName?.charAt(0)?.toUpperCase() || 'C'}
+                </span>
+              </div>
+            )}
+            
+            {/* Company Name and Location */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent truncate">
+                  {companyName}
+                </h1>
+                <ExternalLink className="h-5 w-5 text-[#667eea] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+              </div>
+              <div className="flex items-center text-sm text-gray-600 mt-1">
+                <MapPin className="h-4 w-4 mr-2 text-[#667eea] flex-shrink-0" />
+                <span className="truncate">{companyLocation}</span>
               </div>
             </div>
+          </button>
+        </div>
+        
+        {/* Save and Share buttons aligned at company name level */}
+        <div className="flex space-x-2 ml-4">
+          {!saved && !isApplied && (
+            <button
+              onClick={handleSave}
+              disabled={saved}
+              className={`inline-flex items-center justify-center px-3 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-lg transition-all duration-200`}
+            >
+              <Save className={`h-4 w-4 mr-1.5 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} fill={saved ? 'currentColor' : 'none'} />
+              <span>{saved ? 'Saved' : 'Save'}</span>
+            </button>
+          )}
+          <button
+            onClick={handleShare}
+            className="inline-flex items-center justify-center px-3 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
+          >
+            <Share2 className="h-4 w-4 mr-1.5 text-gray-400" />
+            <span>Share</span>
+          </button>
+        </div>
+      </div>
+      
+      {/* Date information below */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-3">
+        <div className="flex items-center text-sm text-gray-600">
+          <Calendar className="h-4 w-4 mr-2 text-[#667eea]" />
+          <span>{formatDate(job?.startDate)} - {formatDate(job?.endDate)}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-            <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
-              {/* About Section - Now with View Details button */}
-              <div className="px-6 py-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                    About {companyName}
-                  </h2>
-                  {/* <button
-                    onClick={handleCompanyClick}
-                    className="inline-flex items-center text-sm text-[#667eea] hover:text-[#764ba2] transition-colors"
-                  >
-                    View Company Details
-                    <ExternalLink className="h-4 w-4 ml-1" />
-                  </button> */}
-                </div>
-                <p className="text-gray-700 mb-8">{job?.companyPosted?.companyDetails?.description || 'No description provided.'}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                    <div className="text-3xl font-bold text-gray-900 mb-2">{job?.companyPosted?.companyDetails?.numberOfEmployees || 'N/A'}</div>
-                    <div className="text-sm text-gray-600 font-medium">Employees</div>
-                  </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                    <div className="text-3xl font-bold text-gray-900 mb-2">{job?.companyPosted?.companyDetails?.industryType || 'N/A'}</div>
-                    <div className="text-sm text-gray-600 font-medium">Industries</div>
-                  </div>
-                  <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                    <div className="text-3xl font-bold text-gray-900 mb-2">{job?.country || job?.companyPosted?.companyDetails?.country || 'N/A'}</div>
-                    <div className="text-sm text-gray-600 font-medium">Countries</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Rest of your existing code remains exactly the same */}
-              {/* Description */}
-              <div className="px-6 py-6 border-t border-gray-100">
+            {/* All sections in separate boxes with curved corners */}
+            <div className="space-y-6">
+              {/* Job Description Box */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   {job.lookingFor} Description
                 </h2>
@@ -654,13 +640,12 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
                 </div>
               </div>
 
-              {/* ... Rest of your existing JSX code remains exactly the same ... */}
-              {/* Job Details */}
-              <div className="px-6 py-6 border-t border-gray-100">
+              {/* Job Details Box */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   Job Details
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
                       <div className="text-sm font-medium text-[#667eea] mb-1">Looking For</div>
@@ -696,9 +681,9 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
                 </div>
               </div>
 
-              {/* Required Skills */}
+              {/* Required Skills Box */}
               {job?.skills && job?.skills.length > 0 && (
-                <div className="px-6 py-6 border-t border-gray-100">
+                <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                     Required Skills
                   </h2>
@@ -715,8 +700,8 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
                 </div>
               )}
 
-              {/* Eligibility Criteria */}
-              <div className="px-6 py-6 border-t border-gray-100">
+              {/* Eligibility Criteria Box */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   Eligibility Criteria
                 </h2>
@@ -757,7 +742,7 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
                         if (point.toLowerCase().includes('minimum') && point.toLowerCase().includes('60%')) {
                           return (
                             <div key={index} className="flex items-start">
-                              <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt-2 mr-3 flex-shrink-0"></div>
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#667eea] mt=2 mr-3 flex-shrink-0"></div>
                               <span className="text-base text-gray-700">Minimum 60% marks required</span>
                             </div>
                           );
@@ -795,8 +780,8 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
                 )}
               </div>
 
-              {/* Compensation & Benefits */}
-              <div className="px-6 py-6 border-t border-gray-100">
+              {/* Compensation & Benefits Box */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   Compensation & Benefits
                 </h2>
@@ -845,8 +830,8 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
                 </div>
               </div>
 
-              {/* Selection Process */}
-              <div className="px-6 py-6 border-t border-gray-100">
+              {/* Selection Process Box */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
                 <div className="mb-4">
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-1">
                     Selection Process
@@ -881,8 +866,8 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
                 )}
               </div>
 
-              {/* Important Dates */}
-              <div className="px-6 py-6 border-t border-gray-100">
+              {/* Important Dates Box */}
+              <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
                 <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                   Important Dates
                 </h2>
@@ -908,9 +893,9 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
                 </div>
               </div>
 
-              {/* Contact Person */}
+              {/* Contact Person Box */}
               {job?.contactPerson && (
-                <div className="px-6 py-6 border-t border-gray-100">
+                <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                     Contact Person
                   </h2>
