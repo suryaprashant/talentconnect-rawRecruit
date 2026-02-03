@@ -1418,12 +1418,59 @@ export default function RequestInfo() {
     }));
   };
 
-  const handleMultiSelect = (field, value) => {
+  {/*const handleMultiSelect = (field, value) => {
     setFormData(prev => {
       const currentValues = prev[field] || [];
       const newValues = currentValues.includes(value)
         ? currentValues.filter(item => item !== value)
         : [...currentValues, value];
+      return { ...prev, [field]: newValues };
+    });
+  };*/}
+
+  const removeLastSelectionProcess = (process) => {
+    setFormData(prev => {
+      const values = prev.selectionProcess || [];
+
+      // find last index of this process type
+      const lastIndex = [...values]
+        .map((v, i) => ({ v, i }))
+        .filter(item => item.v.startsWith(process))
+        .pop()?.i;
+
+      if (lastIndex === undefined) return prev;
+
+      return {
+        ...prev,
+        selectionProcess: values.filter((_, i) => i !== lastIndex)
+      };
+    });
+  };
+
+
+  const handleMultiSelect = (field, value) => {
+    setFormData(prev => {
+      const currentValues = prev[field] || [];
+
+      // 🔹 Special case ONLY for selectionProcess
+      if (field === 'selectionProcess') {
+        const count = currentValues.filter(item =>
+          item.startsWith(value)
+        ).length;
+
+        const label = `${value} ${count + 1}`;
+
+        return {
+          ...prev,
+          [field]: [...currentValues, label]
+        };
+      }
+
+      // 🔹 Default behavior for all other fields (UNCHANGED)
+      const newValues = currentValues.includes(value)
+        ? currentValues.filter(item => item !== value)
+        : [...currentValues, value];
+
       return { ...prev, [field]: newValues };
     });
   };
@@ -2484,14 +2531,48 @@ export default function RequestInfo() {
                 </div>
                 {dropdownOpen.selectionProcess && (
                   <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                    {processOptions.map(process => (
-                      <div key={process} onClick={() => handleMultiSelect('selectionProcess', process)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.selectionProcess.includes(process) ? "bg-blue-50" : ""}`}>
-                        <div className="flex items-center justify-between">
-                          <span className={`text-sm ${formData.selectionProcess.includes(process) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{process}</span>
-                          {formData.selectionProcess.includes(process) && <span className="text-[#667eea]">✓</span>}
+                    {processOptions.map(process => {
+                      const isSelected = formData.selectionProcess.some(p =>
+                        p.startsWith(process)
+                      );
+                    
+                      return (
+                        <div
+                          key={process}
+                          className={`px-3 py-2 border-b border-gray-100 ${
+                            isSelected ? "bg-blue-50" : "hover:bg-gray-50"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            {/* ADD (left side) */}
+                            <span
+                              onClick={() => handleMultiSelect('selectionProcess', process)}
+                              className={`text-sm cursor-pointer ${
+                                isSelected
+                                  ? "text-[#667eea] font-medium"
+                                  : "text-gray-700"
+                              }`}
+                            >
+                              {process}
+                            </span>
+                            
+                            {/* REMOVE (right side) */}
+                            {isSelected && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation(); // important
+                                  removeLastSelectionProcess(process);
+                                }}
+                                className="text-gray-400 hover:text-red-500 text-sm font-semibold"
+                                title="Remove last round"
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
