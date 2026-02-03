@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { ChevronDown, X, Briefcase, MapPin, DollarSign, Users, BookOpen, Target, Award, Shield, Clock, GraduationCap } from 'lucide-react';
+import { ChevronDown, X, Briefcase, MapPin, DollarSign, Users, BookOpen, Target, Award, Shield, Clock, GraduationCap, Calendar } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
+import DatePicker from 'react-datepicker';
 
 export default function EmployerPostIntership() {
   const initialState = {
@@ -11,6 +12,8 @@ export default function EmployerPostIntership() {
     description: '',
     location: [],
     workMode: 'On-site',
+    startDate: null,
+    onlineTestDate: null,
     minPackage: {
       currency: 'INR',
       amount: ''
@@ -152,6 +155,13 @@ export default function EmployerPostIntership() {
     }
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+
+  const handleDateChange = (date, field) => {
+  setFormData(prev => ({
+    ...prev,
+    [field]: date
+  }));
+};
 
   const handleOptionSelect = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -629,6 +639,57 @@ export default function EmployerPostIntership() {
                       ))}
                     </select>
                     <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                  </div>
+                </div>
+              </div>
+
+              {/*start date test date */}
+              <div>
+                <label className="block mb-2 font-medium text-sm text-gray-700">
+                  Internship Timeline <span className="text-red-500">*</span>
+                </label>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Internship Start Date */}
+                  <div>
+                    <label className="block mb-1 text-xs text-gray-600">
+                      Internship Start Date
+                    </label>
+                    <div className="relative">
+                      <DatePicker
+                        selected={formData.startDate ? new Date(formData.startDate) : null}
+                        onChange={(date) => handleDateChange(date, 'startDate')}
+                        dateFormat="dd-MM-yyyy"
+                        placeholderText="Start date"
+                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        wrapperClassName="w-full"
+                      />
+                      <Calendar
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                        size={14}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Online Test Date */}
+                  <div>
+                    <label className="block mb-1 text-xs text-gray-600">
+                      Online Test Date
+                    </label>
+                    <div className="relative">
+                      <DatePicker
+                        selected={formData.onlineTestDate ? new Date(formData.onlineTestDate) : null}
+                        onChange={(date) => handleDateChange(date, 'onlineTestDate')}
+                        dateFormat="dd-MM-yyyy"
+                        placeholderText="Test date"
+                        className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                        wrapperClassName="w-full"
+                      />
+                      <Calendar
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                        size={14}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
