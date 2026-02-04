@@ -242,67 +242,53 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onSh
     return (
         <>
             <div className="bg-white p-6 rounded-lg shadow-sm mb-6 border border-gray-200">
-                {/* College Header */}
-                <div className="pb-4 border-b border-gray-200 mb-4">
-                    <div className="flex items-center">
-                        {profileImage ? (
-                            <img 
-                                src={profileImage} 
-                                alt={collegeName} 
-                                className="w-16 h-16 rounded-md object-cover flex-shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
-                                onClick={() => setShowCollegeModal(true)}
-                            />
-                        ) : (
-                            <div 
-                                className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center text-gray-500 text-xs cursor-pointer hover:bg-gray-300 transition-colors"
-                                onClick={() => setShowCollegeModal(true)}
-                            >
-                                No Image
-                            </div>
-                        )}
-                        <div className="ml-4 flex-grow">
-                            <h1 
-                                className="text-xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
-                                onClick={() => setShowCollegeModal(true)}
-                            >
-                                {collegeName}
-                            </h1>
-                            <div 
-                                className="flex items-center text-gray-600 text-sm mt-1 cursor-pointer hover:text-blue-600 transition-colors"
-                                onClick={() => setShowCollegeModal(true)}
-                            >
-                                <MapPin size={14} className="mr-1" />
-                                <span>{[city, state].filter(Boolean).join(', ')}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-                        <div className="text-center">
-                            <div className="font-bold text-lg">{placementRate}{placementRate !== 'Not Specified' && '%'}</div>
-                            <div className="text-sm text-gray-600">Placement Rate</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="font-bold text-lg">{highestPackage}{highestPackage !== 'Not Specified' && ' LPA'}</div>
-                            <div className="text-sm text-gray-600">Highest Package</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="font-bold text-lg">{averagePackage}{averagePackage !== 'Not Specified' && ' LPA'}</div>
-                            <div className="text-sm text-gray-600">Average Package</div>
-                        </div>
-                    </div>
-                </div>
+                {/* College Header - REMOVED BORDER-BOTTOM */}
+<div className="pb-4 mb-4"> {/* Removed border-b border-gray-200 */}
+    <div className="flex items-center">
+        {profileImage ? (
+            <img 
+                src={profileImage} 
+                alt={collegeName} 
+                className="w-16 h-16 rounded-md object-cover flex-shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => setShowCollegeModal(true)}
+            />
+        ) : (
+            <div 
+                className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center text-gray-500 text-xs cursor-pointer hover:bg-gray-300 transition-colors"
+                onClick={() => setShowCollegeModal(true)}
+            >
+                No Image
+            </div>
+        )}
+        <div className="ml-4 flex-grow">
+            <h1 
+                className="text-xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
+                onClick={() => setShowCollegeModal(true)}
+            >
+                {collegeName}
+            </h1>
+            <div 
+                className="flex items-center text-gray-600 text-sm mt-1 cursor-pointer hover:text-blue-600 transition-colors"
+                onClick={() => setShowCollegeModal(true)}
+            >
+                <MapPin size={14} className="mr-1" />
+                <span>{[city, state].filter(Boolean).join(', ')}</span>
+            </div>
+        </div>
+    </div>
+</div>
 
-                {/* Main Drive Details Section */}
-                <div className="mb-6">
-                    <h3 className="text-lg font-bold mb-4 text-gray-800">Drive Details</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                        <DetailRow icon={Target} label="Job Roles" value={lookingFor} />
-                        <DetailRow icon={Briefcase} label="Employment Type" value={employmentType} />
-                        <DetailRow icon={MapPin} label="Work Locations" value={workLocations} />
-                        <DetailRow icon={Users} label="College Type" value={collegeCategories} />
-                        <DetailRow icon={Users} label="Minimum Students" value={minimumStudents} />
-                        <DetailRow icon={Calendar} label="Drive Period" value={`${safeFormatDate(startDate)} to ${safeFormatDate(endDate)}`} />
-                    </div>
+{/* Main Drive Details Section */}
+<div className="mb-6">
+    <h3 className="text-lg font-bold mb-4 text-gray-800">Drive Details</h3>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+        <DetailRow icon={Target} label="Job Roles" value={lookingFor} />
+        <DetailRow icon={Briefcase} label="Employment Type" value={employmentType} />
+        <DetailRow icon={MapPin} label="Work Locations" value={workLocations} />
+        <DetailRow icon={Users} label="College Type" value={collegeCategories} />
+        <DetailRow icon={Users} label="Minimum Students" value={minimumStudents} />
+        <DetailRow icon={Calendar} label="Drive Period" value={`${safeFormatDate(startDate)} to ${safeFormatDate(endDate)}`} />
+    </div>
 
                     {/* Package Details */}
                     {(packageDetails.totalCTC || packageDetails.fixedPay) && (

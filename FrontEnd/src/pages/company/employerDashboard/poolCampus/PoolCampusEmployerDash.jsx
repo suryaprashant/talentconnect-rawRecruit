@@ -104,8 +104,8 @@ const PoolCampusEmployeeDash = () => {
   }, [id]);
 
   const handleBack = () => {
-    navigate('/company-dashboard/pool-campus');
-  };
+  window.history.back(); // Simple and clean
+};
 
   const handleSave = async (jobId) => {
     try {
@@ -544,12 +544,12 @@ const PoolCampusEmployeeDash = () => {
           <div className="mb-8">
             <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-6">
               <div className="flex items-start gap-4">
-                <div 
+                {/* <div 
                   className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
                   onClick={() => setShowCollegeModal(true)}
                 >
                   <Building2 className="h-6 w-6 text-[#667eea]" />
-                </div>
+                </div> */}
                 <div>
                   <h2 
                     className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-2 hover:text-blue-600 cursor-pointer transition-colors"
@@ -567,7 +567,7 @@ const PoolCampusEmployeeDash = () => {
                     </span>
                     <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg hover:from-blue-50 hover:to-blue-100">
                       <MapPin className="h-3 w-3 mr-1.5" />
-                      {posting.location?.join(', ') || 'Location not specified'}
+                      {posting.location?.join(', ') || 'Other'}
                     </span>
                     <a
                       href={collegeDetails?.profileAchievements?.collegeWebsite || '#'}

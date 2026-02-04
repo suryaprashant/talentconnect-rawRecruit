@@ -77,7 +77,7 @@ const handleOpenHelp = (key) => {
               label="Pool Campus Requests"
               active={activePath === '/employer-dashboard/Pool-campus'}
             />
-            <SidebarNavItem
+            {/* <SidebarNavItem
               to="/employer-dashboard/resume-search"
               icon={
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -86,7 +86,7 @@ const handleOpenHelp = (key) => {
               }
               label="Resume Search"
               active={activePath === '/employer-dashboard/resume-search'}
-            />
+            /> */}
           </SidebarNavGroup>
 
           {/* Service Request */}

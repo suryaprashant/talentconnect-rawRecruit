@@ -262,8 +262,8 @@ const CollegeDetailPage = () => {
   }, [posting]);
 
   const handleBack = () => {
-    navigate('/company-dashboard/On-campus');
-  };
+  window.history.back(); // Simple and clean
+};
 
   const handleShare = () => {
     const collegeName = posting?.collegePosted?.collegeUniversityDetails?.collegeName || 
@@ -695,7 +695,7 @@ const CollegeDetailPage = () => {
             </button>
             
             {/* Responsive actions */}
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               {!isSaved && !isApplied && (
                 <button
                   onClick={() => handleSave(jobId)}
@@ -706,7 +706,7 @@ const CollegeDetailPage = () => {
                   <span className="md:hidden">Save</span>
                 </button>
               )}
-            </div>
+            </div> */}
           </div>
 
           {/* College Header */}
@@ -767,7 +767,7 @@ const CollegeDetailPage = () => {
                 </div>
                 
                 {/* Smaller Logo/Image */}
-                <div 
+                {/* <div 
                   className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg md:rounded-xl flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity flex-shrink-0"
                   onClick={() => setShowCollegeModal(true)}
                 >
@@ -780,7 +780,7 @@ const CollegeDetailPage = () => {
                   ) : (
                     <Building2 className="h-5 w-5 md:h-6 md:w-6 text-[#667eea]" />
                   )}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -1099,7 +1099,7 @@ const CollegeDetailPage = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 md:gap-4 pt-4 md:pt-6 border-t border-gray-200 mt-4 md:mt-6">
+          {/* <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 md:gap-4 pt-4 md:pt-6 border-t border-gray-200 mt-4 md:mt-6">
             <div className="flex flex-wrap gap-2 md:gap-3">
               <button
                 onClick={handleMessageClick}
@@ -1130,7 +1130,7 @@ const CollegeDetailPage = () => {
                 Accept Invitation
               </button>
             )}
-          </div>
+          </div> */}
         </div>
 
         <AlternateDateModal />

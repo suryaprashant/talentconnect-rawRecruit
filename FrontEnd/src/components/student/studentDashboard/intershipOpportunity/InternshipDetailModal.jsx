@@ -53,10 +53,13 @@ import {
   Globe as GlobeIcon,
   Hash,
   Mail as MailIcon,
-  Phone as PhoneIcon
+  Phone as PhoneIcon,
+  CalendarCheck,
+  PlayCircle
 } from 'lucide-react';
 import { ApplyForInternship, getJobDetails, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
+
 
 // Utility function to format date
 const formatDate = (dateString) => {
@@ -75,16 +78,6 @@ const formatDate = (dateString) => {
     console.error("Error formatting date:", error);
     return 'Not Specified';
   }
-};
-
-// Split long paragraph into meaningful bullet points
-const splitIntoBullets = (text) => {
-  if (!text || typeof text !== "string") return [];
-
-  return text
-    .split(/[\.\n,+]/)
-    .map(s => s.trim())
-    .filter(s => s.length > 3);
 };
 
 // Helper function to render array data as tags
@@ -474,11 +467,12 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
     setShowCompanyDetails(true);
   };
 
-  // Update tabs to remove 'process' tab
+  // Updated tabs to include 'process' tab as the fourth tab
   const tabs = [
     { id: 'overview', label: 'Overview', icon: <Info className="h-4 w-4" /> },
     { id: 'requirements', label: 'Requirements', icon: <Target className="h-4 w-4" /> },
     { id: 'benefits', label: 'Compensation', icon: <IndianRupee className="h-4 w-4" /> },
+    { id: 'process', label: 'Process', icon: <CalendarCheck className="h-4 w-4" /> },
   ];
 
   // Format stipend with rupee sign
@@ -541,7 +535,7 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
   const jobStatus = getJobStatus();
   const isApplied = propIsApplied || jobDetail.isApplied || false;
   const companyName = jobDetail?.companyPosted?.companyDetails?.companyName || jobDetail?.companyName || 'Company';
-  const companyLogo = jobDetail?.companyPosted?.companyDetails?.companyLogo || null;
+  const companyLogo = jobDetail?.companyPosted?.profileImageUrl || null;
   const companyLocation = jobDetail?.companyPosted?.companyDetails?.location || jobDetail?.location?.[0] || 'Not Specified';
   
   const internshipRole = Array.isArray(jobDetail.jobRoles) && jobDetail.jobRoles.length > 0 
@@ -556,7 +550,7 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
   // Prepare company data for modal
   const companyData = {
     name: companyName,
-    logo: companyLogo,
+    logo: companyLogo, // Use the fixed logo here
     location: companyLocation,
     description: jobDetail.companyPosted?.companyDetails?.description || jobDetail.companyDescription,
     industry: jobDetail.companyPosted?.companyDetails?.industryType,
@@ -594,99 +588,83 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
         )}
 
         {/* Main Content Area - Single scroll container */}
-        <div ref={contentRef} className="flex-1 overflow-y-auto bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+        <div ref={contentRef} className="flex-1 overflow-y-auto">
           <div className="p-6">
-            {/* Header Section */}
-            <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-5 rounded-xl mb-6">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm font-medium text-[#667eea]">
-                      {jobStatus.status === 'Closed' ? 'Registrations Completed' : 'Registration Open'}
-                    </span>
-                  </div>
-                  
-                  {/* Company Logo and Name Section */}
-                  <div className="flex items-center gap-3 mb-4">
-                    {/* Company Logo with first letter fallback */}
-                    <button
-                      onClick={handleCompanyClick}
-                      className="group flex items-center gap-3 text-left hover:opacity-90 transition-opacity"
-                    >
-                      {companyLogo ? (
-                        <div className="flex-shrink-0">
-                          <img 
-                            src={companyLogo} 
-                            alt={`${companyName} logo`}
-                            className="w-12 h-12 rounded-lg object-cover border border-gray-200 shadow-sm group-hover:shadow-md transition-shadow"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.style.display = 'none';
-                              e.target.nextElementSibling.style.display = 'flex';
-                            }}
-                          />
-                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 border border-gray-200 shadow-sm hidden items-center justify-center">
-                            <span className="text-lg font-bold text-[#667eea]">
-                              {companyName?.charAt(0)?.toUpperCase() || 'C'}
-                            </span>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 border border-gray-200 shadow-sm flex items-center justify-center flex-shrink-0 group-hover:shadow-md transition-shadow">
+            {/* Header Section - UPDATED */}
+            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl px-6 py-4 mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  {/* Company Logo */}
+                  <button
+                    onClick={handleCompanyClick}
+                    className="group flex items-center gap-3 text-left hover:opacity-90 transition-opacity"
+                  >
+                    {companyLogo ? (
+                      <div className="flex-shrink-0">
+                        <img 
+                          src={companyLogo} 
+                          alt={`${companyName} logo`}
+                          className="w-12 h-12 rounded-lg object-cover border border-gray-200 shadow-sm group-hover:shadow-md transition-shadow"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.style.display = 'none';
+                            e.target.nextElementSibling.style.display = 'flex';
+                          }}
+                        />
+                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 border border-gray-200 shadow-sm hidden items-center justify-center">
                           <span className="text-lg font-bold text-[#667eea]">
                             {companyName?.charAt(0)?.toUpperCase() || 'C'}
                           </span>
                         </div>
-                      )}
-                      
-                      {/* Company Name and Location */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent truncate">
-                            {companyName}
-                          </h1>
-                          <ExternalLink className="h-5 w-5 text-[#667eea] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                        </div>
-                        <div className="flex items-center text-sm text-gray-600 mt-1">
-                          <MapPin className="h-4 w-4 mr-2 text-[#667eea] flex-shrink-0" />
-                          <span className="truncate">{companyLocation}</span>
-                        </div>
                       </div>
-                    </button>
-                  </div>
-                  
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-3">
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Calendar className="h-4 w-4 mr-2 text-[#667eea]" />
-                      <span>Posted: {formatDate(jobDetail?.createdAt)}</span>
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 border border-gray-200 shadow-sm flex items-center justify-center flex-shrink-0 group-hover:shadow-md transition-shadow">
+                        <span className="text-lg font-bold text-[#667eea]">
+                          {companyName?.charAt(0)?.toUpperCase() || 'C'}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Company Name and Location */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h1 className="text-xl font-bold text-gray-900 truncate">
+                          {companyName}
+                        </h1>
+                        <ExternalLink className="h-4 w-4 text-[#667eea] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600 mt-1">
+                        <MapPin className="h-4 w-4 mr-2 text-[#667eea] flex-shrink-0" />
+                        <span className="truncate">{companyLocation}</span>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Save and Share buttons */}
-              <div className="flex space-x-3 mt-4">
-                {!saved && !isApplied && (
-                  <button
-                    onClick={handleSave}
-                    disabled={saved}
-                    className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-lg transition-all duration-200`}
-                  >
-                    <Save className={`h-5 w-5 mr-2 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} fill={saved ? 'currentColor' : 'none'} />
-                    {saved ? 'Saved' : 'Save'}
                   </button>
-                )}
-                <button
-                  onClick={handleShare}
-                  className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
-                >
-                  <Share2 className="h-5 w-5 mr-2 text-gray-400" />
-                  Share
-                </button>
+                </div>
+                
+                {/* Save and Share buttons - Moved to header */}
+                <div className="flex items-center gap-2">
+                  {!saved && !isApplied && (
+                    <button
+                      onClick={handleSave}
+                      disabled={saved}
+                      className={`inline-flex items-center justify-center px-3 py-1.5 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-lg transition-all duration-200`}
+                    >
+                      <Save className={`h-4 w-4 mr-1 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} fill={saved ? 'currentColor' : 'none'} />
+                      {saved ? 'Saved' : 'Save'}
+                    </button>
+                  )}
+                  <button
+                    onClick={handleShare}
+                    className="inline-flex items-center justify-center px-3 py-1.5 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                  >
+                    <Share2 className="h-4 w-4 mr-1 text-gray-400" />
+                    Share
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Tab Navigation */}
+            {/* Tab Navigation - Updated to 4 tabs */}
             <div className="mb-6">
               <div className="flex space-x-1 bg-white/50 backdrop-blur-sm border border-gray-100 rounded-xl p-1">
                 {tabs.map(tab => (
@@ -704,85 +682,41 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
               </div>
             </div>
 
-            <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
+            {/* Content Area */}
+            <div className="space-y-4">
               
               {/* Overview Tab */}
               {activeTab === 'overview' && (
-                <div className="px-6 py-6">
-                  {/* About Company */}
-                  <div className="mb-8">
-                    <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                        About {companyName}
-                      </h2>
-                      {/* <button
-                        onClick={handleCompanyClick}
-                        className="inline-flex items-center text-sm text-[#667eea] hover:text-[#764ba2] transition-colors"
-                      >
-                        View Company Details
-                        <ExternalLink className="h-4 w-4 ml-1" />
-                      </button> */}
-                    </div>
-                    <p className="text-gray-700 mb-8">
-                      {jobDetail.companyPosted?.companyDetails?.description || 
-                       jobDetail.companyDescription || 
-                       'No company description available.'}
-                    </p>
-                    
-                    {/* Company Stats */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                        <div className="text-3xl font-bold text-gray-900 mb-2">
-                          {jobDetail.companyPosted?.companyDetails?.numberOfEmployees?.toLocaleString() || 'N/A'}
-                        </div>
-                        <div className="text-sm text-gray-600 font-medium">Employees</div>
-                      </div>
-                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                        <div className="text-3xl font-bold text-gray-900 mb-2">
-                          {jobDetail.companyPosted?.companyDetails?.industryType || 'N/A'}
-                        </div>
-                        <div className="text-sm text-gray-600 font-medium">Industry</div>
-                      </div>
-                      <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-5 rounded-lg text-center">
-                        <div className="text-3xl font-bold text-gray-900 mb-2">
-                          {jobDetail.companyPosted?.companyDetails?.country || 'N/A'}
-                        </div>
-                        <div className="text-sm text-gray-600 font-medium">Country</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Internship Details */}
-                  <div className="px-6 py-6 border-t border-gray-100">
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                      Internship Details
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  {/* Internship Details Box */}
+                  <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+                    <h2 className="text-lg font-bold text-gray-900 mb-4">Internship Details</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-4">
                         <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-1">Internship Role</div>
+                          <div className="text-sm font-medium text-[#667eea] mb-2">Internship Role</div>
                           {renderTags(jobDetail.jobRoles)}
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-1">Work Location</div>
+                          <div className="text-sm font-medium text-[#667eea] mb-2">Work Location</div>
                           {renderTags(jobDetail.location)}
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-1">Work Mode</div>
+                          <div className="text-sm font-medium text-[#667eea] mb-2">Work Mode</div>
                           {renderTags(jobDetail.workMode)}
                         </div>
                       </div>
                       <div className="space-y-4">
                         <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-1">Duration</div>
+                          <div className="text-sm font-medium text-[#667eea] mb-2">Duration</div>
                           <div className="text-base text-gray-900">{duration}</div>
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-1">Start Date</div>
+                          <div className="text-sm font-medium text-[#667eea] mb-2">Start Date</div>
                           <div className="text-base text-gray-900">{formatDate(jobDetail.startDate)}</div>
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-1">Employment Type</div>
+                          <div className="text-sm font-medium text-[#667eea] mb-2">Employment Type</div>
                           <div className="text-base text-gray-900">
                             {Array.isArray(jobDetail.employmentType) 
                               ? jobDetail.employmentType.join(', ') 
@@ -793,60 +727,53 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                     </div>
                   </div>
 
-                  {/* About the Internship */}
+                  {/* About the Internship Box */}
                   {jobDetail.description && (
-                    <div className="px-6 py-6 border-t border-gray-100">
-                      <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                        About the Internship
-                      </h2>
+                    <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+                      <h2 className="text-lg font-bold text-gray-900 mb-4">About the Internship</h2>
                       <div className="text-gray-700 whitespace-pre-wrap">
                         {jobDetail.description}
                       </div>
                     </div>
                   )}
+
+                  {/* About Company Box - REMOVED as per request */}
                 </div>
               )}
 
               {/* Requirements Tab */}
               {activeTab === 'requirements' && (
-                <div className="px-6 py-6">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                    Internship Requirements
-                  </h2>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="space-y-4">
+                  {/* Eligibility Box */}
+                  <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+                    <h2 className="text-lg font-bold text-gray-900 mb-4">Eligibility</h2>
                     <div className="space-y-4">
-                      <div>
-                        <div className="text-sm font-medium text-[#667eea] mb-1">Required Degrees</div>
-                        {renderTags(jobDetail.degree)}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <div className="text-sm font-medium text-[#667eea] mb-2">Year of Study</div>
+                          <div className="text-base text-gray-900">
+                            {jobDetail.yearOfStudy || 'All years'}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-[#667eea] mb-2">Experience Level</div>
+                          <div className="text-base text-gray-900">
+                            {jobDetail.experienceLevel || 'Fresher'}
+                          </div>
+                        </div>
                       </div>
+                      
                       <div>
-                        <div className="text-sm font-medium text-[#667eea] mb-1">Eligible Streams</div>
+                        <div className="text-sm font-medium text-[#667eea] mb-2">Eligible Streams</div>
                         {renderTags(jobDetail.studentStreams)}
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="text-sm font-medium text-[#667eea] mb-1">Year of Study</div>
-                        <div className="text-base text-gray-900">
-                          {jobDetail.yearOfStudy || 'All years'}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-[#667eea] mb-1">Experience Level</div>
-                        <div className="text-base text-gray-900">
-                          {jobDetail.experienceLevel || 'Fresher'}
-                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Required Skills */}
+                  {/* Required Skills Box */}
                   {jobDetail?.skills && jobDetail?.skills.length > 0 && (
-                    <div className="px-6 py-6 border-t border-gray-100">
-                      <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                        Required Skills
-                      </h2>
+                    <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+                      <h2 className="text-lg font-bold text-gray-900 mb-4">Required Skills</h2>
                       <div className="flex flex-wrap gap-2">
                         {jobDetail.skills.map((skill, index) => (
                           <span
@@ -862,69 +789,66 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                 </div>
               )}
 
-              {/* Compensation Tab - FIXED */}
+              {/* Compensation Tab */}
               {activeTab === 'benefits' && (
-                <div className="px-6 py-6">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-6">
-                    Compensation & Benefits
-                  </h2>
+                <div className="space-y-4">
+                  {/* Compensation Details Box */}
+                  <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+                    <h2 className="text-lg font-bold text-gray-900 mb-4">Compensation Details</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Stipend Card */}
+                      <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-lg p-4">
+                        <div className="flex items-center mb-2">
+                          <div className="p-2 bg-emerald-100 rounded-lg mr-2">
+                            <IndianRupee className="h-5 w-5 text-emerald-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-emerald-800 text-sm">Monthly Stipend</h3>
+                            <p className="text-xs text-emerald-600">During internship</p>
+                          </div>
+                        </div>
+                        <div className="text-xl font-bold text-emerald-900 mt-2">
+                          {formatStipend()}
+                        </div>
+                      </div>
 
-                  {/* Stipend Details */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    {/* Stipend Card */}
-                    <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-xl p-5">
-                      <div className="flex items-center mb-3">
-                        <div className="p-2 bg-emerald-100 rounded-lg mr-3">
-                          <IndianRupee className="h-6 w-6 text-emerald-600" />
+                      {/* Certificate Card */}
+                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-center mb-2">
+                          <div className="p-2 bg-blue-100 rounded-lg mr-2">
+                            <Award className="h-5 w-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-blue-800 text-sm">Certificate</h3>
+                            <p className="text-xs text-blue-600">Upon completion</p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-emerald-800">Monthly Stipend</h3>
-                          <p className="text-sm text-emerald-600">During internship</p>
+                        <div className="text-lg font-medium text-blue-900 mt-2">
+                          Provided
                         </div>
                       </div>
-                      <div className="text-2xl font-bold text-emerald-900">
-                        {formatStipend()}
-                      </div>
-                    </div>
 
-                    {/* Certificate Card */}
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-5">
-                      <div className="flex items-center mb-3">
-                        <div className="p-2 bg-blue-100 rounded-lg mr-3">
-                          <Award className="h-6 w-6 text-blue-600" />
+                      {/* Letter of Recommendation Card */}
+                      <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-lg p-4">
+                        <div className="flex items-center mb-2">
+                          <div className="p-2 bg-purple-100 rounded-lg mr-2">
+                            <FileText className="h-5 w-5 text-purple-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-purple-800 text-sm">Letter of Recommendation</h3>
+                            <p className="text-xs text-purple-600">Performance based</p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-blue-800">Certificate</h3>
-                          <p className="text-sm text-blue-600">Upon completion</p>
+                        <div className="text-lg font-medium text-purple-900 mt-2">
+                          Available
                         </div>
-                      </div>
-                      <div className="text-lg font-medium text-blue-900">
-                        Provided
-                      </div>
-                    </div>
-
-                    {/* Letter of Recommendation Card */}
-                    <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-5">
-                      <div className="flex items-center mb-3">
-                        <div className="p-2 bg-purple-100 rounded-lg mr-3">
-                          <FileText className="h-6 w-6 text-purple-600" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-purple-800">Letter of Recommendation</h3>
-                          <p className="text-sm text-purple-600">Performance based</p>
-                        </div>
-                      </div>
-                      <div className="text-lg font-medium text-purple-900">
-                        Available
                       </div>
                     </div>
                   </div>
 
-                  {/* Additional Benefits */}
-                  <div className="px-6 py-6 border-t border-gray-100">
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                      Internship Benefits
-                    </h2>
+                  {/* Internship Benefits Box */}
+                  <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+                    <h2 className="text-lg font-bold text-gray-900 mb-4">Internship Benefits</h2>
                     <div className="flex flex-wrap gap-2">
                       {jobDetail?.benefits?.length > 0 ? (
                         jobDetail.benefits.map((benefit, index) => (
@@ -953,6 +877,179 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                       )}
                     </div>
                   </div>
+                </div>
+              )}
+
+              {/* Process Tab - NEW SECTION */}
+              {activeTab === 'process' && (
+                <div className="space-y-4">
+                  {/* Timeline Box */}
+                  <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+                    <h2 className="text-lg font-bold text-gray-900 mb-4">Internship Timeline</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Start Date Card */}
+                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-5">
+                        <div className="flex items-center mb-3">
+                          <div className="p-2 bg-blue-100 rounded-lg mr-3">
+                            <Calendar className="h-5 w-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-blue-800">Internship Start Date</h3>
+                            <p className="text-xs text-blue-600">When the internship begins</p>
+                          </div>
+                        </div>
+                        <div className="mt-2">
+                          <div className="text-2xl font-bold text-blue-900">
+                            {formatDate(jobDetail.startDate)}
+                          </div>
+                          <div className="text-sm text-blue-700 mt-1">
+                            {(() => {
+                              const startDate = new Date(jobDetail.startDate);
+                              const now = new Date();
+                              const diffTime = startDate - now;
+                              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                              
+                              if (diffDays > 0) {
+                                return `Starts in ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+                              } else if (diffDays === 0) {
+                                return 'Starts today';
+                              } else {
+                                return 'Already started';
+                              }
+                            })()}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Online Test Date Card */}
+                      <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-5">
+                        <div className="flex items-center mb-3">
+                          <div className="p-2 bg-purple-100 rounded-lg mr-3">
+                            <PlayCircle className="h-5 w-5 text-purple-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-purple-800">Online Test Date</h3>
+                            <p className="text-xs text-purple-600">Scheduled assessment</p>
+                          </div>
+                        </div>
+                        <div className="mt-2">
+                          <div className="text-2xl font-bold text-purple-900">
+                            {formatDate(jobDetail.onlineTestDate)}
+                          </div>
+                          <div className="text-sm text-purple-700 mt-1">
+                            {(() => {
+                              if (!jobDetail.onlineTestDate || jobDetail.onlineTestDate === 'Not Specified') {
+                                return 'No test scheduled';
+                              }
+                              
+                              const testDate = new Date(jobDetail.onlineTestDate);
+                              const now = new Date();
+                              const diffTime = testDate - now;
+                              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                              
+                              if (diffDays > 0) {
+                                return `Test in ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+                              } else if (diffDays === 0) {
+                                return 'Test is today';
+                              } else {
+                                return 'Test date passed';
+                              }
+                            })()}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Additional Process Details */}
+                  {/* <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+                    <h2 className="text-lg font-bold text-gray-900 mb-4">Process Details</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      Duration Card
+                      <div className="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-lg p-4">
+                        <div className="flex items-center mb-2">
+                          <div className="p-2 bg-amber-100 rounded-lg mr-2">
+                            <Clock className="h-5 w-5 text-amber-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-amber-800 text-sm">Duration</h3>
+                            <p className="text-xs text-amber-600">Internship period</p>
+                          </div>
+                        </div>
+                        <div className="text-lg font-bold text-amber-900 mt-2">
+                          {duration}
+                        </div>
+                      </div>
+
+                      Openings Card
+                      <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-lg p-4">
+                        <div className="flex items-center mb-2">
+                          <div className="p-2 bg-emerald-100 rounded-lg mr-2">
+                            <Users className="h-5 w-5 text-emerald-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-emerald-800 text-sm">Open Positions</h3>
+                            <p className="text-xs text-emerald-600">Available seats</p>
+                          </div>
+                        </div>
+                        <div className="text-lg font-bold text-emerald-900 mt-2">
+                          {jobDetail.numberOfOpenings || 'Not specified'}
+                        </div>
+                      </div>
+
+                      Application Status Card
+                      <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 border border-indigo-200 rounded-lg p-4">
+                        <div className="flex items-center mb-2">
+                          <div className="p-2 bg-indigo-100 rounded-lg mr-2">
+                            <Target className="h-5 w-5 text-indigo-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-indigo-800 text-sm">Status</h3>
+                            <p className="text-xs text-indigo-600">Current status</p>
+                          </div>
+                        </div>
+                        <div className="mt-2">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${jobStatus.color}`}>
+                            {jobStatus.status}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    Selection Process Details
+                    {jobDetail.selectionProcess && jobDetail.selectionProcess.length > 0 && (
+                      <div className="mt-6 pt-4 border-t border-gray-200">
+                        <h3 className="text-md font-semibold text-gray-900 mb-3">Selection Process</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {jobDetail.selectionProcess.map((process, index) => (
+                            <span
+                              key={index}
+                              className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
+                            >
+                              {process}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    Rounds Information
+                    {jobDetail.rounds && jobDetail.rounds.length > 0 && (
+                      <div className="mt-6 pt-4 border-t border-gray-200">
+                        <h3 className="text-md font-semibold text-gray-900 mb-3">Hiring Rounds</h3>
+                        <div className="space-y-2">
+                          {jobDetail.rounds.map((round, index) => (
+                            <div key={index} className="flex items-center text-sm text-gray-700">
+                              <div className="w-6 h-6 flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-xs font-bold rounded-full mr-3">
+                                {index + 1}
+                              </div>
+                              <span>{round}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div> */}
                 </div>
               )}
             </div>

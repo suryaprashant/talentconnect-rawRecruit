@@ -67,7 +67,6 @@ export default function InternshipListing() {
     }
   };
 
-
   const handleDelete = async (jobId) => {
     try {
       const confirmed = window.confirm("This action can't be undone! Are you sure you want to delete the internship?");
@@ -134,6 +133,26 @@ export default function InternshipListing() {
     setShowJobDetail(true);
   };
 
+  // Function to calculate end date (30 days after posting)
+  const calculateEndDate = (createdAt) => {
+    if (!createdAt) return 'N/A';
+    
+    try {
+      const postDate = new Date(createdAt);
+      const endDate = new Date(postDate);
+      endDate.setDate(endDate.getDate() + 30);
+      
+      // Format the date
+      return endDate.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch (error) {
+      console.error('Error calculating end date:', error);
+      return 'N/A';
+    }
+  };
 
   const showNewApplications = async (job) => {
     setSelectedJob(job);
@@ -142,92 +161,29 @@ export default function InternshipListing() {
     setShowJobDetail(true);
   };
 
-
   const handleBackToList = () => {
-    setSelectedJob(null);
     setShowJobDetail(false);
+    setIsVisited('');
+    fetchJobs();
   };
 
-  // If showing job detail, render the detail view
+  // If showing job detail, render only the ApplicantDetails component
   if (showJobDetail && selectedJob) {
-    const jobRole = displayAllJobRoles(selectedJob);
-    
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
-        <div className="container mx-auto px-4 py-8 pt-20">
-          <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
-            {/* Back Button */}
-            <button
-              onClick={handleBackToList}
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 group"
-            >
-              <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-              Back to internships
-            </button>
-
-            {/* Selected Job Header */}
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl">
-                  <Building2 className="h-6 w-6 text-[#667eea]" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                    Applications for: {jobRole}
-                  </h2>
-                  <div className="flex flex-wrap items-center gap-3 mt-2">
-                    <span className={`inline-flex items-center text-sm px-3 py-1.5 rounded-lg ${
-                      selectedJob?.status === 'Published'
-                        ? 'bg-gradient-to-r from-green-100 to-green-50 text-green-700 border border-green-200'
-                        : selectedJob?.status === 'Draft'
-                        ? 'bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border border-yellow-200'
-                        : 'bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200'
-                    }`}>
-                      {selectedJob?.status || 'N/A'}
-                    </span>
-                    <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
-                      <MapPin className="h-3 w-3 mr-1.5" />
-                      {displayLocations(selectedJob?.location)}
-                    </span>
-                    <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
-                      <Calendar className="h-3 w-3 mr-1.5" />
-                      {selectedJob?.expireAt  ? new Date(selectedJob.expireAt ).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric',
-                        year: 'numeric'
-                      }) : 'N/A'}
-                    </span>
-                    <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
-                      <Users className="h-3 w-3 mr-1.5" />
-                      Total Applications: {selectedJob?.applicationCount || 0}
-                    </span>
-                    <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
-                      <Eye className="h-3 w-3 mr-1.5" />
-                      Views: {selectedJob?.views || 0}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Load Applicant Details Component */}
-            <ApplicantDetails
-              job={selectedJob}
-              applications={applications}
-              loading={applicationsLoading}
-              error={applicationsError}
-              isVisited={isVisited}
-              onRefresh={() =>
-                fetchApplicationsForJob(
-                  selectedJob._id,
-                  isVisited === "true" ? false : true
-                )
-              }
-              onClose={handleBackToList}
-            />
-          </div>
-        </div>
-      </div>
+      <ApplicantDetails
+        job={selectedJob}
+        applications={applications}
+        loading={applicationsLoading}
+        error={applicationsError}
+        isVisited={isVisited}
+        onRefresh={() =>
+          fetchApplicationsForJob(
+            selectedJob._id,
+            isVisited === "true" ? false : true
+          )
+        }
+        onClose={handleBackToList}
+      />
     );
   }
 
@@ -272,11 +228,11 @@ export default function InternshipListing() {
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
             <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
               <div className="col-span-3">Internship Role</div>
-              <div className="col-span-3">Location</div>
+              <div className="col-span-2">Location</div>
               <div className="col-span-2">End Date</div>
               <div className="col-span-1 text-center">Views</div>
-              <div className="col-span-1 text-center">New Applications</div>
-              <div className="col-span-2 text-center">Actions</div>
+              <div className="col-span-3 text-center">New Applications</div>
+              <div className="col-span-1 text-center">Actions</div>
             </div>
           </div>
 
@@ -322,7 +278,7 @@ export default function InternshipListing() {
                       </div>
 
                       {/* Location */}
-                      <div className="col-span-3">
+                      <div className="col-span-2">
                         <div className="flex items-center gap-2">
                           <MapPin className="h-3 w-3 text-gray-400 flex-shrink-0" />
                           <span className="text-gray-700 text-sm truncate">
@@ -335,13 +291,19 @@ export default function InternshipListing() {
                       <div className="col-span-2">
                         <div className="flex items-center gap-2">
                           <Calendar className="h-3 w-3 text-gray-400" />
-                          <span className="text-gray-700 text-sm">
-                            {job?.expireAt ? new Date(job.expireAt).toLocaleDateString('en-US', { 
-                              month: 'short', 
-                              day: 'numeric',
-                              year: 'numeric'
-                            }) : 'N/A'}
-                          </span>
+                          <div className="flex flex-col">
+                            <span className="text-gray-700 text-sm">
+                              {calculateEndDate(job?.createdAt)}
+                            </span>
+                            {job?.expireAt && (
+                              <span className="text-xs text-gray-500">
+                                (Custom: {new Date(job.expireAt).toLocaleDateString('en-US', { 
+                                  month: 'short', 
+                                  day: 'numeric'
+                                })})
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
 
@@ -354,7 +316,7 @@ export default function InternshipListing() {
 
                       {/* New Applications */}
                       <div 
-                        className="col-span-1 text-center cursor-pointer group"
+                        className="col-span-3 text-center cursor-pointer group"
                         onClick={() => showNewApplications(job)}
                       >
                         <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
@@ -363,7 +325,7 @@ export default function InternshipListing() {
                       </div>
 
                       {/* Actions */}
-                      <div className="col-span-2">
+                      <div className="col-span-1">
                         <div className="flex items-center justify-center gap-2">
                           <button
                             onClick={() => handleViewApplications(job)}

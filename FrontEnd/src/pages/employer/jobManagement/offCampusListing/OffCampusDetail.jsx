@@ -189,7 +189,7 @@ const OffCampusDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
       <button onClick={() => onClose()}>Back</button>
       <div className="bg-white min-h-screen flex">
         {/* Filters Sidebar */}
-        <div className="w-1/4 p-6 border-r border-gray-200">
+        {/* <div className="w-1/4 p-6 border-r border-gray-200">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold">Filters</h2>
             <button className="text-sm text-gray-500">Clear all</button>
@@ -217,7 +217,7 @@ const OffCampusDetails = ({ job, onClose, onAccept, onShortlist, onReject }) => 
               </label>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Applicant Details */}
         <div className="flex-1 p-8">

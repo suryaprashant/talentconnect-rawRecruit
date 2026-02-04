@@ -240,7 +240,7 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onSh
         <>
             <div className="bg-white p-6 rounded-lg shadow-sm mb-6 border border-gray-200">
                 {/* College Header */}
-                <div className="pb-4 border-b border-gray-200 mb-4">
+                <div className="pb-4 mb-4">
                     <div className="flex items-center">
                         {profileImage ? (
                             <img 
@@ -273,7 +273,7 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onSh
                             </div>
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                    {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
                         <div className="text-center">
                             <div className="font-bold text-lg">{placementRate}{placementRate !== 'Not Specified' && '%'}</div>
                             <div className="text-sm text-gray-600">Placement Rate</div>
@@ -286,7 +286,7 @@ const CollegeRequestDetail = ({ collegeApplication, driveDetails, onAccept, onSh
                             <div className="font-bold text-lg">{averagePackage}{averagePackage !== 'Not Specified' && ' LPA'}</div>
                             <div className="text-sm text-gray-600">Average Package</div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Main Drive Details Section */}

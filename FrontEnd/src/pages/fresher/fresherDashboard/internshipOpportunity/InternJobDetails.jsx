@@ -18,6 +18,7 @@ const InternJobDetails = () => {
   const [isApplied, setIsApplied] = useState((searchParams.get('isApplied') || '').toLowerCase() === 'true');
   const [isApplying, setIsApplying] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [imageError, setImageError] = useState(false); // Add image error state
   
   const handleShare = async () => {
     const shareData = {
@@ -60,14 +61,40 @@ const InternJobDetails = () => {
     }
   }, [jobId]);
 
+  // Helper function to get initials for logo fallback
+  const getInitials = (name = '') => {
+    if (!name) return '?';
+    const words = name.trim().split(' ');
+    if (words.length === 1) return words[0][0].toUpperCase();
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+  };
+
+  // Get company logo using comprehensive logic like Header
+  const getCompanyLogo = () => {
+    if (!jobDetails) return null;
+    
+    // Comprehensive logo fetching logic - check multiple possible fields
+    const logo = 
+      jobDetails.companyPosted?.profileImageUrl ||
+      jobDetails.companyPosted?.profileImage ||
+      jobDetails.companyPosted?.companyDetails?.profileImageUrl ||
+      jobDetails.companyPosted?.companyDetails?.companyLogo ||
+      jobDetails.collegePosted?.profileImage ||
+      jobDetails.collegePosted?.profileImageUrl ||
+      null;
+    
+    return logo;
+  };
+
   const handleApply = async () => {
     if (loading) return;
 
-  // 🔐 Not logged in
-  if (!isAuthenticated) {
-    toast.error("Please login to apply");
-    return;
-  }
+    // 🔐 Not logged in
+    if (!isAuthenticated) {
+      toast.error("Please login to apply");
+      return;
+    }
+    
     try {
       setIsApplying(true);
       const response = await ApplyForInternship(jobId);
@@ -139,33 +166,43 @@ const InternJobDetails = () => {
     return <span className="text-gray-700">N/A</span>;
   };
 
-  // Format currency with rupee sign
-  const formatCurrency = (amount, currency) => {
-    if (!amount) return 'Not Specified';
+  // Format stipend with rupee sign - USING SAME LOGIC AS InternshipDetailModal
+  const formatStipend = () => {
+    if (!jobDetails) return 'Not specified';
     
-    // Convert to Indian Rupee format
-    const formatter = new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: currency || 'INR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
+    // Check multiple possible fields for stipend - SAME LOGIC AS IN MODAL
+    const stipendAmount = jobDetails.stipendAmount || 
+                         jobDetails.stipend?.amount || 
+                         jobDetails.salary ||
+                         jobDetails.minPackage?.amount;
     
-    return formatter.format(amount);
+    const stipendCurrency = jobDetails.stipend?.currency || '₹';
+    const stipendFrequency = jobDetails.stipend?.frequency || '/month';
+    
+    if (stipendAmount) {
+      // Format number with commas
+      const formattedAmount = stipendAmount.toLocaleString('en-IN');
+      return `${stipendCurrency} ${formattedAmount}${stipendFrequency}`;
+    }
+    
+    // Check for package details as fallback
+    if (jobDetails.packageDetails?.totalCTC) {
+      const formattedAmount = jobDetails.packageDetails.totalCTC.toLocaleString('en-IN');
+      return `${formattedAmount}`;
+    }
+    
+    return 'Not specified';
   };
 
-  // Get company location properly
-  const getCompanyLocation = () => {
-    if (!jobDetails?.companyPosted?.companyDetails) return 'N/A';
+  // Calculate application deadline (30 days after posting)
+  const getApplicationDeadline = () => {
+    if (!jobDetails?.createdAt) return null;
     
-    const { companyLocation, state, country } = jobDetails.companyPosted.companyDetails;
+    const postingDate = new Date(jobDetails.createdAt);
+    const deadline = new Date(postingDate);
+    deadline.setDate(deadline.getDate() + 30);
     
-    const locationParts = [];
-    if (companyLocation) locationParts.push(companyLocation);
-    if (state) locationParts.push(state);
-    if (country) locationParts.push(country);
-    
-    return locationParts.length > 0 ? locationParts.join(', ') : 'N/A';
+    return deadline;
   };
 
   if (isLoading) {
@@ -192,6 +229,10 @@ const InternJobDetails = () => {
     );
   }
 
+  const applicationDeadline = getApplicationDeadline();
+  const companyName = jobDetails?.companyPosted?.companyDetails?.companyName || 'N/A';
+  const companyLogo = getCompanyLogo();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
       <div className="max-w-4xl mx-auto bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 p-6 my-8">
@@ -204,38 +245,44 @@ const InternJobDetails = () => {
           Back
         </button>
 
-        {/* Header */}
-        <div className="flex justify-between items-start mb-6">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 mr-4 flex items-center justify-center rounded-full overflow-hidden">
-              {jobDetails.companyPosted?.profileImage ? (
+        {/* Header - UPDATED WITH LARGER, BOLDER COMPANY NAME AND PROPER LOGO */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+          <div className="flex items-start sm:items-center gap-4">
+            <div className="w-16 h-16 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
+              {companyLogo && !imageError ? (
                 <img
-                  src={jobDetails.companyPosted.profileImage}
-                  alt={jobDetails.companyPosted.companyDetails.companyName || "Company Logo"}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = 'https://placehold.co/48x48/cccccc/000000?text=Logo';
-                  }}
+                  src={companyLogo}
+                  alt={companyName}
+                  className="w-14 h-14 object-cover"
+                  onError={() => setImageError(true)}
                 />
               ) : (
-                <Building2 className="w-8 h-8 text-[#667eea]" />
+                <div className="w-14 h-14 bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 rounded-full flex items-center justify-center">
+                  <span className="text-lg font-bold text-[#667eea]">
+                    {getInitials(companyName)}
+                  </span>
+                </div>
               )}
             </div>
             <div>
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-gray-900 mb-1">
                 {jobDetails.jobTitle}
-              </h2>
-              <p className="text-gray-600">at {jobDetails.companyPosted?.companyDetails?.companyName || 'N/A'}</p>
+              </h1>
+              {/* LARGER AND BOLDER COMPANY NAME */}
+              <div className="flex items-center">
+                <p className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mr-2">
+                  {companyName}
+                </p>
+              </div>
             </div>
           </div>
-          <div className="flex space-x-2">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <button 
               onClick={handleShare}
-              className="bg-white hover:bg-gray-50 text-[#667eea] font-bold py-2 px-3 rounded-lg transition-all duration-300 border border-[#667eea]/20 shadow-sm flex items-center gap-2"
+              className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-bold py-2 px-4 rounded-lg transition-all duration-300 border border-gray-200 text-sm shadow-sm"
               title="Share Internship"
             >
-              <Share2 className="w-5 h-5" />
+              <Share2 className="w-4 h-4 text-[#667eea]" />
               <span className="hidden sm:inline">Share</span>
             </button>
             {!isApplied && (
@@ -245,7 +292,7 @@ const InternJobDetails = () => {
                   <button 
                     onClick={handleSave} 
                     disabled={isSaving}
-                    className={`bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 hover:from-[#667eea]/20 hover:to-[#764ba2]/20 text-[#667eea] font-bold py-2 px-5 rounded-lg transition-all duration-300 border border-gray-200 ${
+                    className={`bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 hover:from-[#667eea]/20 hover:to-[#764ba2]/20 text-[#667eea] font-bold py-2 px-4 rounded-lg transition-all duration-300 border border-gray-200 text-sm ${
                       isSaving ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                   >
@@ -253,7 +300,7 @@ const InternJobDetails = () => {
                   </button>
                 ) : (
                   <button 
-                    className="bg-gradient-to-br from-green-500/10 to-green-600/10 text-green-600 font-bold py-2 px-5 rounded-lg border border-green-200 cursor-default"
+                    className="bg-gradient-to-br from-green-500/10 to-green-600/10 text-green-600 font-bold py-2 px-4 rounded-lg border border-green-200 cursor-default text-sm"
                     disabled
                   >
                     ✓ Saved
@@ -264,7 +311,7 @@ const InternJobDetails = () => {
                 <button 
                   onClick={handleApply}
                   disabled={isApplying}
-                  className={`px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 ${
+                  className={`px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg hover:shadow-lg hover:shadow-[#667eea]/30 transition-all duration-200 text-sm ${
                     isApplying ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
@@ -274,7 +321,7 @@ const InternJobDetails = () => {
             )}
             {isApplied && (
               <button 
-                className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-2 px-5 rounded-lg cursor-default"
+                className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-2 px-4 rounded-lg cursor-default text-sm"
                 disabled
               >
                 ✓ Applied
@@ -283,10 +330,28 @@ const InternJobDetails = () => {
           </div>
         </div>
 
+        {/* Quick Info Bar */}
+        <div className="flex flex-wrap gap-4 mb-6">
+          <div className="flex items-center text-gray-600">
+            <MapPin className="w-4 h-4 mr-1" />
+            <span className="text-sm">{Array.isArray(jobDetails.location) ? jobDetails.location.join(', ') : jobDetails.location}</span>
+          </div>
+          <div className="flex items-center text-gray-600">
+            <Clock className="w-4 h-4 mr-1" />
+            <span className="text-sm">{jobDetails.internshipDuration}</span>
+          </div>
+          <div className="flex items-center text-gray-600">
+            <IndianRupee className="w-4 h-4 mr-1" />
+            <span className="text-sm">
+              {formatStipend()}
+            </span>
+          </div>
+        </div>
+
         {/* About Company */}
         <section className="mb-8">
           <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-            About {jobDetails.companyPosted?.companyDetails?.companyName || "Company"}
+            About {companyName}
           </h3>
           <p className="text-gray-700 mb-4">{jobDetails.companyPosted?.companyDetails?.description || 'No company description available.'}</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -344,7 +409,7 @@ const InternJobDetails = () => {
               <div>
                 <div className="font-medium text-[#667eea]">Stipend</div>
                 <div className="text-gray-700">
-                  {formatCurrency(jobDetails.minPackage?.amount, jobDetails.minPackage?.currency)}
+                  {formatStipend()}
                 </div>
               </div>
             </div>
@@ -358,7 +423,7 @@ const InternJobDetails = () => {
           </div>
         </section>
 
-        {/* Internship Description - KEPT AS ORIGINAL TEXT */}
+        {/* Internship Description */}
         <section className="mb-8">
           <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
             Internship Description
@@ -368,7 +433,7 @@ const InternJobDetails = () => {
           </p>
         </section>
 
-        {/* Eligibility Criteria - KEPT AS ORIGINAL TEXT */}
+        {/* Eligibility Criteria */}
         <section className="mb-8">
           <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
             Eligibility Criteria
@@ -384,6 +449,14 @@ const InternJobDetails = () => {
             Key Skills Required
           </h3>
           {renderTags(jobDetails.skills)}
+        </section>
+
+        {/* Benefits & Perks */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Benefits & Perks
+          </h3>
+          {renderTags(jobDetails.benefits)}
         </section>
 
         {/* Education Requirements */}
@@ -409,14 +482,6 @@ const InternJobDetails = () => {
           </div>
         </section>
 
-        {/* Benefits & Perks */}
-        <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-            Benefits & Perks
-          </h3>
-          {renderTags(jobDetails.benefits)}
-        </section>
-
         {/* Certificate Requirements */}
         <section className="mb-8">
           <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
@@ -428,7 +493,7 @@ const InternJobDetails = () => {
           </div>
         </section>
 
-        {/* Important Dates */}
+        {/* Important Dates - UPDATED with calculated deadline */}
         <section className="mb-8">
           <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
             Important Dates
@@ -437,7 +502,13 @@ const InternJobDetails = () => {
             <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
               <div className="text-sm text-[#667eea]">Application Deadline</div>
               <div className="font-medium text-red-600">
-                {jobDetails.endDate ? new Date(jobDetails.endDate).toLocaleDateString('en-GB') : 'N/A'}
+                {applicationDeadline 
+                  ? applicationDeadline.toLocaleDateString('en-GB', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric'
+                    })
+                  : 'N/A'}
               </div>
             </div>
             <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
@@ -451,21 +522,6 @@ const InternJobDetails = () => {
             <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
               <div className="text-sm text-[#667eea]">Results</div>
               <div className="font-medium text-gray-700">Rolling basis</div>
-            </div>
-          </div>
-        </section>
-
-        {/* Company Location - IMPROVED */}
-        <section className="mb-8 pt-6 border-t border-gray-200">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-            Company Location
-          </h3>
-          <div className="flex items-start">
-            <MapPin className="w-5 h-5 mt-0.5 mr-3 text-[#667eea] flex-shrink-0" />
-            <div>
-              <div className="text-gray-700">
-                {getCompanyLocation()}
-              </div>
             </div>
           </div>
         </section>

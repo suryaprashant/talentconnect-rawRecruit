@@ -58,9 +58,20 @@ const normalizeCollegeData = (collegeData) => {
   
   console.log("🔧 Raw collegeData for normalization:", collegeData);
   
+  // Get college logo using the same logic as CollegeCard
+  const collegeDetails = collegeData.collegePosted;
+  const logo = collegeDetails?.profileImage || collegeData.collegeLogo || 'https://via.placeholder.com/48';
+  
   if (collegeData.collegePosted?.collegeUniversityDetails?.collegeName) {
     console.log("✅ Already has proper collegePosted structure");
-    return collegeData;
+    return {
+      ...collegeData,
+      // Ensure logo is included in the normalized structure
+      collegePosted: {
+        ...collegeData.collegePosted,
+        profileImage: logo
+      }
+    };
   }
   
   console.log("🔄 Need to create/repair collegePosted structure");
@@ -101,9 +112,8 @@ const normalizeCollegeData = (collegeData) => {
                 "Not Specified"
       },
       
-      profileImage: collegeData.collegePosted?.profileImage || 
-                   collegeData.collegeLogo || 
-                   null,
+      // Use the same logo logic as CollegeCard
+      profileImage: logo,
       
       userId: collegeData.collegePosted?.userId || collegeData.userId,
       
@@ -119,6 +129,7 @@ const normalizeCollegeData = (collegeData) => {
   
   console.log("✅ Normalized college data:", normalized);
   console.log("✅ College name in normalized data:", normalized.collegePosted.collegeUniversityDetails.collegeName);
+  console.log("✅ College logo in normalized data:", normalized.collegePosted.profileImage);
   
   return normalized;
 };
@@ -133,6 +144,9 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Add state for image error handling (same as CollegeCard)
+  const [imageError, setImageError] = useState(false);
+  
   const [showAlternateDateModal, setShowAlternateDateModal] = useState(false);
   const [selectedStartDate, setSelectedStartDate] = useState('');
   const [selectedEndDate, setSelectedEndDate] = useState('');
@@ -143,6 +157,7 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
   const [showCollegeModal, setShowCollegeModal] = useState(false);
   
   const modalRef = useRef(null);
+  const collegeModalRef = useRef(null); // Ref for college details modal
   const contentRef = useRef(null);
   
   const { setSelectedConversation } = useConversation();  
@@ -170,6 +185,7 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
     
     console.log("✅ Normalized college data:", normalizedCollege);
     console.log("✅ College name after normalization:", normalizedCollege.collegePosted?.collegeUniversityDetails?.collegeName);
+    console.log("✅ College logo after normalization:", normalizedCollege.collegePosted?.profileImage);
     
     setPosting(normalizedCollege);
     
@@ -202,13 +218,22 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
     }
   }, [posting]);
 
+  // Close modal on Escape key
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        if (showCollegeModal) {
+          setShowCollegeModal(false);
+        } else if (showAlternateDateModal) {
+          setShowAlternateDateModal(false);
+        } else {
+          onClose();
+        }
+      }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [onClose]);
+  }, [onClose, showCollegeModal, showAlternateDateModal]);
 
   useEffect(() => {
     if (isOpen) {
@@ -221,17 +246,43 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
     };
   }, [isOpen]);
 
+  // Close main modal when clicking outside - updated to handle nested modals
   useEffect(() => {
     const handleClickOutside = (e) => {
+      // Don't close if college modal is open
+      if (showCollegeModal || showAlternateDateModal) return;
+      
+      // Don't close if clicking on college modal or alternate date modal
+      if (collegeModalRef.current?.contains(e.target)) return;
+      
       if (modalRef.current && !modalRef.current.contains(e.target)) {
         onClose();
       }
     };
+    
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, showCollegeModal, showAlternateDateModal]);
+
+  // Helper function to get college initials (same as CollegeCard)
+  const getInitials = (name) => {
+    if (!name) return '?';
+    const words = name.trim().split(' ');
+    if (words.length === 1) return words[0][0].toUpperCase();
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+  };
+
+  // Get college logo using the same logic as CollegeCard
+  const getCollegeLogo = () => {
+    if (!posting) return 'https://via.placeholder.com/48';
+    
+    const collegeDetails = posting.collegePosted;
+    const logo = collegeDetails?.profileImage || posting.collegeLogo || 'https://via.placeholder.com/48';
+    
+    return logo;
+  };
 
   const handleShare = () => {
     if (navigator.share) {
@@ -320,6 +371,7 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
     }
   };
 
+  // Alternate date modal handlers
   const handleAlternateDateClick = () => {
     setSelectedStartDate('');
     setSelectedEndDate('');
@@ -327,9 +379,14 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
     setShowAlternateDateModal(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseAlternateModal = () => {
     setShowAlternateDateModal(false);
     setDateError('');
+  };
+
+  // College modal handler
+  const handleCloseCollegeModal = () => {
+    setShowCollegeModal(false);
   };
 
   const validateDates = () => {
@@ -388,11 +445,14 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
 
     return (
       <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 max-w-md w-full">
+        <div 
+          ref={collegeModalRef}
+          className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 max-w-md w-full"
+        >
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-semibold text-gray-900">Suggest Alternate Dates</h3>
             <button
-              onClick={handleCloseModal}
+              onClick={handleCloseAlternateModal}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X size={20} />
@@ -445,7 +505,7 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
           
           <div className="flex justify-end gap-3">
             <button
-              onClick={handleCloseModal}
+              onClick={handleCloseAlternateModal}
               className="px-4 py-2.5 text-sm font-medium text-gray-700 bg-gradient-to-r from-gray-100 to-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all duration-200"
             >
               Cancel
@@ -480,14 +540,17 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
 
     return (
       <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div 
+          ref={collegeModalRef}
+          className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        >
           <div className="p-6">
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">{collegeName}</h2>
               </div>
               <button
-                onClick={() => setShowCollegeModal(false)}
+                onClick={handleCloseCollegeModal}
                 className="text-gray-500 hover:text-gray-700 text-xl p-1"
               >
                 ✕
@@ -602,6 +665,9 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
   const postingIsApplied = posting.isApplied || false;
   const isSaved = posting.isSaved || false;
 
+  // Get the logo using the same logic as CollegeCard
+  const logo = getCollegeLogo();
+
   return (
     <>
       <div
@@ -611,13 +677,31 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
         {/* Modal Header */}
         <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-gray-50 to-white flex-shrink-0">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
-                 onClick={() => setShowCollegeModal(true)}>
-              <Building2 className="h-6 w-6 text-[#667eea]" />
+            {/* College Logo - Same logic as CollegeCard */}
+            <div 
+              className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() => setShowCollegeModal(true)}
+            >
+              {logo && !imageError ? (
+                <img 
+                  src={logo} 
+                  alt={`${collegeName} logo`}
+                  className="w-12 h-12 object-cover"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-semibold text-gray-700">
+                    {getInitials(collegeName)}
+                  </span>
+                </div>
+              )}
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
-                  onClick={() => setShowCollegeModal(true)}>
+              <h2 
+                className="text-2xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
+                onClick={() => setShowCollegeModal(true)}
+              >
                 {collegeName}
               </h2>
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mt-1">
@@ -669,7 +753,7 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
           style={{ borderRadius: '0 0 0 1rem' }}
         >
           {/* Statistics Cards - Horizontal Layout */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-6">
             {/* Min Package Card */}
             <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
               <div className="flex items-center gap-3">
@@ -718,21 +802,6 @@ const CollegeDetailModal = ({ college, isOpen, onClose, isApplied = false }) => 
                         ? posting.employmentType.join(', ') 
                         : 'N/A'
                     }
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Looking For Card */}
-            <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-gradient-to-br from-yellow-100 to-yellow-50 rounded-lg">
-                  <Award className="h-5 w-5 text-yellow-600" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-gray-600 mb-1">Looking For</p>
-                  <p className="text-sm font-medium text-yellow-600 truncate">
-                    {posting.lookingFor || 'N/A'}
                   </p>
                 </div>
               </div>

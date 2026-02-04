@@ -4,6 +4,7 @@ import { getUserApplicationStatus } from '@/lib/User_AxiosInstance';
 import { getJobDetails } from '@/lib/User_AxiosInstance';
 import { useAuth } from "@/context/AuthContext";
 import InternshipDetailModal from './../../studentDashboard/intershipOpportunity/InternshipDetailModal';
+import { toast } from 'react-hot-toast';
 
 const InternshipStatus = () => {
   const { user, loading } = useAuth();
@@ -32,8 +33,8 @@ const InternshipStatus = () => {
 
   const role = user?.userType;
 
-  // Define internship specific status steps
-  const internshipStatusSteps = ['Applied', 'Under Review', 'Interview', 'Selected'];
+  // Define internship specific status steps - Updated to 3-step flow
+  const internshipStatusSteps = ['Applied', 'Shortlisted', 'Accepted'];
 
   const fetchApplication = async () => {
     try {
@@ -65,7 +66,7 @@ const InternshipStatus = () => {
             console.log(`🔍 Fetching internship details for jobId: ${jobId}`);
             
             const jobResponse = await getJobDetails(jobId);
-            const jobDetails = jobResponse.data[0] || jobResponse.data; // Handle both array and object responses
+            const jobDetails = jobResponse.data[0] || jobResponse.data;
             
             console.log(`✅ Successfully fetched internship ${jobId}:`, {
               companyName: jobDetails.companyPosted?.companyDetails?.companyName || jobDetails.companyDetails?.companyName,
@@ -77,10 +78,18 @@ const InternshipStatus = () => {
             const companyName = 
               jobDetails.companyPosted?.companyDetails?.companyName || 
               jobDetails.companyDetails?.companyName || 
-              item.companyDetails?.companyName || 
+              item.companyDetails?.companyName ||
+              item.companyProfile?.companyDetails?.companyName || 
               "Company";
             
-            const companyLogo = jobDetails.companyPosted?.profileImageUrl || null;
+            // Extract company logo from multiple possible sources
+            const companyLogo = 
+              jobDetails.companyPosted?.profileImageUrl || 
+              jobDetails.companyDetails?.profileImageUrl ||
+              item.companyProfile?.profileImage ||
+              item.companyProfile?.profileImageUrl ||
+              jobDetails.profileImageUrl ||
+              null;
             
             // Extract job title from multiple possible sources
             const jobTitle = 
@@ -110,7 +119,11 @@ const InternshipStatus = () => {
             // Extract stipend/salary
             let stipend = "Not specified";
             if (jobDetails?.stipend) {
-              stipend = `${jobDetails.stipend.currency || ''} ${jobDetails.stipend.amount || jobDetails.stipend}${jobDetails.stipend.frequency ? '/' + jobDetails.stipend.frequency : ''}`;
+              if (typeof jobDetails.stipend === 'object') {
+                stipend = `${jobDetails.stipend.currency || ''} ${jobDetails.stipend.amount || jobDetails.stipend}${jobDetails.stipend.frequency ? '/' + jobDetails.stipend.frequency : ''}`;
+              } else {
+                stipend = jobDetails.stipend;
+              }
             } else if (jobDetails?.salary) {
               stipend = jobDetails.salary;
             }
@@ -147,7 +160,8 @@ const InternshipStatus = () => {
               _debug: {
                 jobId: jobId,
                 companyNameFound: companyName !== "Company",
-                jobTitleFound: jobTitle !== "Internship Position"
+                jobTitleFound: jobTitle !== "Internship Position",
+                logoUrl: companyLogo
               }
             };
             
@@ -244,11 +258,15 @@ const InternshipStatus = () => {
     // If rejected, show 0% progress (stays at Applied step)
     if (lowerStatus === 'rejected') return 0;
     
-    // For normal progression
+    // For normal 3-step progression
     if (lowerStatus === 'applied') return 0;
-    if (lowerStatus === 'under review' || lowerStatus === 'review') return 1;
-    if (lowerStatus === 'interview' || lowerStatus === 'interviewed') return 2;
-    if (lowerStatus === 'selected' || lowerStatus === 'accepted') return 3;
+    if (lowerStatus === 'shortlisted') return 1;
+    if (lowerStatus === 'accepted') return 2;
+    
+    // Map old statuses to new ones for compatibility
+    if (lowerStatus === 'under review' || lowerStatus === 'review') return 1; // Map to Shortlisted
+    if (lowerStatus === 'interview' || lowerStatus === 'interviewed') return 1; // Map to Shortlisted
+    if (lowerStatus === 'selected') return 2; // Map to Accepted
     
     return 0;
   };
@@ -267,11 +285,7 @@ const InternshipStatus = () => {
   const getStatusColor = (status) => {
     switch(status.toLowerCase()) {
       case 'applied': return 'bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30';
-      case 'under review': 
-      case 'review': return 'bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30';
-      case 'interview': 
-      case 'interviewed': return 'bg-gradient-to-r from-[#93c5fd]/20 to-[#60a5fa]/20 text-[#1e40af] border border-[#93c5fd]/30';
-      case 'selected': 
+      case 'shortlisted': return 'bg-gradient-to-r from-[#fde68a]/20 to-[#fcd34d]/20 text-[#92400e] border border-[#fde68a]/30';
       case 'accepted': return 'bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30';
       case 'rejected': return 'bg-gradient-to-r from-[#fda4af]/20 to-[#fb7185]/20 text-[#be123c] border border-[#fda4af]/30';
       default: return 'bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30';
@@ -298,6 +312,12 @@ const InternshipStatus = () => {
             jobDetails.companyDetails?.companyName || 
             job.company;
           
+          const companyLogo = 
+            jobDetails.companyPosted?.profileImageUrl || 
+            jobDetails.companyDetails?.profileImageUrl ||
+            job.companyLogo ||
+            null;
+          
           const jobTitle = 
             jobDetails.jobTitle || 
             jobDetails.position || 
@@ -310,7 +330,7 @@ const InternshipStatus = () => {
           return {
             ...job,
             company: companyName,
-            companyLogo: jobDetails.companyPosted?.profileImageUrl,
+            companyLogo: companyLogo,
             jobTitle: jobTitle,
             internshipRole: internshipRole,
             workMode: Array.isArray(jobDetails?.workMode) && jobDetails.workMode.length > 0
@@ -337,6 +357,41 @@ const InternshipStatus = () => {
     } catch (error) {
       console.error(`❌ Failed to retry internship ${jobId}:`, error);
     }
+  };
+
+  // Fix image rendering in JSX
+  const renderCompanyLogo = (job, isLarge = false) => {
+    const sizeClass = isLarge ? 'w-12 h-12' : 'w-9 h-9';
+    const logoContainerClass = isLarge ? 'w-12 h-12 flex-shrink-0' : 'w-9 h-9 flex-shrink-0';
+    
+    return (
+      <div className={logoContainerClass}>
+        {job.companyLogo ? (
+          <img 
+            src={job.companyLogo} 
+            alt={job.company}
+            className={`${sizeClass} rounded-lg object-cover border border-white/60`}
+            onError={(e) => { 
+              e.target.style.display = 'none'; 
+              const fallback = e.target.nextSibling;
+              if (fallback) fallback.style.display = 'flex'; 
+            }}
+          />
+        ) : null}
+        <div 
+          className={`${job.companyLogo ? 'hidden' : 'flex'} ${sizeClass} rounded-lg items-center justify-center font-bold ${
+            isLarge ? 'text-lg' : 'text-xs'
+          } ${
+            selectedJob?.id === job.id 
+              ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
+              : 'bg-white/50 border border-white/60 text-[#667eea]'
+          }`}
+          style={job.companyLogo ? {} : { display: job.companyLogo ? 'none' : 'flex' }}
+        >
+          {getCompanyInitials(job.company)}
+        </div>
+      </div>
+    );
   };
 
   if (isLoading) {
@@ -464,26 +519,7 @@ const InternshipStatus = () => {
                         }`}
                       >
                         <div className="flex items-start gap-3">
-                          {job.companyLogo ? (
-                            <img 
-                              src={job.companyLogo} 
-                              alt={job.company}
-                              className="w-9 h-9 rounded-lg object-cover border border-white/60"
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                if (e.target.nextSibling) {
-                                  e.target.nextSibling.style.display = 'flex';
-                                }
-                              }}
-                            />
-                          ) : null}
-                          <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                            selectedJob?.id === job.id 
-                              ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
-                              : 'bg-white/50 border border-white/60 text-[#667eea]'
-                          }`}>
-                            <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
-                          </div>
+                          {renderCompanyLogo(job, false)}
                           <div className="flex-1 min-w-0">
                             <h3 className="text-sm font-semibold text-gray-900 truncate">{job.company}</h3>
                             <p className="text-xs text-gray-600 truncate">{job.jobTitle}</p>
@@ -493,11 +529,11 @@ const InternshipStatus = () => {
                                 {job.location}
                               </span>
                               <span className={`text-xs px-1.5 py-0.5 rounded ${
-                                job.status === 'Selected' || job.status === 'Accepted' 
+                                job.status.toLowerCase() === 'accepted' || job.status.toLowerCase() === 'selected'
                                   ? 'bg-green-100 text-green-700 border border-green-200' :
-                                job.status === 'Interview' || job.status === 'Under Review' 
+                                job.status.toLowerCase() === 'shortlisted'
                                   ? 'bg-amber-100 text-amber-700 border border-amber-200' :
-                                job.status === 'Rejected' 
+                                job.status.toLowerCase() === 'rejected'
                                   ? 'bg-red-100 text-red-700 border border-red-200' :
                                 'bg-purple-100 text-purple-700 border border-purple-200'
                               }`}>
@@ -545,16 +581,12 @@ const InternshipStatus = () => {
                       <h2 className="text-lg font-bold text-gray-900">{selectedJob.company}</h2>
                       <p className="text-sm text-gray-600">{selectedJob.internshipRole}</p>
                     </div>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center border border-white/60">
-                      <span className="text-lg font-bold text-[#667eea]">
-                        {getCompanyInitials(selectedJob.company)}
-                      </span>
-                    </div>
+                    {renderCompanyLogo(selectedJob, true)}
                   </div>
                   
-                  {/* Updated Progress Bar for Internship */}
+                  {/* Updated Progress Bar for Internship - 3-step flow */}
                   {selectedJob.status.toLowerCase() === 'rejected' ? (
-                    // Rejected Status - Simple 2-step bar
+                    // Rejected Status - Simple 2-step bar with X icons
                     <div className="relative">
                       <div className="flex justify-between mb-1">
                         <div className="flex flex-col items-center" style={{ width: '50%' }}>
@@ -579,14 +611,14 @@ const InternshipStatus = () => {
                       </div>
                     </div>
                   ) : (
-                    // Normal Internship Status Flow - 4-step bar
+                    // Normal Internship Status Flow - 3-step bar
                     <div className="relative">
                       <div className="flex justify-between mb-1">
                         {internshipStatusSteps.map((step, idx) => {
                           const currentIdx = getStatusIndex(selectedJob.status);
                           const isActive = idx <= currentIdx;
                           return (
-                            <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 4}%` }}>
+                            <div key={idx} className="flex flex-col items-center" style={{ width: `${100 / 3}%` }}>
                               <div className={`w-8 h-8 rounded-full mb-1 flex items-center justify-center border-2 text-xs ${
                                 isActive 
                                   ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] border-transparent text-white'
@@ -601,7 +633,7 @@ const InternshipStatus = () => {
                           );
                         })}
                       </div>
-                      <div className="h-1.5 bg-white/50 absolute left-[12.5%] right-[12.5%] top-4 -z-10">
+                      <div className="h-1.5 bg-white/50 absolute left-[16.5%] right-[16.5%] top-4 -z-10">
                         <div
                           className="h-1.5 bg-gradient-to-r from-[#667eea] to-[#764ba2] transition-all duration-300 rounded-full"
                           style={{
@@ -766,27 +798,28 @@ const InternshipStatus = () => {
         </div>
       </div>
       {isModalOpen && modalJobId && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div 
-      className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
-      onClick={handleCloseModal}
-    />
-    <div className="relative z-10 w-full max-w-6xl h-[90vh] overflow-y-auto rounded-2xl bg-white">
-      <InternshipDetailModal
-        jobId={modalJobId}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        isApplied={true} // Since we're in status page, user has already applied
-        onApplySuccess={(applicationData) => {
-          // Refresh the applications list when a new application is made
-          console.log("✅ New internship application submitted:", applicationData);
-          toast.success("Application submitted successfully!");
-          fetchApplication(); // Refresh the list
-        }}
-      />
-    </div>
-  </div>
-)}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+            onClick={handleCloseModal}
+          />
+          <div className="relative z-10 w-full max-w-6xl h-[90vh] overflow-y-auto rounded-2xl bg-white">
+            <InternshipDetailModal
+              jobId={modalJobId}
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+              isApplied={true} // Since we're in status page, user has already applied
+              onApplySuccess={(applicationData) => {
+                console.log("✅ New internship application submitted:", applicationData);
+                if (typeof toast !== 'undefined') {
+                  toast.success("Application submitted successfully!");
+                }
+                fetchApplication();
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

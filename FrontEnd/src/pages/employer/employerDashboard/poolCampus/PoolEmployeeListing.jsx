@@ -1056,7 +1056,7 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                 </div>
 
                 {/* Results Header */}
-                <div className="mb-6">
+                {/* <div className="mb-6">
                     <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
@@ -1068,15 +1068,15 @@ const PoolCollegeListingPage = ({ compact = false, onPoolSelect, selectedPoolId 
                                 </p>
                             </div>
                             
-                            {/* <div className="text-sm text-gray-600">
+                            <div className="text-sm text-gray-600">
                                 <span className="font-medium">Sort by:</span>{' '}
                                 {sortBy === 'newest' ? 'Newest First' : 
                                  sortBy === 'oldest' ? 'Oldest First' : 
                                  'College Name (A-Z)'}
-                            </div> */}
+                            </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
 
                 {/* Postings Cards */}
       <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6 min-h-[600px]">

@@ -72,10 +72,23 @@ const OffcampusStatus = () => {
               location: jobDetails.location
             });
             
-            // Extract company name
-            const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company";
-            const companyLogo = jobDetails.companyPosted?.profileImageUrl || null;
+            // Extract company name - FIXED: check multiple possible locations
+            const companyName = jobDetails.companyPosted?.companyDetails?.companyName || 
+                              item.companyProfile?.companyDetails?.companyName || 
+                              "Company";
             
+            // Extract company logo - FIXED: check multiple possible locations like on-campus code
+            const companyLogo = jobDetails.companyPosted?.profileImageUrl || 
+                              item.companyProfile?.profileImage || 
+                              item.companyProfile?.profileImageUrl || 
+                              null;
+            
+            console.log('📸 Logo URL for off-campus:', {
+              fromJobDetails: jobDetails.companyPosted?.profileImageUrl,
+              fromItem: item.companyProfile?.profileImage || item.companyProfile?.profileImageUrl,
+              finalLogo: companyLogo
+            });
+
             // Extract job roles
             let jobRolesText = "Position";
             if (Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0) {
@@ -148,7 +161,8 @@ const OffcampusStatus = () => {
                 hasCompanyPosted: !!jobDetails.companyPosted,
                 companyNameFound: companyName !== "Company",
                 jobRoles: jobDetails.jobRoles,
-                employmentType: employmentType
+                employmentType: employmentType,
+                logoUrl: companyLogo
               }
             };
             
@@ -296,7 +310,14 @@ const OffcampusStatus = () => {
       
       setOffcampusJobs(prev => prev.map(job => {
         if (job.jobId === jobId) {
-          const companyName = jobDetails.companyPosted?.companyDetails?.companyName || "Company";
+          const companyName = jobDetails.companyPosted?.companyDetails?.companyName || 
+                            job.company || 
+                            "Company";
+          
+          // Extract company logo from multiple possible sources
+          const companyLogo = jobDetails.companyPosted?.profileImageUrl || 
+                            job.companyLogo || 
+                            null;
           
           // Extract job roles
           const firstJobRole = Array.isArray(jobDetails?.jobRoles) && jobDetails.jobRoles.length > 0 
@@ -310,7 +331,7 @@ const OffcampusStatus = () => {
           return {
             ...job,
             company: companyName,
-            companyLogo: jobDetails.companyPosted?.profileImageUrl,
+            companyLogo: companyLogo,
             jobTitle: firstJobRole,
             jobRoles: jobRolesText,
             employmentType: Array.isArray(jobDetails?.employmentType) && jobDetails.employmentType.length > 0
@@ -467,25 +488,31 @@ const OffcampusStatus = () => {
                         }`}
                       >
                         <div className="flex items-start gap-3">
-                          {job.companyLogo ? (
-                            <img 
-                              src={job.companyLogo} 
-                              alt={job.company}
-                              className="w-9 h-9 rounded-lg object-cover border border-white/60"
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                if (e.target.nextSibling) {
-                                  e.target.nextSibling.style.display = 'flex';
-                                }
-                              }}
-                            />
-                          ) : null}
-                          <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                            selectedJob?.id === job.id 
-                              ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
-                              : 'bg-white/50 border border-white/60 text-[#667eea]'
-                          }`}>
-                            <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
+                          <div className="w-9 h-9 flex-shrink-0">
+                            {job.companyLogo ? (
+                              <img 
+                                src={job.companyLogo} 
+                                alt={job.company}
+                                className="w-9 h-9 rounded-lg object-cover border border-white/60"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                  const fallbackDiv = e.target.nextSibling;
+                                  if (fallbackDiv) {
+                                    fallbackDiv.style.display = 'flex';
+                                  }
+                                }}
+                              />
+                            ) : null}
+                            <div 
+                              className={`${job.companyLogo ? 'hidden' : 'flex'} w-9 h-9 rounded-lg items-center justify-center ${
+                                selectedJob?.id === job.id 
+                                  ? 'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white' 
+                                  : 'bg-white/50 border border-white/60 text-[#667eea]'
+                              }`}
+                              style={job.companyLogo ? {} : { display: job.companyLogo ? 'none' : 'flex' }}
+                            >
+                              <span className="text-xs font-bold">{getCompanyInitials(job.company)}</span>
+                            </div>
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="text-sm font-semibold text-gray-900 truncate">{job.company}</h3>
@@ -545,10 +572,29 @@ const OffcampusStatus = () => {
                       <h2 className="text-lg font-bold text-gray-900">{selectedJob.company}</h2>
                       <p className="text-sm text-gray-600">{selectedJob.jobRoles}</p>
                     </div>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center border border-white/60">
-                      <span className="text-lg font-bold text-[#667eea]">
-                        {getCompanyInitials(selectedJob.company)}
-                      </span>
+                    <div className="w-12 h-12 flex-shrink-0">
+                      {selectedJob.companyLogo ? (
+                        <img 
+                          src={selectedJob.companyLogo} 
+                          alt={selectedJob.company}
+                          className="w-12 h-12 rounded-xl object-cover border border-white/60"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            const fallbackDiv = e.target.nextSibling;
+                            if (fallbackDiv) {
+                              fallbackDiv.style.display = 'flex';
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <div 
+                        className={`${selectedJob.companyLogo ? 'hidden' : 'flex'} w-12 h-12 rounded-xl bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 items-center justify-center border border-white/60`}
+                        style={selectedJob.companyLogo ? {} : { display: selectedJob.companyLogo ? 'none' : 'flex' }}
+                      >
+                        <span className="text-lg font-bold text-[#667eea]">
+                          {getCompanyInitials(selectedJob.company)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   
