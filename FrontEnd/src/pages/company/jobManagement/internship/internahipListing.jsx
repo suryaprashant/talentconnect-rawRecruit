@@ -29,7 +29,7 @@ export default function InternshipListing() {
         setLoading(true);
         setError(null);
         try {
-            const response = await getPostedJobs("Internship", "Shortlisted");
+            const response = await getPostedJobs("Internship", "Applied");
             setJobs(response?.data || []);
         } catch (err) {
             console.error("Error fetching internships:", err);
@@ -52,7 +52,7 @@ export default function InternshipListing() {
             const res = await getOffCampusApplicationsForJob(
                 jobId,
                 "Internship",
-                "Shortlisted",
+                "Applied",
                 isVisited
             );
 
@@ -152,102 +152,35 @@ export default function InternshipListing() {
     };
 
     const handleBackToList = () => {
-        setSelectedJob(null);
         setShowJobDetail(false);
+        setIsVisited('');
+        fetchJobs();
     };
 
-    // If showing job detail, render the detail view
+    // If showing job detail, render only the ApplicantDetails component
     if (showJobDetail && selectedJob) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
-                <div className="container mx-auto px-4 py-8 pt-20">
-                    <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6">
-                        {/* Back Button */}
-                        <button
-                            onClick={handleBackToList}
-                            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 group"
-                        >
-                            <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-                            Back to shortlisted internships
-                        </button>
-
-                        {/* Selected Job Header */}
-                        <div className="mb-8">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-xl">
-                                    <Building2 className="h-6 w-6 text-[#667eea]" />
-                                </div>
-                                <div>
-                                    <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                                        Applications for: {selectedJob?.jobRoles?.join(', ') ||
-                                        selectedJob?.jobTitle ||
-                                        'N/A'}
-                                    </h2>
-                                    <div className="flex flex-wrap items-center gap-3 mt-2">
-                                        <span className={`inline-flex items-center text-sm px-3 py-1.5 rounded-lg ${
-                                            selectedJob?.status === 'Published'
-                                                ? 'bg-gradient-to-r from-green-100 to-green-50 text-green-700 border border-green-200'
-                                                : selectedJob?.status === 'Draft'
-                                                ? 'bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border border-yellow-200'
-                                                : 'bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200'
-                                        }`}>
-                                            {selectedJob?.status || 'N/A'}
-                                        </span>
-                                        <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
-                                            <MapPin className="h-3 w-3 mr-1.5" />
-                                            {selectedJob?.location?.[0] || 'No Location'}
-                                        </span>
-                                        <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
-                                            <Calendar className="h-3 w-3 mr-1.5" />
-                                            {(() => {
-                                                const endDate = calculateEndDate(selectedJob?.createdAt);
-                                                return endDate
-                                                    ? endDate.toLocaleDateString('en-US', {
-                                                        month: 'short',
-                                                        day: 'numeric',
-                                                        year: 'numeric'
-                                                    })
-                                                    : 'N/A';
-                                            })()}
-                                        </span>
-                                        <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
-                                            <Users className="h-3 w-3 mr-1.5" />
-                                            Shortlisted Applications: {selectedJob?.applicationCount || 0}
-                                        </span>
-                                        <span className="inline-flex items-center text-sm text-gray-600 bg-gradient-to-r from-gray-50 to-white px-3 py-1.5 rounded-lg">
-                                            <Eye className="h-3 w-3 mr-1.5" />
-                                            Views: {selectedJob?.views || 0}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Load Applicant Details Component */}
-                        <ApplicantDetails
-                            job={selectedJob}
-                            applications={applications}
-                            loading={applicationsLoading}
-                            error={applicationsError}
-                            isVisited={isVisited}
-                            onRefresh={() => {
-                                // Refresh based on current filter
-                                if (isVisited === "true") {
-                                    // If showing new applications, fetch unvisited
-                                    fetchApplicationsForJob(selectedJob._id, false);
-                                } else if (isVisited === "false") {
-                                    // If showing viewed applications, fetch visited
-                                    fetchApplicationsForJob(selectedJob._id, true);
-                                } else {
-                                    // If showing all, fetch all (null)
-                                    fetchApplicationsForJob(selectedJob._id, null);
-                                }
-                            }}
-                            onClose={handleBackToList}
-                        />
-                    </div>
-                </div>
-            </div>
+            <ApplicantDetails
+                job={selectedJob}
+                applications={applications}
+                loading={applicationsLoading}
+                error={applicationsError}
+                isVisited={isVisited}
+                onRefresh={() => {
+                    // Refresh based on current filter
+                    if (isVisited === "true") {
+                        // If showing new applications, fetch unvisited
+                        fetchApplicationsForJob(selectedJob._id, false);
+                    } else if (isVisited === "false") {
+                        // If showing viewed applications, fetch visited
+                        fetchApplicationsForJob(selectedJob._id, true);
+                    } else {
+                        // If showing all, fetch all (null)
+                        fetchApplicationsForJob(selectedJob._id, null);
+                    }
+                }}
+                onClose={handleBackToList}
+            />
         );
     }
 
