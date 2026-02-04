@@ -521,7 +521,7 @@ export async function createOncampusApplication(req, res) {
   const { jobId } = req.body;
   const userId = req.user._id;
   const userType = req.user.userType;
- console.log()
+ 
   
   try {
     let user;
