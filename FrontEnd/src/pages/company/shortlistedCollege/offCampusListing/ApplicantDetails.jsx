@@ -71,29 +71,74 @@ const ApplicantDetails = ({ job,
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toggleScheduleInterviewPopup, setToggleScheduleInterviewPopup] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState(null);
- 
+  
   const navigate = useNavigate();
   const { setSelectedConversation } = useConversation();
 
- {/* const getApplicants = async (jobId, jobType, isVisited) => {
-    setLoading(true);
-    setError(null);
-    try {
-      let response;
-      if (isVisited === false) {
-        response = await getApplicationsForJob(jobId, jobType, "Shortlisted", isVisited);
-      } else {
-        response = await getApplicationsForJob(jobId, jobType, "Shortlisted");
-      }
-      setApplications(response.data || []);
-    } catch (error) {
-      console.log("Error: ", error);
-      setError('Failed to load applicants');
-      toast.error('Failed to load applicants');
-    } finally {
-      setLoading(false);
+  // Function to extract all unique applicant locations
+  const getAllApplicantLocations = () => {
+    if (!applications || !Array.isArray(applications) || applications.length === 0) {
+      return [];
     }
-  };*/}
+    
+    const locationSet = new Set();
+    
+    applications.forEach((app) => {
+      try {
+        const applicantData = app?.applicant || {};
+        
+        // Check multiple possible location fields
+        const locationFields = [
+          applicantData.locations,
+          applicantData.location,
+          applicantData.currentLocation,
+          applicantData.currentCity,
+          applicantData.city,
+          applicantData.preferredLocation,
+          applicantData.address
+        ];
+        
+        locationFields.forEach(field => {
+          if (field != null && field !== '') {
+            // Handle arrays
+            if (Array.isArray(field)) {
+              field.forEach(item => {
+                if (item != null && item !== '') {
+                  const str = String(item).trim();
+                  if (str && str !== 'null' && str !== 'undefined') {
+                    locationSet.add(str);
+                  }
+                }
+              });
+            }
+            // Handle strings
+            else if (typeof field === 'string') {
+              // Split by common separators
+              field.split(/[,;|]/).forEach(part => {
+                const trimmed = part.trim();
+                if (trimmed && trimmed !== 'null' && trimmed !== 'undefined') {
+                  locationSet.add(trimmed);
+                }
+              });
+            }
+            // Handle other types
+            else {
+              const str = String(field).trim();
+              if (str && str !== 'null' && str !== 'undefined') {
+                locationSet.add(str);
+              }
+            }
+          }
+        });
+        
+      } catch (err) {
+        console.warn('Error processing applicant location:', err);
+        // Continue with next applicant
+      }
+    });
+    
+    return Array.from(locationSet);
+  };
 
   const acceptApplicant = async (applicationId) => {
     setIsSubmitting(true);
@@ -101,7 +146,6 @@ const ApplicantDetails = ({ job,
       const response = await acceptCandidate(applicationId, job?.jobRoles);
       if (response?.data?.success === true) {
         toast.success("Candidate Accepted!");
-        //getApplicants(jobId, jobType, isVisited);
         onRefresh();
       } else {
         toast.error(response.response?.data?.msg || 'Failed to accept candidate');
@@ -120,7 +164,6 @@ const ApplicantDetails = ({ job,
       const response = await rejectCandidate(applicationId, job?.jobRoles);
       if (response?.data?.success === true) {
         toast.success("Candidate Rejected!");
-        //getApplicants(jobId, jobType, isVisited);
         onRefresh();
       } else {
         toast.error(response.response?.data?.msg || 'Failed to reject candidate');
@@ -132,14 +175,6 @@ const ApplicantDetails = ({ job,
       setIsSubmitting(false);
     }
   };
-
-  {/*useEffect(() => {
-    if (isVisited === false) {
-      getApplicants(jobId, jobType, false);
-    } else {
-      getApplicants(jobId, jobType);
-    }
-  }, [jobId]);*/}
 
   const handleMessageClick = async (applicant) => {
     if (!applicant?.applicant?._id) {
@@ -174,8 +209,6 @@ const ApplicantDetails = ({ job,
   };
 
   const handleScheduleInterview = (applicant) => {
-    
-
     setSelectedApplicant(applicant);
     setToggleScheduleInterviewPopup(true);
   };
@@ -197,6 +230,9 @@ const ApplicantDetails = ({ job,
       </div>
     );
   }
+
+  // Get all applicant locations
+  const allApplicantLocations = getAllApplicantLocations();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -221,10 +257,10 @@ const ApplicantDetails = ({ job,
                   Shortlisted Applicants for: {job?.jobRoles?.[0] || 'Job Position'}
                 </h1>
                 <div className="flex flex-wrap items-center gap-3 mt-2">
-                  <span className="inline-flex items-center text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
+                  {/* <span className="inline-flex items-center text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
                     <MapPin size={14} className="mr-1.5" />
                     {Array.isArray(job?.jobLocations) ? job.jobLocations.join(', ') : job?.jobLocations || 'Location not specified'}
-                  </span>
+                  </span> */}
                   <span className="inline-flex items-center text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
                     <FileText size={14} className="mr-1.5" />
                     {job?.jobType || 'Job Type'}
@@ -233,6 +269,15 @@ const ApplicantDetails = ({ job,
                     <Users size={14} className="mr-1.5" />
                     {applications.length} Shortlisted Applicant{applications.length !== 1 ? 's' : ''}
                   </span>
+                  
+                  {/* All Applicant Locations */}
+                  {allApplicantLocations.length > 0 && (
+                    <span className="inline-flex items-center text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
+                      <MapPin size={14} className="mr-1.5" />
+                      Applicants from: {allApplicantLocations.slice(0, 3).join(', ')}
+                      {allApplicantLocations.length > 3 && ` +${allApplicantLocations.length - 3} more`}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -271,8 +316,8 @@ const ApplicantDetails = ({ job,
               
               return (
                 <div key={applicant._id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
-                  {/* Applicant Header */}
-                  <div className="p-6 border-b border-gray-200">
+                  {/* Applicant Header - REMOVED BORDER */}
+                  <div className="p-6">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                       <div className="flex items-start gap-4 mb-4 md:mb-0">
                         <div className="w-16 h-16 bg-yellow-100 rounded-md flex items-center justify-center">
@@ -298,10 +343,10 @@ const ApplicantDetails = ({ job,
                               <GraduationCap size={14} className="mr-1.5" />
                               {applicantData.degree || 'N/A'} ({applicantData.specialization || 'N/A'})
                             </span>
-                            <span className="inline-flex items-center text-sm text-gray-600">
+                            {/* <span className="inline-flex items-center text-sm text-gray-600">
                               <Briefcase size={14} className="mr-1.5" />
                               {applicantData.designation || 'Not specified'}
-                            </span>
+                            </span> */}
                             <span className="inline-flex items-center text-sm text-gray-600">
                               <MapPin size={14} className="mr-1.5" />
                               {applicantData.locations || 'Location not specified'}
@@ -473,8 +518,8 @@ const ApplicantDetails = ({ job,
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                    {/* Action Buttons - REMOVED BORDER */}
+                    <div className="flex flex-col sm:flex-row gap-4">
                       <button
                         onClick={() => handleMessageClick(applicant)}
                         disabled={isSubmitting}

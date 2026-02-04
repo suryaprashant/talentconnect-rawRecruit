@@ -482,6 +482,82 @@ const handleViewResume = async (applicant) => {
     }
   };
 
+  // Function to extract all unique applicant locations - FIXED VERSION
+const getAllApplicantLocations = () => {
+  if (!applications || applications.length === 0) return [];
+  
+  const allLocations = applications
+    .map(app => {
+      const applicantData = app?.applicant || {};
+      
+      // Check multiple possible location fields
+      const location = 
+        applicantData.locations || 
+        applicantData.location || 
+        applicantData.currentLocation ||
+        applicantData.currentCity ||
+        applicantData.city ||
+        applicantData.preferredLocation ||
+        applicantData.address;
+      
+      return location;
+    })
+    .filter(location => location != null && location !== '') // Remove null/undefined/empty
+    .flatMap(location => {
+      // Handle different data types
+      if (Array.isArray(location)) {
+        // If it's already an array, process each element
+        return location.map(item => {
+          if (typeof item === 'string') return item.trim();
+          if (typeof item === 'number') return String(item);
+          if (item && typeof item === 'object') {
+            // Try to extract location from object
+            return item.city || item.name || item.location || JSON.stringify(item);
+          }
+          return String(item);
+        }).filter(item => item && item.trim() !== '');
+      } 
+      else if (typeof location === 'string') {
+        // If it's a string, split by common separators
+        return location.split(/[,;|/]/)
+          .map(loc => loc.trim())
+          .filter(loc => loc !== '');
+      }
+      else if (typeof location === 'number') {
+        // If it's a number, convert to string
+        return [String(location)];
+      }
+      else if (location && typeof location === 'object') {
+        // If it's an object, try to extract meaningful data
+        const extracted = [];
+        if (location.city) extracted.push(location.city);
+        if (location.state) extracted.push(location.state);
+        if (location.country) extracted.push(location.country);
+        if (location.name) extracted.push(location.name);
+        if (location.address) extracted.push(location.address);
+        return extracted.filter(item => item && item.trim() !== '');
+      }
+      
+      // For any other type, convert to string
+      return [String(location)].filter(item => item && item.trim() !== '');
+    })
+    .map(location => {
+      // Final cleanup
+      if (typeof location === 'string') {
+        return location.trim();
+      }
+      return String(location).trim();
+    })
+    .filter(location => location && location !== '' && location !== 'null' && location !== 'undefined'); // Final filter
+  
+  // Get unique locations
+  const uniqueLocations = [...new Set(allLocations)];
+  
+  console.log('Extracted locations:', uniqueLocations); // Debug log
+  
+  return uniqueLocations;
+};
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -505,42 +581,54 @@ const handleViewResume = async (applicant) => {
 
       <div className="container mx-auto px-4 py-8">
         {/* Header Section */}
-        <div className="mb-6">
-          <button
-            onClick={onClose}
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
-          >
-            <ChevronLeft size={20} />
-            Back to Drives
-          </button>
+<div className="mb-6">
+  <button
+    onClick={onClose}
+    className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+  >
+    <ChevronLeft size={20} />
+    Back to Drives
+  </button>
+  
+  <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+    <div className="flex items-center mb-4">
+      <div className="p-3 bg-blue-100 rounded-md mr-4">
+        <Building className="h-6 w-6 text-blue-600" />
+      </div>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">
+          Applicants for: {job?.jobRoles?.[0] || 'Job Position'}
+        </h1>
+        <div className="flex flex-wrap items-center gap-3 mt-2">
+          {/* <span className="inline-flex items-center text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
+            <MapPin size={14} className="mr-1.5" />
+            {Array.isArray(job?.jobLocations) ? job.jobLocations.join(', ') : job?.jobLocations || 'Location not specified'}
+          </span> */}
+          <span className="inline-flex items-center text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
+            <FileText size={14} className="mr-1.5" />
+            {job?.jobType || 'Job Type'}
+          </span>
+          <span className="inline-flex items-center text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
+            <Users size={14} className="mr-1.5" />
+            {applications.length} Applicant{applications.length !== 1 ? 's' : ''}
+          </span>
           
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <div className="flex items-center mb-4">
-              <div className="p-3 bg-blue-100 rounded-md mr-4">
-                <Building className="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Applicants for: {job?.jobRoles?.[0] || 'Job Position'}
-                </h1>
-                <div className="flex flex-wrap items-center gap-3 mt-2">
-                  <span className="inline-flex items-center text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
-                    <MapPin size={14} className="mr-1.5" />
-                    {Array.isArray(job?.jobLocations) ? job.jobLocations.join(', ') : job?.jobLocations || 'Location not specified'}
-                  </span>
-                  <span className="inline-flex items-center text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
-                    <FileText size={14} className="mr-1.5" />
-                    {job?.jobType || 'Job Type'}
-                  </span>
-                  <span className="inline-flex items-center text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
-                    <Users size={14} className="mr-1.5" />
-                    {applications.length} Applicant{applications.length !== 1 ? 's' : ''}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Add Applicant Locations */}
+          {(() => {
+            const locations = getAllApplicantLocations();
+            return locations.length > 0 && (
+              <span className="inline-flex items-center text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-lg">
+                <MapPin size={14} className="mr-1.5" />
+                Applicants from: {locations.slice(0, 3).join(', ')}
+                {locations.length > 3 && ` +${locations.length - 3} more`}
+              </span>
+            );
+          })()}
         </div>
+      </div>
+    </div>
+  </div>
+</div>
 
         {/* Error Display */}
         {error && (
@@ -569,99 +657,95 @@ const handleViewResume = async (applicant) => {
               
               return (
                 <div key={applicant._id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
-                  {/* Applicant Header */}
-                  <div className="p-6 border-b border-gray-200">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-                      <div className="flex items-start gap-4 mb-4 md:mb-0">
-                        <div className="w-16 h-16 bg-blue-100 rounded-md flex items-center justify-center">
-                          {applicantData?.profileImageUrl ? (
-                            <img 
-                              src={applicantData.profileImageUrl} 
-                              alt={applicantData.name}
-                              className="w-full h-full rounded-md object-cover"
-                            />
-                          ) : (
-                            <User className="h-8 w-8 text-blue-600" />
-                          )}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-3 mb-1">
-                            <h2 className="text-xl font-bold text-gray-900">{applicantData.name || 'N/A'}</h2>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              currentStatus === 'Accepted' 
-                                ? 'bg-green-100 text-green-800'
-                                : currentStatus === 'Rejected'
-                                ? 'bg-red-100 text-red-800'
-                                : currentStatus === 'Shortlisted'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-blue-100 text-blue-800'
-                            }`}>
-                              {currentStatus}
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-3 mt-2">
-                            <span className="inline-flex items-center text-sm text-gray-600">
-                              <GraduationCap size={14} className="mr-1.5" />
-                              {applicantData.degree || 'N/A'} ({applicantData.specialization || 'N/A'})
-                            </span>
-                            <span className="inline-flex items-center text-sm text-gray-600">
-                              <Briefcase size={14} className="mr-1.5" />
-                              {applicantData.designation || 'Not specified'}
-                            </span>
-                            <span className="inline-flex items-center text-sm text-gray-600">
-                              <MapPin size={14} className="mr-1.5" />
-                              {applicantData.locations || 'Location not specified'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Date Applied */}
-                      <div className="text-sm text-gray-600">
-                        Applied on: {safeFormatDate(applicant?.createdAt)}
-                      </div>
-                    </div>
-                  </div>
+                  {/* Applicant Header - REMOVED BORDER */}
+<div className="p-6">
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+    <div className="flex items-start gap-4 mb-4 md:mb-0">
+      <div className="w-16 h-16 bg-blue-100 rounded-md flex items-center justify-center">
+        {applicantData?.profileImageUrl ? (
+          <img 
+            src={applicantData.profileImageUrl} 
+            alt={applicantData.name}
+            className="w-full h-full rounded-md object-cover"
+          />
+        ) : (
+          <User className="h-8 w-8 text-blue-600" />
+        )}
+      </div>
+      <div>
+        <div className="flex items-center gap-3 mb-1">
+          <h2 className="text-xl font-bold text-gray-900">{applicantData.name || 'N/A'}</h2>
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+            currentStatus === 'Accepted' 
+              ? 'bg-green-100 text-green-800'
+              : currentStatus === 'Rejected'
+              ? 'bg-red-100 text-red-800'
+              : currentStatus === 'Shortlisted'
+              ? 'bg-yellow-100 text-yellow-800'
+              : 'bg-blue-100 text-blue-800'
+          }`}>
+            {currentStatus}
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-3 mt-2">
+          <span className="inline-flex items-center text-sm text-gray-600">
+            <GraduationCap size={14} className="mr-1.5" />
+            {applicantData.degree || 'N/A'} ({applicantData.specialization || 'N/A'})
+          </span>
+          <span className="inline-flex items-center text-sm text-gray-600">
+            <MapPin size={14} className="mr-1.5" />
+            {applicantData.locations || 'Location not specified'}
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    {/* Date Applied */}
+    <div className="text-sm text-gray-600">
+      Applied on: {safeFormatDate(applicant?.createdAt)}
+    </div>
+  </div>
+</div>
 
-                  {/* Applicant Details */}
-                  <div className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                      {/* Left Column - Contact & Education */}
-                      <div className="space-y-6">
-                        <div>
-                          <h3 className="text-lg font-bold mb-4 text-gray-800">Contact Information</h3>
-                          <div className="space-y-3 text-sm">
-                            <DetailRow icon={Mail} label="Email" value={applicantData.email} />
-                            <DetailRow icon={Phone} label="Phone" value={applicantData.phone} />
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <h3 className="text-lg font-bold mb-4 text-gray-800">Education Details</h3>
-                          <div className="space-y-3 text-sm">
-                            <DetailRow 
-                              icon={GraduationCap} 
-                              label="Degree & Specialization" 
-                              value={`${applicantData.degree || 'N/A'} - ${applicantData.specialization || 'N/A'}`} 
-                            />
-                            <DetailRow 
-                              icon={BookOpen} 
-                              label="Institute" 
-                              value={applicantData.institute || 'N/A'} 
-                            />
-                            <DetailRow 
-                              icon={Calendar} 
-                              label="Graduation Year" 
-                              value={applicantData.graduationYear || 'N/A'} 
-                            />
-                            <DetailRow 
-                              icon={Award} 
-                              label="CGPA/Percentage" 
-                              value={applicantData.cgpa || applicantData.percentage || 'N/A'} 
-                            />
-                          </div>
-                        </div>
-                      </div>
+{/* Applicant Details */}
+<div className="p-6">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    {/* Left Column - Contact & Education */}
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-bold mb-4 text-gray-800">Contact Information</h3>
+        <div className="space-y-3 text-sm">
+          <DetailRow icon={Mail} label="Email" value={applicantData.email} />
+          <DetailRow icon={Phone} label="Phone" value={applicantData.phone} />
+        </div>
+      </div>
+      
+      <div>
+        <h3 className="text-lg font-bold mb-4 text-gray-800">Education Details</h3>
+        <div className="space-y-3 text-sm">
+          <DetailRow 
+            icon={GraduationCap} 
+            label="Degree & Specialization" 
+            value={`${applicantData.degree || 'N/A'} - ${applicantData.specialization || 'N/A'}`} 
+          />
+          <DetailRow 
+            icon={BookOpen} 
+            label="Institute" 
+            value={applicantData.institute || 'N/A'} 
+          />
+          <DetailRow 
+            icon={Calendar} 
+            label="Graduation Year" 
+            value={applicantData.graduationYear || 'N/A'} 
+          />
+          <DetailRow 
+            icon={Award} 
+            label="CGPA/Percentage" 
+            value={applicantData.cgpa || applicantData.percentage || 'N/A'} 
+          />
+        </div>
+      </div>
+    </div>
 
                       {/* Right Column - Professional Details & Salary */}
                       <div className="space-y-6">
@@ -779,7 +863,7 @@ const handleViewResume = async (applicant) => {
                       </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-200">
+                    <div className="flex flex-col sm:flex-row gap-4">
                       {/* Resume View Button */}
 <button
   onClick={() => handleViewResume(applicant)}

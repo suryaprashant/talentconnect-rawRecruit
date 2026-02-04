@@ -189,11 +189,11 @@ export default function OffCampusJobManagement() {
           {/* Table Header */}
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
             <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
-              <div className="col-span-4">Job Title</div>
+              <div className="col-span-3">Job Title</div>
               <div className="col-span-2">Deadline</div>
-              <div className="col-span-1 text-center">Views</div>
-              <div className="col-span-2 text-center">New Applications</div>
-              <div className="col-span-3 text-center">Actions</div>
+              <div className="col-span-2 text-center">Views</div>
+              <div className="col-span-3 text-center">New Applications</div>
+              <div className="col-span-2 text-center">Actions</div>
             </div>
           </div>
 
@@ -217,7 +217,7 @@ export default function OffCampusJobManagement() {
                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                   <div className="grid grid-cols-12 gap-4 items-center">
                     {/* Job Title - col-span-4 (increased from 3) */}
-                    <div className="col-span-4">
+                    <div className="col-span-3">
                       <div 
                         onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}
                         className="group cursor-pointer"
@@ -246,7 +246,7 @@ export default function OffCampusJobManagement() {
                     </div>
 
                     {/* Views - col-span-1 */}
-                    <div className="col-span-1 text-center">
+                    <div className="col-span-2 text-center">
                       <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
                         {job.views || 0}
                       </span>
@@ -254,7 +254,7 @@ export default function OffCampusJobManagement() {
 
                     {/* Applications - col-span-2 (increased from 1) */}
                     <div 
-                      className="col-span-2 text-center cursor-pointer group"
+                      className="col-span-3 text-center cursor-pointer group"
                       onClick={() => handleView(job)}
                     >
                       <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
@@ -263,7 +263,7 @@ export default function OffCampusJobManagement() {
                     </div>
 
                     {/* Actions - col-span-3 */}
-                    <div className="col-span-3">
+                    <div className="col-span-2">
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => showNewApplication(job)}

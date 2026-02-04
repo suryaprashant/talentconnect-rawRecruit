@@ -309,13 +309,13 @@ const JobCard = ({ job, userType, onClick }) => {
         )}
 
         {/* Employment Type Badge */}
-        {job.employmentType && (
+        {/* {job.employmentType && (
           <div className="mt-3">
             <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
               {Array.isArray(job.employmentType) ? job.employmentType.join(', ') : job.employmentType}
             </span>
           </div>
-        )}
+        )} */}
 
         {/* Streams */}
         {job.studentStreams?.length > 0 && (
@@ -377,10 +377,6 @@ const JobCard = ({ job, userType, onClick }) => {
                 <span className="line-clamp-1 max-w-[120px]">
                   {formatLocation()}
                 </span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Briefcase className="h-4 w-4 text-gray-500" />
-                <span className="capitalize">{job.workMode || 'Not specified'}</span>
               </div>
             </div>
           </div>

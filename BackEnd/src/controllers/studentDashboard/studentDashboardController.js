@@ -7,6 +7,7 @@ import { getCompanyService } from "../../services/companyService.js";
 import Application from "../../models/applicationModel.js";
 import { getCollegeService } from "../../services/collegeService.js";
 import Auth from "../../models/authModel.js";
+import mongoose from 'mongoose';
 
 
 
@@ -230,18 +231,42 @@ export const getOnCampusPostingsForCollege = async (req, res) => {
     }
 };
 
+// export const getOnCampusPostingForCollegebyID = async (req, res) => {
+//     const { id } = req.params;
+//     try {
+//         const response = await JobPostingTable.findById(id)
+//             .populate({
+//                 path: 'companyPosted',
+//                 select: 'companyDetails profileImage hiringPreferences',
+//             })
+//             .lean();
+
+//         res.status(200).json(response);
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     }
+// }
 export const getOnCampusPostingForCollegebyID = async (req, res) => {
     const { id } = req.params;
     try {
         const response = await JobPostingTable.findById(id)
             .populate({
                 path: 'companyPosted',
-                select: 'companyDetails profileImage hiringPreferences',
+                select: 'companyDetails profileImageUrl hiringPreferences', // Changed from profileImage to profileImageUrl
             })
             .lean();
 
+        // Debug log
+        console.log('🔍 Backend Response:', {
+            jobId: id,
+            hasCompanyPosted: !!response?.companyPosted,
+            profileImageUrl: response?.companyPosted?.profileImageUrl,
+            companyName: response?.companyPosted?.companyDetails?.companyName
+        });
+
         res.status(200).json(response);
     } catch (err) {
+        console.error('❌ Error in getOnCampusPostingForCollegebyID:', err);
         res.status(500).json({ error: err.message });
     }
 }
@@ -417,13 +442,22 @@ export const getPoolCampusJobByIdForCollege = async (req, res) => {
         const response = await JobPostingTable.findById(id)
             .populate({
                 path: 'companyPosted',
-                select: 'companyDetails profileImage hiringPreferences',
+                select: 'companyDetails profileImageUrl hiringPreferences', // Changed from profileImage to profileImageUrl
             })
             .lean();
+        
+        // Add debug logging
+        console.log('🔍 Pool Campus Backend Response:', {
+            jobId: id,
+            hasCompanyPosted: !!response?.companyPosted,
+            profileImageUrl: response?.companyPosted?.profileImageUrl,
+            companyName: response?.companyPosted?.companyDetails?.companyName
+        });
+        
         res.status(200).json(response);
     }
     catch (err) {
-        console.error(err);
+        console.error('❌ Error in getPoolCampusJobByIdForCollege:', err);
         res.status(500).json({ error: err.message });
     }
 }
@@ -739,19 +773,71 @@ export const getInternshipPostings = async (req, res) => {
     }
 };
 
-
 export const getIntershipById = async (req, res) => {
-    console.log('in internship section')
     const { id } = req.params;
+    
+    console.log('🔍 in internship section - fetching job ID:', id);
+    
     try {
+        // Check if ID is valid (if using MongoDB)
+        if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+            console.log('❌ Invalid ID format:', id);
+            return res.status(400).json({ 
+                error: 'Invalid internship ID format',
+                id: id 
+            });
+        }
+        
         const response = await JobPostingTable.findById(id)
-            .populate('companyPosted')
-            .lean();
+            .populate({
+                path: 'companyPosted',
+                select: 'companyDetails profileImageUrl hiringPreferences',
+            })
+            .lean()
+            .exec(); // Add .exec() for better promise handling
+        
+        // Check if response exists
+        if (!response) {
+            console.log('❌ No internship found for ID:', id);
+            return res.status(404).json({ 
+                error: 'Internship not found',
+                id: id 
+            });
+        }
+        
+        // Add debug logging
+        console.log('✅ Internship Backend Response:', {
+            jobId: id,
+            found: !!response,
+            _id: response._id,
+            jobTitle: response.jobTitle,
+            hasCompanyPosted: !!response?.companyPosted,
+            profileImageUrl: response?.companyPosted?.profileImageUrl,
+            companyName: response?.companyPosted?.companyDetails?.companyName,
+            companyPostedFields: response?.companyPosted ? Object.keys(response.companyPosted) : [],
+            allResponseFields: Object.keys(response)
+        });
+        
+        // Log the entire response for debugging (first few keys)
+        console.log('📦 Full response structure:', {
+            ...response,
+            // Don't log huge fields
+            description: response.description ? `${response.description.substring(0, 100)}...` : 'No description'
+        });
+        
         res.status(200).json(response);
     }
     catch (err) {
-        console.error(err);
-        res.status(500).json({ error: err.message });
+        console.error('❌ Error in getIntershipById:', err);
+        console.error('Error stack:', err.stack);
+        
+        // More detailed error response
+        res.status(500).json({ 
+            success: false,
+            error: 'Internal server error',
+            message: err.message,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        });
     }
 }
 

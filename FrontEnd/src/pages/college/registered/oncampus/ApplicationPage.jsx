@@ -153,6 +153,45 @@ function ApplicationPage() {
     navigate(`/registered/on-campus-opportunities/${jobId}/applicants?targetStatus=Shortlisted`);
   };
 
+  // Handle Degree column click - Navigate to CollegeDetailPage
+  const handleDegreeClick = (job) => {
+    // Prepare data structure for CollegeDetailPage
+    const collegeData = {
+      // The structure expected by CollegeDetailPage
+      _id: job._id,
+      isApplied: false,
+      isSaved: false,
+      collegePosted: job.collegePosted || job.collegeDetails,
+      company: job.companyName || job.company,
+      description: job.description,
+      location: job.location,
+      jobTitle: job.jobTitle,
+      employmentType: job.employmentType,
+      packageDetails: job.packageDetails,
+      noOfplacedStudents: job.noOfplacedStudents || job.noOfStudents,
+      lookingFor: job.lookingFor || job.jobTitle,
+      proposedSchedule: job.proposedSchedule,
+      companyType: job.companyType,
+      roundDetails: job.roundDetails,
+      studentStreams: job.studentStreams,
+      numberOfStudent: job.numberOfStudent,
+      amenitiesRequired: job.amenitiesRequired,
+      contactPerson: job.contactPerson,
+      startDate: job.startDate,
+      endDate: job.endDate,
+      jobType: job.jobType || 'On-campus'
+    };
+    
+    // Navigate to CollegeDetailPage with state data
+    navigate(`/company/employerDashboard/college-detail/${job._id}`, {
+      state: {
+        applicationData: collegeData,
+        isApplied: false,
+        isSaved: false
+      }
+    });
+  };
+
   const handleDelete = async (jobId, e) => {
     e.stopPropagation();
     
@@ -249,7 +288,7 @@ function ApplicationPage() {
           {/* Main Content Card */}
           <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 overflow-hidden">
             {/* Tabs */}
-            <div className="flex border-b border-white/50">
+            {/* <div className="flex border-b border-white/50">
               <button
                 className={`px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === 'All Jobs' 
                   ? 'border-b-2 border-[#3b82f6] text-[#3b82f6]' 
@@ -282,147 +321,138 @@ function ApplicationPage() {
               >
                 Closed ({closedJobsCount})
               </button>
-            </div>
+            </div> */}
 
-            {/* Table - 6 Columns */}
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-white/50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Degree</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Status</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Deadline</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Views</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">New Applications</th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <tr>
-                      <td colSpan={6} className="text-center py-8">
-                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-2 border-solid border-[#3b82f6] border-r-transparent"></div>
-                        <p className="mt-2 text-gray-600">Loading jobs...</p>
-                      </td>
-                    </tr>
-                  ) : error ? (
-                    <tr>
-                      <td colSpan={6} className="text-center py-8">
-                        <div className="flex flex-col items-center">
-                          <AlertCircle className="w-12 h-12 text-red-500 mb-2" />
-                          <p className="text-red-500 font-medium">{error}</p>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : currentJobs.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="text-center py-8">
-                        <div className="flex flex-col items-center">
-                          <Search className="w-12 h-12 text-gray-400 mb-2" />
-                          <p className="text-gray-500 text-lg">No jobs found matching your criteria.</p>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    currentJobs.map(job => {
-                      const jobId = job._id || job.id;
-                      const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : job.degree || 'N/A';
-                      const jobLocation = Array.isArray(job.location) ? job.location.join(', ') : job.location || 'N/A';
-                      const jobStatus = job.jobStatus || 'Unknown';
-                      const deadline = job.endDate || job.deadline;
-                      const views = job.views || 0;
-                      const applications = job.applicationCount || job.applications || 0;
+            {/* Table - 5 Columns */}
+<div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg overflow-hidden">
+  {/* Table Header */}
+  <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+    <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
+      <div className="col-span-3">Degree</div>
+      <div className="col-span-2">Deadline</div>
+      <div className="col-span-2 text-center">Views</div>
+      <div className="col-span-3 text-center">New Applications</div>
+      <div className="col-span-2 text-center">Actions</div>
+    </div>
+  </div>
 
-                      return (
-                        <tr
-                          key={jobId}
-                          className="border-b border-white/50 hover:bg-white/30 transition-colors duration-200"
-                        >
-                          {/* Degree Column - Updated navigation to match acceptedListing.jsx */}
-                          <td 
-                            className="px-6 py-4 cursor-pointer" 
-                            onClick={() => navigate(`/company-dashboard/preview/On-campus/${job._id}?isApplied=true`)}
-                          >
-                            <div className="font-medium text-gray-900 whitespace-normal break-words">
-                              {jobDegree}
-                            </div>
-                            <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-                              <MapPin className="w-3 h-3" />
-                              {jobLocation}
-                            </div>
-                          </td>
-                          
-                          {/* Status Column */}
-                          <td className="px-6 py-4">
-                            <span className={`px-3 py-1 text-xs font-medium rounded-full ${jobStatus === 'Open'
-                              ? 'bg-gradient-to-r from-[#a7f3d0]/20 to-[#34d399]/20 text-[#059669] border border-[#a7f3d0]/30'
-                              : jobStatus === 'Closed'
-                                ? 'bg-gradient-to-r from-[#fecaca]/20 to-[#f87171]/20 text-[#dc2626] border border-[#fecaca]/30'
-                                : 'bg-gradient-to-r from-[#fde68a]/20 to-[#f59e0b]/20 text-[#d97706] border border-[#fde68a]/30'
-                              }`}>
-                              {jobStatus}
-                            </span>
-                          </td>
-                          
-                          {/* Deadline Column */}
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-1 text-gray-700">
-                              <Calendar className="w-4 h-4 text-[#3b82f6]" />
-                              {formatDate(deadline)}
-                            </div>
-                          </td>
-                          
-                          {/* Views Column */}
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-1 text-gray-700">
-                              <Eye className="w-4 h-4 text-[#3b82f6]" />
-                              {views}
-                            </div>
-                          </td>
-                          
-                          {/* New Applications Column */}
-                          <td className="px-6 py-4">
-                            <div 
-                              className="flex items-center gap-1 text-gray-700 cursor-pointer hover:text-[#3b82f6]"
-                              onClick={(e) => handleViewNewApplications(jobId, e)}
-                            >
-                              <Users className="w-4 h-4 text-[#3b82f6]" />
-                              {applications}
-                            </div>
-                          </td>
-                          
-                          {/* Actions Column */}
-                          <td className="px-6 py-4">
-                            <div className="flex gap-3">
-                              <button 
-                                onClick={(e) => handleViewAllApplications(jobId, e)}
-                                className="text-gray-500 hover:text-[#3b82f6] transition-all duration-200" 
-                                title="View All Applications"
-                              >
-                                <Eye size={18} />
-                              </button>
-                              
-                              <button 
-                                onClick={(e) => handleDelete(jobId, e)} 
-                                className={`text-gray-500 hover:text-red-500 transition-all duration-200 ${deletingJobId === jobId ? 'opacity-50 cursor-not-allowed' : ''}`} 
-                                title="Delete Job"
-                                disabled={deletingJobId === jobId}
-                              >
-                                {deletingJobId === jobId ? (
-                                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-[#3b82f6] border-r-transparent"></div>
-                                ) : (
-                                  <Trash size={18} />
-                                )}
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
+  {/* Table Body */}
+  <div className="divide-y divide-gray-100">
+    {loading ? (
+      <div className="p-12 text-center">
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#3b82f6]"></div>
+        <p className="mt-4 text-gray-600">Loading jobs...</p>
+      </div>
+    ) : error ? (
+      <div className="p-12 text-center">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-red-100 to-red-50 mb-4">
+          <AlertCircle className="h-8 w-8 text-red-500" />
+        </div>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Error loading jobs</h3>
+        <p className="text-red-500 font-medium">{error}</p>
+      </div>
+    ) : currentJobs.length === 0 ? (
+      <div className="p-12 text-center">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-4">
+          <Search className="h-8 w-8 text-gray-400" />
+        </div>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
+        <p className="text-gray-600">No jobs match your search criteria.</p>
+      </div>
+    ) : (
+      currentJobs.map(job => {
+        const jobId = job._id || job.id;
+        const jobDegree = Array.isArray(job.degree) ? job.degree.join(', ') : job.degree || 'N/A';
+        const jobLocation = Array.isArray(job.location) ? job.location.join(', ') : job.location || 'N/A';
+        const deadline = job.endDate || job.deadline;
+        const views = job.views || 0;
+        const applications = job.applicationCount || job.applications || 0;
+
+        return (
+          <div key={jobId} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
+            <div className="grid grid-cols-12 gap-4 items-center">
+              {/* Degree Column - col-span-3 */}
+              <div className="col-span-3">
+                <div 
+                  onClick={() => handleDegreeClick(job)}
+                  className="group cursor-pointer"
+                >
+                  <h3 className="font-semibold text-gray-900 group-hover:text-[#3b82f6] transition-colors line-clamp-2">
+                    {jobDegree}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <MapPin className="h-3 w-3 text-gray-400" />
+                    <span className="text-sm text-gray-500 line-clamp-1">{jobLocation}</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Deadline Column - col-span-2 */}
+              <div className="col-span-2">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-3 w-3 text-gray-400" />
+                  <span className="text-gray-700 text-sm">
+                    {formatDate(deadline)}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Views Column - col-span-2 */}
+              <div className="col-span-2 text-center">
+                <div className="flex items-center justify-center">
+                  <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                    {views}
+                  </span>
+                </div>
+              </div>
+              
+              {/* New Applications Column - col-span-3 */}
+              <div 
+                className="col-span-3 text-center cursor-pointer group"
+                onClick={(e) => handleViewNewApplications(jobId, e)}
+              >
+                <div className="flex items-center justify-center">
+                  <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
+                    {applications}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Actions Column - col-span-2 */}
+              <div className="col-span-2">
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    onClick={(e) => handleViewAllApplications(jobId, e)}
+                    className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:text-[#3b82f6] hover:bg-gray-50 hover:border-[#3b82f6]/50 transition-all duration-200"
+                    title="View All Applications"
+                  >
+                    <Eye size={16} />
+                  </button>
+                  <button 
+                    onClick={(e) => handleDelete(jobId, e)} 
+                    className={`p-2 bg-gradient-to-r from-red-100 to-red-50 border border-red-200 rounded-lg transition-all duration-200 ${
+                      deletingJobId === jobId 
+                        ? 'opacity-50 cursor-not-allowed' 
+                        : 'text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300'
+                    }`}
+                    title="Delete Job"
+                    disabled={deletingJobId === jobId}
+                  >
+                    {deletingJobId === jobId ? (
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-[#3b82f6] border-r-transparent"></div>
+                    ) : (
+                      <Trash size={16} />
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
+          </div>
+        );
+      })
+    )}
+  </div>
+</div>
 
             {/* Pagination */}
             {!loading && totalPages > 1 && (

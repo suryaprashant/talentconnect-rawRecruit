@@ -201,18 +201,18 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
 
     const industryOptions = [
         { value: '', label: 'Select industry type' },
-        { value: 'tech', label: 'Information Technology' },
-        { value: 'healthcare', label: 'Healthcare & Pharmaceuticals' },
-        { value: 'finance', label: 'Finance & Banking' },
-        { value: 'ecommerce', label: 'E-commerce' },
-        { value: 'education', label: 'Education' },
-        { value: 'retail', label: 'Retail & Consumer Goods' },
-        { value: 'manufacturing', label: 'Manufacturing' },
-        { value: 'automotive', label: 'Automotive' },
-        { value: 'media', label: 'Media & Entertainment' },
-        { value: 'hospitality', label: 'Hospitality & Tourism' },
-        { value: 'real_estate', label: 'Real Estate & Construction' },
-        { value: 'telecom', label: 'Telecommunications' },
+        { value: 'Tech', label: 'Information Technology' },
+        { value: 'Healthcare', label: 'Healthcare & Pharmaceuticals' },
+        { value: 'Finance', label: 'Finance & Banking' },
+        { value: 'Ecommerce', label: 'E-commerce' },
+        { value: 'Education', label: 'Education' },
+        { value: 'Retail', label: 'Retail & Consumer Goods' },
+        { value: 'Manufacturing', label: 'Manufacturing' },
+        { value: 'Automotive', label: 'Automotive' },
+        { value: 'Media', label: 'Media & Entertainment' },
+        { value: 'Hospitality', label: 'Hospitality & Tourism' },
+        { value: 'Real_estate', label: 'Real Estate & Construction' },
+        { value: 'Telecom', label: 'Telecommunications' },
     ];
 
     const employeeCountOptions = [
