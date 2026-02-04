@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { ChevronDown, X, Calendar, Clock, Users, Target, GraduationCap, Building, DollarSign, IndianRupee, Euro, List, MapPin, User, Mail, Phone, Linkedin, ArrowLeft, Send, CheckSquare, Briefcase, MessageSquare, Trash2, Plus } from 'lucide-react';
+import { ChevronDown, X, Calendar, Clock, Users, Target, GraduationCap, Building, DollarSign, IndianRupee, Euro, List, MapPin, User, Mail, Phone, Linkedin, ArrowLeft, Send, CheckSquare, Briefcase, MessageSquare, Trash2, Plus, BookOpen, Users as UsersIcon, FileText, Globe, Home } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
@@ -32,7 +32,6 @@ export default function RegisterPage({ onBackClick }) {
     const companyTypeOptions = ["MNC", "Startup", "SME", "Public Sector"];
     const proposedModeOptions = ["Online", "Offline", "Hybrid"];
     
-    // Add branch options
     const branchOptions = [
         'Computer Science',
         'Information Technology',
@@ -52,7 +51,6 @@ export default function RegisterPage({ onBackClick }) {
         'All Branches'
     ];
 
-    // Update initialFormState to include branch in rounds
     const initialFormState = {
         degree: [],
         stream: [],
@@ -80,17 +78,19 @@ export default function RegisterPage({ onBackClick }) {
         companyType: [],
         proposedSchedule: { startDate: '', endDate: '', preferredMode: '' },
     };
-const [formData, setFormData] = useState(() => {
-    const savedData = localStorage.getItem('pendingRegistration');
-    if (savedData) {
-        try {
-            return JSON.parse(savedData);
-        } catch (e) {
-            return initialFormState;
+
+    const [formData, setFormData] = useState(() => {
+        const savedData = localStorage.getItem('pendingRegistration');
+        if (savedData) {
+            try {
+                return JSON.parse(savedData);
+            } catch (e) {
+                return initialFormState;
+            }
         }
-    }
-    return initialFormState;
-});
+        return initialFormState;
+    });
+
     const [errors, setErrors] = useState({});
     const [alert, setAlert] = useState({ show: false, message: '', type: '' });
     const [descriptionError, setDescriptionError] = useState("");
@@ -229,7 +229,6 @@ const [formData, setFormData] = useState(() => {
         setFormData({ ...formData, [field]: newValues });
     };
 
-    // Updated handleRoundChange to handle branch field
     const handleRoundChange = (id, field, value) => {
         const updatedRounds = formData.rounds.map(round =>
             round.id === id ? { ...round, [field]: value } : round
@@ -237,7 +236,6 @@ const [formData, setFormData] = useState(() => {
         setFormData({ ...formData, rounds: updatedRounds });
     };
 
-    // Function to add a new round
     const addRound = () => {
         const newId = formData.rounds.length > 0 ? Math.max(...formData.rounds.map(r => r.id)) + 1 : 1;
         setFormData(prev => ({
@@ -246,7 +244,6 @@ const [formData, setFormData] = useState(() => {
         }));
     };
 
-    // Function to remove a round
     const removeRound = (roundId) => {
         if (formData.rounds.length > 1) {
             setFormData(prev => ({
@@ -432,7 +429,6 @@ const [formData, setFormData] = useState(() => {
         return [...allStreams].sort((a, b) => a.localeCompare(b));
     })();
 
-    // Calculate total students across all rounds
     const totalStudents = formData.rounds.reduce((sum, round) => {
         return sum + (parseInt(round.students) || 0);
     }, 0);
@@ -468,432 +464,173 @@ const [formData, setFormData] = useState(() => {
 
                 {/* Form Section */}
                 <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">
-                    <h2 className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-2 text-center">
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-6 text-center">
                         Register for Campus Placement
                     </h2>
-                    <p className="text-gray-600 mb-6 text-center text-sm">
+                    <p className="text-gray-600 mb-8 text-center text-sm">
                         Please fill out the form below to register your college for campus placements.
                     </p>
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Row 1: Degree and Stream */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Degree */}
-                            <div ref={degreeRef} className="relative">
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <GraduationCap className="w-4 h-4 text-[#3b82f6]" />
-                                    Degree <span className="text-red-500">*</span>
-                                </label>
-                                <div className="flex flex-wrap gap-1 mb-1 max-h-16 overflow-y-auto">
-                                    {formData.degree.map(degree => (
-                                        <div key={degree} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
-                                            <span>{degree}</span>
-                                            <button type="button" onClick={() => removeItem('degree', degree)} className="ml-1 hover:bg-[#3b82f6]/20 rounded-full p-0.5">
-                                                <X size={10} />
-                                            </button>
-                                        </div>
-                                    ))}
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        {/* ============ SECTION 1: COLLEGE DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 pb-2">
+                                <Home className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">College Details</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* College Location */}
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <MapPin className="w-4 h-4 text-[#3b82f6]" />
+                                        College Location <span className="text-red-500">*</span>
+                                    </label>
+                                    <CreatableSelect
+                                        isClearable
+                                        options={cityOptions}
+                                        value={formData.collegeLocation}
+                                        onChange={(selectedOption) => handleChange('collegeLocation', selectedOption)}
+                                        placeholder="Select or type city..."
+                                        className="text-sm"
+                                        styles={{
+                                            control: (base, state) => ({
+                                                ...base,
+                                                backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                                                backdropFilter: 'blur(8px)',
+                                                borderColor: errors.collegeLocation ? '#fca5a5' : state.isFocused ? '#93c5fd' : 'rgba(255, 255, 255, 0.5)',
+                                                minHeight: '42px',
+                                                borderRadius: '8px',
+                                                fontSize: '14px',
+                                                '&:hover': {
+                                                    borderColor: errors.collegeLocation ? '#fca5a5' : '#93c5fd',
+                                                },
+                                            }),
+                                            menu: (base) => ({
+                                                ...base,
+                                                fontSize: '14px',
+                                            }),
+                                        }}
+                                    />
+                                    {errors.collegeLocation && (
+                                        <p className="mt-1 text-xs text-red-600">{errors.collegeLocation}</p>
+                                    )}
                                 </div>
-                                <div
-                                    className="flex items-center justify-between p-2.5 w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg cursor-pointer hover:border-[#93c5fd] transition-all duration-200 min-h-[42px]"
-                                    onClick={() => toggleDropdown('degree')}
-                                >
-                                    <span className="text-sm text-gray-500">Select degree(s)</span>
-                                    <ChevronDown className={`w-4 h-4 text-[#3b82f6] transition-transform ${dropdownOpen.degree ? "rotate-180" : ""}`} />
-                                </div>
-                                {errors.degree && (
-                                    <p className="mt-1 text-xs text-red-600">{errors.degree}</p>
-                                )}
-                                {dropdownOpen.degree && (
-                                    <div className="absolute z-20 mt-1 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg shadow-lg shadow-blue-50/50 overflow-hidden">
-                                        <div className="p-2 border-b border-white/50 flex">
-                                            <input
-                                                type="text"
-                                                placeholder="Add custom degree..."
-                                                value={customDegree}
-                                                onChange={(e) => setCustomDegree(e.target.value)}
-                                                onClick={(e) => e.stopPropagation()}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        e.preventDefault();
-                                                        handleCustomAdd('degree', customDegree, setCustomDegree, degreeOptions);
-                                                    }
-                                                }}
-                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleCustomAdd('degree', customDegree, setCustomDegree, degreeOptions);
-                                                }}
-                                                className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
-                                            >
-                                                Add
-                                            </button>
-                                        </div>
-                                        <div className="max-h-40 overflow-auto">
-                                            {degreeOptions.map(option => (
-                                                <div 
-                                                    key={option} 
-                                                    onClick={() => handleMultiToggle('degree', option)} 
-                                                    className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.degree.includes(option) ? "bg-[#93c5fd]/10" : ""}`}
-                                                >
-                                                    <div className="flex items-center">
-                                                        <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.degree.includes(option) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                            {formData.degree.includes(option) && (
-                                                                <CheckSquare size={10} className="text-white" />
-                                                            )}
-                                                        </div>
-                                                        <span className="text-sm">{option}</span>
-                                                    </div>
-                                                    {formData.degree.includes(option) && <span className="text-[#3b82f6] text-xs">✓</span>}
+
+                                {/* Amenities/Facilities */}
+                                <div ref={amenitiesRef} className="relative">
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Building className="w-4 h-4 text-[#3b82f6]" />
+                                        Campus Facilities
+                                    </label>
+                                    <div className="relative">
+                                        <div 
+                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 text-sm" 
+                                            onClick={() => toggleDropdown('amenities')}
+                                        >
+                                            {formData.amenities.length > 0 ? (
+                                                <div className="flex flex-wrap gap-1">
+                                                    {formData.amenities.slice(0, 3).map(item => (
+                                                        <span key={item} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
+                                                            {item}
+                                                        </span>
+                                                    ))}
+                                                    {formData.amenities.length > 3 && (
+                                                        <span className="text-xs text-gray-500">+{formData.amenities.length - 3} more</span>
+                                                    )}
                                                 </div>
-                                            ))}
+                                            ) : <span className="text-gray-500">Select facilities</span>}
                                         </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Stream */}
-                            <div ref={streamRef} className="relative">
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <GraduationCap className="w-4 h-4 text-[#3b82f6]" />
-                                    Stream
-                                </label>
-                                <div className="flex flex-wrap gap-1 mb-1 max-h-16 overflow-y-auto">
-                                    {formData.stream.map(stream => (
-                                        <div key={stream} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
-                                            <span>{stream}</span>
-                                            <button type="button" onClick={() => removeItem('stream', stream)} className="ml-1 hover:bg-[#3b82f6]/20 rounded-full p-0.5">
-                                                <X size={10} />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div
-                                    className={`flex items-center justify-between p-2.5 w-full bg-white/50 backdrop-blur-sm border rounded-lg cursor-pointer hover:border-[#93c5fd] transition-all duration-200 min-h-[42px] ${!formData.degree.length ? 'border-gray-200 cursor-not-allowed' : 'border-white/50'}`}
-                                    onClick={() => formData.degree.length > 0 && toggleDropdown('stream')}
-                                >
-                                    <span className="text-sm text-gray-500">
-                                        {formData.degree.length > 0 ? 'Select stream(s)' : 'Select degree first'}
-                                    </span>
-                                    <ChevronDown className={`w-4 h-4 text-[#3b82f6] transition-transform ${dropdownOpen.stream ? "rotate-180" : ""}`} />
-                                </div>
-                                {dropdownOpen.stream && formData.degree.length > 0 && (
-                                    <div className="absolute z-20 mt-1 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg shadow-lg shadow-blue-50/50 overflow-hidden">
-                                        <div className="p-2 border-b border-white/50 flex">
-                                            <input
-                                                type="text"
-                                                placeholder="Add custom stream..."
-                                                value={customStream}
-                                                onChange={(e) => setCustomStream(e.target.value)}
-                                                onClick={(e) => e.stopPropagation()}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        e.preventDefault();
-                                                        handleCustomAdd('stream', customStream, setCustomStream);
-                                                    }
-                                                }}
-                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleCustomAdd('stream', customStream, setCustomStream);
-                                                }}
-                                                className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
-                                            >
-                                                Add
-                                            </button>
-                                        </div>
-                                        <div className="max-h-40 overflow-auto">
-                                            {availableStreams.length > 0 ? (
-                                                availableStreams.map(stream => (
-                                                    <div 
-                                                        key={stream} 
-                                                        onClick={() => handleMultiToggle('stream', stream)} 
-                                                        className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.stream.includes(stream) ? "bg-[#93c5fd]/10" : ""}`}
-                                                    >
-                                                        <div className="flex items-center">
-                                                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.stream.includes(stream) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                                {formData.stream.includes(stream) && (
-                                                                    <CheckSquare size={10} className="text-white" />
-                                                                )}
+                                        {dropdownOpen.amenities && (
+                                            <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
+                                                <div className="max-h-40 overflow-auto">
+                                                    {amenitiesOptions.map(opt => (
+                                                        <div 
+                                                            key={opt} 
+                                                            className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.amenities.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} 
+                                                            onClick={() => handleMultiToggle('amenities', opt)}
+                                                        >
+                                                            <div className="flex items-center">
+                                                                <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.amenities.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
+                                                                    {formData.amenities.includes(opt) && (
+                                                                        <CheckSquare size={10} className="text-white" />
+                                                                    )}
+                                                                </div>
+                                                                <span className="text-sm">{opt}</span>
                                                             </div>
-                                                            <span className="text-sm">{stream}</span>
+                                                            {formData.amenities.includes(opt) && <span className="text-[#3b82f6] text-xs">✓</span>}
                                                         </div>
-                                                        {formData.stream.includes(stream) && <span className="text-[#3b82f6] text-xs">✓</span>}
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div className="px-3 py-2 text-sm text-gray-500 border-b border-white/50">Add streams manually</div>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Row 2: College Location and Coordinator Name */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* College Location */}
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <MapPin className="w-4 h-4 text-[#3b82f6]" />
-                                    College Location <span className="text-red-500">*</span>
-                                </label>
-                                <CreatableSelect
-                                    isClearable
-                                    options={cityOptions}
-                                    value={formData.collegeLocation}
-                                    onChange={(selectedOption) => handleChange('collegeLocation', selectedOption)}
-                                    placeholder="Select or type city..."
-                                    className="text-sm"
-                                    styles={{
-                                        control: (base, state) => ({
-                                            ...base,
-                                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                                            backdropFilter: 'blur(8px)',
-                                            borderColor: errors.collegeLocation ? '#fca5a5' : state.isFocused ? '#93c5fd' : 'rgba(255, 255, 255, 0.5)',
-                                            minHeight: '42px',
-                                            borderRadius: '8px',
-                                            fontSize: '14px',
-                                            '&:hover': {
-                                                borderColor: errors.collegeLocation ? '#fca5a5' : '#93c5fd',
-                                            },
-                                        }),
-                                        menu: (base) => ({
-                                            ...base,
-                                            fontSize: '14px',
-                                        }),
-                                    }}
-                                />
-                                {errors.collegeLocation && (
-                                    <p className="mt-1 text-xs text-red-600">{errors.collegeLocation}</p>
-                                )}
-                            </div>
-
-                            {/* Coordinator Name */}
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <User className="w-4 h-4 text-[#3b82f6]" />
-                                    Coordinator Name
-                                </label>
-                                <input 
-                                    type="text" 
-                                    placeholder="Enter name" 
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
-                                    value={formData.coordinatorName} 
-                                    onChange={(e) => handleChange('coordinatorName', e.target.value)} 
-                                />
-                            </div>
-                        </div>
-
-                        {/* Row 3: Proposed Schedule - Full Width */}
-                        <div>
-                            <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                <Clock className="w-4 h-4 text-[#3b82f6]" />
-                                Proposed Schedule <span className="text-red-500">*</span>
-                            </label>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                <div className="relative">
-                                    <DatePicker
-                                        selected={formData.proposedSchedule.startDate ? new Date(formData.proposedSchedule.startDate) : null}
-                                        onChange={(date) => handleProposedDateChange(date, 'startDate')}
-                                        dateFormat="dd-MM-yyyy"
-                                        placeholderText="Start Date"
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedStartDate ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
-                                    />
-                                    <Calendar className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                                    {errors.proposedStartDate && (
-                                        <p className="mt-1 text-xs text-red-600">{errors.proposedStartDate}</p>
-                                    )}
-                                </div>
-                                <div className="relative">
-                                    <DatePicker
-                                        selected={formData.proposedSchedule.endDate ? new Date(formData.proposedSchedule.endDate) : null}
-                                        onChange={(date) => handleProposedDateChange(date, 'endDate')}
-                                        dateFormat="dd-MM-yyyy"
-                                        placeholderText="End Date"
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedEndDate ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
-                                    />
-                                    <Calendar className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                                    {errors.proposedEndDate && (
-                                        <p className="mt-1 text-xs text-red-600">{errors.proposedEndDate}</p>
-                                    )}
-                                </div>
-                                <div className="relative">
-                                    <select 
-                                        name="preferredMode" 
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedMode ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
-                                        value={formData.proposedSchedule.preferredMode} 
-                                        onChange={handleProposedScheduleChange}
-                                    >
-                                        <option value="">Preferred Mode</option>
-                                        {proposedModeOptions.map(option => (
-                                            <option key={option} value={option}>{option}</option>
-                                        ))}
-                                    </select>
-                                    {errors.proposedMode && (
-                                        <p className="mt-1 text-xs text-red-600">{errors.proposedMode}</p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Row 4: Looking For and Employment Type */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Target className="w-4 h-4 text-[#3b82f6]" />
-                                    Looking For
-                                </label>
-                                <div className="flex gap-2">
-                                    {['job', 'internship'].map((type) => (
-                                        <button 
-                                            key={type} 
-                                            type="button" 
-                                            className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 capitalize ${
-                                                formData.lookingFor.includes(type) 
-                                                    ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent' 
-                                                    : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
-                                            }`} 
-                                            onClick={() => handleMultiToggle('lookingFor', type)}
-                                        >
-                                            {type}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Briefcase className="w-4 h-4 text-[#3b82f6]" />
-                                    Employment Type
-                                </label>
-                                <div className="flex gap-2">
-                                    {['Full-time', 'Part-time', 'Contract'].map((type) => (
-                                        <button 
-                                            key={type} 
-                                            type="button" 
-                                            className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 ${
-                                                formData.employmentType.includes(type) 
-                                                    ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent' 
-                                                    : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
-                                            }`} 
-                                            onClick={() => handleMultiToggle('employmentType', type)}
-                                        >
-                                            {type}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Row 5: Salary and Company Type */}
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-        <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-            <DollarSign className="w-4 h-4 text-[#3b82f6]" />
-            Minimum Salary
-        </label>
-        <div className="flex rounded-lg overflow-hidden border border-gray-200/80 focus-within:ring-2 focus-within:ring-[#93c5fd] focus-within:border-transparent transition-all duration-200">
-            <div className="relative bg-white/50 backdrop-blur-sm flex items-center">
-                <div className="px-3 py-2 w-24 text-sm flex items-center gap-2">
-                    {formData.salaryRange === 'INR' || !formData.salaryRange ? (
-                        <>
-                            <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
-                            <span>INR</span>
-                        </>
-                    ) : formData.salaryRange === 'USD' ? (
-                        <>
-                            <DollarSign className="w-3.5 h-3.5 text-gray-600" />
-                            <span>USD</span>
-                        </>
-                    ) : formData.salaryRange === 'EUR' ? (
-                        <>
-                            <Euro className="w-3.5 h-3.5 text-gray-600" />
-                            <span>EUR</span>
-                        </>
-                    ) : (
-                        <>
-                            <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
-                            <span>INR</span>
-                        </>
-                    )}
-                </div>
-                <select 
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    value={formData.salaryRange || 'INR'} 
-                    onChange={(e) => handleChange('salaryRange', e.target.value)}
-                >
-                    <option value="INR">INR</option>
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                </select>
-                <ChevronDown className="absolute right-2 w-3 h-3 text-gray-400 pointer-events-none" />
-            </div>
-            <div className="relative flex-1">
-                <input 
-                    type="number" 
-                    className="bg-white/50 backdrop-blur-sm w-full px-3 py-2 text-sm focus:outline-none" 
-                    placeholder="Amount" 
-                    value={formData.salaryValue || ''} 
-                    onChange={(e) => handleChange('salaryValue', e.target.value)}
-                    min="0"
-                    step="1000"
-                />
-                {/* Currency icon in input field */}
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    {formData.salaryRange === 'INR' || !formData.salaryRange ? (
-                        <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
-                    ) : formData.salaryRange === 'USD' ? (
-                        <DollarSign className="w-3.5 h-3.5 text-gray-500" />
-                    ) : formData.salaryRange === 'EUR' ? (
-                        <Euro className="w-3.5 h-3.5 text-gray-500" />
-                    ) : (
-                        <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
-                    )}
-                </div>
-            </div>
-        </div>
-    </div>
-
-                            <div ref={companyTypeRef} className="relative">
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Building className="w-4 h-4 text-[#3b82f6]" />
-                                    Company Type
-                                </label>
-                                <div className="relative">
-                                    <div 
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 text-sm" 
-                                        onClick={() => toggleDropdown('companyType')}
-                                    >
-                                        {formData.companyType.length > 0 ? (
-                                            <div className="flex flex-wrap gap-1">
-                                                {formData.companyType.map(item => (
-                                                    <span key={item} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
-                                                        {item}
-                                                    </span>
-                                                ))}
+                                                    ))}
+                                                </div>
+                                                <div className="p-2 border-t border-white/50">
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="Add custom facility..." 
+                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm" 
+                                                        value={customAmenity} 
+                                                        onChange={(e) => setCustomAmenity(e.target.value)} 
+                                                        onKeyDown={(e) => { 
+                                                            if (e.key === 'Enter') { 
+                                                                e.preventDefault(); 
+                                                                handleCustomAdd('amenities', customAmenity, setCustomAmenity); 
+                                                            } 
+                                                        }} 
+                                                    />
+                                                </div>
                                             </div>
-                                        ) : <span className="text-gray-500">Select company types</span>}
+                                        )}
                                     </div>
-                                    {dropdownOpen.companyType && (
-                                        <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ============ SECTION 2: ACADEMIC DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 pb-2">
+                                <BookOpen className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Academic Details</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Degree */}
+                                <div ref={degreeRef} className="relative">
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <GraduationCap className="w-4 h-4 text-[#3b82f6]" />
+                                        Degree <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="flex flex-wrap gap-1 mb-1 max-h-16 overflow-y-auto">
+                                        {formData.degree.map(degree => (
+                                            <div key={degree} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
+                                                <span>{degree}</span>
+                                                <button type="button" onClick={() => removeItem('degree', degree)} className="ml-1 hover:bg-[#3b82f6]/20 rounded-full p-0.5">
+                                                    <X size={10} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div
+                                        className="flex items-center justify-between p-2.5 w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg cursor-pointer hover:border-[#93c5fd] transition-all duration-200 min-h-[42px]"
+                                        onClick={() => toggleDropdown('degree')}
+                                    >
+                                        <span className="text-sm text-gray-500">Select degree(s)</span>
+                                        <ChevronDown className={`w-4 h-4 text-[#3b82f6] transition-transform ${dropdownOpen.degree ? "rotate-180" : ""}`} />
+                                    </div>
+                                    {errors.degree && (
+                                        <p className="mt-1 text-xs text-red-600">{errors.degree}</p>
+                                    )}
+                                    {dropdownOpen.degree && (
+                                        <div className="absolute z-20 mt-1 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg shadow-lg shadow-blue-50/50 overflow-hidden">
                                             <div className="p-2 border-b border-white/50 flex">
                                                 <input
                                                     type="text"
-                                                    placeholder="Add custom company type..."
-                                                    value={customCompanyType}
-                                                    onChange={(e) => setCustomCompanyType(e.target.value)}
+                                                    placeholder="Add custom degree..."
+                                                    value={customDegree}
+                                                    onChange={(e) => setCustomDegree(e.target.value)}
                                                     onClick={(e) => e.stopPropagation()}
                                                     onKeyDown={(e) => {
                                                         if (e.key === 'Enter') {
                                                             e.preventDefault();
-                                                            handleCustomAdd('companyType', customCompanyType, setCustomCompanyType, companyTypeOptions);
+                                                            handleCustomAdd('degree', customDegree, setCustomDegree, degreeOptions);
                                                         }
                                                     }}
                                                     className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
@@ -902,7 +639,7 @@ const [formData, setFormData] = useState(() => {
                                                     type="button"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        handleCustomAdd('companyType', customCompanyType, setCustomCompanyType, companyTypeOptions);
+                                                        handleCustomAdd('degree', customDegree, setCustomDegree, degreeOptions);
                                                     }}
                                                     className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
                                                 >
@@ -910,315 +647,607 @@ const [formData, setFormData] = useState(() => {
                                                 </button>
                                             </div>
                                             <div className="max-h-40 overflow-auto">
-                                                {companyTypeOptions.map(opt => (
+                                                {degreeOptions.map(option => (
                                                     <div 
-                                                        key={opt} 
-                                                        onClick={() => handleMultiToggle('companyType', opt)} 
-                                                        className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.companyType.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} 
+                                                        key={option} 
+                                                        onClick={() => handleMultiToggle('degree', option)} 
+                                                        className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.degree.includes(option) ? "bg-[#93c5fd]/10" : ""}`}
                                                     >
                                                         <div className="flex items-center">
-                                                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.companyType.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                                {formData.companyType.includes(opt) && (
+                                                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.degree.includes(option) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
+                                                                {formData.degree.includes(option) && (
                                                                     <CheckSquare size={10} className="text-white" />
                                                                 )}
                                                             </div>
-                                                            <span className="text-sm">{opt}</span>
+                                                            <span className="text-sm">{option}</span>
                                                         </div>
-                                                        {formData.companyType.includes(opt) && <span className="text-[#3b82f6] text-xs">✓</span>}
+                                                        {formData.degree.includes(option) && <span className="text-[#3b82f6] text-xs">✓</span>}
                                                     </div>
                                                 ))}
                                             </div>
                                         </div>
                                     )}
                                 </div>
-                            </div>
-                        </div>
 
-                        {/* Row 6: Coordinator Designation and Email */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <User className="w-4 h-4 text-[#3b82f6]" />
-                                    Designation <span className="text-red-500">*</span>
-                                </label>
-                                <div className="relative">
-                                    <select 
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.coordinatorDesignation ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
-                                        value={formData.coordinatorDesignation} 
-                                        onChange={(e) => handleChange('coordinatorDesignation', e.target.value)} 
-                                    >
-                                        <option value="">Select Designation</option>
-                                        {designationOptions.map(option => (
-                                            <option key={option} value={option}>{option}</option>
+                                {/* Stream */}
+                                <div ref={streamRef} className="relative">
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <GraduationCap className="w-4 h-4 text-[#3b82f6]" />
+                                        Stream
+                                    </label>
+                                    <div className="flex flex-wrap gap-1 mb-1 max-h-16 overflow-y-auto">
+                                        {formData.stream.map(stream => (
+                                            <div key={stream} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
+                                                <span>{stream}</span>
+                                                <button type="button" onClick={() => removeItem('stream', stream)} className="ml-1 hover:bg-[#3b82f6]/20 rounded-full p-0.5">
+                                                    <X size={10} />
+                                                </button>
+                                            </div>
                                         ))}
-                                    </select>
-                                    {errors.coordinatorDesignation && (
-                                        <p className="mt-1 text-xs text-red-600">{errors.coordinatorDesignation}</p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Mail className="w-4 h-4 text-[#3b82f6]" />
-                                    Email <span className="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="email" 
-                                    placeholder="official@college.edu" 
-                                    className={`w-full bg-white/50 backdrop-blur-sm border ${errors.email ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
-                                    value={formData.email} 
-                                    onChange={(e) => handleChange('email', e.target.value)} 
-                                />
-                                {errors.email && (
-                                    <p className="mt-1 text-xs text-red-600">{errors.email}</p>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Row 7: Mobile and LinkedIn Profile */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Phone className="w-4 h-4 text-[#3b82f6]" />
-                                    Mobile <span className="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="tel" 
-                                    placeholder="10-digit number" 
-                                    className={`w-full bg-white/50 backdrop-blur-sm border ${errors.mobile ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
-                                    value={formData.mobile} 
-                                    onChange={(e) => handleChange('mobile', e.target.value)} 
-                                />
-                                {errors.mobile && (
-                                    <p className="mt-1 text-xs text-red-600">{errors.mobile}</p>
-                                )}
-                            </div>
-
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Linkedin className="w-4 h-4 text-[#3b82f6]" />
-                                    LinkedIn Profile
-                                </label>
-                                <input 
-                                    type="url" 
-                                    placeholder="linkedin.com/in/username" 
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
-                                    value={formData.linkedinProfile} 
-                                    onChange={(e) => handleChange('linkedinProfile', e.target.value)} 
-                                />
-                            </div>
-                        </div>
-
-                        {/* Row 8: Minimum Students and Application Dates */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Users className="w-4 h-4 text-[#3b82f6]" />
-                                    Min Students to Place <span className="text-red-500">*</span>
-                                </label>
-                                <div className="relative">
-                                    <select 
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.minStudentsToBePlaced ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
-                                        value={formData.minStudentsToBePlaced} 
-                                        onChange={(e) => handleChange('minStudentsToBePlaced', e.target.value)} 
+                                    </div>
+                                    <div
+                                        className={`flex items-center justify-between p-2.5 w-full bg-white/50 backdrop-blur-sm border rounded-lg cursor-pointer hover:border-[#93c5fd] transition-all duration-200 min-h-[42px] ${!formData.degree.length ? 'border-gray-200 cursor-not-allowed' : 'border-white/50'}`}
+                                        onClick={() => formData.degree.length > 0 && toggleDropdown('stream')}
                                     >
-                                        <option value="">Select Range</option>
-                                        {minStudentsOptions.map(option => (
-                                            <option key={option} value={option}>{option}</option>
-                                        ))}
-                                    </select>
-                                    {errors.minStudentsToBePlaced && (
-                                        <p className="mt-1 text-xs text-red-600">{errors.minStudentsToBePlaced}</p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div>
-  <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-    <Calendar className="w-4 h-4 text-[#3b82f6]" />
-    Application Dates
-  </label>
-  <div className="grid grid-cols-2 gap-2">
-    <div className="relative">
-      <DatePicker
-        selected={formData.tentativeStartDate ? new Date(formData.tentativeStartDate) : null}
-        onChange={(date) => handleDateChange(date, 'tentativeStartDate')}
-        dateFormat="dd-MM-yyyy"
-        placeholderText="Start"
-        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
-      />
-      <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-    </div>
-    <div className="relative">
-      <DatePicker
-        selected={formData.tentativeEndDate ? new Date(formData.tentativeEndDate) : null}
-        onChange={(date) => handleDateChange(date, 'tentativeEndDate')}
-        dateFormat="dd-MM-yyyy"
-        placeholderText="End"
-        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
-      />
-      <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-    </div>
-  </div>
-</div>
-                        </div>
-
-                        {/* Row 9: Rounds Table - Full Width */}
-                        <div>
-                            <div className="flex items-center justify-between mb-2">
-                                <label className="block text-gray-700 font-medium text-sm flex items-center gap-1.5">
-                                    <List className="w-4 h-4 text-[#3b82f6]" />
-                                    Student Details
-                                </label>
-                                <button
-                                    type="button"
-                                    onClick={addRound}
-                                    className="flex items-center gap-1.5 text-xs bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white px-2.5 py-1.5 rounded hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200"
-                                >
-                                    <Plus size={12} />
-                                    Add Student
-                                </button>
-                            </div>
-                            
-                            <div className="overflow-x-auto mb-3">
-                                <table className="min-w-full divide-y divide-white/50 text-xs">
-                                    <thead className="bg-white/50">
-                                        <tr>
-                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Student</th>
-                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Branch</th>
-                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Count</th>
-                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Skills (comma separated)</th>
-                                            {/* <th className="px-2 py-1.5 text-left font-medium text-gray-500">Actions</th> */}
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white/30 divide-y divide-white/50">
-                                        {formData.rounds.map((round) => (
-                                            <tr key={round.id}>
-                                                <td className="px-2 py-1.5">#{round.id}</td>
-                                                <td className="px-2 py-1.5">
-                                                    <select 
-                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs" 
-                                                        value={round.branch} 
-                                                        onChange={(e) => handleRoundChange(round.id, 'branch', e.target.value)}
-                                                    >
-                                                        <option value="">Select</option>
-                                                        {branchOptions.map(option => (
-                                                            <option key={option} value={option}>{option}</option>
-                                                        ))}
-                                                    </select>
-                                                </td>
-                                                <td className="px-2 py-1.5">
-                                                    <input 
-                                                        type="number" 
-                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs" 
-                                                        value={round.students} 
-                                                        onChange={(e) => handleRoundChange(round.id, 'students', e.target.value)} 
-                                                        min="0" 
-                                                    />
-                                                </td>
-                                                <td className="px-2 py-1.5">
-                                                    <input 
-                                                        type="text" 
-                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs" 
-                                                        value={round.skills} 
-                                                        onChange={(e) => handleRoundChange(round.id, 'skills', e.target.value)} 
-                                                        placeholder="e.g., Java, Python, React" 
-                                                    />
-                                                </td>
-                                                {/* <td className="px-2 py-1.5">
-                                                    {formData.rounds.length > 1 && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => removeRound(round.id)}
-                                                            className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs"
+                                        <span className="text-sm text-gray-500">
+                                            {formData.degree.length > 0 ? 'Select stream(s)' : 'Select degree first'}
+                                        </span>
+                                        <ChevronDown className={`w-4 h-4 text-[#3b82f6] transition-transform ${dropdownOpen.stream ? "rotate-180" : ""}`} />
+                                    </div>
+                                    {dropdownOpen.stream && formData.degree.length > 0 && (
+                                        <div className="absolute z-20 mt-1 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg shadow-lg shadow-blue-50/50 overflow-hidden">
+                                            <div className="p-2 border-b border-white/50 flex">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Add custom stream..."
+                                                    value={customStream}
+                                                    onChange={(e) => setCustomStream(e.target.value)}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            handleCustomAdd('stream', customStream, setCustomStream);
+                                                        }
+                                                    }}
+                                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleCustomAdd('stream', customStream, setCustomStream);
+                                                    }}
+                                                    className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
+                                                >
+                                                    Add
+                                                </button>
+                                            </div>
+                                            <div className="max-h-40 overflow-auto">
+                                                {availableStreams.length > 0 ? (
+                                                    availableStreams.map(stream => (
+                                                        <div 
+                                                            key={stream} 
+                                                            onClick={() => handleMultiToggle('stream', stream)} 
+                                                            className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.stream.includes(stream) ? "bg-[#93c5fd]/10" : ""}`}
                                                         >
-                                                            <Trash2 size={12} />
-                                                            Remove
-                                                        </button>
-                                                    )}
-                                                </td> */}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            {/* Summary section */}
-                            <div className="mt-2 p-2 bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 border border-[#93c5fd]/20 rounded text-xs">
-                                <div className="flex items-center justify-between">
-                                    <span className="font-medium text-[#3b82f6]">Total Students:</span>
-                                    <span className="font-bold text-[#3b82f6]">{totalStudents}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Row 10: Amenities and Description */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div ref={amenitiesRef} className="relative">
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Building className="w-4 h-4 text-[#3b82f6]" />
-                                    Campus Facilities
-                                </label>
-                                <div className="relative">
-                                    <div 
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 text-sm" 
-                                        onClick={() => toggleDropdown('amenities')}
-                                    >
-                                        {formData.amenities.length > 0 ? (
-                                            <div className="flex flex-wrap gap-1">
-                                                {formData.amenities.slice(0, 3).map(item => (
-                                                    <span key={item} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
-                                                        {item}
-                                                    </span>
-                                                ))}
-                                                {formData.amenities.length > 3 && (
-                                                    <span className="text-xs text-gray-500">+{formData.amenities.length - 3} more</span>
+                                                            <div className="flex items-center">
+                                                                <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.stream.includes(stream) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
+                                                                    {formData.stream.includes(stream) && (
+                                                                        <CheckSquare size={10} className="text-white" />
+                                                                    )}
+                                                                </div>
+                                                                <span className="text-sm">{stream}</span>
+                                                            </div>
+                                                            {formData.stream.includes(stream) && <span className="text-[#3b82f6] text-xs">✓</span>}
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="px-3 py-2 text-sm text-gray-500 border-b border-white/50">Add streams manually</div>
                                                 )}
                                             </div>
-                                        ) : <span className="text-gray-500">Select facilities</span>}
-                                    </div>
-                                    {dropdownOpen.amenities && (
-                                        <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
-                                            <div className="max-h-40 overflow-auto">
-                                                {amenitiesOptions.map(opt => (
-                                                    <div 
-                                                        key={opt} 
-                                                        className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.amenities.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} 
-                                                        onClick={() => handleMultiToggle('amenities', opt)}
-                                                    >
-                                                        <div className="flex items-center">
-                                                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.amenities.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                                {formData.amenities.includes(opt) && (
-                                                                    <CheckSquare size={10} className="text-white" />
-                                                                )}
-                                                            </div>
-                                                            <span className="text-sm">{opt}</span>
-                                                        </div>
-                                                        {formData.amenities.includes(opt) && <span className="text-[#3b82f6] text-xs">✓</span>}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <div className="p-2 border-t border-white/50">
-                                                <input 
-                                                    type="text" 
-                                                    placeholder="Add custom facility..." 
-                                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm" 
-                                                    value={customAmenity} 
-                                                    onChange={(e) => setCustomAmenity(e.target.value)} 
-                                                    onKeyDown={(e) => { 
-                                                        if (e.key === 'Enter') { 
-                                                            e.preventDefault(); 
-                                                            handleCustomAdd('amenities', customAmenity, setCustomAmenity); 
-                                                        } 
-                                                    }} 
-                                                />
-                                            </div>
                                         </div>
                                     )}
                                 </div>
                             </div>
+                        </div>
 
+                        {/* ============ SECTION 3: COORDINATOR DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 pb-2">
+                                <UsersIcon className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Coordinator Details</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <User className="w-4 h-4 text-[#3b82f6]" />
+                                        Coordinator Name
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Enter name" 
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
+                                        value={formData.coordinatorName} 
+                                        onChange={(e) => handleChange('coordinatorName', e.target.value)} 
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <User className="w-4 h-4 text-[#3b82f6]" />
+                                        Designation <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="relative">
+                                        <select 
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.coordinatorDesignation ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
+                                            value={formData.coordinatorDesignation} 
+                                            onChange={(e) => handleChange('coordinatorDesignation', e.target.value)} 
+                                        >
+                                            <option value="">Select Designation</option>
+                                            {designationOptions.map(option => (
+                                                <option key={option} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                        {errors.coordinatorDesignation && (
+                                            <p className="mt-1 text-xs text-red-600">{errors.coordinatorDesignation}</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Mail className="w-4 h-4 text-[#3b82f6]" />
+                                        Email <span className="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="email" 
+                                        placeholder="official@college.edu" 
+                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.email ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
+                                        value={formData.email} 
+                                        onChange={(e) => handleChange('email', e.target.value)} 
+                                    />
+                                    {errors.email && (
+                                        <p className="mt-1 text-xs text-red-600">{errors.email}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Phone className="w-4 h-4 text-[#3b82f6]" />
+                                        Mobile <span className="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="tel" 
+                                        placeholder="10-digit number" 
+                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.mobile ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
+                                        value={formData.mobile} 
+                                        onChange={(e) => handleChange('mobile', e.target.value)} 
+                                    />
+                                    {errors.mobile && (
+                                        <p className="mt-1 text-xs text-red-600">{errors.mobile}</p>
+                                    )}
+                                </div>
+
+                                <div className="md:col-span-2">
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Linkedin className="w-4 h-4 text-[#3b82f6]" />
+                                        LinkedIn Profile
+                                    </label>
+                                    <input 
+                                        type="url" 
+                                        placeholder="linkedin.com/in/username" 
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
+                                        value={formData.linkedinProfile} 
+                                        onChange={(e) => handleChange('linkedinProfile', e.target.value)} 
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ============ SECTION 4: PLACEMENT DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 pb-2">
+                                <Briefcase className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Placement Details</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Target className="w-4 h-4 text-[#3b82f6]" />
+                                        Looking For
+                                    </label>
+                                    <div className="flex gap-2">
+                                        {['job', 'internship'].map((type) => (
+                                            <button 
+                                                key={type} 
+                                                type="button" 
+                                                className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 capitalize ${
+                                                    formData.lookingFor.includes(type) 
+                                                        ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent' 
+                                                        : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
+                                                }`} 
+                                                onClick={() => handleMultiToggle('lookingFor', type)}
+                                            >
+                                                {type}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Briefcase className="w-4 h-4 text-[#3b82f6]" />
+                                        Employment Type
+                                    </label>
+                                    <div className="flex gap-2">
+                                        {['Full-time', 'Part-time', 'Contract'].map((type) => (
+                                            <button 
+                                                key={type} 
+                                                type="button" 
+                                                className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 ${
+                                                    formData.employmentType.includes(type) 
+                                                        ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent' 
+                                                        : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
+                                                }`} 
+                                                onClick={() => handleMultiToggle('employmentType', type)}
+                                            >
+                                                {type}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Users className="w-4 h-4 text-[#3b82f6]" />
+                                        Min Students to Place <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="relative">
+                                        <select 
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.minStudentsToBePlaced ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
+                                            value={formData.minStudentsToBePlaced} 
+                                            onChange={(e) => handleChange('minStudentsToBePlaced', e.target.value)} 
+                                        >
+                                            <option value="">Select Range</option>
+                                            {minStudentsOptions.map(option => (
+                                                <option key={option} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                        {errors.minStudentsToBePlaced && (
+                                            <p className="mt-1 text-xs text-red-600">{errors.minStudentsToBePlaced}</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div ref={companyTypeRef} className="relative">
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Building className="w-4 h-4 text-[#3b82f6]" />
+                                        Company Type
+                                    </label>
+                                    <div className="relative">
+                                        <div 
+                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 text-sm" 
+                                            onClick={() => toggleDropdown('companyType')}
+                                        >
+                                            {formData.companyType.length > 0 ? (
+                                                <div className="flex flex-wrap gap-1">
+                                                    {formData.companyType.map(item => (
+                                                        <span key={item} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
+                                                            {item}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            ) : <span className="text-gray-500">Select company types</span>}
+                                        </div>
+                                        {dropdownOpen.companyType && (
+                                            <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
+                                                <div className="p-2 border-b border-white/50 flex">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Add custom company type..."
+                                                        value={customCompanyType}
+                                                        onChange={(e) => setCustomCompanyType(e.target.value)}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') {
+                                                                e.preventDefault();
+                                                                handleCustomAdd('companyType', customCompanyType, setCustomCompanyType, companyTypeOptions);
+                                                            }
+                                                        }}
+                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleCustomAdd('companyType', customCompanyType, setCustomCompanyType, companyTypeOptions);
+                                                        }}
+                                                        className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
+                                                    >
+                                                        Add
+                                                    </button>
+                                                </div>
+                                                <div className="max-h-40 overflow-auto">
+                                                    {companyTypeOptions.map(opt => (
+                                                        <div 
+                                                            key={opt} 
+                                                            onClick={() => handleMultiToggle('companyType', opt)} 
+                                                            className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.companyType.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} 
+                                                        >
+                                                            <div className="flex items-center">
+                                                                <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.companyType.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
+                                                                    {formData.companyType.includes(opt) && (
+                                                                        <CheckSquare size={10} className="text-white" />
+                                                                    )}
+                                                                </div>
+                                                                <span className="text-sm">{opt}</span>
+                                                            </div>
+                                                            {formData.companyType.includes(opt) && <span className="text-[#3b82f6] text-xs">✓</span>}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ============ SECTION 5: COMPENSATION DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 pb-2">
+                                <IndianRupee className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Compensation Details</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <IndianRupee className="w-4 h-4 text-[#3b82f6]" />
+                                        Minimum Salary
+                                    </label>
+                                    <div className="flex rounded-lg overflow-hidden border border-gray-200/80 focus-within:ring-2 focus-within:ring-[#93c5fd] focus-within:border-transparent transition-all duration-200">
+                                        <div className="relative bg-white/50 backdrop-blur-sm flex items-center">
+                                            <div className="px-3 py-2 w-24 text-sm flex items-center gap-2">
+                                                {formData.salaryRange === 'INR' || !formData.salaryRange ? (
+                                                    <>
+                                                        <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
+                                                        <span>INR</span>
+                                                    </>
+                                                ) : formData.salaryRange === 'USD' ? (
+                                                    <>
+                                                        <DollarSign className="w-3.5 h-3.5 text-gray-600" />
+                                                        <span>USD</span>
+                                                    </>
+                                                ) : formData.salaryRange === 'EUR' ? (
+                                                    <>
+                                                        <Euro className="w-3.5 h-3.5 text-gray-600" />
+                                                        <span>EUR</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
+                                                        <span>INR</span>
+                                                    </>
+                                                )}
+                                            </div>
+                                            <select 
+                                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                                value={formData.salaryRange || 'INR'} 
+                                                onChange={(e) => handleChange('salaryRange', e.target.value)}
+                                            >
+                                                <option value="INR">INR</option>
+                                                <option value="USD">USD</option>
+                                                <option value="EUR">EUR</option>
+                                            </select>
+                                            <ChevronDown className="absolute right-2 w-3 h-3 text-gray-400 pointer-events-none" />
+                                        </div>
+                                        <div className="relative flex-1">
+                                            <input 
+                                                type="number" 
+                                                className="bg-white/50 backdrop-blur-sm w-full px-3 py-2 text-sm focus:outline-none" 
+                                                placeholder="Amount" 
+                                                value={formData.salaryValue || ''} 
+                                                onChange={(e) => handleChange('salaryValue', e.target.value)}
+                                                min="0"
+                                                step="1000"
+                                            />
+                                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                                {formData.salaryRange === 'INR' || !formData.salaryRange ? (
+                                                    <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
+                                                ) : formData.salaryRange === 'USD' ? (
+                                                    <DollarSign className="w-3.5 h-3.5 text-gray-500" />
+                                                ) : formData.salaryRange === 'EUR' ? (
+                                                    <Euro className="w-3.5 h-3.5 text-gray-500" />
+                                                ) : (
+                                                    <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Calendar className="w-4 h-4 text-[#3b82f6]" />
+                                        Application Dates
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="relative">
+                                            <DatePicker
+                                                selected={formData.tentativeStartDate ? new Date(formData.tentativeStartDate) : null}
+                                                onChange={(date) => handleDateChange(date, 'tentativeStartDate')}
+                                                dateFormat="dd-MM-yyyy"
+                                                placeholderText="Start"
+                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
+                                            />
+                                            <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                        </div>
+                                        <div className="relative">
+                                            <DatePicker
+                                                selected={formData.tentativeEndDate ? new Date(formData.tentativeEndDate) : null}
+                                                onChange={(date) => handleDateChange(date, 'tentativeEndDate')}
+                                                dateFormat="dd-MM-yyyy"
+                                                placeholderText="End"
+                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
+                                            />
+                                            <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ============ SECTION 6: STUDENT DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 pb-2">
+                                <Users className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Student Details</h3>
+                            </div>
+                            
+                            <div>
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="block text-gray-700 font-medium text-sm flex items-center gap-1.5">
+                                        <List className="w-4 h-4 text-[#3b82f6]" />
+                                        Student Information
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={addRound}
+                                        className="flex items-center gap-1.5 text-xs bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white px-2.5 py-1.5 rounded hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200"
+                                    >
+                                        <Plus size={12} />
+                                        Add Student
+                                    </button>
+                                </div>
+                                
+                                <div className="overflow-x-auto mb-3">
+                                    <table className="min-w-full divide-y divide-white/50 text-xs">
+                                        <thead className="bg-white/50">
+                                            <tr>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Student</th>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Branch</th>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Count</th>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Skills (comma separated)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white/30 divide-y divide-white/50">
+                                            {formData.rounds.map((round) => (
+                                                <tr key={round.id}>
+                                                    <td className="px-2 py-1.5">#{round.id}</td>
+                                                    <td className="px-2 py-1.5">
+                                                        <select 
+                                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs" 
+                                                            value={round.branch} 
+                                                            onChange={(e) => handleRoundChange(round.id, 'branch', e.target.value)}
+                                                        >
+                                                            <option value="">Select</option>
+                                                            {branchOptions.map(option => (
+                                                                <option key={option} value={option}>{option}</option>
+                                                            ))}
+                                                        </select>
+                                                    </td>
+                                                    <td className="px-2 py-1.5">
+                                                        <input 
+                                                            type="number" 
+                                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs" 
+                                                            value={round.students} 
+                                                            onChange={(e) => handleRoundChange(round.id, 'students', e.target.value)} 
+                                                            min="0" 
+                                                        />
+                                                    </td>
+                                                    <td className="px-2 py-1.5">
+                                                        <input 
+                                                            type="text" 
+                                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs" 
+                                                            value={round.skills} 
+                                                            onChange={(e) => handleRoundChange(round.id, 'skills', e.target.value)} 
+                                                            placeholder="e.g., Java, Python, React" 
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div className="mt-2 p-2 bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 border border-[#93c5fd]/20 rounded text-xs">
+                                    <div className="flex items-center justify-between">
+                                        <span className="font-medium text-[#3b82f6]">Total Students:</span>
+                                        <span className="font-bold text-[#3b82f6]">{totalStudents}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ============ SECTION 7: SCHEDULE DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 pb-2">
+                                <Clock className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Schedule Details</h3>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                    <Clock className="w-4 h-4 text-[#3b82f6]" />
+                                    Proposed Schedule <span className="text-red-500">*</span>
+                                </label>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <div className="relative">
+                                        <DatePicker
+                                            selected={formData.proposedSchedule.startDate ? new Date(formData.proposedSchedule.startDate) : null}
+                                            onChange={(date) => handleProposedDateChange(date, 'startDate')}
+                                            dateFormat="dd-MM-yyyy"
+                                            placeholderText="Start Date"
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedStartDate ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                        />
+                                        <Calendar className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                                        {errors.proposedStartDate && (
+                                            <p className="mt-1 text-xs text-red-600">{errors.proposedStartDate}</p>
+                                        )}
+                                    </div>
+                                    <div className="relative">
+                                        <DatePicker
+                                            selected={formData.proposedSchedule.endDate ? new Date(formData.proposedSchedule.endDate) : null}
+                                            onChange={(date) => handleProposedDateChange(date, 'endDate')}
+                                            dateFormat="dd-MM-yyyy"
+                                            placeholderText="End Date"
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedEndDate ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                        />
+                                        <Calendar className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                                        {errors.proposedEndDate && (
+                                            <p className="mt-1 text-xs text-red-600">{errors.proposedEndDate}</p>
+                                        )}
+                                    </div>
+                                    <div className="relative">
+                                        <select 
+                                            name="preferredMode" 
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedMode ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
+                                            value={formData.proposedSchedule.preferredMode} 
+                                            onChange={handleProposedScheduleChange}
+                                        >
+                                            <option value="">Preferred Mode</option>
+                                            {proposedModeOptions.map(option => (
+                                                <option key={option} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                        {errors.proposedMode && (
+                                            <p className="mt-1 text-xs text-red-600">{errors.proposedMode}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ============ SECTION 8: ADDITIONAL INFORMATION ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 pb-2">
+                                <FileText className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Additional Information</h3>
+                            </div>
+                            
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                     <MessageSquare className="w-4 h-4 text-[#3b82f6]" />
@@ -1226,7 +1255,7 @@ const [formData, setFormData] = useState(() => {
                                 </label>
                                 <textarea 
                                     className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent resize-none" 
-                                    placeholder="Additional information..." 
+                                    placeholder="Additional information about the placement drive, specific requirements, or any other details..." 
                                     value={formData.description} 
                                     onChange={(e) => {
                                         handleChange('description', e.target.value);
@@ -1236,12 +1265,12 @@ const [formData, setFormData] = useState(() => {
                                             setDescriptionError("");
                                         }
                                     }} 
-                                    rows="3"
+                                    rows="4"
                                     maxLength={500}
                                 ></textarea>
                                 <div className="flex justify-between text-xs mt-1">
                                     <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
-                                        {descriptionError ? descriptionError : `${formData.description.length}/500`}
+                                        {descriptionError ? descriptionError : `${formData.description.length}/500 characters`}
                                     </span>
                                 </div>
                             </div>
