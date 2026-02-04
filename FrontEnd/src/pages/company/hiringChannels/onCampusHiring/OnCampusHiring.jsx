@@ -149,7 +149,9 @@ export default function OnCampusHiring() {
 
   const handleSubmit = async () => {
     try {
+        console.log(';lllll')
       const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/rawrecruit/oncampus`, {
+      
         method: "POST",
         withCredentials: true,
         credentials: "include",
@@ -158,7 +160,7 @@ export default function OnCampusHiring() {
         },
         body: JSON.stringify(formData),
       });
-
+     
       if (response.ok) {
         alert("Form submitted successfully!");
         setShowRegistration(false);
