@@ -910,7 +910,7 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { ChevronDown, X, Calendar, Clock, Users, Target, GraduationCap, Building, DollarSign, IndianRupee, Euro, List, Plus, Trash2, MapPin, User, Mail, Phone, Linkedin, ArrowLeft, Send, CheckSquare, Briefcase, School, Monitor, MessageSquare } from 'lucide-react';
+import { ChevronDown, X, Calendar, Clock, Users, Target, GraduationCap, Building, IndianRupee, Euro, List, Plus, Trash2, MapPin, User, Mail, Phone, Linkedin, ArrowLeft, Send, CheckSquare, Briefcase, School, Monitor, MessageSquare, Home, BookOpen, Users as UsersIcon, FileText, DollarSign } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
@@ -1266,19 +1266,16 @@ export default function PoolCampusHiringForm({ onBackClick }) {
             isValid = false;
         }
 
-        // Replace the old startDate.trim() check with this:
         if (!formData.proposedSchedule.startDate) {
             newErrors.proposedStartDate = 'Please select proposed start date';
             isValid = false;
         }
 
-        // Replace the old endDate.trim() check with this:
         if (!formData.proposedSchedule.endDate) {
             newErrors.proposedEndDate = 'Please select proposed end date';
             isValid = false;
         }
 
-        // Replace the old preferredMode.trim() check with this:
         if (!formData.proposedSchedule.preferredMode || !formData.proposedSchedule.preferredMode.trim()) {
             newErrors.proposedMode = 'Please select preferred mode';
             isValid = false;
@@ -1412,527 +1409,101 @@ export default function PoolCampusHiringForm({ onBackClick }) {
 
                 {/* Form Section */}
                 <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">
-                    <h2 className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-2 text-center">
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-6 text-center">
                         Register for Pool Campus Hiring
                     </h2>
-                    <p className="text-gray-600 mb-6 text-center text-sm">
+                    <p className="text-gray-600 mb-8 text-center text-sm">
                         Fill in the details below to register for the hiring drive
                     </p>
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Row 1: Venue and Degree */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {/* Pool Campus Hiring Venue */}
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <MapPin className="w-4 h-4 text-[#3b82f6]" />
-                                    Hiring Venue <span className="text-red-500">*</span>
-                                </label>
-                                <CreatableSelect
-                                    isClearable
-                                    options={cityOptions}
-                                    value={formData.venue ? { value: formData.venue, label: formData.venue } : null}
-                                    onChange={handleVenueChange}
-                                    placeholder="Select or type location..."
-                                    className="text-sm"
-                                    styles={{
-                                        control: (base, state) => ({
-                                            ...base,
-                                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                                            backdropFilter: 'blur(8px)',
-                                            borderColor: errors.venue ? '#fca5a5' : state.isFocused ? '#93c5fd' : 'rgba(255, 255, 255, 0.5)',
-                                            minHeight: '42px',
-                                            borderRadius: '8px',
-                                            fontSize: '14px',
-                                            '&:hover': {
-                                                borderColor: errors.venue ? '#fca5a5' : '#93c5fd',
-                                            },
-                                        }),
-                                        menu: (base) => ({
-                                            ...base,
-                                            fontSize: '14px',
-                                        }),
-                                    }}
-                                />
-                                {errors.venue && (
-                                    <p className="mt-1 text-xs text-red-600">{errors.venue}</p>
-                                )}
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        {/* ============ SECTION 1: HIRING DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <MapPin className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Hiring Details</h3>
                             </div>
-
-                            {/* Degree */}
-                            <div ref={degreeRef} className="relative">
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <GraduationCap className="w-4 h-4 text-[#3b82f6]" />
-                                    Degree(s) <span className="text-red-500">*</span>
-                                </label>
-                                <div className="flex flex-wrap gap-1 mb-1 max-h-16 overflow-y-auto">
-                                    {formData.degree.map(deg => (
-                                        <div key={deg} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
-                                            <span>{deg}</span>
-                                            <button type="button" onClick={() => removeItem('degree', deg)} className="ml-1 hover:bg-[#3b82f6]/20 rounded-full p-0.5">
-                                                <X size={10} />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div
-                                    className="flex items-center justify-between p-2.5 w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg cursor-pointer hover:border-[#93c5fd] transition-all duration-200 min-h-[42px]"
-                                    onClick={() => toggleDropdown('degree')}
-                                >
-                                    <span className="text-sm text-gray-500">Select degrees</span>
-                                    <ChevronDown className={`w-4 h-4 text-[#3b82f6] transition-transform ${dropdownOpen.degree ? "rotate-180" : ""}`} />
-                                </div>
-                                {errors.degree && (
-                                    <p className="mt-1 text-xs text-red-600">{errors.degree}</p>
-                                )}
-                                {dropdownOpen.degree && (
-                                    <div className="absolute z-20 mt-1 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg shadow-lg shadow-blue-50/50 overflow-hidden">
-                                        <div className="p-2 border-b border-white/50 flex">
-                                            <input
-                                                type="text"
-                                                placeholder="Add custom degree..."
-                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
-                                                value={customDegree}
-                                                onChange={(e) => setCustomDegree(e.target.value)}
-                                                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCustomAdd('degree', customDegree, setCustomDegree); } }}
-                                            />
-                                            <button
-                                                type="button"
-                                                className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
-                                                onClick={() => handleCustomAdd('degree', customDegree, setCustomDegree)}
-                                            >
-                                                Add
-                                            </button>
-                                        </div>
-                                        <div className="max-h-40 overflow-auto">
-                                            {degreeOptions.map(opt => (
-                                                <div key={opt} className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.degree.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} onClick={() => handleMultiToggle('degree', opt)}>
-                                                    <div className="flex items-center">
-                                                        <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.degree.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                            {formData.degree.includes(opt) && <CheckSquare size={10} className="text-white" />}
-                                                        </div>
-                                                        <span className="text-sm">{opt}</span>
-                                                    </div>
-                                                    {formData.degree.includes(opt) && <span className="text-[#3b82f6] text-xs">✓</span>}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Row 2: College Type and Employment Type */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {/* College Type */}
-                            <div ref={collegeTypesRef} className="relative">
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <School className="w-4 h-4 text-[#3b82f6]" />
-                                    Type of College
-                                </label>
-                                <div
-                                    onClick={() => toggleDropdown('collegeTypes')}
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 flex items-center justify-between text-sm"
-                                >
-                                    <span className={formData.collegeTypes ? "text-gray-900" : "text-gray-500"}>
-                                        {formData.collegeTypes || 'Select college type'}
-                                    </span>
-                                    <ChevronDown className={`w-4 h-4 text-[#3b82f6] transition-transform ${dropdownOpen.collegeTypes ? "rotate-180" : ""}`} />
-                                </div>
-                                {dropdownOpen.collegeTypes && (
-                                    <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
-                                        <div className="p-2 border-b border-white/50 flex">
-                                            <input
-                                                type="text"
-                                                placeholder="Add custom type..."
-                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
-                                                value={customCollegeType}
-                                                onChange={(e) => setCustomCollegeType(e.target.value)}
-                                                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCustomSingleAdd('collegeTypes', customCollegeType, setCustomCollegeType); } }}
-                                            />
-                                            <button
-                                                type="button"
-                                                className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
-                                                onClick={() => handleCustomSingleAdd('collegeTypes', customCollegeType, setCustomCollegeType)}
-                                            >
-                                                Add
-                                            </button>
-                                        </div>
-                                        <div className="max-h-40 overflow-auto">
-                                            {collegeTypeOptions.map(option => (
-                                                <div
-                                                    key={option}
-                                                    onClick={() => handleOptionSelect('collegeTypes', option)}
-                                                    className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 text-sm ${formData.collegeTypes === option ? 'bg-[#93c5fd]/10' : ''}`}
-                                                >
-                                                    {option}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Employment Type */}
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Briefcase className="w-4 h-4 text-[#3b82f6]" />
-                                    Employment type <span className="text-red-500">*</span>
-                                </label>
-                                <div className="flex gap-2">
-                                    {['Part-time', 'Full-time', 'Contract'].map((type) => (
-                                        <button key={type} type="button" className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 ${
-                                            formData.employmentType.includes(type) 
-                                                ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent' 
-                                                : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
-                                        }`} onClick={() => handleMultiToggle('employmentType', type)}>
-                                            {type}
-                                        </button>
-                                    ))}
-                                </div>
-                                {errors.employmentType && (
-                                    <p className="mt-1 text-xs text-red-600">{errors.employmentType}</p>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Row 3: Proposed Schedule - Full Width */}
-                        <div>
-                            <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                <Clock className="w-4 h-4 text-[#3b82f6]" />
-                                Proposed Schedule <span className="text-red-500">*</span>
-                            </label>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                <div className="relative">
-                                    <DatePicker
-                                        selected={formData.proposedSchedule.startDate ? new Date(formData.proposedSchedule.startDate) : null}
-                                        onChange={(date) => handleProposedDateChange(date, 'startDate')}
-                                        dateFormat="dd-MM-yyyy"
-                                        placeholderText="Start Date"
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedStartDate ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                            
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {/* Pool Campus Hiring Venue */}
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <MapPin className="w-4 h-4 text-[#3b82f6]" />
+                                        Hiring Venue <span className="text-red-500">*</span>
+                                    </label>
+                                    <CreatableSelect
+                                        isClearable
+                                        options={cityOptions}
+                                        value={formData.venue ? { value: formData.venue, label: formData.venue } : null}
+                                        onChange={handleVenueChange}
+                                        placeholder="Select or type location..."
+                                        className="text-sm"
+                                        styles={{
+                                            control: (base, state) => ({
+                                                ...base,
+                                                backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                                                backdropFilter: 'blur(8px)',
+                                                borderColor: errors.venue ? '#fca5a5' : state.isFocused ? '#93c5fd' : 'rgba(255, 255, 255, 0.5)',
+                                                minHeight: '42px',
+                                                borderRadius: '8px',
+                                                fontSize: '14px',
+                                                '&:hover': {
+                                                    borderColor: errors.venue ? '#fca5a5' : '#93c5fd',
+                                                },
+                                            }),
+                                            menu: (base) => ({
+                                                ...base,
+                                                fontSize: '14px',
+                                            }),
+                                        }}
                                     />
-                                    <Calendar className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                                    {errors.proposedStartDate && (
-                                        <p className="mt-1 text-xs text-red-600">{errors.proposedStartDate}</p>
+                                    {errors.venue && (
+                                        <p className="mt-1 text-xs text-red-600">{errors.venue}</p>
                                     )}
                                 </div>
-                                <div className="relative">
-                                    <DatePicker
-                                        selected={formData.proposedSchedule.endDate ? new Date(formData.proposedSchedule.endDate) : null}
-                                        onChange={(date) => handleProposedDateChange(date, 'endDate')}
-                                        dateFormat="dd-MM-yyyy"
-                                        placeholderText="End Date"
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedEndDate ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
-                                    />
-                                    <Calendar className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                                    {errors.proposedEndDate && (
-                                        <p className="mt-1 text-xs text-red-600">{errors.proposedEndDate}</p>
-                                    )}
-                                </div>
-                                <div className="relative">
-                                    <select 
-                                        name="preferredMode" 
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedMode ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
-                                        value={formData.proposedSchedule.preferredMode} 
-                                        onChange={handleProposedScheduleChange}
+
+                                {/* College Type */}
+                                <div ref={collegeTypesRef} className="relative">
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <School className="w-4 h-4 text-[#3b82f6]" />
+                                        Type of College
+                                    </label>
+                                    <div
+                                        onClick={() => toggleDropdown('collegeTypes')}
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 flex items-center justify-between text-sm"
                                     >
-                                        <option value="">Preferred Mode</option>
-                                        {proposedModeOptions.map(option => (
-                                            <option key={option} value={option}>{option}</option>
-                                        ))}
-                                    </select>
-                                    {errors.proposedMode && (
-                                        <p className="mt-1 text-xs text-red-600">{errors.proposedMode}</p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Row 4: Salary and Application Dates */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {/* Salary */}
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <DollarSign className="w-4 h-4 text-[#3b82f6]" />
-                                    Minimum Cut-off Salary
-                                </label>
-                                <div className="flex rounded-lg overflow-hidden border border-gray-200/80 focus-within:ring-1 focus-within:ring-[#93c5fd] focus-within:border-transparent transition-all duration-200">
-                                    <div className="relative bg-white/50 backdrop-blur-sm flex items-center">
-                                        <div className="px-3 py-2 w-24 text-sm flex items-center gap-2">
-                                            {formData.salaryRange === 'INR' ? (
-                                                <>
-                                                    <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
-                                                    <span>INR</span>
-                                                </>
-                                            ) : formData.salaryRange === 'USD' ? (
-                                                <>
-                                                    <DollarSign className="w-3.5 h-3.5 text-gray-600" />
-                                                    <span>USD</span>
-                                                </>
-                                            ) : formData.salaryRange === 'EUR' ? (
-                                                <>
-                                                    <Euro className="w-3.5 h-3.5 text-gray-600" />
-                                                    <span>EUR</span>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
-                                                    <span>INR</span>
-                                                </>
-                                            )}
-                                        </div>
-                                        <select 
-                                            name="salaryRange" 
-                                            className="absolute inset-0 opacity-0 cursor-pointer"
-                                            value={formData.salaryRange || 'INR'} 
-                                            onChange={handleChange}
-                                        >
-                                            <option value="INR">INR</option>
-                                            <option value="USD">USD</option>
-                                            <option value="EUR">EUR</option>
-                                        </select>
-                                        <ChevronDown className="absolute right-2 w-3 h-3 text-gray-400 pointer-events-none" />
+                                        <span className={formData.collegeTypes ? "text-gray-900" : "text-gray-500"}>
+                                            {formData.collegeTypes || 'Select college type'}
+                                        </span>
+                                        <ChevronDown className={`w-4 h-4 text-[#3b82f6] transition-transform ${dropdownOpen.collegeTypes ? "rotate-180" : ""}`} />
                                     </div>
-                                    <div className="relative flex-1">
-                                        <input 
-                                            name="salaryValue" 
-                                            type="number" 
-                                            className="bg-white/50 backdrop-blur-sm w-full px-3 py-2 text-sm focus:outline-none" 
-                                            placeholder="Amount" 
-                                            value={formData.salaryValue || ''} 
-                                            onChange={handleChange}
-                                            min="0"
-                                            step="1000"
-                                        />
-                                        {/* Currency icon in input field */}
-                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                                            {formData.salaryRange === 'INR' ? (
-                                                <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
-                                            ) : formData.salaryRange === 'USD' ? (
-                                                <DollarSign className="w-3.5 h-3.5 text-gray-500" />
-                                            ) : formData.salaryRange === 'EUR' ? (
-                                                <Euro className="w-3.5 h-3.5 text-gray-500" />
-                                            ) : (
-                                                <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Application Dates */}
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Calendar className="w-4 h-4 text-[#3b82f6]" />
-                                    Application Dates
-                                </label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <div className="relative">
-                                        <DatePicker
-                                            selected={formData.tentativeStartDate ? new Date(formData.tentativeStartDate) : null}
-                                            onChange={(date) => handleDateChange(date, 'tentativeStartDate')}
-                                            dateFormat="dd-MM-yyyy"
-                                            placeholderText="Start"
-                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
-                                        />
-                                        <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                                    </div>
-                                    <div className="relative">
-                                        <DatePicker
-                                            selected={formData.tentativeEndDate ? new Date(formData.tentativeEndDate) : null}
-                                            onChange={(date) => handleDateChange(date, 'tentativeEndDate')}
-                                            dateFormat="dd-MM-yyyy"
-                                            placeholderText="End"
-                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
-                                        />
-                                        <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Row 5: Contact Person Name and Designation */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {/* Contact Person Name */}
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <User className="w-4 h-4 text-[#3b82f6]" />
-                                    Contact Person Name <span className="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="name" 
-                                    value={formData.contactPerson.name} 
-                                    onChange={handleContactChange} 
-                                    placeholder="Enter full name" 
-                                    className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonName ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
-                                />
-                                {errors.contactPersonName && (
-                                    <p className="mt-1 text-xs text-red-600">{errors.contactPersonName}</p>
-                                )}
-                            </div>
-
-                            {/* Designation */}
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <User className="w-4 h-4 text-[#3b82f6]" />
-                                    Designation <span className="text-red-500">*</span>
-                                </label>
-                                <div className="relative">
-                                    <select 
-                                        name="designation" 
-                                        value={formData.contactPerson.designation} 
-                                        onChange={handleContactChange} 
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonDesignation ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
-                                    >
-                                        <option value="" disabled>Select designation</option>
-                                        {designationOptions.map((designation) => (
-                                            <option key={designation} value={designation}>{designation}</option>
-                                        ))}
-                                    </select>
-                                    {errors.contactPersonDesignation && (
-                                        <p className="mt-1 text-xs text-red-600">{errors.contactPersonDesignation}</p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Row 6: Contact Email and Mobile */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {/* Contact Email */}
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Mail className="w-4 h-4 text-[#3b82f6]" />
-                                    Email <span className="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="email" 
-                                    name="email" 
-                                    value={formData.contactPerson.email} 
-                                    onChange={handleContactChange} 
-                                    placeholder="example@company.com" 
-                                    className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonEmail ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
-                                />
-                                {errors.contactPersonEmail && (
-                                    <p className="mt-1 text-xs text-red-600">{errors.contactPersonEmail}</p>
-                                )}
-                            </div>
-
-                            {/* Contact Mobile */}
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Phone className="w-4 h-4 text-[#3b82f6]" />
-                                    Mobile No <span className="text-red-500">*</span>
-                                </label>
-                                <input 
-                                    type="tel" 
-                                    name="mobile" 
-                                    value={formData.contactPerson.mobile} 
-                                    onChange={handleContactChange} 
-                                    placeholder="10-digit mobile number" 
-                                    className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonMobile ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
-                                />
-                                {errors.contactPersonMobile && (
-                                    <p className="mt-1 text-xs text-red-600">{errors.contactPersonMobile}</p>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Row 7: LinkedIn Profile and Minimum Students */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {/* LinkedIn Profile */}
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Linkedin className="w-4 h-4 text-[#3b82f6]" />
-                                    LinkedIn Profile
-                                </label>
-                                <input 
-                                    type="url" 
-                                    name="linkedin" 
-                                    value={formData.contactPerson.linkedin} 
-                                    onChange={handleContactChange} 
-                                    placeholder="linkedin.com/in/username" 
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
-                                />
-                            </div>
-
-                            {/* Minimum Students */}
-                            <div>
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Users className="w-4 h-4 text-[#3b82f6]" />
-                                    Min Students to Place <span className="text-red-500">*</span>
-                                </label>
-                                <div className="relative">
-                                    <select 
-                                        name="minStudentsToBePlaced" 
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.minStudentsToBePlaced ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
-                                        value={formData.minStudentsToBePlaced} 
-                                        onChange={handleChange}
-                                    >
-                                        <option value="">Select Range</option>
-                                        {minStudentsOptions.map(option => (
-                                            <option key={option} value={option}>{option}</option>
-                                        ))}
-                                    </select>
-                                    {errors.minStudentsToBePlaced && (
-                                        <p className="mt-1 text-xs text-red-600">{errors.minStudentsToBePlaced}</p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Row 8: Company Type and Rounds Table Header */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {/* Company Type */}
-                            <div ref={companyTypeRef} className="relative">
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Building className="w-4 h-4 text-[#3b82f6]" />
-                                    Company Type
-                                </label>
-                                <div className="relative">
-                                    <div 
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 text-sm" 
-                                        onClick={() => toggleDropdown('companyType')}
-                                    >
-                                        {formData.companyType.length > 0 ? (
-                                            <div className="flex flex-wrap gap-1">
-                                                {formData.companyType.map(item => (
-                                                    <span key={item} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
-                                                        {item}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        ) : <span className="text-gray-500">Select company types</span>}
-                                    </div>
-                                    {dropdownOpen.companyType && (
+                                    {dropdownOpen.collegeTypes && (
                                         <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
                                             <div className="p-2 border-b border-white/50 flex">
                                                 <input
                                                     type="text"
-                                                    placeholder="Add custom company type..."
+                                                    placeholder="Add custom type..."
                                                     className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
-                                                    value={customCompanyType}
-                                                    onChange={(e) => setCustomCompanyType(e.target.value)}
-                                                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCustomAdd('companyType', customCompanyType, setCustomCompanyType); } }}
+                                                    value={customCollegeType}
+                                                    onChange={(e) => setCustomCollegeType(e.target.value)}
+                                                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCustomSingleAdd('collegeTypes', customCollegeType, setCustomCollegeType); } }}
                                                 />
                                                 <button
                                                     type="button"
                                                     className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
-                                                    onClick={() => handleCustomAdd('companyType', customCompanyType, setCustomCompanyType)}
+                                                    onClick={() => handleCustomSingleAdd('collegeTypes', customCollegeType, setCustomCollegeType)}
                                                 >
                                                     Add
                                                 </button>
                                             </div>
                                             <div className="max-h-40 overflow-auto">
-                                                {companyTypeOptions.map(opt => (
-                                                    <div key={opt} className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.companyType.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} onClick={() => handleMultiToggle('companyType', opt)}>
-                                                        <div className="flex items-center">
-                                                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.companyType.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                                {formData.companyType.includes(opt) && <CheckSquare size={10} className="text-white" />}
-                                                            </div>
-                                                            <span className="text-sm">{opt}</span>
-                                                        </div>
-                                                        {formData.companyType.includes(opt) && <span className="text-[#3b82f6] text-xs">✓</span>}
+                                                {collegeTypeOptions.map(option => (
+                                                    <div
+                                                        key={option}
+                                                        onClick={() => handleOptionSelect('collegeTypes', option)}
+                                                        className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 text-sm ${formData.collegeTypes === option ? 'bg-[#93c5fd]/10' : ''}`}
+                                                    >
+                                                        {option}
                                                     </div>
                                                 ))}
                                             </div>
@@ -1940,13 +1511,422 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                     )}
                                 </div>
                             </div>
+                        </div>
 
-                            {/* Rounds Table Header */}
+                        {/* ============ SECTION 2: ACADEMIC DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <BookOpen className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Academic Details</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {/* Degree */}
+                                <div ref={degreeRef} className="relative">
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <GraduationCap className="w-4 h-4 text-[#3b82f6]" />
+                                        Degree(s) <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="flex flex-wrap gap-1 mb-1 max-h-16 overflow-y-auto">
+                                        {formData.degree.map(deg => (
+                                            <div key={deg} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
+                                                <span>{deg}</span>
+                                                <button type="button" onClick={() => removeItem('degree', deg)} className="ml-1 hover:bg-[#3b82f6]/20 rounded-full p-0.5">
+                                                    <X size={10} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div
+                                        className="flex items-center justify-between p-2.5 w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg cursor-pointer hover:border-[#93c5fd] transition-all duration-200 min-h-[42px]"
+                                        onClick={() => toggleDropdown('degree')}
+                                    >
+                                        <span className="text-sm text-gray-500">Select degrees</span>
+                                        <ChevronDown className={`w-4 h-4 text-[#3b82f6] transition-transform ${dropdownOpen.degree ? "rotate-180" : ""}`} />
+                                    </div>
+                                    {errors.degree && (
+                                        <p className="mt-1 text-xs text-red-600">{errors.degree}</p>
+                                    )}
+                                    {dropdownOpen.degree && (
+                                        <div className="absolute z-20 mt-1 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg shadow-lg shadow-blue-50/50 overflow-hidden">
+                                            <div className="p-2 border-b border-white/50 flex">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Add custom degree..."
+                                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
+                                                    value={customDegree}
+                                                    onChange={(e) => setCustomDegree(e.target.value)}
+                                                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCustomAdd('degree', customDegree, setCustomDegree); } }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
+                                                    onClick={() => handleCustomAdd('degree', customDegree, setCustomDegree)}
+                                                >
+                                                    Add
+                                                </button>
+                                            </div>
+                                            <div className="max-h-40 overflow-auto">
+                                                {degreeOptions.map(opt => (
+                                                    <div key={opt} className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.degree.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} onClick={() => handleMultiToggle('degree', opt)}>
+                                                        <div className="flex items-center">
+                                                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.degree.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
+                                                                {formData.degree.includes(opt) && <CheckSquare size={10} className="text-white" />}
+                                                            </div>
+                                                            <span className="text-sm">{opt}</span>
+                                                        </div>
+                                                        {formData.degree.includes(opt) && <span className="text-[#3b82f6] text-xs">✓</span>}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Employment Type */}
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Briefcase className="w-4 h-4 text-[#3b82f6]" />
+                                        Employment type <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="flex gap-2">
+                                        {['Part-time', 'Full-time', 'Contract'].map((type) => (
+                                            <button key={type} type="button" className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 ${
+                                                formData.employmentType.includes(type) 
+                                                    ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent' 
+                                                    : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
+                                            }`} onClick={() => handleMultiToggle('employmentType', type)}>
+                                                {type}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {errors.employmentType && (
+                                        <p className="mt-1 text-xs text-red-600">{errors.employmentType}</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ============ SECTION 3: CONTACT DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <UsersIcon className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Contact Details</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {/* Contact Person Name */}
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <User className="w-4 h-4 text-[#3b82f6]" />
+                                        Contact Person Name <span className="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        name="name" 
+                                        value={formData.contactPerson.name} 
+                                        onChange={handleContactChange} 
+                                        placeholder="Enter full name" 
+                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonName ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                    />
+                                    {errors.contactPersonName && (
+                                        <p className="mt-1 text-xs text-red-600">{errors.contactPersonName}</p>
+                                    )}
+                                </div>
+
+                                {/* Designation */}
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <User className="w-4 h-4 text-[#3b82f6]" />
+                                        Designation <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="relative">
+                                        <select 
+                                            name="designation" 
+                                            value={formData.contactPerson.designation} 
+                                            onChange={handleContactChange} 
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonDesignation ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                        >
+                                            <option value="" disabled>Select designation</option>
+                                            {designationOptions.map((designation) => (
+                                                <option key={designation} value={designation}>{designation}</option>
+                                            ))}
+                                        </select>
+                                        {errors.contactPersonDesignation && (
+                                            <p className="mt-1 text-xs text-red-600">{errors.contactPersonDesignation}</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Contact Email */}
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Mail className="w-4 h-4 text-[#3b82f6]" />
+                                        Email <span className="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="email" 
+                                        name="email" 
+                                        value={formData.contactPerson.email} 
+                                        onChange={handleContactChange} 
+                                        placeholder="example@company.com" 
+                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonEmail ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                    />
+                                    {errors.contactPersonEmail && (
+                                        <p className="mt-1 text-xs text-red-600">{errors.contactPersonEmail}</p>
+                                    )}
+                                </div>
+
+                                {/* Contact Mobile */}
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Phone className="w-4 h-4 text-[#3b82f6]" />
+                                        Mobile No <span className="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        type="tel" 
+                                        name="mobile" 
+                                        value={formData.contactPerson.mobile} 
+                                        onChange={handleContactChange} 
+                                        placeholder="10-digit mobile number" 
+                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonMobile ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                    />
+                                    {errors.contactPersonMobile && (
+                                        <p className="mt-1 text-xs text-red-600">{errors.contactPersonMobile}</p>
+                                    )}
+                                </div>
+
+                                {/* LinkedIn Profile */}
+                                <div className="lg:col-span-2">
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Linkedin className="w-4 h-4 text-[#3b82f6]" />
+                                        LinkedIn Profile
+                                    </label>
+                                    <input 
+                                        type="url" 
+                                        name="linkedin" 
+                                        value={formData.contactPerson.linkedin} 
+                                        onChange={handleContactChange} 
+                                        placeholder="linkedin.com/in/username" 
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ============ SECTION 4: PLACEMENT DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <Briefcase className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Placement Details</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {/* Minimum Students */}
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Users className="w-4 h-4 text-[#3b82f6]" />
+                                        Min Students to Place <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="relative">
+                                        <select 
+                                            name="minStudentsToBePlaced" 
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.minStudentsToBePlaced ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                            value={formData.minStudentsToBePlaced} 
+                                            onChange={handleChange}
+                                        >
+                                            <option value="">Select Range</option>
+                                            {minStudentsOptions.map(option => (
+                                                <option key={option} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                        {errors.minStudentsToBePlaced && (
+                                            <p className="mt-1 text-xs text-red-600">{errors.minStudentsToBePlaced}</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Company Type */}
+                                <div ref={companyTypeRef} className="relative">
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Building className="w-4 h-4 text-[#3b82f6]" />
+                                        Company Type
+                                    </label>
+                                    <div className="relative">
+                                        <div 
+                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 text-sm" 
+                                            onClick={() => toggleDropdown('companyType')}
+                                        >
+                                            {formData.companyType.length > 0 ? (
+                                                <div className="flex flex-wrap gap-1">
+                                                    {formData.companyType.map(item => (
+                                                        <span key={item} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
+                                                            {item}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            ) : <span className="text-gray-500">Select company types</span>}
+                                        </div>
+                                        {dropdownOpen.companyType && (
+                                            <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
+                                                <div className="p-2 border-b border-white/50 flex">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Add custom company type..."
+                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
+                                                        value={customCompanyType}
+                                                        onChange={(e) => setCustomCompanyType(e.target.value)}
+                                                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCustomAdd('companyType', customCompanyType, setCustomCompanyType); } }}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
+                                                        onClick={() => handleCustomAdd('companyType', customCompanyType, setCustomCompanyType)}
+                                                    >
+                                                        Add
+                                                    </button>
+                                                </div>
+                                                <div className="max-h-40 overflow-auto">
+                                                    {companyTypeOptions.map(opt => (
+                                                        <div key={opt} className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.companyType.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} onClick={() => handleMultiToggle('companyType', opt)}>
+                                                            <div className="flex items-center">
+                                                                <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.companyType.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
+                                                                    {formData.companyType.includes(opt) && <CheckSquare size={10} className="text-white" />}
+                                                                </div>
+                                                                <span className="text-sm">{opt}</span>
+                                                            </div>
+                                                            {formData.companyType.includes(opt) && <span className="text-[#3b82f6] text-xs">✓</span>}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ============ SECTION 5: COMPENSATION DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <IndianRupee className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Compensation Details</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {/* Salary */}
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <IndianRupee className="w-4 h-4 text-[#3b82f6]" />
+                                        Minimum Cut-off Salary
+                                    </label>
+                                    <div className="flex rounded-lg overflow-hidden border border-gray-200/80 focus-within:ring-1 focus-within:ring-[#93c5fd] focus-within:border-transparent transition-all duration-200">
+                                        <div className="relative bg-white/50 backdrop-blur-sm flex items-center">
+                                            <div className="px-3 py-2 w-24 text-sm flex items-center gap-2">
+                                                {formData.salaryRange === 'INR' ? (
+                                                    <>
+                                                        <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
+                                                        <span>INR</span>
+                                                    </>
+                                                ) : formData.salaryRange === 'USD' ? (
+                                                    <>
+                                                        <DollarSign className="w-3.5 h-3.5 text-gray-600" />
+                                                        <span>USD</span>
+                                                    </>
+                                                ) : formData.salaryRange === 'EUR' ? (
+                                                    <>
+                                                        <Euro className="w-3.5 h-3.5 text-gray-600" />
+                                                        <span>EUR</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
+                                                        <span>INR</span>
+                                                    </>
+                                                )}
+                                            </div>
+                                            <select 
+                                                name="salaryRange" 
+                                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                                value={formData.salaryRange || 'INR'} 
+                                                onChange={handleChange}
+                                            >
+                                                <option value="INR">INR</option>
+                                                <option value="USD">USD</option>
+                                                <option value="EUR">EUR</option>
+                                            </select>
+                                            <ChevronDown className="absolute right-2 w-3 h-3 text-gray-400 pointer-events-none" />
+                                        </div>
+                                        <div className="relative flex-1">
+                                            <input 
+                                                name="salaryValue" 
+                                                type="number" 
+                                                className="bg-white/50 backdrop-blur-sm w-full px-3 py-2 text-sm focus:outline-none" 
+                                                placeholder="Amount" 
+                                                value={formData.salaryValue || ''} 
+                                                onChange={handleChange}
+                                                min="0"
+                                                step="1000"
+                                            />
+                                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                                {formData.salaryRange === 'INR' ? (
+                                                    <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
+                                                ) : formData.salaryRange === 'USD' ? (
+                                                    <DollarSign className="w-3.5 h-3.5 text-gray-500" />
+                                                ) : formData.salaryRange === 'EUR' ? (
+                                                    <Euro className="w-3.5 h-3.5 text-gray-500" />
+                                                ) : (
+                                                    <IndianRupee className="w-3.5 h-3.5 text-gray-500" />
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Application Dates */}
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Calendar className="w-4 h-4 text-[#3b82f6]" />
+                                        Application Dates
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="relative">
+                                            <DatePicker
+                                                selected={formData.tentativeStartDate ? new Date(formData.tentativeStartDate) : null}
+                                                onChange={(date) => handleDateChange(date, 'tentativeStartDate')}
+                                                dateFormat="dd-MM-yyyy"
+                                                placeholderText="Start"
+                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
+                                            />
+                                            <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                        </div>
+                                        <div className="relative">
+                                            <DatePicker
+                                                selected={formData.tentativeEndDate ? new Date(formData.tentativeEndDate) : null}
+                                                onChange={(date) => handleDateChange(date, 'tentativeEndDate')}
+                                                dateFormat="dd-MM-yyyy"
+                                                placeholderText="End"
+                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent pl-8"
+                                            />
+                                            <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ============ SECTION 6: STUDENT DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <Users className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Student Details</h3>
+                            </div>
+                            
                             <div>
                                 <div className="flex justify-between items-center mb-2">
                                     <label className="block text-gray-700 font-medium text-sm flex items-center gap-1.5">
                                         <List className="w-4 h-4 text-[#3b82f6]" />
-                                        Student Details
+                                        Student Information
                                     </label>
                                     <button
                                         type="button"
@@ -1957,161 +1937,224 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                         Add Student
                                     </button>
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* Row 9: Rounds Table - Full Width */}
-                        <div>
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-white/50 text-xs">
-                                    <thead className="bg-white/50">
-                                        <tr>
-                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">S.No</th>
-                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Branch</th>
-                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Count</th>
-                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Skills (comma separated)</th>
-                                            <th className="px-2 py-1.5 text-left font-medium text-gray-500">Action </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white/30 divide-y divide-white/50">
-                                        {formData.rounds.map((round, index) => (
-                                            <tr key={round.id}>
-                                                <td className="px-2 py-1.5 text-center">{index + 1}</td>
-                                                <td className="px-2 py-1.5">
-                                                    <select 
-                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
-                                                        value={round.branch} 
-                                                        onChange={(e) => handleRoundChange(round.id, 'branch', e.target.value)}
-                                                    >
-                                                        <option value="">Select</option>
-                                                        {branchOptions.map(option => (
-                                                            <option key={option} value={option}>{option}</option>
-                                                        ))}
-                                                    </select>
-                                                </td>
-                                                <td className="px-2 py-1.5">
-                                                    <input 
-                                                        type="number" 
-                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
-                                                        value={round.students} 
-                                                        onChange={(e) => handleRoundChange(round.id, 'students', e.target.value)} 
-                                                        min="0" 
-                                                        placeholder="0"
-                                                    />
-                                                </td>
-                                                <td className="px-2 py-1.5">
-                                                    <input 
-                                                        type="text" 
-                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
-                                                        value={round.skills} 
-                                                        onChange={(e) => handleRoundChange(round.id, 'skills', e.target.value)} 
-                                                        placeholder="e.g., React, Node.js, MongoDB" 
-                                                    />
-                                                </td>
-                                                <td className="px-2 py-1.5 text-center">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleRemoveRound(round.id)}
-                                                        className="text-red-500 hover:text-red-700 transition-colors duration-200"
-                                                        title="Remove"
-                                                    >
-                                                        <Trash2 className="w-3.5 h-3.5" />
-                                                    </button>
-                                                </td>
+                                
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full divide-y divide-white/50 text-xs">
+                                        <thead className="bg-white/50">
+                                            <tr>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">S.No</th>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Branch</th>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Count</th>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Skills (comma separated)</th>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Action </th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            {formData.rounds.length === 0 && (
-                                <div className="text-center py-4 text-gray-500 text-sm">
-                                    No student details added. Click "Add Student" to get started.
+                                        </thead>
+                                        <tbody className="bg-white/30 divide-y divide-white/50">
+                                            {formData.rounds.map((round, index) => (
+                                                <tr key={round.id}>
+                                                    <td className="px-2 py-1.5 text-center">{index + 1}</td>
+                                                    <td className="px-2 py-1.5">
+                                                        <select 
+                                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
+                                                            value={round.branch} 
+                                                            onChange={(e) => handleRoundChange(round.id, 'branch', e.target.value)}
+                                                        >
+                                                            <option value="">Select</option>
+                                                            {branchOptions.map(option => (
+                                                                <option key={option} value={option}>{option}</option>
+                                                            ))}
+                                                        </select>
+                                                    </td>
+                                                    <td className="px-2 py-1.5">
+                                                        <input 
+                                                            type="number" 
+                                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
+                                                            value={round.students} 
+                                                            onChange={(e) => handleRoundChange(round.id, 'students', e.target.value)} 
+                                                            min="0" 
+                                                            placeholder="0"
+                                                        />
+                                                    </td>
+                                                    <td className="px-2 py-1.5">
+                                                        <input 
+                                                            type="text" 
+                                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
+                                                            value={round.skills} 
+                                                            onChange={(e) => handleRoundChange(round.id, 'skills', e.target.value)} 
+                                                            placeholder="e.g., React, Node.js, MongoDB" 
+                                                        />
+                                                    </td>
+                                                    <td className="px-2 py-1.5 text-center">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRemoveRound(round.id)}
+                                                            className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                                                            title="Remove"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            )}
+                                {formData.rounds.length === 0 && (
+                                    <div className="text-center py-4 text-gray-500 text-sm">
+                                        No student details added. Click "Add Student" to get started.
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
-                        {/* Row 10: Amenities and Description */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {/* Amenities */}
-                            <div ref={amenitiesRef} className="relative">
-                                <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <Building className="w-4 h-4 text-[#3b82f6]" />
-                                    Campus Facilities
-                                </label>
-                                <div className="relative">
-                                    <div 
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 text-sm" 
-                                        onClick={() => toggleDropdown('amenities')}
-                                    >
-                                        {formData.amenities.length > 0 ? (
-                                            <div className="flex flex-wrap gap-1">
-                                                {formData.amenities.slice(0, 3).map(item => (
-                                                    <span key={item} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
-                                                        {item}
-                                                    </span>
-                                                ))}
-                                                {formData.amenities.length > 3 && (
-                                                    <span className="text-xs text-gray-500">+{formData.amenities.length - 3} more</span>
-                                                )}
-                                            </div>
-                                        ) : <span className="text-gray-500">Select facilities</span>}
-                                    </div>
-                                    {dropdownOpen.amenities && (
-                                        <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
-                                            <div className="max-h-40 overflow-auto">
-                                                {amenitiesOptions.map(opt => (
-                                                    <div key={opt} className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.amenities.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} onClick={() => handleMultiToggle('amenities', opt)}>
-                                                        <div className="flex items-center">
-                                                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.amenities.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                                {formData.amenities.includes(opt) && <CheckSquare size={10} className="text-white" />}
-                                                            </div>
-                                                            <span className="text-sm">{opt}</span>
-                                                        </div>
-                                                        {formData.amenities.includes(opt) && <span className="text-[#3b82f6] text-xs">✓</span>}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <div className="p-2 border-t border-white/50">
-                                                <input 
-                                                    type="text" 
-                                                    placeholder="Add custom facility..." 
-                                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm" 
-                                                    value={customAmenity} 
-                                                    onChange={(e) => setCustomAmenity(e.target.value)} 
-                                                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCustomAdd('amenities', customAmenity, setCustomAmenity); } }} 
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
+                        {/* ============ SECTION 7: SCHEDULE DETAILS ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <Clock className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Schedule Details</h3>
                             </div>
-
-                            {/* Description */}
+                            
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                    <MessageSquare className="w-4 h-4 text-[#3b82f6]" />
-                                    Description
+                                    <Clock className="w-4 h-4 text-[#3b82f6]" />
+                                    Proposed Schedule <span className="text-red-500">*</span>
                                 </label>
-                                <textarea 
-                                    name="description" 
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent resize-none" 
-                                    placeholder="Additional information..." 
-                                    value={formData.description} 
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        if (e.target.value.length > 500) {
-                                            setDescriptionError("Description cannot exceed 500 characters.");
-                                        } else {
-                                            setDescriptionError("");
-                                        }
-                                    }} 
-                                    rows="3"
-                                    maxLength={500}
-                                ></textarea>
-                                <div className="flex justify-between text-xs mt-1">
-                                    <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
-                                        {descriptionError ? descriptionError : `${formData.description.length}/500`}
-                                    </span>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <div className="relative">
+                                        <DatePicker
+                                            selected={formData.proposedSchedule.startDate ? new Date(formData.proposedSchedule.startDate) : null}
+                                            onChange={(date) => handleProposedDateChange(date, 'startDate')}
+                                            dateFormat="dd-MM-yyyy"
+                                            placeholderText="Start Date"
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedStartDate ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                        />
+                                        <Calendar className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                                        {errors.proposedStartDate && (
+                                            <p className="mt-1 text-xs text-red-600">{errors.proposedStartDate}</p>
+                                        )}
+                                    </div>
+                                    <div className="relative">
+                                        <DatePicker
+                                            selected={formData.proposedSchedule.endDate ? new Date(formData.proposedSchedule.endDate) : null}
+                                            onChange={(date) => handleProposedDateChange(date, 'endDate')}
+                                            dateFormat="dd-MM-yyyy"
+                                            placeholderText="End Date"
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedEndDate ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 pl-9 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                        />
+                                        <Calendar className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                                        {errors.proposedEndDate && (
+                                            <p className="mt-1 text-xs text-red-600">{errors.proposedEndDate}</p>
+                                        )}
+                                    </div>
+                                    <div className="relative">
+                                        <select 
+                                            name="preferredMode" 
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedMode ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
+                                            value={formData.proposedSchedule.preferredMode} 
+                                            onChange={handleProposedScheduleChange}
+                                        >
+                                            <option value="">Preferred Mode</option>
+                                            {proposedModeOptions.map(option => (
+                                                <option key={option} value={option}>{option}</option>
+                                            ))}
+                                        </select>
+                                        {errors.proposedMode && (
+                                            <p className="mt-1 text-xs text-red-600">{errors.proposedMode}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ============ SECTION 8: ADDITIONAL INFORMATION ============ */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <FileText className="w-5 h-5 text-[#3b82f6]" />
+                                <h3 className="text-lg font-semibold text-gray-800">Additional Information</h3>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {/* Amenities */}
+                                <div ref={amenitiesRef} className="relative">
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <Building className="w-4 h-4 text-[#3b82f6]" />
+                                        Campus Facilities
+                                    </label>
+                                    <div className="relative">
+                                        <div 
+                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 text-sm" 
+                                            onClick={() => toggleDropdown('amenities')}
+                                        >
+                                            {formData.amenities.length > 0 ? (
+                                                <div className="flex flex-wrap gap-1">
+                                                    {formData.amenities.slice(0, 3).map(item => (
+                                                        <span key={item} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
+                                                            {item}
+                                                        </span>
+                                                    ))}
+                                                    {formData.amenities.length > 3 && (
+                                                        <span className="text-xs text-gray-500">+{formData.amenities.length - 3} more</span>
+                                                    )}
+                                                </div>
+                                            ) : <span className="text-gray-500">Select facilities</span>}
+                                        </div>
+                                        {dropdownOpen.amenities && (
+                                            <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
+                                                <div className="max-h-40 overflow-auto">
+                                                    {amenitiesOptions.map(opt => (
+                                                        <div key={opt} className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.amenities.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} onClick={() => handleMultiToggle('amenities', opt)}>
+                                                            <div className="flex items-center">
+                                                                <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.amenities.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
+                                                                    {formData.amenities.includes(opt) && <CheckSquare size={10} className="text-white" />}
+                                                                </div>
+                                                                <span className="text-sm">{opt}</span>
+                                                            </div>
+                                                            {formData.amenities.includes(opt) && <span className="text-[#3b82f6] text-xs">✓</span>}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="p-2 border-t border-white/50">
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="Add custom facility..." 
+                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm" 
+                                                        value={customAmenity} 
+                                                        onChange={(e) => setCustomAmenity(e.target.value)} 
+                                                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleCustomAdd('amenities', customAmenity, setCustomAmenity); } }} 
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Description */}
+                                <div>
+                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
+                                        <MessageSquare className="w-4 h-4 text-[#3b82f6]" />
+                                        Description
+                                    </label>
+                                    <textarea 
+                                        name="description" 
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent resize-none" 
+                                        placeholder="Additional information about the pool campus drive, specific requirements, or any other details..." 
+                                        value={formData.description} 
+                                        onChange={(e) => {
+                                            handleChange(e);
+                                            if (e.target.value.length > 500) {
+                                                setDescriptionError("Description cannot exceed 500 characters.");
+                                            } else {
+                                                setDescriptionError("");
+                                            }
+                                        }} 
+                                        rows="4"
+                                        maxLength={500}
+                                    ></textarea>
+                                    <div className="flex justify-between text-xs mt-1">
+                                        <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
+                                            {descriptionError ? descriptionError : `${formData.description.length}/500 characters`}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

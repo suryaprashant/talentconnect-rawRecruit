@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { ChevronDown, X, Mail, Phone, Link, Building2, Calendar, Users, MapPin } from 'lucide-react';
+import { ChevronDown, X, Mail, Phone, Link, Building2, Calendar, Users, MapPin, Briefcase, Target, DollarSign, Clock, MessageSquare, Award, IndianRupee, GraduationCap, Code, Settings } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
@@ -15,13 +15,11 @@ const toolsOptions = [
 export default function OffCampusHiringForm({ onBackClick }) {
 
   const jobRoles = ['Software Developer', 'Data Scientist', 'DevOps Engineer', 'QA Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'Mobile App Developer', 'UI/UX Designer', 'Product Manager', 'Business Analyst', 'Data Analyst', 'Machine Learning Engineer', 'Cloud Architect', 'Network Engineer', 'Cyber Security Specialist', 'Technical Writer', 'Sales Engineer', 'Marketing Specialist', 'HR Recruiter', 'Finance Analyst', 'Other'];
-  //const skillsOptions = ['JavaScript', 'Python', 'Java', 'React', 'Node.js', 'HTML/CSS', 'SQL', 'MongoDB', 'AWS', 'Docker', 'Kubernetes', 'Machine Learning', 'Data Structures', 'Algorithms', 'Git', 'REST APIs'];
   const benefitsOptions = ['Health Insurance', 'Provident Fund (PF)', 'Paid Time Off (PTO)', 'Work from Home', 'Performance Bonus', 'Stock Options'];
   const numberOfRoundsOptions = ['1', '2', '3', '4', '5', '6+'];
   const processOptions = ['Online Test', 'Coding Test', 'Aptitude Test', 'Group Discussion', 'Technical Interview', 'HR Interview', 'Case Study', 'Presentation'].map(option => `${option}`).sort((a, b) => a.localeCompare(b));
   const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
   const minStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '201-500', '500+'];
-  //const degrees = Object.keys(degreeStreamMapping).sort();
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
   const initialState = {
@@ -45,32 +43,31 @@ export default function OffCampusHiringForm({ onBackClick }) {
     tags: [],
     minStudents: '',
     cgpa: '', 
-  toolsAndPlatforms: [],
+    toolsAndPlatforms: [],
   };
 
   const [formData, setFormData] = useState(() => {
-  const savedData = localStorage.getItem('pendingOffCampusRequest');
-  if (!savedData) return initialState;
+    const savedData = localStorage.getItem('pendingOffCampusRequest');
+    if (!savedData) return initialState;
 
-  try {
-    const parsed = JSON.parse(savedData);
+    try {
+      const parsed = JSON.parse(savedData);
 
-    // Convert date strings back to Date objects
-    if (parsed.placementStartDate) parsed.placementStartDate = new Date(parsed.placementStartDate);
-    if (parsed.placementEndDate) parsed.placementEndDate = new Date(parsed.placementEndDate);
-    
-    // --- FIX START: Merge with initialState to ensure new fields exist ---
-    return {
-      ...initialState, // Provides toolsAndPlatforms: [] and cgpa: ''
-      ...parsed        // Overwrites with saved data
-    };
-    // --- FIX END ---
-    
-  } catch (e) {
-    console.error("Error reviving OffCampus data:", e);
-    return initialState;
-  }
-});
+      // Convert date strings back to Date objects
+      if (parsed.placementStartDate) parsed.placementStartDate = new Date(parsed.placementStartDate);
+      if (parsed.placementEndDate) parsed.placementEndDate = new Date(parsed.placementEndDate);
+      
+      // Merge with initialState to ensure new fields exist
+      return {
+        ...initialState,
+        ...parsed
+      };
+      
+    } catch (e) {
+      console.error("Error reviving OffCampus data:", e);
+      return initialState;
+    }
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [descriptionError, setDescriptionError] = useState("");
@@ -110,19 +107,19 @@ export default function OffCampusHiringForm({ onBackClick }) {
   const venueRef = useRef(null);
   const degreeRef = useRef(null);
 
-useEffect(() => {
-  const fetchMeta = async () => {
-    try {
-      const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta`);
-      setMetaData(data);
-    } catch (err) {
-      console.error("Error loading metadata", err);
-    }
-  };
-  fetchMeta();
-}, []);
+  useEffect(() => {
+    const fetchMeta = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta`);
+        setMetaData(data);
+      } catch (err) {
+        console.error("Error loading metadata", err);
+      }
+    };
+    fetchMeta();
+  }, []);
 
-useEffect(() => {
+  useEffect(() => {
     localStorage.setItem('pendingOffCampusRequest', JSON.stringify(formData));
   }, [formData]);
 
@@ -179,16 +176,6 @@ useEffect(() => {
     setFormData(prev => ({ ...prev, [name]: formattedDate }));
   };
 
-  {/*const handleMultiSelect = (field, value) => {
-    setFormData(prev => {
-      const currentValues = prev[field] || [];
-      const newValues = currentValues.includes(value)
-        ? currentValues.filter(item => item !== value)
-        : [...currentValues, value];
-      return { ...prev, [field]: newValues };
-    });
-  };*/}
-
   const removeLastSelectionProcess = (process) => {
     setFormData(prev => {
       const values = prev.selectionProcess || [];
@@ -208,12 +195,11 @@ useEffect(() => {
     });
   };
 
-
   const handleMultiSelect = (field, value) => {
     setFormData(prev => {
       const currentValues = prev[field] || [];
 
-      // 🔹 Special case ONLY for selectionProcess
+      // Special case ONLY for selectionProcess
       if (field === 'selectionProcess') {
         const count = currentValues.filter(item =>
           item.startsWith(value)
@@ -227,7 +213,7 @@ useEffect(() => {
         };
       }
 
-      // 🔹 Default behavior for all other fields (UNCHANGED)
+      // Default behavior for all other fields
       const newValues = currentValues.includes(value)
         ? currentValues.filter(item => item !== value)
         : [...currentValues, value];
@@ -244,15 +230,15 @@ useEffect(() => {
   };
 
   const handleInterviewDateChange = (date, field) => {
-  const formattedDate = formatDateLocal(date);
-  setFormData(prev => ({
-    ...prev,
-    interviewWindow: {
-      ...prev.interviewWindow,
-      [field]: formattedDate
-    }
-  }));
-};
+    const formattedDate = formatDateLocal(date);
+    setFormData(prev => ({
+      ...prev,
+      interviewWindow: {
+        ...prev.interviewWindow,
+        [field]: formattedDate
+      }
+    }));
+  };
 
   const toggleDropdown = (dropdown) => {
     setDropdownOpen(prev => {
@@ -281,57 +267,40 @@ useEffect(() => {
     setFormData({ ...formData, contactPerson: { ...formData.contactPerson, [name]: value } });
   };
 
-  // const handleCustomAdd = (field, value, setValue, predefinedOptions = []) => {
-  //   if (value.trim() === '') return;
-  //   setFormData(prev => {
-  //     const currentValues = prev[field] || [];
-  //     if (currentValues.map(v => v.toLowerCase()).includes(value.trim().toLowerCase()) || 
-  //         predefinedOptions.map(v => v.toLowerCase()).includes(value.trim().toLowerCase())) {
-  //       setValue('');
-  //       toast.error("Item already exists.");
-  //       return prev;
-  //     }
-  //     const newValues = [...currentValues, value.trim()];
-  //     return { ...prev, [field]: newValues };
-  //   });
-  //   setValue('');
-  // };
-const handleCustomAdd = async (field, value, setValue) => {
-  if (value.trim() === '') return;
+  const handleCustomAdd = async (field, value, setValue) => {
+    if (value.trim() === '') return;
 
-  // Validation: Must select degree before adding stream or skill
-  if ((field === 'studentStreams' || field === 'skills') && formData.degree.length === 0) {
-    toast.error(`Please select a Degree first to link this ${field === 'skills' ? 'skill' : 'stream'}.`);
-    return;
-  }
+    // Validation: Must select degree before adding stream or skill
+    if ((field === 'studentStreams' || field === 'skills') && formData.degree.length === 0) {
+      toast.error(`Please select a Degree first to link this ${field === 'skills' ? 'skill' : 'stream'}.`);
+      return;
+    }
 
-  try {
-    const payload = {
-      type: field,
-      name: value.trim(),
-      parentDegree: (field === 'studentStreams' || field === 'skills') ? formData.degree[0] : null
-    };
+    try {
+      const payload = {
+        type: field,
+        name: value.trim(),
+        parentDegree: (field === 'studentStreams' || field === 'skills') ? formData.degree[0] : null
+      };
 
-    const res = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/meta/add`, payload);
+      const res = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/meta/add`, payload);
 
-    setMetaData(prev => {
-      const index = prev.findIndex(m => m.degree === res.data.degree);
-      if (index > -1) {
-        const newMeta = [...prev];
-        newMeta[index] = res.data;
-        return newMeta;
-      }
-      return [...prev, res.data];
-    });
+      setMetaData(prev => {
+        const index = prev.findIndex(m => m.degree === res.data.degree);
+        if (index > -1) {
+          const newMeta = [...prev];
+          newMeta[index] = res.data;
+          return newMeta;
+        }
+        return [...prev, res.data];
+      });
 
-    setValue('');
-    toast.success(`${value} added to database! Click it to select.`);
-    // Note: We are NOT updating formData here, so no "tick" appears automatically.
-  } catch (err) {
-    toast.error(err.response?.data?.message || "Failed to save to server");
-  }
-};
- 
+      setValue('');
+      toast.success(`${value} added to database! Click it to select.`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to save to server");
+    }
+  };
 
   const handleLocationChange = (field, selectedOption) => {
     setFormData(prev => ({
@@ -347,50 +316,37 @@ const handleCustomAdd = async (field, value, setValue) => {
     }));
   };
 
-  // const availableStreams = (() => {
-  //   if (formData.degree.length === 0) {
-  //     return [];
-  //   }
-  //   const allStreams = new Set();
-  //   formData.degree.forEach(degree => {
-  //     if (degreeStreamMapping[degree]) {
-  //       degreeStreamMapping[degree].forEach(stream => allStreams.add(stream));
-  //     }
-  //   });
-  //   return [...allStreams].sort((a, b) => a.localeCompare(b));
-  // })();
-
   const degrees = useMemo(() => metaData.map(m => m.degree).sort(), [metaData]);
 
-const availableStreams = useMemo(() => {
-  if (formData.degree.length === 0) return [];
-  const streams = new Set();
-  formData.degree.forEach(degName => {
-    const match = metaData.find(m => m.degree === degName);
-    if (match) match.streams.forEach(s => streams.add(s));
-  });
-  return [...streams].sort();
-}, [formData.degree, metaData]);
+  const availableStreams = useMemo(() => {
+    if (formData.degree.length === 0) return [];
+    const streams = new Set();
+    formData.degree.forEach(degName => {
+      const match = metaData.find(m => m.degree === degName);
+      if (match) match.streams.forEach(s => streams.add(s));
+    });
+    return [...streams].sort();
+  }, [formData.degree, metaData]);
 
-const skillsOptions = useMemo(() => {
-  if (formData.degree.length === 0) return [];
-  const skills = new Set();
-  formData.degree.forEach(degName => {
-    const match = metaData.find(m => m.degree === degName);
-    if (match && match.skills) match.skills.forEach(s => skills.add(s));
-  });
-  return [...skills].sort();
-}, [formData.degree, metaData]);
+  const skillsOptions = useMemo(() => {
+    if (formData.degree.length === 0) return [];
+    const skills = new Set();
+    formData.degree.forEach(degName => {
+      const match = metaData.find(m => m.degree === degName);
+      if (match && match.skills) match.skills.forEach(s => skills.add(s));
+    });
+    return [...skills].sort();
+  }, [formData.degree, metaData]);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError(null);
+    e.preventDefault();
+    setError(null);
 
-  if (formData.description.length > 500) {
-    setDescriptionError("Job description cannot exceed 500 characters.");
-    toast.error("Job description cannot exceed 500 characters.");
-    return;
-  }
+    if (formData.description.length > 500) {
+      setDescriptionError("Job description cannot exceed 500 characters.");
+      toast.error("Job description cannot exceed 500 characters.");
+      return;
+    }
 
     const fieldsToValidate = [
       { key: 'studentStreams', name: 'Student Stream' },
@@ -414,8 +370,8 @@ const skillsOptions = useMemo(() => {
 
     setIsSubmitting(true);
 
-  try {
-    const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1];
+    try {
+      const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1];
 
       const submissionData = {
         venue: formData.venue,
@@ -446,8 +402,8 @@ const skillsOptions = useMemo(() => {
         contactPerson: formData.contactPerson,
         minimumStudents: formData.minStudents,
         jobType: "Off-campus",
-        cgpa: parseFloat(formData.cgpa) || 0.0, // Backend stores as Double
-    toolsAndPlatforms: formData.toolsAndPlatforms,
+        cgpa: parseFloat(formData.cgpa) || 0.0,
+        toolsAndPlatforms: formData.toolsAndPlatforms,
       };
 
       const response = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/hiring-channels/off-campus`, submissionData, {
@@ -495,6 +451,18 @@ const skillsOptions = useMemo(() => {
           </div>
         </div>
 
+        {/* Error Display */}
+        {error && (
+          <div className="bg-gradient-to-r from-red-50 to-white border border-red-200 rounded-xl p-3 mb-4">
+            <div className="flex items-start">
+              <div>
+                <h3 className="text-sm font-medium text-red-800">Error</h3>
+                <p className="text-sm text-red-700 mt-1">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Main Form */}
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-6">
           <div className="text-center mb-6">
@@ -504,894 +472,938 @@ const skillsOptions = useMemo(() => {
             <p className="text-gray-500 text-sm mt-1">Fill in the details below to register for the hiring drive.</p>
           </div>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm" role="alert">
-              <span className="block sm:inline">{error}</span>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* First Row: Venue */}
-            <div>
-              <label className="block mb-2 font-medium text-sm text-gray-700">
-                <MapPin className="inline w-4 h-4 mr-1" />
-                Hiring Venue <span className="text-red-500">*</span>
-              </label>
-              <CreatableSelect
-                isClearable
-                options={cityOptions}
-                value={formData.venue ? { value: formData.venue, label: formData.venue } : null}
-                onChange={(selectedOption) => handleLocationChange('venue', selectedOption)}
-                placeholder="Select or type venue..."
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    borderColor: '#e5e7eb',
-                    minHeight: '38px',
-                    fontSize: '14px',
-                    borderRadius: '0.5rem',
-                    backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
-                    backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    borderRadius: '0.5rem',
-                    fontSize: '14px',
-                    border: '1px solid #e5e7eb',
-                  }),
-                }}
-              />
-            </div>
-
-            {/* Second Row: Degree and Stream */}
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-  {/* Degree */}
-  <div>
-    <label className="block font-medium mb-2 text-sm text-gray-700">Degree <span className="text-red-500">*</span></label>
-    <div ref={degreeRef} className="relative">
-      <div className={`flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto ${formData.degree.length > 0 ? 'min-h-[20px]' : ''}`}>
-        {formData.degree.map(degree => (
-          <div key={degree} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-            <span>{degree}</span>
-            <button type="button" onClick={() => removeSelectedItem('degree', degree)} className="ml-1 text-gray-500 hover:text-gray-700">
-              <X size={12} />
-            </button>
-          </div>
-        ))}
-      </div>
-      <div
-        className="flex items-center justify-between w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[44px] h-[44px] px-3"
-        onClick={() => toggleDropdown('degree')}
-      >
-        <span className="text-sm text-gray-500">Select degree(s)</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.degree ? "rotate-180" : ""} text-gray-400`} />
-      </div>
-      {dropdownOpen.degree && (
-        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden flex flex-col">
-          {/* Search & Add Section */}
-          <div className="p-2 border-b border-gray-100 flex gap-2 bg-gray-50">
-            <input
-              type="text"
-              placeholder="Search or type new degree..."
-              value={customDegree}
-              onChange={(e) => setCustomDegree(e.target.value)}
-              className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-              onClick={(e) => e.stopPropagation()}
-            />
-            {/* Only show Add button if the degree is new */}
-            {customDegree && !degrees.some(d => d.toLowerCase() === customDegree.trim().toLowerCase()) && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCustomAdd('degree', customDegree, setCustomDegree);
-                }}
-                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-              >
-                Add New
-              </button>
-            )}
-          </div>
-
-          {/* Scrollable List Section */}
-          <div className="overflow-y-auto max-h-48">
-            {degrees
-              .filter(d => d.toLowerCase().includes(customDegree.toLowerCase()))
-              .map((degree) => (
-                <div
-                  key={degree}
-                  onClick={() => handleMultiSelect('degree', degree)}
-                  className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-50 flex items-center justify-between ${
-                    formData.degree.includes(degree) ? "bg-blue-50/50" : ""
-                  }`}
-                >
-                  <span className={`text-sm ${formData.degree.includes(degree) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                    {degree}
-                  </span>
-                  {formData.degree.includes(degree) && <span className="text-[#667eea] font-bold">✓</span>}
+            {/* SECTION 1: Basic Details */}
+            <div className="pt-2">
+              <div className="flex items-center mb-4">
+                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
+                  <MapPin className="h-4 w-4 text-[#667eea]" />
                 </div>
-              ))}
-            
-            {/* Message if no results found */}
-            {degrees.filter(d => d.toLowerCase().includes(customDegree.toLowerCase())).length === 0 && !customDegree && (
-              <div className="p-4 text-center text-gray-400 text-xs italic">
-                No degrees found. Type above to add one.
+                <h3 className="text-lg font-semibold text-gray-800">Basic Details</h3>
               </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  </div>
-
-  {/* Student Stream */}
-  <div>
-    <label className="block font-medium mb-2 text-sm text-gray-700">Student Stream <span className="text-red-500">*</span></label>
-    <div ref={studentStreamsRef} className="relative">
-      <div className={`flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto ${formData.studentStreams.length > 0 ? 'min-h-[20px]' : ''}`}>
-        {formData.studentStreams.map(stream => (
-          <div key={stream} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-            <span>{stream}</span>
-            <button type="button" onClick={() => removeSelectedItem('studentStreams', stream)} className="ml-1 text-gray-500 hover:text-gray-700">
-              <X size={12} />
-            </button>
-          </div>
-        ))}
-      </div>
-      <div
-        onClick={() => formData.degree.length > 0 && toggleDropdown('studentStreams')}
-        className={`flex items-center justify-between w-full border rounded-lg ${
-          !formData.degree.length 
-            ? 'bg-gray-50 cursor-not-allowed border-gray-200' 
-            : 'cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white border-gray-200'
-        } min-h-[44px] h-[44px] px-3`}
-      >
-        <span className={`text-sm ${!formData.degree.length ? 'text-gray-400' : 'text-gray-500'}`}>
-          {formData.degree.length > 0 ? 'Select streams' : 'Select degree first'}
-        </span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.studentStreams ? "rotate-180" : ""} ${!formData.degree.length ? 'text-gray-300' : 'text-gray-400'}`} />
-      </div>
-      {dropdownOpen.studentStreams && formData.degree.length > 0 && (
-        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-          {/* Add custom stream section */}
-          <div className="p-2 border-b border-gray-100 bg-gray-50">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Add custom stream..."
-                value={customStream}
-                onChange={(e) => setCustomStream(e.target.value)}
-                onClick={(e) => e.stopPropagation()}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
-                  }
-                }}
-                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
-                }}
-                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-          
-          {/* Scrollable list of streams */}
-          <div className="overflow-y-auto max-h-48">
-            {availableStreams.length > 0 ? (
-              availableStreams.map(stream => (
-                <div 
-                  key={stream} 
-                  onClick={() => handleMultiSelect('studentStreams', stream)} 
-                  className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                    formData.studentStreams.includes(stream) ? "bg-blue-50/50" : ""
-                  }`}
-                >
-                  <span className={`text-sm ${formData.studentStreams.includes(stream) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                    {stream}
-                  </span>
-                  {formData.studentStreams.includes(stream) && <span className="text-[#667eea] font-bold">✓</span>}
+              
+              <div className="space-y-4">
+                {/* Hiring Venue */}
+                <div>
+                  <label className="block mb-2 font-medium text-sm text-gray-700">
+                    Hiring Venue <span className="text-red-500">*</span>
+                  </label>
+                  <CreatableSelect
+                    isClearable
+                    options={cityOptions}
+                    value={formData.venue ? { value: formData.venue, label: formData.venue } : null}
+                    onChange={(selectedOption) => handleLocationChange('venue', selectedOption)}
+                    placeholder="Select or type venue..."
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        borderColor: '#e5e7eb',
+                        minHeight: '38px',
+                        fontSize: '14px',
+                        borderRadius: '0.5rem',
+                        backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
+                        backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        borderRadius: '0.5rem',
+                        fontSize: '14px',
+                        border: '1px solid #e5e7eb',
+                      }),
+                    }}
+                  />
                 </div>
-              ))
-            ) : (
-              <div className="p-4 text-center text-gray-400 text-xs italic">
-                No streams found. Add a stream above.
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  </div>
-</div>
 
-            {/* Third Row: Eligibility and Description */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Eligibility Criteria */}
-              <div>
-                <label className="block mb-2 font-medium text-sm text-gray-700">Eligibility Criteria <span className="text-red-500">*</span></label>
-                <textarea 
-                  name="eligibilityCriteria" 
-                  value={formData.eligibilityCriteria} 
-                  onChange={handleChange} 
-                  placeholder="e.g., Minimum 60%, no backlogs..." 
-                  className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24"
-                  required
-                />
-              </div>
-
-              {/* Job Description */}
-              <div>
-                <label className="block mb-1 font-medium text-sm text-gray-700">Job Description <span className="text-red-500">*</span></label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  placeholder="Provide job description..."
-                  className={`w-full p-3 text-sm border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24 ${descriptionError ? 'border-red-300' : 'border-gray-200'}`}
-                  maxLength={500}
-                  required
-                />
-                <div className="flex justify-between text-xs mt-1">
-                  <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
-                    {descriptionError ? descriptionError : `${formData.description.length}/500`}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Fourth Row: Skills and Benefits */}
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-  {/* Skills */}
-  <div>
-    <label className="block font-medium mb-2 text-sm text-gray-700">Skills <span className="text-red-500">*</span></label>
-    <div ref={skillsRef} className="relative">
-      <div className={`flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto ${formData.skills.length > 0 ? 'min-h-[20px]' : ''}`}>
-        {formData.skills.map(skill => (
-          <div key={skill} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-            <span>{skill}</span>
-            <button type="button" onClick={() => removeSelectedItem('skills', skill)} className="ml-1 text-gray-500 hover:text-gray-700">
-              <X size={12} />
-            </button>
-          </div>
-        ))}
-      </div>
-      <div onClick={() => toggleDropdown('skills')} className="flex items-center justify-between w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[44px] h-[44px] px-3">
-        <span className="text-sm text-gray-500">Select skills</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.skills ? "rotate-180" : ""} text-gray-400`} />
-      </div>
-      {dropdownOpen.skills && (
-        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-          {/* Add custom skill section */}
-          <div className="p-2 border-b border-gray-100 bg-gray-50">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Add custom skill..."
-                value={customSkill}
-                onChange={(e) => setCustomSkill(e.target.value)}
-                onClick={(e) => e.stopPropagation()}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
-                  }
-                }}
-                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
-                }}
-                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-          
-          {/* Scrollable list of skills */}
-          <div className="overflow-y-auto max-h-48">
-            {skillsOptions.map(skill => (
-              <div 
-                key={skill} 
-                onClick={() => handleMultiSelect('skills', skill)} 
-                className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                  formData.skills.includes(skill) ? "bg-blue-50/50" : ""
-                }`}
-              >
-                <span className={`text-sm ${formData.skills.includes(skill) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                  {skill}
-                </span>
-                {formData.skills.includes(skill) && <span className="text-[#667eea] font-bold">✓</span>}
-              </div>
-            ))}
-            
-            {skillsOptions.length === 0 && (
-              <div className="p-4 text-center text-gray-400 text-xs italic">
-                No skills found. Add a skill above.
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  </div>
-
-  {/* Benefits Offered */}
-  <div>
-    <label className="block font-medium mb-2 text-sm text-gray-700">Benefits <span className="text-red-500">*</span></label>
-    <div ref={benefitsRef} className="relative">
-      <div className={`flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto ${formData.benefits.length > 0 ? 'min-h-[20px]' : ''}`}>
-        {formData.benefits.map(benefit => (
-          <div key={benefit} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-            <span>{benefit}</span>
-            <button type="button" onClick={() => removeSelectedItem('benefits', benefit)} className="ml-1 text-gray-500 hover:text-gray-700">
-              <X size={12} />
-            </button>
-          </div>
-        ))}
-      </div>
-      <div onClick={() => toggleDropdown('benefits')} className="flex items-center justify-between w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[44px] h-[44px] px-3">
-        <span className="text-sm text-gray-500">Select benefits</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.benefits ? "rotate-180" : ""} text-gray-400`} />
-      </div>
-      {dropdownOpen.benefits && (
-        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-          {benefitsOptions.map(benefit => (
-            <div key={benefit} onClick={() => handleMultiSelect('benefits', benefit)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.benefits.includes(benefit) ? "bg-blue-50" : ""}`}>
-              <div className="flex items-center justify-between">
-                <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{benefit}</span>
-                {formData.benefits.includes(benefit) && <span className="text-[#667eea]">✓</span>}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  </div>
-</div>
-
-{/* CGPA and Tools/Platforms Row */}
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-  {/* CGPA Field */}
-  <div>
-    <label className="block mb-2 font-medium text-sm text-gray-700">
-      Minimum CGPA Required <span className="text-red-500">*</span>
-    </label>
-    <input
-      type="number"
-      name="cgpa"
-      step="0.01"
-      min="0"
-      max="10"
-      value={formData.cgpa}
-      onChange={handleChange}
-      placeholder="e.g. 7.50"
-      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-      required
-    />
-  </div>
-
-  {/* Tools & Platforms Field */}
-  <div>
-    <label className="block mb-2 font-medium text-sm text-gray-700">
-      Tools & Platforms <span className="text-red-500">*</span>
-    </label>
-    <CreatableSelect
-      isMulti
-      options={toolsOptions}
-      value={formData.toolsAndPlatforms.map(t => ({ value: t, label: t }))}
-      onChange={(selected) => setFormData({
-        ...formData, 
-        toolsAndPlatforms: selected ? selected.map(s => s.value) : []
-      })}
-      placeholder="Select tools or type new ones..."
-      styles={{
-        control: (base) => ({
-          ...base,
-          borderColor: '#e5e7eb',
-          borderRadius: '0.5rem',
-          fontSize: '14px',
-          backgroundColor: '#f9fafb',
-        }),
-        multiValue: (base) => ({
-          ...base,
-          backgroundColor: '#667eea15',
-          borderRadius: '9999px',
-        }),
-        multiValueLabel: (base) => ({
-          ...base,
-          color: '#667eea',
-          fontSize: '12px',
-          fontWeight: '500'
-        })
-      }}
-    />
-  </div>
-</div>
-            {/* Fifth Row: Tags and Package Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Tags */}
-              <div ref={tagsRef} className="relative">
-                <label className="block font-medium mb-2 text-sm text-gray-700">Tags</label>
-                <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
-                  {formData.tags.map(tag => (
-                    <div key={tag} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                      <span>{tag}</span>
-                      <button type="button" onClick={() => removeSelectedItem('tags', tag)} className="ml-1 text-gray-500 hover:text-gray-700">
-                        <X size={12} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div onClick={() => toggleDropdown('tags')} className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white">
-                  <span className="text-sm text-gray-500">Select tags</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.tags ? "rotate-180" : ""} text-gray-400`} />
-                </div>
-                {dropdownOpen.tags && (
-                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                    {tagsOptions.map(tag => (
-                      <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.tags.includes(tag) ? "bg-blue-50" : ""}`}>
-                        <div className="flex items-center justify-between">
-                          <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{tag}</span>
-                          {formData.tags.includes(tag) && <span className="text-[#667eea]">✓</span>}
-                        </div>
+                {/* Degree and Stream */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                  {/* Degree */}
+                  <div>
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Degree <span className="text-red-500">*</span></label>
+                    <div ref={degreeRef} className="relative">
+                      <div className={`flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto ${formData.degree.length > 0 ? 'min-h-[20px]' : ''}`}>
+                        {formData.degree.map(degree => (
+                          <div key={degree} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                            <span>{degree}</span>
+                            <button type="button" onClick={() => removeSelectedItem('degree', degree)} className="ml-1 text-gray-500 hover:text-gray-700">
+                              <X size={12} />
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Package Details */}
-              <div className='mt-1'>
-                <label className="block mb-2 font-medium text-sm text-gray-700">Package Details <span className="text-red-500">*</span></label>
-                <div className="flex mb-2">
-                  <div className="relative w-20">
-                    <select
-                      name="currency"
-                      value={formData.packageDetails.currency}
-                      onChange={handlePackageDetailsChange}
-                      className="w-full h-full p-2 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none"
-                    >
-                      <option value="INR">INR</option>
-                      <option value="USD">USD</option>
-                      <option value="EUR">EUR</option>
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                  </div>
-                  <input
-                    type="number"
-                    name="totalCTC"
-                    value={formData.packageDetails.totalCTC}
-                    onChange={handlePackageDetailsChange}
-                    placeholder="Total CTC"
-                    className="flex-1 p-2 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                    required
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="number"
-                    name="fixedPay"
-                    value={formData.packageDetails.fixedPay}
-                    onChange={handlePackageDetailsChange}
-                    placeholder="Fixed Pay"
-                    className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                  />
-                  <input
-                    type="number"
-                    name="joiningBonus"
-                    value={formData.packageDetails.joiningBonus}
-                    onChange={handlePackageDetailsChange}
-                    placeholder="Variable Pay"
-                    className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Sixth Row: Work Location and Job Roles */}
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-  {/* Work Location */}
-  <div className='mt-1'>
-    <label className="block font-medium mb-2 text-sm text-gray-700">Work Location <span className="text-red-500">*</span></label>
-    <CreatableSelect
-      isMulti
-      options={cityOptions}
-      value={formData.workLocations.map(location => ({ value: location, label: location }))}
-      onChange={handleWorkLocationsChange}
-      placeholder="Select work locations..."
-      styles={{
-        control: (base, state) => ({
-          ...base,
-          borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
-          minHeight: '44px',
-          height: '44px',
-          fontSize: '14px',
-          borderRadius: '0.5rem',
-          backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
-          backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
-          paddingTop: '2px',
-          paddingBottom: '2px',
-          boxShadow: state.isFocused ? '0 0 0 2px rgba(102, 126, 234, 0.1)' : 'none',
-        }),
-        valueContainer: (base) => ({
-          ...base,
-          padding: '0 10px',
-          height: '40px',
-          alignItems: 'center',
-        }),
-        placeholder: (base) => ({
-          ...base,
-          color: '#9ca3af',
-          margin: 0,
-        }),
-        input: (base) => ({
-          ...base,
-          margin: 0,
-          padding: 0,
-        }),
-        multiValue: (base) => ({
-          ...base,
-          fontSize: '12px',
-          backgroundColor: '#f3f4f6',
-          borderRadius: '9999px',
-          margin: '2px',
-          height: '24px',
-        }),
-        multiValueLabel: (base) => ({
-          ...base,
-          padding: '2px 6px',
-          lineHeight: '20px',
-        }),
-        multiValueRemove: (base) => ({
-          ...base,
-          fontSize: '12px',
-          color: '#6b7280',
-          borderRadius: '0 9999px 9999px 0',
-          ':hover': {
-            backgroundColor: '#e5e7eb',
-            color: '#374151',
-          },
-        }),
-        indicatorsContainer: (base) => ({
-          ...base,
-          height: '40px',
-        }),
-        menu: (base) => ({
-          ...base,
-          borderRadius: '0.5rem',
-          fontSize: '14px',
-          border: '1px solid #e5e7eb',
-          marginTop: '4px',
-        }),
-      }}
-    />
-  </div>
-
-  {/* Job Roles */}
-  <div>
-    <label className="block font-medium mb-2 text-sm text-gray-700">Job Role <span className="text-red-500">*</span></label>
-    <div ref={jobRolesRef} className="relative">
-      {/* Selected roles - removed scrolling */}
-      <div className={`flex flex-wrap gap-1 mb-1 ${formData.jobRoles.length > 0 ? 'min-h-[20px]' : ''}`}>
-        {formData.jobRoles.map(role => (
-          <div key={role} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-            <span>{role}</span>
-            <button type="button" onClick={() => removeSelectedItem('jobRoles', role)} className="ml-1 text-gray-500 hover:text-gray-700">
-              <X size={12} />
-            </button>
-          </div>
-        ))}
-      </div>
-      
-      <div onClick={() => toggleDropdown('jobRoles')} className="flex items-center justify-between w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[44px] h-[44px] px-3">
-        <span className="text-sm text-gray-500">Select job roles</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.jobRoles ? "rotate-180" : ""} text-gray-400`} />
-      </div>
-      
-      {dropdownOpen.jobRoles && (
-        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-          {/* Custom input section */}
-          <div className="p-2 border-b border-gray-100 bg-gray-50">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Add custom role..."
-                value={customJobRole}
-                onChange={(e) => setCustomJobRole(e.target.value)}
-                onClick={(e) => e.stopPropagation()}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
-                  }
-                }}
-                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
-                }}
-                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-          
-          {/* Scrollable list ONLY */}
-          <div className="overflow-y-auto max-h-48">
-            {jobRoles.map(role => (
-              <div 
-                key={role} 
-                onClick={() => handleMultiSelect('jobRoles', role)} 
-                className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                  formData.jobRoles.includes(role) ? "bg-blue-50/50" : ""
-                }`}
-              >
-                <span className={`text-sm ${formData.jobRoles.includes(role) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                  {role}
-                </span>
-                {formData.jobRoles.includes(role) && <span className="text-[#667eea] font-bold">✓</span>}
-              </div>
-            ))}
-            
-            {jobRoles.length === 0 && (
-              <div className="p-4 text-center text-gray-400 text-xs italic">
-                No job roles found. Add a role above.
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  </div>
-</div>
-
-            {/* Seventh Row: Work Mode and Employment Type */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Work Mode */}
-              <div>
-                <label className="block mb-2 font-medium text-sm text-gray-700">Work Mode <span className="text-red-500">*</span></label>
-                <div className="flex gap-2">
-                  {['Hybrid', 'On-site', 'Remote'].map(mode => (
-                    <button 
-                      key={mode} 
-                      type="button" 
-                      onClick={() => handleMultiSelect('workMode', mode)} 
-                      className={`flex-1 px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.workMode.includes(mode) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
-                    >
-                      {mode}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Employment Type */}
-              <div>
-                <label className="block mb-2 font-medium text-sm text-gray-700">Employment Type <span className="text-red-500">*</span></label>
-                <div className="flex gap-2">
-                  {['Part-time', 'Full-time', 'Contract'].map(type => (
-                    <button 
-                      key={type} 
-                      type="button" 
-                      onClick={() => handleMultiSelect('employmentType', type)} 
-                      className={`flex-1 px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.employmentType.includes(type) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Eighth Row: Placement Dates */}
-            <div>
-              <label className="block mb-2 font-medium text-sm text-gray-700">
-                Tentative Placement Dates <span className="text-red-500">*</span>
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block mb-1 text-xs text-gray-600">Start Date</label>
-                  <div className="relative">
-                    <DatePicker
-                      selected={formData.placementStartDate ? new Date(formData.placementStartDate) : null}
-                      onChange={(date) => handleDateChange(date, 'placementStartDate')}
-                      dateFormat="dd-MM-yyyy"
-                      placeholderText="Start date"
-                      className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                      required
-                      wrapperClassName="w-full"
-                    />
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                  </div>
-                </div>
-                <div>
-                  <label className="block mb-1 text-xs text-gray-600">End Date</label>
-                  <div className="relative">
-                    <DatePicker
-                      selected={formData.placementEndDate ? new Date(formData.placementEndDate) : null}
-                      onChange={(date) => handleDateChange(date, 'placementEndDate')}
-                      dateFormat="dd-MM-yyyy"
-                      placeholderText="End date"
-                      className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-                      required
-                      wrapperClassName="w-full"
-                    />
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-{/* Ninth Row: Hiring Timeline Dates */}
-<div>
-  <label className="block mb-2 font-medium text-sm text-gray-700">Hiring Timeline</label>
-  <div className="space-y-3">
-    <div>
-      <label className="block mb-1 text-xs text-gray-600">Test Date</label>
-      <div className="relative">
-        <DatePicker
-          selected={formData.onlineTestDate ? new Date(formData.onlineTestDate) : null}
-          onChange={(date) => handleDateChange(date, 'onlineTestDate')}
-          dateFormat="dd-MM-yyyy"
-          placeholderText="Test date"
-          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-          wrapperClassName="w-full"
-        />
-        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-      </div>
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <label className="block mb-1 text-xs text-gray-600">Interview Start</label>
-        <div className="relative">
-          <DatePicker
-            selected={formData.interviewWindow?.start ? new Date(formData.interviewWindow.start) : null}
-            onChange={(date) => handleInterviewDateChange(date, 'start')}
-            dateFormat="dd-MM-yyyy"
-            placeholderText="Interview start"
-            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-            wrapperClassName="w-full"
-          />
-          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-        </div>
-      </div>
-      <div>
-        <label className="block mb-1 text-xs text-gray-600">Interview End</label>
-        <div className="relative">
-          <DatePicker
-            selected={formData.interviewWindow?.end ? new Date(formData.interviewWindow.end) : null}
-            onChange={(date) => handleInterviewDateChange(date, 'end')}
-            dateFormat="dd-MM-yyyy"
-            placeholderText="Interview end"
-            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-            wrapperClassName="w-full"
-          />
-          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-        </div>
-      </div>
-    </div>
-    
-    <div>
-      <label className="block mb-1 text-xs text-gray-600">Offer Rollout Date</label>
-      <div className="relative">
-        <DatePicker
-          selected={formData.offerRolloutDate ? new Date(formData.offerRolloutDate) : null}
-          onChange={(date) => handleDateChange(date, 'offerRolloutDate')}
-          dateFormat="dd-MM-yyyy"
-          placeholderText="Offer rollout"
-          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
-          wrapperClassName="w-full"
-        />
-        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-      </div>
-    </div>
-  </div>
-</div>
-
-            {/* Ninth Row: Rounds and Selection Process */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Number of Rounds */}
-              <div>
-                <label className="block mb-2 font-medium text-sm text-gray-700">Number of Rounds <span className="text-red-500">*</span></label>
-                <div className="relative">
-                  <select 
-                    name="numberOfRounds" 
-                    value={formData.numberOfRounds} 
-                    onChange={handleChange} 
-                    className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
-                    required
-                  >
-                    <option value="" disabled>Select rounds</option>
-                    {numberOfRoundsOptions.map((round) => (<option key={round} value={round}>{round}</option>))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                </div>
-              </div>
-
-              {/* Process of Selection */}
-              <div ref={selectionProcessRef} className="relative">
-                <label className="block font-medium mb-2 text-sm text-gray-700">Selection Process <span className="text-red-500">*</span></label>
-                <div
-                  onClick={() => toggleDropdown('selectionProcess')}
-                  className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors min-h-[38px] bg-gradient-to-r from-gray-50 to-white"
-                >
-                  <span className={`text-sm ${formData.selectionProcess.length > 0 ? "text-gray-700" : "text-gray-500"}`}>
-                    {formData.selectionProcess.length > 0
-                      ? formData.selectionProcess.join(' + ')
-                      : 'Select process'}
-                  </span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.selectionProcess ? "rotate-180" : ""} text-gray-400`} />
-                </div>
-                {dropdownOpen.selectionProcess && (
-                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                    {processOptions.map(process => {
-                      const isSelected = formData.selectionProcess.some(p =>
-                        p.startsWith(process)
-                      );
-                    
-                      return (
-                        <div
-                          key={process}
-                          className={`px-3 py-2 border-b border-gray-100 ${
-                            isSelected ? "bg-blue-50" : "hover:bg-gray-50"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            {/* ADD (left side) */}
-                            <span
-                              onClick={() => handleMultiSelect('selectionProcess', process)}
-                              className={`text-sm cursor-pointer ${
-                                isSelected
-                                  ? "text-[#667eea] font-medium"
-                                  : "text-gray-700"
-                              }`}
-                            >
-                              {process}
-                            </span>
-                            
-                            {/* REMOVE (right side) */}
-                            {isSelected && (
+                      <div
+                        className="flex items-center justify-between w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[44px] h-[44px] px-3"
+                        onClick={() => toggleDropdown('degree')}
+                      >
+                        <span className="text-sm text-gray-500">Select degree(s)</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.degree ? "rotate-180" : ""} text-gray-400`} />
+                      </div>
+                      {dropdownOpen.degree && (
+                        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden flex flex-col">
+                          <div className="p-2 border-b border-gray-100 flex gap-2 bg-gray-50">
+                            <input
+                              type="text"
+                              placeholder="Search or type new degree..."
+                              value={customDegree}
+                              onChange={(e) => setCustomDegree(e.target.value)}
+                              className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            {customDegree && !degrees.some(d => d.toLowerCase() === customDegree.trim().toLowerCase()) && (
                               <button
+                                type="button"
                                 onClick={(e) => {
-                                  e.stopPropagation(); // important
-                                  removeLastSelectionProcess(process);
+                                  e.stopPropagation();
+                                  handleCustomAdd('degree', customDegree, setCustomDegree);
                                 }}
-                                className="text-gray-400 hover:text-red-500 text-sm font-semibold"
-                                title="Remove last round"
+                                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                               >
-                                ✕
+                                Add New
                               </button>
                             )}
                           </div>
+
+                          <div className="overflow-y-auto max-h-48">
+                            {degrees
+                              .filter(d => d.toLowerCase().includes(customDegree.toLowerCase()))
+                              .map((degree) => (
+                                <div
+                                  key={degree}
+                                  onClick={() => handleMultiSelect('degree', degree)}
+                                  className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-50 flex items-center justify-between ${
+                                    formData.degree.includes(degree) ? "bg-blue-50/50" : ""
+                                  }`}
+                                >
+                                  <span className={`text-sm ${formData.degree.includes(degree) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                                    {degree}
+                                  </span>
+                                  {formData.degree.includes(degree) && <span className="text-[#667eea] font-bold">✓</span>}
+                                </div>
+                              ))}
+                            
+                            {degrees.filter(d => d.toLowerCase().includes(customDegree.toLowerCase())).length === 0 && !customDegree && (
+                              <div className="p-4 text-center text-gray-400 text-xs italic">
+                                No degrees found. Type above to add one.
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      );
-                    })}
+                      )}
+                    </div>
                   </div>
-                )}
+
+                  {/* Student Stream */}
+                  <div>
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Student Stream <span className="text-red-500">*</span></label>
+                    <div ref={studentStreamsRef} className="relative">
+                      <div className={`flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto ${formData.studentStreams.length > 0 ? 'min-h-[20px]' : ''}`}>
+                        {formData.studentStreams.map(stream => (
+                          <div key={stream} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                            <span>{stream}</span>
+                            <button type="button" onClick={() => removeSelectedItem('studentStreams', stream)} className="ml-1 text-gray-500 hover:text-gray-700">
+                              <X size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <div
+                        onClick={() => formData.degree.length > 0 && toggleDropdown('studentStreams')}
+                        className={`flex items-center justify-between w-full border rounded-lg ${
+                          !formData.degree.length 
+                            ? 'bg-gray-50 cursor-not-allowed border-gray-200' 
+                            : 'cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white border-gray-200'
+                        } min-h-[44px] h-[44px] px-3`}
+                      >
+                        <span className={`text-sm ${!formData.degree.length ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {formData.degree.length > 0 ? 'Select streams' : 'Select degree first'}
+                        </span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.studentStreams ? "rotate-180" : ""} ${!formData.degree.length ? 'text-gray-300' : 'text-gray-400'}`} />
+                      </div>
+                      {dropdownOpen.studentStreams && formData.degree.length > 0 && (
+                        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+                          <div className="p-2 border-b border-gray-100 bg-gray-50">
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                placeholder="Add custom stream..."
+                                value={customStream}
+                                onChange={(e) => setCustomStream(e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
+                                  }
+                                }}
+                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                              />
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
+                                }}
+                                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </div>
+                          
+                          <div className="overflow-y-auto max-h-48">
+                            {availableStreams.length > 0 ? (
+                              availableStreams.map(stream => (
+                                <div 
+                                  key={stream} 
+                                  onClick={() => handleMultiSelect('studentStreams', stream)} 
+                                  className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+                                    formData.studentStreams.includes(stream) ? "bg-blue-50/50" : ""
+                                  }`}
+                                >
+                                  <span className={`text-sm ${formData.studentStreams.includes(stream) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                                    {stream}
+                                  </span>
+                                  {formData.studentStreams.includes(stream) && <span className="text-[#667eea] font-bold">✓</span>}
+                                </div>
+                              ))
+                            ) : (
+                              <div className="p-4 text-center text-gray-400 text-xs italic">
+                                No streams found. Add a stream above.
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Contact Information Section */}
-            <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-lg font-semibold text-gray-700 mb-4">Contact Information</h3>
+            {/* SECTION 2: Job Requirements */}
+            <div className="pt-4 border-t border-gray-100">
+              <div className="flex items-center mb-4">
+                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
+                  <Target className="h-4 w-4 text-[#667eea]" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800">Job Requirements</h3>
+              </div>
+              
               <div className="space-y-4">
-                {/* Tenth Row: Contact Person and Designation */}
+                {/* Eligibility and Description */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Eligibility Criteria */}
+                  <div>
+                    <label className="block mb-2 font-medium text-sm text-gray-700">Eligibility Criteria <span className="text-red-500">*</span></label>
+                    <textarea 
+                      name="eligibilityCriteria" 
+                      value={formData.eligibilityCriteria} 
+                      onChange={handleChange} 
+                      placeholder="e.g., Minimum 60%, no backlogs..." 
+                      className="w-full p-3 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24"
+                      required
+                    />
+                  </div>
+
+                  {/* Job Description */}
+                  <div>
+                    <label className="block mb-1 font-medium text-sm text-gray-700">Job Description <span className="text-red-500">*</span></label>
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleChange}
+                      placeholder="Provide job description..."
+                      className={`w-full p-3 text-sm border rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white resize-none h-24 ${descriptionError ? 'border-red-300' : 'border-gray-200'}`}
+                      maxLength={500}
+                      required
+                    />
+                    <div className="flex justify-between text-xs mt-1">
+                      <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
+                        {descriptionError ? descriptionError : `${formData.description.length}/500`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CGPA and Skills */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* CGPA Field */}
+                  <div>
+                    <label className="block mb-2 font-medium text-sm text-gray-700">
+                      Minimum CGPA Required <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      name="cgpa"
+                      step="0.01"
+                      min="0"
+                      max="10"
+                      value={formData.cgpa}
+                      onChange={handleChange}
+                      placeholder="e.g. 7.50"
+                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      required
+                    />
+                  </div>
+
+                  {/* Skills */}
+                  <div>
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Skills <span className="text-red-500">*</span></label>
+                    <div ref={skillsRef} className="relative">
+                      <div className={`flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto ${formData.skills.length > 0 ? 'min-h-[20px]' : ''}`}>
+                        {formData.skills.map(skill => (
+                          <div key={skill} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                            <span>{skill}</span>
+                            <button type="button" onClick={() => removeSelectedItem('skills', skill)} className="ml-1 text-gray-500 hover:text-gray-700">
+                              <X size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <div onClick={() => toggleDropdown('skills')} className="flex items-center justify-between w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[44px] h-[44px] px-3">
+                        <span className="text-sm text-gray-500">Select skills</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.skills ? "rotate-180" : ""} text-gray-400`} />
+                      </div>
+                      {dropdownOpen.skills && (
+                        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+                          <div className="p-2 border-b border-gray-100 bg-gray-50">
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                placeholder="Add custom skill..."
+                                value={customSkill}
+                                onChange={(e) => setCustomSkill(e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
+                                  }
+                                }}
+                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                              />
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
+                                }}
+                                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </div>
+                          
+                          <div className="overflow-y-auto max-h-48">
+                            {skillsOptions.map(skill => (
+                              <div 
+                                key={skill} 
+                                onClick={() => handleMultiSelect('skills', skill)} 
+                                className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+                                  formData.skills.includes(skill) ? "bg-blue-50/50" : ""
+                                }`}
+                              >
+                                <span className={`text-sm ${formData.skills.includes(skill) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                                  {skill}
+                                </span>
+                                {formData.skills.includes(skill) && <span className="text-[#667eea] font-bold">✓</span>}
+                              </div>
+                            ))}
+                            
+                            {skillsOptions.length === 0 && (
+                              <div className="p-4 text-center text-gray-400 text-xs italic">
+                                No skills found. Add a skill above.
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tools & Platforms */}
+                <div>
+                  <label className="block mb-2 font-medium text-sm text-gray-700">
+                    Tools & Platforms <span className="text-red-500">*</span>
+                  </label>
+                  <CreatableSelect
+                    isMulti
+                    options={toolsOptions}
+                    value={formData.toolsAndPlatforms.map(t => ({ value: t, label: t }))}
+                    onChange={(selected) => setFormData({
+                      ...formData, 
+                      toolsAndPlatforms: selected ? selected.map(s => s.value) : []
+                    })}
+                    placeholder="Select tools or type new ones..."
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        borderColor: '#e5e7eb',
+                        borderRadius: '0.5rem',
+                        fontSize: '14px',
+                        backgroundColor: '#f9fafb',
+                      }),
+                      multiValue: (base) => ({
+                        ...base,
+                        backgroundColor: '#667eea15',
+                        borderRadius: '9999px',
+                      }),
+                      multiValueLabel: (base) => ({
+                        ...base,
+                        color: '#667eea',
+                        fontSize: '12px',
+                        fontWeight: '500'
+                      })
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 3: Job Position & Work Details */}
+            <div className="pt-4 border-t border-gray-100">
+              <div className="flex items-center mb-4">
+                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
+                  <Briefcase className="h-4 w-4 text-[#667eea]" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800">Job Position & Work Details</h3>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Work Location and Job Roles */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                  {/* Work Location */}
+                  <div className='mt-1'>
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Work Location <span className="text-red-500">*</span></label>
+                    <CreatableSelect
+                      isMulti
+                      options={cityOptions}
+                      value={formData.workLocations.map(location => ({ value: location, label: location }))}
+                      onChange={handleWorkLocationsChange}
+                      placeholder="Select work locations..."
+                      styles={{
+                        control: (base, state) => ({
+                          ...base,
+                          borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+                          minHeight: '44px',
+                          height: '44px',
+                          fontSize: '14px',
+                          borderRadius: '0.5rem',
+                          backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
+                          backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
+                          paddingTop: '2px',
+                          paddingBottom: '2px',
+                          boxShadow: state.isFocused ? '0 0 0 2px rgba(102, 126, 234, 0.1)' : 'none',
+                        }),
+                        valueContainer: (base) => ({
+                          ...base,
+                          padding: '0 10px',
+                          height: '40px',
+                          alignItems: 'center',
+                        }),
+                        placeholder: (base) => ({
+                          ...base,
+                          color: '#9ca3af',
+                          margin: 0,
+                        }),
+                        input: (base) => ({
+                          ...base,
+                          margin: 0,
+                          padding: 0,
+                        }),
+                        multiValue: (base) => ({
+                          ...base,
+                          fontSize: '12px',
+                          backgroundColor: '#f3f4f6',
+                          borderRadius: '9999px',
+                          margin: '2px',
+                          height: '24px',
+                        }),
+                        multiValueLabel: (base) => ({
+                          ...base,
+                          padding: '2px 6px',
+                          lineHeight: '20px',
+                        }),
+                        multiValueRemove: (base) => ({
+                          ...base,
+                          fontSize: '12px',
+                          color: '#6b7280',
+                          borderRadius: '0 9999px 9999px 0',
+                          ':hover': {
+                            backgroundColor: '#e5e7eb',
+                            color: '#374151',
+                          },
+                        }),
+                        indicatorsContainer: (base) => ({
+                          ...base,
+                          height: '40px',
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          borderRadius: '0.5rem',
+                          fontSize: '14px',
+                          border: '1px solid #e5e7eb',
+                          marginTop: '4px',
+                        }),
+                      }}
+                    />
+                  </div>
+
+                  {/* Job Roles */}
+                  <div>
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Job Role <span className="text-red-500">*</span></label>
+                    <div ref={jobRolesRef} className="relative">
+                      <div className={`flex flex-wrap gap-1 mb-1 ${formData.jobRoles.length > 0 ? 'min-h-[20px]' : ''}`}>
+                        {formData.jobRoles.map(role => (
+                          <div key={role} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                            <span>{role}</span>
+                            <button type="button" onClick={() => removeSelectedItem('jobRoles', role)} className="ml-1 text-gray-500 hover:text-gray-700">
+                              <X size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div onClick={() => toggleDropdown('jobRoles')} className="flex items-center justify-between w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[44px] h-[44px] px-3">
+                        <span className="text-sm text-gray-500">Select job roles</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.jobRoles ? "rotate-180" : ""} text-gray-400`} />
+                      </div>
+                      
+                      {dropdownOpen.jobRoles && (
+                        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+                          <div className="p-2 border-b border-gray-100 bg-gray-50">
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                placeholder="Add custom role..."
+                                value={customJobRole}
+                                onChange={(e) => setCustomJobRole(e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
+                                  }
+                                }}
+                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                              />
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
+                                }}
+                                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </div>
+                          
+                          <div className="overflow-y-auto max-h-48">
+                            {jobRoles.map(role => (
+                              <div 
+                                key={role} 
+                                onClick={() => handleMultiSelect('jobRoles', role)} 
+                                className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+                                  formData.jobRoles.includes(role) ? "bg-blue-50/50" : ""
+                                }`}
+                              >
+                                <span className={`text-sm ${formData.jobRoles.includes(role) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                                  {role}
+                                </span>
+                                {formData.jobRoles.includes(role) && <span className="text-[#667eea] font-bold">✓</span>}
+                              </div>
+                            ))}
+                            
+                            {jobRoles.length === 0 && (
+                              <div className="p-4 text-center text-gray-400 text-xs italic">
+                                No job roles found. Add a role above.
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Work Mode and Employment Type */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Work Mode */}
+                  <div>
+                    <label className="block mb-2 font-medium text-sm text-gray-700">Work Mode <span className="text-red-500">*</span></label>
+                    <div className="flex gap-2">
+                      {['Hybrid', 'On-site', 'Remote'].map(mode => (
+                        <button 
+                          key={mode} 
+                          type="button" 
+                          onClick={() => handleMultiSelect('workMode', mode)} 
+                          className={`flex-1 px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.workMode.includes(mode) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
+                        >
+                          {mode}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Employment Type */}
+                  <div>
+                    <label className="block mb-2 font-medium text-sm text-gray-700">Employment Type <span className="text-red-500">*</span></label>
+                    <div className="flex gap-2">
+                      {['Part-time', 'Full-time', 'Contract'].map(type => (
+                        <button 
+                          key={type} 
+                          type="button" 
+                          onClick={() => handleMultiSelect('employmentType', type)} 
+                          className={`flex-1 px-3 py-1.5 text-sm border rounded-lg transition-colors ${formData.employmentType.includes(type) ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white border-transparent' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'}`}
+                        >
+                          {type}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 4: Compensation & Benefits */}
+            <div className="pt-4 border-t border-gray-100">
+              <div className="flex items-center mb-4">
+                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
+                  <IndianRupee className="h-4 w-4 text-[#667eea]" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800">Compensation & Benefits</h3>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Package Details */}
+                <div className='mt-1'>
+                  <label className="block mb-2 font-medium text-sm text-gray-700">Package Details <span className="text-red-500">*</span></label>
+                  <div className="flex mb-2">
+                    <div className="relative w-20">
+                      <select
+                        name="currency"
+                        value={formData.packageDetails.currency}
+                        onChange={handlePackageDetailsChange}
+                        className="w-full h-full p-2 text-sm border border-gray-200 rounded-l-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-8 text-center focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none"
+                      >
+                        <option value="INR">₹ INR</option>
+                        <option value="USD">$ USD</option>
+                        <option value="EUR">€ EUR</option>
+                      </select>
+                      <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                    </div>
+                    <input
+                      type="number"
+                      name="totalCTC"
+                      value={formData.packageDetails.totalCTC}
+                      onChange={handlePackageDetailsChange}
+                      placeholder="Total CTC"
+                      className="flex-1 p-2 text-sm border border-l-0 border-gray-200 rounded-r-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="number"
+                      name="fixedPay"
+                      value={formData.packageDetails.fixedPay}
+                      onChange={handlePackageDetailsChange}
+                      placeholder="Fixed Pay"
+                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    />
+                    <input
+                      type="number"
+                      name="joiningBonus"
+                      value={formData.packageDetails.joiningBonus}
+                      onChange={handlePackageDetailsChange}
+                      placeholder="Variable Pay"
+                      className="w-full p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Benefits and Tags */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Benefits Offered */}
+                  <div>
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Benefits <span className="text-red-500">*</span></label>
+                    <div ref={benefitsRef} className="relative">
+                      <div className={`flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto ${formData.benefits.length > 0 ? 'min-h-[20px]' : ''}`}>
+                        {formData.benefits.map(benefit => (
+                          <div key={benefit} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                            <span>{benefit}</span>
+                            <button type="button" onClick={() => removeSelectedItem('benefits', benefit)} className="ml-1 text-gray-500 hover:text-gray-700">
+                              <X size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <div onClick={() => toggleDropdown('benefits')} className="flex items-center justify-between w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[44px] h-[44px] px-3">
+                        <span className="text-sm text-gray-500">Select benefits</span>
+                        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.benefits ? "rotate-180" : ""} text-gray-400`} />
+                      </div>
+                      {dropdownOpen.benefits && (
+                        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
+                          {benefitsOptions.map(benefit => (
+                            <div key={benefit} onClick={() => handleMultiSelect('benefits', benefit)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.benefits.includes(benefit) ? "bg-blue-50" : ""}`}>
+                              <div className="flex items-center justify-between">
+                                <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{benefit}</span>
+                                {formData.benefits.includes(benefit) && <span className="text-[#667eea]">✓</span>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Tags */}
+                  <div ref={tagsRef} className="relative">
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Tags</label>
+                    <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
+                      {formData.tags.map(tag => (
+                        <div key={tag} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                          <span>{tag}</span>
+                          <button type="button" onClick={() => removeSelectedItem('tags', tag)} className="ml-1 text-gray-500 hover:text-gray-700">
+                            <X size={12} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <div onClick={() => toggleDropdown('tags')} className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white">
+                      <span className="text-sm text-gray-500">Select tags</span>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.tags ? "rotate-180" : ""} text-gray-400`} />
+                    </div>
+                    {dropdownOpen.tags && (
+                      <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
+                        {tagsOptions.map(tag => (
+                          <div key={tag} onClick={() => handleMultiSelect('tags', tag)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.tags.includes(tag) ? "bg-blue-50" : ""}`}>
+                            <div className="flex items-center justify-between">
+                              <span className={`text-sm ${formData.tags.includes(tag) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{tag}</span>
+                              {formData.tags.includes(tag) && <span className="text-[#667eea]">✓</span>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 5: Hiring Timeline */}
+            <div className="pt-4 border-t border-gray-100">
+              <div className="flex items-center mb-4">
+                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
+                  <Clock className="h-4 w-4 text-[#667eea]" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800">Hiring Timeline</h3>
+              </div>
+              
+              <div className="space-y-6">
+                {/* Placement Dates */}
+                <div>
+                  <label className="block mb-2 font-medium text-sm text-gray-700">
+                    Tentative Placement Dates <span className="text-red-500">*</span>
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block mb-1 text-xs text-gray-600">Start Date</label>
+                      <div className="relative">
+                        <DatePicker
+                          selected={formData.placementStartDate ? new Date(formData.placementStartDate) : null}
+                          onChange={(date) => handleDateChange(date, 'placementStartDate')}
+                          dateFormat="dd-MM-yyyy"
+                          placeholderText="Start date"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          required
+                          wrapperClassName="w-full"
+                        />
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block mb-1 text-xs text-gray-600">End Date</label>
+                      <div className="relative">
+                        <DatePicker
+                          selected={formData.placementEndDate ? new Date(formData.placementEndDate) : null}
+                          onChange={(date) => handleDateChange(date, 'placementEndDate')}
+                          dateFormat="dd-MM-yyyy"
+                          placeholderText="End date"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          required
+                          wrapperClassName="w-full"
+                        />
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hiring Timeline Dates */}
+                <div>
+                  <label className="block mb-2 font-medium text-sm text-gray-700">Selection Process Timeline</label>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block mb-1 text-xs text-gray-600">Test Date</label>
+                      <div className="relative">
+                        <DatePicker
+                          selected={formData.onlineTestDate ? new Date(formData.onlineTestDate) : null}
+                          onChange={(date) => handleDateChange(date, 'onlineTestDate')}
+                          dateFormat="dd-MM-yyyy"
+                          placeholderText="Test date"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          wrapperClassName="w-full"
+                        />
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block mb-1 text-xs text-gray-600">Interview Start</label>
+                        <div className="relative">
+                          <DatePicker
+                            selected={formData.interviewWindow?.start ? new Date(formData.interviewWindow.start) : null}
+                            onChange={(date) => handleInterviewDateChange(date, 'start')}
+                            dateFormat="dd-MM-yyyy"
+                            placeholderText="Interview start"
+                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                            wrapperClassName="w-full"
+                          />
+                          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block mb-1 text-xs text-gray-600">Interview End</label>
+                        <div className="relative">
+                          <DatePicker
+                            selected={formData.interviewWindow?.end ? new Date(formData.interviewWindow.end) : null}
+                            onChange={(date) => handleInterviewDateChange(date, 'end')}
+                            dateFormat="dd-MM-yyyy"
+                            placeholderText="Interview end"
+                            className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                            wrapperClassName="w-full"
+                          />
+                          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block mb-1 text-xs text-gray-600">Offer Rollout Date</label>
+                      <div className="relative">
+                        <DatePicker
+                          selected={formData.offerRolloutDate ? new Date(formData.offerRolloutDate) : null}
+                          onChange={(date) => handleDateChange(date, 'offerRolloutDate')}
+                          dateFormat="dd-MM-yyyy"
+                          placeholderText="Offer rollout"
+                          className="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200 bg-gradient-to-r from-gray-50 to-white"
+                          wrapperClassName="w-full"
+                        />
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Rounds and Selection Process */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Number of Rounds */}
+                  <div>
+                    <label className="block mb-2 font-medium text-sm text-gray-700">Number of Rounds <span className="text-red-500">*</span></label>
+                    <div className="relative">
+                      <select 
+                        name="numberOfRounds" 
+                        value={formData.numberOfRounds} 
+                        onChange={handleChange} 
+                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
+                        required
+                      >
+                        <option value="" disabled>Select rounds</option>
+                        {numberOfRoundsOptions.map((round) => (<option key={round} value={round}>{round}</option>))}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+                    </div>
+                  </div>
+
+                  {/* Process of Selection */}
+                  <div ref={selectionProcessRef} className="relative">
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Selection Process <span className="text-red-500">*</span></label>
+                    <div
+                      onClick={() => toggleDropdown('selectionProcess')}
+                      className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors min-h-[38px] bg-gradient-to-r from-gray-50 to-white"
+                    >
+                      <span className={`text-sm ${formData.selectionProcess.length > 0 ? "text-gray-700" : "text-gray-500"}`}>
+                        {formData.selectionProcess.length > 0
+                          ? formData.selectionProcess.join(' + ')
+                          : 'Select process'}
+                      </span>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.selectionProcess ? "rotate-180" : ""} text-gray-400`} />
+                    </div>
+                    {dropdownOpen.selectionProcess && (
+                      <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
+                        {processOptions.map(process => {
+                          const isSelected = formData.selectionProcess.some(p =>
+                            p.startsWith(process)
+                          );
+                        
+                          return (
+                            <div
+                              key={process}
+                              className={`px-3 py-2 border-b border-gray-100 ${
+                                isSelected ? "bg-blue-50" : "hover:bg-gray-50"
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span
+                                  onClick={() => handleMultiSelect('selectionProcess', process)}
+                                  className={`text-sm cursor-pointer ${
+                                    isSelected
+                                      ? "text-[#667eea] font-medium"
+                                      : "text-gray-700"
+                                  }`}
+                                >
+                                  {process}
+                                </span>
+                                
+                                {isSelected && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      removeLastSelectionProcess(process);
+                                    }}
+                                    className="text-gray-400 hover:text-red-500 text-sm font-semibold"
+                                    title="Remove last round"
+                                  >
+                                    ✕
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 6: Contact Information */}
+            <div className="pt-4 border-t border-gray-100">
+              <div className="flex items-center mb-4">
+                <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
+                  <MessageSquare className="h-4 w-4 text-[#667eea]" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800">Contact Information</h3>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Contact Person and Designation */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block mb-2 font-medium text-sm text-gray-700">Contact Person <span className="text-red-500">*</span></label>
@@ -1423,7 +1435,7 @@ const skillsOptions = useMemo(() => {
                   </div>
                 </div>
 
-                {/* Eleventh Row: Contact Email and Mobile */}
+                {/* Contact Email and Mobile */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block mb-2 font-medium text-sm text-gray-700">Email <span className="text-red-500">*</span></label>
@@ -1457,7 +1469,7 @@ const skillsOptions = useMemo(() => {
                   </div>
                 </div>
 
-                {/* Twelfth Row: LinkedIn and Minimum Students */}
+                {/* LinkedIn and Minimum Students */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block mb-2 font-medium text-sm text-gray-700">LinkedIn Profile</label>
