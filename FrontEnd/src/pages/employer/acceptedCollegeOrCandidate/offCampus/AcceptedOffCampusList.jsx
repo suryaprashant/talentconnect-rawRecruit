@@ -25,6 +25,7 @@ export default function OffCampusJobManagement() {
     const fetchJobs = async () => {
         try {
             const response = await getPostedJobs("Off-campus", "Accepted");
+            console.log("Fetched jobs:", response?.data); // Debug
             setJobs(response?.data);
         } catch (error) {
             console.error("Error fetching jobs:", error);
@@ -62,13 +63,26 @@ export default function OffCampusJobManagement() {
         setCurrentPage(pageNumber);
     };
 
-    // Action handlers
-    const handleView = (jobId) => {
-        const job = jobs.find(j => j._id === jobId);
-        if (job) {
-            setSelectedJob(job);
-            setShowJobDetail(true);
+    // Action handlers - MODIFIED: Separate functions for applications count and Eye icon
+    const handleViewApplicants = (job) => {
+        console.log("handleViewApplicants called for job:", job); // Debug
+        console.log("Application count:", job?.applicationCount); // Debug
+        
+        if (!job?.applicationCount || job.applicationCount === 0) {
+            alert("No applicants have applied for this job yet.");
+            return;
         }
+        setSelectedJob(job);
+        setShowJobDetail(true);
+    };
+
+    const handleViewJob = (job) => {
+        console.log("handleViewJob called for job:", job); // Debug
+        console.log("Application count:", job?.applicationCount); // Debug
+        
+        // Eye icon should always open detail page, even if no applicants
+        setSelectedJob(job);
+        setShowJobDetail(true);
     };
 
     const handleDelete = async (jobId) => {
@@ -224,12 +238,12 @@ export default function OffCampusJobManagement() {
                                         </div>
 
                                         {/* Applications - Clickable to View Applicants */}
-                                        <div className="col-span-3 text-center">
-                                            <div
-                                                onClick={() => handleView(job._id)}
-                                                className="inline-flex items-center justify-center w-8 h-8 text-sm font-medium rounded-full transition-all duration-200 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 hover:bg-gradient-to-r hover:from-blue-200 hover:to-blue-100 hover:shadow-md hover:shadow-blue-100 cursor-pointer"
-                                                title="View Applicant Applications"
-                                            >
+                                        <div 
+                                            className="col-span-3 text-center cursor-pointer group"
+                                            onClick={() => handleViewApplicants(job)}
+                                            title="View Applicant Applications"
+                                        >
+                                            <div className="inline-flex items-center justify-center w-8 h-8 text-sm font-medium rounded-full transition-all duration-200 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 hover:bg-gradient-to-r hover:from-blue-200 hover:to-blue-100 hover:shadow-md hover:shadow-blue-100 group-hover:scale-110">
                                                 {job?.applicationCount || 0}
                                             </div>
                                         </div>
@@ -238,10 +252,9 @@ export default function OffCampusJobManagement() {
                                         <div className="col-span-2">
                                             <div className="flex items-center justify-center gap-2">
                                                 <button 
-                                                    onClick={() => handleView(job._id)}
-                                                    className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                    title="View Applicant Applications"
-                                                    disabled={!job?.applicationCount || job.applicationCount === 0}
+                                                    onClick={() => handleViewJob(job)}
+                                                    className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
+                                                    title="View Job Details"
                                                 >
                                                     <Eye size={16} />
                                                 </button>

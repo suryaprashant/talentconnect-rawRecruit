@@ -1176,20 +1176,93 @@ import "react-datepicker/dist/react-datepicker.css";
 import BackButton from '@/components/layout/BackButton';
 
 export default function PoolCampusHiringForm() {
-  const collegeStreamMapping = {
-    'Engineering': ['B.Tech', 'M.Tech', 'Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Information Technology', 'Biotechnology', 'Chemical', 'Aerospace', 'Automobile'],
-    'Management': ['MBA', 'BBA'],
-    'Arts & Science': ['B.Sc', 'BA', 'B.Com', 'PhD'],
-    'Law': ['LLB', 'LLM'],
-    'Pharmacy': ['B.Pharm', 'M.Pharm'],
-    'Medical': ['MBBS', 'BDS', 'Nursing'],
-    'Architecture': ['B.Arch', 'M.Arch'],
-    'Polytechnic': ['Diploma in Engineering', 'Diploma in Technology'],
-    'ITI': ['Fitter', 'Electrician', 'Welder', 'Mechanic'],
-    'Other': ['Journalism', 'Fashion Design', 'Hotel Management']
+  // Updated data structure for College Type → Degree → Stream
+  const collegeTypeDegreeMapping = {
+    'Engineering': {
+      degrees: ['B.Tech', 'M.Tech', 'Diploma'],
+      streams: {
+        'B.Tech': ['Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Information Technology', 'Biotechnology', 'Chemical', 'Aerospace', 'Automobile'],
+        'M.Tech': ['Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical', 'Information Technology'],
+        'Diploma': ['Computer Science', 'Electronics', 'Mechanical', 'Civil', 'Electrical']
+      }
+    },
+    'Management': {
+      degrees: ['MBA', 'BBA'],
+      streams: {
+        'MBA': ['Finance', 'Marketing', 'HR', 'Operations', 'International Business'],
+        'BBA': ['General', 'Finance', 'Marketing', 'HR']
+      }
+    },
+    'Arts & Science': {
+      degrees: ['B.Sc', 'BA', 'B.Com', 'M.Sc', 'MA', 'M.Com', 'PhD'],
+      streams: {
+        'B.Sc': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science', 'Biology'],
+        'BA': ['English', 'History', 'Economics', 'Psychology', 'Sociology'],
+        'B.Com': ['General', 'Accounts', 'Taxation', 'Finance'],
+        'M.Sc': ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
+        'MA': ['English', 'History', 'Economics'],
+        'M.Com': ['General', 'Accounts'],
+        'PhD': ['Science', 'Arts', 'Commerce']
+      }
+    },
+    'Law': {
+      degrees: ['LLB', 'LLM'],
+      streams: {
+        'LLB': ['General', 'Corporate Law', 'Criminal Law', 'Constitutional Law'],
+        'LLM': ['General', 'Corporate Law', 'International Law']
+      }
+    },
+    'Pharmacy': {
+      degrees: ['B.Pharm', 'M.Pharm'],
+      streams: {
+        'B.Pharm': ['General'],
+        'M.Pharm': ['Pharmaceutics', 'Pharmacology', 'Pharmaceutical Chemistry']
+      }
+    },
+    'Medical': {
+      degrees: ['MBBS', 'BDS', 'Nursing'],
+      streams: {
+        'MBBS': ['General Medicine'],
+        'BDS': ['General Dentistry'],
+        'Nursing': ['General Nursing']
+      }
+    },
+    'Architecture': {
+      degrees: ['B.Arch', 'M.Arch'],
+      streams: {
+        'B.Arch': ['General'],
+        'M.Arch': ['Urban Design', 'Landscape Architecture']
+      }
+    },
+    'Polytechnic': {
+      degrees: ['Diploma in Engineering', 'Diploma in Technology'],
+      streams: {
+        'Diploma in Engineering': ['Computer', 'Electronics', 'Mechanical', 'Civil', 'Electrical'],
+        'Diploma in Technology': ['Computer Technology', 'Electronics Technology']
+      }
+    },
+    'ITI': {
+      degrees: ['Fitter', 'Electrician', 'Welder', 'Mechanic', 'Computer Operator'],
+      streams: {
+        'Fitter': ['General'],
+        'Electrician': ['General'],
+        'Welder': ['General'],
+        'Mechanic': ['General'],
+        'Computer Operator': ['General']
+      }
+    },
+    'Other': {
+      degrees: ['Journalism', 'Fashion Design', 'Hotel Management', 'Animation'],
+      streams: {
+        'Journalism': ['Print', 'Electronic', 'Digital'],
+        'Fashion Design': ['General'],
+        'Hotel Management': ['General'],
+        'Animation': ['2D', '3D', 'VFX']
+      }
+    }
   };
 
-  const collegeTypes = Object.keys(collegeStreamMapping);
+  const collegeTypes = Object.keys(collegeTypeDegreeMapping);
 
   const jobRoles = ['Software Developer', 'Data Scientist', 'DevOps Engineer', 'QA Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'Mobile App Developer', 'UI/UX Designer', 'Product Manager', 'Business Analyst', 'Data Analyst', 'Machine Learning Engineer', 'Cloud Architect', 'Network Engineer', 'Cyber Security Specialist', 'Technical Writer', 'Sales Engineer', 'Marketing Specialist', 'HR Recruiter', 'Finance Analyst', 'Other'];
   const skillsOptions = ['JavaScript', 'Python', 'Java', 'React', 'Node.js', 'HTML/CSS', 'SQL', 'MongoDB', 'AWS', 'Docker', 'Kubernetes', 'Machine Learning', 'Data Structures', 'Algorithms', 'Git', 'REST APIs'];
@@ -1211,10 +1284,12 @@ export default function PoolCampusHiringForm() {
     })),
   []);
 
+  // Updated initialState with new fields
   const initialState = {
     venue: null,
     collegeTypes: '',
-    studentStreams: [],
+    collegeDegrees: [], // New field
+    collegeStreams: [], // New field - renamed from studentStreams
     criteria: '',
     description: '',
     packageDetails: { currency: 'INR', totalCTC: '', fixedPay: '', joiningBonus: '' },
@@ -1237,6 +1312,7 @@ export default function PoolCampusHiringForm() {
     interviewWindow: { start: '', end: '' },
     offerRolloutDate: '',
     preferredHiringMode: '',
+    broadcastType: 'Everyone', // Added broadcastType
   };
 
   const [formData, setFormData] = useState(() => {
@@ -1246,13 +1322,24 @@ export default function PoolCampusHiringForm() {
     try {
       const parsed = JSON.parse(savedData);
 
-      // 1. Revive Top-level Date Strings
+      // Handle backward compatibility
+      if (parsed.studentStreams && !parsed.collegeStreams) {
+        parsed.collegeStreams = parsed.studentStreams;
+      }
+      
+      // Handle backward compatibility
+      if (parsed.collegeTypes && typeof parsed.collegeTypes === 'string' && !parsed.collegeDegrees) {
+        parsed.collegeDegrees = [];
+        parsed.collegeStreams = [];
+      }
+
+      // Revive Dates
       if (parsed.placementStartDate) parsed.placementStartDate = new Date(parsed.placementStartDate);
       if (parsed.placementEndDate) parsed.placementEndDate = new Date(parsed.placementEndDate);
       if (parsed.onlineTestDate) parsed.onlineTestDate = new Date(parsed.onlineTestDate);
       if (parsed.offerRolloutDate) parsed.offerRolloutDate = new Date(parsed.offerRolloutDate);
 
-      // 2. Revive Nested Interview Window Date Strings
+      // Revive Interview Window Dates
       if (parsed.interviewWindow?.start) {
         parsed.interviewWindow.start = new Date(parsed.interviewWindow.start);
       }
@@ -1272,22 +1359,23 @@ export default function PoolCampusHiringForm() {
   const [descriptionError, setDescriptionError] = useState("");
 
   const [customCollegeType, setCustomCollegeType] = useState('');
+  const [customDegree, setCustomDegree] = useState('');
   const [customStream, setCustomStream] = useState('');
   const [customJobRole, setCustomJobRole] = useState('');
   const [customSkill, setCustomSkill] = useState('');
 
   const [dropdownOpen, setDropdownOpen] = useState({
-    studentStreams: false,
     skills: false,
     benefits: false,
     jobRoles: false,
     amenities: false,
     selectionProcess: false,
     tags: false,
-    collegeTypes: false
+    collegeTypes: false,
+    collegeDegrees: false,
+    collegeStreams: false
   });
 
-  const studentStreamsRef = useRef(null);
   const skillsRef = useRef(null);
   const benefitsRef = useRef(null);
   const jobRolesRef = useRef(null);
@@ -1295,6 +1383,8 @@ export default function PoolCampusHiringForm() {
   const selectionProcessRef = useRef(null);
   const tagsRef = useRef(null);
   const collegeTypesRef = useRef(null);
+  const collegeDegreesRef = useRef(null);
+  const collegeStreamsRef = useRef(null);
 
   useEffect(() => {
     localStorage.setItem('pendingEmployerPoolHiring', JSON.stringify(formData));
@@ -1303,7 +1393,6 @@ export default function PoolCampusHiringForm() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       const refs = {
-        studentStreams: studentStreamsRef,
         skills: skillsRef,
         benefits: benefitsRef,
         jobRoles: jobRolesRef,
@@ -1311,6 +1400,8 @@ export default function PoolCampusHiringForm() {
         selectionProcess: selectionProcessRef,
         tags: tagsRef,
         collegeTypes: collegeTypesRef,
+        collegeDegrees: collegeDegreesRef,
+        collegeStreams: collegeStreamsRef,
       };
 
       for (const key in refs) {
@@ -1323,11 +1414,44 @@ export default function PoolCampusHiringForm() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Reset degrees when college type changes
   useEffect(() => {
     if (formData.collegeTypes) {
-      setFormData(prev => ({ ...prev, studentStreams: [] }));
+      setFormData(prev => ({ 
+        ...prev, 
+        collegeDegrees: [],
+        collegeStreams: [] 
+      }));
     }
   }, [formData.collegeTypes]);
+
+  // Reset streams when degrees change
+  useEffect(() => {
+    if (formData.collegeDegrees.length > 0) {
+      setFormData(prev => ({ 
+        ...prev, 
+        collegeStreams: [] 
+      }));
+    }
+  }, [formData.collegeDegrees]);
+
+  // Helper functions for available options
+  const getAvailableDegrees = () => {
+    if (!formData.collegeTypes) return [];
+    return collegeTypeDegreeMapping[formData.collegeTypes]?.degrees || [];
+  };
+
+  const getAvailableStreams = () => {
+    if (!formData.collegeTypes || formData.collegeDegrees.length === 0) return [];
+    
+    const streams = new Set();
+    formData.collegeDegrees.forEach(degree => {
+      const degreeStreams = collegeTypeDegreeMapping[formData.collegeTypes]?.streams?.[degree] || [];
+      degreeStreams.forEach(stream => streams.add(stream));
+    });
+    
+    return Array.from(streams);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -1366,7 +1490,6 @@ export default function PoolCampusHiringForm() {
     setFormData(prev => {
       const values = prev.selectionProcess || [];
 
-      // find last index of this process type
       const lastIndex = [...values]
         .map((v, i) => ({ v, i }))
         .filter(item => item.v.startsWith(process))
@@ -1385,7 +1508,6 @@ export default function PoolCampusHiringForm() {
     setFormData(prev => {
       const currentValues = prev[field] || [];
 
-      // 🔹 Special case ONLY for selectionProcess
       if (field === 'selectionProcess') {
         const count = currentValues.filter(item =>
           item.startsWith(value)
@@ -1399,7 +1521,6 @@ export default function PoolCampusHiringForm() {
         };
       }
 
-      // 🔹 Default behavior for all other fields (UNCHANGED)
       const newValues = currentValues.includes(value)
         ? currentValues.filter(item => item !== value)
         : [...currentValues, value];
@@ -1493,8 +1614,11 @@ export default function PoolCampusHiringForm() {
       return;
     }
 
+    // Updated validation for new fields
     const fieldsToValidate = [
-      { key: 'studentStreams', name: 'Student Stream / Degree' },
+      { key: 'collegeTypes', name: 'College Type' },
+      { key: 'collegeDegrees', name: 'Degree' },
+      { key: 'collegeStreams', name: 'Stream' },
       { key: 'skills', name: 'Skills' },
       { key: 'benefits', name: 'Benefits Offered' },
       { key: 'workMode', name: 'Work Mode' },
@@ -1530,7 +1654,8 @@ export default function PoolCampusHiringForm() {
       const submissionData = {
         venue: formData.venue ? formData.venue.value : '',
         collegeTypes: formData.collegeTypes ? [formData.collegeTypes] : [],
-        studentStreams: formData.studentStreams,
+        collegeDegrees: formData.collegeDegrees,
+        studentStreams: formData.collegeStreams, // Map to expected backend field name
         eligibilityCriteria: formData.criteria,
         description: formData.description,
         packageDetails: {
@@ -1554,6 +1679,7 @@ export default function PoolCampusHiringForm() {
         tags: formData.tags,
         minimumStudents: formData.minStudents,
         jobType: "Pool-campus",
+        broadcastType: formData.broadcastType,
         collegeCategories: formData.collegeCategories,
         onlineTestDate: formData.onlineTestDate || undefined,
         interviewWindow: {
@@ -1592,8 +1718,6 @@ export default function PoolCampusHiringForm() {
       setIsSubmitting(false);
     }
   };
-
-  const availableStreams = collegeStreamMapping[formData.collegeTypes] || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 py-4">
@@ -1634,206 +1758,308 @@ export default function PoolCampusHiringForm() {
             <div className="pt-2">
               <div className="flex items-center mb-4">
                 <div className="p-1.5 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-3">
-                  <MapPin className="h-4 w-4 text-[#667eea]" />
+                  <Building2 className="h-4 w-4 text-[#667eea]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800">Venue & College Details</h3>
               </div>
               
               <div className="space-y-4">
-                {/* Venue */}
-                <div>
-                  <label className="block mb-2 font-medium text-sm text-gray-700">Pool Campus Hiring Venue <span className="text-red-500">*</span></label>
-                  <CreatableSelect
-                    isClearable
-                    options={cityOptions}
-                    value={formData.venue}
-                    onChange={handleVenueChange}
-                    placeholder="Select or type to add a venue location..."
-                    styles={{
-                      control: (base) => ({
-                        ...base,
-                        borderColor: '#e5e7eb',
-                        minHeight: '38px',
-                        fontSize: '14px',
-                        borderRadius: '0.5rem',
-                        backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
-                        backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        borderRadius: '0.5rem',
-                        fontSize: '14px',
-                        border: '1px solid #e5e7eb',
-                      }),
-                    }}
-                  />
-                </div>
-
-                {/* College Type and Stream */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                  {/* Type of College */}
-                  <div className='mt-1'>
-                    <label className="block font-medium mb-2 text-sm text-gray-700">Type of College <span className="text-red-500">*</span></label>
-                    <div ref={collegeTypesRef} className="relative">
-                      <div 
-                        onClick={() => toggleDropdown('collegeTypes')}
-                        className="flex items-center justify-between w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[44px] h-[44px] px-3"
-                      >
-                        <span className={`text-sm ${formData.collegeTypes ? "text-gray-700" : "text-gray-500"}`}>
-                          {formData.collegeTypes || 'Select college type'}
-                        </span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.collegeTypes ? "rotate-180" : ""} text-gray-400`} />
-                      </div>
-                      
-                      {dropdownOpen.collegeTypes && (
-                        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-                          {/* Custom input section */}
-                          <div className="p-2 border-b border-gray-100 bg-gray-50">
-                            <div className="flex gap-2">
-                              <input
-                                type="text"
-                                placeholder="Add custom college type..."
-                                value={customCollegeType}
-                                onChange={(e) => setCustomCollegeType(e.target.value)}
-                                onClick={(e) => e.stopPropagation()}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    handleCustomAddSingle('collegeTypes', customCollegeType, setCustomCollegeType, collegeTypes);
-                                  }
-                                }}
-                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-                              />
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleCustomAddSingle('collegeTypes', customCollegeType, setCustomCollegeType, collegeTypes);
-                                }}
-                                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-                              >
-                                Add
-                              </button>
-                            </div>
-                          </div>
-                          
-                          {/* Scrollable list ONLY */}
-                          <div className="overflow-y-auto max-h-48">
-                            {collegeTypes.map(type => (
-                              <div 
-                                key={type} 
-                                onClick={() => {
-                                  setFormData(prev => ({ ...prev, collegeTypes: type }));
-                                  setDropdownOpen(prev => ({ ...prev, collegeTypes: false }));
-                                }} 
-                                className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                                  formData.collegeTypes === type ? "bg-blue-50/50" : ""
-                                }`}
-                              >
-                                <span className={`text-sm ${formData.collegeTypes === type ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                                  {type}
-                                </span>
-                                {formData.collegeTypes === type && <span className="text-[#667eea] font-bold">✓</span>}
-                              </div>
-                            ))}
-                            
-                            {collegeTypes.length === 0 && (
-                              <div className="p-4 text-center text-gray-400 text-xs italic">
-                                No college types found. Add a type above.
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                {/* Venue and Amenities (moved here) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Venue */}
+                  <div>
+                    <label className="block mb-2 font-medium text-sm text-gray-700">Pool Campus Hiring Venue <span className="text-red-500">*</span></label>
+                    <CreatableSelect
+                      isClearable
+                      options={cityOptions}
+                      value={formData.venue}
+                      onChange={handleVenueChange}
+                      placeholder="Select or type to add a venue location..."
+                      styles={{
+                        control: (base) => ({
+                          ...base,
+                          borderColor: '#e5e7eb',
+                          minHeight: '38px',
+                          fontSize: '14px',
+                          borderRadius: '0.5rem',
+                          backgroundColor: 'rgb(249 250 251 / var(--tw-bg-opacity))',
+                          backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
+                        }),
+                        menu: (base) => ({
+                          ...base,
+                          borderRadius: '0.5rem',
+                          fontSize: '14px',
+                          border: '1px solid #e5e7eb',
+                        }),
+                      }}
+                    />
                   </div>
 
-                  {/* Student Stream / Degree */}
-                  <div>
-                    <label className="block font-medium mb-2 text-sm text-gray-700">Student Stream / Degree <span className="text-red-500">*</span></label>
-                    <div ref={studentStreamsRef} className="relative">
-                      {/* Selected streams */}
-                      <div className={`flex flex-wrap gap-1 mb-1 ${formData.studentStreams.length > 0 ? 'min-h-[20px]' : ''}`}>
-                        {formData.studentStreams.map(stream => (
-                          <div key={stream} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                            <span>{stream}</span>
-                            <button type="button" onClick={() => removeSelectedItem('studentStreams', stream)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
+                  {/* Amenities/Facilities - MOVED HERE */}
+                  <div ref={amenitiesRef} className="relative">
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Amenities/Facilities required <span className="text-red-500">*</span></label>
+                    <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
+                      {formData.amenities.map(item => (
+                        <div key={item} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                          <span>{item}</span>
+                          <button type="button" onClick={() => removeSelectedItem('amenities', item)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
+                        </div>
+                      ))}
+                    </div>
+                    <div onClick={() => toggleDropdown('amenities')} className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white">
+                      <span className="text-sm text-gray-500">Select amenities</span>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.amenities ? "rotate-180" : ""} text-gray-400`} />
+                    </div>
+                    {dropdownOpen.amenities && (
+                      <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
+                        {amenitiesOptions.map(item => (
+                          <div key={item} onClick={() => handleMultiSelect('amenities', item)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.amenities.includes(item) ? "bg-blue-50" : ""}`}>
+                            <div className="flex items-center justify-between">
+                              <span className={`text-sm ${formData.amenities.includes(item) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{item}</span>
+                              {formData.amenities.includes(item) && <span className="text-[#667eea]">✓</span>}
+                            </div>
                           </div>
                         ))}
                       </div>
-                      
-                      <div
-                        onClick={() => formData.collegeTypes && toggleDropdown('studentStreams')}
-                        className={`flex items-center justify-between w-full border rounded-lg ${
-                          !formData.collegeTypes 
-                            ? 'bg-gray-50 cursor-not-allowed border-gray-200' 
-                            : 'cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white border-gray-200'
-                        } min-h-[44px] h-[44px] px-3`}
-                      >
-                        <span className={`text-sm ${!formData.collegeTypes ? 'text-gray-400' : 'text-gray-500'}`}>
-                          {formData.collegeTypes ? 'Select streams' : 'Select college type first'}
-                        </span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.studentStreams ? "rotate-180" : ""} ${!formData.collegeTypes ? 'text-gray-300' : 'text-gray-400'}`} />
-                      </div>
-                      
-                      {dropdownOpen.studentStreams && formData.collegeTypes && (
-                        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-                          {/* Custom input section */}
-                          <div className="p-2 border-b border-gray-100 bg-gray-50">
-                            <div className="flex gap-2">
-                              <input
-                                type="text"
-                                placeholder="Add custom stream..."
-                                value={customStream}
-                                onChange={(e) => setCustomStream(e.target.value)}
-                                onClick={(e) => e.stopPropagation()}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
-                                  }
-                                }}
-                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-                              />
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleCustomAdd('studentStreams', customStream, setCustomStream, availableStreams);
-                                }}
-                                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-                              >
-                                Add
-                              </button>
-                            </div>
-                          </div>
-                          
-                          {/* Scrollable list ONLY */}
-                          <div className="overflow-y-auto max-h-48">
-                            {availableStreams.map(stream => (
-                              <div 
-                                key={stream} 
-                                onClick={() => handleMultiSelect('studentStreams', stream)} 
-                                className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                                  formData.studentStreams.includes(stream) ? "bg-blue-50/50" : ""
-                                }`}
-                              >
-                                <span className={`text-sm ${formData.studentStreams.includes(stream) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                                  {stream}
-                                </span>
-                                {formData.studentStreams.includes(stream) && <span className="text-[#667eea] font-bold">✓</span>}
-                              </div>
-                            ))}
-                            
-                            {availableStreams.length === 0 && (
-                              <div className="p-4 text-center text-gray-400 text-xs italic">
-                                No streams found. Add a stream above.
-                              </div>
-                            )}
+                    )}
+                  </div>
+                </div>
+
+                {/* College Type, Degree, Stream - NEW 3-FIELD STRUCTURE */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* College Type */}
+                  <div ref={collegeTypesRef} className="relative">
+                    <label className="block font-medium mb-2 text-sm text-gray-700">College Type <span className="text-red-500">*</span></label>
+                    <div 
+                      onClick={() => toggleDropdown('collegeTypes')}
+                      className="flex items-center justify-between w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[44px] h-[44px] px-3"
+                    >
+                      <span className={`text-sm ${formData.collegeTypes ? "text-gray-700" : "text-gray-500"}`}>
+                        {formData.collegeTypes || 'Select college type'}
+                      </span>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.collegeTypes ? "rotate-180" : ""} text-gray-400`} />
+                    </div>
+                    
+                    {dropdownOpen.collegeTypes && (
+                      <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+                        <div className="p-2 border-b border-gray-100 bg-gray-50">
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              placeholder="Add custom college type..."
+                              value={customCollegeType}
+                              onChange={(e) => setCustomCollegeType(e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleCustomAddSingle('collegeTypes', customCollegeType, setCustomCollegeType, collegeTypes);
+                                }
+                              }}
+                              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCustomAddSingle('collegeTypes', customCollegeType, setCustomCollegeType, collegeTypes);
+                              }}
+                              className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                            >
+                              Add
+                            </button>
                           </div>
                         </div>
-                      )}
+                        
+                        <div className="overflow-y-auto max-h-48">
+                          {collegeTypes.map(type => (
+                            <div 
+                              key={type} 
+                              onClick={() => {
+                                setFormData(prev => ({ ...prev, collegeTypes: type }));
+                                setDropdownOpen(prev => ({ ...prev, collegeTypes: false }));
+                              }} 
+                              className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+                                formData.collegeTypes === type ? "bg-blue-50/50" : ""
+                              }`}
+                            >
+                              <span className={`text-sm ${formData.collegeTypes === type ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                                {type}
+                              </span>
+                              {formData.collegeTypes === type && <span className="text-[#667eea] font-bold">✓</span>}
+                            </div>
+                          ))}
+                          
+                          {collegeTypes.length === 0 && (
+                            <div className="p-4 text-center text-gray-400 text-xs italic">
+                              No college types found. Add a type above.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Degree */}
+                  <div ref={collegeDegreesRef} className="relative">
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Degree <span className="text-red-500">*</span></label>
+                    <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
+                      {formData.collegeDegrees.map(degree => (
+                        <div key={degree} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                          <span>{degree}</span>
+                          <button type="button" onClick={() => removeSelectedItem('collegeDegrees', degree)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
+                        </div>
+                      ))}
                     </div>
+                    <div
+                      onClick={() => formData.collegeTypes && toggleDropdown('collegeDegrees')}
+                      className={`flex items-center justify-between w-full border rounded-lg ${
+                        !formData.collegeTypes 
+                          ? 'bg-gray-50 cursor-not-allowed border-gray-200' 
+                          : 'cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white border-gray-200'
+                      } min-h-[44px] h-[44px] px-3`}
+                    >
+                      <span className="text-sm text-gray-500">
+                        {formData.collegeTypes ? 'Select degrees' : 'Select college type first'}
+                      </span>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.collegeDegrees ? "rotate-180" : ""} ${!formData.collegeTypes ? 'text-gray-300' : 'text-gray-400'}`} />
+                    </div>
+                    {dropdownOpen.collegeDegrees && formData.collegeTypes && (
+                      <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+                        <div className="p-2 border-b border-gray-100 bg-gray-50">
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              placeholder="Add custom degree..."
+                              value={customDegree}
+                              onChange={(e) => setCustomDegree(e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleCustomAdd('collegeDegrees', customDegree, setCustomDegree, getAvailableDegrees());
+                                }
+                              }}
+                              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCustomAdd('collegeDegrees', customDegree, setCustomDegree, getAvailableDegrees());
+                              }}
+                              className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                            >
+                              Add
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div className="overflow-y-auto max-h-48">
+                          {getAvailableDegrees().map(degree => (
+                            <div 
+                              key={degree} 
+                              onClick={() => handleMultiSelect('collegeDegrees', degree)} 
+                              className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+                                formData.collegeDegrees.includes(degree) ? "bg-blue-50/50" : ""
+                              }`}
+                            >
+                              <span className={`text-sm ${formData.collegeDegrees.includes(degree) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                                {degree}
+                              </span>
+                              {formData.collegeDegrees.includes(degree) && <span className="text-[#667eea] font-bold">✓</span>}
+                            </div>
+                          ))}
+                          
+                          {getAvailableDegrees().length === 0 && (
+                            <div className="p-4 text-center text-gray-400 text-xs italic">
+                              No degrees found for this college type.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Stream */}
+                  <div ref={collegeStreamsRef} className="relative">
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Stream <span className="text-red-500">*</span></label>
+                    <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
+                      {formData.collegeStreams.map(stream => (
+                        <div key={stream} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                          <span>{stream}</span>
+                          <button type="button" onClick={() => removeSelectedItem('collegeStreams', stream)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
+                        </div>
+                      ))}
+                    </div>
+                    <div
+                      onClick={() => formData.collegeDegrees.length > 0 && toggleDropdown('collegeStreams')}
+                      className={`flex items-center justify-between w-full border rounded-lg ${
+                        !formData.collegeDegrees.length 
+                          ? 'bg-gray-50 cursor-not-allowed border-gray-200' 
+                          : 'cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white border-gray-200'
+                      } min-h-[44px] h-[44px] px-3`}
+                    >
+                      <span className="text-sm text-gray-500">
+                        {formData.collegeDegrees.length ? 'Select streams' : 'Select degrees first'}
+                      </span>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.collegeStreams ? "rotate-180" : ""} ${!formData.collegeDegrees.length ? 'text-gray-300' : 'text-gray-400'}`} />
+                    </div>
+                    {dropdownOpen.collegeStreams && formData.collegeDegrees.length > 0 && (
+                      <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
+                        <div className="p-2 border-b border-gray-100 bg-gray-50">
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              placeholder="Add custom stream..."
+                              value={customStream}
+                              onChange={(e) => setCustomStream(e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleCustomAdd('collegeStreams', customStream, setCustomStream, getAvailableStreams());
+                                }
+                              }}
+                              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCustomAdd('collegeStreams', customStream, setCustomStream, getAvailableStreams());
+                              }}
+                              className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
+                            >
+                              Add
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div className="overflow-y-auto max-h-48">
+                          {getAvailableStreams().map(stream => (
+                            <div 
+                              key={stream} 
+                              onClick={() => handleMultiSelect('collegeStreams', stream)} 
+                              className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
+                                formData.collegeStreams.includes(stream) ? "bg-blue-50/50" : ""
+                              }`}
+                            >
+                              <span className={`text-sm ${formData.collegeStreams.includes(stream) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
+                                {stream}
+                              </span>
+                              {formData.collegeStreams.includes(stream) && <span className="text-[#667eea] font-bold">✓</span>}
+                            </div>
+                          ))}
+                          
+                          {getAvailableStreams().length === 0 && (
+                            <div className="p-4 text-center text-gray-400 text-xs italic">
+                              No streams found for selected degrees.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -1847,6 +2073,42 @@ export default function PoolCampusHiringForm() {
                       </button>
                     ))}
                   </div>
+                </div>
+
+                {/* Broadcast Options */}
+                <div className="mt-4 bg-gray-50/50 p-4 rounded-lg border border-gray-100">
+                  <label className="block mb-2 font-medium text-sm text-gray-700">
+                    Broadcast Options <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex gap-6">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="broadcastType"
+                        value="Everyone"
+                        checked={formData.broadcastType === 'Everyone'}
+                        onChange={handleChange}
+                        className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]"
+                      />
+                      <span className="ml-2 text-sm text-gray-700 font-medium">Global (All Colleges)</span>
+                    </label>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="broadcastType"
+                        value="Location"
+                        checked={formData.broadcastType === 'Location'}
+                        onChange={handleChange}
+                        className="h-4 w-4 text-[#667eea] border-gray-300 focus:ring-[#667eea]"
+                      />
+                      <span className="ml-2 text-sm text-gray-700 font-medium">Local (Match by Venue)</span>
+                    </label>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2 italic">
+                    {formData.broadcastType === 'Everyone' 
+                      ? "All colleges nationwide will see this posting." 
+                      : "Only colleges in the same city as the Venue will see this posting."}
+                  </p>
                 </div>
               </div>
             </div>
@@ -2075,7 +2337,6 @@ export default function PoolCampusHiringForm() {
                   <div>
                     <label className="block font-medium mb-2 text-sm text-gray-700">Job Role <span className="text-red-500">*</span></label>
                     <div ref={jobRolesRef} className="relative">
-                      {/* Selected roles */}
                       <div className={`flex flex-wrap gap-1 mb-1 ${formData.jobRoles.length > 0 ? 'min-h-[20px]' : ''}`}>
                         {formData.jobRoles.map(role => (
                           <div key={role} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
@@ -2092,7 +2353,6 @@ export default function PoolCampusHiringForm() {
                       
                       {dropdownOpen.jobRoles && (
                         <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-                          {/* Custom input section */}
                           <div className="p-2 border-b border-gray-100 bg-gray-50">
                             <div className="flex gap-2">
                               <input
@@ -2122,7 +2382,6 @@ export default function PoolCampusHiringForm() {
                             </div>
                           </div>
                           
-                          {/* Scrollable list ONLY */}
                           <div className="overflow-y-auto max-h-48">
                             {jobRoles.map(role => (
                               <div 
@@ -2222,65 +2481,33 @@ export default function PoolCampusHiringForm() {
                   </div>
                 </div>
 
-                {/* Benefits and Amenities */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Benefits Offered */}
-                  <div ref={benefitsRef} className="relative">
-                    <label className="block font-medium mb-2 text-sm text-gray-700">Benefits Offered <span className="text-red-500">*</span></label>
-                    <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
-                      {formData.benefits.map(benefit => (
-                        <div key={benefit} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                          <span>{benefit}</span>
-                          <button type="button" onClick={() => removeSelectedItem('benefits', benefit)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
+                {/* Benefits */}
+                <div ref={benefitsRef} className="relative">
+                  <label className="block font-medium mb-2 text-sm text-gray-700">Benefits Offered <span className="text-red-500">*</span></label>
+                  <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
+                    {formData.benefits.map(benefit => (
+                      <div key={benefit} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                        <span>{benefit}</span>
+                        <button type="button" onClick={() => removeSelectedItem('benefits', benefit)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
+                      </div>
+                    ))}
+                  </div>
+                  <div onClick={() => toggleDropdown('benefits')} className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white">
+                    <span className="text-sm text-gray-500">Select benefits</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.benefits ? "rotate-180" : ""} text-gray-400`} />
+                  </div>
+                  {dropdownOpen.benefits && (
+                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
+                      {benefitsOptions.map(benefit => (
+                        <div key={benefit} onClick={() => handleMultiSelect('benefits', benefit)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.benefits.includes(benefit) ? "bg-blue-50" : ""}`}>
+                          <div className="flex items-center justify-between">
+                            <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{benefit}</span>
+                            {formData.benefits.includes(benefit) && <span className="text-[#667eea]">✓</span>}
+                          </div>
                         </div>
                       ))}
                     </div>
-                    <div onClick={() => toggleDropdown('benefits')} className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white">
-                      <span className="text-sm text-gray-500">Select benefits</span>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.benefits ? "rotate-180" : ""} text-gray-400`} />
-                    </div>
-                    {dropdownOpen.benefits && (
-                      <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                        {benefitsOptions.map(benefit => (
-                          <div key={benefit} onClick={() => handleMultiSelect('benefits', benefit)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.benefits.includes(benefit) ? "bg-blue-50" : ""}`}>
-                            <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.benefits.includes(benefit) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{benefit}</span>
-                              {formData.benefits.includes(benefit) && <span className="text-[#667eea]">✓</span>}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Amenities/Facilities required */}
-                  <div ref={amenitiesRef} className="relative">
-                    <label className="block font-medium mb-2 text-sm text-gray-700">Amenities/Facilities required <span className="text-red-500">*</span></label>
-                    <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
-                      {formData.amenities.map(item => (
-                        <div key={item} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                          <span>{item}</span>
-                          <button type="button" onClick={() => removeSelectedItem('amenities', item)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
-                        </div>
-                      ))}
-                    </div>
-                    <div onClick={() => toggleDropdown('amenities')} className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white">
-                      <span className="text-sm text-gray-500">Select amenities</span>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.amenities ? "rotate-180" : ""} text-gray-400`} />
-                    </div>
-                    {dropdownOpen.amenities && (
-                      <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                        {amenitiesOptions.map(item => (
-                          <div key={item} onClick={() => handleMultiSelect('amenities', item)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.amenities.includes(item) ? "bg-blue-50" : ""}`}>
-                            <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.amenities.includes(item) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{item}</span>
-                              {formData.amenities.includes(item) && <span className="text-[#667eea]">✓</span>}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
 
                 {/* Tags */}
