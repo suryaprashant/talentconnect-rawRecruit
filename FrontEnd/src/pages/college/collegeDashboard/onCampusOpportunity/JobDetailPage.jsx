@@ -11,7 +11,6 @@ const formatDate = (dateString) => {
 
   try {
     const date = new Date(dateString);
-    // Check for invalid date
     if (isNaN(date.getTime())) {
       return 'Not Specified';
     }
@@ -31,16 +30,14 @@ const splitIntoMeaningfulPoints = (text) => {
   if (!text || typeof text !== 'string') return [];
 
   return text
-    // split by full stop, newline, or semicolon
     .split(/[\.\n;]+/)
     .map(line => line.trim())
-    .filter(line => line.length > 5); // ignore junk
+    .filter(line => line.length > 5);
 };
 
 const normalizeSelectionProcess = (selectionProcess) => {
   if (!selectionProcess) return [];
 
-  // Case 1: already an array → return clean
   if (Array.isArray(selectionProcess)) {
     return selectionProcess.flatMap(step =>
       step.includes('+')
@@ -49,7 +46,6 @@ const normalizeSelectionProcess = (selectionProcess) => {
     );
   }
 
-  // Case 2: string → split by + or sentences
   if (typeof selectionProcess === 'string') {
     if (selectionProcess.includes('+')) {
       return selectionProcess.split('+').map(s => s.trim());
@@ -58,6 +54,179 @@ const normalizeSelectionProcess = (selectionProcess) => {
   }
 
   return [];
+};
+
+// Helper function to extract company logo
+const getCompanyLogo = (job) => {
+  if (!job) return null;
+  
+  // Try multiple paths where logo might be stored
+  const possiblePaths = [
+    job.companyPosted?.profileImageUrl,      // Primary location
+    job.companyPosted?.profileImage,         // Alternative field name
+    job.companyPosted?.companyDetails?.companyLogo, // Fallback
+    job.companyProfile?.profileImageUrl,     // Status page structure
+    job.profileImageUrl,
+    job.logo
+  ];
+  
+  for (const path of possiblePaths) {
+    if (path && typeof path === 'string' && path.trim() !== '') {
+      return path;
+    }
+  }
+  
+  return null;
+};
+
+// Helper function to extract company name
+const getCompanyName = (job) => {
+  return (
+    job?.companyPosted?.companyDetails?.companyName ||
+    job?.companyProfile?.companyDetails?.companyName ||
+    job?.companyName ||
+    'Company'
+  );
+};
+
+// Company Details Modal Component
+const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
+  if (!isOpen || !company) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        {/* Background overlay */}
+        <div 
+          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" 
+          onClick={onClose}
+        ></div>
+
+        {/* Modal panel */}
+        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                {/* Company Logo with fallback */}
+                {company.logo ? (
+                  <img 
+                    src={company.logo} 
+                    alt={`${company.companyName} logo`}
+                    className="w-12 h-12 rounded-lg object-cover border border-gray-200 shadow-sm"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextElementSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                {/* <div 
+                  className={`w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-lg shadow-sm ${company.logo ? 'hidden' : ''}`}
+                >
+                  {company.companyName?.charAt(0) || 'C'}
+                </div> */}
+                <h3 className="text-xl font-bold text-gray-900">
+                  {company.companyName || 'Company Details'}
+                </h3>
+              </div>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-500 focus:outline-none"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="px-6 py-4">
+            <div className="space-y-6">
+              {/* About Section */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">About</h4>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {company.description || 'No description provided.'}
+                </p>
+              </div>
+
+              {/* Company Details Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Employees</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.numberOfEmployees || 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Industry</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.industryType || 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Country</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.country || 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Type</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.companyType || 'N/A'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Info */}
+              <div className="pt-4 border-t border-gray-200">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">Contact Information</h4>
+                <div className="space-y-2">
+                  {company.contactPerson && (
+                    <div className="flex items-center">
+                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">{company.contactPerson}</span>
+                    </div>
+                  )}
+                  {company.email && (
+                    <div className="flex items-center">
+                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">{company.email}</span>
+                    </div>
+                  )}
+                  {company.phone && (
+                    <div className="flex items-center">
+                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">{company.phone}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
+            <div className="flex justify-end">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#667eea]"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const JobDetailPage = () => {
@@ -69,16 +238,24 @@ const JobDetailPage = () => {
   const [job, setJob] = useState(null);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState(null);
+  const [showCompanyModal, setShowCompanyModal] = useState(false);
   const { isAuthenticated, loading } = useAuth();
+  const [imageError, setImageError] = useState(false); // Add image error state
 
   const loadJobDetail = async () => {
     try {
       const response = await getCompanyPostingForOncampusDetail(id);
       
-      // Check if response and response.data exist before using them
+      // Debug logging
+      console.log('🔍 JobDetailPage - API Response:', {
+        jobId: response.data?._id,
+        companyPosted: response.data?.companyPosted,
+        profileImageUrl: response.data?.companyPosted?.profileImageUrl,
+        companyName: response.data?.companyPosted?.companyDetails?.companyName
+      });
+      
       if (response && response.data) {
         setJob(response.data);
-        // Use optional chaining (?.) to prevent crashes
         await viewed(response.data?._id);
         setError(null);
       } else {
@@ -87,7 +264,7 @@ const JobDetailPage = () => {
     } catch (error) {
       console.error("Error loading job detail: ", error);
       setError("Failed to load job details. Please try again later.");
-      setJob(null); // Clear previous job state on error
+      setJob(null);
     }
   };
   
@@ -98,15 +275,15 @@ const JobDetailPage = () => {
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: `${job?.jobTitle || 'Job'} at ${job?.companyPosted?.companyDetails?.companyName}`,
-        text: `Check out this opportunity for a ${job?.jobTitle || 'job'} at ${job?.companyPosted?.companyDetails?.companyName}!`,
+        title: `${job?.jobTitle || 'Job'} at ${getCompanyName(job)}`,
+        text: `Check out this opportunity for a ${job?.jobTitle || 'job'} at ${getCompanyName(job)}!`,
         url: window.location.href,
       })
         .catch((error) => console.log('Error sharing', error));
     } else {
       navigator.clipboard.writeText(window.location.href)
-        .then(() => alert('Link copied to clipboard!'))
-        .catch(() => alert('Failed to copy link'));
+        .then(() => toast.success('Link copied to clipboard!'))
+        .catch(() => toast.error('Failed to copy link'));
     }
   };
 
@@ -117,11 +294,11 @@ const JobDetailPage = () => {
   const handleApply = async () => {
     if (loading) return;
 
-  // 🔐 Not logged in
-  if (!isAuthenticated) {
-    toast.error("Please login to apply");
-    return;
-  }
+    if (!isAuthenticated) {
+      toast.error("Please login to apply");
+      return;
+    }
+    
     try {
       const response = await ApplyForOnCampus(id);
       if (response.data?.success === true) toast.success("Applied!");
@@ -156,13 +333,34 @@ const JobDetailPage = () => {
       const response = await SaveOppurtunity(jobId, jobType);
       if (response.data?.success === true) {
         toast.success("Saved!");
-        setSaved(true); // Update save state
+        setSaved(true);
       }
       else toast.error(response.response?.data?.msg || "Could not save.");
     } catch (error) {
       console.log("Error: ", error);
       toast.error('Something went wrong');
     }
+  };
+
+  // Prepare company data for modal from job data
+  const getCompanyData = () => {
+    if (!job) return {};
+    
+    const companyLogo = getCompanyLogo(job);
+    const companyName = getCompanyName(job);
+    
+    return {
+      companyName,
+      logo: companyLogo, // Add logo here
+      description: job?.companyPosted?.companyDetails?.description,
+      numberOfEmployees: job?.companyPosted?.companyDetails?.numberOfEmployees,
+      industryType: job?.companyPosted?.companyDetails?.industryType,
+      country: job?.country || job?.companyPosted?.companyDetails?.country,
+      companyType: job?.companyPosted?.companyDetails?.companyType,
+      contactPerson: job?.contactPerson?.name,
+      email: job?.contactPerson?.email || job?.companyPosted?.companyDetails?.email,
+      phone: job?.contactPerson?.mobile || job?.companyPosted?.companyDetails?.phone
+    };
   };
 
   if (error) {
@@ -193,12 +391,18 @@ const JobDetailPage = () => {
   }
   
   const jobStatus = getJobStatus();
+  const companyData = getCompanyData();
+  const companyLogo = getCompanyLogo(job);
+  const companyName = getCompanyName(job);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
-      <main className="px-6 py-6">
+      <main className="px-6 py-6 max-w-7xl mx-auto">
         {/* Top Back Button */}
-        <button onClick={() => handleGoBack()} className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors">
+        <button 
+          onClick={handleGoBack} 
+          className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
           </svg>
@@ -206,85 +410,93 @@ const JobDetailPage = () => {
         </button>
 
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
-          {/* Header Section */}
+          {/* Header Section - Reorganized */}
           <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4">
-            {jobStatus.status === 'Completed' ? (
-              <div className="text-sm font-medium text-[#667eea]">Registrations Completed</div>
-            ) : (
-              <div className="text-sm font-medium text-[#667eea]">Registration Open</div>
-            )}
-
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-2">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                {job?.companyPosted?.companyDetails?.companyName || 'Not Specified'}
-              </h1>
-            </div>
-
-            <div className="flex flex-col sm:flex-row justify-between mt-4">
-              <div className="flex items-center text-sm text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-[#667eea]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span>{formatDate(job?.startDate)} - {formatDate(job?.endDate)}</span>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              {/* Left side: Status and Company Name */}
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-[#667eea]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>{formatDate(job?.startDate)} - {formatDate(job?.endDate)}</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  {/* Company Logo/Initial - FIXED WITH LOGO */}
+                  {/* <button 
+                    onClick={() => setShowCompanyModal(true)}
+                    className="group flex-shrink-0"
+                  >
+                    {companyLogo && !imageError ? (
+                      <div className="relative">
+                        <img 
+                          src={companyLogo} 
+                          alt={`${companyName} logo`}
+                          className="w-12 h-12 rounded-lg object-cover border border-gray-200 shadow-sm group-hover:shadow-md transition-shadow"
+                          onError={() => setImageError(true)}
+                        />
+                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] hidden items-center justify-center text-white font-bold text-lg shadow-sm">
+                          {companyName?.charAt(0) || 'C'}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-lg shadow-sm group-hover:opacity-90 transition-opacity">
+                        {companyName?.charAt(0) || 'C'}
+                      </div>
+                    )}
+                  </button> */}
+                  
+                  {/* Company Name and Click Hint */}
+                  <div>
+                    <button 
+                      onClick={() => setShowCompanyModal(true)}
+                      className="text-left group"
+                    >
+                      <h1 className="text-2xl font-bold text-gray-900 group-hover:text-[#667eea] transition-colors">
+                        {companyName}
+                      </h1>
+                      {/* <p className="text-sm text-gray-500 mt-1 flex items-center">
+                        Click to view company details
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1 text-[#667eea] opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </p> */}
+                    </button>
+                  </div>
+                </div>
               </div>
-              {/* <div className="flex items-center mt-2 sm:mt-0 text-sm text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-[#667eea]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span>{job?.workLocation?.join(', ') || 'Not Specified'}</span>
-              </div> */}
-            </div>
 
-            {/* Moved Save and Share buttons here, removed Register Now */}
-            <div className="flex space-x-2 mt-4">
-              {!isSaved && (
+              {/* Right side: Save and Share buttons */}
+              <div className="flex items-center gap-2 mt-4 sm:mt-0">
+                {!isSaved && (
+                  <button
+                    onClick={() => handleSave(job?._id, job?.jobType)}
+                    disabled={saved}
+                    className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-lg transition-all duration-200 shadow-sm`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-1 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={saved ? 'currentColor' : 'none'} stroke="currentColor">
+                      <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                    </svg>
+                    {saved ? 'Saved' : 'Save'}
+                  </button>
+                )}
                 <button
-                  onClick={() => handleSave(job?._id, job?.jobType)}
-                  disabled={saved}
-                  className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-lg transition-all duration-200`}
+                  onClick={handleShare}
+                  className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-sm"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-1 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={saved ? 'currentColor' : 'none'} stroke="currentColor">
-                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
                   </svg>
-                  {saved ? 'Saved' : 'Save'}
+                  Share
                 </button>
-              )}
-              <button
-                onClick={handleShare}
-                className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                </svg>
-                Share
-              </button>
-            </div>
-          </div>
-
-          {/* About Section - Removed border */}
-          <div className="px-6 py-6">
-            <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-              About {job?.companyPosted?.companyDetails?.companyName || 'the Company'}
-            </h2>
-            <p className="text-gray-700 mb-6">{job?.companyPosted?.companyDetails?.description || 'No description provided.'}</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                <div className="text-2xl font-bold text-gray-900">{job?.companyPosted?.companyDetails?.numberOfEmployees || 'N/A'}</div>
-                <div className="text-sm text-gray-600">Employees</div>
-              </div>
-              <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                <div className="text-2xl font-bold text-gray-900">{job?.companyPosted?.companyDetails?.industryType || 'N/A'}</div>
-                <div className="text-sm text-gray-600">Industries</div>
-              </div>
-              <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                <div className="text-2xl font-bold text-gray-900">{job?.country || job?.companyPosted?.companyDetails?.country || 'N/A'}</div>
-                <div className="text-sm text-gray-600">Countries</div>
               </div>
             </div>
           </div>
 
-          {/* Description - Removed border, fixed fetching, KEPT AS ORIGINAL TEXT */}
+          {/* Description Section */}
           <div className="px-6 py-6">
             <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
               {job.lookingFor} Description
@@ -298,7 +510,7 @@ const JobDetailPage = () => {
             </div>
           </div>
 
-          {/* Job Details - Removed border */}
+          {/* Job Details */}
           <div className="px-6 py-6">
             <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
               Job Details
@@ -335,7 +547,7 @@ const JobDetailPage = () => {
             </div>
           </div>
 
-          {/* Required Skills - Removed border */}
+          {/* Required Skills */}
           <div className="px-6 py-6">
             <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
               Required Skills
@@ -356,7 +568,7 @@ const JobDetailPage = () => {
             </div>
           </div>
 
-          {/* Eligibility Criteria - Removed border, fixed additional criteria */}
+          {/* Eligibility Criteria */}
           <div className="px-6 py-6">
             <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
               Eligibility Criteria
@@ -380,7 +592,6 @@ const JobDetailPage = () => {
               </div>
             </div>
             
-            {/* Fixed Additional Criteria - check multiple possible fields */}
             {(job?.eligibilityCriteria || job?.additionalEligibilityCriteria || job?.additionalCriteria) && (
               <div className="mt-6">
                 <div className="text-sm font-medium text-[#667eea] mb-2">Additional Criteria</div>
@@ -397,7 +608,7 @@ const JobDetailPage = () => {
             )}
           </div>
 
-          {/* Compensation & Benefits - Removed border */}
+          {/* Compensation & Benefits */}
           <div className="px-6 py-6">
             <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
               Compensation & Benefits
@@ -447,7 +658,7 @@ const JobDetailPage = () => {
             </div>
           </div>
 
-          {/* Selection Process - Removed border */}
+          {/* Selection Process */}
           <div className="px-6 py-6">
             <div className="mb-4">
               <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-1">
@@ -466,14 +677,11 @@ const JobDetailPage = () => {
                     className="group bg-white border border-gray-200 rounded-lg p-3 hover:border-[#667eea]/30 hover:shadow-sm transition-all duration-200"
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      {/* Round number badge */}
                       <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#667eea] to-[#764ba2] flex items-center justify-center">
                         <span className="text-xs font-bold text-white">{index + 1}</span>
                       </div>
                       <p className="text-sm font-medium text-gray-900">Round {index + 1}</p>
                     </div>
-                    
-                    {/* Step content */}
                     <p className="text-xs text-gray-600 line-clamp-3">{step}</p>
                   </div>
                 ))}
@@ -485,7 +693,7 @@ const JobDetailPage = () => {
             )}
           </div>
 
-          {/* Important Dates - Removed border */}
+          {/* Important Dates */}
           <div className="px-6 py-6">
             <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
               Important Dates
@@ -512,7 +720,7 @@ const JobDetailPage = () => {
             </div>
           </div>
 
-          {/* Contact Person - Removed border */}
+          {/* Contact Person */}
           <div className="px-6 py-6">
             <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
               Contact Person
@@ -579,7 +787,7 @@ const JobDetailPage = () => {
           <div className="px-6 py-6">
             <div className="flex justify-left">
               <button 
-                onClick={() => handleGoBack()} 
+                onClick={handleGoBack} 
                 className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -591,6 +799,13 @@ const JobDetailPage = () => {
           </div>
         </div>
       </main>
+
+      {/* Company Details Modal */}
+      <CompanyDetailsModal
+        company={companyData}
+        isOpen={showCompanyModal}
+        onClose={() => setShowCompanyModal(false)}
+      />
     </div>
   );
 };
