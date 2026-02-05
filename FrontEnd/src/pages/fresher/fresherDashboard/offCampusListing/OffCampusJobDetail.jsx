@@ -6,7 +6,7 @@ import {
   SaveOppurtunity,
   viewed,
 } from "@/lib/User_AxiosInstance";
-import { MapPin, ArrowLeft, Building2, Users, Navigation } from "lucide-react";
+import { MapPin, ArrowLeft, Building2, Users, Navigation, Info } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 
@@ -58,6 +58,123 @@ const formatDate = (dateString) => {
   }
 };
 
+// Company Details Modal Component
+const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
+  if (!isOpen || !company) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        {/* Background overlay */}
+        <div 
+          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" 
+          onClick={onClose}
+        ></div>
+
+        {/* Modal panel */}
+        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                  {company.companyName?.charAt(0) || 'C'}
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">
+                  {company.companyName || 'Company Details'}
+                </h3>
+              </div>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-500 focus:outline-none"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="px-6 py-4">
+            <div className="space-y-6">
+              {/* About Section */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">About</h4>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {company.description || 'No description provided.'}
+                </p>
+              </div>
+
+              {/* Company Details Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Employees</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.numberOfEmployees || 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Industry</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.industryType || 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Country</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.country || 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Type</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.companyType || 'N/A'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Info */}
+              <div className="pt-4 border-t border-gray-200">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">Contact Information</h4>
+                <div className="space-y-2">
+                  {company.email && (
+                    <div className="flex items-center">
+                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">{company.email}</span>
+                    </div>
+                  )}
+                  {company.website && (
+                    <div className="flex items-center">
+                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">{company.website}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
+            <div className="flex justify-end">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#667eea]"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function OffCampusJobDetail() {
   const { jobId } = useParams();
@@ -73,6 +190,7 @@ function OffCampusJobDetail() {
   const [jobDetail, setJobDetail] = useState(null);
   const [isApplying, setIsApplying] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showCompanyModal, setShowCompanyModal] = useState(false);
 
   const loadJobDetails = async () => {
     try {
@@ -157,6 +275,22 @@ function OffCampusJobDetail() {
     }
   };
 
+  // Prepare company data for modal
+  const getCompanyData = () => {
+    if (!jobDetail) return {};
+    
+    return {
+      companyName: jobDetail?.companyPosted?.companyDetails?.companyName,
+      description: jobDetail?.companyPosted?.companyDetails?.description,
+      numberOfEmployees: jobDetail?.companyPosted?.companyDetails?.numberOfEmployees,
+      industryType: jobDetail?.companyPosted?.companyDetails?.industryType,
+      country: jobDetail?.companyPosted?.companyDetails?.country,
+      companyType: jobDetail?.companyPosted?.companyDetails?.companyType,
+      email: jobDetail?.companyPosted?.companyDetails?.email,
+      website: jobDetail?.companyPosted?.companyDetails?.website
+    };
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
@@ -202,6 +336,8 @@ function OffCampusJobDetail() {
       headerStatusClasses = 'text-gray-600';
   }
 
+  const companyData = getCompanyData();
+
   // Helper function to render array data as tags
   const renderTags = (data) => {
     if (Array.isArray(data) && data.length > 0) {
@@ -230,33 +366,52 @@ function OffCampusJobDetail() {
           Back
         </button>
 
-        {/* Header */}
+        {/* Header - Modified to make company name clickable */}
         <div className="flex justify-between items-start mb-6">
           <div className="flex items-center">
             <div className="w-12 h-12 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 mr-4 flex items-center justify-center rounded-full overflow-hidden">
-  {jobDetail.companyPosted?.profileImageUrl ? (
-    <img
-      src={jobDetail.companyPosted.profileImageUrl}
-      alt={jobDetail.companyPosted?.companyDetails?.companyName || "Company Logo"}
-      className="w-full h-full object-cover"
-      onError={(e) => {
-        e.target.onerror = null;
-        e.target.src = 'https://placehold.co/48x48/cccccc/000000?text=Logo';
-      }}
-    />
-  ) : (
-    <svg className="w-8 h-8 text-[#667eea]" fill="currentColor" viewBox="0 0 20 20">
-      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-    </svg>
-  )}
-</div>
+              {jobDetail.companyPosted?.profileImageUrl ? (
+                <button 
+                  onClick={() => setShowCompanyModal(true)}
+                  className="w-full h-full group"
+                >
+                  <img
+                    src={jobDetail.companyPosted.profileImageUrl}
+                    alt={jobDetail.companyPosted?.companyDetails?.companyName || "Company Logo"}
+                    className="w-full h-full object-cover group-hover:opacity-90 transition-opacity"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'https://placehold.co/48x48/cccccc/000000?text=Logo';
+                    }}
+                  />
+                </button>
+              ) : (
+                <button 
+                  onClick={() => setShowCompanyModal(true)}
+                  className="w-full h-full flex items-center justify-center group"
+                >
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-lg group-hover:opacity-90 transition-opacity">
+                    {companyData.companyName?.charAt(0) || 'C'}
+                  </div>
+                </button>
+              )}
+            </div>
             <div>
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                {jobDetail.companyPosted?.companyDetails?.companyName || "N/A"} - 
-                {Array.isArray(jobDetail.jobRoles) 
-                  ? jobDetail.jobRoles.join(', ') 
-                  : jobDetail.jobRoles || 'N/A'}
-              </h2>
+              <button 
+                onClick={() => setShowCompanyModal(true)}
+                className="text-left group"
+              >
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent group-hover:text-[#667eea] transition-colors">
+                  {jobDetail.companyPosted?.companyDetails?.companyName || "N/A"}
+                  {/* {Array.isArray(jobDetail.jobRoles) 
+                    ? jobDetail.jobRoles.join(', ') 
+                    : jobDetail.jobRoles || 'N/A'} */}
+                </h2>
+                {/* <div className="flex items-center text-xs text-gray-500 mt-1">
+                  <Info className="w-3 h-3 mr-1" />
+                  Click to view company details
+                </div> */}
+              </button>
             </div>
           </div>
           <div className="flex space-x-2">
@@ -304,28 +459,6 @@ function OffCampusJobDetail() {
             )}
           </div>
         </div>
-
-        {/* About Company */}
-        <section className="mb-8">
-          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-            About {jobDetail.companyPosted?.companyDetails?.companyName || "Company"}
-          </h3>
-          <p className="text-gray-700 mb-4">{jobDetail.companyPosted?.companyDetails?.description || 'No company description available.'}</p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-4 rounded-lg">
-              <div className="font-bold text-lg">{jobDetail.companyPosted?.companyDetails?.numberOfEmployees || "N/A"}</div>
-              <div className="text-sm text-gray-600">Employees</div>
-            </div>
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-4 rounded-lg">
-              <div className="font-bold text-lg capitalize">{jobDetail.companyPosted?.companyDetails?.industryType || "N/A"}</div>
-              <div className="text-sm text-gray-600">Industry</div>
-            </div>
-            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-4 rounded-lg">
-              <div className="font-bold text-lg">{jobDetail.companyPosted?.companyDetails?.country || "N/A"}</div>
-              <div className="text-sm text-gray-600">Country</div>
-            </div>
-          </div>
-        </section>
 
         {/* Opportunity Details */}
         <section className="mb-8">
@@ -535,62 +668,69 @@ function OffCampusJobDetail() {
         </section>
 
         {/* Important Dates */}
-<section className="mb-8">
-  <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-    Important Dates
-  </h3>
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-    {/* Application Deadline */}
-    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-      <div className="text-sm text-[#667eea]">Registration Deadline</div>
-      <div className="font-medium text-red-600">
-        {formatDate(jobDetail.endDate)}
-      </div>
-    </div>
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold mb-3 bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
+            Important Dates
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Application Deadline */}
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#667eea]">Registration Deadline</div>
+              <div className="font-medium text-red-600">
+                {formatDate(jobDetail.endDate)}
+              </div>
+            </div>
 
-    {/* Online Test Date */}
-    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-      <div className="text-sm text-[#667eea]">Test Date</div>
-      <div className="font-medium text-gray-700">
-        {formatDate(jobDetail.onlineTestDate)}
-      </div>
-    </div>
+            {/* Online Test Date */}
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#667eea]">Test Date</div>
+              <div className="font-medium text-gray-700">
+                {formatDate(jobDetail.onlineTestDate)}
+              </div>
+            </div>
 
-    {/* Interview Window */}
-    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-      <div className="text-sm text-[#667eea]">Interview Window</div>
-      <div className="font-medium text-gray-700">
-        {jobDetail.interviewWindow?.start
-          ? `${formatDate(jobDetail.interviewWindow.start)} - ${formatDate(jobDetail.interviewWindow.end)}`
-          : 'N/A'}
-      </div>
-    </div>
+            {/* Interview Window */}
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#667eea]">Interview Window</div>
+              <div className="font-medium text-gray-700">
+                {jobDetail.interviewWindow?.start
+                  ? `${formatDate(jobDetail.interviewWindow.start)} - ${formatDate(jobDetail.interviewWindow.end)}`
+                  : 'N/A'}
+              </div>
+            </div>
 
-    {/* Offer Rollout */}
-    <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
-      <div className="text-sm text-[#667eea]">Results</div>
-      <div className="font-medium text-gray-700">
-        {formatDate(jobDetail.offerRolloutDate)}
-      </div>
-    </div>
-  </div>
-</section>
+            {/* Offer Rollout */}
+            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 border border-gray-200 p-3 rounded-lg">
+              <div className="text-sm text-[#667eea]">Results</div>
+              <div className="font-medium text-gray-700">
+                {formatDate(jobDetail.offerRolloutDate)}
+              </div>
+            </div>
+          </div>
+        </section>
 
-{/* Bottom Back Button - REMOVED BORDER */}
-<section className="mt-8 pt-6">
-  <div className="flex justify-left">
-    <button 
-      onClick={() => handleBackToList()} 
-      className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-      </svg>
-      Back
-    </button>
-  </div>
-</section>
+        {/* Bottom Back Button - REMOVED BORDER */}
+        <section className="mt-8 pt-6">
+          <div className="flex justify-left">
+            <button 
+              onClick={() => handleBackToList()} 
+              className="inline-flex items-center px-6 py-3 bg-white text-[#667eea] border border-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white rounded-xl transition-all duration-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+              Back
+            </button>
+          </div>
+        </section>
       </div>
+
+      {/* Company Details Modal */}
+      <CompanyDetailsModal
+        company={companyData}
+        isOpen={showCompanyModal}
+        onClose={() => setShowCompanyModal(false)}
+      />
     </div>
   );
 }
