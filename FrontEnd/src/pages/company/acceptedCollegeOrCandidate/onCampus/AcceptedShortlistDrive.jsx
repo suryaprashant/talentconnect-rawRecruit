@@ -14,6 +14,8 @@ export default function OnCampusJobManagement() {
   const [colleges, setColleges] = useState([]);
   const [collegesLoading, setCollegesLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isVisited, setIsVisited] = useState();
+
   const navigate = useNavigate();
 
   const itemsPerPage = 10;
@@ -34,7 +36,7 @@ export default function OnCampusJobManagement() {
     }
   };
 
-  const fetchCollegesForJob = async (jobId, jobType, isVisited) => {
+  {/*const fetchCollegesForJob = async (jobId, jobType, isVisited) => {
     setCollegesLoading(true);
     setError(null);
     try {
@@ -52,7 +54,35 @@ export default function OnCampusJobManagement() {
     } finally {
       setCollegesLoading(false);
     }
+  };*/}
+
+  const fetchCollegesForJob = async (jobId, jobType, filterVisited = null) => {
+    setCollegesLoading(true);
+    setError(null);
+
+    try {
+      const response = await getCollegeApplicationsForJob(
+        jobId,
+        jobType,
+        "Accepted",
+        filterVisited
+      );
+
+      console.log("Fetched colleges for job:", response.data);
+      setColleges(response?.data || []);
+    } catch (err) {
+      console.error("Error fetching colleges:", err);
+      setError(
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to fetch colleges."
+      );
+      setColleges([]);
+    } finally {
+      setCollegesLoading(false);
+    }
   };
+
 
   const handleUpdateApplicationStatus = async (applicationId, status) => {
     try {
@@ -74,7 +104,12 @@ export default function OnCampusJobManagement() {
         toast.success(`Application status updated to: ${status}`);
         // Refresh the colleges list after status update
         if (selectedJob) {
-          fetchCollegesForJob(selectedJob._id, selectedJob.jobType);
+          fetchCollegesForJob(
+            selectedJob._id,
+            selectedJob.jobType,
+            isVisited === "true" ? false : true
+          );
+
         }
       } else {
         toast.error(response?.response?.data?.msg || 'Failed to update status');
@@ -131,23 +166,28 @@ export default function OnCampusJobManagement() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentJobs = filteredJobs.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleViewColleges = (job) => {
+  const handleViewColleges = async (job) => {
     setSelectedJob(job);
-    fetchCollegesForJob(job._id, job.jobType);
+    setIsVisited("false"); // show all accepted
+    await fetchCollegesForJob(job._id, job.jobType, true);
   };
+
 
   const showNewApplication = async (job) => {
     try {
       setSelectedJob(job);
+      setIsVisited("true"); // new accepted
       await fetchCollegesForJob(job._id, job.jobType, false);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
+
 
   const handleBackToList = () => {
     setSelectedJob(null);
     setColleges([]);
+    setIsVisited('');
     fetchJobs();
   };
 
