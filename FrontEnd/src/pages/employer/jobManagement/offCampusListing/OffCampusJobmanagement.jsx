@@ -396,9 +396,9 @@
 
 
 import { useState, useEffect } from 'react';
-import { Search, Eye, Trash, Building2, MapPin, Calendar, Users, FileText, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Eye, Trash, Building2, MapPin, Calendar, Users, FileText, AlertCircle, ChevronLeft, ChevronRight, Briefcase } from 'lucide-react';
 import ApplicantDetails from './OffCampusDetail';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { deleteJobById, getPostedJobs } from '@/lib/Company_AxiosInstance';
 import toast from 'react-hot-toast';
 
@@ -408,9 +408,9 @@ export default function OffCampusJobManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedJob, setSelectedJob] = useState(null);
-  const [applicants, setApplicants] = useState([]);
-  const [applicantsLoading, setApplicantsLoading] = useState(false);
+  const [showJobDetail, setShowJobDetail] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const itemsPerPage = 10;
 
@@ -469,7 +469,8 @@ export default function OffCampusJobManagement() {
   const totalItems = filteredJobs?.length || 0;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentJobs = filteredJobs?.slice(startIndex, startIndex + itemsPerPage);
+  const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+  const currentJobs = filteredJobs?.slice(startIndex, endIndex);
 
   const handleViewApplicants = (job) => {
     if (job?.applicationCount === 0) {
@@ -477,11 +478,19 @@ export default function OffCampusJobManagement() {
       return;
     }
     setSelectedJob(job);
+    setShowJobDetail(true);
   };
 
-  const handleBackToList = () => {
+  const handleViewJob = (job) => {
+    // This is for the Eye icon - always try to show details even if applicationCount is 0
+    setSelectedJob(job);
+    setShowJobDetail(true);
+  };
+
+  const handleCloseDetail = () => {
+    setShowJobDetail(false);
     setSelectedJob(null);
-    setApplicants([]);
+    fetchJobs(); // Refresh the job list when closing details
   };
 
   const displayLocations = (locations) => {
@@ -489,11 +498,24 @@ export default function OffCampusJobManagement() {
     return Array.isArray(locations) ? locations.join(', ') : String(locations);
   };
 
-  if (selectedJob) {
+  // Pagination controls
+  const handlePrevPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
+
+  const handlePageClick = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  if (showJobDetail && selectedJob) {
     return (
       <ApplicantDetails
         job={selectedJob}
-        onClose={handleBackToList}
+        onClose={handleCloseDetail}
         onUpdate={fetchJobs}
       />
     );
@@ -554,8 +576,8 @@ export default function OffCampusJobManagement() {
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
             <div className="grid grid-cols-12 gap-4 text-xs font-medium text-gray-700 uppercase tracking-wider">
               <div className="col-span-3">Job Title</div>
-              <div className="col-span-2">Location</div>
-              <div className="col-span-2">End Date</div>
+              <div className="col-span-2">Deadline</div>
+              <div className="col-span-2 text-center">Views</div>
               <div className="col-span-3 text-center">New Applications</div>
               <div className="col-span-2 text-center">Actions</div>
             </div>
@@ -581,37 +603,28 @@ export default function OffCampusJobManagement() {
                 <div key={job._id} className="p-4 hover:bg-gray-50/50 transition-all duration-200">
                   <div className="grid grid-cols-12 gap-4 items-center">
                     {/* Job Title */}
-<div className="col-span-3">
-  <Link
-    to={`/company-dashboard/Off-campus/${job._id}?isApplied=true`}
-    className="group cursor-pointer block"
-  >
-    <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
-      {Array.isArray(job?.jobRoles) 
-        ? job.jobRoles.join(', ') 
-        : job?.jobRoles || 'N/A'
-      }
-    </h3>
-    <div className="flex items-center gap-2 mt-1">
-      <FileText className="h-3 w-3 text-gray-400" />
-      <span className="text-sm text-gray-500">
-        {job?.workMode} • {job?.employmentType || 'N/A Type'}
-      </span>
-    </div>
-  </Link>
-</div>
-
-                    {/* Location */}
-                    <div className="col-span-2">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-3 w-3 text-gray-400 flex-shrink-0" />
-                        <span className="text-gray-700 text-sm capitalize truncate">
-                          {displayLocations(job.location)}
-                        </span>
+                    <div className="col-span-3">
+                      <div 
+                        onClick={() => navigate(`/company-dashboard/Off-campus/${job._id}?isApplied=true`)}
+                        className="group cursor-pointer"
+                      >
+                        <h3 className="font-semibold text-gray-900 group-hover:text-[#667eea] transition-colors">
+                          {Array.isArray(job?.jobRoles) 
+                            ? job.jobRoles.join(', ') 
+                            : job?.jobRoles || 'N/A'
+                          }
+                        </h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Briefcase className="h-3 w-3 text-gray-400" />
+                          <span className="text-sm text-gray-500">{job?.workMode}</span>
+                          <span className="text-gray-300">•</span>
+                          <MapPin className="h-3 w-3 text-gray-400" />
+                          <span className="text-sm text-gray-500 capitalize">{displayLocations(job.location)}</span>
+                        </div>
                       </div>
                     </div>
 
-                    {/* End Date */}
+                    {/* Deadline */}
                     <div className="col-span-2">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-3 w-3 text-gray-400" />
@@ -621,25 +634,31 @@ export default function OffCampusJobManagement() {
                       </div>
                     </div>
 
-                    {/* Applications Count */}
-                    <div className="col-span-3 text-center">
-                      <div
-                        onClick={() => handleViewApplicants(job)}
-                        className="inline-flex items-center justify-center w-8 h-8 text-sm font-medium rounded-full transition-all duration-200 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 hover:bg-gradient-to-r hover:from-blue-200 hover:to-blue-100 hover:shadow-md hover:shadow-blue-100 cursor-pointer"
-                        title="View Applicant Applications"
-                      >
+                    {/* Views */}
+                    <div className="col-span-2 text-center">
+                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                        {job.views || 0}
+                      </span>
+                    </div>
+
+                    {/* New Applications - Clickable count */}
+                    <div 
+                      className="col-span-3 text-center cursor-pointer group"
+                      onClick={() => handleViewApplicants(job)}
+                      title="View applications"
+                    >
+                      <span className="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium group-hover:scale-110 transition-transform">
                         {job?.applicationCount || 0}
-                      </div>
+                      </span>
                     </div>
 
                     {/* Actions */}
                     <div className="col-span-2">
                       <div className="flex items-center justify-center gap-2">
                         <button
-                          onClick={() => handleViewApplicants(job)}
-                          disabled={job.applicationCount === 0}
-                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="View Applicant Applications"
+                          onClick={() => handleViewJob(job)}
+                          className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
+                          title="View job details"
                         >
                           <Eye size={16} />
                         </button>
@@ -660,36 +679,67 @@ export default function OffCampusJobManagement() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between p-4 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-white">
-              <button
-                onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                disabled={currentPage === 1}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              >
-                <ChevronLeft size={16} />
-                Prev
-              </button>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                >
+                  <ChevronLeft size={16} />
+                  Prev
+                </button>
+                
+                <div className="text-sm text-gray-600">
+                  Page <span className="font-semibold text-[#667eea]">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
+                </div>
+              </div>
 
-              <div className="flex gap-2">
-                {Array.from({ length: totalPages }, (_, i) => i + 1)?.map(page => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 ${
-                      currentPage === page 
-                        ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
-                        : 'bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
+              <div className="flex items-center gap-2">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  if (i === 3 && totalPages > 5 && currentPage < totalPages - 2) {
+                    return (
+                      <div key="ellipsis" className="text-gray-400 px-2">
+                        ...
+                      </div>
+                    );
+                  }
+                  
+                  if (i === 4 && totalPages > 5 && currentPage < totalPages - 2) {
+                    pageNum = totalPages;
+                  }
+                  
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageClick(pageNum)}
+                      className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 ${
+                        currentPage === pageNum 
+                          ? 'bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white shadow-lg shadow-[#667eea]/30' 
+                          : 'bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
               </div>
 
               <button
-                onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                onClick={handleNextPage}
                 disabled={currentPage === totalPages || totalPages === 0}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 Next
                 <ChevronRight size={16} />

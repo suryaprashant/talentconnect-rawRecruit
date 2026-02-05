@@ -281,7 +281,8 @@ import {
   Calendar, MapPin, Target, FileText, Building2, Globe, 
   ArrowUpRight, ClipboardList, Users, Award, ChevronLeft,
   Github, Linkedin, ExternalLink, X, GraduationCap, Globe as GlobeIcon,
-  CheckCircle, Clock, AlertCircle
+  CheckCircle, Clock, AlertCircle,
+  IndianRupee
 } from 'lucide-react';
 
 const InternshipDetails = ({  job,
@@ -384,6 +385,31 @@ const InternshipDetails = ({  job,
     }
   }, [jobId, jobType, isVisited]);*/}
 
+  // Helper function to get applicant logo with fallbacks
+  const getApplicantLogo = (applicant) => {
+    if (!applicant) return null;
+    
+    // Try multiple possible paths for the applicant's profile image
+    const possiblePaths = [
+      applicant.profileImageUrl,        // Primary field
+      applicant.profileImage,           // Alternative field name
+      applicant.avatar,                 // Another possible field
+      applicant.image,                  // Generic field
+      applicant.photo,                  // Another possibility
+      applicant.profilePicture,         // Yet another possibility
+      applicant.profilePic,             // Short form
+      applicant.profilePictureUrl       // Full URL field
+    ];
+    
+    // Find the first valid URL
+    const validLogo = possiblePaths.find(path => 
+      path && typeof path === 'string' && path.trim() !== '' && 
+      (path.startsWith('http') || path.startsWith('https') || path.startsWith('/'))
+    );
+    
+    return validLogo || null;
+  };
+
   const handleMessageClick = async (applicant) => {
     if (!applicant?.applicant?._id) {
       toast.error("Applicant data is missing.");
@@ -399,7 +425,7 @@ const InternshipDetails = ({  job,
           _id: userId,
           name: applicant.applicant.name || 'Unknown Applicant',
           email: applicant.applicant.email || '',
-          profileImage: applicant.applicant.profileImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+          profileImage: getApplicantLogo(applicant.applicant) || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png', // Use helper function
           userType: 'candidate',
           fullname: applicant.applicant.name || 'Unknown Applicant'
         };
@@ -431,6 +457,7 @@ const InternshipDetails = ({  job,
     
     const applicant = selectedApplicant.applicant;
     const currentStatus = selectedApplicant.currentStatus || 'Applied';
+    const applicantLogo = getApplicantLogo(applicant); // Get logo using helper
     
     return (
       <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
@@ -439,17 +466,22 @@ const InternshipDetails = ({  job,
             {/* Header */}
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center">
-                {applicant.profileImageUrl ? (
+                {applicantLogo ? (
                   <img 
-                    src={applicant.profileImageUrl} 
+                    src={applicantLogo} 
                     alt={applicant.name}
                     className="w-20 h-20 rounded-full object-cover mr-4"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextElementSibling.style.display = 'flex';
+                    }}
                   />
-                ) : (
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-600 text-lg mr-4">
-                    {applicant.name?.charAt(0) || 'U'}
-                  </div>
-                )}
+                ) : null}
+                <div 
+                  className={`${applicantLogo ? 'hidden' : 'flex'} w-20 h-20 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 items-center justify-center text-gray-600 text-lg mr-4`}
+                >
+                  {applicant.name?.charAt(0) || 'U'}
+                </div>
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">{applicant.name}</h2>
                   <p className="text-gray-600 text-sm mt-1">
@@ -473,7 +505,7 @@ const InternshipDetails = ({  job,
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
                 <div className="flex items-center mb-2">
-                  <DollarSign className="w-5 h-5 mr-2 text-blue-600" />
+                  <IndianRupee className="w-5 h-5 mr-2 text-blue-600" />
                   <h3 className="font-semibold text-gray-800">Current Salary</h3>
                 </div>
                 <p className="text-2xl font-bold text-gray-900">
@@ -482,7 +514,7 @@ const InternshipDetails = ({  job,
               </div>
               <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
                 <div className="flex items-center mb-2">
-                  <DollarSign className="w-5 h-5 mr-2 text-green-600" />
+                  <IndianRupee className="w-5 h-5 mr-2 text-green-600" />
                   <h3 className="font-semibold text-gray-800">Expected Salary</h3>
                 </div>
                 <p className="text-2xl font-bold text-gray-900">
@@ -597,8 +629,8 @@ const InternshipDetails = ({  job,
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-gray-200">
+            {/* Action Buttons - Commented out as requested */}
+            {/* <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-gray-200">
               <button 
                 onClick={() => handleMessageClick(selectedApplicant)}
                 disabled={isProcessing}
@@ -631,7 +663,7 @@ const InternshipDetails = ({  job,
                 <X size={18} className="mr-2" />
                 Reject Application
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -685,6 +717,7 @@ const InternshipDetails = ({  job,
               {applications.map((application) => {
                 const applicant = application.applicant;
                 const currentStatus = application.currentStatus || 'Applied';
+                const applicantLogo = getApplicantLogo(applicant); // Get logo using helper
                 
                 return (
                   <div key={application._id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
@@ -695,17 +728,23 @@ const InternshipDetails = ({  job,
                           className="cursor-pointer"
                           onClick={() => handleViewApplicantDetails(application)}
                         >
-                          {applicant.profileImageUrl ? (
+                          {applicantLogo ? (
                             <img 
-                              src={applicant.profileImageUrl} 
+                              src={applicantLogo} 
                               alt={applicant.name}
                               className="w-16 h-16 rounded-full object-cover mr-4 hover:opacity-90 transition-opacity"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextElementSibling.style.display = 'flex';
+                              }}
                             />
-                          ) : (
-                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-600 text-lg mr-4 hover:bg-gray-300 transition-colors">
-                              {applicant.name?.charAt(0) || 'U'}
-                            </div>
-                          )}
+                          ) : null}
+                          <div 
+                            className={`${applicantLogo ? 'hidden' : 'flex'} w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 items-center justify-center text-gray-600 text-lg mr-4 hover:bg-gray-300 transition-colors`}
+                            onClick={() => handleViewApplicantDetails(application)}
+                          >
+                            {applicant.name?.charAt(0) || 'U'}
+                          </div>
                         </div>
                         <div className="flex-1">
                           <div 
@@ -734,8 +773,8 @@ const InternshipDetails = ({  job,
                         </div>
                       </div>
 
-                      {/* Quick Info */}
-                      <div className="flex flex-wrap gap-4 text-sm">
+                      {/* Quick Info - Commented out as requested */}
+                      {/* <div className="flex flex-wrap gap-4 text-sm">
                         <div className="text-center">
                           <div className="font-semibold text-gray-800">
                             {applicant.currentSalaryCurrency} {applicant.currentSalaryAmount || '0'}
@@ -748,17 +787,17 @@ const InternshipDetails = ({  job,
                           </div>
                           <div className="text-xs text-gray-500">Expected Salary</div>
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Action Buttons */}
                       <div className="flex items-center gap-2">
-                        <button
+                        {/* <button
                           onClick={() => handleViewApplicantDetails(application)}
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
                           title="View Details"
                         >
                           <User size={16} />
-                        </button>
+                        </button> */}
                         <button
                           onClick={() => handleMessageClick(application)}
                           disabled={isProcessing}

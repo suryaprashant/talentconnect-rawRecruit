@@ -1857,6 +1857,35 @@ export default function RequestInfo() {
                   />
                 </div>
               </div>
+
+              {/* Amenities Required */}
+                  <div ref={amenitiesRef} className="relative">
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Amenities Required</label>
+                    <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
+                      {formData.amenitiesRequired.map(amenity => (
+                        <div key={amenity} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                          <span>{amenity}</span>
+                          <button type="button" onClick={() => removeSelectedItem('amenitiesRequired', amenity)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('amenities')}>
+                      <span className="text-sm text-gray-500">Select amenities</span>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.amenities ? "rotate-180" : ""} text-gray-400`} />
+                    </div>
+                    {dropdownOpen.amenities && (
+                      <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
+                        {amenitiesOptions.map(amenity => (
+                          <div key={amenity} onClick={() => handleMultiSelect('amenitiesRequired', amenity)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.amenitiesRequired.includes(amenity) ? "bg-blue-50" : ""}`}>
+                            <div className="flex items-center justify-between">
+                              <span className={`text-sm ${formData.amenitiesRequired.includes(amenity) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{amenity}</span>
+                              {formData.amenitiesRequired.includes(amenity) && <span className="text-[#667eea]">✓</span>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
             </div>
 
             {/* SECTION 2: Job Position Details */}
@@ -2316,34 +2345,7 @@ export default function RequestInfo() {
 
                 {/* Amenities and Benefits */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Amenities Required */}
-                  <div ref={amenitiesRef} className="relative">
-                    <label className="block font-medium mb-2 text-sm text-gray-700">Amenities Required</label>
-                    <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
-                      {formData.amenitiesRequired.map(amenity => (
-                        <div key={amenity} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                          <span>{amenity}</span>
-                          <button type="button" onClick={() => removeSelectedItem('amenitiesRequired', amenity)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('amenities')}>
-                      <span className="text-sm text-gray-500">Select amenities</span>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.amenities ? "rotate-180" : ""} text-gray-400`} />
-                    </div>
-                    {dropdownOpen.amenities && (
-                      <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-auto">
-                        {amenitiesOptions.map(amenity => (
-                          <div key={amenity} onClick={() => handleMultiSelect('amenitiesRequired', amenity)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${formData.amenitiesRequired.includes(amenity) ? "bg-blue-50" : ""}`}>
-                            <div className="flex items-center justify-between">
-                              <span className={`text-sm ${formData.amenitiesRequired.includes(amenity) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{amenity}</span>
-                              {formData.amenitiesRequired.includes(amenity) && <span className="text-[#667eea]">✓</span>}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  
 
                   {/* Benefits */}
                   <div ref={benefitsRef} className="relative">
@@ -2373,9 +2375,8 @@ export default function RequestInfo() {
                       </div>
                     )}
                   </div>
-                </div>
 
-                {/* Tags */}
+                  {/* Tags */}
                 <div>
                   <label className="block font-medium mb-2 text-sm text-gray-700">Tags</label>
                   <div ref={tagsRef} className="relative">
@@ -2405,6 +2406,9 @@ export default function RequestInfo() {
                     )}
                   </div>
                 </div>
+                </div>
+
+                
               </div>
             </div>
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { ChevronDown, ChevronUp, X, Filter, MapPin, Search, Briefcase, Calendar, TrendingUp, RefreshCw, AlertCircle, Building, DollarSign, Clock, Users, GraduationCap, BookOpen } from 'lucide-react';
+import { ChevronDown, ChevronUp, X, Filter, MapPin, Search, Briefcase, Calendar, TrendingUp, RefreshCw, AlertCircle, Building, DollarSign, Clock, Users, GraduationCap, BookOpen, IndianRupee } from 'lucide-react';
 import JobCard from '@/components/student/studentDashboard/intershipOpportunity/JobCard';
 import { getAllInternship } from '@/lib/User_AxiosInstance';
 import { City } from 'country-state-city';
@@ -620,7 +620,7 @@ function InternJobListings({ compact = false, onJobSelect, selectedJobId, hideSe
                 </p>
               </div>
               <div className="p-2 bg-gradient-to-br from-[#a7f3d0]/30 to-[#10b981]/20 rounded-lg">
-                <DollarSign className="w-5 h-5 text-[#10b981]" />
+                <IndianRupee className="w-5 h-5 text-[#10b981]" />
               </div>
             </div>
           </div>

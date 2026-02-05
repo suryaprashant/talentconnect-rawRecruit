@@ -201,19 +201,41 @@ export function shortlistCandidate(applicationId, jobRole) {
     .catch((error) => error);
 }
 
-// reject
-export function rejectCandidate(applicationId, jobRole) {
-  return axiosClient
-    .patch(`/application/manage/reject/${applicationId}`, { jobRole })
-    .then((response) => response)
-    .catch((error) => error);
-}
+// // reject
+// export function rejectCandidate(applicationId, jobRole) {
+//   return axiosClient
+//     .patch(`/application/manage/reject/${applicationId}`, { jobRole })
+//     .then((response) => response)
+//     .catch((error) => error);
+// }
+// // accept candidate
+// export function acceptCandidate(applicationId, jobRole) {
+//   return axiosClient
+//     .patch(`/application/manage/accept/${applicationId}`, { jobRole })
+//     .then((response) => response)
+//     .catch((error) => error);
+// }
+
 // accept candidate
 export function acceptCandidate(applicationId, jobRole) {
   return axiosClient
-    .patch(`/application/manage/accept/${applicationId}`, { jobRole })
+    .patch(`/application/manage/accept/${applicationId}`, { jobRole: jobRole || [] })
     .then((response) => response)
-    .catch((error) => error);
+    .catch((error) => {
+      console.error("Accept candidate error:", error);
+      throw error; // Re-throw to handle in component
+    });
+}
+
+// reject candidate
+export function rejectCandidate(applicationId, jobRole) {
+  return axiosClient
+    .patch(`/application/manage/reject/${applicationId}`, { jobRole: jobRole || [] })
+    .then((response) => response)
+    .catch((error) => {
+      console.error("Reject candidate error:", error);
+      throw error; // Re-throw to handle in component
+    });
 }
 
 //schedule interview

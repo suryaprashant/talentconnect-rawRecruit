@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { MapPin, Building, Calendar, Globe, Mail, Phone, Linkedin, CheckCircle, Info, Download } from 'lucide-react';
+import { MapPin, Building, Calendar, Globe, Mail, Phone, Linkedin, CheckCircle, Info, Download, ExternalLink } from 'lucide-react';
 import { ApplyForPoolCampus, SaveOppurtunity, getPoolCampusJobById } from '@/lib/College_AxiosIntance';
 import toast from 'react-hot-toast';
 import { viewed } from '@/lib/User_AxiosInstance';
@@ -56,6 +56,199 @@ const normalizeSelectionProcess = (process) => {
   return [];
 };
 
+// Helper function to get company logo
+const getCompanyLogo = (jobDetails) => {
+  if (!jobDetails) return null;
+  
+  console.log('🔍 Logo extraction for pool campus:', {
+    jobId: jobDetails._id,
+    profileImageUrl: jobDetails.companyPosted?.profileImageUrl,
+    profileImage: jobDetails.companyPosted?.profileImage,
+    companyDetailsLogo: jobDetails.companyPosted?.companyDetails?.companyLogo,
+    companyPostedKeys: jobDetails.companyPosted ? Object.keys(jobDetails.companyPosted) : []
+  });
+  
+  // Priority order
+  const possiblePaths = [
+    jobDetails.companyPosted?.profileImageUrl,    // Correct path after backend fix
+    jobDetails.companyPosted?.profileImage,       // Fallback if backend hasn't been updated
+    jobDetails.companyPosted?.companyDetails?.companyLogo, // Alternative location
+    jobDetails.logo,                               // Direct logo on job
+    jobDetails.profileImageUrl                     // Direct profileImageUrl on job
+  ];
+  
+  for (const path of possiblePaths) {
+    if (path && typeof path === 'string' && path.trim() !== '') {
+      console.log('✅ Selected logo:', path);
+      return path;
+    }
+  }
+  
+  console.log('❌ No logo found');
+  return null;
+};
+
+// Company Details Modal Component
+const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
+  if (!isOpen || !company) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        {/* Background overlay */}
+        <div 
+          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" 
+          onClick={onClose}
+        ></div>
+
+        {/* Modal panel */}
+        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                {/* Company Logo with first letter fallback */}
+                {/* {company.logo ? (
+                  <div className="w-12 h-12 rounded-lg bg-white border-2 border-white shadow-md overflow-hidden">
+                    <img 
+                      src={company.logo} 
+                      alt={`${company.companyName} logo`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextElementSibling.style.display = 'flex';
+                      }}
+                    />
+                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] hidden items-center justify-center text-white font-bold text-lg">
+                      {company.companyName?.charAt(0) || 'C'}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                    {company.companyName?.charAt(0) || 'C'}
+                  </div>
+                )} */}
+                <h3 className="text-xl font-bold text-gray-900">
+                  {company.companyName || 'Company Details'}
+                </h3>
+              </div>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-500 focus:outline-none"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="px-6 py-4">
+            <div className="space-y-6">
+              {/* About Section */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">About</h4>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {company.description || 'No description provided.'}
+                </p>
+              </div>
+
+              {/* Company Details Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Employees</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.numberOfEmployees || 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Industry</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.industryType || 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Country</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.country || 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Type</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.companyType || 'N/A'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Info */}
+              <div className="pt-4 border-t border-gray-200">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">Contact Information</h4>
+                <div className="space-y-2">
+                  {company.contactPerson && (
+                    <div className="flex items-center">
+                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">{company.contactPerson}</span>
+                    </div>
+                  )}
+                  {company.email && (
+                    <div className="flex items-center">
+                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <a href={`mailto:${company.email}`} className="text-gray-700 text-sm hover:text-[#667eea]">
+                        {company.email}
+                      </a>
+                    </div>
+                  )}
+                  {company.phone && (
+                    <div className="flex items-center">
+                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      <a href={`tel:${company.phone}`} className="text-gray-700 text-sm hover:text-[#667eea]">
+                        {company.phone}
+                      </a>
+                    </div>
+                  )}
+                  {company.website && (
+                    <div className="flex items-center">
+                      <ExternalLink className="h-5 w-5 text-[#667eea] mr-2" />
+                      <a 
+                        href={company.website} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-gray-700 text-sm hover:text-[#667eea] truncate"
+                      >
+                        {company.website.replace(/^https?:\/\//, '')}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
+            <div className="flex justify-end">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#667eea]"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const PoolJobDetailsPage = () => {
     const { id } = useParams();
     const [searchParams] = useSearchParams();
@@ -65,6 +258,7 @@ const PoolJobDetailsPage = () => {
     const [isloading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [saved, setSaved] = useState(false);
+    const [showCompanyModal, setShowCompanyModal] = useState(false);
     const navigate = useNavigate();
     const { isAuthenticated, loading } = useAuth();
     
@@ -78,8 +272,34 @@ const PoolJobDetailsPage = () => {
             setError(null);
             try {
                 const response = await getPoolCampusJobById(id);
-                setJobDetails(response.data);
-                await viewed(response.data._id);
+                
+                // Debug the API response
+                console.log('🔍 Pool Campus Page - API Response:', {
+                    jobId: id,
+                    hasData: !!response.data,
+                    companyPosted: response.data?.companyPosted,
+                    profileImageUrl: response.data?.companyPosted?.profileImageUrl,
+                    profileImage: response.data?.companyPosted?.profileImage,
+                    companyDetailsLogo: response.data?.companyPosted?.companyDetails?.companyLogo,
+                    // Normalize if needed
+                    needsNormalization: !response.data?.companyPosted?.profileImageUrl && !!response.data?.companyPosted?.profileImage
+                });
+                
+                // If backend returns profileImage instead of profileImageUrl, normalize it
+                let normalizedData = response.data;
+                if (response.data?.companyPosted?.profileImage && !response.data?.companyPosted?.profileImageUrl) {
+                    console.log('🔄 Normalizing: Copying profileImage to profileImageUrl');
+                    normalizedData = {
+                        ...response.data,
+                        companyPosted: {
+                            ...response.data.companyPosted,
+                            profileImageUrl: response.data.companyPosted.profileImage
+                        }
+                    };
+                }
+                
+                setJobDetails(normalizedData);
+                await viewed(normalizedData._id);
             } catch (err) {
                 console.error("Error fetching job details:", err);
                 setError("Failed to fetch job details. Please try again later.");
@@ -136,8 +356,8 @@ const PoolJobDetailsPage = () => {
                 .catch((error) => console.log('Error sharing', error));
         } else {
             navigator.clipboard.writeText(window.location.href)
-                .then(() => alert('Link copied to clipboard!'))
-                .catch(() => alert('Failed to copy link'));
+                .then(() => toast.success('Link copied to clipboard!'))
+                .catch(() => toast.error('Failed to copy link'));
         }
     };
 
@@ -157,6 +377,28 @@ const PoolJobDetailsPage = () => {
         } else {
             return { status: 'Completed', color: 'bg-gray-100 text-gray-700' };
         }
+    };
+
+    // Get company logo
+    const companyLogo = getCompanyLogo(jobDetails);
+    
+    // Prepare company data for modal from job data
+    const getCompanyData = () => {
+        if (!jobDetails) return {};
+        
+        return {
+            companyName: jobDetails?.companyPosted?.companyDetails?.companyName,
+            description: jobDetails?.companyPosted?.companyDetails?.description,
+            numberOfEmployees: jobDetails?.companyPosted?.companyDetails?.numberOfEmployees,
+            industryType: jobDetails?.companyPosted?.companyDetails?.industryType,
+            country: jobDetails?.companyPosted?.companyDetails?.country,
+            companyType: jobDetails?.companyPosted?.companyDetails?.companyType,
+            contactPerson: jobDetails?.contactPerson?.name,
+            email: jobDetails?.contactPerson?.email || jobDetails?.companyPosted?.companyDetails?.email,
+            phone: jobDetails?.contactPerson?.mobile || jobDetails?.companyPosted?.companyDetails?.phone,
+            website: jobDetails?.companyPosted?.companyDetails?.website,
+            logo: companyLogo // Add the logo here
+        };
     };
 
     if (isloading) {
@@ -203,10 +445,11 @@ const PoolJobDetailsPage = () => {
     }
     
     const jobStatus = getJobStatus();
+    const companyData = getCompanyData();
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
-            <main className="px-6 py-6">
+            <main className="px-6 py-6 max-w-7xl mx-auto">
                 {/* Top Back Button */}
                 <button onClick={() => handleGoBack()} className="inline-flex items-center text-[#667eea] hover:text-[#764ba2] mb-6 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -216,80 +459,93 @@ const PoolJobDetailsPage = () => {
                 </button>
 
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
-                    {/* Header Section */}
+                    {/* Header Section - Reorganized */}
                     <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4">
-                        {jobStatus.status === 'Completed' ? (
-                            <div className="text-sm font-medium text-[#667eea]">Registrations Completed</div>
-                        ) : (
-                            <div className="text-sm font-medium text-[#667eea]">Registration Open</div>
-                        )}
-
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-2">
-                            <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                                {jobDetails?.companyPosted?.companyDetails?.companyName || 'Not Specified'}
-                            </h1>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row justify-between mt-4">
-                            <div className="flex items-center text-sm text-gray-600">
-                                <Calendar className="h-5 w-5 mr-1 text-[#667eea]" />
-                                <span>{formatDate(jobDetails?.startDate)} - {formatDate(jobDetails?.endDate)}</span>
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            {/* Left side: Status and Company Name */}
+                            <div className="flex-1 min-w-0">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                                    <div className="flex items-center text-sm text-gray-600">
+                                        <Calendar className="h-5 w-5 mr-1 text-[#667eea]" />
+                                        <span>{formatDate(jobDetails?.startDate)} - {formatDate(jobDetails?.endDate)}</span>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex items-start gap-3">
+                                    {/* Company Logo/Initial */}
+                                    {/* <button 
+                                        onClick={() => setShowCompanyModal(true)}
+                                        className="group"
+                                    >
+                                        {companyLogo ? (
+                                            <div className="w-12 h-12 rounded-lg bg-white border border-gray-200 shadow-sm overflow-hidden group-hover:shadow-md transition-shadow">
+                                                <img 
+                                                    src={companyLogo} 
+                                                    alt={`${companyData.companyName} logo`}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        console.error('❌ Logo failed to load:', companyLogo);
+                                                        e.target.style.display = 'none';
+                                                        e.target.nextElementSibling.style.display = 'flex';
+                                                    }}
+                                                />
+                                                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] hidden items-center justify-center text-white font-bold text-lg">
+                                                    {companyData.companyName?.charAt(0) || 'C'}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-lg shadow-sm group-hover:opacity-90 transition-opacity">
+                                                {companyData.companyName?.charAt(0) || 'C'}
+                                            </div>
+                                        )}
+                                    </button> */}
+                                    
+                                    {/* Company Name and Click Hint */}
+                                    <div>
+                                        <button 
+                                            onClick={() => setShowCompanyModal(true)}
+                                            className="text-left group"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <h1 className="text-2xl font-bold text-gray-900 group-hover:text-[#667eea] transition-colors">
+                                                    {companyData.companyName || 'Not Specified'}
+                                                </h1>
+                                                <ExternalLink className="h-5 w-5 text-[#667eea] opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            </div>
+                                            
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            {/* <div className="flex items-center mt-2 sm:mt-0 text-sm text-gray-600">
-                                <MapPin className="h-5 w-5 mr-1 text-[#667eea]" />
-                                <span>{jobDetails?.workLocation?.join(', ') || 'Not Specified'}</span>
-                            </div> */}
-                        </div>
 
-                        {/* Moved Save and Share buttons here, removed Register Now */}
-                        <div className="flex space-x-2 mt-4">
-                            {!isSaved && (
+                            {/* Right side: Save and Share buttons */}
+                            <div className="flex items-center gap-2 mt-4 sm:mt-0">
+                                {!isSaved && (
+                                    <button
+                                        onClick={() => handleSave(jobDetails?._id, "Pool-campus")}
+                                        disabled={saved}
+                                        className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-lg transition-all duration-200 shadow-sm`}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-1 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={saved ? 'currentColor' : 'none'} stroke="currentColor">
+                                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                                        </svg>
+                                        {saved ? 'Saved' : 'Save'}
+                                    </button>
+                                )}
                                 <button
-                                    onClick={() => handleSave(jobDetails?._id, "Pool-campus")}
-                                    disabled={saved}
-                                    className={`inline-flex items-center justify-center px-4 py-2 border ${saved ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'} text-sm font-medium rounded-lg transition-all duration-200`}
+                                    onClick={handleShare}
+                                    className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-sm"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 mr-1 ${saved ? 'text-[#667eea]' : 'text-gray-400'}`} viewBox="0 0 20 20" fill={saved ? 'currentColor' : 'none'} stroke="currentColor">
-                                        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
                                     </svg>
-                                    {saved ? 'Saved' : 'Save'}
+                                    Share
                                 </button>
-                            )}
-                            <button
-                                onClick={handleShare}
-                                className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                                </svg>
-                                Share
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* About Section */}
-                    <div className="px-6 py-6">
-                        <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                            About {jobDetails.companyPosted?.companyDetails?.companyName || 'the Company'}
-                        </h2>
-                        <p className="text-gray-700 mb-6">{jobDetails.companyPosted?.companyDetails?.description || 'No description provided.'}</p>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                                <div className="text-2xl font-bold text-gray-900">{jobDetails.companyPosted?.companyDetails?.numberOfEmployees || 'N/A'}</div>
-                                <div className="text-sm text-gray-600">Employees</div>
-                            </div>
-                            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                                <div className="text-2xl font-bold text-gray-900">{jobDetails.companyPosted?.companyDetails?.industryType || 'N/A'}</div>
-                                <div className="text-sm text-gray-600">Industries</div>
-                            </div>
-                            <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-4 rounded-lg">
-                                <div className="text-2xl font-bold text-gray-900">{jobDetails.companyPosted?.companyDetails?.country || 'N/A'}</div>
-                                <div className="text-sm text-gray-600">Countries</div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Job Description - KEPT AS ORIGINAL TEXT */}
+                    {/* Job Description */}
                     <div className="px-6 py-6">
                         <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
                             Job Description
@@ -601,6 +857,13 @@ const PoolJobDetailsPage = () => {
                     </div>
                 </div>
             </main>
+
+            {/* Company Details Modal */}
+            <CompanyDetailsModal
+                company={companyData}
+                isOpen={showCompanyModal}
+                onClose={() => setShowCompanyModal(false)}
+            />
         </div>
     );
 };

@@ -1,9 +1,127 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ApplyForInternship, getInternshipById, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
-import { ArrowLeft, MapPin, Building2, Users, Briefcase, DollarSign, GraduationCap, FileText, Globe, Clock, CheckCircle, Share2, IndianRupee } from 'lucide-react';
+import { ArrowLeft, MapPin, Building2, Users, Briefcase, DollarSign, GraduationCap, FileText, Globe, Clock, CheckCircle, Share2, IndianRupee, Info } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from "@/context/AuthContext";
+
+// Company Details Modal Component
+const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
+  if (!isOpen || !company) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        {/* Background overlay */}
+        <div 
+          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" 
+          onClick={onClose}
+        ></div>
+
+        {/* Modal panel */}
+        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                  {company.companyName?.charAt(0) || 'C'}
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">
+                  {company.companyName || 'Company Details'}
+                </h3>
+              </div>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-500 focus:outline-none"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="px-6 py-4">
+            <div className="space-y-6">
+              {/* About Section */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-2">About</h4>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {company.description || 'No description provided.'}
+                </p>
+              </div>
+
+              {/* Company Details Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Employees</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.numberOfEmployees || 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Industry</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.industryType || 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Country</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.country || 'N/A'}
+                  </div>
+                </div>
+                <div className="bg-gradient-to-br from-[#667eea]/5 to-[#764ba2]/5 p-3 rounded-lg">
+                  <div className="text-sm font-medium text-gray-600">Type</div>
+                  <div className="text-lg font-semibold text-gray-900 mt-1">
+                    {company.companyType || 'N/A'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Info */}
+              {/* <div className="pt-4 border-t border-gray-200">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">Contact Information</h4>
+                <div className="space-y-2">
+                  {company.email && (
+                    <div className="flex items-center">
+                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">{company.email}</span>
+                    </div>
+                  )}
+                  {company.website && (
+                    <div className="flex items-center">
+                      <svg className="h-5 w-5 text-[#667eea] mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                      </svg>
+                      <span className="text-gray-700 text-sm">{company.website}</span>
+                    </div>
+                  )}
+                </div>
+              </div> */}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
+            <div className="flex justify-end">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#667eea]"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const InternJobDetails = () => {
   const { jobId } = useParams();
@@ -18,7 +136,8 @@ const InternJobDetails = () => {
   const [isApplied, setIsApplied] = useState((searchParams.get('isApplied') || '').toLowerCase() === 'true');
   const [isApplying, setIsApplying] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [imageError, setImageError] = useState(false); // Add image error state
+  const [imageError, setImageError] = useState(false);
+  const [showCompanyModal, setShowCompanyModal] = useState(false);
   
   const handleShare = async () => {
     const shareData = {
@@ -84,6 +203,22 @@ const InternJobDetails = () => {
       null;
     
     return logo;
+  };
+
+  // Prepare company data for modal
+  const getCompanyData = () => {
+    if (!jobDetails) return {};
+    
+    return {
+      companyName: jobDetails?.companyPosted?.companyDetails?.companyName,
+      description: jobDetails?.companyPosted?.companyDetails?.description,
+      numberOfEmployees: jobDetails?.companyPosted?.companyDetails?.numberOfEmployees,
+      industryType: jobDetails?.companyPosted?.companyDetails?.industryType,
+      country: jobDetails?.companyPosted?.companyDetails?.country,
+      companyType: jobDetails?.companyPosted?.companyDetails?.companyType,
+      email: jobDetails?.companyPosted?.companyDetails?.email,
+      website: jobDetails?.companyPosted?.companyDetails?.website
+    };
   };
 
   const handleApply = async () => {
@@ -232,6 +367,7 @@ const InternJobDetails = () => {
   const applicationDeadline = getApplicationDeadline();
   const companyName = jobDetails?.companyPosted?.companyDetails?.companyName || 'N/A';
   const companyLogo = getCompanyLogo();
+  const companyData = getCompanyData();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
@@ -245,35 +381,52 @@ const InternJobDetails = () => {
           Back
         </button>
 
-        {/* Header - UPDATED WITH LARGER, BOLDER COMPANY NAME AND PROPER LOGO */}
+        {/* Header - Modified to make company name clickable */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <div className="flex items-start sm:items-center gap-4">
             <div className="w-16 h-16 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
               {companyLogo && !imageError ? (
-                <img
-                  src={companyLogo}
-                  alt={companyName}
-                  className="w-14 h-14 object-cover"
-                  onError={() => setImageError(true)}
-                />
+                <button 
+                  onClick={() => setShowCompanyModal(true)}
+                  className="w-full h-full group"
+                >
+                  <img
+                    src={companyLogo}
+                    alt={companyName}
+                    className="w-14 h-14 object-cover group-hover:opacity-90 transition-opacity"
+                    onError={() => setImageError(true)}
+                  />
+                </button>
               ) : (
-                <div className="w-14 h-14 bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 rounded-full flex items-center justify-center">
-                  <span className="text-lg font-bold text-[#667eea]">
-                    {getInitials(companyName)}
-                  </span>
-                </div>
+                <button 
+                  onClick={() => setShowCompanyModal(true)}
+                  className="w-full h-full flex items-center justify-center group"
+                >
+                  <div className="w-14 h-14 bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 rounded-full flex items-center justify-center group-hover:opacity-90 transition-opacity">
+                    <span className="text-lg font-bold text-[#667eea]">
+                      {getInitials(companyName)}
+                    </span>
+                  </div>
+                </button>
               )}
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-1">
                 {jobDetails.jobTitle}
               </h1>
-              {/* LARGER AND BOLDER COMPANY NAME */}
-              <div className="flex items-center">
-                <p className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mr-2">
+              {/* LARGER AND BOLDER COMPANY NAME - NOW CLICKABLE */}
+              <button 
+                onClick={() => setShowCompanyModal(true)}
+                className="text-left group"
+              >
+                <p className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mr-2 group-hover:text-[#667eea] transition-colors">
                   {companyName}
                 </p>
-              </div>
+                {/* <div className="flex items-center text-xs text-gray-500 mt-1">
+                  <Info className="w-3 h-3 mr-1" />
+                  Click to view company details
+                </div> */}
+              </button>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
@@ -541,6 +694,13 @@ const InternJobDetails = () => {
           </div>
         </section>
       </div>
+
+      {/* Company Details Modal */}
+      <CompanyDetailsModal
+        company={companyData}
+        isOpen={showCompanyModal}
+        onClose={() => setShowCompanyModal(false)}
+      />
     </div>
   );
 };
