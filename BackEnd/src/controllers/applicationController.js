@@ -11,6 +11,7 @@ import {
   fetchCompanyDashboardMetrics,
   getSavedCollegesService,
   fetchCollegeSideApplicationsByJobService,
+  createInternshipApplicationService,
   // getApplicationService,
   // getOffCampusApplicantsService, fetchShortlistedCandidates, fetchInternshipApplicationService, fetchApplicationStatusService
 } from "../services/applicationService.js";
@@ -249,12 +250,13 @@ export async function createOffcampusApplication(req, res) {
       return res.status(404).json({ msg: "Job not found" });
     }
 
-    const application = await createApplicationService(
-      actorProfile._id,
-      userType,
+    const application = await createApplicationService({
+      appliedByUserId: actorProfile._id,   // student profile id
+      appliedByType: userType,             // student | fresher | professional
+      appliedForCompanyId: null,           // 🔑 off-campus has NO company context
       jobId,
-      "Off-campus"
-    );
+      jobType: "Off-campus",
+    });
 
     if (application.success === false) {
       return res.status(403).json({ msg: application.message });
@@ -327,6 +329,7 @@ export async function createIntershipApplication(req, res) {
   const { internshipId } = req.body;
   const userId = req.user._id;
   const userType = req.user.userType;
+  console.log("🔥 hit me")
 
   try {
     // to get userId from user database
@@ -345,12 +348,16 @@ export async function createIntershipApplication(req, res) {
       return res.status(404).json({ msg: "Internship not found" });
     }
 
-    const application = await createApplicationService(
-      user.data[0]._id,
-      req.user.userType,
-      internshipId,
-      "Internship"
-    );
+    const application = await createApplicationService({
+      appliedByUserId: actorProfile._id,
+      appliedByType: userType,          // student / fresher
+      appliedForCompanyId: internship.companyPosted?._id || null,
+      jobId: internshipId,
+      jobType: "Internship",
+    });
+
+
+
     if (application.success === false)
       return res.status(403).json({ msg: application.message });
 
@@ -519,6 +526,7 @@ export async function createOncampusApplication(req, res) {
     return res.status(401).json({ msg: "User not logged in!" });
   }
   const { jobId } = req.body;
+  const authUser = req.user;
   const userId = req.user._id;
   const userType = req.user.userType;
  
@@ -555,16 +563,35 @@ export async function createOncampusApplication(req, res) {
 
     if (!job) return res.status(404).json({ msg: "Job not found" });
 
+    const appliedByUserId = actorProfile._id;
+
+
+    const isEmployeeWithCompany =
+      authUser.userType === "employer" && authUser.activeCompanyId;
+
+    const appliedByType = isEmployeeWithCompany
+      ? "employer"
+      : authUser.userType;
+
+    let appliedForCompanyId = null;
+
+    if (authUser.userType === "employer") {
+      appliedForCompanyId = authUser.activeCompanyId || actorProfile._id;
+    } else if (authUser.userType === "company") {
+      appliedForCompanyId = actorProfile._id;
+    }
+
     
 
     const jobType = job.jobType;
 
-    const application = await createApplicationService(
-      actorProfile._id,
-      userType,
+    const application = await createApplicationService({
+      appliedByUserId,
+      appliedByType,
+      appliedForCompanyId,
       jobId,
-      "On-campus"
-    );
+      jobType: "On-campus",
+  });
 
     if (application.success === false) {
       return res.status(403).json({ msg: application.message });
@@ -684,6 +711,25 @@ export async function createPoolcampusApplication(req, res) {
   const { jobId } = req.body;
   const userId = req.user._id;
   const userType = req.user.userType;
+  const authUser = req.user;
+
+  // who clicked apply
+ 
+
+  // employee acting for a company
+  const isEmployeeWithCompany =
+    authUser.userType === "employer" && authUser.activeCompanyId;
+
+  // who the application belongs to
+  {/*const appliedForCompanyId = isEmployeeWithCompany
+    ? authUser.activeCompanyId
+    : authUser.userType === "company"
+      ? user.data?.[0]?._id
+      : null;*/}
+
+  // how it was applied
+  const appliedByType = isEmployeeWithCompany ? "employer" : authUser.userType;
+
 
   try {
     let user;
@@ -706,6 +752,19 @@ export async function createPoolcampusApplication(req, res) {
     }
 
     const actorProfile = user.data[0];
+    let appliedForCompanyId = null;
+
+     const appliedByUserId = actorProfile._id;
+
+    if (authUser.userType === "employer") {
+      appliedForCompanyId = authUser.activeCompanyId || actorProfile._id;
+    }
+
+    else if (authUser.userType === "company") {
+      appliedForCompanyId = actorProfile._id;
+    }
+
+
 
     const job = await JobPostingTable.findById(jobId)
       .populate("companyPosted")
@@ -715,12 +774,14 @@ export async function createPoolcampusApplication(req, res) {
 
     const jobType = job.jobType; // should be "Pool-campus"
 
-    const application = await createApplicationService(
-      actorProfile._id,
-      userType,
+    const application = await createApplicationService({
+      appliedByUserId,
+      appliedByType,
+      appliedForCompanyId,
       jobId,
-      "Pool-campus"
-    );
+      jobType: "Pool-campus",
+    });
+
 
     if (application.success === false) {
       return res.status(403).json({ msg: application.message });
@@ -860,11 +921,19 @@ export async function getUserApplicationStatus(req, res) {
       return res.status(404).json({ error: "User profile not found" });
     }
 
+    let activeCompanyId = null;
+
+    if (userType === "employer") {
+      activeCompanyId = req.user.activeCompanyId;
+    }
+
     const response = await fetchApplicationStatusService(
       user.data[0]._id,
       jobType,
-      userType
+      userType,
+      activeCompanyId
     );
+
     // console.log(response);
 
     if (response.success) res.status(200).json(response);
@@ -878,14 +947,17 @@ export async function getUserApplicationStatus(req, res) {
 // action by company
 // offcampus and joblisting
 export async function getApplicationsByJob(req, res) {
+  console.log("🔥 getApplicationsByJob HIT") 
   const { jobId, jobType, targetStatus, isVisited } = req.query;
+  const userType = req.user.userType;
   if (!jobId || !jobType)
     return res.status(404).json({ msg: "Job not found!" });
 
   try {
-    const response = await fetchApplicationsByJobService(
+    const response = await fetchCollegeApplicationsByJobService(
       jobId,
       jobType,
+      userType,
       targetStatus,
       isVisited
     );
@@ -948,6 +1020,7 @@ export async function getApplicationsByJob(req, res) {
 
 //past new working for company prathmesh
 export async function getCollegeApplicationsByJob(req, res) { 
+  console.log("hello")
   
   const { jobId, jobType, targetStatus, isVisited } = req.query; 
   const userType = req.user.userType; if (!jobId || !jobType || !targetStatus) 
@@ -956,6 +1029,7 @@ export async function getCollegeApplicationsByJob(req, res) {
   try { const response = await fetchCollegeApplicationsByJobService( jobId, jobType, userType, targetStatus, isVisited ); 
     // to be implement -- sorting feature like ATS 
     console.log(response)
+    
       res.status(200).json(response.data); 
     } catch (error) 
     { 

@@ -3,11 +3,10 @@ import CompanyProfile from "../../models/companyDashboard/companyProfileModel.js
 import { JobPostingTable } from "../../models/jobPostingsModel.js";
 import OnboardingModel from "../../models/studentonboardingModel.js";
 import { getStudentService } from "../../services/studentService.js";
-import { getCompanyService } from "../../services/companyService.js";
+import { getCompanyService, getEmployerService } from "../../services/companyService.js";
 import Application from "../../models/applicationModel.js";
 import { getCollegeService } from "../../services/collegeService.js";
 import Auth from "../../models/authModel.js";
-import mongoose from 'mongoose';
 
 
 
@@ -78,9 +77,10 @@ export const getOnCampusPostings = async (req, res) => {
 //     }
 // };
 
-export const getOnCampusPostingsForCompany = async (req, res) => {
+{/*export const getOnCampusPostingsForCompany = async (req, res) => {
     // 1. Safely handle guest users
     const userId = req.user ? req.user._id : null; 
+    console.log("=== GET ON-CAMPUS POSTINGS FOR COMPANY ===");
     
     try {
         let company = { data: [] };
@@ -107,27 +107,135 @@ export const getOnCampusPostingsForCompany = async (req, res) => {
         }
 
         // 4. Apply application filtering for logged-in companies
+        // 4. Apply application filtering for logged-in companies
         try {
-            const companyProfileId = company.data[0]._id;
-            const jobIds = filteredPostings.map(p => p._id);
-            const applications = await Application.find({ 
-                applicant: companyProfileId, 
-                job: { $in: jobIds } 
-            }).select('job').lean();
+          const companyProfileId = company.data[0]._id;
+          const jobIds = filteredPostings.map(p => p._id);
+        
+          const applications = await Application.find({
+            job: { $in: jobIds },
+            $or: [
+              // Company applied directly
+              { applicant: companyProfileId },
             
-            const appliedJobIds = new Set(applications.map(a => String(a.job)));
-            const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
-            
-            return sendResponse(res, 200, { data: finalPostings });
+              // Employer applied on behalf of company
+              { appliedForCompany: companyProfileId }
+            ]
+          }).select('job').lean();
+      
+          const appliedJobIds = new Set(applications.map(a => String(a.job)));
+      
+          const finalPostings = filteredPostings.filter(
+            p => !appliedJobIds.has(String(p._id))
+          );
+      
+          return sendResponse(res, 200, { data: finalPostings });
         } catch (err) {
-            console.error('Error filtering postings:', err.message);
-            return sendResponse(res, 200, { data: filteredPostings });
+          console.error('Error filtering postings:', err.message);
+          return sendResponse(res, 200, { data: filteredPostings });
         }
+
     } catch (error) {
         console.error("Error in getOnCampusPostingsForCompany:", error.message);
         sendError(res, 500, "Internal server error");
     }
-};
+};*/}
+
+//comapny-> employer parenmt child working 
+export const getOnCampusPostingsForCompany = async (req, res) => {
+      const userId = req.user ? req.user._id : null;
+      
+
+
+      try {
+        let companyProfileId = null;
+
+        // Employer acting on behalf of company
+        if (req.user?.userType === "employer" && req.user.activeCompanyId) {
+          companyProfileId = req.user.activeCompanyId;
+        }
+        // Company user
+        else if (req.user?.userType === "company") {
+          const company = await getCompanyService(userId);
+          companyProfileId = company?.data?.[0]?._id || null;
+        }
+
+        let employerProfileId = null;
+
+        if (req.user?.userType === "employer" && !req.user.activeCompanyId) {
+          const employer = await getEmployerService(userId);
+          employerProfileId = employer?.data?.[0]?._id || null;
+        }
+
+        // Get all on-campus postings
+        const postings = await getJobPostingsByCollegeService(
+          "On-campus",
+          userId
+        );
+
+        // Visible to company
+        const filteredPostings = postings.filter(
+          (posting) => posting.visibleTo === "Company"
+        );
+
+        // Guest / no company context
+        // Guest = neither company nor employer individual
+        if (!companyProfileId && !employerProfileId) {
+          return sendResponse(res, 200, {
+            data: filteredPostings,
+            message: "Guest view: Showing all available postings.",
+          });
+        }
+
+
+        // 🔒 EXACT SAME RULE AS POOL-CAMPUS
+        const jobIds = filteredPostings.map((p) => p._id);
+
+        {/*const applications = await Application.find({
+          appliedForCompany: companyProfileId,
+          job: { $in: jobIds },
+        })
+          .select("job")
+          .lean();*/}
+
+        const applicationQuery = {
+          job: { $in: jobIds },
+        };
+
+        // Company OR employer acting on behalf
+        if (companyProfileId) {
+          applicationQuery.appliedForCompany = companyProfileId;
+        }
+
+        // Employer as individual
+        else if (employerProfileId) {
+          applicationQuery.applicant = employerProfileId;
+        }
+
+
+        console.log("🔍 Dashboard Context Debug");
+
+        console.log("applicationQuery:", JSON.stringify(applicationQuery, null, 2));
+
+
+        const applications = await Application.find(applicationQuery)
+          .select("job")
+          .lean();
+
+
+        const appliedJobIds = new Set(applications.map((a) => String(a.job)));
+
+        const finalPostings = filteredPostings.filter(
+          (p) => !appliedJobIds.has(String(p._id))
+        );
+
+        return sendResponse(res, 200, { data: finalPostings });
+      } catch (error) {
+        console.error("Error in getOnCampusPostingsForCompany:", error);
+        return sendError(res, 500, "Internal server error");
+      }
+    };
+
 
 export const getOnCampusPostingForCompanybyID = async (req, res) => {
     const { id } = req.params;
@@ -328,21 +436,12 @@ export const getOnCampusPostingForCollegebyID = async (req, res) => {
         const response = await JobPostingTable.findById(id)
             .populate({
                 path: 'companyPosted',
-                select: 'companyDetails profileImageUrl hiringPreferences', // Changed from profileImage to profileImageUrl
+                select: 'companyDetails profileImage hiringPreferences',
             })
             .lean();
 
-        // Debug log
-        console.log('🔍 Backend Response:', {
-            jobId: id,
-            hasCompanyPosted: !!response?.companyPosted,
-            profileImageUrl: response?.companyPosted?.profileImageUrl,
-            companyName: response?.companyPosted?.companyDetails?.companyName
-        });
-
         res.status(200).json(response);
     } catch (err) {
-        console.error('❌ Error in getOnCampusPostingForCollegebyID:', err);
         res.status(500).json({ error: err.message });
     }
 }
@@ -587,22 +686,13 @@ export const getPoolCampusJobByIdForCollege = async (req, res) => {
         const response = await JobPostingTable.findById(id)
             .populate({
                 path: 'companyPosted',
-                select: 'companyDetails profileImageUrl hiringPreferences', // Changed from profileImage to profileImageUrl
+                select: 'companyDetails profileImage hiringPreferences',
             })
             .lean();
-        
-        // Add debug logging
-        console.log('🔍 Pool Campus Backend Response:', {
-            jobId: id,
-            hasCompanyPosted: !!response?.companyPosted,
-            profileImageUrl: response?.companyPosted?.profileImageUrl,
-            companyName: response?.companyPosted?.companyDetails?.companyName
-        });
-        
         res.status(200).json(response);
     }
     catch (err) {
-        console.error('❌ Error in getPoolCampusJobByIdForCollege:', err);
+        console.error(err);
         res.status(500).json({ error: err.message });
     }
 }
@@ -742,56 +832,94 @@ const userId = req.user ? req.user._id : null;
     }
 }*/}
 
+
+//comapny-> employer parenmt child working 
 export const getPoolCampusForCompany = async (req, res) => {
-    // 1. Safely handle guest users
-    const userId = req.user ? req.user._id : null; 
-    
-    try {
-        let company = { data: [] };
-        
-        // 2. Only look up company profile if user is logged in
-        if (userId) {
-            company = await getCompanyService(userId);
-        }
+  const userId = req.user ? req.user._id : null;
+  console.log("🧭 ENTRY getPoolCampusForCompany", {
+    userType: req.user?.userType,
+    activeCompanyId: req.user?.activeCompanyId,
+  });
 
-        // Get all on-campus postings
-        const postings = await getJobPostingsByCollegeService("Pool-campus", userId);
+  try {
+    let companyProfileId = null;
+    let employerProfileId = null;
 
-        // Filter results visible to "Company"
-        const filteredPostings = postings.filter(
-            (posting) => posting.visibleTo === "Company"
-        );
-
-        // 3. Handle guest response immediately if no profile is found
-        if (!company.data || !company.data[0]?._id) {
-            return sendResponse(res, 200, { 
-                data: filteredPostings,
-                message: "Guest view: Showing all available postings."
-            });
-        }
-
-        // 4. Apply application filtering for logged-in companies
-        try {
-            const companyProfileId = company.data[0]._id;
-            const jobIds = filteredPostings.map(p => p._id);
-            const applications = await Application.find({ 
-                applicant: companyProfileId, 
-                job: { $in: jobIds } 
-            }).select('job').lean();
-            
-            const appliedJobIds = new Set(applications.map(a => String(a.job)));
-            const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
-            
-            return sendResponse(res, 200, { data: finalPostings });
-        } catch (err) {
-            console.error('Error filtering postings:', err.message);
-            return sendResponse(res, 200, { data: filteredPostings });
-        }
-    } catch (error) {
-        console.error("Error in getOnCampusPostingsForCompany:", error.message);
-        sendError(res, 500, "Internal server error");
+    // Employer acting for company
+    if (req.user?.userType === "employer" && req.user.activeCompanyId) {
+      companyProfileId = req.user.activeCompanyId;
     }
+    // Company user
+    else if (req.user?.userType === "company") {
+      const company = await getCompanyService(userId);
+      companyProfileId = company?.data?.[0]?._id || null;
+    }
+
+    // Employer as individual
+    if (req.user?.userType === "employer" && !req.user.activeCompanyId) {
+      const employer = await getEmployerService(userId);
+      employerProfileId = employer?.data?.[0]?._id || null;
+    }
+
+    console.log("🔍 Dashboard Context Debug", {
+      companyProfileId,
+      employerProfileId,
+    });
+
+    // Get all pool-campus postings
+    const postings = await getJobPostingsByCollegeService(
+      "Pool-campus",
+      userId
+    );
+
+    // Visible to company
+    const filteredPostings = postings.filter(
+      (posting) => posting.visibleTo === "Company"
+    );
+
+    // Guest view
+    if (!companyProfileId && !employerProfileId) {
+      return sendResponse(res, 200, {
+        data: filteredPostings,
+        message: "Guest view: Showing all available postings.",
+      });
+    }
+
+    // Hide already-applied jobs (company-level)
+    const jobIds = filteredPostings.map((p) => p._id);
+
+    const applicationQuery = {
+      job: { $in: jobIds },
+    };
+
+    if (companyProfileId) {
+      // company OR employer-on-behalf
+      applicationQuery.appliedForCompany = companyProfileId;
+      console.log("🏢 Pool-campus company filter applied");
+    } else if (employerProfileId) {
+      // employer individual
+      applicationQuery.applicant = employerProfileId;
+      console.log("👤 Pool-campus employer-individual filter applied");
+    }
+
+    console.log("📦 Application Query:", applicationQuery);
+
+    const applications = await Application.find(applicationQuery)
+      .select("job")
+      .lean();
+
+    const appliedJobIds = new Set(applications.map((a) => String(a.job)));
+    const finalPostings = filteredPostings.filter(
+      (p) => !appliedJobIds.has(String(p._id))
+    );
+
+    return sendResponse(res, 200, { data: finalPostings });
+  } catch (error) {
+    console.error("Error in getPoolCampusForCompany:", error);
+    return sendError(res, 500, "Internal server error");
+  }
 };
+
 
 export const getPoolCampusJobByIdForCompany = async (req, res) => {
     const { id } = req.params;
@@ -978,7 +1106,23 @@ export const getInternshipPostings = async (req, res) => {
     }
 };
 
+
 export const getIntershipById = async (req, res) => {
+    console.log('in internship section')
+    const { id } = req.params;
+    try {
+        const response = await JobPostingTable.findById(id)
+            .populate('companyPosted')
+            .lean();
+        res.status(200).json(response);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+}
+
+{/*export const getIntershipById = async (req, res) => {
     const { id } = req.params;
     
     console.log('🔍 in internship section - fetching job ID:', id);
@@ -1045,6 +1189,7 @@ export const getIntershipById = async (req, res) => {
         });
     }
 }
+     */}
 
 export const getReferralJobs = async (req, res) => {
     try {
