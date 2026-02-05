@@ -921,6 +921,10 @@ export async function fetchCollegeApplicationsByJobService(
                 $switch: {
                   branches: [
                     {
+                      case: { $eq: ["$applicantType", "company"] },
+                      then: { $arrayElemAt: ["$companyApplicant", 0] }
+                    },
+                    {
                       case: { $eq: ["$applicantType", "college"] },
                       then: { $arrayElemAt: ["$collegeApplicant", 0] }
                     },
