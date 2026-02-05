@@ -170,6 +170,7 @@ export async function getSavedCollegesService(applicantId, applicantType) {
 // save job by user
 export async function saveJobService(userId, userType, jobId, jobType) {
     try {
+      
         const existing = await getApplicationService(userId, userType, jobId, jobType);
 
         if (existing?.response[0]?.currentStatus === "Applied" || existing?.response[0]?.currentStatus === "Shortlisted" || existing?.response[0]?.currentStatus === "Rejected" || existing?.response[0]?.currentStatus === "Accepted") {
@@ -182,6 +183,7 @@ export async function saveJobService(userId, userType, jobId, jobType) {
             const newApplication = new Application({
                 applicant: userId,
                 applicantType: userType,
+                appliedByType: userType, 
                 job: jobId,
                 jobType: jobType,
                 statusHistory: [{ status: "Saved" }],
