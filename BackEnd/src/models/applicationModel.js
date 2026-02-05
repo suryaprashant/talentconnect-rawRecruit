@@ -11,6 +11,18 @@ const ApplicationSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        appliedForCompany: {
+           type: mongoose.Schema.Types.ObjectId,
+           ref: "CompanyProfile",
+           default: null,
+           index: true,
+         },
+         appliedByType: {
+            type: String,
+            enum: ['employer','company','college','student','fresher','professional'],
+            required: true
+        },
+
         // applicant: {
         //     type: mongoose.Schema.Types.ObjectId,
         //     required: true,

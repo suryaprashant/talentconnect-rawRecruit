@@ -9,16 +9,59 @@ import {
   Calendar, MapPin, Target, FileText, Building2, Globe, 
   ArrowUpRight, ClipboardList, Users, Award, ChevronLeft,
   Github, Linkedin, ExternalLink, X, GraduationCap, Globe as GlobeIcon,
-  CheckCircle, Clock, AlertCircle, Check
+  CheckCircle, Clock, AlertCircle, Check,
+  IndianRupee
 } from 'lucide-react';
 
-const InternshipDetails = ({ job,
+// Helper function to extract applicant logo
+const getApplicantLogo = (applicant) => {
+  if (!applicant) return null;
+  
+  // Try multiple possible paths for applicant profile image
+  const possiblePaths = [
+    applicant.profileImageUrl,      // Most common
+    applicant.profileImage,         // Alternative field name
+    applicant.photo,                // Another possible field
+    applicant.image,                // Simple field name
+    applicant.profilePicture,       // Another variation
+    applicant.profilePic,           // Short form
+    applicant.avatar,               // Common in user profiles
+    applicant.profileImageUrl       // Capitalized version
+  ];
+  
+  // Find the first valid URL
+  const validLogo = possiblePaths.find(path => 
+    path && typeof path === 'string' && path.trim() !== '' && 
+    (path.startsWith('http') || path.startsWith('https') || path.startsWith('/'))
+  );
+  
+  console.log('🔍 Applicant Logo Debug:', {
+    applicantId: applicant._id,
+    applicantName: applicant.name,
+    foundLogo: validLogo,
+    allPaths: possiblePaths
+  });
+  
+  return validLogo || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+};
+
+// Helper function to get applicant initials
+const getApplicantInitials = (name) => {
+  if (!name) return 'U';
+  const words = name.trim().split(' ');
+  if (words.length === 1) return words[0].charAt(0).toUpperCase();
+  return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
+};
+
+const InternshipDetails = ({ 
+  job,
   applications,
   loading,
   error,
   isVisited,
   onRefresh,
-  onClose, }) => {
+  onClose 
+}) => {
   const jobId = job._id;
   const jobType = job.jobType;
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,11 +136,14 @@ const InternshipDetails = ({ job,
     try {
       const response = await conversationWithCollege(userId);
       if (response.data) {
+        // Get applicant logo using helper function
+        const applicantLogo = getApplicantLogo(applicant.applicant);
+        
         const conversationUser = {
           _id: userId,
           name: applicant.applicant.name || 'Unknown Applicant',
           email: applicant.applicant.email || '',
-          profileImage: applicant.applicant.profileImageUrl || 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+          profileImage: applicantLogo, // Use the extracted logo
           userType: 'candidate',
           fullname: applicant.applicant.name || 'Unknown Applicant'
         };
@@ -130,6 +176,9 @@ const InternshipDetails = ({ job,
     const applicant = selectedApplicant.applicant;
     const currentStatus = selectedApplicant.currentStatus || 'Accepted';
     
+    // Get applicant logo
+    const applicantLogo = getApplicantLogo(applicant);
+    
     return (
       <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -137,17 +186,32 @@ const InternshipDetails = ({ job,
             {/* Header */}
             <div className="flex justify-between items-start mb-6">
               <div className="flex items-center">
-                {applicant.profileImageUrl ? (
+                {/* Applicant Logo/Image */}
+                {applicantLogo ? (
                   <img 
-                    src={applicant.profileImageUrl} 
+                    src={applicantLogo} 
                     alt={applicant.name}
-                    className="w-20 h-20 rounded-full object-cover mr-4"
+                    className="w-20 h-20 rounded-full object-cover mr-4 border-2 border-gray-200"
+                    onError={(e) => {
+                      console.error('Applicant logo failed to load:', applicantLogo);
+                      e.target.style.display = 'none';
+                      // Show fallback initials
+                      const fallback = e.target.nextElementSibling;
+                      if (fallback) {
+                        fallback.style.display = 'flex';
+                      }
+                    }}
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-600 text-lg mr-4">
-                    {applicant.name?.charAt(0) || 'U'}
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-600 text-2xl font-bold mr-4">
+                    {getApplicantInitials(applicant.name)}
                   </div>
                 )}
+                {/* Fallback for image error */}
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 hidden items-center justify-center text-gray-600 text-2xl font-bold mr-4">
+                  {getApplicantInitials(applicant.name)}
+                </div>
+                
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">{applicant.name}</h2>
                   <p className="text-gray-600 text-sm mt-1">
@@ -168,18 +232,18 @@ const InternshipDetails = ({ job,
             </div>
 
             {/* Status Badge */}
-            <div className="mb-6">
+            {/* <div className="mb-6">
               <span className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-100 to-green-50 text-green-700 rounded-full text-sm font-medium border border-green-200">
                 <Check size={16} className="mr-2" />
                 Accepted Candidate
               </span>
-            </div>
+            </div> */}
 
             {/* Salary Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
                 <div className="flex items-center mb-2">
-                  <DollarSign className="w-5 h-5 mr-2 text-blue-600" />
+                  <IndianRupee className="w-5 h-5 mr-2 text-blue-600" />
                   <h3 className="font-semibold text-gray-800">Current Salary</h3>
                 </div>
                 <p className="text-2xl font-bold text-gray-900">
@@ -188,7 +252,7 @@ const InternshipDetails = ({ job,
               </div>
               <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
                 <div className="flex items-center mb-2">
-                  <DollarSign className="w-5 h-5 mr-2 text-green-600" />
+                  <IndianRupee className="w-5 h-5 mr-2 text-green-600" />
                   <h3 className="font-semibold text-gray-800">Expected Salary</h3>
                 </div>
                 <p className="text-2xl font-bold text-gray-900">
@@ -304,7 +368,7 @@ const InternshipDetails = ({ job,
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-gray-200">
+            {/* <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-gray-200">
               <button 
                 onClick={() => handleMessageClick(selectedApplicant)}
                 disabled={isProcessing}
@@ -321,7 +385,7 @@ const InternshipDetails = ({ job,
                 <X size={18} className="mr-2" />
                 Reject Application
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -376,6 +440,9 @@ const InternshipDetails = ({ job,
                 const applicant = application.applicant;
                 const currentStatus = application.currentStatus || 'Accepted';
                 
+                // Get applicant logo
+                const applicantLogo = getApplicantLogo(applicant);
+                
                 return (
                   <div key={application._id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -385,17 +452,30 @@ const InternshipDetails = ({ job,
                           className="cursor-pointer"
                           onClick={() => handleViewApplicantDetails(application)}
                         >
-                          {applicant.profileImageUrl ? (
+                          {/* Applicant Logo/Image */}
+                          {applicantLogo ? (
                             <img 
-                              src={applicant.profileImageUrl} 
+                              src={applicantLogo} 
                               alt={applicant.name}
-                              className="w-16 h-16 rounded-full object-cover mr-4 hover:opacity-90 transition-opacity"
+                              className="w-16 h-16 rounded-full object-cover mr-4 hover:opacity-90 transition-opacity border border-gray-200"
+                              onError={(e) => {
+                                console.error('Applicant logo failed to load in list:', applicantLogo);
+                                e.target.style.display = 'none';
+                                const fallback = e.target.nextElementSibling;
+                                if (fallback) {
+                                  fallback.style.display = 'flex';
+                                }
+                              }}
                             />
                           ) : (
-                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-600 text-lg mr-4 hover:bg-gray-300 transition-colors">
-                              {applicant.name?.charAt(0) || 'U'}
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-600 text-lg mr-4 hover:bg-gray-300 transition-colors border border-gray-200">
+                              {getApplicantInitials(applicant.name)}
                             </div>
                           )}
+                          {/* Fallback for image error */}
+                          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 hidden items-center justify-center text-gray-600 text-lg mr-4 hover:bg-gray-300 transition-colors border border-gray-200">
+                            {getApplicantInitials(applicant.name)}
+                          </div>
                         </div>
                         <div className="flex-1">
                           <div 
@@ -423,7 +503,7 @@ const InternshipDetails = ({ job,
                       </div>
 
                       {/* Quick Info */}
-                      <div className="flex flex-wrap gap-4 text-sm">
+                      {/* <div className="flex flex-wrap gap-4 text-sm">
                         <div className="text-center">
                           <div className="font-semibold text-gray-800">
                             {applicant.currentSalaryCurrency} {applicant.currentSalaryAmount || '0'}
@@ -436,17 +516,17 @@ const InternshipDetails = ({ job,
                           </div>
                           <div className="text-xs text-gray-500">Expected</div>
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Action Buttons */}
                       <div className="flex items-center gap-2">
-                        <button
+                        {/* <button
                           onClick={() => handleViewApplicantDetails(application)}
                           className="p-2 bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-[#667eea] hover:border-[#667eea]/50 transition-all duration-200"
                           title="View Details"
                         >
                           <User size={16} />
-                        </button>
+                        </button> */}
                         <button
                           onClick={() => handleMessageClick(application)}
                           disabled={isProcessing}
