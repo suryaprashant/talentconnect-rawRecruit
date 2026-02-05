@@ -14,6 +14,8 @@ export default function OnCampusJobManagement() {
   const [colleges, setColleges] = useState([]);
   const [collegesLoading, setCollegesLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isVisited, setIsVisited] = useState();
+
 
   const itemsPerPage = 10;
 
@@ -33,17 +35,16 @@ export default function OnCampusJobManagement() {
     }
   };
 
-    const fetchCollegesForJob = async (jobId, jobType, isVisited) => {
+    const fetchCollegesForJob = async (jobId, jobType, filterVisited = null) => {
     setCollegesLoading(true);
     setError(null);
     try {
-      let response;
-      if (isVisited === false) response = await getCollegeApplicationsForJob(jobId, jobType, "Shortlisted", isVisited);
-      else {
-        response = await getCollegeApplicationsForJob(jobId, jobType, "Shortlisted");
-      }
-
-      console.log("Fetched colleges for job:", response.data);
+      const response = await getCollegeApplicationsForJob(
+        jobId,
+        jobType,
+        "Shortlisted",
+        filterVisited
+      );
       setColleges(response.data || []);
     } catch (err) {
       console.error("Error fetching colleges:", err);
@@ -69,10 +70,12 @@ export default function OnCampusJobManagement() {
       }
       if (response?.data?.success === true) {
         toast.success(`Application status updated to: ${status}`);
-        // Refresh the colleges list after status update
-        if (selectedJob) {
-          fetchCollegesForJob(selectedJob._id, selectedJob.jobType);
-        }
+
+        fetchCollegesForJob(
+          selectedJob._id,
+          selectedJob.jobType,
+          isVisited === "true" ? false : true
+        );
       } else {
         toast.error(response?.response?.data?.msg || 'Failed to update status');
       }
@@ -128,27 +131,28 @@ export default function OnCampusJobManagement() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentJobs = filteredJobs.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleViewColleges = (job) => {
-    {/*if (job.applicationCount === 0) {
-      alert("No colleges have applied for this drive yet.");
-      return;
-    }*/}
+  const handleViewColleges = async (job) => {
     setSelectedJob(job);
-    fetchCollegesForJob(job._id, job.jobType);
+    setIsVisited("false"); // view all shortlisted
+    await fetchCollegesForJob(job._id, job.jobType, true);
   };
+
 
   const showNewApplication = async (job) => {
     try {
       setSelectedJob(job);
+      setIsVisited("true"); // new shortlisted applications
       await fetchCollegesForJob(job._id, job.jobType, false);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
+
 
   const handleBackToList = () => {
     setSelectedJob(null);
     setColleges([]);
+    setIsVisited('');
     fetchJobs();
   };
 

@@ -3,11 +3,10 @@ import CompanyProfile from "../../models/companyDashboard/companyProfileModel.js
 import { JobPostingTable } from "../../models/jobPostingsModel.js";
 import OnboardingModel from "../../models/studentonboardingModel.js";
 import { getStudentService } from "../../services/studentService.js";
-import { getCompanyService } from "../../services/companyService.js";
+import { getCompanyService, getEmployerService } from "../../services/companyService.js";
 import Application from "../../models/applicationModel.js";
 import { getCollegeService } from "../../services/collegeService.js";
 import Auth from "../../models/authModel.js";
-import mongoose from 'mongoose';
 
 
 
@@ -78,9 +77,10 @@ export const getOnCampusPostings = async (req, res) => {
 //     }
 // };
 
-export const getOnCampusPostingsForCompany = async (req, res) => {
+{/*export const getOnCampusPostingsForCompany = async (req, res) => {
     // 1. Safely handle guest users
     const userId = req.user ? req.user._id : null; 
+    console.log("=== GET ON-CAMPUS POSTINGS FOR COMPANY ===");
     
     try {
         let company = { data: [] };
@@ -107,27 +107,135 @@ export const getOnCampusPostingsForCompany = async (req, res) => {
         }
 
         // 4. Apply application filtering for logged-in companies
+        // 4. Apply application filtering for logged-in companies
         try {
-            const companyProfileId = company.data[0]._id;
-            const jobIds = filteredPostings.map(p => p._id);
-            const applications = await Application.find({ 
-                applicant: companyProfileId, 
-                job: { $in: jobIds } 
-            }).select('job').lean();
+          const companyProfileId = company.data[0]._id;
+          const jobIds = filteredPostings.map(p => p._id);
+        
+          const applications = await Application.find({
+            job: { $in: jobIds },
+            $or: [
+              // Company applied directly
+              { applicant: companyProfileId },
             
-            const appliedJobIds = new Set(applications.map(a => String(a.job)));
-            const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
-            
-            return sendResponse(res, 200, { data: finalPostings });
+              // Employer applied on behalf of company
+              { appliedForCompany: companyProfileId }
+            ]
+          }).select('job').lean();
+      
+          const appliedJobIds = new Set(applications.map(a => String(a.job)));
+      
+          const finalPostings = filteredPostings.filter(
+            p => !appliedJobIds.has(String(p._id))
+          );
+      
+          return sendResponse(res, 200, { data: finalPostings });
         } catch (err) {
-            console.error('Error filtering postings:', err.message);
-            return sendResponse(res, 200, { data: filteredPostings });
+          console.error('Error filtering postings:', err.message);
+          return sendResponse(res, 200, { data: filteredPostings });
         }
+
     } catch (error) {
         console.error("Error in getOnCampusPostingsForCompany:", error.message);
         sendError(res, 500, "Internal server error");
     }
-};
+};*/}
+
+//comapny-> employer parenmt child working 
+export const getOnCampusPostingsForCompany = async (req, res) => {
+      const userId = req.user ? req.user._id : null;
+      
+
+
+      try {
+        let companyProfileId = null;
+
+        // Employer acting on behalf of company
+        if (req.user?.userType === "employer" && req.user.activeCompanyId) {
+          companyProfileId = req.user.activeCompanyId;
+        }
+        // Company user
+        else if (req.user?.userType === "company") {
+          const company = await getCompanyService(userId);
+          companyProfileId = company?.data?.[0]?._id || null;
+        }
+
+        let employerProfileId = null;
+
+        if (req.user?.userType === "employer" && !req.user.activeCompanyId) {
+          const employer = await getEmployerService(userId);
+          employerProfileId = employer?.data?.[0]?._id || null;
+        }
+
+        // Get all on-campus postings
+        const postings = await getJobPostingsByCollegeService(
+          "On-campus",
+          userId
+        );
+
+        // Visible to company
+        const filteredPostings = postings.filter(
+          (posting) => posting.visibleTo === "Company"
+        );
+
+        // Guest / no company context
+        // Guest = neither company nor employer individual
+        if (!companyProfileId && !employerProfileId) {
+          return sendResponse(res, 200, {
+            data: filteredPostings,
+            message: "Guest view: Showing all available postings.",
+          });
+        }
+
+
+        // 🔒 EXACT SAME RULE AS POOL-CAMPUS
+        const jobIds = filteredPostings.map((p) => p._id);
+
+        {/*const applications = await Application.find({
+          appliedForCompany: companyProfileId,
+          job: { $in: jobIds },
+        })
+          .select("job")
+          .lean();*/}
+
+        const applicationQuery = {
+          job: { $in: jobIds },
+        };
+
+        // Company OR employer acting on behalf
+        if (companyProfileId) {
+          applicationQuery.appliedForCompany = companyProfileId;
+        }
+
+        // Employer as individual
+        else if (employerProfileId) {
+          applicationQuery.applicant = employerProfileId;
+        }
+
+
+        console.log("🔍 Dashboard Context Debug");
+
+        console.log("applicationQuery:", JSON.stringify(applicationQuery, null, 2));
+
+
+        const applications = await Application.find(applicationQuery)
+          .select("job")
+          .lean();
+
+
+        const appliedJobIds = new Set(applications.map((a) => String(a.job)));
+
+        const finalPostings = filteredPostings.filter(
+          (p) => !appliedJobIds.has(String(p._id))
+        );
+
+        return sendResponse(res, 200, { data: finalPostings });
+      } catch (error) {
+        console.error("Error in getOnCampusPostingsForCompany:", error);
+        return sendError(res, 500, "Internal server error");
+      }
+    };
+
 
 export const getOnCampusPostingForCompanybyID = async (req, res) => {
     const { id } = req.params;
@@ -143,93 +251,97 @@ export const getOnCampusPostingForCompanybyID = async (req, res) => {
     }
 };
 
-export const getOnCampusPostingsForCollege = async (req, res) => {
-    const userId = req.user && req.user._id;
+// export const getOnCampusPostingsForCollege = async (req, res) => {
+//     const userId = req.user && req.user._id;
     
-    try {
-        console.log("=== getOnCampusPostingsForCollege called ===");
-        console.log("User ID:", userId);
-        console.log("User object:", req.user);
+//     try {
+//         let collegeCity = null;
+//         let collegeProfileId = null;
+       
+//         console.log("=== getOnCampusPostingsForCollege called ===");
+//         console.log("User ID:", userId);
+//         console.log("User object:", req.user);
 
-        // Get college profile
-        let collegeProfileId = null;
-        if (userId) {
-            try {
-                const college = await getCollegeService(userId);
-                console.log("College service response:", college);
+//         // Get college profile
+//         if (userId) {
+//             try {
+//                 const college = await getCollegeService(userId);
+//                 console.log("College service response:", college);
                 
-                if (college && college.success && college.data && college.data.length > 0) {
-                    collegeProfileId = college.data[0]._id;
-                    console.log("College Profile ID found:", collegeProfileId);
-                } else {
-                    console.log("No college profile found for user");
-                }
-            } catch (collegeError) {
-                console.error("Error fetching college profile:", collegeError.message);
-            }
-        }
+//                 if (college && college.success && college.data && college.data.length > 0) {
+//                     collegeProfileId = college.data[0]._id;
+//                     collegeCity = profile.collegeUniversityDetails?.city
+//                     console.log('CITY HERE ',collegeCity)
+//                     console.log("College Profile ID found:", collegeProfileId);
+//                 } else {
+//                     console.log("No college profile found for user");
+//                 }
+//             } catch (collegeError) {
+//                 console.error("Error fetching college profile:", collegeError.message);
+//             }
+//         }
 
-        // Get all on-campus postings
-        let postings;
-        try {
-            postings = await getJobPostingsByJobTypeService("On-campus", userId);
-            console.log(`Found ${postings.length} on-campus postings`);
-        } catch (postingsError) {
-            console.error("Error fetching postings:", postingsError.message);
-            return sendError(res, 500, "Failed to fetch job postings");
-        }
+//         // Get all on-campus postings
+//         let postings;
+//         try {
+//             postings = await getJobPostingsByJobTypeService("On-campus", userId);
+//             console.log(`Found ${postings.length} on-campus postings`);
+//         } catch (postingsError) {
+//             console.error("Error fetching postings:", postingsError.message);
+//             return sendError(res, 500, "Failed to fetch job postings");
+//         }
 
-        // Filter by visibility to "College"
-        const filteredPostings = postings.filter(
-            (posting) => posting.visibleTo === "College"
-        );
-        console.log(`After visibility filter: ${filteredPostings.length} postings`);
+//         // Filter by visibility to "College"
+//         const filteredPostings = postings.filter(
+//             (posting) => posting.visibleTo === "College"
+//         );
+//         console.log(`After visibility filter: ${filteredPostings.length} postings`);
 
-        // If no college profile, return all filtered postings
-        if (!collegeProfileId) {
-            console.log("Returning postings without application filter (no college profile)");
-            return sendResponse(res, 200, { 
-                data: filteredPostings,
-                message: "No college profile found. Showing all available postings."
-            });
-        }
+//         // If no college profile, return all filtered postings
+//         if (!collegeProfileId) {
+//             console.log("Returning postings without application filter (no college profile)");
+//             return sendResponse(res, 200, { 
+//                 data: filteredPostings,
+//                 message: "No college profile found. Showing all available postings."
+//             });
+//         }
 
-        // Filter out already applied postings
-        try {
-            const jobIds = filteredPostings.map(p => p._id);
-            console.log(`Checking applications for ${jobIds.length} jobs`);
+//         // Filter out already applied postings
+//         try {
+//             const jobIds = filteredPostings.map(p => p._id);
+//             console.log(`Checking applications for ${jobIds.length} jobs`);
             
-            const applications = await Application.find({ 
-                applicant: collegeProfileId, 
-                job: { $in: jobIds } 
-            }).select('job').lean();
+//             const applications = await Application.find({ 
+//                 applicant: collegeProfileId, 
+//                 job: { $in: jobIds } 
+//             }).select('job').lean();
             
-            console.log(`Found ${applications.length} existing applications`);
+//             console.log(`Found ${applications.length} existing applications`);
             
-            const appliedJobIds = new Set(applications.map(a => String(a.job)));
-            const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
+//             const appliedJobIds = new Set(applications.map(a => String(a.job)));
+//             const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
             
-            console.log(`Final postings after filter: ${finalPostings.length}`);
-            return sendResponse(res, 200, { 
-                data: finalPostings,
-                filteredFrom: filteredPostings.length,
-                appliedJobs: applications.length
-            });
-        } catch (filterError) {
-            console.error('Error filtering applications:', filterError.message);
-            // Return unfiltered postings as fallback
-            return sendResponse(res, 200, { 
-                data: filteredPostings,
-                message: "Unable to filter applications. Showing all available postings.",
-                error: filterError.message
-            });
-        }
-    } catch (error) {
-        console.error("Unexpected error in getOnCampusPostingsForCollege:", error.message);
-        console.error("Stack trace:", error.stack);
-        sendError(res, 500, "Internal server error: " + error.message);
-    }
-};
+//             console.log(`Final postings after filter: ${finalPostings.length}`);
+//             return sendResponse(res, 200, { 
+//                 data: finalPostings,
+//                 filteredFrom: filteredPostings.length,
+//                 appliedJobs: applications.length
+//             });
+//         } catch (filterError) {
+//             console.error('Error filtering applications:', filterError.message);
+//             // Return unfiltered postings as fallback
+//             return sendResponse(res, 200, { 
+//                 data: filteredPostings,
+//                 message: "Unable to filter applications. Showing all available postings.",
+//                 error: filterError.message
+//             });
+//         }
+//     } catch (error) {
+//         console.error("Unexpected error in getOnCampusPostingsForCollege:", error.message);
+//         console.error("Stack trace:", error.stack);
+//         sendError(res, 500, "Internal server error: " + error.message);
+//     }
+// };
 
 // export const getOnCampusPostingForCollegebyID = async (req, res) => {
 //     const { id } = req.params;
@@ -246,27 +358,90 @@ export const getOnCampusPostingsForCollege = async (req, res) => {
 //         res.status(500).json({ error: err.message });
 //     }
 // }
+
+export const getOnCampusPostingsForCollege = async (req, res) => {
+    const userId = req.user && req.user._id;
+    
+    try {
+        let collegeCity = null;
+        let collegeProfileId = null;
+
+        // 1. Fetch College Profile and Extract City
+        if (userId) {
+            const college = await getCollegeService(userId);
+            
+            if (college && college.success && college.data?.length > 0) {
+                const collegeDoc = college.data[0]; // Define the variable here
+                collegeProfileId = collegeDoc._id;
+                
+                // Extract city from the nested object
+                collegeCity = collegeDoc.collegeUniversityDetails?.collegeLocation;
+                console.log(collegeCity)
+                
+                console.log("Found College City:", collegeCity);
+            }
+        }
+
+        // 2. Fetch Job Postings
+        let postings = await getJobPostingsByJobTypeService("On-campus", userId);
+
+        // 3. Filter by Visibility AND Location logic
+        const filteredPostings = postings.filter((posting) => {
+            // Must be visible to College
+            if (posting.visibleTo !== "College") return false;
+
+            // If Broadcast is Location, check for city match
+            if (posting.broadcastType === "Location") {
+                // If we don't know the college's city, they can't see location-restricted jobs
+                if (!collegeCity) return false;
+
+                const jobCities = posting.location || [];
+                const isMatch = (posting.city === collegeCity) || jobCities.includes(collegeCity);
+                
+                if (!isMatch) return false;
+            }
+
+            // If broadcastType is 'Everyone', it passes through automatically
+            return true;
+        });
+
+        // 4. Application Filter (Existing Logic)
+        if (!collegeProfileId) {
+            return sendResponse(res, 200, { data: filteredPostings });
+        }
+
+        const jobIds = filteredPostings.map(p => p._id);
+        const applications = await Application.find({ 
+            applicant: collegeProfileId, 
+            job: { $in: jobIds } 
+        }).select('job').lean();
+        
+        const appliedJobIds = new Set(applications.map(a => String(a.job)));
+        const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
+
+        return sendResponse(res, 200, { 
+            data: finalPostings,
+            totalAvailable: finalPostings.length 
+        });
+
+    } catch (error) {
+        console.error("Critical Error in getOnCampusPostingsForCollege:", error.message);
+        sendError(res, 500, "Internal server error");
+    }
+};
+
 export const getOnCampusPostingForCollegebyID = async (req, res) => {
     const { id } = req.params;
     try {
         const response = await JobPostingTable.findById(id)
             .populate({
                 path: 'companyPosted',
-                select: 'companyDetails profileImageUrl hiringPreferences', // Changed from profileImage to profileImageUrl
+                select: 'companyDetails profileImage hiringPreferences',
             })
             .lean();
 
-        // Debug log
-        console.log('🔍 Backend Response:', {
-            jobId: id,
-            hasCompanyPosted: !!response?.companyPosted,
-            profileImageUrl: response?.companyPosted?.profileImageUrl,
-            companyName: response?.companyPosted?.companyDetails?.companyName
-        });
-
         res.status(200).json(response);
     } catch (err) {
-        console.error('❌ Error in getOnCampusPostingForCollegebyID:', err);
         res.status(500).json({ error: err.message });
     }
 }
@@ -373,61 +548,130 @@ export const getOnCampusPostingForCollegebyID = async (req, res) => {
 
 import jwt from 'jsonwebtoken'; // Make sure to import this at the top
 
-export const getPoolCampusForCollege = async (req, res) => {
-    // 1. Manually extract the token from headers
-    {/*const authHeader = req.headers.authorization;
-    let userId = null;
+// export const getPoolCampusForCollege = async (req, res) => {
+//     // 1. Manually extract the token from headers
+//     {/*const authHeader = req.headers.authorization;
+//     let userId = null;
 
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-        try {
-            const token = authHeader.split(' ')[1];
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            userId = decoded._id || decoded.id; // Get the user ID if token is valid
-        } catch (err) {
-            console.log("Request by Guest/Invalid Token - proceeding as non-login");
-            // We don't throw an error, we just keep userId as null
-        }
-    }*/}
+//     if (authHeader && authHeader.startsWith('Bearer ')) {
+//         try {
+//             const token = authHeader.split(' ')[1];
+//             const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//             userId = decoded._id || decoded.id; // Get the user ID if token is valid
+//         } catch (err) {
+//             console.log("Request by Guest/Invalid Token - proceeding as non-login");
+//             // We don't throw an error, we just keep userId as null
+//         }
+//     }*/}
+
+//     try {
+//         console.log("=== getPoolCampusForCollege called ===");
+//         console.log("req.user:", req.user);
+
+//         // ✅ ADD THIS (single source of truth)
+//         const userId = req.user?._id;
+        
+//         // 2. Fetch the postings (visible to everyone)
+//         const postings = await getJobPostingsByJobTypeService("Pool-campus", userId);
+//         const filteredPostings = postings.filter(p => p.visibleTo === "College");
+
+//         // 3. Logic for LOGGED IN users only
+//         if (userId) {
+//             // Your existing logic for filtering applications
+//             // Use 'userId' instead of 'req.user._id'
+//             let collegeProfile = null;
+//             const college = await getCollegeService(userId);
+            
+//             if (college?.success && college?.data?.length > 0) {
+//                 collegeProfile = college.data[0];
+                
+//                 const jobIds = filteredPostings.map(p => p._id);
+//                 const applications = await Application.find({ 
+//                     applicant: collegeProfile._id, 
+//                     job: { $in: jobIds } 
+//                 }).select('job').lean();
+                
+//                 const appliedJobIds = new Set(applications.map(a => String(a.job)));
+//                 const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
+                
+//                 return sendResponse(res, 200, { data: finalPostings });
+//             }
+//         }
+
+//         // 4. Fallback for non-logged in users (Guests)
+//         // If no userId or no collegeProfile, just send all visible postings
+//         return sendResponse(res, 200, { 
+//             data: filteredPostings,
+//             message: "Successfully fetched postings (Guest View)"
+//         });
+
+//     } catch (error) {
+//         console.error("Error in getPoolCampusForCollege:", error.message);
+//         sendError(res, 500, "Internal server error");
+//     }
+// };
+
+export const getPoolCampusForCollege = async (req, res) => {
+    const userId = req.user?._id;
 
     try {
         console.log("=== getPoolCampusForCollege called ===");
-        console.log("req.user:", req.user);
-
-        // ✅ ADD THIS (single source of truth)
-        const userId = req.user?._id;
         
-        // 2. Fetch the postings (visible to everyone)
-        const postings = await getJobPostingsByJobTypeService("Pool-campus", userId);
-        const filteredPostings = postings.filter(p => p.visibleTo === "College");
+        let collegeCity = null;
+        let collegeProfileId = null;
 
-        // 3. Logic for LOGGED IN users only
+        // 1. Fetch college info if user is logged in
         if (userId) {
-            // Your existing logic for filtering applications
-            // Use 'userId' instead of 'req.user._id'
-            let collegeProfile = null;
             const college = await getCollegeService(userId);
-            
-            if (college?.success && college?.data?.length > 0) {
-                collegeProfile = college.data[0];
-                
-                const jobIds = filteredPostings.map(p => p._id);
-                const applications = await Application.find({ 
-                    applicant: collegeProfile._id, 
-                    job: { $in: jobIds } 
-                }).select('job').lean();
-                
-                const appliedJobIds = new Set(applications.map(a => String(a.job)));
-                const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
-                
-                return sendResponse(res, 200, { data: finalPostings });
+            if (college?.success && college.data?.[0]) {
+                const profile = college.data[0];
+                collegeProfileId = profile._id;
+                // Capture city for location-based filtering
+                collegeCity = profile.collegeUniversityDetails?.collegeLocation;
             }
         }
 
-        // 4. Fallback for non-logged in users (Guests)
-        // If no userId or no collegeProfile, just send all visible postings
+        // 2. Fetch all Pool-campus postings
+        const postings = await getJobPostingsByJobTypeService("Pool-campus", userId);
+
+        // 3. Apply Visibility and Location Filter
+        const filteredByLocation = postings.filter((posting) => {
+            // Must be visible to Colleges
+            if (posting.visibleTo !== "College") return false;
+
+            // Apply Broadcast Logic:
+            // If broadcast is 'Location', cities MUST match. 
+            // If it's 'Everyone', skip the city check.
+            if (posting.broadcastType === "Location") {
+                if (!collegeCity) return false; // Hide location-restricted jobs if city is unknown
+
+                const jobCities = posting.venue || [];
+                const isMatch = (posting.city === collegeCity) || jobCities.includes(collegeCity);
+                
+                if (!isMatch) return false;
+            }
+
+            return true;
+        });
+
+        // 4. Filter out already applied postings for logged-in users
+        if (collegeProfileId) {
+            const jobIds = filteredByLocation.map(p => p._id);
+            const applications = await Application.find({ 
+                applicant: collegeProfileId, 
+                job: { $in: jobIds } 
+            }).select('job').lean();
+            
+            const appliedJobIds = new Set(applications.map(a => String(a.job)));
+            const finalPostings = filteredByLocation.filter(p => !appliedJobIds.has(String(p._id)));
+            
+            return sendResponse(res, 200, { data: finalPostings });
+        }
+
+        // 5. Fallback for Guests
         return sendResponse(res, 200, { 
-            data: filteredPostings,
-            message: "Successfully fetched postings (Guest View)"
+            data: filteredByLocation,
+            message: "Showing jobs based on guest visibility."
         });
 
     } catch (error) {
@@ -442,22 +686,13 @@ export const getPoolCampusJobByIdForCollege = async (req, res) => {
         const response = await JobPostingTable.findById(id)
             .populate({
                 path: 'companyPosted',
-                select: 'companyDetails profileImageUrl hiringPreferences', // Changed from profileImage to profileImageUrl
+                select: 'companyDetails profileImage hiringPreferences',
             })
             .lean();
-        
-        // Add debug logging
-        console.log('🔍 Pool Campus Backend Response:', {
-            jobId: id,
-            hasCompanyPosted: !!response?.companyPosted,
-            profileImageUrl: response?.companyPosted?.profileImageUrl,
-            companyName: response?.companyPosted?.companyDetails?.companyName
-        });
-        
         res.status(200).json(response);
     }
     catch (err) {
-        console.error('❌ Error in getPoolCampusJobByIdForCollege:', err);
+        console.error(err);
         res.status(500).json({ error: err.message });
     }
 }
@@ -597,56 +832,94 @@ const userId = req.user ? req.user._id : null;
     }
 }*/}
 
+
+//comapny-> employer parenmt child working 
 export const getPoolCampusForCompany = async (req, res) => {
-    // 1. Safely handle guest users
-    const userId = req.user ? req.user._id : null; 
-    
-    try {
-        let company = { data: [] };
-        
-        // 2. Only look up company profile if user is logged in
-        if (userId) {
-            company = await getCompanyService(userId);
-        }
+  const userId = req.user ? req.user._id : null;
+  console.log("🧭 ENTRY getPoolCampusForCompany", {
+    userType: req.user?.userType,
+    activeCompanyId: req.user?.activeCompanyId,
+  });
 
-        // Get all on-campus postings
-        const postings = await getJobPostingsByCollegeService("Pool-campus", userId);
+  try {
+    let companyProfileId = null;
+    let employerProfileId = null;
 
-        // Filter results visible to "Company"
-        const filteredPostings = postings.filter(
-            (posting) => posting.visibleTo === "Company"
-        );
-
-        // 3. Handle guest response immediately if no profile is found
-        if (!company.data || !company.data[0]?._id) {
-            return sendResponse(res, 200, { 
-                data: filteredPostings,
-                message: "Guest view: Showing all available postings."
-            });
-        }
-
-        // 4. Apply application filtering for logged-in companies
-        try {
-            const companyProfileId = company.data[0]._id;
-            const jobIds = filteredPostings.map(p => p._id);
-            const applications = await Application.find({ 
-                applicant: companyProfileId, 
-                job: { $in: jobIds } 
-            }).select('job').lean();
-            
-            const appliedJobIds = new Set(applications.map(a => String(a.job)));
-            const finalPostings = filteredPostings.filter(p => !appliedJobIds.has(String(p._id)));
-            
-            return sendResponse(res, 200, { data: finalPostings });
-        } catch (err) {
-            console.error('Error filtering postings:', err.message);
-            return sendResponse(res, 200, { data: filteredPostings });
-        }
-    } catch (error) {
-        console.error("Error in getOnCampusPostingsForCompany:", error.message);
-        sendError(res, 500, "Internal server error");
+    // Employer acting for company
+    if (req.user?.userType === "employer" && req.user.activeCompanyId) {
+      companyProfileId = req.user.activeCompanyId;
     }
+    // Company user
+    else if (req.user?.userType === "company") {
+      const company = await getCompanyService(userId);
+      companyProfileId = company?.data?.[0]?._id || null;
+    }
+
+    // Employer as individual
+    if (req.user?.userType === "employer" && !req.user.activeCompanyId) {
+      const employer = await getEmployerService(userId);
+      employerProfileId = employer?.data?.[0]?._id || null;
+    }
+
+    console.log("🔍 Dashboard Context Debug", {
+      companyProfileId,
+      employerProfileId,
+    });
+
+    // Get all pool-campus postings
+    const postings = await getJobPostingsByCollegeService(
+      "Pool-campus",
+      userId
+    );
+
+    // Visible to company
+    const filteredPostings = postings.filter(
+      (posting) => posting.visibleTo === "Company"
+    );
+
+    // Guest view
+    if (!companyProfileId && !employerProfileId) {
+      return sendResponse(res, 200, {
+        data: filteredPostings,
+        message: "Guest view: Showing all available postings.",
+      });
+    }
+
+    // Hide already-applied jobs (company-level)
+    const jobIds = filteredPostings.map((p) => p._id);
+
+    const applicationQuery = {
+      job: { $in: jobIds },
+    };
+
+    if (companyProfileId) {
+      // company OR employer-on-behalf
+      applicationQuery.appliedForCompany = companyProfileId;
+      console.log("🏢 Pool-campus company filter applied");
+    } else if (employerProfileId) {
+      // employer individual
+      applicationQuery.applicant = employerProfileId;
+      console.log("👤 Pool-campus employer-individual filter applied");
+    }
+
+    console.log("📦 Application Query:", applicationQuery);
+
+    const applications = await Application.find(applicationQuery)
+      .select("job")
+      .lean();
+
+    const appliedJobIds = new Set(applications.map((a) => String(a.job)));
+    const finalPostings = filteredPostings.filter(
+      (p) => !appliedJobIds.has(String(p._id))
+    );
+
+    return sendResponse(res, 200, { data: finalPostings });
+  } catch (error) {
+    console.error("Error in getPoolCampusForCompany:", error);
+    return sendError(res, 500, "Internal server error");
+  }
 };
+
 
 export const getPoolCampusJobByIdForCompany = async (req, res) => {
     const { id } = req.params;
@@ -730,50 +1003,126 @@ export const getJobPostings = async (req, res) => {
     }
 };*/}
 
+// export const getInternshipPostings = async (req, res) => {
+//     try {
+//         const userId = req.user?._id;
+//         let studentLocations = [];
+//         let appliedJobIds = [];
+
+//         const studentProfile = await getStudentService(userId);
+
+//         if (
+//             studentProfile.success &&
+//             studentProfile.data.length > 0
+//         ) {
+//             const student = studentProfile.data[0];
+//             studentLocations = student.locations || [];
+
+//             if (userId) {
+//                 appliedJobIds = await Application
+//                     .find({ applicant: student._id })
+//                     .distinct("job");
+//             }
+//         }
+
+//         const postings =
+//             await getJobPostingsByJobTypeWithLocationBasedService(
+//                 "Internship",
+//                 studentLocations,
+//                 userId
+//             );
+
+//         const filteredPostings =
+//             userId && appliedJobIds.length > 0
+//                 ? postings.filter(p =>
+//                       !appliedJobIds.some(id => id.equals(p._id))
+//                   )
+//                 : postings;
+
+//         sendResponse(res, 200, { data: filteredPostings });
+//     } catch (error) {
+//         console.error("Internship error:", error);
+//         sendError(res, 500, "Internal server error");
+//     }
+// };
+
 export const getInternshipPostings = async (req, res) => {
     try {
         const userId = req.user?._id;
         let studentLocations = [];
+        let studentProfileId = null;
         let appliedJobIds = [];
 
-        const studentProfile = await getStudentService(userId);
+        // 1. Fetch Student Profile Standardized
+        if (userId) {
+            const studentProfile = await getStudentService(userId);
+            if (studentProfile?.success && studentProfile.data?.length > 0) {
+                const student = studentProfile.data[0];
+                studentProfileId = student._id;
+                studentLocations = student.locations || [];
 
-        if (
-            studentProfile.success &&
-            studentProfile.data.length > 0
-        ) {
-            const student = studentProfile.data[0];
-            studentLocations = student.locations || [];
-
-            if (userId) {
-                appliedJobIds = await Application
-                    .find({ applicant: student._id })
-                    .distinct("job");
+                // Fetch jobs student already applied to
+                appliedJobIds = await Application.find({ applicant: studentProfileId }).distinct("job");
             }
         }
 
-        const postings =
-            await getJobPostingsByJobTypeWithLocationBasedService(
-                "Internship",
-                studentLocations,
-                userId
-            );
+        // 2. Fetch Base Postings (assuming this service handles basic db fetching)
+        const postings = await getJobPostingsByJobTypeService("Internship", userId);
 
-        const filteredPostings =
-            userId && appliedJobIds.length > 0
-                ? postings.filter(p =>
-                      !appliedJobIds.some(id => id.equals(p._id))
-                  )
-                : postings;
+        // 3. Apply Strict Visibility Logic
+        const filteredByBroadcast = postings.filter((posting) => {
+            // Respect basic visibility
+            if (posting.visibleTo === "College") return false;
 
-        sendResponse(res, 200, { data: filteredPostings });
+            // Strict Broadcast Logic: student must have job venue in their locations
+            if (posting.broadcastType === "Location") {
+                if (!studentLocations.length) return false;
+
+                const norm = (v) => v ? String(v).toLowerCase().replace(/[\s.-]/g, "").trim() : "";
+                const jVenue = norm(posting.location);
+                const sLocs = studentLocations.map(norm);
+
+                // MATCH: Does student's preference list include the job venue?
+                const isVenueMatch = sLocs.includes(jVenue);
+
+                // Bypass if workMode is Remote (Standard practice)
+                // if (posting.workMode?.includes("Remote")) return true;
+
+                if (!isVenueMatch) return false;
+            }
+            return true;
+        });
+
+        // 4. Remove Already Applied Postings
+        const finalPostings = userId && appliedJobIds.length > 0
+            ? filteredByBroadcast.filter(p => !appliedJobIds.some(id => id.equals(p._id)))
+            : filteredByBroadcast;
+
+        sendResponse(res, 200, { data: finalPostings });
+
     } catch (error) {
-        console.error("Internship error:", error);
+        console.error("Internship error:", error.message);
         sendError(res, 500, "Internal server error");
     }
 };
 
+
 export const getIntershipById = async (req, res) => {
+    console.log('in internship section')
+    const { id } = req.params;
+    try {
+        const response = await JobPostingTable.findById(id)
+            .populate('companyPosted')
+            .lean();
+        res.status(200).json(response);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+}
+
+{/*export const getIntershipById = async (req, res) => {
     const { id } = req.params;
     
     console.log('🔍 in internship section - fetching job ID:', id);
@@ -840,6 +1189,7 @@ export const getIntershipById = async (req, res) => {
         });
     }
 }
+     */}
 
 export const getReferralJobs = async (req, res) => {
     try {

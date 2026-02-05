@@ -170,6 +170,7 @@ export async function getSavedCollegesService(applicantId, applicantType) {
 // save job by user
 export async function saveJobService(userId, userType, jobId, jobType) {
     try {
+      
         const existing = await getApplicationService(userId, userType, jobId, jobType);
 
         if (existing?.response[0]?.currentStatus === "Applied" || existing?.response[0]?.currentStatus === "Shortlisted" || existing?.response[0]?.currentStatus === "Rejected" || existing?.response[0]?.currentStatus === "Accepted") {
@@ -182,6 +183,7 @@ export async function saveJobService(userId, userType, jobId, jobType) {
             const newApplication = new Application({
                 applicant: userId,
                 applicantType: userType,
+                appliedByType: userType, 
                 job: jobId,
                 jobType: jobType,
                 statusHistory: [{ status: "Saved" }],
@@ -197,7 +199,143 @@ export async function saveJobService(userId, userType, jobId, jobType) {
 }
 
 // create application
-export async function createApplicationService(userId, userType, jobId, jobType) {
+{/*export async function createApplicationService({appliedByUserId,
+  appliedByType,
+  appliedForCompanyId,
+  jobId,
+  jobType,}) {
+    try {
+        // 1️⃣ Decide who the applicant is
+        let applicantId;
+
+        if (appliedByType === "employer") {
+          applicantId = appliedByUserId;               // employer profile
+        } else if (appliedByType === "company") {
+          applicantId = appliedForCompanyId;           // company profile
+        } else {
+          applicantId = appliedByUserId;               // student / college
+        }
+
+        const existing = await Application.findOne({
+          job: jobId,
+          jobType,
+          appliedForCompany: appliedForCompanyId,
+        });
+
+       
+        if (existing?.response[0]?.currentStatus === "Shortlisted" || existing?.response[0]?.currentStatus === "Accepted" || existing?.response[0]?.currentStatus === "Rejected") {
+            return { success: false, message: `currentStatus: ${existing?.response[0]?.currentStatus}` };
+        }
+        else if (existing?.response[0]?.currentStatus === "Applied") {
+            return { success: false, message: "Already Applied" };
+        }
+        else if (existing?.response[0]?.currentStatus === "Saved") {
+            existing.response[0].currentStatus = "Applied";
+            existing.response[0].statusHistory.push({ status: "Applied" });
+            await existing.response[0].save();
+        }
+        else {
+            const newApplication = new Application({
+              applicant: applicantId,
+              applicantType: appliedByType,
+              appliedByType,
+              appliedForCompany: appliedForCompanyId, // 🔑 new field
+              job: jobId,
+              jobType: jobType,
+              statusHistory: [{ status: "Applied" }],
+              currentStatus: "Applied"
+            });
+
+            await newApplication.save();
+
+        }
+
+        return { success: true, message: 'Application submited!' };
+    } catch (error) {
+        console.log("Error: ", error.message);
+        throw new Error("Failed to Save");
+    }
+}*/}
+
+export async function createApplicationService({
+  appliedByUserId,
+  appliedByType,
+  appliedForCompanyId,
+  jobId,
+  jobType,
+}) {
+  try {
+    // 1️⃣ Decide applicant
+    let applicantId;
+
+    if (appliedByType === "company") {
+      applicantId = appliedForCompanyId;
+    } else {
+      // employer / student / college / fresher / professional
+      applicantId = appliedByUserId;
+    }
+
+    // 2️⃣ Build SAFE uniqueness condition
+    const match = {
+      job: jobId,
+      jobType,
+    };
+
+    if (appliedForCompanyId) {
+      // company or employer-on-behalf
+      match.appliedForCompany = appliedForCompanyId;
+    } else {
+      // student / college / employer independent
+      match.applicant = applicantId;
+    }
+
+    const existing = await Application.findOne(match);
+
+    if (existing) {
+      if (
+        ["Shortlisted", "Accepted", "Rejected"].includes(existing.currentStatus)
+      ) {
+        return {
+          success: false,
+          message: `currentStatus: ${existing.currentStatus}`,
+        };
+      }
+
+      if (existing.currentStatus === "Applied") {
+        return { success: false, message: "Already Applied" };
+      }
+
+      if (existing.currentStatus === "Saved") {
+        existing.currentStatus = "Applied";
+        existing.statusHistory.push({ status: "Applied" });
+        await existing.save();
+        return { success: true, message: "Application submitted!" };
+      }
+    }
+
+    // 3️⃣ Create new application
+    const newApplication = new Application({
+      applicant: applicantId,
+      applicantType: appliedByType,
+      appliedByType,
+      appliedForCompany: appliedForCompanyId || null,
+      job: jobId,
+      jobType,
+      statusHistory: [{ status: "Applied" }],
+      currentStatus: "Applied",
+    });
+
+    await newApplication.save();
+
+    return { success: true, message: "Application submitted!" };
+  } catch (error) {
+    console.error("createApplicationService error:", error);
+    throw new Error("Failed to Save");
+  }
+}
+
+
+export async function createInternshipApplicationService(userId, userType, jobId, jobType) {
     try {
         const existing = await getApplicationService(userId, userType, jobId, jobType);
        
@@ -216,6 +354,7 @@ export async function createApplicationService(userId, userType, jobId, jobType)
             const newApplication = new Application({
                 applicant: userId,
                 applicantType: userType,
+                appliedByType: userType, 
                 job: jobId,
                 jobType: jobType,
                 statusHistory: [{ status: "Applied" }],
@@ -231,6 +370,7 @@ export async function createApplicationService(userId, userType, jobId, jobType)
         throw new Error("Failed to Save");
     }
 }
+
 
 // getStatus
 // export async function fetchApplicationStatusService(userId, jobType, userType) {
@@ -538,160 +678,100 @@ export async function createApplicationService(userId, userType, jobId, jobType)
 // job management
 // joblisting and offcampus
 
-export async function fetchApplicationStatusService(userId, jobType, userType) {
-    try {
-        const applicationData = await Application.aggregate([
-            {
-                $match: {
-                    applicant: new mongoose.Types.ObjectId(userId),
-                    jobType: jobType,
-                    currentStatus: { $ne: 'Saved' }
-                }
-            },
-            {
-                $lookup: {
-                    from: 'jobpostingtables',
-                    localField: 'job',
-                    foreignField: '_id',
-                    as: 'jobDetails'
-                }
-            },
-            // ✅ We unwind jobDetails so it's an object. 
-            // DO NOT use $arrayElemAt on jobDetails after this!
-            { $unwind: { path: "$jobDetails", preserveNullAndEmptyArrays: true } },
-            
-            {
-                $lookup: {
-                    from: 'companyprofiles',
-                    localField: 'jobDetails.companyPosted',
-                    foreignField: '_id',
-                    as: 'companyProfile' 
-                }
-            },
-            {
-                $lookup: {
-                    from: 'collegeonboardings',
-                    localField: 'jobDetails.collegePosted',
-                    foreignField: '_id',
-                    as: 'collegeDetails'
-                }
-            },
-            {
-                $addFields: {
-                    // ✅ FIXED: We only use arrayElemAt for the fields that are still arrays
-                    // We DO NOT touch jobDetails here because $unwind already handled it.
-                    companyProfile: { $arrayElemAt: ["$companyProfile", 0] },
-                    collegeDetails: { $arrayElemAt: ["$collegeDetails", 0] }
-                }
-            }
-        ]);
+export async function fetchApplicationStatusService(userId, jobType, userType, activeCompanyId = null) {
+  try {
+    let matchStage = {
+      jobType,
+      currentStatus: { $ne: "Saved" },
+    };
 
-        console.log("🔍 Total applications found:", applicationData.length);
-        return { success: true, data: applicationData };
-    } catch (error) {
-        console.error("Aggregation Error:", error.message);
-        throw new Error("Failed to fetch");
+    if (userType === "employer") {
+      matchStage.appliedByType = "employer";
+      matchStage.appliedForCompany = new mongoose.Types.ObjectId(
+        activeCompanyId || userId
+      );
     }
+
+    else if (userType === "company") {
+      matchStage.appliedForCompany = new mongoose.Types.ObjectId(userId);
+    } 
+    else {
+      matchStage.applicant = new mongoose.Types.ObjectId(userId);
+    }
+
+    console.log("Match stage for aggregation:", matchStage);
+
+    const applicationData = await Application.aggregate([
+      { $match: matchStage },
+      {
+        $lookup: {
+          from: "jobpostingtables",
+          localField: "job",
+          foreignField: "_id",
+          as: "jobDetails",
+        },
+      },
+      { $unwind: { path: "$jobDetails", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "companyprofiles",
+          localField: "jobDetails.companyPosted",
+          foreignField: "_id",
+          as: "companyProfile",
+        },
+      },
+      {
+        $lookup: {
+          from: "collegeonboardings",
+          localField: "jobDetails.collegePosted",
+          foreignField: "_id",
+          as: "collegeDetails",
+        },
+      },
+      {
+        $addFields: {
+          companyProfile: { $arrayElemAt: ["$companyProfile", 0] },
+          collegeDetails: { $arrayElemAt: ["$collegeDetails", 0] },
+        },
+      },
+    ]);
+
+    console.log("🔍 Total applications found:", applicationData.length);
+    return { success: true, data: applicationData };
+  } catch (error) {
+    console.error("Aggregation Error:", error.message);
+    throw new Error("Failed to fetch");
+  }
 }
 
-export async function fetchApplicationsByJobService(jobId, jobType, targetStatus, isVisited) {
-    // console.log("...........\n", jobId, jobType, targetStatus, isVisited);
-    try {
-        const matchConditions = {
-            job: new mongoose.Types.ObjectId(jobId),
-            jobType: jobType,
-            currentStatus: targetStatus
-        };
-        if (isVisited !== undefined) {
-            matchConditions.isVisited = isVisited === 'true' || isVisited === true ? true : false;
-        }
-        const response = await Application.aggregate([
-            {
-                $match: matchConditions
-            },
-            {
-                $lookup: {
-                    from: "onboardings",
-                    localField: "applicant",
-                    foreignField: "_id",
-                    as: "applicant"
-                }
-            },
-            {
-                $unwind: { path: "$applicant", preserveNullAndEmptyArrays: true }
-            },
-            {
-                $project: {
-                    applicant: 1,
-                    // job: {
-                    //     _id: 1,
-                    //     jobTitle: 1
-                    // },
-                    jobType: 1,
-                    statusHistory: 1,
-                    currentStatus: 1,
-                    createdAt: 1
-                }
-            }
-        ]);
 
-        const idsToMarkVisited = response
-            .filter((doc) => !doc.isVisited)
-            .map((doc) => doc._id);
 
-        if (idsToMarkVisited.length > 0) {
-            await Application.updateMany(
-                { _id: { $in: idsToMarkVisited } },
-                { $set: { isVisited: true } }
-            );
-        }
-
-        return { success: true, data: response };
-    } catch (error) {
-        console.log("Error: ", error.message);
-        throw new Error("Failed to fetch");
-    }
-}
-
-// oncampus and poolcampus -> past new working for company employer Prathmesh
-export async function fetchCollegeApplicationsByJobService(
+export async function fetchApplicationsByJobService(
   jobId,
   jobType,
-  userType,
   targetStatus,
   isVisited
 ) {
-   
-  let applicantDB;
-
-  if (userType === "college") applicantDB = "companyprofiles";
-  else if (userType === "company" || userType === "employer")
-    applicantDB = "collegeonboardings";
-
   try {
+    console.log("bantai");
     const matchConditions = {
       job: new mongoose.Types.ObjectId(jobId),
-      jobType,
+      jobType: jobType,
       currentStatus: targetStatus,
     };
 
-   
-    if (isVisited === "false" || isVisited === false) {
-      // New Applications
-      matchConditions.isVisited = false;
-    } else if (isVisited === "true" || isVisited === true) {
-      // Explicit past fetch
-      matchConditions.isVisited = true;
-    } else {
-      // Action button (past applications)
-      matchConditions.isVisited = true;
+    if (isVisited !== undefined) {
+      matchConditions.isVisited =
+        isVisited === "true" || isVisited === true ? true : false;
     }
 
     const response = await Application.aggregate([
-      { $match: matchConditions },
+      {
+        $match: matchConditions,
+      },
       {
         $lookup: {
-          from: applicantDB,
+          from: "onboardings",
           localField: "applicant",
           foreignField: "_id",
           as: "applicant",
@@ -706,14 +786,184 @@ export async function fetchCollegeApplicationsByJobService(
       {
         $project: {
           applicant: 1,
+          jobType: 1,
           statusHistory: 1,
           currentStatus: 1,
           createdAt: 1,
-          isVisited: 1,
         },
       },
     ]);
 
+    const idsToMarkVisited = response
+      .filter((doc) => !doc.isVisited)
+      .map((doc) => doc._id);
+
+    if (idsToMarkVisited.length > 0) {
+      await Application.updateMany(
+        { _id: { $in: idsToMarkVisited } },
+        { $set: { isVisited: true } }
+      );
+    }
+
+    return {
+      success: true,
+      data: response,
+    };
+  } catch (error) {
+    console.log("Error:", error.message);
+    throw new Error("Failed to fetch");
+  }
+}
+
+
+
+// oncampus and poolcampus -> past new working for company employer Prathmesh
+export async function fetchCollegeApplicationsByJobService(
+  jobId,
+  jobType,
+  userType,
+  targetStatus,
+  isVisited
+) {
+  try {
+    console.log("hello 23");
+    const matchConditions = {
+      job: new mongoose.Types.ObjectId(jobId),
+      jobType,
+    };
+
+    if (targetStatus) {
+      matchConditions.currentStatus = targetStatus;
+    }
+
+    if (isVisited !== undefined) {
+      matchConditions.isVisited =
+        isVisited === "true" || isVisited === true;
+    }
+
+    console.log("MATCH =>", matchConditions);
+
+
+    const response = await Application.aggregate([
+      { $match: matchConditions },
+        
+      // ✅ Decide which ID to lookup
+      {
+        $addFields: {
+          effectiveApplicantId: {
+            $cond: [
+              {
+                $and: [
+                  { $eq: ["$appliedByType", "employer"] },
+                  { $ne: ["$appliedForCompany", null] }
+                ]
+              },
+              "$appliedForCompany", // employer applying for company
+              "$applicant"          // all others
+            ]
+          }
+        }
+      },
+    
+      // ---------- LOOKUPS ----------
+    
+      {
+        $lookup: {
+          from: "companyprofiles",
+          localField: "effectiveApplicantId",
+          foreignField: "_id",
+          as: "companyApplicant"
+        }
+      },
+    
+      {
+        $lookup: {
+          from: "collegeonboardings",
+          localField: "effectiveApplicantId",
+          foreignField: "_id",
+          as: "collegeApplicant"
+        }
+      },
+    
+      {
+        $lookup: {
+          from: "onboardings", // fresher / student
+          localField: "effectiveApplicantId",
+          foreignField: "_id",
+          as: "studentApplicant"
+        }
+      },
+    
+      {
+        $lookup: {
+          from: "employerprofiles",
+          localField: "effectiveApplicantId",
+          foreignField: "_id",
+          as: "employerApplicant"
+        }
+      },
+    
+      // ---------- FINAL APPLICANT SELECTOR ----------
+    
+      {
+        $addFields: {
+          applicant: {
+            $cond: [
+              // ⭐ Employer applying FOR COMPANY
+              {
+                $and: [
+                  { $eq: ["$appliedByType", "employer"] },
+                  { $ne: ["$appliedForCompany", null] }
+                ]
+              },
+              { $arrayElemAt: ["$companyApplicant", 0] },
+            
+              // ⭐ Otherwise choose based on applicantType
+              {
+                $switch: {
+                  branches: [
+                    {
+                      case: { $eq: ["$applicantType", "company"] },
+                      then: { $arrayElemAt: ["$companyApplicant", 0] }
+                    },
+                    {
+                      case: { $eq: ["$applicantType", "college"] },
+                      then: { $arrayElemAt: ["$collegeApplicant", 0] }
+                    },
+                    {
+                      case: { $eq: ["$applicantType", "employer"] },
+                      then: { $arrayElemAt: ["$employerApplicant", 0] }
+                    },
+                    {
+                      case: {
+                        $in: ["$applicantType", ["student", "fresher", "professional"]]
+                      },
+                      then: { $arrayElemAt: ["$studentApplicant", 0] }
+                    }
+                  ],
+                  default: null
+                }
+              }
+            ]
+          }
+        }
+      },
+    
+      {
+        $project: {
+          applicant: 1,
+          applicantType: 1,
+          statusHistory: 1,
+          currentStatus: 1,
+          createdAt: 1,
+          isVisited: 1
+        }
+      }
+    ]);
+
+
+
+    // 👁️ mark visited only for new fetch
     if (isVisited === "false" || isVisited === false) {
       const idsToMarkVisited = response
         .filter((doc) => doc.isVisited === false)
@@ -733,6 +983,7 @@ export async function fetchCollegeApplicationsByJobService(
     throw error;
   }
 }
+
 
 // 🔥 NEW — used ONLY by college controller
 export async function fetchCollegeSideApplicationsByJobService(

@@ -47,7 +47,27 @@ export const getRelevantOffCampusJobs = async (req, res) => {
 
     const norm = (v) => v ? String(v).toLowerCase().replace(/[\s.-]/g, "").trim() : "";
 
-    const scoredJobs = jobs.map((job, index) => {
+
+    const studentLocs = (student.locations || []).map(norm);
+
+    // --- BROADCAST TYPE FILTERING ---
+    const venueFilteredJobs = jobs.filter(job => {
+      // Rule 1: If broadcast is 'Everyone', allow it
+      if (job.broadcastType !== "Location") return true;
+
+      // Rule 2: If broadcast is 'Location', match strictly with Venue
+      const jVenue = norm(job.venue);
+      
+      // Check if student's any location matches the job's venue
+      const isVenueMatch = studentLocs.includes(jVenue);
+
+      // Rule 3: Remote bypass (Optional - remove if you want 100% strictness even for remote)
+      //if (job.workMode?.includes("Remote")) return true;
+
+      return isVenueMatch;
+    });
+
+    const scoredJobs = venueFilteredJobs.map((job, index) => {
       let breakdown = { skills: 0, tools: 0, roles: 0, academics: 0, location: 0, salary: 0 };
       let logs = { skills: "", tools: "", academics: "", location: "", salary: "" };
       

@@ -14,6 +14,8 @@ export default function OnCampusJobManagement() {
   const [selectedJob, setSelectedJob] = useState(null);
   const [colleges, setColleges] = useState([]);
   const [collegesLoading, setCollegesLoading] = useState(false);
+  const [isVisited, setIsVisited] = useState();
+
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -57,7 +59,7 @@ export default function OnCampusJobManagement() {
   }
 };
 
-  const fetchCollegesForJob = async (jobId, jobType, isVisited) => {
+  {/*const fetchCollegesForJob = async (jobId, jobType, isVisited) => {
     setCollegesLoading(true);
     setError(null);
     try {
@@ -74,7 +76,34 @@ export default function OnCampusJobManagement() {
     } finally {
       setCollegesLoading(false);
     }
-  };
+  };*/}
+
+  const fetchCollegesForJob = async (jobId, jobType, visitedFlag = null) => {
+  setCollegesLoading(true);
+  setError(null);
+
+  try {
+    const response = await getCollegeApplicationsForJob(
+      jobId,
+      jobType,
+      "Applied",
+      visitedFlag
+    );
+
+    setColleges(response?.data || []);
+  } catch (err) {
+    console.error("Error fetching colleges:", err);
+    setError(
+      err.response?.data?.message ||
+      err.message ||
+      "Failed to fetch colleges."
+    );
+    setColleges([]);
+  } finally {
+    setCollegesLoading(false);
+  }
+};
+
 
   const handleUpdateApplicationStatus = async (applicationId, status) => {
     try {
@@ -142,23 +171,28 @@ export default function OnCampusJobManagement() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentJobs = filteredJobs?.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleViewColleges = (job) => {
-    setSelectedJob(job);
-    fetchCollegesForJob(job._id, job.jobType);
-  };
+  const handleViewColleges = async (job) => {
+  setSelectedJob(job);
+  setIsVisited("false"); // showing all
+  await fetchCollegesForJob(job._id, job.jobType, true);
+};
+
 
   const showNewApplication = async (job) => {
-    try {
-      setSelectedJob(job);
-      await fetchCollegesForJob(job._id, job.jobType, false);
-    } catch (error) {
-      console.log(error);
-    }
+  try {
+    setSelectedJob(job);
+    setIsVisited("true"); // new applications
+    await fetchCollegesForJob(job._id, job.jobType, false);
+  } catch (error) {
+    console.log(error);
   }
+};
+
 
   const handleBackToList = () => {
     setSelectedJob(null);
     setColleges([]);
+    setIsVisited('');
     fetchJobs();
   };
 

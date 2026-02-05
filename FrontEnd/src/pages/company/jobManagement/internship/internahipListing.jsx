@@ -138,8 +138,8 @@ export default function InternshipListing() {
     // FIX 1: Eye icon should show ALL applications (both visited and unvisited)
     const handleViewApplications = async (job) => {
         setSelectedJob(job);
-        setIsVisited(null); // Show all applications, don't filter by visited status
-        await fetchApplicationsForJob(job._id, null); // Pass null to get all
+        setIsVisited("false"); // Show all applications, don't filter by visited status
+        await fetchApplicationsForJob(job._id, true); // Pass null to get all
         setShowJobDetail(true);
     };
 
