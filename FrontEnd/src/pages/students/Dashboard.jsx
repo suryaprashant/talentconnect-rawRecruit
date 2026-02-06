@@ -41,30 +41,45 @@ function Dashboard() {
   }, [])
 
   const fetchDashboardData = async () => {
-    try {
-      setDashboardData(prev => ({ ...prev, loading: true }))
+  try {
+    setDashboardData(prev => ({ ...prev, loading: true }))
 
-      // Fetch data for Off-Campus and Internship separately
-      const [offCampusRes, internshipRes] = await Promise.all([
-        getUserApplicationStatus("Off-campus").catch(() => ({ data: { data: [] } })),
-        getUserApplicationStatus("Internship").catch(() => ({ data: { data: [] } }))
-      ])
+    // Fetch job applications
+    const [offCampusRes, internshipRes] = await Promise.all([
+      getUserApplicationStatus("Off-campus").catch(() => ({ data: { data: [] } })),
+      getUserApplicationStatus("Internship").catch(() => ({ data: { data: [] } }))
+    ])
 
-      const offCampusApps = offCampusRes.data?.data || []
-      const internshipApps = internshipRes.data?.data || []
-      
-      // Calculate stats for each category
-      const offCampusStats = calculateCategoryStats(offCampusApps)
-      const internshipStats = calculateCategoryStats(internshipApps)
+    // Fetch service requests
+    const [counsellingRes, careerCraftRes, mockInterviewRes] = await Promise.all([
+      getUserServiceRequests("counselling").catch(() => ({ data: { data: [] } })),
+      getUserServiceRequests("career-craft").catch(() => ({ data: { data: [] } })),
+      getUserServiceRequests("mock-interview").catch(() => ({ data: { data: [] } }))
+    ])
 
-      // Calculate main stats (count of applications)
-      const stats = {
-        'Off-Campus': offCampusApps.length,
-        'Internship': internshipApps.length,
-        'Counselling': 0, // Placeholder - you'll need to fetch this data separately
-        'Career Craft': 0, // Placeholder - you'll need to fetch this data separately
-        'Mock Interview': 0 // Placeholder - you'll need to fetch this data separately
-      }
+    const offCampusApps = offCampusRes.data?.data || []
+    const internshipApps = internshipRes.data?.data || []
+    const counsellingApps = counsellingRes.data?.data || []
+    const careerCraftApps = careerCraftRes.data?.data || []
+    const mockInterviewApps = mockInterviewRes.data?.data || []
+    
+    // Calculate stats - for services, you might want different status categories
+    const offCampusStats = calculateCategoryStats(offCampusApps)
+    const internshipStats = calculateCategoryStats(internshipApps)
+    
+    // For services, you might need a different calculation
+    const counsellingStats = calculateServiceStats(counsellingApps)
+    const careerCraftStats = calculateServiceStats(careerCraftApps)
+    const mockInterviewStats = calculateServiceStats(mockInterviewApps)
+
+    // Calculate main stats (count of applications/services)
+    const stats = {
+      'Off-Campus': offCampusApps.length,
+      'Internship': internshipApps.length,
+      'Counselling': counsellingApps.length,
+      'Career Craft': careerCraftApps.length,
+      'Mock Interview': mockInterviewApps.length
+    }
 
       // Format recent applications
       const allApplications = [...offCampusApps, ...internshipApps]
@@ -435,7 +450,7 @@ function Dashboard() {
               className="border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
               onClick={() => navigate('/student-interviews')}
             >
-              Schedule Interview
+              Scheduled Interview
             </Button>
           </div>
         </div>

@@ -436,12 +436,21 @@ export const getOnCampusPostingForCollegebyID = async (req, res) => {
         const response = await JobPostingTable.findById(id)
             .populate({
                 path: 'companyPosted',
-                select: 'companyDetails profileImage hiringPreferences',
+                select: 'companyDetails profileImageUrl hiringPreferences', // Changed from profileImage to profileImageUrl
             })
             .lean();
 
+        // Debug log
+        console.log('🔍 Backend Response:', {
+            jobId: id,
+            hasCompanyPosted: !!response?.companyPosted,
+            profileImageUrl: response?.companyPosted?.profileImageUrl,
+            companyName: response?.companyPosted?.companyDetails?.companyName
+        });
+
         res.status(200).json(response);
     } catch (err) {
+        console.error('❌ Error in getOnCampusPostingForCollegebyID:', err);
         res.status(500).json({ error: err.message });
     }
 }
@@ -686,13 +695,22 @@ export const getPoolCampusJobByIdForCollege = async (req, res) => {
         const response = await JobPostingTable.findById(id)
             .populate({
                 path: 'companyPosted',
-                select: 'companyDetails profileImage hiringPreferences',
+                select: 'companyDetails profileImageUrl hiringPreferences', // Changed from profileImage to profileImageUrl
             })
             .lean();
+        
+        // Add debug logging
+        console.log('🔍 Pool Campus Backend Response:', {
+            jobId: id,
+            hasCompanyPosted: !!response?.companyPosted,
+            profileImageUrl: response?.companyPosted?.profileImageUrl,
+            companyName: response?.companyPosted?.companyDetails?.companyName
+        });
+        
         res.status(200).json(response);
     }
     catch (err) {
-        console.error(err);
+        console.error('❌ Error in getPoolCampusJobByIdForCollege:', err);
         res.status(500).json({ error: err.message });
     }
 }
