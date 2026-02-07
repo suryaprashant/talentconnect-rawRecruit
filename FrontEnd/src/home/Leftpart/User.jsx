@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import useConversation from "../../statemanage/useConversation.js";
 import { useSocketContext } from "../../context/SocketContext.jsx";
@@ -14,91 +13,102 @@ function User({ user, unreadCount }) {
   const [userLogo, setUserLogo] = useState(null);
   const [loadingLogo, setLoadingLogo] = useState(true);
 
-  // Fetch logo for the user
+  // SIMPLE FETCH FUNCTION - Use a common endpoint
   useEffect(() => {
-    const fetchUserLogo = async () => {
-      if (!user?.userType || !user?._id) {
+    const fetchUserData = async () => {
+      if (!user?._id) {
         setLoadingLogo(false);
         return;
       }
 
       try {
-        let endpoint = '';
-        
-        // Set endpoints based on user type
-        switch (user.userType) {
-          case 'student':
-            endpoint = `/api/student-onboarding/profile-data/${user._id}`;
-            break;
-          case 'fresher':
-            endpoint = `/api/fresher-onboarding/profile-data/${user._id}`;
-            break;
-          case 'college':
-            endpoint = `/api/college-onboarding/profile-data/${user._id}`;
-            break;
-          case 'company':
-            endpoint = `/api/companyDashboard/getInformation/${user._id}`;
-            break;
-          case 'professional':
-            endpoint = `/api/professional-onboarding/profile-data/${user._id}`;
-            break;
-          case 'employer':
-            endpoint = `/api/dashboard/employer-data/${user._id}`;
-            break;
-          default:
-            setLoadingLogo(false);
-            return;
-        }
-
         const backendUrl = import.meta.env.VITE_Backend_URL;
-        const response = await axios.get(`${backendUrl}${endpoint}`, {
-          withCredentials: true,
-        });
-
-        // Extract logo based on user type and response structure
-        let logoUrl = null;
         
-        switch (user.userType) {
-          case 'college':
-            logoUrl = response.data?.data?.collegeLogo ||
-                      response.data?.data?.logoUrl ||
-                      response.data?.data?.profileImage;
-            break;
-          case 'company':
-            logoUrl = response.data?.profile?.companyLogo ||
-                      response.data?.profile?.companyDetails?.logoUrl ||
-                      response.data?.data?.logoUrl ||
-                      response.data?.profile?.profileImageUrl;
-            break;
-          case 'employer':
-            logoUrl = response.data?.profile?.companyLogo ||
-                      response.data?.profile?.employerDetails?.logoUrl ||
-                      response.data?.data?.logoUrl ||
-                      response.data?.profile?.profileImageUrl;
-            break;
-          case 'student':
-          case 'fresher':
-          case 'professional':
-            logoUrl = response.data?.data?.logo ||
-                      response.data?.data?.logoUrl ||
-                      response.data?.data?.profileImage ||
-                      response.data?.data?.profileImageUrl;
-            break;
+        // Try multiple endpoints in sequence
+        const endpoints = [
+          // First try: Get from auth/user endpoint (you need to create this)
+          `/api/auth/user/${user._id}`,
+          // Second try: Company endpoint (we know this works)
+          `/api/companyDashboard/getInformation/${user._id}`,
+          // Third try: Try the profile endpoints with better error handling
+          ...(user.userType ? [`/api/${user.userType}-onboarding/profile-data/${user._id}`] : []),
+        ];
+
+        let logoUrl = null;
+        let lastError = null;
+
+        // Try each endpoint until one works
+        for (const endpoint of endpoints) {
+          try {
+            console.log(`Trying endpoint: ${endpoint}`);
+            const response = await axios.get(`${backendUrl}${endpoint}`, {
+              withCredentials: true,
+              timeout: 3000, // 3 second timeout
+            });
+
+            console.log(`${endpoint} response:`, response.data);
+
+            // Extract logo from response
+            const data = response.data;
+            
+            // Check various possible locations
+            if (data?.profileImage) logoUrl = data.profileImage;
+            else if (data?.avatar) logoUrl = data.avatar;
+            else if (data?.image) logoUrl = data.image;
+            else if (data?.logo) logoUrl = data.logo;
+            else if (data?.data?.profileImage) logoUrl = data.data.profileImage;
+            else if (data?.data?.avatar) logoUrl = data.data.avatar;
+            else if (data?.profile?.profileImageUrl) logoUrl = data.profile.profileImageUrl;
+            else if (data?.profile?.profileImage) logoUrl = data.profile.profileImage;
+            
+            if (logoUrl) {
+              console.log(`Found logo at ${endpoint}:`, logoUrl);
+              break;
+            }
+          } catch (error) {
+            lastError = error;
+            console.log(`Endpoint ${endpoint} failed:`, error.message);
+            // Continue to next endpoint
+            continue;
+          }
         }
 
         if (logoUrl) {
+          // Handle URL formatting
+          if (!logoUrl.startsWith('http') && !logoUrl.startsWith('data:') && !logoUrl.startsWith('blob:')) {
+            if (logoUrl.startsWith('/')) {
+              logoUrl = `${backendUrl}${logoUrl}`;
+            } else {
+              logoUrl = `${backendUrl}/${logoUrl}`;
+            }
+          }
           setUserLogo(logoUrl);
+        } else {
+          console.log('No logo found for user:', user._id, 'Last error:', lastError?.message);
+          setUserLogo(null);
         }
+        
       } catch (error) {
-        console.error('Error fetching user logo:', error);
-        // Silently fail - will use default avatar
+        console.error('Error in fetchUserData:', error.message);
+        setUserLogo(null);
       } finally {
         setLoadingLogo(false);
       }
     };
 
-    fetchUserLogo();
+    fetchUserData();
   }, [user]);
+
+  // Helper function to get user initials
+  const getUserInitials = () => {
+    const name = user.name || user.fullname || user.email;
+    if (!name) return 'U';
+    const names = name.split(' ');
+    if (names.length > 1) {
+      return (names[0][0] + names[names.length - 1][0]).toUpperCase();
+    }
+    return name.charAt(0).toUpperCase();
+  };
 
   return (
     <div
@@ -119,7 +129,7 @@ function User({ user, unreadCount }) {
             }`}>
             
             {loadingLogo ? (
-              <div className="w-full h-full bg-gray-200 animate-pulse rounded-full"></div>
+              <div className="w-full h-full bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 animate-pulse rounded-full"></div>
             ) : userLogo ? (
               <img 
                 src={userLogo} 
@@ -129,16 +139,17 @@ function User({ user, unreadCount }) {
                   // Fallback to initials if image fails to load
                   e.target.style.display = 'none';
                   const parent = e.target.parentElement;
+                  const initials = getUserInitials();
                   parent.innerHTML = `
                     <div class="w-full h-full bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center text-2xl font-bold text-[#667eea]">
-                      ${user.name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                      ${initials}
                     </div>
                   `;
                 }}
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-r from-[#667eea]/20 to-[#764ba2]/20 flex items-center justify-center text-2xl font-bold text-[#667eea]">
-                {user.name?.charAt(0) || user.email?.charAt(0) || 'U'}
+                {getUserInitials()}
               </div>
             )}
           </div>
@@ -152,7 +163,7 @@ function User({ user, unreadCount }) {
           <div className="flex justify-between items-center mb-1">
             <div className="flex items-center">
               <h1 className="font-semibold text-lg text-gray-900 truncate mr-2">
-                {user.name || user.email}
+                {user.name || user.fullname || user.email}
               </h1>
               {isOnline ? (
                 <CheckCircle className="h-4 w-4 text-green-500" fill="currentColor" />
@@ -167,7 +178,7 @@ function User({ user, unreadCount }) {
             )}
           </div>
           
-          {user.name && user.email && (
+          {user.email && user.email !== (user.name || user.fullname) && (
             <span className="text-sm text-gray-600 truncate">{user.email}</span>
           )}
           
