@@ -984,7 +984,7 @@ export const getJobPostings = async (req, res) => {
         if (studentProfile.success && studentProfile.data.length > 0 && studentProfile.data[0].locations) {
             studentLocations = studentProfile.data[0].locations;
         }
-        console.log("userId:\n", userId);
+        console.log("userId.....:\n", userId);
         const postings = await getJobPostingsByJobTypeWithLocationBasedService("Job-listing", studentLocations, userId);
 
         sendResponse(res, 200, { data: postings });
@@ -1065,6 +1065,7 @@ export const getJobPostings = async (req, res) => {
 // };
 
 export const getInternshipPostings = async (req, res) => {
+    console.log('here i am ')
     try {
         const userId = req.user?._id;
         let studentLocations = [];
