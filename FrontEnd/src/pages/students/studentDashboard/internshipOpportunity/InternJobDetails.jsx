@@ -5,6 +5,55 @@ import { ArrowLeft, MapPin, Building2, Users, Calendar, Briefcase, DollarSign, A
 import toast from 'react-hot-toast';
 import { useAuth } from "@/context/AuthContext";
 
+import { createPortal } from 'react-dom';
+
+// ---------- LOGIN PROMPT COMPONENT ----------
+const LoginPromptModal = ({ isOpen, onClose, onLogin }) => {
+  if (!isOpen) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
+      
+      {/* Card */}
+      <div className="relative z-[100000] w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl text-center border border-white/20">
+        <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-indigo-50 mb-6">
+          <Briefcase className="h-10 w-10 text-[#667eea]" />
+        </div>
+        
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">Login Required</h3>
+        <p className="text-gray-600 mb-8 text-sm">
+          Please log in to your account to apply for or save this internship opportunity.
+        </p>
+        
+        <div className="flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              e.nativeEvent.stopImmediatePropagation(); 
+              onLogin();
+            }}
+            className="w-full py-4 px-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-bold rounded-2xl hover:opacity-90 shadow-lg cursor-pointer transition-all"
+          >
+            Login to Continue
+          </button>
+          
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full py-3 px-4 text-gray-400 font-medium hover:text-gray-600 transition-colors"
+          >
+            Maybe Later
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+};
 // Company Details Modal Component
 const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
   if (!isOpen || !company) return null;
@@ -138,6 +187,12 @@ const InternJobDetails = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [showCompanyModal, setShowCompanyModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  const handleLoginRedirect = () => {
+    // Ensuring a clean navigation to the user selection page
+    window.location.href = '/userselection';
+  };
 
   // Helper function to get initials for logo fallback
   const getInitials = (name = '') => {
@@ -219,9 +274,10 @@ const InternJobDetails = () => {
   const handleApply = async () => {
     if (loading) return;
 
+
     // 🔐 Not logged in
-    if (!isAuthenticated) {
-      toast.error("Please login to apply");
+   if (!isAuthenticated) {
+      setShowLoginModal(true);
       return;
     }
     
@@ -250,6 +306,10 @@ const InternJobDetails = () => {
   };
 
   const handleSave = async () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true); // 👈 Trigger Prompt
+      return;
+    }
     try {
       setIsSaving(true);
       const response = await SaveOppurtunity(jobId, jobDetails?.jobType || 'internship');
@@ -394,6 +454,11 @@ const InternJobDetails = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5">
+     <LoginPromptModal 
+        isOpen={showLoginModal} 
+        onClose={() => setShowLoginModal(false)} 
+        onLogin={handleLoginRedirect} 
+      />
       <div className="max-w-4xl mx-auto bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 p-6 my-8">
         {/* Top Back Button */}
         <button 

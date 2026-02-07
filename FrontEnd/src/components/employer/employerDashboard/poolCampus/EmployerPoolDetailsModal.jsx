@@ -23,12 +23,61 @@ import { viewed } from '@/lib/User_AxiosInstance';
 import { conversationWithCollege } from '@/lib/College_AxiosIntance';
 import useConversation from '@/statemanage/useConversation';
 import { format } from 'date-fns';
+import { useAuth } from '@/context/AuthContext';
+import { createPortal } from 'react-dom';
+const LoginPromptModal = ({ isOpen, onClose, onLogin }) => {
+  if (!isOpen) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
+      
+      {/* Card */}
+      <div className="relative z-[100000] w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl text-center border border-white/20">
+        <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-indigo-50 mb-6">
+          <Building2 className="h-10 w-10 text-[#667eea]" />
+        </div>
+        
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">Login Required</h3>
+        <p className="text-gray-600 mb-8 text-sm">
+          Please log in to your company account to accept pool-campus invitations or message coordinators.
+        </p>
+        
+        <div className="flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              e.nativeEvent.stopImmediatePropagation(); 
+              onLogin();
+            }}
+            className="w-full py-4 px-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-bold rounded-2xl hover:opacity-90 shadow-lg cursor-pointer transition-all"
+          >
+            Login to Continue
+          </button>
+          
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full py-3 px-4 text-gray-400 font-medium hover:text-gray-600 transition-colors"
+          >
+            Maybe Later
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+};
 
 const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
   const modalRef = useRef(null);
   const poolModalRef = useRef(null); // Ref for pool details modal
   const contentRef = useRef(null); // Added contentRef for scrollable area
-  
+  const { isAuthenticated, loading: authLoading } = useAuth(); // Added Auth Context
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [posting, setPosting] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,6 +94,11 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
   const { setSelectedConversation } = useConversation();
 
   // Helper function to get college initials (same as CollegeCard)
+
+  const handleLoginRedirect = () => {
+    window.location.href = '/userselection';
+  };
+
   const getInitials = (name) => {
     if (!name) return '?';
     const words = name.trim().split(' ');
@@ -137,24 +191,23 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
   }, [isOpen]);
 
   // Close main modal when clicking outside - updated to handle nested modals
+ useEffect(() => {
+    if (isOpen && pool) fetchPostingDetails();
+  }, [isOpen, pool, isAuthenticated]);
+
+  // 🛠️ CRITICAL: Pause click-outside if sub-modals are active
   useEffect(() => {
     const handleClickOutside = (e) => {
-      // Don't close if pool modal is open
-      if (showPoolModal || showAlternateDateModal) return;
-      
-      // Don't close if clicking on pool modal or alternate date modal
-      if (poolModalRef.current?.contains(e.target)) return;
+      if (showPoolModal || showAlternateDateModal || showLoginModal) return;
       
       if (modalRef.current && !modalRef.current.contains(e.target)) {
         onClose();
       }
     };
     
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+    if (isOpen) document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onClose, showPoolModal, showAlternateDateModal]);
+  }, [isOpen, onClose, showPoolModal, showAlternateDateModal, showLoginModal]);
 
   // Handle share
   const handleShare = () => {
@@ -173,6 +226,10 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
 
   // Handle save
   const handleSave = async (jobId) => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     try {
       const response = await SaveOppurtunity(jobId, posting?.jobType);
       if (response.data?.success === true) toast.success("Saved");
@@ -185,6 +242,10 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
 
   // Handle apply
   const handleApply = async (jobId) => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     try {
       const response = await ApplyForPoolcampusOppurtunity(jobId);
       if (response.data?.success === true) toast.success("Applied to Pool Campus");
@@ -869,7 +930,11 @@ const EmployerPoolDetailsModal = ({ pool, isOpen, onClose }) => {
           </div>
         </div>
       </div>
-
+     <LoginPromptModal 
+        isOpen={showLoginModal} 
+        onClose={() => setShowLoginModal(false)} 
+        onLogin={handleLoginRedirect} 
+      />
       {/* Nested Modals */}
       <AlternateDateModal />
       <PoolDetailsModal />

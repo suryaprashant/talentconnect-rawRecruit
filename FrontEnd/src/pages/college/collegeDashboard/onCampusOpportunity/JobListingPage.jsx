@@ -219,16 +219,17 @@ const JobsListingPage = ({ compact = false, onJobSelect, selectedJobId }) => {
     setFilteredjobPosted(result);
   }, [filters, jobPosted, searchQuery, sortBy]);
 
-  const handleJobSelect = (job) => {
-    console.log('Opening details for:', job?.companyPosted?.companyDetails?.companyName);
+const handleJobSelect = (job) => {
+  // If parent provided onJobSelect (Zoomed View), let the parent handle it
+  if (onJobSelect && typeof onJobSelect === 'function') {
+    onJobSelect(job);
+  } else {
+    // Normal View: Open the local modal as usual
+    console.log('Opening local details for:', job?.companyPosted?.companyDetails?.companyName);
     setSelectedJob(job);
     setIsModalOpen(true);
-    
-    // Pass to parent if onJobSelect exists (for compact mode)
-    if (onJobSelect && typeof onJobSelect === 'function') {
-      onJobSelect(job);
-    }
-  };
+  }
+};
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -991,18 +992,19 @@ if (compact) {
       </div>
 
       {/* Job Detail Modal */}
-      {isModalOpen && selectedJob && (
-        <div className="fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          <div className="relative z-10 flex items-center justify-center h-full p-4">
-            <JobDetailModal
-              jobId={selectedJob._id}
-              isOpen={isModalOpen}
-              onClose={handleCloseModal}
-            />
-          </div>
-        </div>
-      )}
+  {/* ✅ ONLY render local modal if NOT in compact/sidebar mode */}
+{isModalOpen && selectedJob && !compact && (
+  <div className="fixed inset-0 z-50">
+    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+    <div className="relative z-10 flex items-center justify-center h-full p-4">
+      <JobDetailModal
+        jobId={selectedJob._id}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
+    </div>
+  </div>
+)}
     </div>
   );
 };
