@@ -121,7 +121,7 @@ export async function getSavedJobsService(userId) {
         populate: {
           path: "companyPosted",
           model: "CompanyProfile",
-          select: "companyDetails.companyName",
+       select: "companyDetails.companyName profileImageUrl",
         },
       })
       .lean();
