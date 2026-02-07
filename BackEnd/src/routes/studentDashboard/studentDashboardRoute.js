@@ -14,8 +14,8 @@ router.get("/oncampus/college/:id", getOnCampusPostingForCollegebyID);
 // router.get('/pool-campus',secureRoute , getPoolCampusPostings); 
 
 router.get('/getAllPoolCampusJobs', verifyUser, getPoolCampusForCollege);
-router.get('/pool-campus/college', secureRoute, getPoolCampusForCollege);
-router.get('/getPoolCampusJob/:id', secureRoute, getPoolCampusJobByIdForCollege);
+router.get('/pool-campus/college',verifyUser, getPoolCampusForCollege);
+router.get('/getPoolCampusJob/:id', verifyUser, getPoolCampusJobByIdForCollege);
 
 router.get('/pool-campus/company',verifyUser, getPoolCampusForCompany);//
 router.get('/pool-campus/company/:id', secureRoute, getPoolCampusJobByIdForCompany);
