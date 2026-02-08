@@ -35,6 +35,56 @@ import { viewed } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/context/AuthContext";
+import { createPortal } from 'react-dom'; 
+
+// ---------- LOGIN PROMPT COMPONENT ----------
+const LoginPromptModal = ({ isOpen, onClose, onLogin }) => {
+  if (!isOpen) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
+      
+      {/* Card */}
+      <div className="relative z-[100000] w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl text-center border border-white/20">
+        <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-indigo-50 mb-6">
+          <Briefcase className="h-10 w-10 text-[#667eea]" />
+        </div>
+        
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">Login Required</h3>
+        <p className="text-gray-600 mb-8 text-sm">
+          Please log in to your account to apply for this pool campus opportunity.
+        </p>
+        
+        <div className="flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              e.nativeEvent.stopImmediatePropagation(); 
+              console.log("🔥 Redirecting to login...");
+              onLogin();
+            }}
+            className="w-full py-4 px-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-bold rounded-2xl hover:opacity-90 shadow-lg cursor-pointer transition-all"
+          >
+            Login to Continue
+          </button>
+          
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full py-3 px-4 text-gray-400 font-medium hover:text-gray-600 transition-colors"
+          >
+            Maybe Later
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+};
 
 // Utility function to format date
 const formatDate = (dateString) => {
@@ -276,6 +326,7 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
 };
 
 const PoolJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSaved: propIsSaved }) => {
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const navigate = useNavigate();
   const [jobDetails, setJobDetails] = useState(null);
   const [saved, setSaved] = useState(propIsSaved || false);
@@ -311,6 +362,10 @@ const PoolJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, 
     }
   };
   
+  const handleLoginRedirect = () => {
+    
+    window.location.href = '/userselection';
+  };
   useEffect(() => {
     if (isOpen && jobId) {
       loadJobDetail();
@@ -345,24 +400,19 @@ const PoolJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, 
   }, [isOpen]);
 
   // Close main modal when clicking outside - updated to handle nested modals
-  useEffect(() => {
+useEffect(() => {
     const handleClickOutside = (e) => {
-      // Don't close if company modal is open
-      if (showCompanyDetails) return;
-      
-      // Don't close if clicking on company modal
-      if (companyModalRef.current?.contains(e.target)) return;
+      // 🛑 CRITICAL: If login modal is open, ignore clicks outside
+      if (showCompanyDetails || showLoginModal) return;
       
       if (modalRef.current && !modalRef.current.contains(e.target)) {
         onClose();
       }
     };
     
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+    if (isOpen) document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onClose, showCompanyDetails]);
+  }, [isOpen, onClose, showCompanyDetails, showLoginModal]);
 
   const handleShare = () => {
     if (navigator.share) {
@@ -380,8 +430,11 @@ const PoolJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, 
   };
 
   const handleApply = async () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true); // 👈 Trigger Prompt
+      return;
+    }
     if (!jobId) return;
-    
     setIsSubmitting(true);
     try {
       const response = await ApplyForPoolCampus(jobId);
@@ -505,6 +558,12 @@ const PoolJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, 
         company={companyData}
         isOpen={showCompanyDetails}
         onClose={handleCloseCompanyModal}
+      />
+
+      <LoginPromptModal 
+        isOpen={showLoginModal} 
+        onClose={() => setShowLoginModal(false)} 
+        onLogin={handleLoginRedirect} 
       />
 
       <div

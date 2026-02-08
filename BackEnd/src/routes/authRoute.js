@@ -1,6 +1,6 @@
 // src/routes/auth.js
 import express from 'express';
-import { signup, login, logout,getCountOfTotalUsers, sendSignupOtp, getMe } from '../controllers/authentication/manualAuthController.js';
+import { signup, login, logout,getCountOfTotalUsers, sendSignupOtp, getMe, getUserById } from '../controllers/authentication/manualAuthController.js';
 import { googleAuth } from '../controllers/authentication/googleAuthController.js';
 import {  handleLinkedInCallback, redirectToLinkedIn } from '../controllers/authentication/linkedInAuthController.js';
 import { requestPasswordReset, resetPassword, validateResetToken } from '../controllers/authentication/forgotPasswordController.js';
@@ -30,6 +30,8 @@ router.post('/reset-password' , resetPassword);
 //   res.json({ user: req.user });
 // });
 
+// In your auth routes
+router.get('/user/:id', getUserById);
 
 export default router;
 

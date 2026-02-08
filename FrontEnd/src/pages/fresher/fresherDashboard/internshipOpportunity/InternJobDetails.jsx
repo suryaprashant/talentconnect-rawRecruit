@@ -1,9 +1,53 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Navigate } from 'react-router-dom';
 import { ApplyForInternship, getInternshipById, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 import { ArrowLeft, MapPin, Building2, Users, Briefcase, DollarSign, GraduationCap, FileText, Globe, Clock, CheckCircle, Share2, IndianRupee, Info } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from "@/context/AuthContext";
+
+const LoginPromptModal = ({ isOpen, onClose }) => {
+  const navigate=useNavigate()
+  const onLogin = ()=>{
+   navigate('/userselection')
+  }
+
+  if (!isOpen) return null;
+ 
+  return (
+    <div className="fixed inset-0 z-[60] overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen px-4 text-center">
+        <div className="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-50 backdrop-blur-sm" onClick={onClose}></div>
+
+        <div className="inline-block align-middle bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full p-8">
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 mb-4">
+              <Briefcase className="h-8 w-8 text-[#667eea]" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Ready to Apply?</h3>
+            <p className="text-gray-600 mb-8">
+              You need to be logged in  to apply for internships/jobs and track your applications.
+            </p>
+            
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={onLogin}
+                className="w-full py-3 px-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-bold rounded-xl hover:shadow-lg transition-all duration-200"
+              >
+                Login to Continue
+              </button>
+              <button
+                onClick={onClose}
+                className="w-full py-3 px-4 bg-gray-50 text-gray-700 font-semibold rounded-xl hover:bg-gray-100 transition-colors"
+              >
+                Maybe Later
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Company Details Modal Component
 const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
@@ -128,6 +172,7 @@ const InternJobDetails = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { isAuthenticated, loading } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(false); // New state
   
   const [jobDetails, setJobDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -225,10 +270,13 @@ const InternJobDetails = () => {
     if (loading) return;
 
     // 🔐 Not logged in
+  
+    // 🔐 Check if logged in
     if (!isAuthenticated) {
-      toast.error("Please login to apply");
+      setShowLoginModal(true); // Open Modal instead of just a Toast
       return;
     }
+    
     
     try {
       setIsApplying(true);
@@ -701,6 +749,12 @@ const InternJobDetails = () => {
         isOpen={showCompanyModal}
         onClose={() => setShowCompanyModal(false)}
       />
+      <LoginPromptModal 
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+       
+      />
+ 
     </div>
   );
 };

@@ -86,7 +86,156 @@ const normalizeSelectionProcess = (selectionProcess) => {
   return [];
 };
 
+//   const navigate=useNavigate()
+ 
+//   const onLogin = () => {
+//   onClose(); // close login modal
+//   console.log('clicked here')
+//   navigate('/userselection');
+// };
+  
+
+//   if (!isOpen) return null;
+ 
+//   return (
+//     <div className="fixed inset-0 z-[60] overflow-y-auto">
+//       <div className="flex items-center justify-center min-h-screen px-4 text-center">
+//         <div className="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-50 backdrop-blur-sm" onClick={onClose}></div>
+
+//         <div className="inline-block align-middle bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full p-8">
+//           <div className="text-center">
+//             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 mb-4">
+//               <Briefcase className="h-8 w-8 text-[#667eea]" />
+//             </div>
+//             <h3 className="text-2xl font-bold text-gray-900 mb-2">Ready to Apply?</h3>
+//             <p className="text-gray-600 mb-8">
+//               You need to be logged in  to apply for internships/jobs and track your applications.
+//             </p>
+            
+//             <div className="flex flex-col gap-3">
+//               <button
+//                 onClick={onLogin}
+//                 className="w-full py-3 px-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-bold rounded-xl hover:shadow-lg transition-all duration-200"
+//               >
+//                 Login to Continue
+//               </button>
+//               <button
+//                 onClick={onClose}
+//                 className="w-full py-3 px-4 bg-gray-50 text-gray-700 font-semibold rounded-xl hover:bg-gray-100 transition-colors"
+//               >
+//                 Maybe Later
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
 // Simple Company Details Modal
+
+// const LoginPromptModal = ({ isOpen, onClose, onLogin }) => {
+//   if (!isOpen) return null;
+
+//   return (
+//     <div className="fixed inset-0 z-[110] overflow-y-auto">
+//       <div className="flex items-center justify-center min-h-screen px-4 text-center">
+//         {/* Background overlay */}
+//         <div 
+//           className="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-50 backdrop-blur-sm" 
+//           onClick={onClose}
+//         ></div>
+
+//         {/* Modal panel */}
+//         <div className="inline-block align-middle bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full p-8 z-[120]">
+//           <div className="text-center">
+//             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 mb-4">
+//               <Briefcase className="h-8 w-8 text-[#667eea]" />
+//             </div>
+//             <h3 className="text-2xl font-bold text-gray-900 mb-2">Ready to Apply?</h3>
+//             <p className="text-gray-600 mb-8">
+//               You need to be logged in to apply for internships/jobs and track your applications.
+//             </p>
+            
+//             <div className="flex flex-col gap-3">
+//               <button
+//                 onClick={onLogin} // This now calls the function passed from parent
+//                 className="w-full py-3 px-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-bold rounded-xl hover:shadow-lg transition-all duration-200"
+//               >
+//                 Login to Continue
+//               </button>
+//               <button
+//                 onClick={onClose}
+//                 className="w-full py-3 px-4 bg-gray-50 text-gray-700 font-semibold rounded-xl hover:bg-gray-100 transition-colors"
+//               >
+//                 Maybe Later
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+import { createPortal } from 'react-dom'; // 👈 Add this import at the top
+
+const LoginPromptModal = ({ isOpen, onClose, onLogin }) => {
+  if (!isOpen) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/80 backdrop-blur-md" 
+        onClick={onClose} 
+      />
+      
+      {/* Modal Card */}
+      <div className="relative z-[100000] w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl text-center border border-white/20">
+        <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-indigo-50 mb-6">
+          <Briefcase className="h-10 w-10 text-[#667eea]" />
+        </div>
+        
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">Login Required</h3>
+        <p className="text-gray-600 mb-8 text-sm">
+          Please log in to your account to apply for this opportunity.
+        </p>
+        
+        <div className="flex flex-col gap-3">
+      
+<button
+  type="button"
+  // Use onClickCapture to intercept the event before it bubbles
+  onClickCapture={(e) => {
+    e.stopPropagation();
+    console.log("🔥 CAPTURE CLICK: Redirecting now...");
+    onLogin();
+  }}
+  // Keep the standard onClick for safety
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }}
+  className="w-full py-4 px-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-bold rounded-2xl hover:opacity-90 shadow-lg cursor-pointer transition-all relative z-[999999]"
+>
+  Login to Continue
+</button>
+          
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full py-3 px-4 text-gray-400 font-medium hover:text-gray-600 transition-colors"
+          >
+            Maybe Later
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body // This moves it out of the layout and into the main HTML body
+  );
+};
+
 const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
   if (!isOpen || !company) return null;
 
@@ -278,8 +427,11 @@ const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
   );
 };
 
-const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSaved: propIsSaved }) => {
+const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSaved: propIsSaved,onNavigateAway }) => {
+
   const navigate = useNavigate();
+  // Use auth hook
+  const [showLoginModal, setShowLoginModal] = useState(false); // New state
   const [job, setJob] = useState(null);
   const [saved, setSaved] = useState(propIsSaved || false);
   const [isloading, setLoading] = useState(true);
@@ -291,6 +443,11 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
   const modalRef = useRef(null);
   const companyModalRef = useRef(null); // Ref for company details modal
   const contentRef = useRef(null);
+
+const handleLoginRedirect = () => {
+ 
+  window.location.href = '/userselection';
+};
 
   const loadJobDetail = async () => {
   if (!jobId) return;
@@ -363,24 +520,23 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
   }, [isOpen]);
 
   // Close main modal when clicking outside - updated to handle nested modals
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      // Don't close if company modal is open
-      if (showCompanyDetails) return;
-      
-      // Don't close if clicking on company modal
-      if (companyModalRef.current?.contains(e.target)) return;
-      
-      if (modalRef.current && !modalRef.current.contains(e.target)) {
-        onClose();
-      }
-    };
+// Inside JobDetailModal.jsx
+useEffect(() => {
+  const handleClickOutside = (e) => {
+    // 🛑 CRITICAL FIX: If the login prompt is visible, stop the "click outside" logic
+    // so it doesn't unmount the login button while the user is clicking it.
+    if (showLoginModal || showCompanyDetails) return;
     
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+    if (modalRef.current && !modalRef.current.contains(e.target)) {
+      onClose();
     }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onClose, showCompanyDetails]);
+  };
+  
+  if (isOpen) {
+    document.addEventListener('mousedown', handleClickOutside);
+  }
+  return () => document.removeEventListener('mousedown', handleClickOutside);
+}, [isOpen, onClose, showLoginModal, showCompanyDetails]); // Add showLoginModal here
 
   const handleShare = () => {
     if (navigator.share) {
@@ -398,8 +554,11 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
   };
 
   const handleApply = async () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     if (!jobId) return;
-    
     setIsSubmitting(true);
     try {
       const response = await ApplyForOnCampus(jobId);
@@ -436,8 +595,11 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
   };
 
   const handleSave = async () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     if (!job?._id || !job?.jobType) return;
-    
     try {
       const response = await SaveOppurtunity(job._id, job.jobType);
       if (response.data?.success === true) {
@@ -524,6 +686,12 @@ const JobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplied, isSa
         company={companyData}
         isOpen={showCompanyDetails}
         onClose={handleCloseCompanyModal}
+      />
+      
+<LoginPromptModal 
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLogin={handleLoginRedirect} 
       />
 
       <div

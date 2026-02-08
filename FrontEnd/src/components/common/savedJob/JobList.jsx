@@ -383,19 +383,16 @@ const getOrganizationName = (job) => {
 
 // Function to get organization logo (same logic as UnifiedJobDetail)
 const getOrganizationLogo = (job) => {
-  const jobData = job?.job;
-  
-  if (jobData?.companyPosted?.companyDetails?.logo) {
-    return jobData.companyPosted.companyDetails.logo;
-  }
-  else if (jobData?.collegePosted?.profileImage) {
-    return jobData.collegePosted.profileImage;
-  }
-  else if (jobData?.employerDetails?.logo) {
-    return jobData.employerDetails.logo;
-  }
-  
-  return null;
+  const jd = job?.job || job; // Handle nested 'Saved' jobs and flat jobs
+
+  return (
+    jd?.companyPosted?.profileImageUrl || // Match your backend controller select
+    jd?.collegePosted?.profileImageUrl || 
+    jd?.companyPosted?.companyDetails?.logo || 
+    jd?.collegePosted?.profileImage ||
+    jd?.employerDetails?.logo ||
+    null
+  );
 };
 
 const JobList = ({ jobs: initialJobs, onRefresh }) => {
@@ -439,32 +436,59 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
   };
 
   // Function to get logo URL or initials - UPDATED with unified logic
-  const getLogoOrInitials = (job) => {
-    const logoUrl = getOrganizationLogo(job);
-    const orgName = getOrganizationName(job);
+  // const getLogoOrInitials = (job) => {
+  //   const logoUrl = getOrganizationLogo(job);
+  //   const orgName = getOrganizationName(job);
     
-    if (logoUrl) {
-      return (
+  //   if (logoUrl) {
+  //     return (
+  //       <img 
+  //         src={logoUrl} 
+  //         alt={orgName || "Organization"} 
+  //         className="w-10 h-10 rounded-lg object-cover"
+  //         onError={(e) => {
+  //           // If image fails to load, show initials
+  //           e.target.style.display = 'none';
+  //           e.target.nextSibling.style.display = 'flex';
+  //         }}
+  //       />
+  //     );
+  //   }
+    
+  //   // Show initials if no logo
+  //   return (
+  //     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-sm">
+  //       {getInitials(orgName)}
+  //     </div>
+  //   );
+  // };
+  const getLogoOrInitials = (job) => {
+  const logoUrl = getOrganizationLogo(job);
+  const orgName = getOrganizationName(job);
+  const initials = getInitials(orgName);
+
+  return (
+    <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 relative bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center">
+      {/* Background Layer: Initials are always here */}
+      <span className="text-white font-bold text-sm absolute z-0">
+        {initials}
+      </span>
+
+      {/* Foreground Layer: Logo hides initials if it loads successfully */}
+      {logoUrl && (
         <img 
           src={logoUrl} 
-          alt={orgName || "Organization"} 
-          className="w-10 h-10 rounded-lg object-cover"
+          alt={orgName} 
+          className="w-full h-full object-cover relative z-10"
           onError={(e) => {
-            // If image fails to load, show initials
+            // If the URL exists but image fails to fetch, hide the img tag
             e.target.style.display = 'none';
-            e.target.nextSibling.style.display = 'flex';
           }}
         />
-      );
-    }
-    
-    // Show initials if no logo
-    return (
-      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center text-white font-bold text-sm">
-        {getInitials(orgName)}
-      </div>
-    );
-  };
+      )}
+    </div>
+  );
+};
 
   const resolveLocation = (job) => {
     const jobData = job?.job;
@@ -556,7 +580,7 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
               const orgName = getOrganizationName(job);
               const locationText = resolveLocation(job);
               const roles = job?.job?.jobRoles || [];
-
+          console.log('here',job)
               return (
                 <Link
                   key={job?.job?._id}
@@ -642,7 +666,7 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                               <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                             </svg>
-                            Start Date
+                            Start Datem
                           </div>
                           <div className="font-medium">
                             {job?.job?.startDate

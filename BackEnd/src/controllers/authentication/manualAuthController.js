@@ -1,5 +1,8 @@
 import { loginUser, registerUser, generateToken,getTotalUsersCount, sendSignupOtpService } from "../../services/authService.js";
 import Otp from "../../models/otpModel.js";
+import StudentProfile from '../../models/studentProfileModel.js';
+import FresherProfile from '../../models/fresherProfileModel.js';
+import CollegeProfile from '../../models/collegeDashboard/collegeProfileModel.js';
 
 const setJwtCookie = (res, token) => {
     res.cookie('jwt', token, {
@@ -164,5 +167,119 @@ export const getMe = async (req, res) => {
   } catch (error) {
     console.error("getMe error:", error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+// controllers/authentication/manualAuthController.js - Update getUserById
+export const getUserById = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    
+    // First, get the basic user info from Auth model
+    const user = await Auth.findById(userId).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    let profileImage = null;
+    let additionalData = {};
+    let logoUrl = null; // Use consistent variable name
+    
+    // Try to fetch profile image based on user type
+    switch (user.userType) {
+      case 'student':
+        const studentProfile = await StudentProfile.findOne({ userId });
+        if (studentProfile) {
+          // Try multiple possible image fields
+          logoUrl = studentProfile.profileImageUrl || 
+                    studentProfile.profileImage || 
+                    studentProfile.avatar ||
+                    studentProfile.profile?.profileImageUrl;
+          additionalData = {
+            profileCompleted: !!studentProfile,
+            about: studentProfile.about,
+            skills: studentProfile.skills
+          };
+        }
+        break;
+        
+      case 'fresher':
+        const fresherProfile = await FresherProfile.findOne({ userId });
+        if (fresherProfile) {
+          logoUrl = fresherProfile.profileImageUrl || 
+                    fresherProfile.profileImage || 
+                    fresherProfile.avatar ||
+                    fresherProfile.profile?.profileImageUrl;
+          additionalData = {
+            profileCompleted: !!fresherProfile,
+            about: fresherProfile.about,
+            skills: fresherProfile.skills
+          };
+        }
+        break;
+        
+      case 'college':
+        const collegeProfile = await CollegeProfile.findOne({ userId });
+        if (collegeProfile) {
+          // College might store image differently
+          logoUrl = collegeProfile.profileImage || 
+                    collegeProfile.collegeDetails?.collegeImageUrl ||
+                    collegeProfile.collegeLogo ||
+                    collegeProfile.logo;
+          additionalData = {
+            profileCompleted: !!collegeProfile,
+            collegeName: collegeProfile.collegeDetails?.collegeName
+          };
+        }
+        break;
+        
+      case 'professional':
+        // Add professional profile model if exists
+        // const professionalProfile = await ProfessionalProfile.findOne({ userId });
+        // if (professionalProfile) {
+        //   logoUrl = professionalProfile.profileImageUrl || professionalProfile.avatar;
+        // }
+        break;
+        
+      case 'employer':
+      case 'company':
+        // These might use companyDashboard endpoints
+        // Keep existing logic for these
+        break;
+        
+      default:
+        // For any other user type, try the default profileImage field
+        logoUrl = user.profileImage;
+    }
+    
+    // Also check if the user has a profileImage in the Auth model itself
+    if (!logoUrl && user.profileImage) {
+      logoUrl = user.profileImage;
+    }
+    
+    // Prepare response
+    const response = {
+      success: true,
+      data: {
+        _id: user._id,
+        name: user.name || user.fullname,
+        email: user.email,
+        userType: user.userType,
+        profileImage: logoUrl, // Use consistent field name
+        avatar: logoUrl, // Add avatar field for compatibility
+        ...additionalData
+      }
+    };
+    
+    res.status(200).json(response);
+    
+  } catch (error) {
+    console.error('Error in getUserById:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error',
+      error: error.message 
+    });
   }
 };
