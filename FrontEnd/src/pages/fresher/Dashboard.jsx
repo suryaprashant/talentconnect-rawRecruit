@@ -435,7 +435,7 @@ function FresherDashboard() {
               className="border-[#667eea] text-[#667eea] hover:bg-gradient-to-r hover:from-[#667eea] hover:to-[#764ba2] hover:text-white"
               onClick={() => navigate('/fresher-interviews')}
             >
-              Schedule Interview
+              Scheduled Interview
             </Button>
           </div>
         </div>

@@ -436,12 +436,21 @@ export const getOnCampusPostingForCollegebyID = async (req, res) => {
         const response = await JobPostingTable.findById(id)
             .populate({
                 path: 'companyPosted',
-                select: 'companyDetails profileImage hiringPreferences',
+                select: 'companyDetails profileImageUrl hiringPreferences', // Changed from profileImage to profileImageUrl
             })
             .lean();
 
+        // Debug log
+        console.log('🔍 Backend Response:', {
+            jobId: id,
+            hasCompanyPosted: !!response?.companyPosted,
+            profileImageUrl: response?.companyPosted?.profileImageUrl,
+            companyName: response?.companyPosted?.companyDetails?.companyName
+        });
+
         res.status(200).json(response);
     } catch (err) {
+        console.error('❌ Error in getOnCampusPostingForCollegebyID:', err);
         res.status(500).json({ error: err.message });
     }
 }
@@ -686,13 +695,22 @@ export const getPoolCampusJobByIdForCollege = async (req, res) => {
         const response = await JobPostingTable.findById(id)
             .populate({
                 path: 'companyPosted',
-                select: 'companyDetails profileImage hiringPreferences',
+                select: 'companyDetails profileImageUrl hiringPreferences', // Changed from profileImage to profileImageUrl
             })
             .lean();
+        
+        // Add debug logging
+        console.log('🔍 Pool Campus Backend Response:', {
+            jobId: id,
+            hasCompanyPosted: !!response?.companyPosted,
+            profileImageUrl: response?.companyPosted?.profileImageUrl,
+            companyName: response?.companyPosted?.companyDetails?.companyName
+        });
+        
         res.status(200).json(response);
     }
     catch (err) {
-        console.error(err);
+        console.error('❌ Error in getPoolCampusJobByIdForCollege:', err);
         res.status(500).json({ error: err.message });
     }
 }
@@ -966,7 +984,7 @@ export const getJobPostings = async (req, res) => {
         if (studentProfile.success && studentProfile.data.length > 0 && studentProfile.data[0].locations) {
             studentLocations = studentProfile.data[0].locations;
         }
-        console.log("userId:\n", userId);
+        console.log("userId.....:\n", userId);
         const postings = await getJobPostingsByJobTypeWithLocationBasedService("Job-listing", studentLocations, userId);
 
         sendResponse(res, 200, { data: postings });
@@ -1047,6 +1065,7 @@ export const getJobPostings = async (req, res) => {
 // };
 
 export const getInternshipPostings = async (req, res) => {
+    console.log('here i am ')
     try {
         const userId = req.user?._id;
         let studentLocations = [];
