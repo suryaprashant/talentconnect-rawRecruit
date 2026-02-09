@@ -468,7 +468,7 @@ function Profile() {
             <div className="p-6 border-b border-gray-100">
               <h3 className="text-lg font-semibold text-gray-900">Upload your recent resume or CV</h3>
               <p className="mt-1 text-sm text-gray-600">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.
+              
               </p>
             </div>
 
@@ -1036,12 +1036,32 @@ function Profile() {
       case 'profile':
         return (
           <div className="space-y-6">
+             <div className="flex justify-end p-6 bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 mt-6">
+              <Button
+                variant="primary"
+                className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 rounded-xl"
+                onClick={isProfileEditing ? handleSaveChanges : () => setIsProfileEditing(true)}
+                disabled={loading}
+              >
+                {isProfileEditing ? (
+                  <>
+                    <FiSave className="w-4 h-4 mr-2" />
+                    {loading ? 'Saving...' : 'Save Changes'}
+                  </>
+                ) : (
+                  <>
+                    <FiEdit2 className="w-4 h-4 mr-2" />
+                    Edit Profile
+                  </>
+                )}
+              </Button>
+            </div>
             {/* About Section */}
             <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">About</h3>
-                  <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
+                  
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1215,7 +1235,7 @@ function Profile() {
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Educational Background</h3>
-                  <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
+                 
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1344,7 +1364,7 @@ function Profile() {
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Career Goals</h3>
-                  <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
+                
                 </div>
               </div>
               <div className="space-y-6">
@@ -1587,7 +1607,7 @@ function Profile() {
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Skills</h3>
-                  <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
+                 
                 </div>
               </div>
               <div>
@@ -1659,7 +1679,7 @@ function Profile() {
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Social Profiles</h3>
-                  <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
+                 
                 </div>
               </div>
               <div className="space-y-4">
@@ -1752,7 +1772,7 @@ function Profile() {
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Certifications</h3>
-                  <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
+                  
                 </div>
               </div>
               {profileData.certifications.map((cert, index) => (
