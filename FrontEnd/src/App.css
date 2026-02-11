@@ -123,3 +123,7 @@
 .delay-600 {
   animation-delay: 600ms;
 }
+
+.achievement-datepicker-popper {
+  z-index: 9999 !important;
+}
