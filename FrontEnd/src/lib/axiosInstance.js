@@ -25,4 +25,23 @@ axiosInstance.interceptors.request.use(
   }
 );
 
+// ✅ Response interceptor (ADD BELOW)
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const isAuthMe =
+      error.config?.url?.includes("/api/auth/me") &&
+      error.response?.status === 401;
+
+    if (isAuthMe) {
+      // Silent failure for guest users
+      return Promise.reject(error);
+    }
+
+    console.error(error);
+    return Promise.reject(error);
+  }
+);
+
+
 export default axiosInstance;

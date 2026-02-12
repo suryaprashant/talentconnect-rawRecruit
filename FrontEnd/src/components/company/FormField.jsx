@@ -30,7 +30,7 @@ const FormField = ({
             value={value || ''}
             onChange={onChange}
             placeholder={placeholder}
-            className={`form-input block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black sm:text-sm ${className}`}
+            className={`form-input block w-full px-3 py-2  border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black sm:text-sm ${className}`}
             required={required}
           />
         );
@@ -43,7 +43,7 @@ const FormField = ({
             onChange={onChange}
             placeholder={placeholder}
             rows="4"
-            className={`form-textarea block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black sm:text-sm ${className}`}
+            className={`form-textarea block w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black sm:text-sm ${className}`}
             required={required}
           ></textarea>
         );
@@ -54,7 +54,7 @@ const FormField = ({
             name={name}
             value={value || ''}
             onChange={onChange}
-            className={`form-select block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black sm:text-sm ${className}`}
+            className={`form-select block w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black sm:text-sm ${className}`}
             multiple={isMulti}
             required={required}
           >
