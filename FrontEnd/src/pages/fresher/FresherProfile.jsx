@@ -7,6 +7,8 @@ import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown, Fi
 import axios from 'axios';
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 function Fresher_Profile() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -471,7 +473,7 @@ function Fresher_Profile() {
             <div className="p-6 border-b border-gray-100">
               <h3 className="text-lg font-semibold text-gray-900">Upload your recent resume or CV</h3>
               <p className="mt-1 text-sm text-gray-600">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.
+              
               </p>
             </div>
 
@@ -1094,7 +1096,7 @@ function Fresher_Profile() {
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">About</h3>
-                  <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
+                 
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1220,7 +1222,22 @@ function Fresher_Profile() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
                   {isProfileEditing ? (
-                    <input type="date" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={profileData.dob} onChange={(e) => handleProfileDataChange('dob', e.target.value)} />
+                    <div className="relative">
+                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 border-black text-gray-400" />
+                            <DatePicker
+                              selected={profileData.dob ? new Date(profileData.dob) : null}
+                              onChange={(date) =>
+                                handleProfileDataChange(
+                                  'dob',
+                                  date ? date.toISOString().split('T')[0] : ''
+                                )
+                              }
+                              dateFormat="MMMM d, yyyy"
+                              maxDate={new Date()}
+                              placeholderText="Select date"
+                              className="w-full pl-10 px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                            />
+                          </div>
                   ) : (<div className={displayFieldStyle}>{profileData.dob || "N/A"}</div>)}
                 </div>
                 <div>
@@ -1266,7 +1283,7 @@ function Fresher_Profile() {
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Educational Background</h3>
-                  <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
+                 
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1394,7 +1411,7 @@ function Fresher_Profile() {
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Career Goals</h3>
-                  <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
+                
                 </div>
               </div>
               <div className="space-y-6">
@@ -1636,7 +1653,7 @@ function Fresher_Profile() {
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Skills</h3>
-                  <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
+                
                 </div>
               </div>
               <div>
@@ -1734,7 +1751,7 @@ function Fresher_Profile() {
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Social Profiles</h3>
-                  <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
+                 
                 </div>
               </div>
               <div className="space-y-4">
@@ -1826,7 +1843,7 @@ function Fresher_Profile() {
               <div className="flex justify-between items-center mb-4">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900">Certifications</h3>
-                  <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros.</p>
+                
                 </div>
               </div>
               {profileData.certifications.map((cert, index) => (
@@ -1952,11 +1969,18 @@ function Fresher_Profile() {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Start Date / Received Date</label>
                                 {isProfileEditing ? (
-                                    <input 
-                                        type="date" 
-                                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" 
-                                        value={award.startDate} 
-                                        onChange={(e) => handleAwardChange(index, 'startDate', e.target.value)} 
+                                    <DatePicker
+                                      selected={award.startDate ? new Date(award.startDate) : null}
+                                      onChange={(date) =>
+                                        handleAwardChange(
+                                          index,
+                                          'startDate',
+                                          date ? date.toISOString().split('T')[0] : ''
+                                        )
+                                      }
+                                      dateFormat="MMMM d, yyyy"
+                                      placeholderText="Select date"
+                                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
                                     />
                                 ) : (
                                     <div className={displayFieldStyle}>{award.startDate || "N/A"}</div>
@@ -1966,12 +1990,20 @@ function Fresher_Profile() {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">End Date (Optional)</label>
                                 {isProfileEditing ? (
-                                    <input 
-                                        type="date" 
-                                        className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" 
-                                        value={award.endDate} 
-                                        onChange={(e) => handleAwardChange(index, 'endDate', e.target.value)} 
-                                    />
+                                    <DatePicker
+                                       selected={award.endDate ? new Date(award.endDate) : null}
+                                       onChange={(date) =>
+                                         handleAwardChange(
+                                           index,
+                                           'endDate',
+                                           date ? date.toISOString().split('T')[0] : ''
+                                         )
+                                       }
+                                       dateFormat="MMMM d, yyyy"
+                                       placeholderText="Select date"
+                                       minDate={award.startDate ? new Date(award.startDate) : null}
+                                       className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                                     />
                                 ) : (
                                     <div className={displayFieldStyle}>{award.endDate || "N/A"}</div>
                                 )}
@@ -2051,7 +2083,21 @@ function Fresher_Profile() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                            {isProfileEditing ? (<input type="date" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50" value={ach.date} onChange={(e) => handleAchievementChange(index, 'date', e.target.value)} />) : (<div className={displayFieldStyle}>{ach.date || "N/A"}</div>)}
+                            {isProfileEditing ? (
+                              <DatePicker
+                                    selected={ach.date ? new Date(ach.date) : null}
+                                    onChange={(date) =>
+                                      handleAchievementChange(
+                                        index,
+                                        'date',
+                                        date ? date.toISOString().split('T')[0] : ''
+                                      )
+                                    }
+                                    dateFormat="MMMM d, yyyy"
+                                    placeholderText="Select date"
+                                    popperClassName="achievement-datepicker-popper"
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
+                                  />) : (<div className={displayFieldStyle}>{ach.date || "N/A"}</div>)}
                         </div>
                     </div>
                 ))}

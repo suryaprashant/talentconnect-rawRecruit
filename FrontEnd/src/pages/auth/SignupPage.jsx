@@ -38,6 +38,10 @@ const trackGAEvent = (category, action, label) => {
   }
 };
 
+const emailRegex =
+  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+
 const handleAuthRedirect = (user, navigate) => {
   if (!user) return;
   const { userType, onboardingCompleted } = user;
@@ -144,6 +148,12 @@ function SignupPage() {
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setError('');
+
+    // ✅ EMAIL VALIDATION
+    if (!emailRegex.test(formData.email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
     
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');

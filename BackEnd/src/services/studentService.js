@@ -105,6 +105,7 @@ export async function submitOnboardingFormService(userId, body, files) {
 
 export async function updateOnboardingFormService(userId, body, files) {
   const updates = { ...body };
+  console.log(updates)
   const fieldsToParse = ['jobRoles', 'locations', 'industry', 'skills', 'languagesKnown', 'toolsAndPlatforms', 'domainKnowledge'];
   fieldsToParse.forEach(field => {
     if (updates[field] && typeof updates[field] === 'string') {
