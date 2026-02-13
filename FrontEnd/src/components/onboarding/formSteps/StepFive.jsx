@@ -336,7 +336,7 @@ const handleSelectOrAdd = async (skillName) => {
                           handleSelectOrAdd(customSkillSearch);
                         }
                       }}
-                      className="w-full pl-12 p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] text-gray-700 placeholder-gray-400"
+                      className="w-full pl-12 p-4  bg-white text-black placeholder-gray-400 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] "
                     />
                   </div>
                   {customSkillSearch && (
@@ -406,7 +406,7 @@ const handleSelectOrAdd = async (skillName) => {
                   rows="3"
                   value={localFormData.certifications}
                   onChange={handleChange}
-                  className="flex-grow p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
+                  className="flex-grow p-4  bg-white text-black placeholder-gray-400 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]"
                   placeholder="e.g., Google Cloud Certified, AWS Certified Developer (One per line)"
                 />
               </div>
@@ -428,7 +428,7 @@ const handleSelectOrAdd = async (skillName) => {
                       type="url"
                       value={localFormData.linkedin}
                       onChange={handleChange}
-                      className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
+                      className="w-full p-4  bg-white text-black placeholder-gray-400 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]"
                       placeholder="linkedin.com/in/username"
                     />
                     {errors.linkedin && (
@@ -452,7 +452,7 @@ const handleSelectOrAdd = async (skillName) => {
                       type="url"
                       value={localFormData.github}
                       onChange={handleChange}
-                      className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
+                      className="w-full p-4  bg-white text-black placeholder-gray-400 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]"
                       placeholder="github.com/username"
                     />
                     {errors.github && (

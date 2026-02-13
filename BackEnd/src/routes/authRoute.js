@@ -5,11 +5,12 @@ import { googleAuth } from '../controllers/authentication/googleAuthController.j
 import {  handleLinkedInCallback, redirectToLinkedIn } from '../controllers/authentication/linkedInAuthController.js';
 import { requestPasswordReset, resetPassword, validateResetToken } from '../controllers/authentication/forgotPasswordController.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
+import optionalAuth from '../middlewares/optionalAuth.middleware.js';
 
 
 const router = express.Router();
 
-router.get("/me", authMiddleware, getMe);
+router.get("/me", optionalAuth, getMe);
 router.post('/signup', signup);
 router.post('/login', login);
 router.post('/google', googleAuth);

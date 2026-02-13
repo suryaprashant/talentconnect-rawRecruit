@@ -80,7 +80,7 @@ const studentOnboardingSchema = new mongoose.Schema(
     expectedSalaryAmount: String,
     currentSalaryCurrency: String,
     currentSalaryAmount: String,
-    lookingFor: { type: [String], enum: ["Job", "Internship", "Both"] },
+    lookingFor: { type: [String], enum: ["Job", "Internship", "Job,Internship" , "Both"] },
     employmentType: {
       type: [String],
       enum: ["part time", "full time", "contract"],

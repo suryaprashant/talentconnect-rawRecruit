@@ -16,7 +16,10 @@ export const AuthContextRole = ({ children }) => {
         });
         setUser(res.data.user);
       } catch (err) {
-        setUser(null);
+        if (err.response?.status === 401) {
+          // User is not logged in → this is OK
+          setUser(null);
+        }
       } finally {
         setLoading(false);
       }
