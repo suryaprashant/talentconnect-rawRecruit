@@ -310,7 +310,7 @@ export const FresherStepFour = ({ onNext, onBack }) => {
 
                         {/* Preferred Job Locations */}
                         <div>
-                            <label className="block text-gray-700 font-medium text-sm mb-2">Preferred Job Locations</label>
+                            <label className="block text-gray-700 font-medium text-sm mb-2">Preferred Job Location</label>
                             <div className="flex items-center p-1">
                                 <MapPin className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
                                 <CreatableSelect

@@ -267,6 +267,9 @@ function Profile() {
   }, []);
 
 
+  console.log(profileData)
+
+
 
   const handleProfessionalSwitch = async () => {
     const isConfirmed = window.confirm(
@@ -529,24 +532,30 @@ function Profile() {
   }));
 
   const handleLookingForChange = (option) => {
-    let newVal;
-    if (option === 'Both') {
-        newVal = ['Job', 'Internship'];
-    } else {
-        newVal = option;
-    }
-    handleProfileDataChange('lookingFor', newVal);
-  };
+  let newVal;
+  if (option === 'Both') {
+    // Set as an array of both valid enum values
+    newVal = ['Job', 'Internship']; 
+  } else {
+    // Set as an array with a single valid enum value
+    newVal = [option];
+  }
+  handleProfileDataChange('lookingFor', newVal);
+};
 
-  const isLookingForActive = (option) => {
-    const val = profileData.lookingFor;
-    if (option === 'Both') {
-        return Array.isArray(val) && val.includes('Job') && val.includes('Internship');
-    }
-    if (val === option) return true;
-    if (Array.isArray(val) && val.includes(option) && val.length === 1) return true;
-    return false;
-  };
+const isLookingForActive = (option) => {
+  const val = profileData.lookingFor;
+  
+  // Ensure we are working with an array
+  const currentArray = Array.isArray(val) ? val : [val];
+
+  if (option === 'Both') {
+    return currentArray.includes('Job') && currentArray.includes('Internship');
+  }
+  
+  // For single options, they are active only if the other is NOT present
+  return currentArray.includes(option) && currentArray.length === 1;
+};
 
   const renderContent = () => {
     if (loading) return <div className="text-center py-8 text-gray-600">Loading profile data...</div>;
@@ -989,24 +998,7 @@ function Profile() {
                           </div>
                         </div>
 
-                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                            Looking for
-                          </h5>
-                          <div className="flex flex-wrap gap-2">
-                              {Array.isArray(profileData.lookingFor) && profileData.lookingFor.length > 0 ? (
-                                  profileData.lookingFor.map((item) => (
-                                      <Badge key={item} variant="primary" size="md" className="bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30 rounded-xl">
-                                        {item}
-                                      </Badge>
-                                  ))
-                              ) : (
-                                  <Badge variant="primary" size="md" className="bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30 rounded-xl">
-                                    {profileData.lookingFor || 'N/A'}
-                                  </Badge>
-                              )}
-                          </div>
-                        </div>
+                      
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
                           <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
