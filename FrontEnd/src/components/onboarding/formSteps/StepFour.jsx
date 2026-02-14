@@ -110,29 +110,18 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
 
   // --- Handlers for Looking For ---
   const handleLookingForClick = (option) => {
-    let newValue;
-    if (option === 'Both') {
-      newValue = ['Internship', 'Job'];
-    } else {
-      newValue = option; // 'Job' or 'Internship'
-    }
-    setLocalFormData(prev => ({ ...prev, lookingFor: newValue }));
-  };
+  // We wrap the option in an array because your schema is type: [String]
+  // This sends ["Job"], ["Internship"], or ["Both"]
+  setLocalFormData(prev => ({ 
+    ...prev, 
+    lookingFor: [option] 
+  }));
+};
 
-  const isLookingForActive = (option) => {
-    const val = localFormData.lookingFor;
-
-    if (val === option) return true;
-
-    if (Array.isArray(val)) {
-      if (option === 'Both') {
-        return val.includes('Job') && val.includes('Internship');
-      }
-      // If state is array but checking single option (rare edge case with this UI logic, but safe to have)
-      return val.includes(option) && val.length === 1;
-    }
-    return false;
-  };
+const isLookingForActive = (option) => {
+  // Checks if the first element of the array matches the button clicked
+  return Array.isArray(localFormData.lookingFor) && localFormData.lookingFor[0] === option;
+};
 
   const handleNextClick = () => {
     const dataToSave = {
