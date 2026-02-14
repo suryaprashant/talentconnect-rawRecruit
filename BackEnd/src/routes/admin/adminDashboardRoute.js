@@ -1,6 +1,7 @@
 import express from "express";
 import adminAuth from "../../middlewares/adminMiddleware.js";
 import {getAdminDashboardOverView} from "../../controllers/admin/adminDashboardController.js"
+import { getPendingReferralJobsForAdmin, updateReferralJobApprovalStatus } from "../../controllers/admin/jobDriveManagementController.js";
 
 const router = express.Router();
 
@@ -10,5 +11,17 @@ router.use(adminAuth);
 // Admin dashboard overview
 router.get('/overviewdata', getAdminDashboardOverView);
 router.get("/overview", getAdminDashboardOverView);
+router.get(
+  "/referral-jobs/pending",
+  adminAuth,
+  getPendingReferralJobsForAdmin
+);
+router.patch(
+  "/referral-jobs/:jobId/approval",
+  adminAuth,
+  updateReferralJobApprovalStatus
+);
+
+
 
 export default router;

@@ -79,6 +79,7 @@ const ApplicationSchema = new mongoose.Schema(
                 "Offer Extended",
                 "Accepted",
                 "Rejected",
+                
             ],
             default: "Applied",
         },
