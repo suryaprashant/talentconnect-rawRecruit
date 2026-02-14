@@ -17,6 +17,12 @@ const jobPostingSchema = new mongoose.Schema({
         required: true,
         enum: ["Off-campus", "On-campus", "Pool-campus", "Job-listing", "Internship", "Referral"]
     },
+    approvalStatus: {
+      type: String,
+      enum: ['Pending', 'Approved', 'Rejected'],
+      default: 'Pending',
+      index: true
+    },
     visibleTo: {
         type: String,
         enum: ["All", "College", "Company"],

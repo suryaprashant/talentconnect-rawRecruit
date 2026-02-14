@@ -50,12 +50,12 @@ function StudentSidebar({ activePath }) {
           label="Internship Opportunities" 
           active={activePath === '/student-dashboard/Internship'} 
         /> 
-        {/* <SidebarNavItem 
+         <SidebarNavItem 
           to="/student-dashboard/Referral" 
           icon={<FiUsers />} 
           label="Referral Jobs" 
           active={activePath === '/student-dashboard/Referral'} 
-        /> */}
+        /> 
       </SidebarNavGroup>
 
       {/* <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>

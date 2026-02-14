@@ -167,6 +167,7 @@ export const getReferralJobsService = async (jobType, candidatePostedId) => {
     try {
         const response = await JobPostingTable.find({
             jobType: jobType,
+            approvalStatus: "Approved", 
             candidatePosted: { $ne: candidatePostedId }
         })
             .lean()
