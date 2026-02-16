@@ -102,6 +102,99 @@ const InternshipDetails = ({
     }
   };
 
+  const handleViewResume = async (applicant) => {
+    const applicantData = applicant?.applicant || {};
+    const applicantStr = JSON.stringify(applicantData);
+    const urlMatch = applicantStr.match(/(https?:\/\/res\.cloudinary\.com\/[^"'\s]+)/);
+    
+    if (!urlMatch) return toast.error("No resume found");
+    
+    const cloudinaryUrl = urlMatch[0];
+    
+    toast.loading("Loading resume...");
+    
+    try {
+      const response = await fetch(cloudinaryUrl);
+      const blob = await response.blob();
+      const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      
+      const newTab = window.open('', '_blank');
+      newTab.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>${applicantData.name || 'Applicant'} - Resume</title>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body, html { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+            .header h1 { font-size: 18px; font-weight: 600; margin: 0; }
+            .controls { display: flex; gap: 10px; }
+            .controls button { background: white; color: #667eea; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
+            .controls button:hover { background: #f8fafc; transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+            .pdf-container { width: 100%; height: calc(100vh - 60px); }
+            iframe { width: 100%; height: 100%; border: none; }
+            .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; color: #666; }
+            .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>📄 ${applicantData.name || 'Applicant'} - Resume</h1>
+            <div class="controls">
+              <button onclick="downloadPDF()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Download
+              </button>
+              <button onclick="window.close()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Close
+              </button>
+            </div>
+          </div>
+          <div class="pdf-container">
+            <iframe src="${pdfUrl}" title="Resume PDF Viewer"></iframe>
+          </div>
+          <script>
+            const pdfBlobUrl = "${pdfUrl}";
+            function downloadPDF() {
+              const link = document.createElement('a');
+              link.href = pdfBlobUrl;
+              link.download = '${applicantData.name || 'resume'}.pdf';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }
+            window.addEventListener('beforeunload', () => {
+              if (pdfBlobUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(pdfBlobUrl);
+              }
+            });
+            setTimeout(() => {
+              if (pdfBlobUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(pdfBlobUrl);
+              }
+            }, 10 * 60 * 1000);
+          </script>
+        </body>
+        </html>
+      `);
+      newTab.document.close();
+      toast.dismiss();
+      toast.success("Resume opened in new tab!");
+    } catch (error) {
+      toast.dismiss();
+      toast.error("Failed to load resume");
+      console.error("Error:", error);
+    }
+  };
+
   const rejectApplicant = async (applicationId) => {
     try {
       const response = await rejectCandidate(applicationId, job?.jobTitle);
@@ -527,6 +620,24 @@ const InternshipDetails = ({
                         >
                           <User size={16} />
                         </button> */}
+                        <button
+                          onClick={() => handleViewResume(application)}
+                          disabled={
+                            !application?.applicant?.resumeUrl &&
+                            !application?.applicant?.resume &&
+                            !application?.applicant?.cv
+                          }
+                          className={`p-2 border rounded-lg transition-all duration-200 ${
+                            application?.applicant?.resumeUrl ||
+                            application?.applicant?.resume ||
+                            application?.applicant?.cv
+                              ? 'bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200'
+                              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          }`}
+                          title="View Resume"
+                        >
+                          <FileText size={16} />
+                        </button>
                         <button
                           onClick={() => handleMessageClick(application)}
                           disabled={isProcessing}
