@@ -257,6 +257,7 @@ export async function saveJobService(userId, userType, jobId, jobType) {
     }
 }*/}
 
+//step3 apply service
 export async function createApplicationService({
   appliedByUserId,
   appliedByType,
@@ -273,6 +274,24 @@ export async function createApplicationService({
     } else {
       // employer / student / college / fresher / professional
       applicantId = appliedByUserId;
+    }
+
+    if (jobType === "Referral") {
+      const job = await JobPostingTable.findOne({
+        _id: jobId,
+        jobType: "Referral",
+      }).select("approvalStatus");
+    
+      if (!job) {
+        return { success: false, message: "Referral job not found" };
+      }
+    
+      if (job.approvalStatus !== "Approved") {
+        return {
+          success: false,
+          message: "Referral job not approved by admin yet",
+        };
+      }
     }
 
     // 2️⃣ Build SAFE uniqueness condition
