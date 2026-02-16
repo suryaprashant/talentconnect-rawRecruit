@@ -247,6 +247,13 @@ const JobCard = ({ job, onClick, compact = false }) => {
   const stableColor = getStableColor(job._id || companyName);
   const description = getDescription();
 
+  // Calculate visible items with +X more format
+  const visibleJobRoles = job.jobRoles?.slice(0, 4) || [];
+  const remainingJobRolesCount = job.jobRoles?.length > 4 ? job.jobRoles.length - 4 : 0;
+
+  const visibleSkills = job.skills?.slice(0, 5) || [];
+  const remainingSkillsCount = job.skills?.length > 5 ? job.skills.length - 5 : 0;
+
   return (
     <div 
       onClick={handleCardClick}
@@ -282,10 +289,10 @@ const JobCard = ({ job, onClick, compact = false }) => {
               {companyName}
             </h3>
 
-            {/* Job Roles */}
+            {/* Job Roles - With +X more format */}
             {job.jobRoles?.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-0">
-                {job.jobRoles.slice(0, 3).map((role, index) => {
+              <div className="flex flex-wrap gap-1 mb-3">
+                {visibleJobRoles.map((role, index) => {
                   const roleColors = [
                     "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700",
                     "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700",
@@ -304,9 +311,9 @@ const JobCard = ({ job, onClick, compact = false }) => {
                     </span>
                   );
                 })}
-                {job.jobRoles.length > 3 && (
+                {remainingJobRolesCount > 0 && (
                   <span className="text-sm font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-0.5 rounded-full border">
-                    +{job.jobRoles.length - 3}
+                    +{remainingJobRolesCount} more
                   </span>
                 )}
               </div>
@@ -341,7 +348,7 @@ const JobCard = ({ job, onClick, compact = false }) => {
         )}
 
         {/* Streams */}
-        {job.studentStreams?.length > 0 && (
+        {/* {job.studentStreams?.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
             {job.studentStreams.slice(0, 3).map((stream, index) => (
               <span
@@ -355,51 +362,48 @@ const JobCard = ({ job, onClick, compact = false }) => {
               <span className="px-2 py-1 text-xs text-gray-600">+{job.studentStreams.length - 3}</span>
             )}
           </div>
-        )}
+        )} */}
 
-        {/* Hiring Process Steps */}
-        {job.selectionProcess && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            {(() => {
-              const processes = typeof job.selectionProcess === 'string' 
-                ? job.selectionProcess.split(' + ').slice(0, 3)
-                : job.selectionProcess.slice(0, 3);
-              
-              return processes.map((step, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
-                >
-                  {step}
+        {/* Skills Required - In 2 rows with +X more format */}
+        {job.skills?.length > 0 && (
+          <div className="mb-3">
+            {/* <div className="text-xs font-semibold text-gray-600 mb-1">Skills Required:</div> */}
+            <div className="flex flex-wrap gap-1">
+              {visibleSkills.map((skill, index) => {
+                const skillColors = [
+                  "px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs",
+                  "px-3 py-1 bg-indigo-100 text-indigo-800 border border-indigo-300 rounded-full text-xs",
+                  "px-3 py-1 bg-pink-100 text-pink-800 border border-pink-300 rounded-full text-xs",
+                  "px-3 py-1 bg-teal-100 text-teal-800 border border-teal-300 rounded-full text-xs",
+                  "px-3 py-1 bg-orange-100 text-orange-800 border border-orange-300 rounded-full text-xs",
+                  "px-3 py-1 bg-cyan-100 text-cyan-800 border border-cyan-300 rounded-full text-xs",
+                ];
+                const colorClass = skillColors[index % skillColors.length];
+                
+                return (
+                  <span
+                    key={index}
+                    className={colorClass}
+                  >
+                    {skill}
+                  </span>
+                );
+              })}
+              {remainingSkillsCount > 0 && (
+                <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-1 rounded-full border">
+                  +{remainingSkillsCount} more
                 </span>
-              ));
-            })()}
-          </div>
-        )}
-
-        {/* Tags */}
-        {job.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            {job.tags.slice(0, 3).map((tag, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 bg-gray-100 text-gray-800 border border-gray-300 rounded-full text-xs"
-              >
-                {tag}
-              </span>
-            ))}
-            {job.tags.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{job.tags.length - 3}</span>
-            )}
+              )}
+            </div>
           </div>
         )}
 
         {/* Description */}
-        <div className="flex-1">
+        {/* <div className="flex-1">
           <p className="text-sm text-gray-700 line-clamp-2">
             {description}
           </p>
-        </div>
+        </div> */}
       </div>
 
       {/* BOTTOM SECTION - White background */}

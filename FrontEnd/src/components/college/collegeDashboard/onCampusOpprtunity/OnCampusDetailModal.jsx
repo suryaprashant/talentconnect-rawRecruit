@@ -838,7 +838,7 @@ useEffect(() => {
                       <div className="text-base text-gray-900">{job?.companyHiringPreference?.preferredMode || 'Not Specified'}</div>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-[#667eea] mb-1">Amenities/Facilities Required</div>
+                      <div className="text-sm font-medium text-[#667eea] mb-1">Amenities Required</div>
                       <div className="text-base text-gray-900">{job?.amenitiesRequired?.join(', ') || 'None'}</div>
                     </div>
                     <div>

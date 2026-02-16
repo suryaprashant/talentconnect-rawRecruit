@@ -99,6 +99,38 @@ const PoolCollegeCard = ({ college, onClick }) => {
     return '';
   };
 
+  // Get degree/streams with multiple fallbacks
+  const getDegrees = () => {
+    // Check multiple possible fields
+    if (college.degree && Array.isArray(college.degree)) {
+      return college.degree;
+    }
+    if (college.studentStreams && Array.isArray(college.studentStreams)) {
+      return college.studentStreams;
+    }
+    if (college.jobRoles && Array.isArray(college.jobRoles)) {
+      return college.jobRoles;
+    }
+    if (college.branches && Array.isArray(college.branches)) {
+      return college.branches;
+    }
+    return [];
+  };
+
+  // Get skills
+  const getSkills = () => {
+    if (college.skills && Array.isArray(college.skills)) {
+      return college.skills;
+    }
+    if (college.amenitiesRequired && Array.isArray(college.amenitiesRequired)) {
+      return college.amenitiesRequired;
+    }
+    if (college.requiredSkills && Array.isArray(college.requiredSkills)) {
+      return college.requiredSkills;
+    }
+    return [];
+  };
+
   // Get status based on dates (same as before)
   const getCollegeStatus = () => {
     const now = new Date();
@@ -222,15 +254,14 @@ const PoolCollegeCard = ({ college, onClick }) => {
 
   const collegeName = getCollegeName();
   const logo = getLogo();
+  const degrees = getDegrees();
+  const skills = getSkills();
   const collegeStatus = getCollegeStatus();
   const stableColor = getStableColor(college._id || collegeName);
   const description = getDescription();
 
-  // Get degree badges (from EmployerPoolDetailsModal structure)
+  // Get degree badges - with +X more format
   const getDegreeBadges = () => {
-    // Check multiple possible fields
-    const degrees = college.degree || college.studentStreams || college.jobRoles || [];
-    
     if (degrees.length === 0) return null;
     
     const roleColors = [
@@ -241,9 +272,12 @@ const PoolCollegeCard = ({ college, onClick }) => {
       "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border-yellow-200",
     ];
     
+    const visibleDegrees = degrees.slice(0, 4);
+    const remainingCount = degrees.length > 4 ? degrees.length - 4 : 0;
+    
     return (
       <div className="flex flex-wrap gap-1 mt-2">
-        {degrees.slice(0, 3).map((degree, index) => (
+        {visibleDegrees.map((degree, index) => (
           <span 
             key={index} 
             className={`text-sm font-medium px-2 py-0.5 rounded-full border ${roleColors[index % roleColors.length]}`}
@@ -251,11 +285,50 @@ const PoolCollegeCard = ({ college, onClick }) => {
             {degree}
           </span>
         ))}
-        {degrees.length > 3 && (
+        {remainingCount > 0 && (
           <span className="text-sm font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-0.5 rounded-full border border-gray-200">
-            +{degrees.length - 3}
+            +{remainingCount} more
           </span>
         )}
+      </div>
+    );
+  };
+
+  // Get skills badges - with 2 rows and +X more format
+  const getSkillsBadges = () => {
+    if (skills.length === 0) return null;
+    
+    const skillColors = [
+      "px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs",
+      "px-3 py-1 bg-indigo-100 text-indigo-800 border border-indigo-300 rounded-full text-xs",
+      "px-3 py-1 bg-pink-100 text-pink-800 border border-pink-300 rounded-full text-xs",
+      "px-3 py-1 bg-teal-100 text-teal-800 border border-teal-300 rounded-full text-xs",
+      "px-3 py-1 bg-orange-100 text-orange-800 border border-orange-300 rounded-full text-xs",
+      "px-3 py-1 bg-cyan-100 text-cyan-800 border border-cyan-300 rounded-full text-xs",
+    ];
+    
+    // Show up to 5 skills (which typically fits in 2 rows)
+    const visibleSkills = skills.slice(0, 5);
+    const remainingCount = skills.length > 5 ? skills.length - 5 : 0;
+    
+    return (
+      <div className="mb-3">
+        <div className="text-xs font-semibold text-gray-600 mb-1"></div>
+        <div className="flex flex-wrap gap-1">
+          {visibleSkills.map((skill, index) => (
+            <span
+              key={index}
+              className={skillColors[index % skillColors.length]}
+            >
+              {skill}
+            </span>
+          ))}
+          {remainingCount > 0 && (
+            <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-1 rounded-full border">
+              +{remainingCount} more
+            </span>
+          )}
+        </div>
       </div>
     );
   };
@@ -273,13 +346,17 @@ const PoolCollegeCard = ({ college, onClick }) => {
     );
   };
 
-  // Get college types
+  // Get college types with +X more format
   const getCollegeTypes = () => {
     if (!college.collegeTypes?.length) return null;
     
+    const visibleTypes = college.collegeTypes.slice(0, 3);
+    const remainingCount = college.collegeTypes.length > 3 ? college.collegeTypes.length - 3 : 0;
+    
     return (
       <div className="flex flex-wrap gap-2 mb-3">
-        {college.collegeTypes.slice(0, 3).map((type, index) => (
+        <span className="text-xs font-semibold text-gray-600 mr-1">College Types:</span>
+        {visibleTypes.map((type, index) => (
           <span
             key={index}
             className="px-3 py-1 bg-orange-100 text-orange-800 border border-orange-300 rounded-full text-xs"
@@ -287,20 +364,26 @@ const PoolCollegeCard = ({ college, onClick }) => {
             {type}
           </span>
         ))}
-        {college.collegeTypes.length > 3 && (
-          <span className="px-2 py-1 text-xs text-gray-600">+{college.collegeTypes.length - 3}</span>
+        {remainingCount > 0 && (
+          <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
+            +{remainingCount} more
+          </span>
         )}
       </div>
     );
   };
 
-  // Get work modes
+  // Get work modes with +X more format
   const getWorkModes = () => {
     if (!college.workMode?.length) return null;
     
+    const visibleModes = college.workMode.slice(0, 3);
+    const remainingCount = college.workMode.length > 3 ? college.workMode.length - 3 : 0;
+    
     return (
       <div className="flex flex-wrap gap-2 mb-3">
-        {college.workMode.slice(0, 3).map((mode, index) => (
+        <span className="text-xs font-semibold text-gray-600 mr-1">Work Modes:</span>
+        {visibleModes.map((mode, index) => (
           <span
             key={index}
             className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/60 backdrop-blur-sm"
@@ -308,20 +391,26 @@ const PoolCollegeCard = ({ college, onClick }) => {
             {mode}
           </span>
         ))}
-        {college.workMode.length > 3 && (
-          <span className="px-2 py-1 text-xs text-gray-600">+{college.workMode.length - 3}</span>
+        {remainingCount > 0 && (
+          <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
+            +{remainingCount} more
+          </span>
         )}
       </div>
     );
   };
 
-  // Get company types
+  // Get company types with +X more format
   const getCompanyTypes = () => {
     if (!college.companyType?.length) return null;
     
+    const visibleTypes = college.companyType.slice(0, 3);
+    const remainingCount = college.companyType.length > 3 ? college.companyType.length - 3 : 0;
+    
     return (
       <div className="flex flex-wrap gap-2 mb-3">
-        {college.companyType.slice(0, 3).map((type, index) => (
+        <span className="text-xs font-semibold text-gray-600 mr-1">Preferred:</span>
+        {visibleTypes.map((type, index) => (
           <span
             key={index}
             className="px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs"
@@ -329,22 +418,28 @@ const PoolCollegeCard = ({ college, onClick }) => {
             {type}
           </span>
         ))}
-        {college.companyType.length > 3 && (
-          <span className="px-2 py-1 text-xs text-gray-600">+{college.companyType.length - 3}</span>
+        {remainingCount > 0 && (
+          <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
+            +{remainingCount} more
+          </span>
         )}
       </div>
     );
   };
 
-  // Get amenities/skills
+  // Get amenities/skills with +X more format (legacy - now using getSkillsBadges for skills)
   const getAmenitiesSkills = () => {
-    const items = college.amenitiesRequired || college.skills || [];
+    const items = college.amenitiesRequired || [];
     
     if (items.length === 0) return null;
     
+    const visibleItems = items.slice(0, 3);
+    const remainingCount = items.length > 3 ? items.length - 3 : 0;
+    
     return (
       <div className="flex flex-wrap gap-2 mb-3">
-        {items.slice(0, 3).map((item, index) => (
+        <span className="text-xs font-semibold text-gray-600 mr-1">Amenities:</span>
+        {visibleItems.map((item, index) => (
           <span
             key={index}
             className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/60 backdrop-blur-sm"
@@ -352,8 +447,10 @@ const PoolCollegeCard = ({ college, onClick }) => {
             {item}
           </span>
         ))}
-        {items.length > 3 && (
-          <span className="px-2 py-1 text-xs text-gray-600">+{items.length - 3}</span>
+        {remainingCount > 0 && (
+          <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
+            +{remainingCount} more
+          </span>
         )}
       </div>
     );
@@ -395,7 +492,7 @@ const PoolCollegeCard = ({ college, onClick }) => {
               {collegeName}
             </h3>
             
-            {/* Degree Types as colored badges */}
+            {/* Degree Types as colored badges with +X more */}
             {getDegreeBadges()}
           </div>
 
@@ -420,24 +517,27 @@ const PoolCollegeCard = ({ college, onClick }) => {
         {/* Employment Type Badge */}
         {getEmploymentType()}
 
-        {/* College Types */}
-        {getCollegeTypes()}
+        {/* Skills with 2 rows and +X more */}
+        {getSkillsBadges()}
 
-        {/* Work Modes */}
-        {getWorkModes()}
+        {/* College Types with +X more */}
+        {/* {getCollegeTypes()} */}
 
-        {/* Company Types */}
-        {getCompanyTypes()}
+        {/* Work Modes with +X more */}
+        {/* {getWorkModes()} */}
 
-        {/* Amenities/Skills */}
-        {getAmenitiesSkills()}
+        {/* Company Types with +X more */}
+        {/* {getCompanyTypes()} */}
+
+        {/* Amenities with +X more */}
+        {/* {getAmenitiesSkills()} */}
 
         {/* Description */}
-        <div className="flex-1">
+        {/* <div className="flex-1 mt-2">
           <p className="text-sm text-gray-700 line-clamp-2">
             {description}
           </p>
-        </div>
+        </div> */}
       </div>
 
       {/* BOTTOM SECTION - White background */}
