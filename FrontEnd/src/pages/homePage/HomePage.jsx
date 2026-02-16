@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import "../homePage/../../pages/../../src/App.css"
 import { useNavigate } from 'react-router-dom';
 import {
   Users, Building2, Briefcase, GraduationCap, Target,
@@ -568,35 +569,26 @@ const App = () => {
                   </div>
 
                   {/* Stats Preview - Black Text Only */}
-                  <div className="mt-16 overflow-hidden relative max-w-md mx-auto">
-                    {/* Container with fixed width */}
-                    <div className="flex items-center justify-center h-8">
-                      {/* Scrolling wrapper */}
-                      <div className="flex animate-compact-scroll whitespace-nowrap">
-                        {/* First set - always visible initially */}
-                        <div className="flex items-center gap-2 px-4">
-                          <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
-                          <span className="text-black font-semibold">50+ Colleges</span>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 px-4">
-                          <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
-                          <span className="text-black font-semibold">100+ Companies</span>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 px-4">
-                          <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
-                          <span className="text-black font-semibold">95% Satisfaction</span>
-                        </div>
-                        
-                        {/* Repeat for seamless loop */}
-                        <div className="flex items-center gap-2 px-4">
-                          <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
-                          <span className="text-black font-semibold">50+ Colleges</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+  <div className='text-center mx-auto'>               
+<div className="marquee-wrapper mt-10">
+  <div className="marquee">
+    <div className="marquee-content">
+      <TickerItem text="50+ Colleges" />
+      <TickerItem text="100+ Companies" />
+      <TickerItem text="95% Satisfaction" />
+
+      {/* duplicate same items immediately */}
+      <TickerItem text="50+ Colleges" />
+      <TickerItem text="100+ Companies" />
+      <TickerItem text="95% Satisfaction" />
+    </div>
+  </div>
+</div>
+</div> 
+
+
+
+
                 </div>
               </div>
             </div>
@@ -2427,3 +2419,18 @@ const App = () => {
 };
 
 export default App;
+
+const TickerItem = ({ text }) => (
+  <div className="marquee-item">
+    <div style={{
+      width: "8px",
+      height: "8px",
+      background: "black",
+      borderRadius: "50%"
+    }} />
+    <span style={{ fontWeight: 600 }}>
+      {text}
+    </span>
+  </div>
+);
+

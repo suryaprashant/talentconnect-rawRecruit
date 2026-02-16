@@ -43,8 +43,12 @@ function CareerCraft() {
       icon: <Award className="h-6 w-6" />
     }
   ]);
+  const [featureAdded, setFeatureAdded] = useState(false);
 
   const addFeature = () => {
+    
+    if(featureAdded) return
+
     const newFeature = {
       id: features.length + 1,
       title: 'Interview Preparation',
@@ -56,6 +60,7 @@ function CareerCraft() {
       icon: <Rocket className="h-6 w-6" />
     };
     setFeatures([...features, newFeature]);
+    setFeatureAdded(true);
   };
 
   return (
@@ -130,6 +135,7 @@ function CareerCraft() {
           </section>
 
           {/* Add Feature Button */}
+        { !featureAdded &&
           <div className="text-center mb-10">
             <button
               onClick={addFeature}
@@ -142,8 +148,12 @@ function CareerCraft() {
               Click to explore additional career development tools
             </p>
           </div>
+
+          }
         </div>
+          
       </div>
+          
     </>
   );
 }
