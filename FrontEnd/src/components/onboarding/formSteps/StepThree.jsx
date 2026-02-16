@@ -754,20 +754,36 @@ const handleRemoteAdd = async (type, name) => {
             ) : (
               // Non-Student Layout: Degree & Graduation Year side-by-side
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Degree */}
-                <CreatableSelect
-  isClearable
-  options={degreeOptions}
-  onCreateOption={(val) => handleRemoteAdd('degree', val)}
-  value={localFormData.degree ? { value: localFormData.degree, label: localFormData.degree } : null}
-  onChange={(sel) => setLocalFormData(p => ({ ...p, degree: sel?.value || "", specialization: "" }))}
-  placeholder="Search or add degree"
-/>
-             
-                
-                {/* Graduation Year */}
-                <GraduationYearSelect flexClass="w-full" />
-              </div>
+  {/* Degree */}
+  <div>
+    <label className="block text-gray-700 font-medium text-sm mb-2">
+      Degree
+    </label>
+    <CreatableSelect
+      isClearable
+      options={degreeOptions}
+      onCreateOption={(val) => handleRemoteAdd('degree', val)}
+      value={
+        localFormData.degree
+          ? { value: localFormData.degree, label: localFormData.degree }
+          : null
+      }
+      onChange={(sel) =>
+        setLocalFormData((p) => ({
+          ...p,
+          degree: sel?.value || "",
+          specialization: "",
+        }))
+      }
+      styles={customSelectStyles}
+      placeholder="Search or add degree"
+    />
+  </div>
+
+  {/* Graduation Year */}
+  <GraduationYearSelect flexClass="w-full" />
+</div>
+
             )}
            <label htmlFor="semester" className="block text-gray-700 font-medium text-sm mb-2">
                     Field of Study / Specialization

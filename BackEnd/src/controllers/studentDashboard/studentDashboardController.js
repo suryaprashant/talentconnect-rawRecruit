@@ -204,7 +204,11 @@ export const getOnCampusPostingsForCompany = async (req, res) => {
 
         // Company OR employer acting on behalf
         if (companyProfileId) {
-          applicationQuery.appliedForCompany = companyProfileId;
+          //applicationQuery.appliedForCompany = companyProfileId;
+          applicationQuery.$or = [
+        { appliedForCompany: companyProfileId },
+        { applicant: companyProfileId } 
+    ];
         }
 
         // Employer as individual
@@ -222,13 +226,14 @@ export const getOnCampusPostingsForCompany = async (req, res) => {
           .select("job")
           .lean();
 
-
+  
         const appliedJobIds = new Set(applications.map((a) => String(a.job)));
 
         const finalPostings = filteredPostings.filter(
           (p) => !appliedJobIds.has(String(p._id))
         );
-
+        
+      console.log('finalpostings',finalPostings)
         return sendResponse(res, 200, { data: finalPostings });
       } catch (error) {
         console.error("Error in getOnCampusPostingsForCompany:", error);
@@ -912,8 +917,10 @@ export const getPoolCampusForCompany = async (req, res) => {
 
     if (companyProfileId) {
       // company OR employer-on-behalf
-      applicationQuery.appliedForCompany = companyProfileId;
-      console.log("🏢 Pool-campus company filter applied");
+     applicationQuery.$or = [
+        { appliedForCompany: companyProfileId },
+        { applicant: companyProfileId }
+      ];
     } else if (employerProfileId) {
       // employer individual
       applicationQuery.applicant = employerProfileId;
