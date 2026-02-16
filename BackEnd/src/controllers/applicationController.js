@@ -393,10 +393,11 @@ export async function createIntershipApplication(req, res) {
   }
 }
 
-// referral
+// referral step 3 apply
 export async function createReferralApplication(req, res) {
   const { referralId } = req.body;
   const userId = req.user._id;
+  const userType = req.user.userType;
 
   try {
     // to get userId from user database
@@ -404,12 +405,16 @@ export async function createReferralApplication(req, res) {
     console.log(user, " ", referralId);
     if (!user || !referralId) return res.status(404).json({ msg: "Invalid" });
 
-    const application = await createApplicationService(
-      user.data[0]._id,
-      req.user.userType,
-      referralId,
-      "Referral"
-    );
+     const actorProfile = user.data[0];
+
+    const application = await createApplicationService({
+      appliedByUserId: actorProfile._id,     // 🔑 FIX
+      appliedByType: userType,               // 🔑 FIX
+      appliedForCompanyId: null,              // 🔑 Referral has no company context
+      jobId: referralId,                      // 🔑 FIX
+      jobType: "Referral",
+    });
+
     if (application.success === false)
       return res.status(403).json({ msg: application.message });
 
