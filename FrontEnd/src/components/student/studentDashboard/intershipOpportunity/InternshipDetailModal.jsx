@@ -96,6 +96,14 @@ const renderTags = (data) => {
   return <span className="text-gray-500 text-sm">Not specified</span>;
 };
 
+// Helper function to check if a value is meaningful
+const hasValue = (value) => {
+  if (value === null || value === undefined || value === '' || value === 'N/A' || value === 'Not Specified') return false;
+  if (typeof value === 'number' && value === 0) return false;
+  if (typeof value === 'string' && value.trim() === '') return false;
+  return true;
+};
+
 // Simple Company Details Modal
 const CompanyDetailsModal = ({ company, isOpen, onClose }) => {
   if (!isOpen || !company) return null;
@@ -716,7 +724,7 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                           <div className="text-base text-gray-900">{formatDate(jobDetail.startDate)}</div>
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-2">Employment Type</div>
+                          {/* <div className="text-sm font-medium text-[#667eea] mb-2">Employment Type</div> */}
                           <div className="text-base text-gray-900">
                             {Array.isArray(jobDetail.employmentType) 
                               ? jobDetail.employmentType.join(', ') 
@@ -742,52 +750,65 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
               )}
 
               {/* Requirements Tab */}
-              {activeTab === 'requirements' && (
-                <div className="space-y-4">
-                  {/* Eligibility Box */}
-                  <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">Eligibility</h2>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-2">Year of Study</div>
-                          <div className="text-base text-gray-900">
-                            {jobDetail.yearOfStudy || 'All years'}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-2">Experience Level</div>
-                          <div className="text-base text-gray-900">
-                            {jobDetail.experienceLevel || 'Fresher'}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <div className="text-sm font-medium text-[#667eea] mb-2">Eligible Streams</div>
-                        {renderTags(jobDetail.studentStreams)}
-                      </div>
-                    </div>
-                  </div>
+{activeTab === 'requirements' && (
+  <div className="space-y-4">
+    {/* Eligibility Box */}
+    <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+      <h2 className="text-lg font-bold text-gray-900 mb-4">Eligibility & Additional Criteria</h2>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div className="text-sm font-medium text-[#667eea] mb-2">Eligible Streams</div>
+            {renderTags(jobDetail.studentStreams)}
+          </div>
+          <div>
+            <div className="text-sm font-medium text-[#667eea] mb-2">Experience Level</div>
+            <div className="text-base text-gray-900">
+              {jobDetail.experienceLevel || 'Fresher'}
+            </div>
+          </div>
+        </div>
+        
+        {/* Additional Requirements Section - As bullet points */}
+        <div>
+  <h3 className="text-md font-semibold text-[#667eea] mb-2">Additional Requirements</h3>
+  <ul className="space-y-2">
+    {/* Eligibility Criteria Text - Split into bullet points */}
+    {hasValue(jobDetail.eligibilityCriteria) && (
+      <>
+        {jobDetail.eligibilityCriteria.split('\n').map((point, index) => 
+          point.trim() && (
+            <li key={index} className="text-gray-700 flex items-start">
+              <span className="mr-2 text-[#667eea]">•</span>
+              <span>{point.trim()}</span>
+            </li>
+          )
+        )}
+      </>
+    )}
+  </ul>
+</div>
+      </div>
+    </div>
 
-                  {/* Required Skills Box */}
-                  {jobDetail?.skills && jobDetail?.skills.length > 0 && (
-                    <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
-                      <h2 className="text-lg font-bold text-gray-900 mb-4">Required Skills</h2>
-                      <div className="flex flex-wrap gap-2">
-                        {jobDetail.skills.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium border border-gray-200"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+    {/* Required Skills Box */}
+    {jobDetail?.skills && jobDetail?.skills.length > 0 && (
+      <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+        <h2 className="text-lg font-bold text-gray-900 mb-4">Required Skills</h2>
+        <div className="flex flex-wrap gap-2">
+          {jobDetail.skills.map((skill, index) => (
+            <span
+              key={index}
+              className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium border border-gray-200"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+)}
 
               {/* Compensation Tab */}
               {activeTab === 'benefits' && (
@@ -960,96 +981,6 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                       </div>
                     </div>
                   </div>
-
-                  {/* Additional Process Details */}
-                  {/* <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">Process Details</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      Duration Card
-                      <div className="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-lg p-4">
-                        <div className="flex items-center mb-2">
-                          <div className="p-2 bg-amber-100 rounded-lg mr-2">
-                            <Clock className="h-5 w-5 text-amber-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-amber-800 text-sm">Duration</h3>
-                            <p className="text-xs text-amber-600">Internship period</p>
-                          </div>
-                        </div>
-                        <div className="text-lg font-bold text-amber-900 mt-2">
-                          {duration}
-                        </div>
-                      </div>
-
-                      Openings Card
-                      <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-lg p-4">
-                        <div className="flex items-center mb-2">
-                          <div className="p-2 bg-emerald-100 rounded-lg mr-2">
-                            <Users className="h-5 w-5 text-emerald-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-emerald-800 text-sm">Open Positions</h3>
-                            <p className="text-xs text-emerald-600">Available seats</p>
-                          </div>
-                        </div>
-                        <div className="text-lg font-bold text-emerald-900 mt-2">
-                          {jobDetail.numberOfOpenings || 'Not specified'}
-                        </div>
-                      </div>
-
-                      Application Status Card
-                      <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 border border-indigo-200 rounded-lg p-4">
-                        <div className="flex items-center mb-2">
-                          <div className="p-2 bg-indigo-100 rounded-lg mr-2">
-                            <Target className="h-5 w-5 text-indigo-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-indigo-800 text-sm">Status</h3>
-                            <p className="text-xs text-indigo-600">Current status</p>
-                          </div>
-                        </div>
-                        <div className="mt-2">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${jobStatus.color}`}>
-                            {jobStatus.status}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    Selection Process Details
-                    {jobDetail.selectionProcess && jobDetail.selectionProcess.length > 0 && (
-                      <div className="mt-6 pt-4 border-t border-gray-200">
-                        <h3 className="text-md font-semibold text-gray-900 mb-3">Selection Process</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {jobDetail.selectionProcess.map((process, index) => (
-                            <span
-                              key={index}
-                              className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
-                            >
-                              {process}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    Rounds Information
-                    {jobDetail.rounds && jobDetail.rounds.length > 0 && (
-                      <div className="mt-6 pt-4 border-t border-gray-200">
-                        <h3 className="text-md font-semibold text-gray-900 mb-3">Hiring Rounds</h3>
-                        <div className="space-y-2">
-                          {jobDetail.rounds.map((round, index) => (
-                            <div key={index} className="flex items-center text-sm text-gray-700">
-                              <div className="w-6 h-6 flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-xs font-bold rounded-full mr-3">
-                                {index + 1}
-                              </div>
-                              <span>{round}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div> */}
                 </div>
               )}
             </div>

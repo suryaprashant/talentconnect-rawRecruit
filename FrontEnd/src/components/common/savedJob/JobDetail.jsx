@@ -777,12 +777,6 @@ const UnifiedJobDetail = () => {
                   <div className="mt-1 text-base text-gray-900">{job.degree.join(' / ') || 'Not Specified'}</div>
                 </div>
               )}
-              {hasValidData(job.studentStreams) && (
-                <div>
-                  <div className="text-sm font-medium text-[#667eea]">Eligible Streams</div>
-                  <div className="mt-1 text-base text-gray-900">{job.studentStreams.join(', ') || 'Not Specified'}</div>
-                </div>
-              )}
               {hasValidData(job.employmentType) && (
                 <div>
                   <div className="text-sm font-medium text-[#667eea]">Employment Type</div>
@@ -798,13 +792,26 @@ const UnifiedJobDetail = () => {
             </div>
           </div>
 
-          {/* Required Skills */}
-          {hasValidData(job.skills) && (
+          {/* Required Skills & Eligible Streams - Combined Section */}
+          {(hasValidData(job.skills) || hasValidData(job.studentStreams)) && (
             <div className="px-6 py-6">
               <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                Required Skills
+                Required Skills & Eligible Streams
               </h2>
-              {renderTags(job.skills)}
+              
+              {hasValidData(job.skills) && (
+                <div className="mb-4">
+                  <div className="text-sm font-medium text-[#667eea] mb-2">Skills</div>
+                  {renderTags(job.skills)}
+                </div>
+              )}
+              
+              {hasValidData(job.studentStreams) && (
+                <div>
+                  <div className="text-sm font-medium text-[#667eea] mb-2">Eligible Streams</div>
+                  {renderTags(job.studentStreams)}
+                </div>
+              )}
             </div>
           )}
 
