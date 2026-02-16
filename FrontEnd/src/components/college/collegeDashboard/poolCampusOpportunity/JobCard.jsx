@@ -198,7 +198,7 @@ const JobCard = ({ job, onClick }) => {
   const stableColor = getStableColor(job._id || companyName);
   const description = getDescription();
 
-  // Get colored badges for job roles
+  // Get colored badges for job roles - with +X more format
   const getJobRoleBadges = () => {
     if (!job.jobRoles?.length) {
       // Try to get position or jobTitle as fallback
@@ -220,9 +220,12 @@ const JobCard = ({ job, onClick }) => {
       "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border-yellow-200",
     ];
     
+    const visibleRoles = job.jobRoles.slice(0, 4);
+    const remainingCount = job.jobRoles.length > 4 ? job.jobRoles.length - 4 : 0;
+    
     return (
       <div className="flex flex-wrap gap-1 mt-2">
-        {job.jobRoles.slice(0, 3).map((role, index) => (
+        {visibleRoles.map((role, index) => (
           <span 
             key={index} 
             className={`text-sm font-medium px-2 py-0.5 rounded-full border ${roleColors[index % roleColors.length]}`}
@@ -230,16 +233,16 @@ const JobCard = ({ job, onClick }) => {
             {role}
           </span>
         ))}
-        {job.jobRoles.length > 3 && (
+        {remainingCount > 0 && (
           <span className="text-sm font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-0.5 rounded-full border border-gray-200">
-            +{job.jobRoles.length - 3}
+            +{remainingCount} more
           </span>
         )}
       </div>
     );
   };
 
-  // Get student streams badges
+  // Get student streams badges - with +X more format
   const getStreamBadges = () => {
     if (!job.studentStreams?.length && !job.streams?.length) return null;
     
@@ -250,9 +253,12 @@ const JobCard = ({ job, onClick }) => {
       "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700 border-pink-200",
     ];
     
+    const visibleStreams = streams.slice(0, 3);
+    const remainingCount = streams.length > 3 ? streams.length - 3 : 0;
+    
     return (
       <div className="flex flex-wrap gap-1 mt-1">
-        {streams.slice(0, 2).map((stream, index) => (
+        {visibleStreams.map((stream, index) => (
           <span 
             key={index} 
             className={`text-xs font-medium px-2 py-0.5 rounded-full border ${streamColors[index % streamColors.length]}`}
@@ -260,9 +266,9 @@ const JobCard = ({ job, onClick }) => {
             {stream}
           </span>
         ))}
-        {streams.length > 2 && (
+        {remainingCount > 0 && (
           <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-0.5 rounded-full border border-gray-200">
-            +{streams.length - 2}
+            +{remainingCount} more
           </span>
         )}
       </div>
@@ -282,36 +288,57 @@ const JobCard = ({ job, onClick }) => {
     );
   };
 
-  // Get skills badges
+  // Get skills badges - UPDATED: Show in 2 rows with +X more pill
   const getSkillsBadges = () => {
     if (!job.skills?.length) return null;
     
+    const skillColors = [
+      "px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs",
+      "px-3 py-1 bg-indigo-100 text-indigo-800 border border-indigo-300 rounded-full text-xs",
+      "px-3 py-1 bg-pink-100 text-pink-800 border border-pink-300 rounded-full text-xs",
+      "px-3 py-1 bg-teal-100 text-teal-800 border border-teal-300 rounded-full text-xs",
+      "px-3 py-1 bg-orange-100 text-orange-800 border border-orange-300 rounded-full text-xs",
+      "px-3 py-1 bg-cyan-100 text-cyan-800 border border-cyan-300 rounded-full text-xs",
+    ];
+    
+    // Show up to 5 skills (which typically fits in 2 rows)
+    const visibleSkills = job.skills.slice(0, 5);
+    const remainingCount = job.skills.length > 5 ? job.skills.length - 5 : 0;
+    
     return (
-      <div className="flex flex-wrap gap-2 mb-3">
-        {job.skills.slice(0, 3).map((skill, index) => (
-          <span
-            key={index}
-            className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
-          >
-            {skill}
-          </span>
-        ))}
-        {job.skills.length > 3 && (
-          <span className="px-2 py-1 text-xs text-gray-600">+{job.skills.length - 3}</span>
-        )}
+      <div className="mb-3">
+        {/* <div className="text-xs font-semibold text-gray-600 mb-1">Skills Required:</div> */}
+        <div className="flex flex-wrap gap-1">
+          {visibleSkills.map((skill, index) => (
+            <span
+              key={index}
+              className={skillColors[index % skillColors.length]}
+            >
+              {skill}
+            </span>
+          ))}
+          {remainingCount > 0 && (
+            <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-1 rounded-full border">
+              +{remainingCount} more
+            </span>
+          )}
+        </div>
       </div>
     );
   };
 
-  // Get selection process badges
+  // Get selection process badges - with +X more format
   const getSelectionProcessBadges = () => {
     if (!job.selectionProcess?.length && !job.hiringProcess?.length) return null;
     
     const process = job.selectionProcess || job.hiringProcess || [];
     
+    const visibleProcess = process.slice(0, 3);
+    const remainingCount = process.length > 3 ? process.length - 3 : 0;
+    
     return (
       <div className="flex flex-wrap gap-2 mb-3">
-        {process.slice(0, 2).map((step, index) => (
+        {visibleProcess.map((step, index) => (
           <span
             key={index}
             className="px-3 py-1 bg-gradient-to-r from-purple-100 to-purple-50 text-purple-800 border border-purple-300 rounded-full text-xs"
@@ -319,8 +346,10 @@ const JobCard = ({ job, onClick }) => {
             {step}
           </span>
         ))}
-        {process.length > 2 && (
-          <span className="px-2 py-1 text-xs text-gray-600">+{process.length - 2}</span>
+        {remainingCount > 0 && (
+          <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
+            +{remainingCount} more
+          </span>
         )}
       </div>
     );
@@ -339,44 +368,48 @@ const JobCard = ({ job, onClick }) => {
     );
   };
 
-  // Get company type badges (similar to amenities in CollegeCard)
-  // Get company type badges (similar to amenities in CollegeCard)
-const getCompanyTypeBadges = () => {
-  // Safely get types, handling strings, arrays, or undefined
-  let types = [];
-  
-  if (companyDetails.companyType) {
-    if (Array.isArray(companyDetails.companyType)) {
-      types = companyDetails.companyType;
-    } else if (typeof companyDetails.companyType === 'string') {
-      types = [companyDetails.companyType];
+  // Get company type badges - with +X more format
+  const getCompanyTypeBadges = () => {
+    // Safely get types, handling strings, arrays, or undefined
+    let types = [];
+    
+    if (companyDetails.companyType) {
+      if (Array.isArray(companyDetails.companyType)) {
+        types = companyDetails.companyType;
+      } else if (typeof companyDetails.companyType === 'string') {
+        types = [companyDetails.companyType];
+      }
+    } else if (companyDetails.industryType) {
+      if (Array.isArray(companyDetails.industryType)) {
+        types = companyDetails.industryType;
+      } else if (typeof companyDetails.industryType === 'string') {
+        types = [companyDetails.industryType];
+      }
     }
-  } else if (companyDetails.industryType) {
-    if (Array.isArray(companyDetails.industryType)) {
-      types = companyDetails.industryType;
-    } else if (typeof companyDetails.industryType === 'string') {
-      types = [companyDetails.industryType];
-    }
-  }
-  
-  if (types.length === 0) return null;
-  
-  return (
-    <div className="flex flex-wrap gap-2 mb-3">
-      {types.slice(0, 2).map((type, index) => (
-        <span
-          key={index}
-          className="px-3 py-1 bg-gradient-to-r from-purple-100 to-purple-50 text-purple-800 border border-purple-300 rounded-full text-xs"
-        >
-          {type}
-        </span>
-      ))}
-      {types.length > 2 && (
-        <span className="px-2 py-1 text-xs text-gray-600">+{types.length - 2}</span>
-      )}
-    </div>
-  );
-};
+    
+    if (types.length === 0) return null;
+    
+    const visibleTypes = types.slice(0, 2);
+    const remainingCount = types.length > 2 ? types.length - 2 : 0;
+    
+    return (
+      <div className="flex flex-wrap gap-2 mb-3">
+        {visibleTypes.map((type, index) => (
+          <span
+            key={index}
+            className="px-3 py-1 bg-gradient-to-r from-purple-100 to-purple-50 text-purple-800 border border-purple-300 rounded-full text-xs"
+          >
+            {type}
+          </span>
+        ))}
+        {remainingCount > 0 && (
+          <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
+            +{remainingCount} more
+          </span>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div 
@@ -413,62 +446,62 @@ const getCompanyTypeBadges = () => {
               {companyName}
             </h3>
             
-            {/* Job Roles as colored badges */}
+            {/* Job Roles as colored badges with +X more */}
             {getJobRoleBadges()}
             
-            {/* Stream badges */}
-            {getStreamBadges()}
+            {/* Stream badges with +X more */}
+            {/* {getStreamBadges()} */}
             
             {/* Work mode badge */}
-            {getWorkModeBadge()}
+            {/* {getWorkModeBadge()} */}
           </div>
 
           <div className="w-14 h-14 bg-white rounded-full shadow flex items-center justify-center overflow-hidden border shrink-0">
-  {/* Only show image if logo exists and is a valid URL */}
-  {logo && logo.startsWith('http') && !imageError ? (
-    <img 
-      src={logo} 
-      alt={`${companyName} logo`}
-      className="w-12 h-12 object-cover"
-      onError={() => setImageError(true)}
-    />
-  ) : (
-    <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center">
-      <span className="text-lg font-bold text-blue-700">
-        {getInitials(companyName)}
-      </span>
-    </div>
-  )}
-</div>
+            {/* Only show image if logo exists and is a valid URL */}
+            {logo && logo.startsWith('http') && !imageError ? (
+              <img 
+                src={logo} 
+                alt={`${companyName} logo`}
+                className="w-12 h-12 object-cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center">
+                <span className="text-lg font-bold text-blue-700">
+                  {getInitials(companyName)}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Employment Type Badge */}
         {getEmploymentTypeBadge()}
 
-        {/* Company Type Badges */}
-        {getCompanyTypeBadges()}
+        {/* Company Type Badges with +X more */}
+        {/* {getCompanyTypeBadges()} */}
 
-        {/* Skills */}
+        {/* Skills with 2 rows and +X more */}
         {getSkillsBadges()}
 
-        {/* Selection Process */}
-        {getSelectionProcessBadges()}
+        {/* Selection Process with +X more */}
+        {/* {getSelectionProcessBadges()} */}
 
         {/* Urgent Hiring Badge */}
-        {job.urgent && (
+        {/* {job.urgent && (
           <div className="mb-3">
             <span className="px-3 py-1 bg-gradient-to-r from-red-100 to-red-50 text-red-700 border border-red-300 rounded-full text-xs font-semibold">
               Urgent Hiring
             </span>
           </div>
-        )}
+        )} */}
 
         {/* Description */}
-        <div className="flex-1 mt-2">
+        {/* <div className="flex-1 mt-2">
           <p className="text-sm text-gray-700 line-clamp-2">
             {description}
           </p>
-        </div>
+        </div> */}
       </div>
 
       {/* BOTTOM SECTION - White background */}
