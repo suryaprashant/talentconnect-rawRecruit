@@ -39,7 +39,7 @@ const loading = false;
   }*/}
 
   const handleLogin = () => {
-  navigate('/login');
+  navigate('/userselection');
 };
 
   console.log("Sidebar auth:", {
