@@ -582,16 +582,24 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
               const roles = job?.job?.jobRoles || [];
           console.log('here',job)
               return (
-                <Link
-                  key={job?.job?._id}
-                  to={`/${user?.userType}-dashboard/job-details`}
-                  state={{
-                    job: job.job,
-                    isSaved: true,
-                    jobType: job.jobType
-                  }}
-                  className="group block"
-                >
+                // In your JobList component, update the Link section:
+
+<Link
+  key={job?.job?._id}
+  to={user?.userType === 'company' || user?.userType === 'employer'
+    ? `/${user?.userType}/saved-jobs/job/${job?.job?._id}`  // Company & Employer go to separate page
+    : user?.userType === 'college'
+    ? `/college/saved-jobs/job/${job?.job?._id}`  // College goes to unified via college path
+    : `/saved-jobs/job/${job?.job?._id}`          // Student/fresher path
+  }
+  state={{
+    job: job.job,
+    isSaved: true,
+    jobType: job.jobType,
+    userType: user?.userType
+  }}
+  className="group block"
+>
                   
                   <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
 
@@ -666,7 +674,7 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                               <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                             </svg>
-                            Start Datem
+                            Start Date
                           </div>
                           <div className="font-medium">
                             {job?.job?.startDate
