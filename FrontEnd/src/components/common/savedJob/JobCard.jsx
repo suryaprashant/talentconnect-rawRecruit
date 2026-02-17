@@ -1,37 +1,117 @@
-const JobCard = ({ job }) => {
+const JobCard = ({ job, userType = 'student' }) => {
+  // Available user types: 'college', 'company', 'employer', 'student', 'fresher'
 
   const normalizeArrayField = (value) => {
-  if (Array.isArray(value)) return value.join(', ');
-  if (typeof value === 'string' && value.trim()) return value;
-  return 'N/A';
-};
+    if (Array.isArray(value)) return value.join(', ');
+    if (typeof value === 'string' && value.trim()) return value;
+    return 'N/A';
+  };
 
   const jobData = job?.job || job;
 
   const resolveLocation = () => {
-  // 1. Work location (company-posted jobs)
-  if (Array.isArray(jobData?.workLocation) && jobData.workLocation.length > 0) {
-    return jobData.workLocation.join(', ');
-  }
+    // 1. Work location (company-posted jobs)
+    if (Array.isArray(jobData?.workLocation) && jobData.workLocation.length > 0) {
+      return jobData.workLocation.join(', ');
+    }
 
-  // 2. Explicit job location
-  if (Array.isArray(jobData?.location) && jobData.location.length > 0) {
-    return jobData.location.join(', ');
-  }
+    // 2. Explicit job location
+    if (Array.isArray(jobData?.location) && jobData.location.length > 0) {
+      return jobData.location.join(', ');
+    }
 
-  // 3. College city (college-posted jobs)
-  if (jobData?.collegePosted?.collegeUniversityDetails?.city) {
-    return jobData.collegePosted.collegeUniversityDetails.city;
-  }
+    // 3. College city (college-posted jobs)
+    if (jobData?.collegePosted?.collegeUniversityDetails?.city) {
+      return jobData.collegePosted.collegeUniversityDetails.city;
+    }
 
-  // 4. College full location (final fallback)
-  if (jobData?.collegePosted?.collegeUniversityDetails?.collegeLocation) {
-    return jobData.collegePosted.collegeUniversityDetails.collegeLocation;
-  }
+    // 4. College full location (final fallback)
+    if (jobData?.collegePosted?.collegeUniversityDetails?.collegeLocation) {
+      return jobData.collegePosted.collegeUniversityDetails.collegeLocation;
+    }
 
-  return 'N/A';
-};
+    return 'N/A';
+  };
 
+  const getDisplayData = () => {
+    switch(userType) {
+      case 'college':
+        return {
+          title: jobData?.collegeUniversityDetails?.collegeName || 'College',
+          subtitle: 'Posted by College',
+          mainHeading: jobData?.jobTitle || jobData?.jobRoles || 'Job Opportunity',
+          description: jobData?.description || 'No description available',
+          metaInfo: [
+            { label: 'Posted Date', value: jobData?.createdAt ? new Date(jobData.createdAt).toLocaleDateString() : 'N/A' },
+            { label: 'Eligible Courses', value: normalizeArrayField(jobData?.eligibleCourses) },
+            { label: 'Batch', value: normalizeArrayField(jobData?.eligibleBatches) }
+          ]
+        };
+
+      case 'company':
+        return {
+          title: jobData?.companyName || jobData?.company || 'Company',
+          subtitle: `${jobData?.industry || 'Company'} • Posted by Company`,
+          mainHeading: jobData?.jobTitle || jobData?.jobRoles || 'Position',
+          description: jobData?.description || 'No description available',
+          metaInfo: [
+            { label: 'Experience', value: jobData?.experienceRequired || 'Fresher' },
+            { label: 'Salary', value: jobData?.salary || 'Not disclosed' },
+            { label: 'Posted', value: jobData?.createdAt ? new Date(jobData.createdAt).toLocaleDateString() : 'N/A' }
+          ]
+        };
+
+      case 'employer':
+        return {
+          title: jobData?.employerName || jobData?.company || 'Employer',
+          subtitle: `${jobData?.designation || 'Employer'} • Hiring`,
+          mainHeading: jobData?.jobTitle || jobData?.jobRoles || 'Opening',
+          description: jobData?.description || 'No description available',
+          metaInfo: [
+            { label: 'Department', value: jobData?.department || 'N/A' },
+            { label: 'Positions', value: jobData?.numberOfPositions || '1' },
+            { label: 'Deadline', value: jobData?.applicationDeadline ? new Date(jobData.applicationDeadline).toLocaleDateString() : 'N/A' }
+          ]
+        };
+
+      case 'student':
+        return {
+          title: jobData?.collegeUniversityDetails?.collegeName || jobData?.company || 'Opportunity',
+          subtitle: `${jobData?.jobType || 'Job'} • For Students`,
+          mainHeading: jobData?.jobTitle || jobData?.jobRoles || 'Position',
+          description: jobData?.description || 'No description available',
+          metaInfo: [
+            { label: 'Stipend', value: jobData?.stipend || jobData?.salary || 'Not specified' },
+            { label: 'Duration', value: jobData?.internshipDuration || 'Not specified' },
+            { label: 'Apply By', value: jobData?.lastDateToApply ? new Date(jobData.lastDateToApply).toLocaleDateString() : 'N/A' }
+          ]
+        };
+
+      case 'fresher':
+        return {
+          title: jobData?.company || jobData?.collegeUniversityDetails?.collegeName || 'Opportunity',
+          subtitle: 'Entry Level • Fresher Friendly',
+          mainHeading: jobData?.jobTitle || jobData?.jobRoles || 'Fresher Job',
+          description: jobData?.description || 'No description available',
+          metaInfo: [
+            { label: 'Eligibility', value: jobData?.eligibility || 'Graduate' },
+            { label: 'Skills', value: normalizeArrayField(jobData?.requiredSkills) },
+            { label: 'Location', value: resolveLocation() }
+          ]
+        };
+
+      default:
+        return {
+          title: jobData?.company || jobData?.collegeUniversityDetails?.collegeName || 'Job',
+          subtitle: 'Career Opportunity',
+          mainHeading: jobData?.jobTitle || jobData?.jobRoles || 'Position',
+          description: jobData?.description || 'No description available',
+          metaInfo: []
+        };
+    }
+  };
+
+  const displayData = getDisplayData();
 
   return (
     <div className="border rounded-md p-4 hover:shadow-md transition-shadow">
@@ -49,33 +129,40 @@ const JobCard = ({ job }) => {
         </div>
 
         <div className="ml-4 flex-1">
-          <h2 className="text-xl font-bold">{job?.collegeUniversityDetails?.collegeName}ll</h2>
-          {/*<div className="flex text-sm text-gray-500 mb-1">
-            <span>{job?.jobDetails[0].location}</span>
+          {/* Dynamic title based on user type */}
+          <h2 className="text-xl font-bold">{displayData.title}</h2>
+          
+          {/* Subtitle based on user type */}
+          <p className="text-sm text-gray-500 mb-1">{displayData.subtitle}</p>
+
+          {/* Location and job type info (common for all) */}
+          <div className="flex text-sm text-gray-500 mb-2">
+            <span>{resolveLocation()}</span>
             <span className="mx-2">•</span>
-            <span>{job?.jobDetails[0].employmentType}</span>
+            <span>{normalizeArrayField(jobData?.employmentType)}</span>
             <span className="mx-2">•</span>
-            <span>{job?.jobDetails[0].workMode}</span>
-          </div>*/}
+            <span>{normalizeArrayField(jobData?.workMode)}</span>
+          </div>
 
-          <div className="flex text-sm text-gray-500 mb-1">
- <span>{resolveLocation()}</span>
-  <span className="mx-2">•</span>
-  <span>{normalizeArrayField(jobData?.employmentType)}</span>
-  <span className="mx-2">•</span>
-  <span>{normalizeArrayField(jobData?.workMode)}</span>
-</div>
-
-
-
-          <h3 className="font-bold text-xl capitalize">{job?.jobDetails[0]?.jobTitle || job?.jobDetails[0]?.jobRoles}</h3>
-         
+          {/* Main heading */}
+          <h3 className="font-bold text-xl capitalize">{displayData.mainHeading}</h3>
+          
+          {/* Description */}
           <p className="mt-2 text-sm text-gray-600 line-clamp-3 capitalize">
-            {job?.jobDetails[0]?.description}
+            {displayData.description}
           </p>
-        </div>
 
-      
+          {/* Dynamic meta information based on user type */}
+          <div className="mt-3 flex flex-wrap gap-3 text-xs">
+            {displayData.metaInfo.map((info, index) => (
+              info.value !== 'N/A' && info.value !== 'Not specified' && (
+                <div key={index} className="bg-gray-100 px-2 py-1 rounded">
+                  <span className="font-semibold">{info.label}:</span> {info.value}
+                </div>
+              )
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
