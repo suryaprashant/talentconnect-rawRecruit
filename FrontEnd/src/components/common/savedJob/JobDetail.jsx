@@ -346,12 +346,14 @@ const normalizeJobData = (savedJob, userType) => {
   // Check for company data first
   if (job?.companyPosted?.companyDetails?.companyName) {
     organizationName = job.companyPosted.companyDetails.companyName;
-    organizationLogo = job.companyPosted.companyDetails.logo;
+    // Use the same logic as JobList's getOrganizationLogo
+    organizationLogo = job.companyPosted?.profileImageUrl || job.companyPosted?.companyDetails?.logo || null;
   } 
   // Check for college data
   else if (job?.collegePosted?.collegeUniversityDetails?.collegeName) {
     organizationName = job.collegePosted.collegeUniversityDetails.collegeName;
-    organizationLogo = job.collegePosted.profileImage;
+    // Use the same logic as JobList's getOrganizationLogo
+    organizationLogo = job.collegePosted?.profileImageUrl || job.collegePosted?.profileImage || null;
   }
   // Check for employer data (if job is posted by employer)
   else if (job?.postedBy === 'employer' && job?.employerDetails?.companyName) {
@@ -670,21 +672,40 @@ const UnifiedJobDetail = () => {
         </button>
 
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg overflow-hidden">
-          {/* Header Section */}
+          {/* Header Section - Using exact same logic as JobList */}
 <div className="bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 px-6 py-4">
   <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-2">
     <div className="flex items-center">
-      <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
-        {job.organizationLogo ? (
-          <img
-            src={job.organizationLogo}
-            alt={job.organizationName}
-            className="w-10 h-10 object-contain"
+      {/* Logo with initials fallback - EXACT same as JobList */}
+      <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 mr-4 relative bg-gradient-to-br from-[#667eea] to-[#764ba2] flex items-center justify-center">
+        {/* Background Layer: Initials are always here */}
+        <span className="text-white font-bold text-sm absolute z-0">
+          {job.organizationName ? 
+            (() => {
+              const words = job.organizationName.trim().split(/\s+/);
+              if (words.length === 1) {
+                return job.organizationName.substring(0, 2).toUpperCase();
+              } else {
+                return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+              }
+            })() : '?'
+          }
+        </span>
+
+        {/* Foreground Layer: Logo hides initials if it loads successfully */}
+        {job.organizationLogo && (
+          <img 
+            src={job.organizationLogo} 
+            alt={job.organizationName || "Organization"} 
+            className="w-full h-full object-cover relative z-10"
+            onError={(e) => {
+              // If the URL exists but image fails to fetch, hide the img tag
+              e.target.style.display = 'none';
+            }}
           />
-        ) : (
-          <Building2 className="w-8 h-8 text-[#667eea]" />
         )}
       </div>
+      
       <div>
         {/* Company Name - Highlighted and bold */}
         <h1 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
@@ -869,52 +890,67 @@ const UnifiedJobDetail = () => {
           </div>
 
           {/* Eligibility Criteria */}
-          {(hasValue(job.eligibilityCriteria) || (job.cgpa && job.cgpa > 0) || hasValue(job.minEducation) || hasValue(job.workAuthorization)) && (
-            <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                Eligibility Criteria
-              </h2>
-              {hasValue(job.eligibilityCriteria) && (
-                <div className="mb-4">
-                  <div className="text-sm font-medium text-[#667eea]">Additional Criteria</div>
-                  <p className="text-gray-700 whitespace-pre-wrap mt-1">
-                    {job.eligibilityCriteria}
-                  </p>
-                </div>
-              )}
-              {job.cgpa && job.cgpa > 0 && (
-                <div className="mb-4">
-                  <div className="text-sm font-medium text-[#667eea]">Minimum CGPA</div>
-                  <div className="text-base text-gray-900">{job.cgpa}</div>
-                </div>
-              )}
-              {hasValue(job.minEducation) && (
-                <div className="mb-4">
-                  <div className="text-sm font-medium text-[#667eea]">Minimum Education</div>
-                  <div className="text-base text-gray-900">{job.minEducation}</div>
-                </div>
-              )}
-              {hasValue(job.workAuthorization) && (
-                <div className="mb-4">
-                  <div className="text-sm font-medium text-[#667eea]">Work Authorization</div>
-                  <div className="text-base text-gray-900">{job.workAuthorization}</div>
-                </div>
-              )}
-            </div>
-          )}
+{(hasValue(job.eligibilityCriteria) || (job.cgpa && job.cgpa > 0) || hasValue(job.minEducation) || hasValue(job.workAuthorization)) && (
+  <div className="px-6 py-6">
+    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+      Eligibility Criteria
+    </h2>
+    
+    {/* All criteria as bullet points in a single list */}
+    <ul className="space-y-2">
+      {/* CGPA */}
+      {/* {job.cgpa && job.cgpa > 0 && (
+        <li className="text-gray-700 flex items-start">
+          <span className="mr-2 text-[#667eea]">•</span>
+          <span><span className="font-medium">Minimum CGPA:</span> {job.cgpa}</span>
+        </li>
+      )} */}
 
-          {/* Additional Requirements */}
-          {hasValidData(job.certifications) && (
-            <div className="px-6 py-6">
-              <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                Additional Requirements
-              </h2>
-              <div>
-                <div className="text-sm font-medium text-[#667eea]">Certifications</div>
-                {renderTags(job.certifications)}
-              </div>
-            </div>
+      {/* Minimum Education */}
+      {/* {hasValue(job.minEducation) && (
+        <li className="text-gray-700 flex items-start">
+          <span className="mr-2 text-[#667eea]">•</span>
+          <span><span className="font-medium">Minimum Education:</span> {job.minEducation}</span>
+        </li>
+      )} */}
+
+      {/* Work Authorization */}
+      {/* {hasValue(job.workAuthorization) && (
+        <li className="text-gray-700 flex items-start">
+          <span className="mr-2 text-[#667eea]">•</span>
+          <span><span className="font-medium">Work Authorization:</span> {job.workAuthorization}</span>
+        </li>
+      )} */}
+
+      {/* Additional Criteria - Split into multiple bullet points if it contains newlines */}
+      {hasValue(job.eligibilityCriteria) && (
+        <>
+          {job.eligibilityCriteria.split('\n').map((point, index) => 
+            point.trim() && (
+              <li key={`criteria-${index}`} className="text-gray-700 flex items-start">
+                <span className="mr-2 text-[#667eea]">•</span>
+                <span>{point.trim()}</span>
+              </li>
+            )
           )}
+        </>
+      )}
+    </ul>
+  </div>
+)}
+
+{/* Additional Requirements */}
+{hasValidData(job.certifications) && (
+  <div className="px-6 py-6">
+    <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
+      Additional Requirements
+    </h2>
+    <div>
+      <div className="text-sm font-medium text-[#667eea] mb-2">Certifications</div>
+      {renderTags(job.certifications)}
+    </div>
+  </div>
+)}
 
           {/* Selection Process */}
           {(normalizeSelectionProcess(job.selectionProcess)?.length > 0 || hasValidData(job.rounds)) && (
