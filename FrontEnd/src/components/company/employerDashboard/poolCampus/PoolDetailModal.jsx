@@ -956,7 +956,7 @@ const PoolCampusDetailModal = ({ college, isOpen, onClose, isApplied: propIsAppl
             {posting.amenitiesRequired?.length > 0 && (
               <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">
-                  Amenities Required
+                  Amenities Offered
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {posting.amenitiesRequired.map((amenity, index) => (
