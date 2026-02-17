@@ -11,6 +11,7 @@ import AdminApplication from "../pages/admin/adminPages/adminApplication";
 import AdminSettings from "../pages/admin/adminPages/adminSetting"
 import NotFound from "@/pages/NotFound";
 import AdminSidebar from "../components/layout/AdminSidebar";
+import AllReferralPost from "@/pages/admin/adminPages/AllReferralPost";
 
 const AdminRoutes = () => {
   return (
@@ -29,9 +30,11 @@ const AdminRoutes = () => {
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="users" element={<AdminUserManagement />} />
         <Route path="jobs" element={<AdminJobManagement />} />
-        <Route path="applications" element={<AdminApplication />} />
         <Route path="settings" element={<AdminSettings />} />
+        <Route path="applications" element={<AdminApplication />} />
+        <Route path="referral-posted" element={<AllReferralPost />} />
         <Route path="*" element={<NotFound />} />
+
       </Route>
     </Routes>
   );
