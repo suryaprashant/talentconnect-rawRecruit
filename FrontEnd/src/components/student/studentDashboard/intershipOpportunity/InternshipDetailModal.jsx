@@ -59,9 +59,45 @@ import {
 } from 'lucide-react';
 import { ApplyForInternship, getJobDetails, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
-
-
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 // Utility function to format date
+const LoginPromptModal = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
+  const onLogin = () => {
+    navigate('/userselection');
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[110] overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen px-4 text-center">
+        <div className="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-50 backdrop-blur-sm" onClick={onClose}></div>
+        <div className="inline-block align-middle bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full p-8">
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 mb-4">
+              <Briefcase className="h-8 w-8 text-[#667eea]" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Ready to Apply?</h3>
+            <p className="text-gray-600 mb-8">
+              You need to be logged in to apply for internships and track your applications.
+            </p>
+            <div className="flex flex-col gap-3">
+              <button onClick={onLogin} className="w-full py-3 px-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-bold rounded-xl hover:shadow-lg transition-all duration-200">
+                Login to Continue
+              </button>
+              <button onClick={onClose} className="w-full py-3 px-4 bg-gray-50 text-gray-700 font-semibold rounded-xl hover:bg-gray-100 transition-colors">
+                Maybe Later
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const formatDate = (dateString) => {
   if (!dateString || dateString === 'Not Specified') return 'Not Specified';
   try {
@@ -304,6 +340,8 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [showCompanyDetails, setShowCompanyDetails] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false); // Add this
+  const { isAuthenticated } = useAuth(); // Add this
   
   const modalRef = useRef(null);
   const contentRef = useRef(null);
@@ -398,7 +436,10 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
 
   const handleApply = async () => {
     if (!jobId || !jobDetail) return;
-    
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     setIsSubmitting(true);
     try {
       console.log("🎯 Applying for internship with jobId:", jobId);
@@ -454,6 +495,10 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
 
   const handleSave = async () => {
     if (!jobDetail?._id) return;
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     
     try {
       const jobType = "Internship";
@@ -579,6 +624,10 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
         company={companyData}
         isOpen={showCompanyDetails}
         onClose={() => setShowCompanyDetails(false)}
+      />
+      <LoginPromptModal 
+        isOpen={showLoginModal} 
+        onClose={() => setShowLoginModal(false)} 
       />
 
       <div

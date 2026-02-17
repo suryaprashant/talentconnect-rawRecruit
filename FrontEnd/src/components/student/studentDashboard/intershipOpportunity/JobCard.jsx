@@ -429,13 +429,12 @@ const JobCard = ({ job, userType, onClick }) => {
             </div>
           </div>
 
-          <Link
-            to={routePath}
-            onClick={handleDetailsClick}
-            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
-          >
+          <button
+           //onClick={handleDetailsClick}
+            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition">
+
             Details
-          </Link>
+          </button>
         </div>
       </div>
     </div>
