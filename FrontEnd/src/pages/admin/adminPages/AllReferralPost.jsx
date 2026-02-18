@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, X, Filter, SortAsc, Building2, MapPin, Users, Calendar, Briefcase, Search, GraduationCap, BookOpen, TrendingUp } from 'lucide-react';
 import RefferalCard from '../../../components/admin/ReferralCard';
 import { getPendingReferralJobs } from '@/lib/Admin_AxiosInstance';
-
+import ReferralDetailModal from './ReferralDetailModal';
 import CreatableSelect from 'react-select/creatable';
 import { useMemo } from 'react';
 import { City } from 'country-state-city';
+
 
 const AllReferralPost = ({ compact = false, onCollegeSelect }) => {
  const [referrals, setReferrals] = useState([]);
@@ -86,6 +87,17 @@ const [filteredReferrals, setFilteredReferrals] = useState([]);
   const safeLocation = Array.isArray(filters.location)
     ? filters.location
     : [];
+
+    const [selectedJob, setSelectedJob] = useState(null);
+const [isModalOpen, setIsModalOpen] = useState(false);
+
+const handleOpenDetails = (job) => {
+  console.log("1. Card clicked!");
+  console.log("2. Job Data received:", job);
+  setSelectedJob(job);
+  setIsModalOpen(true);
+  console.log("3. State should be open now.");
+};
 
 useEffect(() => {
   const fetchReferrals = async () => {
@@ -743,17 +755,22 @@ if (error && referrals.length === 0) {
         {/* College Cards Grid */}
 <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-2xl shadow-lg p-6 overflow-hidden">
   {filteredReferrals.length > 0 ? (
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {filteredReferrals.map(referral => (
-      <div key={referral._id} className="h-full">
-        <RefferalCard
-          job={referral}
-          onClick={onCollegeSelect}
-        />
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredReferrals.map((post) => (
+          <RefferalCard 
+            key={post._id} 
+            job={post} 
+            onClick={handleOpenDetails} 
+          />
+        ))}
       </div>
-    ))}
-  </div>
+
+      {/* MODAL GOES HERE - OUTSIDE THE GRID LOOP */}
+    
+    </>
   ) : (
+
     <div className="flex flex-col items-center justify-center py-12">
       <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 mb-6">
         <Building2 className="h-12 w-12 text-gray-400" />
@@ -780,8 +797,19 @@ if (error && referrals.length === 0) {
     </div>
   )}
 </div>
-      </div>
-    </div>
+     </div> {/* This is the end of your container mx-auto */}
+      
+      {/* ADD THE MODAL HERE - OUTSIDE EVERYTHING ELSE */}
+      <ReferralDetailModal 
+        isOpen={isModalOpen}
+        job={selectedJob} 
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedJob(null);
+        }}
+      />
+    </div> // This is the final closing div of the return
+
   );
 };
 
