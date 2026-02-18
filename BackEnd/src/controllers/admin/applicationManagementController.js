@@ -328,6 +328,13 @@ export const getReferralApplicationsForAdmin = async (req, res) => {
     // optional query filters (future-ready)
     const { jobId, adminApprovalStatus } = req.query;
 
+    if (!jobId) {
+      return res.status(400).json({
+        success: false,
+        message: "jobId is required",
+      });
+    }
+
     const response = await fetchReferralApplicationsService({
       jobId,
       adminApprovalStatus,
