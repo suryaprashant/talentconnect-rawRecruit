@@ -4,6 +4,7 @@ import WorkShopHostingService from "../../services/workshopService.js";
 import CaseStudyHostingService from "../../services/casestudyService.js";
 import { JobPostingTable } from "../../models/jobPostingsModel.js";
 import { getPendingReferralJobsService, updateReferralApprovalStatusService } from "../../services/adminService.js";
+import { ok } from "assert";
 
 export const getJobDriveOverView = async (req, res) => {
   try {
@@ -262,8 +263,10 @@ export const getPendingReferralJobsForAdmin = async (req, res) => {
 
 export const updateReferralJobApprovalStatus = async (req, res) => {
   try {
+    console.log('ok')
     const { jobId } = req.params;
     const { approvalStatus } = req.body;
+    console.log(approvalStatus)
 
     // Basic validation
     if (!["Approved", "Rejected", "Pending"].includes(approvalStatus)) {

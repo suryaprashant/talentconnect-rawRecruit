@@ -22,3 +22,9 @@ export function getCompanyPostingForOncampus() {
     .then(response => response)
     .catch(error => error);
 }
+// Add this to your API exports
+export function updateReferralStatus(jobId, status) {
+return axiosClient.patch(`/api/admin/dashboard/referral-jobs/${jobId}/approval`, {
+    approvalStatus: status
+  });
+}

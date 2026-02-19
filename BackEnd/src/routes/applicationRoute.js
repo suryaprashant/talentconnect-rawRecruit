@@ -1,7 +1,7 @@
 import express from "express";
 import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser ,unsaveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication, getShortlistedCompaniesForCollege, shortlistApplicantForCompany, rejectCompanyApplicationByCollege, scheduleInterview ,
 getCompanyDashboardMetrics,
-submitAlternateDates
+submitAlternateDates,getReferralApplicationsForProfessional
     
  } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
@@ -73,5 +73,12 @@ router.get('/manage/college', secureRoute, getCollegeApplicationsByJob);
 router.post('/manage/schedule', secureRoute, scheduleInterview);
 
 router.post('/:jobId/submit' , secureRoute , submitAlternateDates) ;
+
+// router.js
+router.get(
+  "/my-referral-applications",
+  secureRoute, // Ensures req.user.profileId is populated
+  getReferralApplicationsForProfessional
+);
 
 export default router;
