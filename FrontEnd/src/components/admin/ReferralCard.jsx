@@ -67,14 +67,14 @@ const handleDetailsClick = (e) => {
             {job.jobType}
           </span>
 
-          <button
+          {/* <button
             onClick={handleSave}
             className="bg-white p-2 rounded-full shadow hover:shadow-md transition z-10"
           >
             <Heart
               className={`h-5 w-5 ${isSaved ? "text-red-500 fill-red-500" : "text-gray-600"}`}
             />
-          </button>
+          </button> */}
         </div>
 
         {/* Job Title + Company */}

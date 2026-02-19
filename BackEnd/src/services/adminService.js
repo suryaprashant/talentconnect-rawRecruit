@@ -27,6 +27,30 @@ export const getPendingReferralJobsService = async () => {
   }
 };
 
+export const getAcceptedReferralJobsService = async () => {
+  try {
+    const jobs = await JobPostingTable
+      .find({
+        jobType: "Referral",
+        approvalStatus: "Approved"
+      })
+      .populate({
+        path: "candidatePosted",
+        select: "name email totalYearsOfExperience currentCompany linkedin profileType"
+      })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return jobs;
+  } catch (error) {
+    console.error(
+      "Error in getPendingReferralJobsService:",
+      error.message
+    );
+    throw error;
+  }
+};
+
 
 export const updateReferralApprovalStatusService = async (
   jobId,

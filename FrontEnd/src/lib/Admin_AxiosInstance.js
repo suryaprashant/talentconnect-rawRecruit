@@ -16,6 +16,9 @@ axiosClient.defaults.withCredentials = true;
 export function getPendingReferralJobs (){
   return axiosClient.get('/api/admin/dashboard/referral-jobs/pending')
 }
+export function getAcceptedReferralJobs (){
+  return axiosClient.get('/api/admin/dashboard/referral-jobs/accepted')
+}
 
 export function getCompanyPostingForOncampus() {
   return axiosClient.get(`/api/student-dashboard/on-campus/college`)

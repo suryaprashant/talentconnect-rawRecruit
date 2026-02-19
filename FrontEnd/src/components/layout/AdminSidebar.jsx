@@ -9,6 +9,7 @@ import {
   
 } from "react-icons/fa";
 import { IoAlbums } from "react-icons/io5";
+import { RiAccountPinCircleFill } from "react-icons/ri";
 
 
 
@@ -16,6 +17,7 @@ const sidebarItems = [
   { name: "Dashboard", to: "/admin/dashboard", icon: <FaTachometerAlt /> },
   { name: "User Management", to: "/admin/users", icon: <FaUsers /> },
   {name:   "referral posted", to: "/admin/referral-posted", icon :<IoAlbums />},
+  { name:  "Manage Referral", to:"/admin/manage-referral",icon:<RiAccountPinCircleFill />},
   { name: "Jobs & Drives", to: "/admin/jobs", icon: <FaBriefcase /> },
   { name: "Applications", to: "/admin/applications", icon: <FaClipboardList /> },
   { name: "Settings", to: "/admin/settings", icon: <FaCog /> },
