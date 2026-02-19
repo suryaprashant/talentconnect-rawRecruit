@@ -40,7 +40,27 @@ import { unsaveJobService } from "../services/applicationService.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import  InterviewSchedule  from "../models/InterviewSchedule.Model.js";
 import { resolveStudentAuthId } from "../utils/resolveStudentAuthId.js";
+import { fetchReferralApplicationsService } from "../controllers/../services/adminService.js";
+// controllers/professionalController.js
+export const getReferralApplicationsForProfessional = async (req, res, next) => {
+  try {
+    const professionalProfileId = req.user.profileId; 
 
+    // 1. Get the specific jobId from the URL query (?jobId=...)
+    const { jobId, adminApprovalStatus } = req.query;
+
+    // 2. Pass jobId into the service
+    const response = await fetchReferralApplicationsService({
+      professionalProfileId,
+      jobId, // <--- THIS IS THE KEY CHANGE
+      adminApprovalStatus: adminApprovalStatus || "Approved",
+    });
+
+    return res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
 export async function unsaveJobByUser(req, res) {
     const { jobId } = req.params; // jobId passed in the URL
     const userId = req.user._id;

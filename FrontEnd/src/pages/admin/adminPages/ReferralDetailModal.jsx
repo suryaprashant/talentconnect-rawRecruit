@@ -1,16 +1,18 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { 
   X, MapPin, Briefcase, ShieldCheck, 
-  Users, Zap, Clock, MessageSquare, 
-  GraduationCap, Award, Calendar, 
-  Share2, Save, CheckCircle2, Building2, 
-  DollarSign, Mail, Linkedin, UserCircle,
-  ExternalLink
+  GraduationCap, Share2, CheckCircle2, 
+  Building2, Mail, Linkedin, UserCircle,
+  Clock, Laptop, Award, Users, Calendar,
+  Target, Info, XCircle, Loader2
 } from 'lucide-react';
+import { updateReferralStatus } from '@/lib/Admin_AxiosInstance';
 
-const ReferralDetailModal = ({ job, isOpen, onClose }) => {
-  const modalRef = useRef(null);
+const ReferralDetailModal = ({ job, isOpen, onClose, onRefresh }) => {
+  // --- 1. HOOKS (Must always be at the top) ---
+  const modalContentRef = useRef(null);
+  const [loadingAction, setLoadingAction] = useState(null);
 
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';
@@ -18,153 +20,187 @@ const ReferralDetailModal = ({ job, isOpen, onClose }) => {
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  // --- 2. EARLY RETURN (Only after hooks are declared) ---
+  if (!isOpen || !job) return null;
 
+  // --- 3. EVENT HANDLERS ---
+  const handleStatusUpdate = async (status) => {
+    setLoadingAction(status); // Start spinner on the clicked button
+    try {
+      // Ensure job._id exists and status is exactly what the backend expects
+      const response = await updateReferralStatus(job._id, status);
+      
+      if (response.data.success) {
+        alert(`Job ${status} successfully!`);
+        onClose(); // Close the modal
+        if (onRefresh) onRefresh(); // Refresh the list on the dashboard
+      }
+    } catch (error) {
+      console.error("Update error:", error);
+      alert(error.response?.data?.message || `Failed to update status to ${status}`);
+    } finally {
+      setLoadingAction(null); // Stop spinner
+    }
+  };
+
+  // --- 4. DATA MAPPING ---
   const referrer = job?.candidatePosted || {};
   const location = job?.location?.[0] || "Remote";
+  const workMode = job?.workMode?.[0] || "On-site";
+  const experience = job?.yearsOfExperience || "0-1 Years";
+  const openings = job?.numberOfOpenings || 0;
+  
+  const expiryDate = job?.expireAt ? new Date(job.expireAt) : null;
+  const daysLeft = expiryDate ? Math.ceil((expiryDate - new Date()) / (1000 * 60 * 60 * 24)) : null;
+
   const ctc = job?.packageDetails?.totalCTC 
     ? `${job.packageDetails.currency === 'INR' ? '₹' : '$'}${job.packageDetails.totalCTC.toLocaleString()}`
     : "Not Disclosed";
 
   return createPortal(
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
-      {/* SUBTLE BACKDROP: Reduced blur and opacity */}
-      <div 
-        className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] transition-opacity" 
-        onClick={onClose} 
-      />
+    <div 
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6" 
+      onClick={(e) => modalContentRef.current && !modalContentRef.current.contains(e.target) && onClose()}
+    >
+      <div className="absolute inset-0 bg-slate-600/20 backdrop-blur-[2px] transition-opacity" />
 
       <div 
-        ref={modalRef}
-        className="relative w-full max-w-4xl max-h-[92vh] bg-white rounded-[32px] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-300"
+        ref={modalContentRef} 
+        className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
       >
-        {/* Header Action Bar */}
-        <div className="absolute top-6 right-6 z-50 flex gap-2">
-          <button className="p-2.5 bg-white/80 backdrop-blur-md border border-slate-200 rounded-full shadow-sm hover:bg-white transition-all active:scale-90 text-slate-600">
-             <Share2 size={18} />
-          </button>
-          <button 
-            onClick={onClose}
-            className="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-full transition-all group"
-          >
-            <X className="h-5 w-5 text-slate-600 group-hover:rotate-90 transition-transform" />
-          </button>
-        </div>
-
-        {/* 1. TOP BRANDING SECTION */}
-        <div className="bg-white px-8 pt-10 pb-6 shrink-0 border-b border-slate-50">
-          <div className="flex gap-6 items-center">
-            <div className="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-100 shrink-0">
-              <Building2 className="h-10 w-10 text-white" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase italic leading-tight truncate">
-                {job?.jobTitle || "Job Opportunity"}
-              </h1>
-              <div className="flex items-center gap-3 mt-2 text-slate-500 font-bold text-sm">
-                <span className="flex items-center gap-1.5"><MapPin size={16} className="text-indigo-500"/> {location}</span>
-                <span className="text-slate-300">•</span>
-                <span className="flex items-center gap-1.5"><Briefcase size={16} className="text-indigo-500"/> {referrer.currentCompany}</span>
+        
+        {/* Header */}
+        <div className="border-b border-slate-100 p-5 sm:p-6 bg-white">
+          <div className="flex justify-between items-start gap-4">
+            <div className="flex gap-4 items-center min-w-0">
+              <div className="w-12 h-12 bg-indigo-50 border border-indigo-100 rounded-lg flex items-center justify-center shrink-0">
+                <Building2 className="h-6 w-6 text-indigo-600" />
               </div>
+              <div className="min-w-0">
+                <h1 className="text-lg font-bold text-slate-900 truncate leading-tight">{job?.jobTitle}</h1>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-slate-500 text-xs font-medium">
+                  <span className="flex items-center gap-1"><MapPin size={14} className="text-slate-400"/> {location}</span>
+                  <span className="text-slate-300">•</span>
+                  <span className="flex items-center gap-1"><Laptop size={14} className="text-slate-400"/> {workMode}</span>
+                  <span className="text-slate-300">•</span>
+                  <span className="text-indigo-600 font-semibold">{job?.jobType}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-1 shrink-0">
+              <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-md transition-colors"><Share2 size={18} /></button>
+              <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-md transition-colors"><X size={18} /></button>
             </div>
           </div>
         </div>
 
-        {/* 2. SCROLLABLE CONTENT */}
-        <div className="flex-1 overflow-y-auto p-8 pt-4 custom-scrollbar bg-white">
-          <div className="space-y-8">
-            
-            {/* Metric Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Employment</p>
-                <p className="font-bold text-slate-800">{job?.employmentType?.[0] || 'Full-time'}</p>
-              </div>
-              <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Experience</p>
-                <p className="font-bold text-slate-800">{job?.yearsOfExperience || '0-2'} Years</p>
-              </div>
-              <div className="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100/50">
-                <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1 text-center">CTC Package</p>
-                <p className="font-black text-indigo-600 text-center text-lg">{ctc}</p>
-              </div>
+        {/* Content Body */}
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 custom-scrollbar space-y-8">
+          
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <MetricBox label="Experience" value={experience} icon={<Briefcase size={12}/>} />
+            <MetricBox label="Openings" value={openings} icon={<Users size={12}/>} />
+            <MetricBox label="Employment" value={job?.employmentType?.[0]} icon={<Clock size={12}/>} />
+            <MetricBox label="Work Mode" value={workMode} icon={<Laptop size={12}/>} />
+            <div className="bg-indigo-600 rounded-lg p-3 text-white">
+              <p className="text-[10px] font-medium opacity-80 uppercase tracking-wider">Package</p>
+              <p className="text-sm font-bold truncate">{ctc}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-8">
+              <section>
+                <SectionTitle title="Description" icon={<Info size={14}/>} />
+                <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">
+                  {job?.description}
+                </p>
+              </section>
+
+              <section>
+                <SectionTitle title="Eligibility & Streams" icon={<GraduationCap size={14}/>} />
+                <p className="text-sm text-slate-600 mb-3">{job?.eligibilityCriteria}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {job?.studentStreams?.map(s => (
+                    <span key={s} className="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-100 rounded text-[11px] font-semibold">{s}</span>
+                  ))}
+                </div>
+              </section>
+
+              <section>
+                <SectionTitle title="Required Skills" icon={<Target size={14}/>} />
+                <div className="flex flex-wrap gap-1.5">
+                  {job?.skills?.length > 0 ? job.skills.map(s => (
+                    <span key={s} className="px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[11px] font-semibold">{s}</span>
+                  )) : <span className="text-xs text-slate-400 italic">No specific skills listed</span>}
+                </div>
+              </section>
             </div>
 
-            {/* Job Description */}
-            <section>
-              <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                <div className="h-px w-6 bg-slate-200"></div> Description
-              </h3>
-              <div className="text-slate-600 leading-relaxed text-lg whitespace-pre-wrap font-medium pl-2 border-l-2 border-slate-100">
-                {job?.description || "No description provided."}
-              </div>
-            </section>
-
-            {/* Eligibility */}
-            <section className="bg-slate-50 p-6 rounded-3xl border border-slate-100 relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-5">
-                <GraduationCap size={80} />
-              </div>
-              <h3 className="font-black text-slate-900 uppercase text-xs mb-3 flex items-center gap-2">
-                <GraduationCap className="h-4 w-4 text-indigo-600" /> Eligibility Criteria
-              </h3>
-              <p className="text-slate-700 font-bold leading-relaxed">
-                {job?.eligibilityCriteria || "Open to all relevant Engineering and Computer Science graduates."}
-              </p>
-            </section>
-
-            {/* Referrer Details Section */}
-            <section className="pt-4">
-              <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-                <div className="h-px w-6 bg-slate-200"></div> Posted By
-              </h3>
-              <div className="flex flex-col md:flex-row items-center gap-6 p-6 rounded-[28px] border border-slate-100 shadow-sm bg-white">
-                <div className="relative shrink-0">
-                  <div className="w-20 h-20 rounded-2xl border border-slate-100 flex items-center justify-center overflow-hidden bg-slate-50">
-                    {referrer.profileImageUrl ? (
-                      <img src={referrer.profileImageUrl} className="w-full h-full object-cover" alt="" />
-                    ) : (
-                      <UserCircle className="h-12 w-12 text-slate-300" />
-                    )}
+            <div className="space-y-8">
+              <section className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                <SectionTitle title="Additional Info" icon={<Award size={14}/>} />
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Certifications</p>
+                    {job?.certifications?.length > 0 ? job.certifications.map(c => (
+                      <div key={c} className="flex items-center gap-2 text-xs text-slate-600 mb-1">
+                        <div className="w-1 h-1 bg-indigo-400 rounded-full" /> {c}
+                      </div>
+                    )) : <p className="text-xs text-slate-400 italic">None required</p>}
                   </div>
-                  <div className="absolute -bottom-1 -right-1 bg-green-500 p-1 rounded-full border-2 border-white shadow-sm">
-                    <ShieldCheck className="h-3.5 w-3.5 text-white" />
-                  </div>
-                </div>
-
-                <div className="flex-1 text-center md:text-left">
-                  <h4 className="text-xl font-black text-slate-900 uppercase italic tracking-tight leading-none">
-                    {referrer.name || "Verified Member"}
-                  </h4>
-                  <p className="text-indigo-600 font-bold text-xs mt-2 uppercase tracking-wider flex items-center justify-center md:justify-start gap-1">
-                    <Building2 size={12}/> {referrer.currentCompany || "Verified Org"}
-                  </p>
-                  
-                  <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-4">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg text-xs font-bold text-slate-500 border border-slate-100">
-                      <Mail size={14} className="text-slate-400" /> {referrer.email || "N/A"}
+                  <div className="pt-2 border-t border-slate-200">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Deadline</p>
+                    <div className="flex items-center gap-2 text-xs font-semibold text-orange-600">
+                      <Calendar size={14} /> {daysLeft !== null ? `Expires in ${daysLeft} days` : 'No date set'}
                     </div>
-                    {referrer.linkedin && (
-                      <a 
-                        href={referrer.linkedin} 
-                        target="_blank" 
-                        className="flex items-center gap-2 px-3 py-1.5 bg-[#0077b5]/5 rounded-lg text-xs font-bold text-[#0077b5] border border-[#0077b5]/10 hover:bg-[#0077b5]/10 transition-colors"
-                      >
-                        <Linkedin size={14} fill="currentColor" className="text-transparent" /> LinkedIn Profile
-                      </a>
-                    )}
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
+
+              <section>
+                <SectionTitle title="Referrer" icon={<UserCircle size={14}/>} />
+                <div className="flex items-center gap-3 mt-3">
+                  <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 overflow-hidden shrink-0">
+                    {referrer.profileImageUrl ? <img src={referrer.profileImageUrl} className="w-full h-full object-cover" /> : <UserCircle className="w-full h-full text-slate-300" />}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-slate-900 truncate leading-none">{referrer.name || 'Anonymous'}</p>
+                    <p className="text-xs text-slate-500 truncate mt-1">{referrer.currentCompany || "N/A"}</p>
+                  </div>
+                </div>
+                <div className="flex gap-3 mt-4">
+                  {referrer.linkedin && (
+                    <a href={referrer.linkedin} target="_blank" rel="noreferrer" className="text-slate-400 hover:text-indigo-600"><Linkedin size={16} /></a>
+                  )}
+                  <a href={`mailto:${referrer.email}`} className="text-slate-400 hover:text-indigo-600"><Mail size={16} /></a>
+                  <div className="ml-auto flex items-center gap-1 text-[10px] font-bold text-green-600 uppercase">
+                    <ShieldCheck size={12} /> Verified
+                  </div>
+                </div>
+              </section>
+            </div>
           </div>
         </div>
 
-        {/* 3. FIXED CTA FOOTER */}
-        <div className="p-6 bg-white border-t border-slate-50 flex justify-center shrink-0">
-          <button className="w-full max-w-sm py-4 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-black rounded-2xl shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-3 active:scale-95 group uppercase tracking-[0.2em] text-xs">
-            <CheckCircle2 size={18} className="group-hover:scale-110 transition-transform" />
-            Request Referral
+        {/* Footer Action */}
+        <div className="p-4 sm:p-5 bg-slate-50 border-t border-slate-100 flex gap-4 justify-end">
+          <button 
+            disabled={loadingAction !== null}
+            onClick={() => handleStatusUpdate('Rejected')}
+            className="flex-1 sm:flex-none px-10 py-2.5 bg-white border border-red-200 text-red-600 hover:bg-red-50 text-sm font-bold rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
+          >
+            {loadingAction === 'Rejected' ? <Loader2 size={16} className="animate-spin" /> : <XCircle size={16} />}
+            Reject
+          </button>
+          
+          <button 
+            disabled={loadingAction !== null}
+            onClick={() => handleStatusUpdate('Approved')}
+            className="flex-1 sm:flex-none px-10 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg shadow-md flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
+          >
+            {loadingAction === 'Approved' ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
+            Approve
           </button>
         </div>
       </div>
@@ -172,5 +208,21 @@ const ReferralDetailModal = ({ job, isOpen, onClose }) => {
     document.body
   );
 };
+
+// Sub-components
+const MetricBox = ({ label, value, icon }) => (
+  <div className="bg-white border border-slate-100 rounded-lg p-3">
+    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight flex items-center gap-1 mb-1">
+      {icon} {label}
+    </p>
+    <p className="text-xs font-bold text-slate-700 truncate">{value || 'N/A'}</p>
+  </div>
+);
+
+const SectionTitle = ({ title, icon }) => (
+  <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2 mb-3">
+    <span className="text-indigo-500">{icon}</span> {title}
+  </h3>
+);
 
 export default ReferralDetailModal;
