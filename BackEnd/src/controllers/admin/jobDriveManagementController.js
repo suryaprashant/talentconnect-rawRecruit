@@ -3,7 +3,7 @@ import HackathonHostingService from "../../services/hackathonHostingService.js";
 import WorkShopHostingService from "../../services/workshopService.js";
 import CaseStudyHostingService from "../../services/casestudyService.js";
 import { JobPostingTable } from "../../models/jobPostingsModel.js";
-import { getPendingReferralJobsService, updateReferralApprovalStatusService } from "../../services/adminService.js";
+import { getPendingReferralJobsService, updateReferralApprovalStatusService,getAcceptedReferralJobsService } from "../../services/adminService.js";
 import { ok } from "assert";
 
 export const getJobDriveOverView = async (req, res) => {
@@ -244,6 +244,31 @@ export const getPendingReferralJobsForAdmin = async (req, res) => {
 
     // 2. Call service
     const jobs = await getPendingReferralJobsService();
+
+    // 3. Response
+    return res.status(200).json({
+      count: jobs.length,
+      data: jobs
+    });
+
+  } catch (error) {
+    console.error(
+      "Error in getPendingReferralJobsForAdmin:",
+      error.message
+    );
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getAcceptedReferralJobsForAdmin= async (req, res) => {
+  try {
+    // 1. Authorization
+    if (req.user.userType !== "admin") {
+      return res.status(403).json({ error: "Access denied" });
+    }
+
+    // 2. Call service
+    const jobs = await getAcceptedReferralJobsService();
 
     // 3. Response
     return res.status(200).json({

@@ -1,7 +1,7 @@
 import express from "express";
 import adminAuth from "../../middlewares/adminMiddleware.js";
 import {getAdminDashboardOverView} from "../../controllers/admin/adminDashboardController.js"
-import { getPendingReferralJobsForAdmin, updateReferralJobApprovalStatus } from "../../controllers/admin/jobDriveManagementController.js";
+import { getPendingReferralJobsForAdmin, updateReferralJobApprovalStatus ,getAcceptedReferralJobsForAdmin} from "../../controllers/admin/jobDriveManagementController.js";
 import { getReferralApplicationsForAdmin, updateReferralApplicationStatus } from "../../controllers/admin/applicationManagementController.js";
 
 const router = express.Router();
@@ -18,6 +18,13 @@ router.get(
   adminAuth,
   getPendingReferralJobsForAdmin
 );
+
+router.get(
+  "/referral-jobs/accepted",
+  adminAuth,
+  getAcceptedReferralJobsForAdmin
+);
+
 
 //admin approve/reject step 2
 router.patch(
