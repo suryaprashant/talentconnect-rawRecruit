@@ -31,3 +31,11 @@ return axiosClient.patch(`/api/admin/dashboard/referral-jobs/${jobId}/approval`,
     approvalStatus: status
   });
 }
+// Add this to your API exports file
+export function updateReferralApplicationStatus(applicationId, action) {
+  // Matches controller: const { action } = req.body;
+  // Matches controller: const { applicationId } = req.params;
+  return axiosClient.patch(`/api/admin/dashboard/referral-applications/${applicationId}`, {
+    action: action // Must be "Approved" or "Rejected"
+  });
+}
