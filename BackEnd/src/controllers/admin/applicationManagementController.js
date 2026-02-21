@@ -323,10 +323,39 @@ export const getAllApplications = async (req, res) => {
   }
 };
 
+// export const getReferralApplicationsForAdmin = async (req, res) => {
+//   try {
+//     console.log('reached here')
+//     // optional query filters (future-ready)
+//     const { jobId, adminApprovalStatus } = req.query;
+
+//     if (!jobId) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "jobId is required",
+//       });
+//     }
+
+//     const response = await fetchReferralApplicationsService({
+//       jobId,
+//       adminApprovalStatus,
+//     });
+
+//     return res.status(200).json(response);
+//   } catch (error) {
+//     console.error("❌ getReferralApplicationsForAdmin:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch referral applications",
+//     });
+//   }
+// };
 export const getReferralApplicationsForAdmin = async (req, res) => {
   try {
-    // optional query filters (future-ready)
-    const { jobId, adminApprovalStatus } = req.query;
+    const { jobId } = req.query;
+    
+    // Default to "Pending" so processed applications "disappear" from this view
+    const adminApprovalStatus = req.query.adminApprovalStatus || "Pending";
 
     if (!jobId) {
       return res.status(400).json({
@@ -337,7 +366,7 @@ export const getReferralApplicationsForAdmin = async (req, res) => {
 
     const response = await fetchReferralApplicationsService({
       jobId,
-      adminApprovalStatus,
+      adminApprovalStatus, // Now passing "Pending" if nothing else is provided
     });
 
     return res.status(200).json(response);
@@ -352,6 +381,7 @@ export const getReferralApplicationsForAdmin = async (req, res) => {
 
 export const updateReferralApplicationStatus = async (req, res) => {
   try {
+    console.log('reached here')
     const { applicationId } = req.params;
     const { action } = req.body;
 

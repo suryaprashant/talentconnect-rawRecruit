@@ -46,6 +46,7 @@ function ProfessionalSidebar({ activePath }) {
           label="Hackathon" 
           active={activePath === '/professional-dashboard/hackathon'} 
         /> */}
+        
       </SidebarNavGroup>
             <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>
         <SidebarNavItem 
@@ -81,6 +82,9 @@ function ProfessionalSidebar({ activePath }) {
           active={activePath === '/service-request/manage-Referral'} 
         />
       </SidebarNavGroup>
+
+        <SidebarNavItem to="/professional-dashboard/Referral-management" icon={<FiHome />} label="Referral Management" active={activePath === '/professional-dashboard/Referral-management'} />
+
 
       <SidebarNavGroup label="Application Status" icon={<FiCheckCircle />} active={activePath.includes('/application-status')}>
         <SidebarNavItem 
