@@ -267,6 +267,7 @@ import CollegeDetailPage from "./pages/company/employerDashboard/CollegeDetailPa
 import CompanyPoolCampusLayout from "./components/company/CompanyPoolCampusLayout";
 import OffCampusJobs from "./pages/students/studentDashboard/offCampusListing/offCampusJobListing";
 import OffCampusLayout from "./components/student/studentDashboard/offCampusListing/OffCampusLayout";
+import ReferralLayout from "./components/student/professionaDashboard/referralJobs/ReferralJobLayout";
 import InternshipLayout from "./components/student/studentDashboard/intershipOpportunity/InternshipLayout";
 import InternshipListingEmployer from "./pages/employer/jobManagement/internship/internahipListing";
 import SaveJob from "./components/common/savedJob/JobDetail"
@@ -461,7 +462,7 @@ function AppRoutes() {
               <Route path="/professional-dashboard/Job-listing/:jobId" element={<ProfessionalJobDetails />} />
               <Route path="/professional-dashboard/hackathon" element={<ProfessionalHackathon />} />
               <Route path="/professional-dashboard/hackathon/:id" element={<ProfessionalDetail />} />
-              <Route path="/professional-dashboard/Referral" element={<RefferalPosting />} />
+              <Route path="/professional-dashboard/Referral" element={<ReferralLayout />} />
               <Route path="/professional-dashboard/Referral/:jobId" element={<RefferalDetail />} />
 
               <Route path='professional/service-request' element={<RefPostingPage />} />

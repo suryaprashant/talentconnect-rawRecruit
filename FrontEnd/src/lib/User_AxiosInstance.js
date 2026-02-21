@@ -242,6 +242,19 @@ export const getStudentDashboardMetrics = async () => {
   }
 };
 
+export const getProfessionalDashboardMetrics = async () => {
+  try {
+    const response = await axiosClient.get('/application/professional/metrics', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // Add these functions to your User_AxiosInstance.js file
 export function getOffCampusJobDetail(jobId) {
   return axiosClient.get(`/api/student-dashboard/off-campus/${jobId}`)

@@ -170,6 +170,7 @@ export const getReferralJobsService = async (jobType, candidatePostedId) => {
             approvalStatus: "Approved", 
             candidatePosted: { $ne: candidatePostedId }
         })
+            .populate('candidatePosted')
             .lean()
             .sort({ createdAt: -1 });
 
