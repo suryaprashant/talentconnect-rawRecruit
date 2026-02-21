@@ -28,12 +28,12 @@ function ProfessionalSidebar({ activePath }) {
       <SidebarNavItem to="/saved-jobs" icon={<FiBookmark />} label="Saved Jobs/Internships" active={activePath === '/saved-jobs'} />
 
       <SidebarNavGroup label="Professional Dashboard" icon={<FiPieChart />} active={activePath.includes('/professional-dashboard')}>
-        <SidebarNavItem 
+        {/*<SidebarNavItem 
           to="/professional-dashboard/job-listing" 
           icon={<FiBriefcase />} 
           label="Job Listings" 
           active={activePath === '/professional-dashboard/job-listing'} 
-        />
+        />*/}
         <SidebarNavItem 
           to="/professional-dashboard/Referral" 
           icon={<FiUsers />} 

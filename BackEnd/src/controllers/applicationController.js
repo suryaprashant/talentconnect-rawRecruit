@@ -12,6 +12,7 @@ import {
   getSavedCollegesService,
   fetchCollegeSideApplicationsByJobService,
   createInternshipApplicationService,
+  fetchProfessionalDashboardMetrics,
   // getApplicationService,
   // getOffCampusApplicantsService, fetchShortlistedCandidates, fetchInternshipApplicationService, fetchApplicationStatusService
 } from "../services/applicationService.js";
@@ -1963,6 +1964,25 @@ export const getCompanyDashboardMetrics = async (req, res) => {
   }
 };
 
+export const getProfessionalDashboardMetrics = async (req, res) => {
+  try {
+    const user = req.user;
+
+    const metrics = await fetchProfessionalDashboardMetrics(user);
+
+    res.status(200).json({
+      success: true,
+      data: metrics,
+    });
+  } catch (error) {
+    console.error("❌ Error in getProfessionalDashboardMetrics:", error);
+
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
+  }
+};
 
 //alternate date controller
 export async function submitAlternateDates(req, res) {

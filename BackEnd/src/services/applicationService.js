@@ -5,6 +5,7 @@ import { JobPostingTable } from '../models/jobPostingsModel.js';
 import { getCollegeService } from './collegeService.js';
 import { getCompanyService } from './companyService.js';
 import { getEmployerService } from './companyService.js';
+import OnboardingModel from "../models/studentonboardingModel.js";
 
 
 class AppError extends Error {
@@ -116,15 +117,22 @@ export async function getSavedJobsService(userId) {
       currentStatus: "Saved",
       applicant: userId,
     })
-      .populate({
-        path: "job",
-        populate: {
+    .populate({
+      path: "job",
+      populate: [
+        {
           path: "companyPosted",
           model: "CompanyProfile",
-       select: "companyDetails.companyName profileImageUrl",
+          select: "companyDetails.companyName profileImageUrl",
         },
-      })
-      .lean();
+        {
+          path: "candidatePosted",
+          model: "Onboarding",
+          select: "profileImage currentCompany fullName currentRole",
+        },
+      ],
+    })
+    .lean();
 
     return { success: true, data: applications };
   } catch (error) {
@@ -1317,6 +1325,88 @@ export async function fetchCompanyDashboardMetrics(user) {
         throw new AppError(error.message || 'Failed to fetch dashboard metrics', 500);
     }
 }
+
+export const fetchProfessionalDashboardMetrics = async (user) => {
+  try {
+    if (!user || user.userType !== "professional") {
+      throw new AppError("Unauthorized access", 403);
+    }
+
+    console.log("👤 Auth User ID:", user._id);
+
+    /* ----------------------------------------------------
+       1️⃣ FETCH PROFESSIONAL ONBOARDING PROFILE
+    ---------------------------------------------------- */
+
+    const professionalProfile = await OnboardingModel.findOne({
+      userId: user._id
+    }).select("_id");
+
+    console.log("📄 Professional Profile ID:", professionalProfile?._id);
+
+    if (!professionalProfile) {
+      throw new AppError("Professional onboarding profile not found", 404);
+    }
+
+    const professionalProfileId = professionalProfile._id;
+
+    /* ----------------------------------------------------
+       1️⃣ JOBS POSTED BY PROFESSIONAL
+    ---------------------------------------------------- */
+
+    const jobStats = await JobPostingTable.aggregate([
+      {
+        $match: {
+          candidatePosted: professionalProfileId 
+        }
+      },
+      {
+        $group: {
+          _id: "$approvalStatus",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    let totalJobsPosted = 0;
+    let approvedJobs = 0;
+    let rejectedJobs = 0;
+
+    jobStats.forEach(stat => {
+      totalJobsPosted += stat.count;
+
+      if (stat._id === "Approved") approvedJobs = stat.count;
+      if (stat._id === "Rejected") rejectedJobs = stat.count;
+    });
+
+    /* ----------------------------------------------------
+       2️⃣ APPLICATIONS DONE BY PROFESSIONAL
+    ---------------------------------------------------- */
+
+    const totalApplicationsDone = await Application.countDocuments({
+      applicant: professionalProfileId,
+      appliedByType: "professional"
+    });
+
+    /* ----------------------------------------------------
+       RESPONSE
+    ---------------------------------------------------- */
+
+    return {
+      totalJobsPosted,
+      approvedJobs,
+      rejectedJobs,
+      totalApplicationsDone
+    };
+
+  } catch (error) {
+    console.error("❌ Error in fetchProfessionalDashboardMetrics:", error);
+    throw new AppError(
+      error.message || "Failed to fetch professional dashboard metrics",
+      error.statusCode || 500
+    );
+  }
+};
 
 // candidate
 // export async function fetchOffcampusApplicationService(userId) {

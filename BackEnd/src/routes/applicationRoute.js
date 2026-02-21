@@ -1,7 +1,8 @@
 import express from "express";
 import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser ,unsaveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication, getShortlistedCompaniesForCollege, shortlistApplicantForCompany, rejectCompanyApplicationByCollege, scheduleInterview ,
 getCompanyDashboardMetrics,
-submitAlternateDates,getReferralApplicationsForProfessional
+submitAlternateDates,getReferralApplicationsForProfessional,
+getProfessionalDashboardMetrics
     
  } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
@@ -56,6 +57,7 @@ router.get('/manage/accept/', secureRoute, getAcceptedCandidatesByCompany);
 
 
 router.get('/company/metrics', secureRoute, getCompanyDashboardMetrics);
+router.get('/professional/metrics', secureRoute, getProfessionalDashboardMetrics);
 
 
 
