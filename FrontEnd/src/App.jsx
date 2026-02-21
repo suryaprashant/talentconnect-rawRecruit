@@ -230,6 +230,7 @@ import RefferalJobPosting from './pages/fresher/fresherDashboard/refferalJobs/Re
 import RefferalJobDetail from './pages/fresher/fresherDashboard/refferalJobs/RefferalJobDetails'
 import RefferalPosting from './pages/professional/dashboard/refferalJobs/RefferalJobListing'
 import RefferalDetail from './pages/professional/dashboard/refferalJobs/RefferalJobDetails'
+import ReferralManagement from './pages/professional/ReferralManagement/ReferralManagement'
 import StudentReferralJobs from './pages/students/studentDashboard/refferalJobs/RefferalJobListing'
 import StudentRefferalJobDetails from './pages/students/studentDashboard/refferalJobs/RefferalJobDetails'
 import OncampusApplicationStatus from "./pages/company/applicationStatus/OncampusApplicationStatus";
@@ -270,6 +271,7 @@ import OffCampusLayout from "./components/student/studentDashboard/offCampusList
 import InternshipLayout from "./components/student/studentDashboard/intershipOpportunity/InternshipLayout";
 import InternshipListingEmployer from "./pages/employer/jobManagement/internship/internahipListing";
 import SaveJob from "./components/common/savedJob/JobDetail"
+
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -278,6 +280,7 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Auth Routes */}
+      
       <Route path="/mock" element={<PostIntership />} />
       <Route path="/userselection" element={<RoleSelection />} />
       <Route path="/" element={<HomapPage />} />
@@ -463,6 +466,7 @@ function AppRoutes() {
               <Route path="/professional-dashboard/hackathon/:id" element={<ProfessionalDetail />} />
               <Route path="/professional-dashboard/Referral" element={<RefferalPosting />} />
               <Route path="/professional-dashboard/Referral/:jobId" element={<RefferalDetail />} />
+              <Route path="/professional-dashboard/Referral-management" element={<ReferralManagement />} />
 
               <Route path='professional/service-request' element={<RefPostingPage />} />
               <Route path='professional/service-request/post' element={<PostReferralJobPage />} />
