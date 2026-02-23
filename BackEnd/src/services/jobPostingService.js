@@ -2,6 +2,35 @@ import mongoose from 'mongoose';
 import { JobPostingTable } from '../models/jobPostingsModel.js';
 import Application from "../models/applicationModel.js";
 import OnboardingModel from '../models/studentonboardingModel.js';
+import { getStudentService } from './studentService.js';
+export const getProfessionalReferralsService = async (userId) => {
+  try {
+        // Step 1: 
+        // Get the student/onboarding profile first
+        const authUserId=userId
+        const userProfile = await getStudentService(authUserId);
+        const onboardingId = userProfile?.data?._id;
+
+        if (!onboardingId) {
+            console.log("No onboarding profile found for this user.");
+            return [];
+        }
+
+        console.log("Searching for jobs with candidatePosted ID:", onboardingId);
+
+        // Step 2: Query using the onboardingId found in your Compass screenshot
+        return await JobPostingTable.find({
+            candidatePosted: onboardingId,
+            jobType: "Referral"
+        })
+        .sort({ createdAt: -1 })
+        .lean();
+
+    } catch (error) {
+        console.error("Service Error:", error.message);
+        throw error;
+    }
+};
 
 // get totel job posted and it is in active state 
 export const getTotalJobPostedCount = async (filters = {}) => {

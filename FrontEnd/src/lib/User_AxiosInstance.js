@@ -175,6 +175,12 @@ export const postReferralJob = (jobData) => {
     });
 }
 
+export function getMyApprovedReferralpost(){
+  return axiosClient.get('/api/student-dashboard/posted-referral-job')
+  .then(response => response)
+    .catch(error => console.log("Error:", error));
+}
+
 export function getReferralJobListing() {
   return axiosClient.get(`/api/student-dashboard/referral-jobs`)
     .then(response => response)
@@ -267,3 +273,18 @@ export function ApplyForOffCampusJob(jobId) {
     .then(response => response)
     .catch(error => error);
 }
+
+
+export const getReferralApplications = (jobId) => {
+  return axiosClient.get(`/application/my-referral-applications`, {
+    params: {
+      jobId: jobId,
+      adminApprovalStatus: 'Approved'
+    }
+  });
+};
+
+export const updateApplicationStatusApi = (applicationId, status) => {
+  return axiosClient.patch(`/application/update-status/${applicationId}`, { status });
+  // REMOVE .then/.catch here so the component handles the logic
+};
