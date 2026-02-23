@@ -6,7 +6,8 @@ import {
 } from 'lucide-react';
 import axios from 'axios'; // Or your Professional Axios Instance
 // import ReferralApplicationsModal from './ReferralApplicationsModal';
-
+import {getMyApprovedReferralpost} from '@/lib/User_AxiosInstance'
+import ReferralApplicationsModal from './ReferralApplicationsModal';
 export default function ReferralManagement() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,10 +26,7 @@ export default function ReferralManagement() {
     try {
       // Updated API URL with your specific query parameters
       // Note: Use backticks if you need to make the jobId dynamic via a variable
-      const response = await axios.get(
-        'http://localhost:5000/api/student-dashboard/referral-jobs', 
-        
-      );
+      const response = await getMyApprovedReferralpost()
 
       // Accessing the data based on common backend structures
       const jobsData = response.data?.data || response.data || [];
@@ -69,7 +67,7 @@ export default function ReferralManagement() {
     (currentPage - 1) * itemsPerPage, 
     currentPage * itemsPerPage
   );
-
+  console.log(filteredJobs)
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
       <div className="container mx-auto px-4 py-8 pt-22">
@@ -214,16 +212,16 @@ export default function ReferralManagement() {
         </div>
       </div>
 
-      {/* Applications Modal
-      {/* <ReferralApplicationsModal 
+     <ReferralApplicationsModal 
         isOpen={isAppModalOpen}
         jobId={targetJob?._id}
         jobTitle={targetJob?.jobTitle}
         onClose={() => {
           setIsAppModalOpen(false);
           setTargetJob(null);
-        }} */}
-    
+        }}
+      />
     </div>
-  );
+    
+     );
 }

@@ -2,15 +2,18 @@ import express from "express";
 import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser ,unsaveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication, getShortlistedCompaniesForCollege, shortlistApplicantForCompany, rejectCompanyApplicationByCollege, scheduleInterview ,
 getCompanyDashboardMetrics,
 submitAlternateDates,getReferralApplicationsForProfessional,
-getProfessionalDashboardMetrics
+getProfessionalDashboardMetrics,
+ updateApplicationStatus
     
  } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
+//import { updateApplicationStatus } from '../controllers/applicationController.js';
 
 const router = express.Router();
 
 // api '.../application'
 // save opportunity
+router.patch('/update-status/:applicationId',secureRoute, updateApplicationStatus)
 router.post("/saveopportunity", secureRoute, saveJobByUser);
 router.delete("/saveopportunity/:jobId", secureRoute, unsaveJobByUser);
 router.get("/saveopportunity", secureRoute, fetchSavedJobs);

@@ -42,6 +42,7 @@ import { JobPostingTable } from "../models/jobPostingsModel.js";
 import  InterviewSchedule  from "../models/InterviewSchedule.Model.js";
 import { resolveStudentAuthId } from "../utils/resolveStudentAuthId.js";
 import { fetchReferralApplicationsService } from "../controllers/../services/adminService.js";
+import Application from "../models/applicationModel.js";
 // controllers/professionalController.js
 export const getReferralApplicationsForProfessional = async (req, res, next) => {
   try {
@@ -2045,3 +2046,38 @@ export async function submitAlternateDates(req, res) {
     });
   }
 }
+// controllers/applicationController.js
+
+
+export const updateApplicationStatus = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+        const { status } = req.body; // "Accepted" or "Rejected"
+
+        // Basic validation
+        if (!["Accepted", "Rejected"].includes(status)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Status must be either 'Accepted' or 'Rejected'" 
+            });
+        }
+
+        const updatedApplication = await Application.findByIdAndUpdate(
+            applicationId,
+            { currentStatus: status },
+            { new: true }
+        );
+
+        if (!updatedApplication) {
+            return res.status(404).json({ success: false, message: "Application not found" });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Status updated to ${status}`,
+            data: updatedApplication
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
