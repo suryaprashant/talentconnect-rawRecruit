@@ -1,6 +1,6 @@
 import express from "express";
 import adminAuth from "../../middlewares/adminMiddleware.js";
-import {getAdminDashboardOverView} from "../../controllers/admin/adminDashboardController.js"
+import {getAdminDashboardOverView, getAdminScheduledInterviews, scheduleInterviewByAdmin} from "../../controllers/admin/adminDashboardController.js"
 import { getPendingReferralJobsForAdmin, updateReferralJobApprovalStatus ,getAcceptedReferralJobsForAdmin} from "../../controllers/admin/jobDriveManagementController.js";
 import { getReferralApplicationsForAdmin, updateReferralApplicationStatus } from "../../controllers/admin/applicationManagementController.js";
 
@@ -47,5 +47,18 @@ router.patch(
   updateReferralApplicationStatus
 );
 
+//admin schedule interview for referral application
+router.post(
+  "/admin/schedule-interview",
+  adminAuth,
+  scheduleInterviewByAdmin
+);
 
+
+//admin get interview call
+router.get(
+  "/interviews",
+  adminAuth,
+  getAdminScheduledInterviews
+);
 export default router;

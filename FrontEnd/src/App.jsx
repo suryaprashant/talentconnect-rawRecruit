@@ -389,7 +389,7 @@ function AppRoutes() {
               <Route path="/student-dashboard/hackathon" element={<Hackathon />} />
               <Route path="/student-dashboard/hackathon/:id" element={<Detail />} />
               <Route path="/student-dashboard/hackathon/register/:event_ID" element={<HackathonRegistration />} />
-              <Route path="/student-dashboard/Referral" element={<StudentReferralJobs />} />
+              <Route path="/student-dashboard/Referral" element={<ReferralLayout />} />
               <Route path="/student-dashboard/Referral/:jobId" element={<StudentRefferalJobDetails />} />
               {/* Student Events Routes */}
               <Route path="/student-events/hackathon" element={<EventList event_name="hackathon" />} />
@@ -437,7 +437,7 @@ function AppRoutes() {
               <Route path="/fresher-dashboard/Off-campus" element={<OffCampusLayout />} />
               <Route path="/fresher-dashboard/Off-campus/:jobId" element={<FOffCampusJobDetail />} />
 
-              <Route path="/fresher-dashboard/Referral" element={<RefferalJobPosting />} />
+              <Route path="/fresher-dashboard/Referral" element={<ReferralLayout />} />
               <Route path="/fresher-dashboard/Referral/:jobId" element={<RefferalJobDetail />} />
 
               <Route path="/fresher-dashboard/hackathon" element={<FresherHackathon />} />
