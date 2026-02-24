@@ -12,6 +12,7 @@ import {
   getSavedCollegesService,
   fetchCollegeSideApplicationsByJobService,
   createInternshipApplicationService,
+  fetchProfessionalDashboardMetrics,
   // getApplicationService,
   // getOffCampusApplicantsService, fetchShortlistedCandidates, fetchInternshipApplicationService, fetchApplicationStatusService
 } from "../services/applicationService.js";
@@ -40,7 +41,28 @@ import { unsaveJobService } from "../services/applicationService.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import  InterviewSchedule  from "../models/InterviewSchedule.Model.js";
 import { resolveStudentAuthId } from "../utils/resolveStudentAuthId.js";
+import { fetchReferralApplicationsService } from "../controllers/../services/adminService.js";
+import Application from "../models/applicationModel.js";
+// controllers/professionalController.js
+export const getReferralApplicationsForProfessional = async (req, res, next) => {
+  try {
+    const professionalProfileId = req.user.profileId; 
 
+    // 1. Get the specific jobId from the URL query (?jobId=...)
+    const { jobId, adminApprovalStatus } = req.query;
+
+    // 2. Pass jobId into the service
+    const response = await fetchReferralApplicationsService({
+      professionalProfileId,
+      jobId, // <--- THIS IS THE KEY CHANGE
+      adminApprovalStatus: adminApprovalStatus || "Approved",
+    });
+
+    return res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+};
 export async function unsaveJobByUser(req, res) {
     const { jobId } = req.params; // jobId passed in the URL
     const userId = req.user._id;
@@ -393,10 +415,11 @@ export async function createIntershipApplication(req, res) {
   }
 }
 
-// referral
+// referral step 3 apply
 export async function createReferralApplication(req, res) {
   const { referralId } = req.body;
   const userId = req.user._id;
+  const userType = req.user.userType;
 
   try {
     // to get userId from user database
@@ -404,12 +427,16 @@ export async function createReferralApplication(req, res) {
     console.log(user, " ", referralId);
     if (!user || !referralId) return res.status(404).json({ msg: "Invalid" });
 
-    const application = await createApplicationService(
-      user.data[0]._id,
-      req.user.userType,
-      referralId,
-      "Referral"
-    );
+     const actorProfile = user.data[0];
+
+    const application = await createApplicationService({
+      appliedByUserId: actorProfile._id,     // 🔑 FIX
+      appliedByType: userType,               // 🔑 FIX
+      appliedForCompanyId: null,              // 🔑 Referral has no company context
+      jobId: referralId,                      // 🔑 FIX
+      jobType: "Referral",
+    });
+
     if (application.success === false)
       return res.status(403).json({ msg: application.message });
 
@@ -1938,6 +1965,25 @@ export const getCompanyDashboardMetrics = async (req, res) => {
   }
 };
 
+export const getProfessionalDashboardMetrics = async (req, res) => {
+  try {
+    const user = req.user;
+
+    const metrics = await fetchProfessionalDashboardMetrics(user);
+
+    res.status(200).json({
+      success: true,
+      data: metrics,
+    });
+  } catch (error) {
+    console.error("❌ Error in getProfessionalDashboardMetrics:", error);
+
+    res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
+    });
+  }
+};
 
 //alternate date controller
 export async function submitAlternateDates(req, res) {
@@ -2000,3 +2046,38 @@ export async function submitAlternateDates(req, res) {
     });
   }
 }
+// controllers/applicationController.js
+
+
+export const updateApplicationStatus = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+        const { status } = req.body; // "Accepted" or "Rejected"
+
+        // Basic validation
+        if (!["Accepted", "Rejected"].includes(status)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Status must be either 'Accepted' or 'Rejected'" 
+            });
+        }
+
+        const updatedApplication = await Application.findByIdAndUpdate(
+            applicationId,
+            { currentStatus: status },
+            { new: true }
+        );
+
+        if (!updatedApplication) {
+            return res.status(404).json({ success: false, message: "Application not found" });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Status updated to ${status}`,
+            data: updatedApplication
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};

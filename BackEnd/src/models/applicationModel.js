@@ -22,6 +22,13 @@ const ApplicationSchema = new mongoose.Schema(
             enum: ['employer','company','college','student','fresher','professional'],
             required: true
         },
+        adminApprovalStatus: {
+          type: String,
+          enum: ["Pending", "Approved", "Rejected"],
+          default: "Pending",
+          index: true
+        },
+
 
         // applicant: {
         //     type: mongoose.Schema.Types.ObjectId,
@@ -79,6 +86,7 @@ const ApplicationSchema = new mongoose.Schema(
                 "Offer Extended",
                 "Accepted",
                 "Rejected",
+                
             ],
             default: "Applied",
         },
