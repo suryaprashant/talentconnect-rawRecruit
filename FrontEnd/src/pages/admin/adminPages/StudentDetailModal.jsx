@@ -6,8 +6,11 @@ import {
 } from 'lucide-react';
 
 import { updateReferralApplicationStatus } from '@/lib/Admin_AxiosInstance'
+import InterviewSchedulerPopupAdmin from './ScheduleInterviewAdmin';
+
 export default function StudentDetailModal({ application, onClose, onStatusUpdate }) {
   const [updating, setUpdating] = useState(null); // stores 'Approved' or 'Rejected' to show specific loader
+  const [toggleScheduleInterviewPopup, setToggleScheduleInterviewPopup] = useState(false);
 
   if (!application) return null;
 
@@ -143,7 +146,7 @@ const handleStatusUpdate = async (statusAction) => {
 
         {/* Footer Actions */}
         <div className="px-8 py-6 border-t bg-white flex flex-wrap items-center justify-between gap-4">
-          <div>
+          <div className="flex gap-3 items-center">
             {applicant?.resume ? (
               <a
                 href={applicant.resume}
@@ -157,6 +160,15 @@ const handleStatusUpdate = async (statusAction) => {
             ) : (
               <span className="text-gray-400 italic">No resume uploaded</span>
             )}
+
+            {/* 🗓️ Schedule Interview */}
+            <button
+              onClick={() => setToggleScheduleInterviewPopup(true)}
+              className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg"
+            >
+              <Calendar size={18} />
+              Schedule Interview
+            </button>
           </div>
 
           <div className="flex gap-3">
@@ -179,6 +191,14 @@ const handleStatusUpdate = async (statusAction) => {
           </div>
         </div>
       </div>
+
+      {toggleScheduleInterviewPopup && (
+        <InterviewSchedulerPopupAdmin
+          setToggleScheduleInterviewPopup={setToggleScheduleInterviewPopup}
+          application={application}
+          job={application.job} 
+        />
+      )}
     </div>
   );
 }

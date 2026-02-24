@@ -119,13 +119,13 @@ function StudentSidebar({ activePath }) {
           label="Internship Opportunities" 
           active={activePath === '/application-status/Internship'} 
         /> 
-        {/* <SidebarNavItem 
+        <SidebarNavItem 
           to="/application-status/Referral" 
           icon={<FiUsers />} 
           label="Referral Jobs" 
           active={activePath === '/application-status/Referral'} 
         />
-        <SidebarNavItem 
+        {/*<SidebarNavItem 
           to="/application-status/event-status" 
           icon={<FiAward />} 
           label="Event Management" 

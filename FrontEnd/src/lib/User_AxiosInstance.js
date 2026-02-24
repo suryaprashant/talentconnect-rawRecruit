@@ -288,3 +288,23 @@ export const updateApplicationStatusApi = (applicationId, status) => {
   return axiosClient.patch(`/application/update-status/${applicationId}`, { status });
   // REMOVE .then/.catch here so the component handles the logic
 };
+
+export function scheduleInterviewByAdmin(payload) {
+  return axiosClient.post("/api/admin/dashboard/admin/schedule-interview", {
+    applicationId: payload.applicationId,
+    jobId: payload.jobId,
+
+    applicantProfileId: payload.applicantProfileId,
+    applicantAuthId: payload.applicantAuthId,
+    applicantType: payload.applicantType,
+
+    applicantName: payload.applicantName,
+
+    data: {
+      date: payload.data.date,
+      time: payload.data.time,
+      meetLink: payload.data.meetLink,
+      message: payload.data.message,
+    },
+  });
+}
