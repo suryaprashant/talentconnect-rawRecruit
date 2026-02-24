@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ReferralJobs from "@/pages/professional/dashboard/refferalJobs/RefferalJobListing";
-import ReferralJobDetailModal from "@/components/student/professionaDashboard/referralJobs/referralJobDetailModal";
+import ReferralJobDetailModal from "@/components/student/professionaDashboard/referralJobs/ReferralJobDetailModal";
 
 
 const ReferralLayout = () => {
