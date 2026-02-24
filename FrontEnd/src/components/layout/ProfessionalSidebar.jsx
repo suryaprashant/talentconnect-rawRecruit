@@ -28,12 +28,12 @@ function ProfessionalSidebar({ activePath }) {
       <SidebarNavItem to="/saved-jobs" icon={<FiBookmark />} label="Saved Jobs/Internships" active={activePath === '/saved-jobs'} />
 
       <SidebarNavGroup label="Professional Dashboard" icon={<FiPieChart />} active={activePath.includes('/professional-dashboard')}>
-        <SidebarNavItem 
+        {/*<SidebarNavItem 
           to="/professional-dashboard/job-listing" 
           icon={<FiBriefcase />} 
           label="Job Listings" 
           active={activePath === '/professional-dashboard/job-listing'} 
-        />
+        />*/}
         <SidebarNavItem 
           to="/professional-dashboard/Referral" 
           icon={<FiUsers />} 
@@ -46,6 +46,7 @@ function ProfessionalSidebar({ activePath }) {
           label="Hackathon" 
           active={activePath === '/professional-dashboard/hackathon'} 
         /> */}
+        
       </SidebarNavGroup>
             <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>
         <SidebarNavItem 
@@ -81,6 +82,9 @@ function ProfessionalSidebar({ activePath }) {
           active={activePath === '/service-request/manage-Referral'} 
         />
       </SidebarNavGroup>
+
+        <SidebarNavItem to="/professional-dashboard/Referral-management" icon={<FiHome />} label="Referral Management" active={activePath === '/professional-dashboard/Referral-management'} />
+
 
       <SidebarNavGroup label="Application Status" icon={<FiCheckCircle />} active={activePath.includes('/application-status')}>
         <SidebarNavItem 

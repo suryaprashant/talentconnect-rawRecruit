@@ -175,6 +175,12 @@ export const postReferralJob = (jobData) => {
     });
 }
 
+export function getMyApprovedReferralpost(){
+  return axiosClient.get('/api/student-dashboard/posted-referral-job')
+  .then(response => response)
+    .catch(error => console.log("Error:", error));
+}
+
 export function getReferralJobListing() {
   return axiosClient.get(`/api/student-dashboard/referral-jobs`)
     .then(response => response)
@@ -242,6 +248,19 @@ export const getStudentDashboardMetrics = async () => {
   }
 };
 
+export const getProfessionalDashboardMetrics = async () => {
+  try {
+    const response = await axiosClient.get('/application/professional/metrics', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // Add these functions to your User_AxiosInstance.js file
 export function getOffCampusJobDetail(jobId) {
   return axiosClient.get(`/api/student-dashboard/off-campus/${jobId}`)
@@ -253,4 +272,39 @@ export function ApplyForOffCampusJob(jobId) {
   return axiosClient.post(`/application/candidate/offcampus`, { jobId: jobId })
     .then(response => response)
     .catch(error => error);
+}
+
+
+export const getReferralApplications = (jobId) => {
+  return axiosClient.get(`/application/my-referral-applications`, {
+    params: {
+      jobId: jobId,
+      adminApprovalStatus: 'Approved'
+    }
+  });
+};
+
+export const updateApplicationStatusApi = (applicationId, status) => {
+  return axiosClient.patch(`/application/update-status/${applicationId}`, { status });
+  // REMOVE .then/.catch here so the component handles the logic
+};
+
+export function scheduleInterviewByAdmin(payload) {
+  return axiosClient.post("/api/admin/dashboard/admin/schedule-interview", {
+    applicationId: payload.applicationId,
+    jobId: payload.jobId,
+
+    applicantProfileId: payload.applicantProfileId,
+    applicantAuthId: payload.applicantAuthId,
+    applicantType: payload.applicantType,
+
+    applicantName: payload.applicantName,
+
+    data: {
+      date: payload.data.date,
+      time: payload.data.time,
+      meetLink: payload.data.meetLink,
+      message: payload.data.message,
+    },
+  });
 }

@@ -240,7 +240,7 @@ function PostReferralJobPage() {
             {/* Form content from CreateJob */}
             <div className="max-w-3xl mx-auto">
                 <div className="bg-white border border-gray-200 rounded-md p-6 mb-6">
-                    <h2 className="text-lg font-bold mb-1">Basic Job Details</h2>
+                    <h2 className="text-lg font-bold mb-1">Basic Job Details </h2>
                     <p className="text-sm text-gray-600 mb-4">Provide the core details about this job opportunity.</p>
 
                     <div className="mb-4">

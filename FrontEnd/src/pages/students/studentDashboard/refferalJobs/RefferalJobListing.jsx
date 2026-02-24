@@ -1018,7 +1018,7 @@ const StudentRefferalJobListings = () => {
                   <div
                     key={job._id}
                     className="h-full flex transform transition-all duration-200 hover:scale-[1.02] cursor-pointer"
-                    onClick={() => navigate(`/student-dashboard/referral-jobs/${job._id}`)}
+                    onClick={() => navigate(`/student-dashboard/Referral/${job._id}`)}
                   >
                     <div className="w-full">
                       {/* Custom Job Card Component */}

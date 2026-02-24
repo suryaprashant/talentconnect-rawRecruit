@@ -1,15 +1,19 @@
 import express from "express";
 import { createOffcampusApplication, createIntershipApplication, createJobListingApplication, saveJobByUser ,unsaveJobByUser, getApplicationsByJob, getCollegeApplicationsByJob, createOncampusApplication, createPoolcampusApplication, shortlistApplicant, acceptApplicant, rejectApplicant, getShortlistedCandidatesByCompany, getAcceptedCandidatesByCompany, fetchSavedJobs, createCampusInternshipApplication, getUserApplicationStatus, createReferralApplication, getShortlistedCompaniesForCollege, shortlistApplicantForCompany, rejectCompanyApplicationByCollege, scheduleInterview ,
 getCompanyDashboardMetrics,
-submitAlternateDates
+submitAlternateDates,getReferralApplicationsForProfessional,
+getProfessionalDashboardMetrics,
+ updateApplicationStatus
     
  } from "../controllers/applicationController.js";
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
+//import { updateApplicationStatus } from '../controllers/applicationController.js';
 
 const router = express.Router();
 
 // api '.../application'
 // save opportunity
+router.patch('/update-status/:applicationId',secureRoute, updateApplicationStatus)
 router.post("/saveopportunity", secureRoute, saveJobByUser);
 router.delete("/saveopportunity/:jobId", secureRoute, unsaveJobByUser);
 router.get("/saveopportunity", secureRoute, fetchSavedJobs);
@@ -56,6 +60,7 @@ router.get('/manage/accept/', secureRoute, getAcceptedCandidatesByCompany);
 
 
 router.get('/company/metrics', secureRoute, getCompanyDashboardMetrics);
+router.get('/professional/metrics', secureRoute, getProfessionalDashboardMetrics);
 
 
 
@@ -73,5 +78,12 @@ router.get('/manage/college', secureRoute, getCollegeApplicationsByJob);
 router.post('/manage/schedule', secureRoute, scheduleInterview);
 
 router.post('/:jobId/submit' , secureRoute , submitAlternateDates) ;
+
+// router.js
+router.get(
+  "/my-referral-applications",
+  secureRoute, // Ensures req.user.profileId is populated
+  getReferralApplicationsForProfessional
+);
 
 export default router;

@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import Auth from "../models/authModel.js";
 
 const adminAuth = async (req, res, next) => {
+  
+
   try {
     let token;
 
@@ -24,6 +26,8 @@ const adminAuth = async (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await Auth.findById(decoded.userId);
+    console.log("Decoded token:", decoded);
+    console.log("User from DB:", user?._id, user?.userType);
 
     if (!user || user.userType !== "admin") {
       return res.status(403).json({
