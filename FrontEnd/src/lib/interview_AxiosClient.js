@@ -28,3 +28,8 @@ export const getInterviewById = (id) =>
 
 export const updateInterviewStatus = (id, status) =>
   axiosClient.patch(`/interviews/${id}/status`, { status });
+
+
+export const getAdminInterviews = () => {
+  return axiosClient.get("/api/admin/dashboard/interviews");
+};
