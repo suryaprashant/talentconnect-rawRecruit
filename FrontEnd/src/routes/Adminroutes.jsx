@@ -13,6 +13,7 @@ import NotFound from "@/pages/NotFound";
 import AdminSidebar from "../components/layout/AdminSidebar";
 import AllReferralPost from "@/pages/admin/adminPages/AllReferralPost";
 import ManageReferral from "@/pages/admin/adminPages/ManageReferral";
+import ScheduledInterviewPage from "@/pages/admin/adminPages/ScheduledInterviewPage";
 
 const AdminRoutes = () => {
   return (
@@ -35,6 +36,7 @@ const AdminRoutes = () => {
         <Route path="applications" element={<AdminApplication />} />
         <Route path="referral-posted" element={<AllReferralPost />} />
         <Route path="manage-referral" element={<ManageReferral/>}/>
+        <Route path="scheduled-interviews" element={<ScheduledInterviewPage/>}/>
         <Route path="*" element={<NotFound />} />
 
       </Route>

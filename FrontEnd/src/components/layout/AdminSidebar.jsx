@@ -18,6 +18,7 @@ const sidebarItems = [
   { name: "User Management", to: "/admin/users", icon: <FaUsers /> },
   {name:   "referral posted", to: "/admin/referral-posted", icon :<IoAlbums />},
   { name:  "Manage Referral", to:"/admin/manage-referral",icon:<RiAccountPinCircleFill />},
+  { name:  "Scheduled Interviews", to:"/admin/scheduled-interviews",icon:<RiAccountPinCircleFill />},
   { name: "Jobs & Drives", to: "/admin/jobs", icon: <FaBriefcase /> },
   { name: "Applications", to: "/admin/applications", icon: <FaClipboardList /> },
   { name: "Settings", to: "/admin/settings", icon: <FaCog /> },
