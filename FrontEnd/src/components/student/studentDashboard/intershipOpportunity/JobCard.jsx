@@ -191,13 +191,13 @@ const JobCard = ({ job, userType, onClick }) => {
     }
   };
 
-  // Get job role badges as pills (updated to show full job roles prominently)
+  // Get job role badges as pills with +X more format
   const getJobRoleBadges = () => {
     if (!job.jobRoles?.length) {
       // Try to get jobTitle or lookingFor as fallback
       const title = job.jobTitle || job.lookingFor || "Job Role";
       return (
-        <div className="flex items-center">
+        <div className="flex items-center mt-1">
           <span className="px-3 py-1 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border border-blue-200 rounded-full text-sm font-medium">
             {title}
           </span>
@@ -213,10 +213,12 @@ const JobCard = ({ job, userType, onClick }) => {
       "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border-yellow-200",
     ];
     
-    // Show all job roles (up to 3) in the main card area
+    const visibleRoles = job.jobRoles.slice(0, 4);
+    const remainingCount = job.jobRoles.length > 4 ? job.jobRoles.length - 4 : 0;
+    
     return (
-      <div className="flex flex-wrap gap-2 mt-3">
-        {job.jobRoles.slice(0, 3).map((role, index) => (
+      <div className="flex flex-wrap gap-2">
+        {visibleRoles.map((role, index) => (
           <span 
             key={index} 
             className={`px-3 py-1 rounded-full text-sm font-medium border ${roleColors[index % roleColors.length]}`}
@@ -224,11 +226,86 @@ const JobCard = ({ job, userType, onClick }) => {
             {role}
           </span>
         ))}
-        {job.jobRoles.length > 3 && (
+        {remainingCount > 0 && (
           <span className="px-3 py-1 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full text-sm font-medium">
-            +{job.jobRoles.length - 3}
+            +{remainingCount} more
           </span>
         )}
+      </div>
+    );
+  };
+
+  // Get student streams badges with +X more format
+  const getStreamBadges = () => {
+    if (!job.studentStreams?.length) return null;
+    
+    const streamColors = [
+      "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
+      "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border-purple-200",
+      "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700 border-pink-200",
+      "bg-gradient-to-r from-green-100 to-green-50 text-green-700 border-green-200",
+    ];
+    
+    const visibleStreams = job.studentStreams.slice(0, 3);
+    const remainingCount = job.studentStreams.length > 3 ? job.studentStreams.length - 3 : 0;
+    
+    return (
+      <div className="mt-2">
+        {/* <div className="text-xs font-semibold text-gray-600 mb-1">Streams:</div> */}
+        <div className="flex flex-wrap gap-2">
+          {visibleStreams.map((stream, index) => (
+            <span
+              key={index}
+              className={`px-3 py-1 rounded-full text-xs font-medium border ${streamColors[index % streamColors.length]}`}
+            >
+              {stream}
+            </span>
+          ))}
+          {remainingCount > 0 && (
+            <span className="px-3 py-1 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full text-xs font-medium">
+              +{remainingCount} more
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Get skills badges with 2 rows and +X more format
+  const getSkillsBadges = () => {
+    if (!job.skills?.length) return null;
+    
+    const skillColors = [
+      "px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs",
+      "px-3 py-1 bg-indigo-100 text-indigo-800 border border-indigo-300 rounded-full text-xs",
+      "px-3 py-1 bg-pink-100 text-pink-800 border border-pink-300 rounded-full text-xs",
+      "px-3 py-1 bg-teal-100 text-teal-800 border border-teal-300 rounded-full text-xs",
+      "px-3 py-1 bg-orange-100 text-orange-800 border border-orange-300 rounded-full text-xs",
+      "px-3 py-1 bg-cyan-100 text-cyan-800 border border-cyan-300 rounded-full text-xs",
+    ];
+    
+    // Show up to 5 skills (which typically fits in 2 rows)
+    const visibleSkills = job.skills.slice(0, 5);
+    const remainingCount = job.skills.length > 5 ? job.skills.length - 5 : 0;
+    
+    return (
+      <div className="mt-2">
+        <div className="text-xs font-semibold text-gray-600 mb-1"></div>
+        <div className="flex flex-wrap gap-1">
+          {visibleSkills.map((skill, index) => (
+            <span
+              key={index}
+              className={skillColors[index % skillColors.length]}
+            >
+              {skill}
+            </span>
+          ))}
+          {remainingCount > 0 && (
+            <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-1 rounded-full border">
+              +{remainingCount} more
+            </span>
+          )}
+        </div>
       </div>
     );
   };
@@ -267,7 +344,7 @@ const JobCard = ({ job, userType, onClick }) => {
         </div>
 
         {/* Company Name with logo */}
-        <div className="flex justify-between items-start gap-2 mb-3">
+        <div className="flex justify-between items-start gap-2">
           <div className="flex-1">
             <h3 
               className="text-black font-bold text-lg truncate cursor-pointer hover:text-blue-600"
@@ -295,19 +372,19 @@ const JobCard = ({ job, userType, onClick }) => {
           </div>
         </div>
 
-        {/* Job Roles as prominent pills */}
+        {/* Job Roles as prominent pills with +X more */}
         {getJobRoleBadges()}
 
         {/* Urgent Hiring Badge */}
-        {job.urgent && (
+        {/* {job.urgent && (
           <div className="mt-3">
             <span className="px-3 py-1 bg-red-100 text-red-700 border border-red-300 rounded-full text-xs font-semibold">
               Urgent Hiring
             </span>
           </div>
-        )}
+        )} */}
 
-        {/* Employment Type Badge */}
+        {/* Employment Type Badge - commented out as in original */}
         {/* {job.employmentType && (
           <div className="mt-3">
             <span className="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-xs font-semibold">
@@ -316,48 +393,20 @@ const JobCard = ({ job, userType, onClick }) => {
           </div>
         )} */}
 
-        {/* Streams */}
-        {job.studentStreams?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {job.studentStreams.slice(0, 2).map((stream, i) => (
-              <span
-                key={i}
-                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
-              >
-                {stream}
-              </span>
-            ))}
-            {job.studentStreams.length > 2 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{job.studentStreams.length - 2}</span>
-            )}
-          </div>
-        )}
+        {/* Streams with +X more */}
+        {getStreamBadges()}
 
-        {/* Skills */}
-        {job.skills?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {job.skills.slice(0, 2).map((skill, i) => (
-              <span
-                key={i}
-                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
-              >
-                {skill}
-              </span>
-            ))}
-            {job.skills.length > 2 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{job.skills.length - 2}</span>
-            )}
-          </div>
-        )}
+        {/* Skills with 2 rows and +X more */}
+        {getSkillsBadges()}
 
         {/* Description */}
-        <div className="mt-3 flex-1">
+        {/* <div className="mt-3 flex-1">
           <p className="text-sm text-gray-700 line-clamp-2">
             {job.description || 
              job.jobDescription || 
              `${companyName} is hiring for various positions.`}
           </p>
-        </div>
+        </div> */}
       </div>
 
       {/* BOTTOM SECTION - White background */}
@@ -380,13 +429,12 @@ const JobCard = ({ job, userType, onClick }) => {
             </div>
           </div>
 
-          <Link
-            to={routePath}
-            onClick={handleDetailsClick}
-            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
-          >
+          <button
+           //onClick={handleDetailsClick}
+            className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition">
+
             Details
-          </Link>
+          </button>
         </div>
       </div>
     </div>

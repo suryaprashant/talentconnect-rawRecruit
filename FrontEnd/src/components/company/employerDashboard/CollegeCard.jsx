@@ -211,7 +211,7 @@ const CollegeCard = ({ college, onClick }) => {
   const stableColor = getStableColor(college._id || collegeName);
   const description = getDescription();
 
-  // Get colored badges for degree types
+  // Get colored badges for degree types - with +X more format
   const getDegreeBadges = () => {
     if (!college.degreeType?.length) return null;
     
@@ -223,9 +223,12 @@ const CollegeCard = ({ college, onClick }) => {
       "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border-yellow-200",
     ];
     
+    const visibleDegrees = college.degreeType.slice(0, 4);
+    const remainingCount = college.degreeType.length > 4 ? college.degreeType.length - 4 : 0;
+    
     return (
       <div className="flex flex-wrap gap-1 mt-2">
-        {college.degreeType.slice(0, 3).map((degree, index) => (
+        {visibleDegrees.map((degree, index) => (
           <span 
             key={index} 
             className={`text-sm font-medium px-2 py-0.5 rounded-full border ${roleColors[index % roleColors.length]}`}
@@ -233,11 +236,122 @@ const CollegeCard = ({ college, onClick }) => {
             {degree}
           </span>
         ))}
-        {college.degreeType.length > 3 && (
+        {remainingCount > 0 && (
           <span className="text-sm font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-0.5 rounded-full border border-gray-200">
-            +{college.degreeType.length - 3}
+            +{remainingCount} more
           </span>
         )}
+      </div>
+    );
+  };
+
+  // Get student streams badges (branch) - with +X more format
+  const getStreamBadges = () => {
+    if (!college.studentStreams?.length) return null;
+    
+    const streamColors = [
+      "bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border-blue-200",
+      "bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border-purple-200",
+      "bg-gradient-to-r from-pink-100 to-pink-50 text-pink-700 border-pink-200",
+      "bg-gradient-to-r from-green-100 to-green-50 text-green-700 border-green-200",
+      "bg-gradient-to-r from-yellow-100 to-yellow-50 text-yellow-700 border-yellow-200",
+    ];
+    
+    const visibleStreams = college.studentStreams.slice(0, 4);
+    const remainingCount = college.studentStreams.length > 4 ? college.studentStreams.length - 4 : 0;
+    
+    return (
+      <div className="flex flex-wrap gap-1 mt-1">
+        {/* <span className="text-xs font-semibold text-gray-600 mr-1">Branches:</span> */}
+        {visibleStreams.map((stream, index) => (
+          <span 
+            key={index} 
+            className={`text-xs font-medium px-2 py-0.5 rounded-full border ${streamColors[index % streamColors.length]}`}
+          >
+            {stream}
+          </span>
+        ))}
+        {remainingCount > 0 && (
+          <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-0.5 rounded-full border border-gray-200">
+            +{remainingCount} more
+          </span>
+        )}
+      </div>
+    );
+  };
+
+  // Get skills badges - with 2 rows and +X more format
+  const getSkillsBadges = () => {
+    if (!college.skills?.length) return null;
+    
+    const skillColors = [
+      "px-3 py-1 bg-purple-100 text-purple-800 border border-purple-300 rounded-full text-xs",
+      "px-3 py-1 bg-indigo-100 text-indigo-800 border border-indigo-300 rounded-full text-xs",
+      "px-3 py-1 bg-pink-100 text-pink-800 border border-pink-300 rounded-full text-xs",
+      "px-3 py-1 bg-teal-100 text-teal-800 border border-teal-300 rounded-full text-xs",
+      "px-3 py-1 bg-orange-100 text-orange-800 border border-orange-300 rounded-full text-xs",
+      "px-3 py-1 bg-cyan-100 text-cyan-800 border border-cyan-300 rounded-full text-xs",
+    ];
+    
+    // Show up to 5 skills (which typically fits in 2 rows)
+    const visibleSkills = college.skills.slice(0, 5);
+    const remainingCount = college.skills.length > 5 ? college.skills.length - 5 : 0;
+    
+    return (
+      <div className="mb-3">
+        <div className="text-xs font-semibold text-gray-600 mb-1"></div>
+        <div className="flex flex-wrap gap-1">
+          {visibleSkills.map((skill, index) => (
+            <span
+              key={index}
+              className={skillColors[index % skillColors.length]}
+            >
+              {skill}
+            </span>
+          ))}
+          {remainingCount > 0 && (
+            <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-1 rounded-full border">
+              +{remainingCount} more
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Get round details (branch + skills) from roundDetails array
+  const getRoundDetailsBadges = () => {
+    if (!college.roundDetails?.length) return null;
+    
+    // Create a combined representation for first few rounds
+    const visibleRounds = college.roundDetails.slice(0, 2);
+    const remainingCount = college.roundDetails.length > 2 ? college.roundDetails.length - 2 : 0;
+    
+    return (
+      <div className="mb-3">
+        {/* <div className="text-xs font-semibold text-gray-600 mb-1">Branches & Skills:</div> */}
+        <div className="space-y-1">
+          {visibleRounds.map((round, index) => (
+            <div key={index} className="flex flex-wrap items-center gap-1">
+              <span className="text-xs font-medium bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">
+                {round.branch || 'Branch'}
+              </span>
+              <span className="text-xs text-gray-400">→</span>
+              {round.skills ? (
+                <span className="text-xs bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200">
+                  {round.skills}
+                </span>
+              ) : (
+                <span className="text-xs text-gray-500">No skills specified</span>
+              )}
+            </div>
+          ))}
+          {remainingCount > 0 && (
+            <span className="text-xs font-medium bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 px-2 py-0.5 rounded-full border">
+              +{remainingCount} more rounds
+            </span>
+          )}
+        </div>
       </div>
     );
   };
@@ -277,7 +391,7 @@ const CollegeCard = ({ college, onClick }) => {
               {collegeName}
             </h3>
             
-            {/* Degree Types as colored badges */}
+            {/* Degree Types as colored badges with +X more */}
             {getDegreeBadges()}
           </div>
 
@@ -308,26 +422,19 @@ const CollegeCard = ({ college, onClick }) => {
           </div>
         )}
 
-        {/* Amenities as Skills */}
-        {college.amenitiesRequired?.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            {college.amenitiesRequired.slice(0, 3).map((amenity, index) => (
-              <span
-                key={index}
-                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
-              >
-                {amenity}
-              </span>
-            ))}
-            {college.amenitiesRequired.length > 3 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{college.amenitiesRequired.length - 3}</span>
-            )}
-          </div>
-        )}
+        {/* Student Streams (Branches) with +X more */}
+        {getStreamBadges()}
 
-        {/* Company Types */}
-        {college.companyType?.length > 0 && (
+        {/* Skills with 2 rows and +X more */}
+        {getSkillsBadges()}
+
+        {/* Round Details (Branch + Skills) */}
+        {/* {getRoundDetailsBadges()} */}
+
+        {/* Company Types with +X more */}
+        {/* {college.companyType?.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
+            <span className="text-xs font-semibold text-gray-600 mr-1">Preferred:</span>
             {college.companyType.slice(0, 2).map((type, index) => (
               <span
                 key={index}
@@ -337,17 +444,39 @@ const CollegeCard = ({ college, onClick }) => {
               </span>
             ))}
             {college.companyType.length > 2 && (
-              <span className="px-2 py-1 text-xs text-gray-600">+{college.companyType.length - 2}</span>
+              <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
+                +{college.companyType.length - 2} more
+              </span>
             )}
           </div>
-        )}
+        )} */}
+
+        {/* Amenities as Skills */}
+        {/* {college.amenitiesRequired?.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            <span className="text-xs font-semibold text-gray-600 mr-1">Amenities:</span>
+            {college.amenitiesRequired.slice(0, 3).map((amenity, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 border border-gray-300 text-gray-700 rounded-full text-xs bg-white/50"
+              >
+                {amenity}
+              </span>
+            ))}
+            {college.amenitiesRequired.length > 3 && (
+              <span className="px-2 py-1 text-xs bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 border border-gray-200 rounded-full">
+                +{college.amenitiesRequired.length - 3} more
+              </span>
+            )}
+          </div>
+        )} */}
 
         {/* Description */}
-        <div className="flex-1">
+        {/* <div className="flex-1 mt-2">
           <p className="text-sm text-gray-700 line-clamp-2">
             {description}
           </p>
-        </div>
+        </div> */}
       </div>
 
       {/* BOTTOM SECTION - White background */}

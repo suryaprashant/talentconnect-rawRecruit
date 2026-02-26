@@ -343,11 +343,11 @@ const navigate = useNavigate();
         )}
 
         {/* Description */}
-        <div className="flex-1">
+        {/* <div className="flex-1">
           <p className="text-sm text-gray-700 line-clamp-2">
             {description}
           </p>
-        </div>
+        </div> */}
       </div>
 
       {/* BOTTOM SECTION - White background */}

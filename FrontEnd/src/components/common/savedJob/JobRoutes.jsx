@@ -1,8 +1,8 @@
-// src/routes/JobRoutes.jsx
+// src/components/common/savedJob/JobRoutes.jsx
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import JobList from "./JobList";
-import JobDetail from "./JobDetail";
+import JobDetailRouter from "./JobDetailRouter";
 import JobLayout from "./JobLayout";
 
 const JobRoutes = () => (
@@ -15,11 +15,13 @@ const JobRoutes = () => (
         </JobLayout>
       }
     />
+    
+    {/* Use the router component to decide which detail page to show */}
     <Route
-      path="/jobType/:id"
+      path="/job/:id"
       element={
         <JobLayout>
-          <JobDetail />
+          <JobDetailRouter />
         </JobLayout>
       }
     />

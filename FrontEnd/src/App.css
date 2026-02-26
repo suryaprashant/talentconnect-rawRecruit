@@ -5,6 +5,53 @@
   text-align: center;
 } */
 
+.marquee-wrapper {
+  display: flex;
+  justify-content: center;   /* centers the whole ticker */
+  width: 100%;
+  overflow: hidden;
+}
+
+.marquee {
+  width: 600px;              /* control visible area */
+  overflow: hidden;
+}
+
+.marquee-content {
+  display: flex;
+  width: max-content;
+  animation: scroll 18s linear infinite;
+}
+
+.marquee-content > * {
+  flex-shrink: 0;
+}
+
+.marquee-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 40px;
+  white-space: nowrap;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
+
+
+
+
+
+
+
 .logo {
   height: 6em;
   padding: 1.5em;

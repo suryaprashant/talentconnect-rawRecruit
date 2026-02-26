@@ -142,18 +142,27 @@ const ContactUs = () => {
               <div className="p-3 bg-gradient-to-br from-[#667eea]/20 to-[#764ba2]/20 rounded-lg mr-4">
                 <MapPin className="h-5 w-5 text-[#667eea]" />
               </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">Office</h2>
-                <p className="text-gray-600">Bengaluru, Karnataka, India</p>
-                <a
-                  href="https://maps.google.com/?q=Bengaluru, Karnataka, India"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#667eea] hover:text-[#764ba2] transition-colors mt-1 inline-block"
-                >
-                  Get Directions
-                </a>
-              </div>
+           <div>
+  <h2 className="text-lg font-semibold text-gray-900 mb-1">
+    Office
+  </h2>
+
+  <p className="text-gray-600">
+    RUKMINI VENKATASWAMY REDDY ARCADE, B-Block, Ashoka Lane,
+    Green Glen Layout, Bellandur, Bangalore, Karnataka - 560103
+  </p>
+
+  <a
+    href="https://maps.google.com/?q=RUKMINI%20VENKATASWAMY%20REDDY%20ARCADE,%20B-Block,%20Ashoka%20Lane,%20Green%20Glen%20Layout,%20Bellandur,%20Bangalore,%20Karnataka%20560103"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-[#667eea] hover:text-[#764ba2] transition-colors mt-1 inline-block underline-offset-2 hover:underline"
+    aria-label="Get directions to office on Google Maps"
+  >
+    Get Directions
+  </a>
+</div>
+
             </div>
           </div>
         </div>

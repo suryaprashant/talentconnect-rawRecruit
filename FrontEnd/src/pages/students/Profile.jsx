@@ -8,8 +8,121 @@ import axios from 'axios';
 import { Country, State, City } from 'country-state-city';
 import { Calendar } from "lucide-react";
 import CreatableSelect from 'react-select/creatable';
+
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
+
+import Select from 'react-select';
+const customSelectStyles = {
+  control: (base, state) => ({
+    ...base,
+    minHeight: '48px',
+    borderRadius: '16px',
+    padding: '4px 8px',
+    border: state.isFocused 
+      ? '2px solid transparent' 
+      : '1px solid #e5e7eb',
+    background: 'rgba(255, 255, 255, 0.65)',
+    backdropFilter: 'blur(10px)',
+    boxShadow: state.isFocused
+      ? '0 0 0 3px rgba(102, 126, 234, 0.15)'
+      : 'none',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      borderColor: '#c7d2fe',
+    },
+  }),
+
+  valueContainer: (base) => ({
+    ...base,
+    padding: '2px 6px',
+    gap: '6px',
+  }),
+
+  placeholder: (base) => ({
+    ...base,
+    color: '#9ca3af',
+    fontWeight: 400,
+  }),
+
+  singleValue: (base) => ({
+    ...base,
+    color: '#374151',
+    fontWeight: 500,
+  }),
+
+  multiValue: (base) => ({
+    ...base,
+    background: 'linear-gradient(135deg, rgba(165,180,252,0.25), rgba(196,181,253,0.25))',
+    borderRadius: '999px',
+    padding: '2px 6px',
+  }),
+
+  multiValueLabel: (base) => ({
+    ...base,
+    color: '#5b21b6',
+    fontWeight: 500,
+  }),
+
+  multiValueRemove: (base) => ({
+    ...base,
+    borderRadius: '999px',
+    color: '#6b7280',
+    ':hover': {
+      backgroundColor: 'rgba(239, 68, 68, 0.15)',
+      color: '#ef4444',
+    },
+  }),
+
+  dropdownIndicator: (base, state) => ({
+    ...base,
+    color: state.isFocused ? '#667eea' : '#9ca3af',
+    transition: 'all 0.2s ease',
+    ':hover': {
+      color: '#667eea',
+    },
+  }),
+
+  clearIndicator: (base) => ({
+    ...base,
+    color: '#9ca3af',
+    ':hover': {
+      color: '#ef4444',
+    },
+  }),
+
+  menu: (base) => ({
+    ...base,
+    marginTop: '8px',
+    borderRadius: '16px',
+    background: 'rgba(255, 255, 255, 0.85)',
+    backdropFilter: 'blur(14px)',
+    border: '1px solid rgba(229, 231, 235, 0.6)',
+    boxShadow: '0 10px 40px rgba(102, 126, 234, 0.15)',
+    overflow: 'hidden',
+  }),
+
+  menuList: (base) => ({
+    ...base,
+    padding: '8px',
+  }),
+
+  option: (base, state) => ({
+    ...base,
+    borderRadius: '12px',
+    padding: '10px 14px',
+    fontWeight: 500,
+    cursor: 'pointer',
+    backgroundColor: state.isSelected
+      ? 'rgba(165, 180, 252, 0.35)'
+      : state.isFocused
+      ? 'rgba(243, 244, 246, 0.7)'
+      : 'transparent',
+    color: '#374151',
+    transition: 'all 0.15s ease',
+  }),
+};
 
 
 
@@ -73,8 +186,7 @@ function Profile() {
   const [projectFile, setProjectFile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isJobRolesDropdownOpen, setIsJobRolesDropdownOpen] = useState(false);
-  const jobRolesDropdownRef = useRef(null);
+
   
   const predefinedMaritalStatuses = ['Single', 'Married', 'Divorced', 'Widowed', 'Prefer not to say'];
   const predefinedEthnicities = ['Asian', 'Black or African American', 'Hispanic or Latino', 'Native American or Alaska Native', 'White', 'Two or More Races', 'Prefer not to say'];
@@ -154,13 +266,10 @@ function Profile() {
     fetchUserProfileData();
   }, []);
 
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (jobRolesDropdownRef.current && !jobRolesDropdownRef.current.contains(event.target)) setIsJobRolesDropdownOpen(false);
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+
+  console.log(profileData)
+
+
 
   const handleProfessionalSwitch = async () => {
     const isConfirmed = window.confirm(
@@ -410,12 +519,7 @@ function Profile() {
   const handleProfileImageClick = () => document.getElementById('profileImageUpload').click();
   const handleBackgroundImageClick = () => document.getElementById('backgroundImageUpload').click();
   const handleResumeClick = () => document.getElementById('resume-upload').click();
-  const handleCustomMultiSelectToggle = (field, item) => {
-    setProfileData(prev => {
-      const current = prev[field] || [];
-      return { ...prev, [field]: current.includes(item) ? current.filter(i => i !== item) : [...current, item] };
-    });
-  };
+
 
   const handleLocationChange = (selectedOptions) => {
     const locations = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
@@ -428,24 +532,30 @@ function Profile() {
   }));
 
   const handleLookingForChange = (option) => {
-    let newVal;
-    if (option === 'Both') {
-        newVal = ['Job', 'Internship'];
-    } else {
-        newVal = option;
-    }
-    handleProfileDataChange('lookingFor', newVal);
-  };
+  let newVal;
+  if (option === 'Both') {
+    // Set as an array of both valid enum values
+    newVal = ['Job', 'Internship']; 
+  } else {
+    // Set as an array with a single valid enum value
+    newVal = [option];
+  }
+  handleProfileDataChange('lookingFor', newVal);
+};
 
-  const isLookingForActive = (option) => {
-    const val = profileData.lookingFor;
-    if (option === 'Both') {
-        return Array.isArray(val) && val.includes('Job') && val.includes('Internship');
-    }
-    if (val === option) return true;
-    if (Array.isArray(val) && val.includes(option) && val.length === 1) return true;
-    return false;
-  };
+const isLookingForActive = (option) => {
+  const val = profileData.lookingFor;
+  
+  // Ensure we are working with an array
+  const currentArray = Array.isArray(val) ? val : [val];
+
+  if (option === 'Both') {
+    return currentArray.includes('Job') && currentArray.includes('Internship');
+  }
+  
+  // For single options, they are active only if the other is NOT present
+  return currentArray.includes(option) && currentArray.length === 1;
+};
 
   const renderContent = () => {
     if (loading) return <div className="text-center py-8 text-gray-600">Loading profile data...</div>;
@@ -888,24 +998,7 @@ function Profile() {
                           </div>
                         </div>
 
-                        <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#bbf7d0]/10 to-[#86efac]/10 shadow-sm">
-                          <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                            Looking for
-                          </h5>
-                          <div className="flex flex-wrap gap-2">
-                              {Array.isArray(profileData.lookingFor) && profileData.lookingFor.length > 0 ? (
-                                  profileData.lookingFor.map((item) => (
-                                      <Badge key={item} variant="primary" size="md" className="bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30 rounded-xl">
-                                        {item}
-                                      </Badge>
-                                  ))
-                              ) : (
-                                  <Badge variant="primary" size="md" className="bg-gradient-to-r from-[#bbf7d0]/20 to-[#86efac]/20 text-[#065f46] border border-[#bbf7d0]/30 rounded-xl">
-                                    {profileData.lookingFor || 'N/A'}
-                                  </Badge>
-                              )}
-                          </div>
-                        </div>
+                      
 
                         <div className="p-4 border border-gray-100 rounded-xl bg-gradient-to-r from-[#fbcfe8]/10 to-[#f9a8d4]/10 shadow-sm">
                           <h5 className="text-lg font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
@@ -1166,7 +1259,7 @@ function Profile() {
                 </div>
                 <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Your Layo
+                        
                     </label>
                     {isProfileEditing ? (
                         <textarea
@@ -1396,16 +1489,26 @@ function Profile() {
                     Interested Industry Type
                   </label>
                   {isProfileEditing ? (
-                    <select
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea] bg-white/50"
-                      value={profileData.industry && profileData.industry.length > 0 ? profileData.industry[0] : ''}
-                      onChange={(e) => handleProfileDataChange('industry', [e.target.value])}
-                    >
-                      <option value="">Select Industry</option>
-                      {predefinedIndustries.map(industry => (
-                        <option key={industry} value={industry}>{industry}</option>
-                      ))}
-                    </select>
+                   <Select
+  options={predefinedIndustries.map(ind => ({
+    value: ind,
+    label: ind
+  }))}
+  value={
+    profileData.industry?.length > 0
+      ? { value: profileData.industry[0], label: profileData.industry[0] }
+      : null
+  }
+  onChange={(selected) =>
+    handleProfileDataChange(
+      'industry',
+      selected ? [selected.value] : []
+    )
+  }
+  placeholder="Select Industry"
+  styles={customSelectStyles}
+/>
+
                   ) : (
                     <div className={displayFieldStyle}>
                       {profileData.industry && profileData.industry.length > 0 ? profileData.industry[0] : "N/A"}
@@ -1418,46 +1521,26 @@ function Profile() {
                     Interested Job Roles
                   </label>
                   {isProfileEditing ? (
-                    <div className="relative" ref={jobRolesDropdownRef}>
-                      <div
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl bg-white/50 flex items-center justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#667eea]/30 focus:border-[#667eea]"
-                        onClick={() => setIsJobRolesDropdownOpen(!isJobRolesDropdownOpen)}
-                      >
-                        <div className="flex flex-wrap gap-2 pr-6">
-                          {profileData.jobRoles.length > 0 ? (
-                            profileData.jobRoles.map(role => (
-                              <Badge key={role} variant="primary" size="sm" className="bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6] border border-[#a5b4fc]/30 rounded-lg">
-                                {role}
-                                <span
-                                  className="ml-1 cursor-pointer text-gray-600 hover:text-gray-900"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleCustomMultiSelectToggle('jobRoles', role);
-                                  }}
-                                >x</span>
-                              </Badge>
-                            ))
-                          ) : (
-                            <span className="text-gray-500">Multiple-select</span>
-                          )}
-                        </div>
-                        <FiChevronDown className="w-5 h-5 text-gray-400 absolute right-3" />
-                      </div>
-                      {isJobRolesDropdownOpen && (
-                        <div className="absolute z-10 w-full mt-1 bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow-lg shadow-purple-50/50 max-h-60 overflow-y-auto">
-                          {predefinedJobRoles.map((role) => (
-                            <div
-                              key={role}
-                              className={`px-3 py-2 cursor-pointer hover:bg-gray-50 ${profileData.jobRoles.includes(role) ? 'bg-gradient-to-r from-[#a5b4fc]/20 to-[#c4b5fd]/20 text-[#5b21b6]' : ''
-                                }`}
-                              onClick={() => handleCustomMultiSelectToggle('jobRoles', role)}
-                            >
-                              {role}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                  <CreatableSelect
+  isMulti
+  options={predefinedJobRoles.map(role => ({
+    value: role,
+    label: role
+  }))}
+  value={profileData.jobRoles.map(role => ({
+    value: role,
+    label: role
+  }))}
+  onChange={(selectedOptions) =>
+    handleProfileDataChange(
+      'jobRoles',
+      selectedOptions ? selectedOptions.map(opt => opt.value) : []
+    )
+  }
+  placeholder="Select or type job roles..."
+  styles={customSelectStyles}
+/>
+
                   ) : (
                     <div className={displayFieldStyle}>
                       {profileData.jobRoles && profileData.jobRoles.length > 0 ? (
@@ -1484,57 +1567,7 @@ function Profile() {
                         value={profileData.locations.map(loc => ({ label: loc, value: loc }))}
                         onChange={(selectedOptions) => handleLocationChange(selectedOptions)}
                         placeholder="Select or type to add locations..."
-                        styles={{
-                            control: (base) => ({
-                                ...base,
-                                borderColor: '#e5e7eb',
-                                minHeight: '42px',
-                                borderRadius: '0.75rem',
-                                backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                                padding: '2px',
-                                boxShadow: 'none',
-                                '&:hover': {
-                                    borderColor: '#d1d5db'
-                                },
-                                '&:focus-within': {
-                                    borderColor: '#667eea',
-                                    boxShadow: '0 0 0 2px rgba(102, 126, 234, 0.1)'
-                                }
-                            }),
-                            menu: (base) => ({
-                                ...base,
-                                borderRadius: '0.75rem',
-                                border: '1px solid #e5e7eb',
-                                zIndex: 50,
-                                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                backdropFilter: 'blur(4px)'
-                            }),
-                            option: (base, state) => ({
-                                ...base,
-                                backgroundColor: state.isSelected ? 'rgba(165, 180, 252, 0.2)' : state.isFocused ? 'rgba(243, 244, 246, 0.5)' : 'transparent',
-                                color: '#374151',
-                                cursor: 'pointer',
-                                borderRadius: '0.5rem',
-                                margin: '2px',
-                                '&:active': {
-                                    backgroundColor: 'rgba(165, 180, 252, 0.3)'
-                                }
-                            }),
-                            multiValue: (base) => ({
-                                ...base,
-                                backgroundColor: 'rgba(165, 180, 252, 0.2)',
-                                borderRadius: '9999px',
-                            }),
-                            multiValueRemove: (base) => ({
-                                ...base,
-                                borderRadius: '0 9999px 9999px 0',
-                                color: '#6b7280',
-                                ':hover': {
-                                    backgroundColor: 'rgba(209, 213, 219, 0.5)',
-                                    color: '#374151',
-                                },
-                            }),
-                        }}
+                       styles={customSelectStyles}
                     />
                   ) : (
                     <div className={displayFieldStyle}>

@@ -59,9 +59,45 @@ import {
 } from 'lucide-react';
 import { ApplyForInternship, getJobDetails, SaveOppurtunity, viewed } from '@/lib/User_AxiosInstance';
 import toast from 'react-hot-toast';
-
-
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 // Utility function to format date
+const LoginPromptModal = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
+  const onLogin = () => {
+    navigate('/userselection');
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[110] overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen px-4 text-center">
+        <div className="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-50 backdrop-blur-sm" onClick={onClose}></div>
+        <div className="inline-block align-middle bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full p-8">
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-indigo-100 mb-4">
+              <Briefcase className="h-8 w-8 text-[#667eea]" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Ready to Apply?</h3>
+            <p className="text-gray-600 mb-8">
+              You need to be logged in to apply for internships and track your applications.
+            </p>
+            <div className="flex flex-col gap-3">
+              <button onClick={onLogin} className="w-full py-3 px-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-bold rounded-xl hover:shadow-lg transition-all duration-200">
+                Login to Continue
+              </button>
+              <button onClick={onClose} className="w-full py-3 px-4 bg-gray-50 text-gray-700 font-semibold rounded-xl hover:bg-gray-100 transition-colors">
+                Maybe Later
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const formatDate = (dateString) => {
   if (!dateString || dateString === 'Not Specified') return 'Not Specified';
   try {
@@ -94,6 +130,14 @@ const renderTags = (data) => {
     );
   }
   return <span className="text-gray-500 text-sm">Not specified</span>;
+};
+
+// Helper function to check if a value is meaningful
+const hasValue = (value) => {
+  if (value === null || value === undefined || value === '' || value === 'N/A' || value === 'Not Specified') return false;
+  if (typeof value === 'number' && value === 0) return false;
+  if (typeof value === 'string' && value.trim() === '') return false;
+  return true;
 };
 
 // Simple Company Details Modal
@@ -296,6 +340,8 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [showCompanyDetails, setShowCompanyDetails] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false); // Add this
+  const { isAuthenticated } = useAuth(); // Add this
   
   const modalRef = useRef(null);
   const contentRef = useRef(null);
@@ -390,7 +436,10 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
 
   const handleApply = async () => {
     if (!jobId || !jobDetail) return;
-    
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     setIsSubmitting(true);
     try {
       console.log("🎯 Applying for internship with jobId:", jobId);
@@ -446,6 +495,10 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
 
   const handleSave = async () => {
     if (!jobDetail?._id) return;
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
     
     try {
       const jobType = "Internship";
@@ -571,6 +624,10 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
         company={companyData}
         isOpen={showCompanyDetails}
         onClose={() => setShowCompanyDetails(false)}
+      />
+      <LoginPromptModal 
+        isOpen={showLoginModal} 
+        onClose={() => setShowLoginModal(false)} 
       />
 
       <div
@@ -716,7 +773,7 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                           <div className="text-base text-gray-900">{formatDate(jobDetail.startDate)}</div>
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-2">Employment Type</div>
+                          {/* <div className="text-sm font-medium text-[#667eea] mb-2">Employment Type</div> */}
                           <div className="text-base text-gray-900">
                             {Array.isArray(jobDetail.employmentType) 
                               ? jobDetail.employmentType.join(', ') 
@@ -742,52 +799,65 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
               )}
 
               {/* Requirements Tab */}
-              {activeTab === 'requirements' && (
-                <div className="space-y-4">
-                  {/* Eligibility Box */}
-                  <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">Eligibility</h2>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-2">Year of Study</div>
-                          <div className="text-base text-gray-900">
-                            {jobDetail.yearOfStudy || 'All years'}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-2">Experience Level</div>
-                          <div className="text-base text-gray-900">
-                            {jobDetail.experienceLevel || 'Fresher'}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <div className="text-sm font-medium text-[#667eea] mb-2">Eligible Streams</div>
-                        {renderTags(jobDetail.studentStreams)}
-                      </div>
-                    </div>
-                  </div>
+{activeTab === 'requirements' && (
+  <div className="space-y-4">
+    {/* Eligibility Box */}
+    <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+      <h2 className="text-lg font-bold text-gray-900 mb-4">Eligibility & Additional Criteria</h2>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div className="text-sm font-medium text-[#667eea] mb-2">Eligible Streams</div>
+            {renderTags(jobDetail.studentStreams)}
+          </div>
+          <div>
+            <div className="text-sm font-medium text-[#667eea] mb-2">Experience Level</div>
+            <div className="text-base text-gray-900">
+              {jobDetail.experienceLevel || 'Fresher'}
+            </div>
+          </div>
+        </div>
+        
+        {/* Additional Requirements Section - As bullet points */}
+        <div>
+  <h3 className="text-md font-semibold text-[#667eea] mb-2">Additional Requirements</h3>
+  <ul className="space-y-2">
+    {/* Eligibility Criteria Text - Split into bullet points */}
+    {hasValue(jobDetail.eligibilityCriteria) && (
+      <>
+        {jobDetail.eligibilityCriteria.split('\n').map((point, index) => 
+          point.trim() && (
+            <li key={index} className="text-gray-700 flex items-start">
+              <span className="mr-2 text-[#667eea]">•</span>
+              <span>{point.trim()}</span>
+            </li>
+          )
+        )}
+      </>
+    )}
+  </ul>
+</div>
+      </div>
+    </div>
 
-                  {/* Required Skills Box */}
-                  {jobDetail?.skills && jobDetail?.skills.length > 0 && (
-                    <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
-                      <h2 className="text-lg font-bold text-gray-900 mb-4">Required Skills</h2>
-                      <div className="flex flex-wrap gap-2">
-                        {jobDetail.skills.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium border border-gray-200"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+    {/* Required Skills Box */}
+    {jobDetail?.skills && jobDetail?.skills.length > 0 && (
+      <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+        <h2 className="text-lg font-bold text-gray-900 mb-4">Required Skills</h2>
+        <div className="flex flex-wrap gap-2">
+          {jobDetail.skills.map((skill, index) => (
+            <span
+              key={index}
+              className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium border border-gray-200"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+)}
 
               {/* Compensation Tab */}
               {activeTab === 'benefits' && (
@@ -960,96 +1030,6 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                       </div>
                     </div>
                   </div>
-
-                  {/* Additional Process Details */}
-                  {/* <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">Process Details</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      Duration Card
-                      <div className="bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 rounded-lg p-4">
-                        <div className="flex items-center mb-2">
-                          <div className="p-2 bg-amber-100 rounded-lg mr-2">
-                            <Clock className="h-5 w-5 text-amber-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-amber-800 text-sm">Duration</h3>
-                            <p className="text-xs text-amber-600">Internship period</p>
-                          </div>
-                        </div>
-                        <div className="text-lg font-bold text-amber-900 mt-2">
-                          {duration}
-                        </div>
-                      </div>
-
-                      Openings Card
-                      <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-lg p-4">
-                        <div className="flex items-center mb-2">
-                          <div className="p-2 bg-emerald-100 rounded-lg mr-2">
-                            <Users className="h-5 w-5 text-emerald-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-emerald-800 text-sm">Open Positions</h3>
-                            <p className="text-xs text-emerald-600">Available seats</p>
-                          </div>
-                        </div>
-                        <div className="text-lg font-bold text-emerald-900 mt-2">
-                          {jobDetail.numberOfOpenings || 'Not specified'}
-                        </div>
-                      </div>
-
-                      Application Status Card
-                      <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 border border-indigo-200 rounded-lg p-4">
-                        <div className="flex items-center mb-2">
-                          <div className="p-2 bg-indigo-100 rounded-lg mr-2">
-                            <Target className="h-5 w-5 text-indigo-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-indigo-800 text-sm">Status</h3>
-                            <p className="text-xs text-indigo-600">Current status</p>
-                          </div>
-                        </div>
-                        <div className="mt-2">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${jobStatus.color}`}>
-                            {jobStatus.status}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    Selection Process Details
-                    {jobDetail.selectionProcess && jobDetail.selectionProcess.length > 0 && (
-                      <div className="mt-6 pt-4 border-t border-gray-200">
-                        <h3 className="text-md font-semibold text-gray-900 mb-3">Selection Process</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {jobDetail.selectionProcess.map((process, index) => (
-                            <span
-                              key={index}
-                              className="px-3 py-1.5 bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#667eea] border border-[#667eea]/20 rounded-full text-sm font-medium"
-                            >
-                              {process}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    Rounds Information
-                    {jobDetail.rounds && jobDetail.rounds.length > 0 && (
-                      <div className="mt-6 pt-4 border-t border-gray-200">
-                        <h3 className="text-md font-semibold text-gray-900 mb-3">Hiring Rounds</h3>
-                        <div className="space-y-2">
-                          {jobDetail.rounds.map((round, index) => (
-                            <div key={index} className="flex items-center text-sm text-gray-700">
-                              <div className="w-6 h-6 flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-xs font-bold rounded-full mr-3">
-                                {index + 1}
-                              </div>
-                              <span>{round}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div> */}
                 </div>
               )}
             </div>
