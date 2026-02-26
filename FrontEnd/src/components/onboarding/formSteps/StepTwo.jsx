@@ -10,7 +10,7 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
     name: '',
     email: '',
     phone: '',
-    profileType: ''
+    
   });
 
   React.useEffect(() => {
@@ -331,7 +331,7 @@ const validateAllFields = () => {
     name: validateField('name', formData.name || parsedData.name || ''),
     email: validateField('email', formData.email || parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser") || "{}")?.user?.email || ''),
     phone: validateField('phone', formData.phone || parsedData.phone || ''),
-    profileType: validateField('profileType', formData.profileType || '')
+    
   };
 
   setValidationErrors(errors);
@@ -487,7 +487,7 @@ const validateAllFields = () => {
             </div>
 
             {/* Profile Type Field - Full width below */}
-            {!formData.profileType && (
+            {/*{!formData.profileType && (
             <div>
               <label htmlFor="profileType" className="block text-gray-700 font-medium text-sm mb-2">
                 Profile Type <span className="text-red-500">*</span>
@@ -503,7 +503,7 @@ const validateAllFields = () => {
                   onChange={handleProfileTypeChange}
                   onBlur={handleFieldBlur}
                   
-                  className="appearance-none w-full p-4 bg-transparent border-none focus:outline-none text-gray-700 pr-12 text-base" /* Increased padding and text size */
+                  className="appearance-none w-full p-4 bg-transparent border-none focus:outline-none text-gray-700 pr-12 text-base" 
                 >
                   <option value="" disabled className="text-gray-400">Select a profile type</option>
                   <option value="student" className="text-gray-700">Student</option>
@@ -517,7 +517,7 @@ const validateAllFields = () => {
                   {validationErrors.profileType}
                 </div>
               )}
-            </div>)}
+            </div>)}*/}
 
           </div>
 

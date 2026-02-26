@@ -395,6 +395,7 @@ import CreatableSelect from "react-select/creatable";
 import { UploadIcon, GraduationCap } from "lucide-react";
 import colleges from "../../../assets/colleges.json";
 import axios from 'axios';
+import { getMasterDataByType, createMasterData } from "../../../lib/User_AxiosInstance";
 
 
 const normalizeString = (str) =>
@@ -421,6 +422,8 @@ export const StepThree = ({
   const [collegeSuggestions, setCollegeSuggestions] = useState([]);
 const [dbColleges, setDbColleges] = useState([]);
 const [isLoadingColleges, setIsLoadingColleges] = useState(false);
+const [degreeOptions, setDegreeOptions] = useState([]);
+const [streamOptions, setStreamOptions] = useState([]);
 
 useEffect(() => {
   const fetchColleges = async () => {
@@ -465,8 +468,56 @@ const handleAddCollege = async (name) => {
 
   const [metaData, setMetaData] = useState([]);
 
+  useEffect(() => {
+    const fetchDegrees = async () => {
+      try {
+        const res = await getMasterDataByType("DEGREE");
+
+        setDegreeOptions(
+          res.data.data.map((item) => ({
+            value: item.value,
+            label: item.value,
+          }))
+        );
+      } catch (err) {
+        console.error("Error fetching degrees", err);
+      }
+    };
+
+    fetchDegrees();
+  }, []);
+
+  useEffect(() => {
+    if (!localFormData.degree) {
+      setStreamOptions([]);
+      return;
+    }
+  
+    const fetchStreams = async () => {
+      try {
+        const res = await getMasterDataByType("STREAM");
+      
+        const filteredStreams = res.data.data
+          .filter((item) => item.parent === localFormData.degree)
+          .map((item) => ({
+            value: item.value,
+            label: item.value,
+          }));
+        
+        setStreamOptions(filteredStreams);
+      } catch (err) {
+        console.error("Error fetching streams", err);
+      }
+    };
+  
+    fetchStreams();
+  }, [localFormData.degree]);
+
+  console.log("Degree:", localFormData.degree);
+  
+
 // 1. Fetch data from your new API
-useEffect(() => {
+{/*useEffect(() => {
   const fetchMeta = async () => {
     try {
       const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta`);
@@ -503,7 +554,8 @@ const handleRemoteAdd = async (type, name) => {
   } catch (err) {
     console.error("Save failed", err);
   }
-};
+};*/}
+
   // Get the role from sessionStorage
   const selectedRole = sessionStorage.getItem('candidateOnboardingSelectedRole');
   
@@ -666,51 +718,39 @@ const handleRemoteAdd = async (type, name) => {
                     </label>
                     <CreatableSelect
                       isClearable
-                      placeholder="Select or type your degree"
                       options={degreeOptions}
                       value={
                         localFormData.degree
-                          ? {
-                              value: localFormData.degree,
-                              label: localFormData.degree,
-                            }
+                          ? { value: localFormData.degree, label: localFormData.degree }
                           : null
                       }
-                      onChange={(selected) =>
-                        setLocalFormData((prev) => ({
-                          ...prev,
-                          degree: selected ? selected.value : "",
+                      onChange={(sel) =>
+                        setLocalFormData((p) => ({
+                          ...p,
+                          degree: sel?.label || "",
+                          specialization: "",
                         }))
                       }
-                      className="mt-2"
-                      styles={{
-                        control: (base) => ({
-                          ...base,
-                          minHeight: '56px',
-                          borderColor: '#d1d5db',
-                          borderRadius: '12px',
-                          '&:hover': {
-                            borderColor: '#667eea'
-                          }
-                        }),
-                        placeholder: (base) => ({
-                          ...base,
-                          color: '#9ca3af'
-                        }),
-                        menu: (base) => ({
-                          ...base,
-                          borderRadius: '12px',
-                          overflow: 'hidden'
-                        }),
-                        option: (base, state) => ({
-                          ...base,
-                          backgroundColor: state.isFocused ? '#667eea10' : 'transparent',
-                          color: state.isFocused ? '#5b21b6' : '#374151',
-                          '&:hover': {
-                            backgroundColor: '#667eea10'
-                          }
-                        })
+                      onCreateOption={async (val) => {
+                        try {
+                          const res = await createMasterData({
+                            type: "DEGREE",
+                            value: val,
+                          });
+                        
+                          const newValue = res.data.data.value;
+                        
+                          setDegreeOptions((prev) => [
+                            ...prev,
+                            { value: newValue, label: newValue },
+                          ]);
+                        
+                          setLocalFormData((p) => ({ ...p, degree: newValue }));
+                        } catch (err) {
+                          console.error("Error adding degree", err);
+                        }
                       }}
+                      placeholder="Select or add degree"
                     />
                   </div>
 
@@ -756,13 +796,13 @@ const handleRemoteAdd = async (type, name) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Degree */}
                 <CreatableSelect
-  isClearable
-  options={degreeOptions}
-  onCreateOption={(val) => handleRemoteAdd('degree', val)}
-  value={localFormData.degree ? { value: localFormData.degree, label: localFormData.degree } : null}
-  onChange={(sel) => setLocalFormData(p => ({ ...p, degree: sel?.value || "", specialization: "" }))}
-  placeholder="Search or add degree"
-/>
+                  isClearable
+                  options={degreeOptions}
+                  onCreateOption={(val) => handleRemoteAdd('degree', val)}
+                  value={localFormData.degree ? { value: localFormData.degree, label: localFormData.degree } : null}
+                  onChange={(sel) => setLocalFormData(p => ({ ...p, degree: sel?.label || "", specialization: "" }))}
+                  placeholder="Search or add degree"
+                />
              
                 
                 {/* Graduation Year */}
@@ -770,18 +810,49 @@ const handleRemoteAdd = async (type, name) => {
               </div>
             )}
            <label htmlFor="semester" className="block text-gray-700 font-medium text-sm mb-2">
-                    Field of Study / Specialization
+                    Stream / Specialization
            </label>
             {/* Field of Study / Specialization */}
            <CreatableSelect
-            isClearable
-            isDisabled={!localFormData.degree}
-            options={specializationOptions}
-            onCreateOption={(val) => handleRemoteAdd('specialization', val)}
-            value={localFormData.specialization ? { value: localFormData.specialization, label: localFormData.specialization } : null}
-            onChange={(sel) => setLocalFormData(p => ({ ...p, specialization: sel?.value || "" }))}
-            placeholder="Search or add specialization"
-          />
+              isClearable
+              isDisabled={!localFormData.degree}
+              options={streamOptions}
+              value={
+                localFormData.specialization
+                  ? {
+                      value: localFormData.specialization,
+                      label: localFormData.specialization,
+                    }
+                  : null
+              }
+              onChange={(sel) =>
+                setLocalFormData((p) => ({
+                  ...p,
+                  specialization: sel?.value || "",
+                }))
+              }
+              onCreateOption={async (val) => {
+                try {
+                  const res = await createMasterData({
+                    type: "STREAM",
+                    value: val,
+                    parent: localFormData.degree,
+                  });
+                
+                  const newValue = res.data.data.value;
+                
+                  setStreamOptions((prev) => [
+                    ...prev,
+                    { value: newValue, label: newValue },
+                  ]);
+                
+                  setLocalFormData((p) => ({ ...p, specialization: newValue }));
+                } catch (err) {
+                  console.error("Error adding stream", err);
+                }
+              }}
+              placeholder="Search or add specialization"
+            />
                       
 
             {/* CGPA/Percentage */}

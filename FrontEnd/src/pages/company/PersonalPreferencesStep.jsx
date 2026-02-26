@@ -1,9 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import FormField from '@/components/company/FormField';
+import CreatableSelect from "react-select/creatable";
+import { getCompanyMasterDataByType,
+  createCompanyMasterData } from '@/lib/Company_AxiosInstance';
+
 
 const PersonalInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
   const [errors, setErrors] = useState({});
+  const [designationOptions, setDesignationOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchDesignations = async () => {
+      try {
+        const res = await getCompanyMasterDataByType("COMPANY_DESIGNATION");
+        setDesignationOptions(
+          (res?.data?.data || []).map(item => ({
+            value: item.value,
+            label: item.value,
+          }))
+        );
+      } catch (err) {
+        console.error("Failed to fetch designations", err);
+      }
+    };
+
+    fetchDesignations();
+  }, []);
 
   const validate = () => {
     const newErrors = {};
@@ -75,24 +98,61 @@ const PersonalInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
               required
             />
 
-            <FormField
-              label="Designation"
-              type="select"
-              name="designation"
-              value={formData.designation}
-              onChange={handleFieldChange}
-              placeholder="Choose your role"
-              options={[
-                { value: '', label: 'Select designation' },
-                { value: 'hr_manager', label: 'HR Manager' },
-                { value: 'recruiter', label: 'Recruiter' },
-                { value: 'hiring_manager', label: 'Hiring Manager' },
-                { value: 'team_lead', label: 'Team Lead' },
-                { value: 'ceo', label: 'CEO' },
-              ]}
-              error={errors.designation}
-              required
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Designation <span className="text-red-500">*</span>
+              </label>
+
+              <CreatableSelect
+                isClearable
+                placeholder="Select or type designation"
+                options={designationOptions}
+                value={
+                  designationOptions.find(
+                    opt => opt.value === formData.designation
+                  ) || null
+                }
+                onChange={async (selected) => {
+                  if (!selected) {
+                    handleChange("designation", "");
+                    return;
+                  }
+                
+                  // Existing designation
+                  if (!selected.__isNew__) {
+                    handleChange("designation", selected.value);
+                    return;
+                  }
+                
+                  // New designation typed + Enter
+                  try {
+                    const res = await createCompanyMasterData({
+                      type: "COMPANY_DESIGNATION",
+                      value: selected.value,
+                      isCustom: true,
+                    });
+                  
+                    const savedValue = res.data.data.value;
+                  
+                    const newOption = {
+                      value: savedValue,
+                      label: savedValue,
+                    };
+                  
+                    setDesignationOptions(prev => [...prev, newOption]);
+                    handleChange("designation", savedValue);
+                  } catch (err) {
+                    console.error("Failed to create designation", err);
+                  }
+                }}
+              />
+
+              {errors.designation && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.designation}
+                </p>
+              )}
+            </div>
 
             <FormField
               label="Enter your work email"

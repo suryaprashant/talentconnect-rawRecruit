@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { ChevronDownIcon, X, Target, MapPin, Briefcase } from "lucide-react";
 import { City } from "country-state-city";
 import CreatableSelect from 'react-select/creatable';
+import {
+  getCompanyMasterDataByType,
+  createCompanyMasterData
+} from "@/lib/Company_AxiosInstance";
 
 const jobRoleOptions = ['Software Developer', 'Data Scientist', 'DevOps Engineer', 'QA Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'Mobile App Developer', 'UI/UX Designer', 'Product Manager', 'Business Analyst', 'Data Analyst', 'Machine Learning Engineer', 'Cloud Architect', 'Network Engineer', 'Cyber Security Specialist', 'Technical Writer', 'Sales Engineer', 'Marketing Specialist', 'HR Recruiter', 'Finance Analyst', 'Other'];
  
@@ -21,6 +25,8 @@ const SelectedTag = ({ item, onRemove }) => (
 );
 
 export const StepFour = ({ onNext, onBack, formData, onChange }) => {
+  const [industryOptions, setIndustryOptions] = useState([]);
+  const [jobRoleOptions, setJobRoleOptions] = useState([]);
 
   const locationOptions = useMemo(() => {
     return City.getCitiesOfCountry("IN")
@@ -57,6 +63,35 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
   });
 
   const jobRolesRef = useRef(null);
+
+  useEffect(() => {
+    const fetchMasterData = async () => {
+      try {
+        const [industryRes, jobRoleRes] = await Promise.all([
+          getCompanyMasterDataByType("INDUSTRY_TYPE"),
+          getCompanyMasterDataByType("JOB_ROLE")
+        ]);
+
+        setIndustryOptions(
+          industryRes.data.data.map(item => ({
+            label: item.value,
+            value: item.value
+          }))
+        );
+
+        setJobRoleOptions(
+          jobRoleRes.data.data.map(item => ({
+            label: item.value,
+            value: item.value
+          }))
+        );
+      } catch (err) {
+        console.error("Error fetching company master data", err);
+      }
+    };
+
+    fetchMasterData();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -179,20 +214,43 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
                 Interested Industry Type
               </label>
               <div className="relative">
-                <select
-                  id="industry"
-                  name="industry"
-                  value={localFormData.industry}
-                  onChange={handleStandardChange}
-                  className="appearance-none w-full p-4 bg-transparent border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
-                >
-                  <option value="" disabled>Select Industry</option>
-                  <option value="Technology">Technology</option>
-                  <option value="Finance">Finance</option>
-                  <option value="Healthcare">Healthcare</option>
-                  <option value="Education">Education</option>
-                  <option value="Manufacturing">Manufacturing</option>
-                </select>
+                <CreatableSelect
+                  isClearable
+                  placeholder="Select or add industry..."
+                  options={industryOptions}
+                  value={
+                    localFormData.industry
+                      ? { label: localFormData.industry, value: localFormData.industry }
+                      : null
+                  }
+                  onChange={(selected) => {
+                    setLocalFormData(prev => ({
+                      ...prev,
+                      industry: selected ? selected.value : ""
+                    }));
+                  }}
+                  onCreateOption={async (inputValue) => {
+                    try {
+                      const res = await createCompanyMasterData({
+                        type: "INDUSTRY_TYPE",
+                        value: inputValue
+                      });
+                    
+                      const newOption = {
+                        label: res.data.data.value,
+                        value: res.data.data.value
+                      };
+                    
+                      setIndustryOptions(prev => [...prev, newOption]);
+                      setLocalFormData(prev => ({
+                        ...prev,
+                        industry: newOption.value
+                      }));
+                    } catch (err) {
+                      console.error("Error creating industry", err);
+                    }
+                  }}
+                />
                 <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
@@ -208,65 +266,46 @@ export const StepFour = ({ onNext, onBack, formData, onChange }) => {
                 Interested Job Roles
               </label>
 
-              {/* Selected Tags */}
-              {localFormData.jobRoles.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {localFormData.jobRoles.map((role) => (
-                    <SelectedTag
-                      key={role}
-                      item={role}
-                      onRemove={() => removeSelectedItem("jobRoles", role)}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {/* Custom Dropdown Trigger */}
-              <div
-                className="flex items-center justify-between p-4 w-full border border-gray-300 rounded-xl cursor-pointer hover:border-[#667eea] transition-all duration-200"
-                onClick={() => toggleDropdown("jobRoles")}
-              >
-                <div className="flex items-center">
-                  <Briefcase className="w-5 h-5 text-gray-400 mr-3" />
-                  <span className={localFormData.jobRoles.length > 0 ? "text-gray-700" : "text-gray-400"}>
-                    {localFormData.jobRoles.length > 0
-                      ? `Selected ${localFormData.jobRoles.length} role(s)`
-                      : "Select one or more job roles"}
-                  </span>
-                </div>
-                <ChevronDownIcon
-                  className={`w-5 h-5 text-gray-400 transition-transform ${dropdownOpen.jobRoles ? "rotate-180" : ""
-                    }`}
-                />
-              </div>
-
-              {/* Custom Dropdown Menu */}
-              {dropdownOpen.jobRoles && (
-                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-xl shadow-lg max-h-60 overflow-auto">
-                  {jobRoleOptions.map((role) => (
-                    <div
-                      key={role}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleMultiSelect("jobRoles", role);
-                      }}
-                      className={`px-4 py-3 hover:bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5 cursor-pointer transition-all duration-200 border-b border-gray-100 last:border-b-0 ${localFormData.jobRoles.includes(role)
-                        ? "bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-[#5b21b6]"
-                        : ""
-                        }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-700">{role}</span>
-                        {localFormData.jobRoles.includes(role) && (
-                          <svg className="w-5 h-5 text-[#667eea]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <CreatableSelect
+                isMulti
+                placeholder="Select or add job roles..."
+                options={jobRoleOptions}
+                value={localFormData.jobRoles.map(role => ({
+                  label: role,
+                  value: role
+                }))}
+                onChange={(selectedOptions) => {
+                  const values = selectedOptions
+                    ? selectedOptions.map(opt => opt.value)
+                    : [];
+                
+                  setLocalFormData(prev => ({
+                    ...prev,
+                    jobRoles: values
+                  }));
+                }}
+                onCreateOption={async (inputValue) => {
+                  try {
+                    const res = await createCompanyMasterData({
+                      type: "JOB_ROLE",
+                      value: inputValue
+                    });
+                  
+                    const newOption = {
+                      label: res.data.data.value,
+                      value: res.data.data.value
+                    };
+                  
+                    setJobRoleOptions(prev => [...prev, newOption]);
+                    setLocalFormData(prev => ({
+                      ...prev,
+                      jobRoles: [...prev.jobRoles, newOption.value]
+                    }));
+                  } catch (err) {
+                    console.error("Error creating job role", err);
+                  }
+                }}
+              />
             </div>
 
             {/* Preferred Locations */}
