@@ -3,7 +3,12 @@ import { useState, useEffect } from 'react';
 import { Country, State, City } from 'country-state-city';
 import FormField from '@/components/company/FormField';
 import Button from '@/components/company/Button';
-import { fetchAllCompaniesName } from '@/lib/Company_AxiosInstance';
+import { fetchAllCompaniesName, getCompanyMasterDataByType,
+  createCompanyMasterData } from '@/lib/Company_AxiosInstance';
+
+import CreatableSelect from 'react-select/creatable';
+
+
 
 const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
     const [isRegisteringNewCompany, setIsRegisteringNewCompany] = useState(false);
@@ -16,6 +21,62 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
     const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [companyTypeOptions, setCompanyTypeOptions] = useState([
+      { value: '', label: 'Select company type' },
+    ]);
+
+    const [industryOptions, setIndustryOptions] = useState([
+      { value: '', label: 'Select industry type' },
+    ]);
+
+    const [showCustomCompanyType, setShowCustomCompanyType] = useState(false);
+    const [customCompanyType, setCustomCompanyType] = useState('');
+
+    const [showCustomIndustryType, setShowCustomIndustryType] = useState(false);
+    const [customIndustryType, setCustomIndustryType] = useState('');
+
+    const [isLoadingMasterData, setIsLoadingMasterData] = useState(false);
+
+    useEffect(() => {
+      const loadMasterData = async () => {
+        try {
+          setIsLoadingMasterData(true);
+
+          const [companyTypeRes, industryRes] = await Promise.all([
+            getCompanyMasterDataByType('COMPANY_TYPE'),
+            getCompanyMasterDataByType('INDUSTRY_TYPE'),
+          ]);
+
+          const companyTypes = (companyTypeRes?.data?.data || []).map(item => ({
+            value: item.value,
+            label: item.value,
+          }));
+
+          const industries = (industryRes?.data?.data || []).map(item => ({
+            value: item.value,
+            label: item.value,
+          }));
+
+          setCompanyTypeOptions([
+            { value: '', label: 'Select company type' },
+            ...companyTypes,
+            { value: '__custom__', label: '➕ Add new company type' },
+          ]);
+
+          setIndustryOptions([
+            { value: '', label: 'Select industry type' },
+            ...industries,
+            { value: '__custom__', label: '➕ Add new industry type' },
+          ]);
+        } catch (error) {
+          console.error('Failed to load company master data', error);
+        } finally {
+          setIsLoadingMasterData(false);
+        }
+      };
+
+      loadMasterData();
+    }, []);
 
     useEffect(() => {
         const loadCompanies = async () => {
@@ -187,7 +248,7 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
         }
     };
 
-    const companyTypeOptions = [
+    {/*const companyTypeOptions = [
         { value: '', label: 'Select company type' },
         { value: 'startup', label: 'Startup' },
         { value: 'mnc', label: 'Multinational Corporation (MNC)' },
@@ -213,7 +274,7 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
         { value: 'Hospitality', label: 'Hospitality & Tourism' },
         { value: 'Real_estate', label: 'Real Estate & Construction' },
         { value: 'Telecom', label: 'Telecommunications' },
-    ];
+    ];*/}
 
     const employeeCountOptions = [
         { value: '', label: 'Select employee count' },
@@ -321,33 +382,106 @@ const CompanyInfoStep = ({ formData, handleChange, nextStep, prevStep }) => {
                             placeholder="Provide a brief description of your company..."
                         />
 
-                        <FormField
-                            label="Company Type"
-                            type="select"
-                            name="companyType"
-                            value={formData.companyType}
-                            onChange={(e) => {
-                                handleChange('companyType', e.target.value);
-                                setErrors(prev => ({ ...prev, companyType: '' }));
-                            }}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Company Type
+                          </label>
+                                            
+                          <CreatableSelect
+                            isClearable
                             options={companyTypeOptions}
-                            required
-                            error={errors.companyType}
-                        />
-
-                        <FormField
-                            label="Industry Type"
-                            type="select"
-                            name="industryType"
-                            value={formData.industryType}
-                            onChange={(e) => {
-                                handleChange('industryType', e.target.value);
-                                setErrors(prev => ({ ...prev, industryType: '' }));
+                            value={companyTypeOptions.find(
+                              opt => opt.value === formData.companyType
+                            ) || null}
+                            placeholder="Select or type company type"
+                            onChange={async (selected) => {
+                              if (!selected) {
+                                handleChange('companyType', '');
+                                return;
+                              }
+                        
+                              // Existing option selected
+                              if (!selected.__isNew__) {
+                                handleChange('companyType', selected.value);
+                                return;
+                              }
+                        
+                              // New value typed + Enter pressed
+                              try {
+                                const res = await createCompanyMasterData({
+                                  type: 'COMPANY_TYPE',
+                                  value: selected.value,
+                                  isCustom: true,
+                                });
+                            
+                                const savedValue = res.data.data.value;
+                            
+                                const newOption = {
+                                  value: savedValue,
+                                  label: savedValue,
+                                };
+                            
+                                setCompanyTypeOptions(prev => [...prev, newOption]);
+                                handleChange('companyType', savedValue);
+                              } catch (err) {
+                                console.error('Failed to create company type', err);
+                              }
                             }}
+                          />
+                          {errors.companyType && (
+                            <p className="text-red-500 text-sm mt-1">{errors.companyType}</p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Industry Type
+                          </label>
+                                            
+                          <CreatableSelect
+                            isClearable
                             options={industryOptions}
-                            required
-                            error={errors.industryType}
-                        />
+                            value={industryOptions.find(
+                              opt => opt.value === formData.industryType
+                            ) || null}
+                            placeholder="Select or type industry type"
+                            onChange={async (selected) => {
+                              if (!selected) {
+                                handleChange('industryType', '');
+                                return;
+                              }
+                          
+                              if (!selected.__isNew__) {
+                                handleChange('industryType', selected.value);
+                                return;
+                              }
+                          
+                              try {
+                                const res = await createCompanyMasterData({
+                                  type: 'INDUSTRY_TYPE',
+                                  value: selected.value,
+                                  isCustom: true,
+                                });
+                            
+                                const savedValue = res.data.data.value;
+                            
+                                const newOption = {
+                                  value: savedValue,
+                                  label: savedValue,
+                                };
+                            
+                                setIndustryOptions(prev => [...prev, newOption]);
+                                handleChange('industryType', savedValue);
+                              } catch (err) {
+                                console.error('Failed to create industry type', err);
+                              }
+                            }}
+                          />
+                        
+                          {errors.industryType && (
+                            <p className="text-red-500 text-sm mt-1">{errors.industryType}</p>
+                          )}
+                        </div>
 
                         <FormField
                             label="Number of Employees"

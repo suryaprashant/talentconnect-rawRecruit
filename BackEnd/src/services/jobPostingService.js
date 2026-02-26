@@ -435,12 +435,43 @@ export const getJobPostedByCompanyService = async (Id, jobType, userType , authU
 
 
 export const deleteJobByIdService = async (jobId, companyId) => {
+    const session = await mongoose.startSession();
+
     try {
-        const response = await JobPostingTable.findOneAndDelete({ _id: jobId, companyPosted: companyId });
-        // console.log(response);
-        return { success: true, msg: "Job Deleted" };
+        session.startTransaction();
+
+        // 1️⃣ Verify job belongs to company
+        const job = await JobPostingTable.findOne(
+            { _id: jobId, companyPosted: companyId },
+            null,
+            { session }
+        );
+
+        if (!job) {
+            throw new Error("Job not found or unauthorized");
+        }
+
+        // 2️⃣ Delete all applications for this job
+        await Application.deleteMany(
+            { job: jobId },
+            { session }
+        );
+
+        // 3️⃣ Delete the job itself
+        await JobPostingTable.deleteOne(
+            { _id: jobId },
+            { session }
+        );
+
+        await session.commitTransaction();
+        session.endSession();
+
+        return { success: true, msg: "Job and related applications deleted successfully" };
+
     } catch (error) {
-        console.log("Error: ", error.message);
-        throw new Error("Failed to fetch");
+        await session.abortTransaction();
+        session.endSession();
+        console.error("Delete Job Error:", error.message);
+        throw error;
     }
-}
+};

@@ -3,6 +3,8 @@ import { useState, useRef, useEffect, useMemo } from 'react'
 import { ChevronDownIcon, X } from 'lucide-react'
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
+import {  getCompanyMasterDataByType,
+  createCompanyMasterData } from '@/lib/Company_AxiosInstance';
 
 const HiringPreferencesStep = ({ formData, handleChange, nextStep, prevStep }) => {
 
@@ -15,8 +17,26 @@ const HiringPreferencesStep = ({ formData, handleChange, nextStep, prevStep }) =
     }
 
     const [lookingFor, setLookingFor] = useState(getInitialLookingFor())
-    const [showJobRolesDropdown, setShowJobRolesDropdown] = useState(false)
-    const jobRolesRef = useRef(null)
+    const [jobRoleOptions, setJobRoleOptions] = useState([]);
+
+    useEffect(() => {
+      const fetchJobRoles = async () => {
+        try {
+          const res = await getCompanyMasterDataByType("JOB_ROLE");
+          setJobRoleOptions(
+            (res?.data?.data || []).map(item => ({
+              value: item.value,
+              label: item.value,
+            }))
+          );
+        } catch (err) {
+          console.error("Failed to fetch job roles", err);
+        }
+      };
+
+      fetchJobRoles();
+    }, []);
+    
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -62,18 +82,7 @@ const HiringPreferencesStep = ({ formData, handleChange, nextStep, prevStep }) =
         handleChange('employmentType', newTypes)
     }
 
-    const handleJobRoleSelect = (value) => {
-        if (!formData.jobRoles?.includes(value)) {
-            const newJobRoles = [...(formData.jobRoles || []), value]
-            handleChange('jobRoles', newJobRoles)
-        }
-        setShowJobRolesDropdown(false)
-    }
-
-    const removeJobRole = (roleToRemove) => {
-        const newJobRoles = formData.jobRoles?.filter(role => role !== roleToRemove) || []
-        handleChange('jobRoles', newJobRoles)
-    }
+    
 
     // --- Locations Logic using React-Select ---
 
@@ -94,13 +103,7 @@ const HiringPreferencesStep = ({ formData, handleChange, nextStep, prevStep }) =
         value: loc
     }));
 
-    const jobRoleOptions = [
-        { value: 'software_engineer', label: 'Software Engineer' },
-        { value: 'product_manager', label: 'Product Manager' },
-        { value: 'designer', label: 'Designer' },
-        { value: 'data_scientist', label: 'Data Scientist' },
-        { value: 'marketing', label: 'Marketing' },
-    ]
+    
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -144,46 +147,59 @@ const HiringPreferencesStep = ({ formData, handleChange, nextStep, prevStep }) =
 
                         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <div className="space-y-6">
-                                <div ref={jobRolesRef}>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Job Roles You Hire For
-                                    </label>
-                                    <div className="flex flex-wrap gap-2 mb-3">
-                                        {formData.jobRoles?.map((role) => {
-                                            const roleLabel = jobRoleOptions.find(opt => opt.value === role)?.label || role;
-                                            return (
-                                                <span key={role} className="flex items-center bg-gradient-to-r from-[#667eea]/10 to-[#764ba2]/10 text-sm text-gray-800 px-3 py-1.5 rounded-full border border-[#667eea]/20">
-                                                    {roleLabel}
-                                                    <button type="button" onClick={() => removeJobRole(role)} className="ml-2 text-gray-500 hover:text-gray-700">
-                                                        <X className="w-4 h-4" />
-                                                    </button>
-                                                </span>
-                                            );
-                                        })}
-                                    </div>
-                                    <div className="relative">
-                                        <div
-                                            className="flex items-center justify-between p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-[#667eea]/50 transition-all duration-300"
-                                            onClick={() => setShowJobRolesDropdown(!showJobRolesDropdown)}
-                                        >
-                                            <span className="text-gray-700">Select Job Roles</span>
-                                            <ChevronDownIcon className={`w-5 h-5 text-gray-500 transition-transform ${showJobRolesDropdown ? 'rotate-180' : ''}`} />
-                                        </div>
-                                        {showJobRolesDropdown && (
-                                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-auto">
-                                                {jobRoleOptions.map((option) => (
-                                                    <div
-                                                        key={option.value}
-                                                        className={`p-3 hover:bg-gray-50 cursor-pointer transition-colors ${formData.jobRoles?.includes(option.value) ? 'bg-gradient-to-r from-[#667eea]/5 to-[#764ba2]/5' : ''}`}
-                                                        onClick={() => handleJobRoleSelect(option.value)}
-                                                    >
-                                                        {option.label}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Job Roles You Hire For
+                                  </label>
+
+                                  <CreatableSelect
+                                    isMulti
+                                    placeholder="Select or type job roles"
+                                    options={jobRoleOptions}
+                                    value={(formData.jobRoles || []).map(role => ({
+                                      value: role,
+                                      label: role,
+                                    }))}
+                                    onChange={async (selectedOptions) => {
+                                      if (!selectedOptions) {
+                                        handleChange("jobRoles", []);
+                                        return;
+                                      }
+                                  
+                                      const finalRoles = [];
+                                  
+                                      for (const opt of selectedOptions) {
+                                        // Existing role
+                                        if (!opt.__isNew__) {
+                                          finalRoles.push(opt.value);
+                                        } else {
+                                          // New role → save to DB
+                                          try {
+                                            const res = await createCompanyMasterData({
+                                              type: "JOB_ROLE",
+                                              value: opt.value,
+                                              isCustom: true,
+                                            });
+                                        
+                                            const savedValue = res.data.data.value;
+                                        
+                                            finalRoles.push(savedValue);
+                                        
+                                            setJobRoleOptions(prev => [
+                                              ...prev,
+                                              { value: savedValue, label: savedValue }
+                                            ]);
+                                          } catch (err) {
+                                            console.error("Failed to create job role", err);
+                                          }
+                                        }
+                                      }
+                                  
+                                      handleChange("jobRoles", finalRoles);
+                                    }}
+                                  />
                                 </div>
+                                
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-3">
