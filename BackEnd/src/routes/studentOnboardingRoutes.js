@@ -4,6 +4,8 @@ import {
   submitOnboardingForm,
   getOnboardingForm,
   updateOnboardingForm,
+  getMasterData,
+  createMasterData,
 } from "../controllers/studentOnboardingController.js";
 import secureRoute from "../middlewares/secureRouteMiddleware.js"; 
 import multer from "multer"; 
@@ -54,6 +56,12 @@ router.put(
   ]),
   updateOnboardingForm
 );
+
+// Fetch dropdown options
+router.get("/master-data", getMasterData);
+
+// Add custom option (during onboarding)
+router.post("/master-data", secureRoute, createMasterData);
 
 
 

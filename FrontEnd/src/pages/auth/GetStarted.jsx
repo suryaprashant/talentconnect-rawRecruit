@@ -127,6 +127,7 @@ const RoleSelection = () => {
   const handleContinue = () => {
     if (selectedRole) {
       sessionStorage.setItem('tempSelectedRole', selectedRole);
+      sessionStorage.setItem('candidateOnboardingSelectedRole', selectedRole);
       localStorage.setItem('selectedRole', selectedRole);
       
       // Track final selection confirmation

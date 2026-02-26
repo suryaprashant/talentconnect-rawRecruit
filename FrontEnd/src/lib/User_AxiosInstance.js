@@ -308,3 +308,17 @@ export function scheduleInterviewByAdmin(payload) {
     },
   });
 }
+
+export function getMasterDataByType(type) {
+  return axiosClient.get("/api/master-data", {
+    params: { type },
+  });
+}
+
+export function createMasterData(payload) {
+  return axiosClient.post("/api/master-data", {
+    type: payload.type,
+    value: payload.value,
+    parent: payload.parent || null, // for STREAM → DEGREE mapping
+  });
+}

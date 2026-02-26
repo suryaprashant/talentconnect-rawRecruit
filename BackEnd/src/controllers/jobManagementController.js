@@ -79,8 +79,8 @@ export const deleteJob = async (req, res) => {
 
         res.status(400).json("Bad request!")
     } catch (error) {
-        console.log("Error: ", error);
-        res.status(500).json({ msg: "Internal server error!" });
+        console.error("Delete Job Controller Error:", error);
+        res.status(500).json({ msg: error.message || "Internal server error" });
     }
 }
 
