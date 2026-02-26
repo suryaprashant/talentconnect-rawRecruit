@@ -758,10 +758,10 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
                           <div className="text-sm font-medium text-[#667eea] mb-2">Experience Level</div>
                           <div className="text-base text-gray-900">{jobDetail.experienceLevel || 'Entry Level'}</div>
                         </div>
-                        <div>
+                        {/* <div>
                           <div className="text-sm font-medium text-[#667eea] mb-2">Notice Period</div>
                           <div className="text-base text-gray-900">{jobDetail.noticePeriod || 'Immediate to 30 days'}</div>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
@@ -779,53 +779,72 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
               )}
 
               {/* Requirements Tab */}
-              {activeTab === 'requirements' && (
-                <div className="space-y-4">
-                  {/* Eligibility Box */}
-                  <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">Eligibility Criteria</h2>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-2">Eligible Degrees</div>
-                          <div className="text-base text-gray-900">{jobDetail?.degree?.join(' / ') || 'Not Specified'}</div>
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-[#667eea] mb-2">Experience Level</div>
-                          <div className="text-base text-gray-900">{jobDetail.experienceLevel || 'Entry Level'}</div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <div className="text-sm font-medium text-[#667eea] mb-2">Eligible Streams</div>
-                        <div className="text-base text-gray-900">{jobDetail?.studentStreams?.join(', ') || 'Not Specified'}</div>
-                      </div>
+{activeTab === 'requirements' && (
+  <div className="space-y-4">
+    {/* Eligibility Box */}
+    <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+      <h2 className="text-lg font-bold text-gray-900 mb-4">Eligibility Criteria</h2>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div className="text-sm font-medium text-[#667eea] mb-2">Eligible Degrees</div>
+            <div className="text-base text-gray-900">{jobDetail?.degree?.join(' / ') || 'Not Specified'}</div>
+          </div>
+          <div>
+            <div className="text-sm font-medium text-[#667eea] mb-2">Experience Level</div>
+            <div className="text-base text-gray-900">{jobDetail.experienceLevel || 'Entry Level'}</div>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div className="text-sm font-medium text-[#667eea] mb-2">Eligible Streams</div>
+            <div className="text-base text-gray-900">{jobDetail?.studentStreams?.join(', ') || 'Not Specified'}</div>
+          </div>
 
-                      <div>
-                        <div className="text-sm font-medium text-[#667eea] mb-2">Additional Requirements</div>
-                        <div className="text-base text-gray-900">{jobDetail.additionalCriteria || 'None'}</div>
-                      </div>
-                    </div>
-                  </div>
+          <div>
+            <div className="text-sm font-medium text-[#667eea] mb-2">CGPA Requirement</div>
+            <div className="text-base text-gray-900">{jobDetail.cgpa ? `${jobDetail.cgpa} CGPA` : 'Not Specified'}</div>
+          </div>
+        </div>
 
-                  {/* Required Skills Box */}
-                  {jobDetail?.skills && jobDetail?.skills.length > 0 && (
-                    <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
-                      <h2 className="text-lg font-bold text-gray-900 mb-4">Required Skills</h2>
-                      <div className="flex flex-wrap gap-2">
-                        {jobDetail.skills.map((skill, index) => (
-                          <span
-                            key={index}
-                            className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium border border-gray-200"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+        {/* Additional Requirements from Eligibility Criteria field - Display as bullet points */}
+        {jobDetail.eligibilityCriteria && (
+          <div className="pt-2">
+            <div className="text-sm font-medium text-[#667eea] mb-2">Additional Criteria</div>
+            <ul className="space-y-1">
+              {jobDetail.eligibilityCriteria.split('\n').map((point, index) => 
+                point.trim() && (
+                  <li key={index} className="text-gray-700 flex items-start">
+                    <span className="mr-2 text-[#667eea]">•</span>
+                    <span>{point.trim()}</span>
+                  </li>
+                )
               )}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+
+    {/* Required Skills Box */}
+    {jobDetail?.skills && jobDetail?.skills.length > 0 && (
+      <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
+        <h2 className="text-lg font-bold text-gray-900 mb-4">Required Skills</h2>
+        <div className="flex flex-wrap gap-2">
+          {jobDetail.skills.map((skill, index) => (
+            <span
+              key={index}
+              className="bg-gradient-to-br from-[#667eea]/10 to-[#764ba2]/10 text-gray-800 px-3 py-1.5 rounded-md text-sm font-medium border border-gray-200"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+)}
 
               {/* Compensation Tab */}
               {activeTab === 'compensation' && (

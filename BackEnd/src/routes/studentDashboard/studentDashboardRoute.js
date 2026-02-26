@@ -21,7 +21,7 @@ router.get('/pool-campus/company',verifyUser, getPoolCampusForCompany);//
 router.get('/pool-campus/company/:id', secureRoute, getPoolCampusJobByIdForCompany);
 
 router.get('/job-postings', secureRoute, getJobPostings);
-router.get('/internship-postings', secureRoute, getInternshipPostings);
+router.get('/internship-postings', verifyUser, getInternshipPostings);
 router.get('/getInternshipDetail/:id',getIntershipById)
 
 router.get('/referral-jobs', secureRoute, getReferralJobs);

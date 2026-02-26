@@ -737,7 +737,7 @@ useEffect(() => {
               {jobDetails?.amenitiesRequired?.length > 0 && (
                 <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm p-6">
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent mb-4">
-                    Amenity/Facility Required
+                    Amenities Required
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {jobDetails.amenitiesRequired.map((amenity, index) => (
