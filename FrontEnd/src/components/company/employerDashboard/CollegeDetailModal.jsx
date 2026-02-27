@@ -1003,6 +1003,7 @@ useEffect(() => {
             )}
 
             {/* College Student Details */}
+            {console.log('here', posting)}
             {(posting.roundDetails?.length > 0 || posting.studentStreams?.length > 0) && (
               <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-4 md:p-6">
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">
