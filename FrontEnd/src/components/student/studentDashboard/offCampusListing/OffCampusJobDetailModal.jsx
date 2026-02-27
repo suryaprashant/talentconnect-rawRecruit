@@ -728,6 +728,7 @@ const OffCampusJobDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsAppl
               {activeTab === 'overview' && (
                 <div className="space-y-4">
                   {/* Job Details Box */}
+                  {console.log('her',jobDetail)}
                   <div className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-5">
                     <h2 className="text-lg font-bold text-gray-900 mb-4">Job Details</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

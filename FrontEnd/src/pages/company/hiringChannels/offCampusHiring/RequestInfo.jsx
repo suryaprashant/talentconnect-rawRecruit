@@ -99,6 +99,66 @@ export default function OffCampusHiringForm({ onBackClick }) {
     toolsAndPlatforms: [],
     broadcastType: 'Everyone',
   };
+// --- DYNAMIC SKILLS STATE ---
+const [metaData, setMetaData] = useState([]); // All skills from DB
+const [customSkillSearch, setCustomSkillSearch] = useState(""); 
+const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+// --- FETCH FROM DATABASE ---
+useEffect(() => {
+  const fetchSkills = async () => {
+    try {
+      const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta/get-skills`);
+      const skillNames = data.map(item => item.skills);
+      setMetaData(skillNames);
+    } catch (err) {
+      console.error("Error loading skills", err);
+    }
+  };
+  fetchSkills();
+}, []);
+
+const filteredSkillOptions = useMemo(() => {
+  return Array.isArray(metaData) ? metaData.sort() : [];
+}, [metaData]);
+
+// --- SKILL HANDLERS ---
+const handleAddNewSkill = async (newSkillName) => {
+  const trimmedSkill = newSkillName.trim();
+  if (!trimmedSkill) return;
+
+  try {
+    const payload = { skills: trimmedSkill };
+    const { data } = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/meta/add-skill`, payload);
+
+    setMetaData(prev => [...new Set([...prev, data.skills])]);
+    setFormData(prev => ({
+      ...prev,
+      skills: [...new Set([...prev.skills, data.skills])]
+    }));
+    toast.success(`Skill "${data.skills}" added to global database!`);
+  } catch (err) {
+    if (err.response?.status === 409) toast.error("Skill already exists");
+    else toast.error("Failed to add skill");
+  }
+};
+
+const handleSelectOrAdd = async (skillName) => {
+  const trimmed = skillName.trim();
+  if (!trimmed) return;
+
+  const existingInDb = metaData.find(s => s.toLowerCase() === trimmed.toLowerCase());
+
+  if (existingInDb) {
+    if (!formData.skills.includes(existingInDb)) {
+      setFormData(prev => ({ ...prev, skills: [...prev.skills, existingInDb] }));
+    }
+  } else {
+    await handleAddNewSkill(trimmed);
+  }
+  setCustomSkillSearch("");
+  setIsDropdownOpen(false);
+};
 
   const [formData, setFormData] = useState(() => {
     const savedData = localStorage.getItem('pendingOffCampusRequest');
@@ -1049,90 +1109,94 @@ export default function OffCampusHiringForm({ onBackClick }) {
   
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
     {/* Skills */}
-    <div>
-      <label className="block font-medium mb-2 text-sm text-gray-700">Skills <span className="text-red-500">*</span></label>
-      <div ref={skillsRef} className="relative">
-        <div className={`flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto ${formData.skills.length > 0 ? 'min-h-[20px]' : ''}`}>
-          {formData.skills.map(skill => (
-            <div key={skill} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-              <span>{skill}</span>
-              <button type="button" onClick={() => removeSelectedItem('skills', skill)} className="ml-1 text-gray-500 hover:text-gray-700">
-                <X size={12} />
-              </button>
-            </div>
-          ))}
-        </div>
-        <div onClick={() => formData.degree.length > 0 && toggleDropdown('skills')}
-          className={`flex items-center justify-between w-full border rounded-lg ${
-            !formData.degree.length 
-              ? 'bg-gray-50 cursor-not-allowed border-gray-200' 
-              : 'cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white border-gray-200'
-          } min-h-[44px] h-[44px] px-3`}
+    {/* --- DYNAMIC SKILLS SECTION --- */}
+<div ref={skillsRef} className="relative pt-2">
+  <label className="block font-semibold mb-2 text-sm text-gray-700 flex items-center gap-2">
+    <Award className="w-4 h-4 text-[#667eea]" />
+    Required Skills <span className="text-red-500">*</span>
+  </label>
+
+  <div className={`
+    group flex flex-wrap gap-2 p-2.5 min-h-[48px] 
+    bg-gradient-to-r from-gray-50 to-white 
+    border rounded-xl transition-all duration-300
+    ${isDropdownOpen ? 'border-[#667eea] ring-2 ring-[#667eea]/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'}
+  `}>
+    {/* Selected Tags */}
+    {formData.skills.map((skill) => (
+      <div 
+        key={skill} 
+        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#667eea]/20 text-[#667eea] text-xs font-bold rounded-full shadow-sm animate-in fade-in zoom-in duration-200"
+      >
+        {skill}
+        <button 
+          type="button" 
+          onClick={() => removeSelectedItem('skills', skill)} 
+          className="hover:bg-red-50 p-0.5 rounded-full transition-colors"
         >
-          <span className={`text-sm ${!formData.degree.length ? 'text-gray-400' : 'text-gray-500'}`}>
-            {formData.degree.length > 0 ? 'Select skills' : 'Select degree first'}
-          </span>
-          <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.skills ? "rotate-180" : ""} ${!formData.degree.length ? 'text-gray-300' : 'text-gray-400'}`} />
-        </div>
-        {dropdownOpen.skills && formData.degree.length > 0 && (
-          <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-            {/* Add custom skill section */}
-            <div className="p-2 border-b border-gray-100 bg-gray-50">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Add custom skill..."
-                  value={customSkill}
-                  onChange={(e) => setCustomSkill(e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleCustomAdd('skills', customSkill, setCustomSkill, getAvailableSkills());
-                    }
-                  }}
-                  className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCustomAdd('skills', customSkill, setCustomSkill, getAvailableSkills());
-                  }}
-                  className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-                >
-                  Add
-                </button>
+          <X size={12} className="text-gray-400 hover:text-red-500" />
+        </button>
+      </div>
+    ))}
+
+    <input
+      type="text"
+      className="flex-grow min-w-[140px] outline-none bg-transparent text-sm text-gray-800 placeholder:text-gray-400"
+      placeholder={formData.skills.length === 0 ? "Search or add skills (e.g. React, Java)..." : "Add more..."}
+      value={customSkillSearch}
+      onFocus={() => setIsDropdownOpen(true)}
+      onChange={(e) => setCustomSkillSearch(e.target.value)}
+    />
+  </div>
+
+  {/* Unified Dropdown Menu */}
+  {isDropdownOpen && (
+    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-top-2 duration-200">
+      <div className="max-h-64 overflow-y-auto">
+        
+        {/* 1. Results from Database */}
+        {filteredSkillOptions
+          .filter(s => 
+            s.toLowerCase().includes(customSkillSearch.toLowerCase()) && 
+            !formData.skills.includes(s)
+          )
+          .map((skill, index) => (
+            <button
+              key={index}
+              type="button"
+              className="w-full text-left px-5 py-3 hover:bg-[#667eea]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
+              onClick={() => handleSelectOrAdd(skill)}
+            >
+              <span>{skill}</span>
+              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#667eea] -rotate-90" />
+            </button>
+          ))}
+
+        {/* 2. "Add New" button */}
+        {customSkillSearch && !filteredSkillOptions.some(s => s.toLowerCase() === customSkillSearch.toLowerCase()) && (
+          <button
+            type="button"
+            className="w-full text-left px-5 py-4 bg-[#667eea]/5 text-[#667eea] text-sm font-bold hover:bg-[#667eea]/10 transition-all border-t border-[#667eea]/10"
+            onClick={() => handleSelectOrAdd(customSkillSearch)}
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-1.5 bg-white rounded-lg shadow-sm">
+                <Target size={16} className="text-[#764ba2]" />
               </div>
+              <span>Add "<span className="underline italic">{customSkillSearch}</span>" as a new skill</span>
             </div>
-            
-            {/* Scrollable list of skills */}
-            <div className="overflow-y-auto max-h-48">
-              {getAvailableSkills().map(skill => (
-                <div 
-                  key={skill} 
-                  onClick={() => handleMultiSelect('skills', skill)} 
-                  className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                    formData.skills.includes(skill) ? "bg-blue-50/50" : ""
-                  }`}
-                >
-                  <span className={`text-sm ${formData.skills.includes(skill) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                    {skill}
-                  </span>
-                  {formData.skills.includes(skill) && <span className="text-[#667eea] font-bold">✓</span>}
-                </div>
-              ))}
-              
-              {getAvailableSkills().length === 0 && (
-                <div className="p-4 text-center text-gray-400 text-xs italic">
-                  No skills found for selected degrees.
-                </div>
-              )}
-            </div>
+          </button>
+        )}
+
+        {customSkillSearch === "" && filteredSkillOptions.length === 0 && (
+          <div className="px-5 py-8 text-center text-gray-400 text-xs italic">
+            Start typing to search or add skills...
           </div>
         )}
       </div>
     </div>
+  )}
+</div>
 
     {/* Tools & Platforms */}
     <div>
