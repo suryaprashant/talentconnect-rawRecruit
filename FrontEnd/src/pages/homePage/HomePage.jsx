@@ -22,6 +22,22 @@ import { SolutionsModal } from '@/components/onboarding/SolutionModal';
 import { FeaturesModal } from '@/components/onboarding/FeatureModal';
 import heroImage from "../../assets/RR-Tagline.png";
 import bgImage from "../../assets/bgImage.png";
+import h1 from "../../assets/ss-company-home--Q8hVb9h.png";
+import h2 from "../../assets/ss-student-ClIhnGfc.png";
+import h3 from "../../assets/ss-college-home-Ba2ok6X0.png";
+import h4 from "../../assets/h4.png";
+import h5 from "../../assets/h5.png";
+import h6 from "../../assets/h6.png";
+import h7 from "../../assets/h7.png";
+import h8 from "../../assets/h8.png";
+import h9 from "../../assets/h9.png";
+import f0 from "../../assets/f0.png";
+import f1 from "../../assets/f1.png";
+import f2 from "../../assets/f2.png";
+import f3 from "../../assets/f3.png";
+import f4 from "../../assets/f4.png";
+import f5 from "../../assets/f5.png";
+import f6 from "../../assets/f6.png";
 
 const App = () => {
   const navigate = useNavigate();
@@ -31,6 +47,8 @@ const App = () => {
   const [activeSection, setActiveSection] = useState(null);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [isEditing, setIsEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState("company");
+  const [activeCard, setActiveCard] = useState("dashboard");
 
   // Refs for sections
   const heroRef = useRef(null);
@@ -243,6 +261,886 @@ const App = () => {
     }
   ];
 
+  const FeatureCard = ({
+  image,
+  imageBg,
+  iconColor,
+  iconBg,
+  iconPath,
+  iconSecondaryPath,
+  iconType,
+  title,
+  description
+}) => {
+
+  const renderIcon = () => {
+    if (iconType === "chart") {
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: iconColor }}>
+          <line x1="18" x2="18" y1="20" y2="10" />
+          <line x1="12" x2="12" y1="20" y2="4" />
+          <line x1="6" x2="6" y1="20" y2="14" />
+        </svg>
+      );
+    }
+
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: iconColor }}>
+        <path d={iconPath} />
+        {iconSecondaryPath && <path d={iconSecondaryPath} />}
+      </svg>
+    );
+  };
+
+  return (
+    <div
+      className="bg-white rounded-[14px] border border-border overflow-hidden flex flex-col group hover:-translate-y-1 transition-all duration-300 mx-auto w-full max-w-[420px]"
+      style={{ boxShadow: "var(--shadow-md)" }}
+    >
+      {/* Image */}
+      <div
+        className="relative overflow-hidden"
+        style={{ height: "165px", background: imageBg }}
+      >
+        <img
+          src={image}
+          alt={title}
+          className="w-full h-full object-contain object-center transition-transform duration-500 group-hover:scale-[1.05]"
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(transparent 35%, ${imageBg} 100%)`
+          }}
+        />
+      </div>
+
+      {/* Content */}
+      <div style={{ padding: "16px" }}>
+        <div
+          className="w-9 h-9 rounded-xl flex items-center justify-center mb-2"
+          style={{ background: iconBg }}
+        >
+          {renderIcon()}
+        </div>
+
+        <h3 className="font-bold text-foreground mb-1 text-[15px]">
+          {title}
+        </h3>
+
+        <p className="text-muted-foreground leading-relaxed text-[13px]">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// StepCard Component
+const StepCard = ({ stepNumber, arrowPosition, arrowColor, title, description }) => {
+  return (
+    <div className="flex flex-col items-center text-center">
+      
+      {/* Step Number Circle */}
+      <div 
+        className="w-[52px] h-[52px] rounded-2xl flex items-center justify-center font-black text-white text-sm mb-6 shadow-lg"
+        style={{ 
+          background: stepNumber === "01" 
+            ? 'linear-gradient(135deg, #7D3AE9, #9F6EF0)' 
+            : stepNumber === "02"
+            ? 'linear-gradient(135deg, #EE4499, #F472B7)'
+            : 'linear-gradient(135deg, #327DF5, #6AA0FF)'
+        }}
+      >
+        {stepNumber}
+      </div>
+
+      {/* Arrow Indicator (Desktop only) */}
+      {arrowPosition && arrowColor && (
+        <div 
+          className="hidden md:block absolute"
+          style={{ 
+            top: '14px', 
+            left: arrowPosition, 
+            color: arrowColor, 
+            opacity: 0.4 
+          }}
+        >
+          <ArrowRightIcon />
+        </div>
+      )}
+
+      {/* Card Content */}
+      <div 
+        className="w-full rounded-2xl border border-border p-7 hover:shadow-lg transition-all duration-300"
+        style={{ background: 'white' }}
+      >
+        <h3 className="font-bold text-foreground mb-3 text-[17px]">
+          {title}
+        </h3>
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// Arrow Icon Component
+const ArrowRightIcon = () => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width="24" 
+    height="24" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+  >
+    <path d="M5 12h14"></path>
+    <path d="m12 5 7 7-7 7"></path>
+  </svg>
+);
+
+  // const getTabColor = (tabId) => {
+  //   switch(tabId) {
+  //     case "company": return "#7D3AE9";
+  //     case "college": return "#EE4499";
+  //     case "employer": return "#327DF5";
+  //     case "candidate": return "#20C55D";
+  //     default: return "#7D3AE9";
+  //   }
+  // };
+
+  // const cardData = {
+  //   company: [
+  //     { 
+  //       id: "dashboard", 
+  //       title: "Dashboard Overview", 
+  //       description: "View all recruitment activities", 
+  //       step: "01",
+  //       fullDescription: "Complete overview of all recruitment activities, metrics, and upcoming drives in one place.",
+  //       image: f1,
+  //       iconColor: "#7D3AE9",
+  //       iconBg: "#F0EBFA",
+  //       iconPath: "M3 12l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v10H3V12z",
+  //     },
+  //     { 
+  //       id: "jobs", 
+  //       title: "Job Postings", 
+  //       description: "Manage job listings", 
+  //       step: "02",
+  //       fullDescription: "Create, edit, and manage job postings with detailed requirements and eligibility criteria.",
+  //       image: f2,
+  //       iconColor: "#7D3AE9",
+  //       iconBg: "#F0EBFA",
+  //       iconPath: "M20 7h-4.5A2.5 2.5 0 0 1 13 4.5V3M4 21h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8L9 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"
+  //     },
+  //     { 
+  //       id: "requests", 
+  //       title: "Campus Requests", 
+  //       description: "Postings by college", 
+  //       step: "03",
+  //       fullDescription: "Review and manage campus requests from colleges, schedule drives, and coordinate with placement cells.",
+  //       image: f5,
+  //       iconColor: "#7D3AE9",
+  //       iconBg: "#F0EBFA",
+  //       iconPath: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 9l5 5 5-5M12 4v10"
+  //     },
+  //     { 
+  //       id: "applications", 
+  //       title: "Applications", 
+  //       description: "Track candidate applications", 
+  //       step: "04",
+  //       fullDescription: "Track and manage all incoming applications, filter by criteria, and shortlist candidates.",
+  //       image: f3,
+  //       iconColor: "#7D3AE9",
+  //       iconBg: "#F0EBFA",
+  //       iconPath: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"
+  //     },
+  //     { 
+  //       id: "interviews", 
+  //       title: "Interviews", 
+  //       description: "Schedule and manage interviews", 
+  //       step: "05",
+  //       fullDescription: "Schedule interviews, send invites, and track interview feedback and outcomes.",
+  //       image: f4,
+  //       iconColor: "#7D3AE9",
+  //       iconBg: "#F0EBFA",
+  //       iconPath: "M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5M16 2v4M3 10h18M8 2v4"
+  //     },
+  //     { 
+  //       id: "messages", 
+  //       title: "Messaging", 
+  //       description: "Real time chats", 
+  //       step: "06",
+  //       fullDescription: "Real-time communication with colleges and candidates, with message history and notifications.",
+  //       image: f6,
+  //       iconColor: "#7D3AE9",
+  //       iconBg: "#F0EBFA",
+  //       iconPath: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+  //     },
+  //   ],
+  //   college: [
+  //     { 
+  //       id: "dashboard", 
+  //       title: "College Dashboard", 
+  //       description: "Placement cell overview", 
+  //       step: "01",
+  //       fullDescription: "Complete placement cell overview with drive schedules, student stats, and company partnerships.",
+  //       image: f1,
+  //       iconColor: "#EE4499",
+  //       iconBg: "#FBEDF5",
+  //       iconPath: "M3 12l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v10H3V12z",
+  //     },
+  //     { 
+  //       id: "drives", 
+  //       title: "Placement Drives", 
+  //       description: "Manage campus drives", 
+  //       step: "02",
+  //       fullDescription: "Create and manage campus placement drives, invite companies, and track drive progress.",
+  //       image: f2,
+  //       iconColor: "#EE4499",
+  //       iconBg: "#FBEDF5",
+  //       iconPath: "M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2zM17 21v-4H7v4M12 7v6M9 10h6"
+  //     },
+  //     { 
+  //       id: "students", 
+  //       title: "Student Management", 
+  //       description: "Manage student profiles", 
+  //       step: "03",
+  //       fullDescription: "Manage student profiles, track eligibility, and maintain placement-ready candidate pools.",
+  //       image: f3,
+  //       iconColor: "#EE4499",
+  //       iconBg: "#FBEDF5",
+  //       iconPath: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
+  //     },
+  //     { 
+  //       id: "companies", 
+  //       title: "Company Relations", 
+  //       description: "Partner companies", 
+  //       step: "04",
+  //       fullDescription: "Manage company partnerships, track engagement, and maintain relationships with recruiters.",
+  //       image: f4,
+  //       iconColor: "#EE4499",
+  //       iconBg: "#FBEDF5",
+  //       iconPath: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0"
+  //     },
+  //     { 
+  //       id: "reports", 
+  //       title: "Placement Reports", 
+  //       description: "Track placement stats", 
+  //       step: "05",
+  //       fullDescription: "Generate placement reports, track metrics, and analyze placement performance over time.",
+  //       image: f5,
+  //       iconColor: "#EE4499",
+  //       iconBg: "#FBEDF5",
+  //       iconPath: "M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2M3 21h18M12 7v10M8 7v10M16 7v10"
+  //     },
+  //     { 
+  //       id: "calendar", 
+  //       title: "Event Calendar", 
+  //       description: "Schedule placements", 
+  //       step: "06",
+  //       fullDescription: "Schedule placement events, interviews, and drive activities with calendar integration.",
+  //       image: f6,
+  //       iconColor: "#EE4499",
+  //       iconBg: "#FBEDF5",
+  //       iconPath: "M8 2v4M16 2v4M3 10h18M21 14v-4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"
+  //     },
+  //   ],
+  //   employer: [
+  //     { 
+  //       id: "dashboard", 
+  //       title: "Employer Dashboard", 
+  //       description: "Complete hiring overview", 
+  //       step: "01",
+  //       fullDescription: "Complete hiring dashboard with job postings, candidate pipelines, and hiring metrics.",
+  //       image: f1,
+  //       iconColor: "#327DF5",
+  //       iconBg: "#E9F0FB",
+  //       iconPath: "M3 12l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v10H3V12z",
+  //     },
+  //     { 
+  //       id: "postings", 
+  //       title: "Job Postings", 
+  //       description: "Create & manage jobs", 
+  //       step: "02",
+  //       fullDescription: "Create and manage job postings, set requirements, and track application volumes.",
+  //       image: f2,
+  //       iconColor: "#327DF5",
+  //       iconBg: "#E9F0FB",
+  //       iconPath: "M20 7h-4.5A2.5 2.5 0 0 1 13 4.5V3M4 21h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8L9 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"
+  //     },
+  //     { 
+  //       id: "candidates", 
+  //       title: "Candidate Search", 
+  //       description: "Find matching profiles", 
+  //       step: "03",
+  //       fullDescription: "Search and filter candidate profiles, save searches, and shortlist potential hires.",
+  //       image: f3,
+  //       iconColor: "#327DF5",
+  //       iconBg: "#E9F0FB",
+  //       iconPath: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0"
+  //     },
+  //     { 
+  //       id: "applications", 
+  //       title: "Applications", 
+  //       description: "Review applicants", 
+  //       step: "04",
+  //       fullDescription: "Review incoming applications, filter by criteria, and move candidates through pipeline.",
+  //       image: f4,
+  //       iconColor: "#327DF5",
+  //       iconBg: "#E9F0FB",
+  //       iconPath: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"
+  //     },
+  //     { 
+  //       id: "interviews", 
+  //       title: "Interviews", 
+  //       description: "Schedule & track", 
+  //       step: "05",
+  //       fullDescription: "Schedule interviews, send calendar invites, and track interview feedback.",
+  //       image: f5,
+  //       iconColor: "#327DF5",
+  //       iconBg: "#E9F0FB",
+  //       iconPath: "M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5M16 2v4M3 10h18M8 2v4"
+  //     },
+  //     { 
+  //       id: "offers", 
+  //       title: "Offer Management", 
+  //       description: "Send & track offers", 
+  //       step: "06",
+  //       fullDescription: "Create and send offer letters, track acceptance rates, and manage offer negotiations.",
+  //       image: f6,
+  //       iconColor: "#327DF5",
+  //       iconBg: "#E9F0FB",
+  //       iconPath: "M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5M9 12h6M12 9v6"
+  //     },
+  //   ],
+  //   candidate: [
+  //     { 
+  //       id: "dashboard", 
+  //       title: "Candidate Dashboard", 
+  //       description: "Personalized overview", 
+  //       step: "01",
+  //       fullDescription: "Personalized dashboard with job recommendations, application status, and upcoming interviews.",
+  //       image: f1,
+  //       iconColor: "#20C55D",
+  //       iconBg: "#EBFAF0",
+  //       iconPath: "M3 12l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v10H3V12z",
+  //     },
+  //     { 
+  //       id: "offcampus", 
+  //       title: "Off-Campus Jobs", 
+  //       description: "Browse off-campus openings", 
+  //       step: "02",
+  //       fullDescription: "Browse and apply to off-campus job openings from partner companies.",
+  //       image: f2,
+  //       iconColor: "#20C55D",
+  //       iconBg: "#EBFAF0",
+  //       iconPath: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20M12 2v20"
+  //     },
+  //     { 
+  //       id: "internships", 
+  //       title: "Internships", 
+  //       description: "Find internship opportunities", 
+  //       step: "03",
+  //       fullDescription: "Discover and apply to internship opportunities matching your profile and interests.",
+  //       image: f3,
+  //       iconColor: "#20C55D",
+  //       iconBg: "#EBFAF0",
+  //       iconPath: "M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
+  //     },
+  //     { 
+  //       id: "applications", 
+  //       title: "My Applications", 
+  //       description: "Track application status", 
+  //       step: "04",
+  //       fullDescription: "Track all your job applications, view status updates, and manage responses.",
+  //       image: f4,
+  //       iconColor: "#20C55D",
+  //       iconBg: "#EBFAF0",
+  //       iconPath: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"
+  //     },
+  //     { 
+  //       id: "interviews", 
+  //       title: "My Interviews", 
+  //       description: "Upcoming interviews", 
+  //       step: "05",
+  //       fullDescription: "View and manage upcoming interviews, get reminders, and access interview details.",
+  //       image: f5,
+  //       iconColor: "#20C55D",
+  //       iconBg: "#EBFAF0",
+  //       iconPath: "M8 7h.01M12 7h.01M16 7h.01M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5M3 10h18"
+  //     },
+  //     { 
+  //       id: "chats", 
+  //       title: "Messages", 
+  //       description: "Chat with recruiters", 
+  //       step: "06",
+  //       fullDescription: "Real-time chat with recruiters and placement coordinators, get updates and ask questions.",
+  //       image: f6,
+  //       iconColor: "#20C55D",
+  //       iconBg: "#EBFAF0",
+  //       iconPath: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+  //     },
+  //   ],
+  // };
+
+  // const getImageForActiveCard = () => {
+  //   const card = cardData[activeTab]?.find(c => c.id === activeCard);
+  //   return card?.image || f1;
+  // };
+
+  // const getActiveTitle = () => {
+  //   const card = cardData[activeTab]?.find(c => c.id === activeCard);
+  //   return card?.title || "Dashboard";
+  // };
+
+  // const getActiveDescription = () => {
+  //   const card = cardData[activeTab]?.find(c => c.id === activeCard);
+  //   return card?.fullDescription || card?.description || "";
+  // };
+
+  // const renderStepCard = (card, isActive, tabColor, sectionTab) => {
+  //   return (
+  //     <button
+  //       key={card.id}
+  //       onClick={() => {
+  //         setActiveTab(sectionTab);
+  //         setActiveCard(card.id);
+  //       }}
+  //       className="text-left rounded-xl p-4 transition-all duration-300 border w-full hover:translate-x-1"
+  //       style={{
+  //         borderColor: isActive ? tabColor : 'transparent',
+  //         backgroundColor: isActive ? `${tabColor}08` : 'transparent',
+  //         boxShadow: isActive ? `0 4px 12px ${tabColor}20` : 'none',
+  //       }}
+  //     >
+  //       <div className="flex items-start gap-3">
+  //         <span 
+  //           className="text-sm font-bold whitespace-nowrap mt-0.5"
+  //           style={{ color: tabColor }}
+  //         >
+  //           {card.step}
+  //         </span>
+  //         <div className="flex-1">
+  //           <h3 
+  //             className="text-base font-semibold leading-tight"
+  //             style={{ color: '#0f172a' }}
+  //           >
+  //             {card.title}
+  //           </h3>
+  //           {isActive && (
+  //             <p className="text-sm leading-relaxed mt-2 text-muted-foreground">
+  //               {card.fullDescription}
+  //             </p>
+  //           )}
+  //         </div>
+  //       </div>
+  //     </button>
+  //   );
+  // };
+
+  const getTabColor = (tabId) => {
+    switch(tabId) {
+      case "company": return "#7D3AE9";
+      case "college": return "#EE4499";
+      case "employer": return "#327DF5";
+      case "candidate": return "#20C55D";
+      default: return "#7D3AE9";
+    }
+  };
+
+  const cardData = {
+    company: [
+      { 
+        id: "dashboard", 
+        title: "Dashboard Overview", 
+        description: "View all recruitment activities", 
+        fullDescription: "Complete overview of all recruitment activities, metrics, and upcoming drives in one place.",
+        step: "01",
+        image: h1,
+        iconColor: "#7D3AE9",
+        iconBg: "#F0EBFA",
+        iconPath: "M3 12l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v10H3V12z",
+      },
+      { 
+        id: "jobs", 
+        title: "Job Postings", 
+        description: "Manage job listings", 
+        fullDescription: "Create, edit, and manage job postings with detailed requirements and eligibility criteria.",
+        step: "02",
+        image: f2,
+        iconColor: "#7D3AE9",
+        iconBg: "#F0EBFA",
+        iconPath: "M20 7h-4.5A2.5 2.5 0 0 1 13 4.5V3M4 21h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8L9 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"
+      },
+      { 
+        id: "requests", 
+        title: "Campus Requests", 
+        description: "Postings by college", 
+        fullDescription: "Review and manage campus requests from colleges, schedule drives, and coordinate with placement cells.",
+        step: "03",
+        image: h4,
+        iconColor: "#7D3AE9",
+        iconBg: "#F0EBFA",
+        iconPath: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 9l5 5 5-5M12 4v10"
+      },
+      { 
+        id: "applications", 
+        title: "Applications", 
+        description: "Track candidate applications", 
+        fullDescription: "Track and manage all incoming applications, filter by criteria, and shortlist candidates.",
+        step: "04",
+        image: f5,
+        iconColor: "#7D3AE9",
+        iconBg: "#F0EBFA",
+        iconPath: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"
+      },
+      { 
+        id: "interviews", 
+        title: "Interviews", 
+        description: "Schedule and manage interviews", 
+        fullDescription: "Schedule interviews, send invites, and track interview feedback and outcomes.",
+        step: "05",
+        image: f4,
+        iconColor: "#7D3AE9",
+        iconBg: "#F0EBFA",
+        iconPath: "M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5M16 2v4M3 10h18M8 2v4M12 14h.01M16 14h.01M20 14h.01M8 18h.01M12 18h.01M16 18h.01"
+      },
+      { 
+        id: "messages", 
+        title: "Messaging", 
+        description: "Real time chats", 
+        fullDescription: "Real-time communication with colleges and candidates, with message history and notifications.",
+        step: "06",
+        image: f6,
+        iconColor: "#7D3AE9",
+        iconBg: "#F0EBFA",
+        iconPath: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+      },
+    ],
+    college: [
+      { 
+        id: "dashboard", 
+        title: "College Dashboard", 
+        description: "Placement cell overview", 
+        image: h3,
+        iconColor: "#EE4499",
+        iconBg: "#FBEDF5",
+        iconPath: "M3 12l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v10H3V12z",
+      },
+      { 
+        id: "drives", 
+        title: "Placement Drives", 
+        description: "Manage campus drives", 
+        image: h5,
+        iconColor: "#EE4499",
+        iconBg: "#FBEDF5",
+        iconPath: "M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2zM17 21v-4H7v4M12 7v6M9 10h6"
+      },
+      { 
+        id: "students", 
+        title: "Student Management", 
+        description: "Manage student profiles", 
+        image: f4,
+        iconColor: "#EE4499",
+        iconBg: "#FBEDF5",
+        iconPath: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
+      },
+      { 
+        id: "companies", 
+        title: "Company Relations", 
+        description: "Partner companies", 
+        image: h6,
+        iconColor: "#EE4499",
+        iconBg: "#FBEDF5",
+        iconPath: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0"
+      },
+      { 
+        id: "reports", 
+        title: "Placement Reports", 
+        description: "Track placement stats", 
+        image: f5,
+        iconColor: "#EE4499",
+        iconBg: "#FBEDF5",
+        iconPath: "M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2M3 21h18M12 7v10M8 7v10M16 7v10"
+      },
+      { 
+        id: "message", 
+        title: "Messaging", 
+        description: "Real time messaging", 
+        image: f6,
+        iconColor: "#EE4499",
+        iconBg: "#FBEDF5",
+        iconPath: "M8 2v4M16 2v4M3 10h18M21 14v-4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"
+      },
+    ],
+    employer: [
+      { 
+        id: "dashboard", 
+        title: "Employer Dashboard", 
+        description: "Complete hiring overview", 
+        image: h1,
+        iconColor: "#327DF5",
+        iconBg: "#E9F0FB",
+        iconPath: "M3 12l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v10H3V12z",
+      },
+      { 
+        id: "postings", 
+        title: "Job Postings", 
+        description: "Create & manage jobs", 
+        image: f0,
+        iconColor: "#327DF5",
+        iconBg: "#E9F0FB",
+        iconPath: "M20 7h-4.5A2.5 2.5 0 0 1 13 4.5V3M4 21h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8L9 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"
+      },
+      { 
+        id: "candidates", 
+        title: "Candidate Search", 
+        description: "Find matching profiles", 
+        image: f3,
+        iconColor: "#327DF5",
+        iconBg: "#E9F0FB",
+        iconPath: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0"
+      },
+      { 
+        id: "applications", 
+        title: "Applications", 
+        description: "Review applicants", 
+        image: f5,
+        iconColor: "#327DF5",
+        iconBg: "#E9F0FB",
+        iconPath: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"
+      },
+      { 
+        id: "chat", 
+        title: "Messaging", 
+        description: "Real time messaging", 
+        image: f6,
+        iconColor: "#327DF5",
+        iconBg: "#E9F0FB",
+        iconPath: "M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5M16 2v4M3 10h18M8 2v4"
+      },
+      { 
+        id: "offers", 
+        title: "Offer Management", 
+        description: "Send & track offers", 
+        image: f4,
+        iconColor: "#327DF5",
+        iconBg: "#E9F0FB",
+        iconPath: "M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5M9 12h6M12 9v6"
+      },
+    ],
+    candidate: [
+      { 
+        id: "dashboard", 
+        title: "Candidate Dashboard", 
+        description: "Personalized overview", 
+        image: h7,
+        iconColor: "#20C55D",
+        iconBg: "#EBFAF0",
+        iconPath: "M3 12l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v10H3V12z",
+      },
+      { 
+        id: "offcampus", 
+        title: "Off-Campus Jobs", 
+        description: "Browse off-campus openings", 
+        image: h8,
+        iconColor: "#20C55D",
+        iconBg: "#EBFAF0",
+        iconPath: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20M12 2v20"
+      },
+      { 
+        id: "internships", 
+        title: "Internships", 
+        description: "Find internship opportunities", 
+        image: h9,
+        iconColor: "#20C55D",
+        iconBg: "#EBFAF0",
+        iconPath: "M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
+      },
+      { 
+        id: "applications", 
+        title: "My Applications", 
+        description: "Track application status", 
+        image: f4,
+        iconColor: "#20C55D",
+        iconBg: "#EBFAF0",
+        iconPath: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"
+      },
+      { 
+        id: "interviews", 
+        title: "My Interviews", 
+        description: "Upcoming interviews", 
+        image: f5,
+        iconColor: "#20C55D",
+        iconBg: "#EBFAF0",
+        iconPath: "M8 7h.01M12 7h.01M16 7h.01M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5M3 10h18"
+      },
+      { 
+        id: "chats", 
+        title: "Messages", 
+        description: "Chat with recruiters", 
+        image: f6,
+        iconColor: "#20C55D",
+        iconBg: "#EBFAF0",
+        iconPath: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+      },
+    ],
+  };
+
+  const getImageForActiveCard = () => {
+    const card = cardData[activeTab]?.find(c => c.id === activeCard);
+    return card?.image || f1;
+  };
+
+  const getActiveTitle = () => {
+    const card = cardData[activeTab]?.find(c => c.id === activeCard);
+    return card?.title || "Dashboard";
+  };
+
+  // Style 1: Step Cards (for Company)
+  const renderStepCard = (card, isActive, tabColor) => {
+    return (
+      <button
+        key={card.id}
+        onClick={() => {
+          setActiveTab("company");
+          setActiveCard(card.id);
+        }}
+        className="text-left rounded-xl p-4 transition-all duration-300 border w-full hover:translate-x-1"
+        style={{
+          borderColor: isActive ? tabColor : 'transparent',
+          backgroundColor: isActive ? `${tabColor}08` : 'transparent',
+          boxShadow: isActive ? `0 4px 12px ${tabColor}20` : 'none',
+        }}
+      >
+        <div className="flex items-start gap-3">
+          <span 
+            className="text-sm font-bold whitespace-nowrap mt-0.5"
+            style={{ color: tabColor }}
+          >
+            {card.step}
+          </span>
+          <div className="flex-1">
+            <h3 
+              className="text-base font-semibold leading-tight"
+              style={{ color: '#0f172a' }}
+            >
+              {card.title}
+            </h3>
+            {isActive && (
+              <p className="text-sm leading-relaxed mt-2 text-muted-foreground">
+                {card.fullDescription}
+              </p>
+            )}
+          </div>
+        </div>
+      </button>
+    );
+  };
+
+  // Style 2: Square Cards (for College)
+  const renderSquareCard = (card, isActive, tabColor) => {
+    return (
+      <div
+        key={card.id}
+        onClick={() => {
+          setActiveTab("college");
+          setActiveCard(card.id);
+        }}
+        className="bg-white rounded-xl border p-3 cursor-pointer transition-all duration-300 hover:-translate-y-1 flex flex-col justify-start"
+        style={{
+          height: 'calc((450px - 12px) / 3)',
+          borderColor: tabColor,
+          backgroundColor: isActive ? tabColor : 'white',
+          boxShadow: isActive ? `0 8px 20px -5px ${tabColor}30` : 'var(--shadow-sm)',
+        }}
+      >
+        <div 
+          className="w-8 h-8 rounded-lg flex items-center justify-center mb-2 transition-all duration-300"
+          style={{ background: isActive ? 'white' : card.iconBg }}
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="16" 
+            height="16" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+            style={{ color: isActive ? tabColor : card.iconColor }}
+          >
+            <path d={card.iconPath}></path>
+          </svg>
+        </div>
+        <h3 
+          className="font-semibold text-xs mb-1 leading-tight transition-all duration-300"
+          style={{ color: isActive ? 'white' : '#0f172a' }}
+        >
+          {card.title}
+        </h3>
+        <p 
+          className="text-[10px] leading-tight line-clamp-2 transition-all duration-300"
+          style={{ color: isActive ? 'rgba(255,255,255,0.9)' : '#64748b' }}
+        >
+          {card.description}
+        </p>
+      </div>
+    );
+  };
+
+  // Style 3: Pill Card (for Employer & Candidate)
+  const renderPillCard = (card, isActive, tabColor, section) => {
+    return (
+      <button
+        key={card.id}
+        onClick={() => {
+          setActiveTab(section);
+          setActiveCard(card.id);
+        }}
+        className="flex items-center gap-2 px-4 py-2.5 rounded-full transition-all duration-300 hover:-translate-y-1 whitespace-nowrap"
+        style={{
+          background: isActive ? tabColor : 'white',
+          border: `1px solid ${tabColor}`,
+          boxShadow: isActive ? `0 8px 20px -5px ${tabColor}40` : 'var(--shadow-sm)',
+        }}
+      >
+        <div 
+          className="w-7 h-7 rounded-lg flex items-center justify-center"
+          style={{ background: card.iconBg }}
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="14" 
+            height="14" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+            style={{ color: card.iconColor }}
+          >
+            <path d={card.iconPath}></path>
+          </svg>
+        </div>
+        <span 
+          className="text-xs font-medium"
+          style={{ color: isActive ? 'white' : '#1e293b' }}
+        >
+          {card.title}
+        </span>
+      </button>
+    );
+  };
+
   const services = {
     company: {
       title: 'Companies',
@@ -403,453 +1301,342 @@ const App = () => {
       {/* Main Content */}
       <div className="relative z-20">
         {/* Modern Glass Navigation */}
-        <header className="absolute top-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-6xl bg-white/70 backdrop-blur-xl rounded-2xl border border-white/40 shadow-2xl z-50">
-          <div className="px-8 py-3 flex justify-between items-center">
-            {/* Simple logo without any effects */}
-            <button 
-              onClick={handleLogoClick}
-              className="focus:outline-none"
+        <header 
+  className="fixed top-0 left-0 right-0 z-50"
+  style={{ 
+    height: '80px', 
+    background: 'rgba(255, 255, 255, 0.85)', 
+    backdropFilter: 'blur(16px)', 
+    boxShadow: 'rgba(0, 0, 0, 0.04) 0px 2px 10px', 
+    borderBottom: '1px solid rgba(225, 231, 239, 0.8)'
+  }}
+>
+  <div className="container-xl h-full flex items-center justify-between px-16 md:px-18 lg:px-20">
+    
+    {/* Logo - With left spacing */}
+    <button 
+      onClick={handleLogoClick}
+      className="flex items-center gap-3 flex-shrink-0 focus:outline-none ml-1 md:ml-0"
+    >
+      <img 
+        src={heroImage} 
+        alt="RawRecruit Logo" 
+        className="h-14 w-auto object-contain"
+      />
+    </button>
+
+    {/* Desktop Navigation - Hidden on mobile, shown on xl screens */}
+    <nav className="hidden xl:flex items-center gap-1">
+      {['Services', 'How It Works', 'Features', 'About'].map((item) => (
+        <a
+          key={item}
+          href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+          className="px-4 py-2.5 text-[16px] font-medium text-gray-700 hover:text-purple-600 rounded-lg hover:bg-purple-50/60 transition-all duration-150"
+        >
+          {item}
+        </a>
+      ))}
+    </nav>
+
+    {/* Desktop Get Started Button - With right spacing */}
+    <div className="hidden xl:flex items-center mr-1 md:mr-0">
+      <button
+        onClick={handleGetStarted}
+        className="relative group"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
+        <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 shadow-lg">
+          <span className="flex items-center gap-2">
+            Get Started
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </span>
+        </div>
+      </button>
+    </div>
+
+    {/* Mobile Menu Button - Shown only on smaller screens */}
+    <button
+      className="xl:hidden p-3 rounded-lg text-gray-600 hover:bg-purple-50 transition-colors mr-1 md:mr-0"
+      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+    >
+      {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+    </button>
+  </div>
+
+  {/* Mobile Menu Dropdown */}
+  {mobileMenuOpen && (
+    <div className="xl:hidden absolute top-full left-0 right-0 mt-1 px-4 md:px-6 lg:px-8 animate-slideDown">
+      <div className="bg-white/90 backdrop-blur-lg rounded-2xl p-4 border border-white/40 shadow-xl mx-1 md:mx-0">
+        <div className="flex flex-col gap-1">
+          {['Services', 'How It Works', 'Features', 'About'].map((item) => (
+            <a
+              key={item}
+              href={`#${item.toLowerCase().replace(' ', '-')}`}
+              className="text-gray-700 hover:text-purple-600 transition-all duration-300 py-3.5 px-4 text-[16px] rounded-lg hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50"
+              onClick={() => setMobileMenuOpen(false)}
             >
-              <img 
-                src={heroImage} 
-                alt="RawRecruit Logo" 
-                className="h-16 w-auto object-contain"
-              />
-            </button>
-
-            <nav className="hidden md:flex items-center gap-8">
-              {['Services', 'How It Works', 'Features', 'About'].map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
-                  className="relative text-gray-700 hover:text-purple-600 transition-all duration-300 font-medium group py-2"
-                >
-                  {item}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 group-hover:w-full transition-all duration-300"></span>
-                </a>
-              ))}
-              
-              <button
-                onClick={handleGetStarted}
-                className="relative group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
-                <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 shadow-lg">
-                  <span className="flex items-center gap-2">
-                    Get Started
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </div>
-              </button>
-            </nav>
-
-            <button
-              className="md:hidden p-3 rounded-xl bg-white/80 backdrop-blur-sm border border-gray-200/60 shadow-sm hover:shadow-md transition-all duration-300"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-
-          {mobileMenuOpen && (
-            <div className="md:hidden px-8 pb-6 animate-slideDown">
-              <div className="bg-white/90 backdrop-blur-lg rounded-2xl p-6 border border-white/40 shadow-xl">
-                <div className="flex flex-col gap-4">
-                  {['Services', 'How It Works', 'Features', 'About'].map((item) => (
-                    <a
-                      key={item}
-                      href={`#${item.toLowerCase().replace(' ', '-')}`}
-                      className="text-gray-700 hover:text-purple-600 transition-all duration-300 py-3 px-4 rounded-lg hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {item}
-                    </a>
-                  ))}
-                  <button
-                    onClick={handleGetStarted}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300 mt-2"
-                  >
-                    Get Started
-                  </button>
-                </div>
-              </div>
+              {item}
+            </a>
+          ))}
+          
+          {/* Mobile Get Started Button - Original styling */}
+          <button
+            onClick={() => {
+              handleGetStarted();
+              setMobileMenuOpen(false);
+            }}
+            className="relative group w-full mt-3"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
+            <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-6 py-3.5 rounded-xl font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-300 shadow-lg w-full">
+              <span className="flex items-center justify-center gap-2">
+                Get Started
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </span>
             </div>
-          )}
-        </header>
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+</header>
 
         {/* Hero Section */}
         <div className="pt-20">
           <section ref={heroRef} id="hero" className="relative px-6">
             {/* Wrapper for hero + stats only */}
             <div className="relative">
-              {/* Background for the top portion only - INSIDE the wrapper */}
-              <div className="absolute inset-0 -z-10 overflow-hidden">
-                {/* Your background image with proper sizing - adjusted to start higher */}
-                <div 
-                  className="absolute inset-0"
-                  style={{
-                    backgroundImage: `url(${bgImage})`,
-                    backgroundSize: 'contain',
-                    backgroundPosition: 'center top',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundColor: 'white',
-                  }}
-                />
-                {/* Gradient overlay for better text readability */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-transparent" />
-                {/* Subtle colored tint */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-blue-500/10" />
-                
-                {/* Hero Background Elements - keep these */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
-                  <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl"></div>
-                </div>
-              </div>
+  {/* Hero Background Elements - keep these for visual interest */}
+  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
+    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl"></div>
+  </div>
 
-              <div className="max-w-7xl mx-auto relative">
-                <div className="text-center mb-20 pt-12 pb-24">
-                  {/* Interactive Tag */}
-                  <div className="inline-flex items-center gap-2 mb-8 mt-8">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur opacity-30 animate-pulse"></div>
-                      <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2.5 rounded-full text-sm font-medium shadow-lg">
-                        <span className="flex items-center gap-2">
-                          <Lightning className="w-4 h-4" />
-                          Recruitment Revolutionized
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+  <div className="max-w-7xl mx-auto px-6 pt-20 pb-24">
+    <div className="grid lg:grid-cols-2 gap-16 items-center">
 
-                  {/* Main Headline */}
-                  <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
-                    <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent animate-gradient">
-                      Next-Generation Campus
-                    </span>
-                    <br />
-                    <span className="text-gray-800">
-                      Recruitment Platform
-                    </span>
-                  </h1>
+      {/* ================= LEFT SIDE ================= */}
+      <div>
 
-                  {/* SEO H2 – hidden visually but readable by search engines */}
-                  <h2 className="sr-only">
-                    Connecting companies and colleges through data-driven recruitment and
-                    career-building solutions for freshers
-                  </h2>
+        {/* Top Label */}
+        <p className="text-sm tracking-widest text-purple-600 font-semibold mb-6">
+          TRUSTED CAMPUS RECRUITMENT PLATFORM
+        </p>
 
-                  <p 
-                    className="text-black text-xl max-w-3xl mx-auto mb-12 leading-relaxed"
-                    style={{
-                      WebkitTextStroke: '0.3px #FFFFFF',
-                      paintOrder: 'stroke fill'
-                    }}
-                  >
-                    RawRecruit connects colleges, companies, and freshers through a modern
-                    campus recruitment platform focused on efficient entry-level hiring,
-                    seamless fresher recruitment, and sustainable career growth powered
-                    by technology.
-                  </p>
+        {/* Heading */}
+        <h1 className="text-5xl md:text-5xl font-bold leading-tight mb-8">
+          <span className="text-[#0f172a]">
+            The Operating System
+          </span>
+          <br />
+          <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            for Campus Recruitment
+          </span>
+        </h1>
 
-                  {/* Interactive CTA */}
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <button
-                      onClick={handleGetStarted}
-                      className="group relative"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
-                      <div className="relative bg-gradient-to-r from-purple-600 to-pink-600 group-hover:from-blue-600 group-hover:to-purple-700 text-white px-10 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 shadow-xl">
-                        <span className="flex items-center gap-3">
-                          Start Your Journey
-                          <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                        </span>
-                      </div>
-                    </button>
-                  </div>
+        {/* Paragraph */}
+<p className="text-gray-600 text-lg leading-relaxed mb-4 max-w-[520px]">
+  Connect Colleges, Companies, and Students in One Unified
+  Recruitment Platform.
+</p>
 
-                  {/* Stats Preview - Black Text Only */}
-  <div className='text-center mx-auto'>               
-<div className="marquee-wrapper mt-10">
-  <div className="marquee">
-    <div className="marquee-content">
-      <TickerItem text="50+ Colleges" />
-      <TickerItem text="100+ Companies" />
-      <TickerItem text="95% Satisfaction" />
+<p className="text-gray-600 text-lg leading-relaxed mb-10 max-w-[520px]">
+  Run On-Campus Drives, Pool Hiring, Off-Campus Hiring, and
+  Internships — all from a single system.
+</p>
 
-      {/* duplicate same items immediately */}
-      <TickerItem text="50+ Colleges" />
-      <TickerItem text="100+ Companies" />
-      <TickerItem text="95% Satisfaction" />
+        {/* Single CTA */}
+        <button
+          onClick={handleGetStarted}
+          className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-10 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+        >
+          <span className="flex items-center gap-3">
+            Start Your Journey
+            <ArrowRight className="w-5 h-5" />
+          </span>
+        </button>
+
+        <div className="mt-14 flex items-center gap-4 max-w-5xl">
+
+  <div className="flex items-center gap-3">
+    <div className="w-4 h-4 flex items-center justify-center rounded-full border-2 border-purple-500 text-purple-600 text-xs font-bold">
+      ✓
+    </div>
+    <p className="text-gray-700 text-sm whitespace-nowrap">
+      <span className="font-semibold text-gray-900">50+</span> Partner Colleges
+    </p>
+  </div>
+
+  <div className="flex items-center gap-3">
+    <div className="w-4 h-4 flex items-center justify-center rounded-full border-2 border-purple-500 text-purple-600 text-xs font-bold">
+      ✓
+    </div>
+    <p className="text-gray-700 text-sm whitespace-nowrap">
+      <span className="font-semibold text-gray-900">100+</span> Companies
+    </p>
+  </div>
+
+  <div className="flex items-center gap-3">
+    <div className="w-4 h-4 flex items-center justify-center rounded-full border-2 border-purple-500 text-purple-600 text-xs font-bold">
+      ✓
+    </div>
+    <p className="text-gray-700 text-sm whitespace-nowrap">
+      <span className="font-semibold text-gray-900">3,000+</span> Students Placed
+    </p>
+  </div>
+
+  <div className="flex items-center gap-3">
+    <div className="w-4 h-4 flex items-center justify-center rounded-full border-2 border-purple-500 text-purple-600 text-xs font-bold">
+      ✓
+    </div>
+    <p className="text-gray-700 text-sm whitespace-nowrap">
+      <span className="font-semibold text-gray-900">95%</span> Satisfaction Rate
+    </p>
+  </div>
+
+</div>
+
+      </div>
+
+
+      {/* ================= RIGHT SIDE ================= */}
+      <div className="relative h-[550px] flex items-center justify-center">
+
+  {/* H1 – Top Center */}
+  <img
+    src={h1}
+    alt="Company Dashboard"
+    className="absolute top-0 z-30 w-[90%] rounded-2xl shadow-2xl border border-gray-200 float-slow"
+  />
+
+  {/* H2 – Left Middle */}
+  <img
+    src={h2}
+    alt="Student Dashboard"
+    className="absolute top-48 left-0 z-20 w-[92%] rounded-2xl shadow-2xl border border-gray-200 float-slower"
+  />
+
+  {/* H3 – Bottom Right */}
+  <img
+    src={h3}
+    alt="College Dashboard"
+    className="absolute bottom-8 right-0 z-10 w-[92%] rounded-2xl shadow-2xl border border-gray-200 float-slowest"
+  />
+
+</div>
+
     </div>
   </div>
 </div>
-</div> 
 
+            {/* Partners Section */}
+<div className="w-full overflow-hidden py-0">
 
+  {/* Heading */}
+  <div className="text-center mb-8">
+    <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">
+      Trusted by Leading Institutions and Companies
+    </span>
+  </div>
 
-
+  {/* ===== COMPANY MARQUEE ===== */}
+  <div className="relative w-full overflow-hidden">
+    <div className="marquee-container">
+      {/* Removed white gradient overlays */}
+      
+      <div className="marquee">
+        <div className="marquee-track">
+          {[...Array(3)].map((_, loopIndex) => (
+            <div key={loopIndex} className="marquee-content">
+              {["Google", "Microsoft", "Amazon", "Meta", "Apple", "Adobe", "Netflix", "Salesforce"].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 whitespace-nowrap mx-4">
+                  <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 text-sm font-semibold">
+                    {item.charAt(0)}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {item}
+                  </span>
                 </div>
-              </div>
+              ))}
             </div>
-
-            {/* Hero Cards - Modern Dashboard Style */}
-<div id="services" className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto relative">
-  {heroCards.map((card, idx) => {
-    // Create unique gradient colors for each card
-    const gradientColors = [
-      { from: '#8B5CF6', via: '#7C3AED', to: '#6D28D9', bg: '#8B5CF6', dark: '#4C1D95' }, // Purple
-      { from: '#C026D3', via: '#952e8f', to: '#6D28D9', bg: '#952e8f', dark: '#952e8f' }, // Magenta/Purple
-      { from: '#60A5FA', via: '#3B82F6', to: '#1D4ED8', bg: '#60A5FA', dark: '#1E3A8A' }  // Blue
-    ];
-    
-    const colors = gradientColors[idx];
-    
-    return (
-      <div
-        key={idx}
-        onClick={() => handleCardClick(card.title)}
-        onMouseEnter={(e) => {
-          setHoveredCard(idx);
-          // Enhanced hover animations
-          const cardElement = e.currentTarget;
-          cardElement.style.transform = 'translateY(-12px) translateZ(30px)';
-          cardElement.style.boxShadow = `
-            0 25px 50px -12px ${colors.from}40,
-            0 10px 30px -5px rgba(0, 0, 0, 0.1),
-            inset 0 1px 0 0 rgba(255, 255, 255, 0.2)
-          `;
-          
-          // Animate floating elements
-          const floatingElements = cardElement.querySelectorAll('.floating-element');
-          floatingElements.forEach((el, i) => {
-            el.style.animation = `floatElement 2s ease-in-out ${i * 0.2}s infinite`;
-          });
-          
-          // Pulse glow effect
-          const glowElement = cardElement.querySelector('.card-glow');
-          if (glowElement) {
-            glowElement.style.opacity = '0.6';
-            glowElement.style.animation = 'pulseGlow 1.5s ease-in-out infinite';
-          }
-        }}
-        onMouseLeave={(e) => {
-          setHoveredCard(null);
-          const cardElement = e.currentTarget;
-          cardElement.style.transform = 'translateY(0) translateZ(0)';
-          cardElement.style.boxShadow = '';
-          
-          // Reset floating elements
-          const floatingElements = cardElement.querySelectorAll('.floating-element');
-          floatingElements.forEach(el => {
-            el.style.animation = '';
-          });
-          
-          // Reset glow
-          const glowElement = cardElement.querySelector('.card-glow');
-          if (glowElement) {
-            glowElement.style.opacity = '0';
-            glowElement.style.animation = '';
-          }
-        }}
-        className="relative group cursor-pointer perspective-1000 h-full"
-        style={{
-          animationDelay: `${idx * 150}ms`,
-          animation: `slideUp 0.6s ease-out forwards ${idx * 150}ms, floatCard${idx + 1} 4s ease-in-out infinite ${idx * 0.3}s`,
-          opacity: 0,
-          transformStyle: 'preserve-3d',
-          willChange: 'transform, box-shadow',
-          transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-        }}
-      >
-        {/* Card Glow Effect */}
-        <div 
-          className="card-glow absolute -inset-4 rounded-3xl opacity-0 transition-opacity duration-500"
-          style={{
-            background: `radial-gradient(circle at 50% 0%, ${colors.from}30 0%, transparent 70%)`,
-            filter: 'blur(20px)',
-            zIndex: 0,
-          }}
-        />
-        
-        {/* Floating Background Elements */}
-        <div className="absolute inset-0 overflow-hidden rounded-3xl">
-          {/* Subtle grid pattern */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute inset-0" style={{
-              backgroundImage: `linear-gradient(to right, ${colors.from}20 1px, transparent 1px),
-                                linear-gradient(to bottom, ${colors.from}20 1px, transparent 1px)`,
-              backgroundSize: '20px 20px',
-            }} />
-          </div>
-          
-          {/* Floating particles */}
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className="floating-element absolute w-2 h-2 rounded-full"
-              style={{
-                background: colors.from,
-                left: `${15 + i * 10}%`,
-                top: `${20 + i * 8}%`,
-                opacity: 0.1,
-                animation: `floatParticle 3s ease-in-out ${i * 0.4}s infinite`,
-              }}
-            />
           ))}
         </div>
-        
-        {/* Card Container with Glass Morphism - FLEX COLUMN */}
-        <div className="relative bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl overflow-hidden z-10 transition-all duration-500 group-hover:bg-gradient-to-br group-hover:from-gray-900 group-hover:to-gray-800 group-hover:border-gray-700/40 h-full flex flex-col">
-          {/* Top Accent Bar - Only visible normally, hidden on hover */}
-          <div 
-            className="h-1.5 w-full rounded-t-3xl transition-all duration-500 group-hover:h-0 group-hover:opacity-0 flex-shrink-0"
-            style={{
-              background: `linear-gradient(90deg, ${colors.from}, ${colors.via}, ${colors.to})`,
-            }}
-          />
-          
-          {/* Card Content - FLEXIBLE HEIGHT */}
-          <div className="relative p-8 flex-grow flex flex-col">
-            {/* Color overlay on hover - Takes full card */}
-            <div 
-              className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-              style={{
-                background: `linear-gradient(135deg, ${colors.dark}ee, ${colors.dark}cc)`,
-              }}
-            />
-            
-            <div className="relative flex-grow flex flex-col">
-              {/* Icon Container with Floating Effect */}
-              <div className="relative mb-8 flex-shrink-0">
-                {/* Icon Background Glow */}
-                <div 
-                  className="absolute -inset-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
-                  style={{
-                    background: `radial-gradient(circle at center, ${colors.from}40 0%, transparent 70%)`,
-                    filter: 'blur(15px)',
-                  }}
-                />
-                
-                {/* Icon Container */}
-                <div className="relative">
-                  {/* Icon Background - White normally, stays white on hover */}
-                  <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-white to-gray-50 p-4 shadow-lg border border-white/60 flex items-center justify-center group-hover:border-white/80">
-                    {/* Inner Glow */}
-                    <div 
-                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
-                      style={{
-                        background: `linear-gradient(135deg, ${colors.from}30, ${colors.to}30)`,
-                      }}
-                    />
-                    
-                    {/* Icon */}
-                    <div 
-                      className="relative transform transition-transform duration-500 group-hover:scale-110"
-                      style={{ color: colors.from }}
-                    >
-                      {card.icon}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Title with Gradient - White text on hover */}
-              <div className="mb-4 flex-shrink-0">
-                <h3 className="text-2xl font-bold">
-                  <span className="bg-gradient-to-r from-gray-800 via-gray-900 to-black bg-clip-text text-transparent group-hover:text-white transition-all duration-500">
-                    {card.title}
-                  </span>
-                  {/* Animated underline - Only appears on hover */}
-                  <div 
-                    className="h-0.5 w-0 group-hover:w-full transition-all duration-700 mt-1"
-                    style={{
-                      background: `linear-gradient(90deg, ${colors.from}, ${colors.to})`,
-                    }}
-                  />
-                </h3>
-              </div>
-              
-              {/* Features List with Animated Indicators - FLEXIBLE CONTENT */}
-              <ul className="space-y-4 mb-6 flex-grow"> {/* Changed from mb-4 to mb-6 for more space after features */}
-                {card.features.map((feature, fIdx) => (
-                  <li 
-                    key={fIdx}
-                    className="flex items-start gap-3 group/item"
-                    style={{ animationDelay: `${fIdx * 100}ms` }}
-                  >
-                    {/* Animated Check Circle */}
-                    <div className="relative flex-shrink-0 mt-1">
-                      {/* Pulse Ring */}
-                      <div 
-                        className="absolute -inset-1 rounded-full opacity-0 group-hover/item:opacity-30 transition-opacity duration-300"
-                        style={{
-                          background: colors.from,
-                          animation: 'pulseRing 2s ease-in-out infinite',
-                        }}
-                      />
-                      
-                      {/* Check Circle - White on hover */}
-                      <div 
-                        className="relative w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-0.5 group-hover:bg-white group-hover:border group-hover:border-white/60"
-                        style={{
-                          background: `linear-gradient(135deg, ${colors.from}, ${colors.via})`,
-                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                        }}
-                      >
-                        <CheckCircle className="w-3.5 h-3.5 text-white group-hover:text-gray-700 transition-colors duration-300" />
-                      </div>
-                    </div>
-                    
-                    {/* Feature Text - White text on hover */}
-                    <span className="text-sm text-gray-600 group-hover:text-gray-200 transition-colors duration-300 leading-relaxed">
-                      {feature}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              
-              {/* REMOVED: Interactive Bottom Section with Arrow */}
-              {/* This entire section has been removed */}
-              
-              {/* REMOVED: <div className="pt-2 border-t border-gray-100/50 group-hover:border-gray-700/50 transition-colors duration-500 flex-shrink-0">
-                Animated Arrow
-                <div className="flex items-center justify-end">
-                  <div className="relative">
-                    Arrow Trail
-                    <div className="absolute -left-8 w-0 h-0.5 rounded-full group-hover:w-8 transition-all duration-500"
-                      style={{
-                        background: `linear-gradient(90deg, transparent, ${colors.from})`,
-                      }}
-                    />
-                    
-                    Arrow - White on hover
-                    <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-gray-50 to-white border border-gray-100/60 flex items-center justify-center shadow-sm group-hover:bg-white group-hover:border-white/80 group-hover:shadow-md transition-all duration-300 group-hover:translate-x-2">
-                      <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-700 transition-colors duration-300" />
-                    </div>
-                  </div>
-                </div>
-              </div> */}
-            </div>
-          </div>
-          
-          {/* Edge Highlights for 3D Effect - Darker on hover */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent group-hover:via-gray-700/50 flex-shrink-0" />
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:via-gray-700/30 flex-shrink-0" />
-        </div>
-        
-        {/* Floating Shadow */}
-        <div className="absolute -bottom-4 left-4 right-4 h-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
-          style={{
-            background: colors.from,
-            filter: 'blur(15px)',
-            transform: 'translateZ(-20px)',
-          }}
-        />
       </div>
-    );
-  })}
-</div>
+    </div>
+  </div>
+
+  {/* ===== COLLEGE MARQUEE ===== */}
+  <div className="relative w-full overflow-hidden mt-8">
+    <div className="marquee-container">
+      {/* Removed white gradient overlays */}
+      
+      <div className="marquee reverse">
+        <div className="marquee-track">
+          {[...Array(3)].map((_, loopIndex) => (
+            <div key={loopIndex} className="marquee-content">
+              {[
+                "IIT Bombay", "IIT Delhi", "IIT Madras", "IIT Kharagpur",
+                "BITS Pilani", "NIT Trichy", "IIM Ahmedabad", "IIM Bangalore",
+                "IIT Kanpur", "NIT Surathkal"
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 whitespace-nowrap mx-4">
+                  <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 text-sm font-semibold">
+                    {item.split(' ').map(word => word.charAt(0)).join('')}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {item}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Animation Styles */}
+  <style jsx>{`
+    .marquee-container {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .marquee {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: scroll 35s linear infinite;
+    }
+
+    .marquee.reverse .marquee-track {
+      animation: scroll-reverse 35s linear infinite;
+    }
+
+    .marquee-content {
+      display: flex;
+      gap: 0rem;
+      padding-right: 0rem;
+    }
+
+    @keyframes scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-33.33%); }
+    }
+
+    @keyframes scroll-reverse {
+      from { transform: translateX(-33.33%); }
+      to { transform: translateX(0); }
+    }
+  `}</style>
+
+</div> 
           </section>
 
           <style jsx>{`
@@ -869,28 +1656,36 @@ const App = () => {
           `}</style>
         </div>
 
-        {/* How It Works - Modern Dashboard Layout */}
+        {/* Platform Overview */}
 <section 
   ref={howItWorksRef}
   id="how-it-works" 
   className="relative px-6 py-20"
 >
   <div className="max-w-7xl mx-auto">
-    <div className="text-center mb-16">
-      <div className="inline-flex items-center gap-3 mb-6">
-        <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100">
-          <Layout className="w-6 h-6 text-purple-600" />
-        </div>
-        <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">Workflow</span>
-      </div>
-      <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-        How <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">RawRecruit</span> Works
-      </h2>
-      <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-        A unified campus recruitment platform designed for colleges, companies, and employers. 
-        Streamline your fresher hiring process with our comprehensive campus recruitment solutions.
-      </p>
-    </div>
+    <div className="text-center mb-20">
+
+  {/* Small Top Label */}
+  <p className="text-sm font-semibold tracking-widest uppercase text-purple-600 mb-6">
+    PLATFORM OVERVIEW
+  </p>
+
+  {/* Main Heading */}
+  <h2 className="text-4xl md:text-4xl font-bold mb-6 leading-tight">
+    <span className="text-[#0f172a]">
+      One Platform.
+    </span>{" "}
+    <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+      Three Powerful Interfaces.
+    </span>
+  </h2>
+
+  {/* Sub Text */}
+  <p className="text-gray-500 text-lg md:text-xl max-w-3xl mx-auto">
+    Designed for Colleges, Companies, and Students
+  </p>
+
+</div>
 
     {/* Dashboard Style Cards */}
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -1028,1064 +1823,741 @@ const App = () => {
   </div>
 </section>
 
-        {/* Services Dashboard */}
-        <section id="features" className="relative">
-          {/* Companies Section */}
-          <div 
-            ref={companyServicesRef}
-            className={`relative w-full py-20 transition-all duration-1000 ${activeSection === 'companies' ? '' : ''}`}
-          >
-            {/* Enhanced Background with curved corners - Brighter colors */}
-            <div 
-              className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-                activeSection === 'companies' 
-                  ? 'bg-gradient-to-b from-purple-500/15 via-indigo-500/15 to-purple-500/10 opacity-100' 
-                  : 'opacity-0'
-              }`}
-            />
-            
-            {/* Subtle border highlight for active section */}
-            <div 
-              className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-                activeSection === 'companies' 
-                  ? 'border-2 border-purple-400/20 opacity-100' 
-                  : 'opacity-0 border-0'
-              }`}
-            />
-            
-            <div className="relative max-w-7xl mx-auto px-6 z-10">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
-                <div>
-                  <div className="inline-flex items-center gap-4 mb-4">
-  <div className="p-3 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 shadow-lg">
-    <Building2 className="w-10 h-10 text-purple-700" />
+<section id="features" className="section-pad" style={{ background: 'linear-gradient(180deg, #F6F3FC 0%, #F8FAFC 100%)' }}>
+  <div className="container-xl">
+    
+    {/* Section Header */}
+    <div className="text-center mb-14">
+      <p className="text-sm font-semibold tracking-widest uppercase text-purple-600 mb-6">
+        CORE FEATURES
+      </p>
+
+      <h2 className="font-bold text-foreground mb-4 text-[clamp(28px,4vw,40px)] leading-[1.2] tracking-[-0.02em] text-[#0f172a]">
+        Everything Needed to Run{" "}
+        <span className="bg-gradient-to-r from-[#7c3aed] to-[#ec4899] bg-clip-text text-transparent">
+          Campus Recruitment
+        </span>
+      </h2>
+      <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+        Proven tools for every stakeholder — built for real recruitment operations at scale.
+      </p>
+    </div>
+
+    {/* Features Grid */}
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+      
+      {/* Feature Card 1 - On-Campus Recruitment */}
+      <FeatureCard
+        image={f0}
+        imageBg="#F0EBFA"
+        iconColor="#7D3AE9"
+        iconBg="#F0EBFA"
+        iconPath="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+        iconSecondaryPath="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0"
+        title="On-Campus Recruitment"
+        description="Colleges publish on-campus drives; companies discover and apply. Manage the entire drive lifecycle from a single dashboard."
+      />
+
+      {/* Feature Card 2 - Pool Campus Recruitment */}
+      <FeatureCard
+        image={f1}
+        imageBg="#FBEDF5"
+        iconColor="#EE4499"
+        iconBg="#FBEDF5"
+        iconPath="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+        iconSecondaryPath="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
+        title="Pool Campus Recruitment"
+        description="Run multi-college hiring drives. Pool multiple institutions and source from a wider talent pool efficiently."
+      />
+
+      {/* Feature Card 3 - Off-Campus Recruitment */}
+      <FeatureCard
+        image={f2}
+        imageBg="#E9F0FB"
+        iconColor="#327DF5"
+        iconBg="#E9F0FB"
+        iconPath="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20 M2 12h20"
+        iconSecondaryPath="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
+        title="Off-Campus Recruitment"
+        description="Post jobs visible to students across all partner colleges. Off-campus hiring made structured and trackable."
+      />
+
+      {/* Feature Card 4 - Internship Management */}
+      <FeatureCard
+        image={f4}
+        imageBg="#EBFAF0"
+        iconColor="#20C55D"
+        iconBg="#EBFAF0"
+        iconPath="M12 7v14 M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
+        title="Internship Management"
+        description="Post and manage internship opportunities. Students discover, apply, and track status — all in one place."
+      />
+
+      {/* Feature Card 5 - Application Tracking System */}
+      <FeatureCard
+        image={f5}
+        imageBg="#FCF4E8"
+        iconColor="#F49D25"
+        iconBg="#FCF4E8"
+        iconPath="M18 20V10 M12 20V4 M6 20V14"
+        iconType="chart"
+        title="Application Tracking System"
+        description="Complete pipeline visibility — Applied, Shortlisted, Accepted, Rejected. Real-time status for every stakeholder."
+      />
+
+      {/* Feature Card 6 - Real-time Messaging */}
+      <FeatureCard
+        image={f6}
+        imageBg="#F0EBFA"
+        iconColor="#7D3AE9"
+        iconBg="#F0EBFA"
+        iconPath="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+        title="Real-time Messaging System"
+        description="Built-in chat connects HR teams with colleges and students directly. No external tools needed."
+      />
+
+    </div>
   </div>
-  <span className="text-3xl font-extrabold text-gray-800 uppercase tracking-wide">
-    For Companies
-  </span>
-</div>
-<h2 className="text-2xl font-semibold text-gray-700 mb-6">
-  Tailored Recruitment Solutions
-</h2>
-                  <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-                    {services.company.desc}
-                  </p>
-                  <button
-                    onClick={() => handleRoleSelect('company')}
-                    className="group relative text-white px-8 py-4 rounded-full font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
-                  >
-                    {/* Base layer */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 transition-all duration-300" />
-                    
-                    {/* Hover color layer */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
-                    {/* Glow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400/30 to-indigo-400/30 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
-                    
-                    <span className="relative flex items-center gap-3">
-                      Explore Company Features
-                      <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+</section>
+
+        {/* <section className="section-pad pt-20" style={{ background: 'linear-gradient(180deg, #F6F3FC 0%, #F8FAFC 100%)' }}>
+      <div className="container-xl max-w-7xl mx-auto px-4">
+        
+        Section Header
+        <div className="text-center mb-16">
+          <p className="text-sm font-semibold tracking-widest uppercase text-purple-600 mb-6">
+            HOW RAWRECRUIT WORKS
+          </p>
+          <h2 className="font-bold text-foreground mb-4 text-[clamp(28px,4vw,40px)] leading-[1.2] tracking-[-0.02em] text-[#0f172a]">
+            Built for Real{" "}
+            <span className="bg-gradient-to-r from-[#7c3aed] to-[#ec4899] bg-clip-text text-transparent">
+              Recruitment Operations
+            </span>
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+            Every interface purpose-built for its user.
+          </p>
+        </div>
+
+        FOR COMPANIES SECTION
+        <div className="mb-20">
+          <h3 className="text-2xl font-bold text-foreground mb-8 text-center">For Companies</h3>
+          <div className="grid md:grid-cols-12 gap-6 items-start">
+            Left Half - Step Cards
+            <div className="md:col-span-4">
+              <div className="flex flex-col gap-3">
+                {cardData.company?.map((card) => {
+                  const isActive = activeTab === "company" && activeCard === card.id;
+                  return renderStepCard(card, isActive, getTabColor("company"), "company");
+                })}
+              </div>
+            </div>
+
+            Right Half - Image Display
+            <div className="md:col-span-8">
+              <div className="relative rounded-2xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-xl)' }}>
+                MacOS-style window bar
+                <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
+                  <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
+                  <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
+                  <span className="w-3 h-3 rounded-full bg-green-500 opacity-80"></span>
+                  <div className="ml-4 flex-1 max-w-xs rounded-md flex items-center px-3" style={{ height: '22px', background: '#061946' }}>
+                    <span className="text-white/40 text-[10px] font-mono truncate">
+                      rawrecruit.in — {activeTab === "company" ? getActiveTitle() : "Company Dashboard"}
                     </span>
-                  </button>
+                  </div>
                 </div>
 
-                {/* Dashboard Grid - Fixed uniform card sizes */}
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 rounded-3xl blur-3xl"></div>
-                  <div className="relative grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {services.company.cards.map((service, idx) => {
-                      // Function to generate darker pastel shade of icon color
-                      const getDarkerPastelColor = (hexColor) => {
-                        // Convert hex to RGB
-                        const hex = hexColor.replace('#', '');
-                        const r = parseInt(hex.substr(0, 2), 16);
-                        const g = parseInt(hex.substr(2, 2), 16);
-                        const b = parseInt(hex.substr(4, 2), 16);
-                        
-                        // Create darker pastel version (reduce lightness)
-                        const darkenFactor = 0.7; // Make it 30% darker
-                        const dr = Math.floor(r * darkenFactor);
-                        const dg = Math.floor(g * darkenFactor);
-                        const db = Math.floor(b * darkenFactor);
-                        
-                        // Increase saturation slightly for pastel effect
-                        const sr = Math.min(255, dr + 40);
-                        const sg = Math.min(255, dg + 40);
-                        const sb = Math.min(255, db + 40);
-                        
-                        return `rgb(${sr}, ${sg}, ${sb})`;
-                      };
-                      
-                      const darkerPastelColor = getDarkerPastelColor(service.color);
-                      
-                      return (
-                        <div
-                          key={idx}
-                          onClick={() => handleServiceCardClick('company', service.title)}
-                          className="relative group cursor-pointer min-h-[180px]"
-                        >
-                          {/* Card with darker pastel hover color change */}
-                          <div 
-                            className="relative bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-white/40 shadow-lg transform group-hover:-translate-y-2 transition-all duration-300 h-full group-hover:shadow-2xl overflow-hidden"
-                            style={{
-                              backgroundColor: 'rgba(255, 255, 255, 0.9)'
-                            }}
-                          >
-                            {/* Darker pastel color overlay on hover - using service.color */}
-                            <div 
-                              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                              style={{
-                                background: `linear-gradient(135deg, ${darkerPastelColor}, ${darkerPastelColor})`,
-                              }}
-                            />
-                            
-                            {/* Icon - Centered in box */}
-                            <div className="relative z-10 w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 p-2.5 mb-3 shadow-sm border border-white/60 flex items-center justify-center group-hover:bg-white/20">
-                              <div className="flex items-center justify-center w-full h-full">
-                                <div 
-                                  className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
-                                  style={{ color: service.color }}
-                                >
-                                  {service.icon}
-                                </div>
-                              </div>
-                            </div>
-                            
-                            {/* Content - Text changes to SHARP WHITE on hover */}
-                            <div className="relative z-10">
-                              <h3 
-                                className="text-sm font-bold text-gray-800 mb-1 transition-all duration-300 group-hover:text-white group-hover:font-bold"
-                              >
-                                {service.title}
-                              </h3>
-                              <p 
-                                className="text-xs leading-relaxed text-gray-600 transition-all duration-300 group-hover:text-white"
-                              >
-                                {service.desc}
-                              </p>
-                            </div>
-                            
-                            {/* Hover Indicator - Color matched */}
-                            <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                              <div className="w-6 h-6 rounded-lg bg-white/90 flex items-center justify-center border border-white/60 shadow-lg backdrop-blur-sm group-hover:bg-white/20">
-                                <ChevronRight 
-                                  className="w-3 h-3 transition-all duration-300 group-hover:scale-110 group-hover:text-white"
-                                  style={{ color: service.color }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Glow Effect - Enhanced on hover */}
-                          <div 
-                            className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
-                            style={{
-                              background: `radial-gradient(circle at center, ${service.color}40 0%, transparent 70%)`,
-                            }}
-                          ></div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                Image Container
+                <div className="relative overflow-hidden" style={{ maxHeight: '520px' }}>
+                  <img 
+                    src={activeTab === "company" ? getImageForActiveCard() : f1} 
+                    alt="Company Dashboard" 
+                    className="w-full h-auto object-top object-cover transition-all duration-300"
+                    style={{ animation: 'fade-up 0.3s ease-out' }}
+                  />
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Colleges Section */}
-<div 
-  ref={collegeServicesRef}
-  className={`relative w-full py-20 transition-all duration-1000 ${activeSection === 'colleges' ? '' : ''}`}
->
-  {/* Enhanced Background with curved corners - Brighter colors */}
-  <div 
-    className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-      activeSection === 'colleges' 
-        ? 'bg-gradient-to-b from-pink-500/15 via-rose-500/15 to-pink-500/10 opacity-100' 
-        : 'opacity-0'
-    }`}
-  />
-  
-  {/* Subtle border highlight for active section */}
-  <div 
-    className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-      activeSection === 'colleges' 
-        ? 'border-2 border-pink-400/20 opacity-100' 
-        : 'opacity-0 border-0'
-    }`}
-  />
-  
-  <div className="relative max-w-7xl mx-auto px-6 z-10">
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
-      <div className="order-2 lg:order-1">
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-rose-500/5 rounded-3xl blur-3xl"></div>
-          <div className="relative">
-            {/* First row - 3 cards */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-              {services.college.cards.slice(0, 3).map((service, idx) => {
-                // Function to generate darker pastel shade of icon color
-                const getDarkerPastelColor = (hexColor) => {
-                  const hex = hexColor.replace('#', '');
-                  const r = parseInt(hex.substr(0, 2), 16);
-                  const g = parseInt(hex.substr(2, 2), 16);
-                  const b = parseInt(hex.substr(4, 2), 16);
-                  
-                  const darkenFactor = 0.7;
-                  const dr = Math.floor(r * darkenFactor);
-                  const dg = Math.floor(g * darkenFactor);
-                  const db = Math.floor(b * darkenFactor);
-                  
-                  const sr = Math.min(255, dr + 40);
-                  const sg = Math.min(255, dg + 40);
-                  const sb = Math.min(255, db + 40);
-                  
-                  return `rgb(${sr}, ${sg}, ${sb})`;
-                };
-                
-                const darkerPastelColor = getDarkerPastelColor(service.color);
-                
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => handleServiceCardClick('college', service.title)}
-                    className="relative group cursor-pointer min-h-[180px]"
-                  >
-                    <div 
-                      className="relative bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-white/40 shadow-lg transform group-hover:-translate-y-2 transition-all duration-300 h-full group-hover:shadow-2xl overflow-hidden"
-                      style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)'
-                      }}
-                    >
-                      {/* Darker pastel color overlay on hover */}
-                      <div 
-                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        style={{
-                          background: `linear-gradient(135deg, ${darkerPastelColor}, ${darkerPastelColor})`,
-                        }}
-                      />
-                      
-                      {/* Icon container - unchanged */}
-                      <div className="relative z-10 w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 p-2.5 mb-3 shadow-sm border border-white/60 flex items-center justify-center group-hover:bg-white/20">
-                        <div className="flex items-center justify-center w-full h-full">
-                          <div 
-                            className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
-                            style={{ color: service.color }}
-                          >
-                            {service.icon}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Content with SHARP WHITE text on hover */}
-                      <div className="relative z-10">
-                        <h3 
-                          className="text-sm font-bold text-gray-800 mb-1 transition-all duration-300 group-hover:text-white group-hover:font-bold"
-                        >
-                          {service.title}
-                        </h3>
-                        <p 
-                          className="text-xs leading-relaxed text-gray-600 transition-all duration-300 group-hover:text-white"
-                        >
-                          {service.desc}
-                        </p>
-                      </div>
-                      
-                      {/* Hover Indicator */}
-                      <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                        <div className="w-6 h-6 rounded-lg bg-white/90 flex items-center justify-center border border-white/60 shadow-lg backdrop-blur-sm group-hover:bg-white/20">
-                          <ChevronRight 
-                            className="w-3 h-3 transition-all duration-300 group-hover:scale-110 group-hover:text-white"
-                            style={{ color: service.color }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Glow Effect */}
-                    <div 
-                      className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
-                      style={{
-                        background: `radial-gradient(circle at center, ${service.color}50 0%, transparent 70%)`,
-                      }}
-                    ></div>
+        FOR COLLEGES SECTION - Image Left, Cards Right
+        <div className="mb-20">
+          <h3 className="text-2xl font-bold text-foreground mb-8 text-center">For Colleges</h3>
+          <div className="grid md:grid-cols-12 gap-6 items-start">
+            Left Half - Image Display
+            <div className="md:col-span-8">
+              <div className="relative rounded-2xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-xl)' }}>
+                MacOS-style window bar
+                <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
+                  <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
+                  <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
+                  <span className="w-3 h-3 rounded-full bg-green-500 opacity-80"></span>
+                  <div className="ml-4 flex-1 max-w-xs rounded-md flex items-center px-3" style={{ height: '22px', background: '#061946' }}>
+                    <span className="text-white/40 text-[10px] font-mono truncate">
+                      rawrecruit.in — {activeTab === "college" ? getActiveTitle() : "College Dashboard"}
+                    </span>
                   </div>
-                );
-              })}
+                </div>
+
+                Image Container
+                <div className="relative overflow-hidden" style={{ maxHeight: '520px' }}>
+                  <img 
+                    src={activeTab === "college" ? getImageForActiveCard() : f1} 
+                    alt="College Dashboard" 
+                    className="w-full h-auto object-top object-cover transition-all duration-300"
+                    style={{ animation: 'fade-up 0.3s ease-out' }}
+                  />
+                </div>
+              </div>
             </div>
-            
-            {/* Second row - 2 cards, centered */}
-            <div className="flex justify-center">
-              <div className="grid grid-cols-2 gap-4 max-w-md">
-                {services.college.cards.slice(3, 5).map((service, idx) => {
-                  // Function to generate darker pastel shade of icon color
-                  const getDarkerPastelColor = (hexColor) => {
-                    const hex = hexColor.replace('#', '');
-                    const r = parseInt(hex.substr(0, 2), 16);
-                    const g = parseInt(hex.substr(2, 2), 16);
-                    const b = parseInt(hex.substr(4, 2), 16);
-                    
-                    const darkenFactor = 0.7;
-                    const dr = Math.floor(r * darkenFactor);
-                    const dg = Math.floor(g * darkenFactor);
-                    const db = Math.floor(b * darkenFactor);
-                    
-                    const sr = Math.min(255, dr + 40);
-                    const sg = Math.min(255, dg + 40);
-                    const sb = Math.min(255, db + 40);
-                    
-                    return `rgb(${sr}, ${sg}, ${sb})`;
-                  };
-                  
-                  const darkerPastelColor = getDarkerPastelColor(service.color);
-                  
-                  return (
-                    <div
-                      key={idx + 3}
-                      onClick={() => handleServiceCardClick('college', service.title)}
-                      className="relative group cursor-pointer min-h-[180px]"
-                    >
-                      <div 
-                        className="relative bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-white/40 shadow-lg transform group-hover:-translate-y-2 transition-all duration-300 h-full group-hover:shadow-2xl overflow-hidden"
-                        style={{
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)'
-                        }}
-                      >
-                        {/* Darker pastel color overlay on hover */}
-                        <div 
-                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                          style={{
-                            background: `linear-gradient(135deg, ${darkerPastelColor}, ${darkerPastelColor})`,
-                          }}
-                        />
-                        
-                        {/* Icon container - unchanged */}
-                        <div className="relative z-10 w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 p-2.5 mb-3 shadow-sm border border-white/60 flex items-center justify-center group-hover:bg-white/20">
-                          <div className="flex items-center justify-center w-full h-full">
-                            <div 
-                              className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
-                              style={{ color: service.color }}
-                            >
-                              {service.icon}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Content with SHARP WHITE text on hover */}
-                        <div className="relative z-10">
-                          <h3 
-                            className="text-sm font-bold text-gray-800 mb-1 transition-all duration-300 group-hover:text-white group-hover:font-bold"
-                          >
-                            {service.title}
-                          </h3>
-                          <p 
-                            className="text-xs leading-relaxed text-gray-600 transition-all duration-300 group-hover:text-white"
-                          >
-                            {service.desc}
-                          </p>
-                        </div>
-                        
-                        {/* Hover Indicator */}
-                        <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                          <div className="w-6 h-6 rounded-lg bg-white/90 flex items-center justify-center border border-white/60 shadow-lg backdrop-blur-sm group-hover:bg-white/20">
-                            <ChevronRight 
-                              className="w-3 h-3 transition-all duration-300 group-hover:scale-110 group-hover:text-white"
-                              style={{ color: service.color }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Glow Effect */}
-                      <div 
-                        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
-                        style={{
-                          background: `radial-gradient(circle at center, ${service.color}50 0%, transparent 70%)`,
-                        }}
-                      ></div>
-                    </div>
-                  );
+
+            Right Half - Step Cards
+            <div className="md:col-span-4">
+              <div className="flex flex-col gap-3">
+                {cardData.college?.map((card) => {
+                  const isActive = activeTab === "college" && activeCard === card.id;
+                  return renderStepCard(card, isActive, getTabColor("college"), "college");
                 })}
               </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <div className="order-1 lg:order-2">
-        <div className="inline-flex items-center gap-4 mb-4">
-  <div className="p-3 rounded-xl bg-gradient-to-br from-pink-100 to-rose-100 shadow-lg">
-    <GraduationCap className="w-10 h-10 text-pink-700" />
-  </div>
-  <span className="text-3xl font-extrabold text-gray-800 uppercase tracking-wide">
-    For Colleges
-  </span>
-</div>
-<h2 className="text-2xl font-semibold text-gray-700 mb-6">
-  Student Placement Excellence
-</h2>
-        <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-          {services.college.desc}
-        </p>
-        <button
-          onClick={() => handleRoleSelect('college')}
-          className="group relative text-white px-8 py-4 rounded-full font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
-        >
-          {/* Base layer - Pink to Magenta */}
-          <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-fuchsia-600 transition-all duration-300" />
-          
-          {/* Hover color layer - Brighter pink/magenta */}
-          <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-fuchsia-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          
-          {/* Glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-pink-400/30 to-fuchsia-400/30 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
-          
-          <span className="relative flex items-center gap-3">
-            Explore College Features
-            <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
-          </span>
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 
-          {/* Employers Section */}
-          <div 
-            ref={employerServicesRef}
-            className={`relative w-full py-20 transition-all duration-1000 ${activeSection === 'employers' ? '' : ''}`}
-          >
-            {/* Enhanced Background with curved corners - Brighter colors */}
-            <div 
-              className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-                activeSection === 'employers' 
-                  ? 'bg-gradient-to-b from-blue-500/15 via-cyan-500/15 to-blue-500/10 opacity-100' 
-                  : 'opacity-0'
-              }`}
-            />
-            
-            {/* Subtle border highlight for active section */}
-            <div 
-              className={`absolute inset-0 mx-6 rounded-3xl transition-all duration-1000 ${
-                activeSection === 'employers' 
-                  ? 'border-2 border-blue-400/20 opacity-100' 
-                  : 'opacity-0 border-0'
-              }`}
-            />
-            
-            <div className="relative max-w-7xl mx-auto px-6 z-10">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
-                  <div className="inline-flex items-center gap-4 mb-4">
-  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100 shadow-lg">
-    <Briefcase className="w-10 h-10 text-blue-700" />
-  </div>
-  <span className="text-3xl font-extrabold text-gray-800 uppercase tracking-wide">
-    For Employers
-  </span>
-</div>
-<h2 className="text-2xl font-semibold text-gray-700 mb-6">
-  Recruitment Management Suite
-</h2>
-                  <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-                    {services.employer.desc}
-                  </p>
-                  <button
-                    onClick={() => handleRoleSelect('employer')}
-                    className="group relative text-white px-8 py-4 rounded-full font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 shadow-lg overflow-hidden"
-                  >
-                    {/* Base layer */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 transition-all duration-300" />
-                    
-                    {/* Hover color layer */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
-                    {/* Glow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400/30 to-cyan-400/30 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-300" />
-                    
-                    <span className="relative flex items-center gap-3">
-                      Explore Employer Features
-                      <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+        FOR EMPLOYERS SECTION - Cards Left, Image Right
+        <div className="mb-20">
+          <h3 className="text-2xl font-bold text-foreground mb-8 text-center">For Employers</h3>
+          <div className="grid md:grid-cols-12 gap-6 items-start">
+            Left Half - Step Cards
+            <div className="md:col-span-4">
+              <div className="flex flex-col gap-3">
+                {cardData.employer?.map((card) => {
+                  const isActive = activeTab === "employer" && activeCard === card.id;
+                  return renderStepCard(card, isActive, getTabColor("employer"), "employer");
+                })}
+              </div>
+            </div>
+
+            Right Half - Image Display
+            <div className="md:col-span-8">
+              <div className="relative rounded-2xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-xl)' }}>
+                MacOS-style window bar
+                <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
+                  <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
+                  <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
+                  <span className="w-3 h-3 rounded-full bg-green-500 opacity-80"></span>
+                  <div className="ml-4 flex-1 max-w-xs rounded-md flex items-center px-3" style={{ height: '22px', background: '#061946' }}>
+                    <span className="text-white/40 text-[10px] font-mono truncate">
+                      rawrecruit.in — {activeTab === "employer" ? getActiveTitle() : "Employer Dashboard"}
                     </span>
-                  </button>
-                </div>
-
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 rounded-3xl blur-3xl"></div>
-                  <div className="relative grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {services.employer.cards.map((service, idx) => {
-                      // Function to generate darker pastel shade of icon color
-                      const getDarkerPastelColor = (hexColor) => {
-                        const hex = hexColor.replace('#', '');
-                        const r = parseInt(hex.substr(0, 2), 16);
-                        const g = parseInt(hex.substr(2, 2), 16);
-                        const b = parseInt(hex.substr(4, 2), 16);
-                        
-                        const darkenFactor = 0.7;
-                        const dr = Math.floor(r * darkenFactor);
-                        const dg = Math.floor(g * darkenFactor);
-                        const db = Math.floor(b * darkenFactor);
-                        
-                        const sr = Math.min(255, dr + 40);
-                        const sg = Math.min(255, dg + 40);
-                        const sb = Math.min(255, db + 40);
-                        
-                        return `rgb(${sr}, ${sg}, ${sb})`;
-                      };
-                      
-                      const darkerPastelColor = getDarkerPastelColor(service.color);
-                      
-                      return (
-                        <div
-                          key={idx}
-                          onClick={() => handleServiceCardClick('employer', service.title)}
-                          className="relative group cursor-pointer min-h-[180px]"
-                        >
-                          <div 
-                            className="relative bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-white/40 shadow-lg transform group-hover:-translate-y-2 transition-all duration-300 h-full group-hover:shadow-2xl overflow-hidden"
-                            style={{
-                              backgroundColor: 'rgba(255, 255, 255, 0.9)'
-                            }}
-                          >
-                            {/* Darker pastel color overlay on hover */}
-                            <div 
-                              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                              style={{
-                                background: `linear-gradient(135deg, ${darkerPastelColor}, ${darkerPastelColor})`,
-                              }}
-                            />
-                            
-                            {/* Icon container - unchanged */}
-                            <div className="relative z-10 w-12 h-12 rounded-lg bg-gradient-to-br from-white to-gray-50 p-2.5 mb-3 shadow-sm border border-white/60 flex items-center justify-center group-hover:bg-white/20">
-                              <div className="flex items-center justify-center w-full h-full">
-                                <div 
-                                  className="transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
-                                  style={{ color: service.color }}
-                                >
-                                  {service.icon}
-                                </div>
-                              </div>
-                            </div>
-                            
-                            {/* Content with SHARP WHITE text on hover */}
-                            <div className="relative z-10">
-                              <h3 
-                                className="text-sm font-bold text-gray-800 mb-1 transition-all duration-300 group-hover:text-white group-hover:font-bold"
-                              >
-                                {service.title}
-                              </h3>
-                              <p 
-                                className="text-xs leading-relaxed text-gray-600 transition-all duration-300 group-hover:text-white"
-                              >
-                                {service.desc}
-                              </p>
-                            </div>
-                            
-                            {/* Hover Indicator */}
-                            <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                              <div className="w-6 h-6 rounded-lg bg-white/90 flex items-center justify-center border border-white/60 shadow-lg backdrop-blur-sm group-hover:bg-white/20">
-                                <ChevronRight 
-                                  className="w-3 h-3 transition-all duration-300 group-hover:scale-110 group-hover:text-white"
-                                  style={{ color: service.color }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Glow Effect */}
-                          <div 
-                            className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300"
-                            style={{
-                              background: `radial-gradient(circle at center, ${service.color}50 0%, transparent 70%)`,
-                            }}
-                          ></div>
-                        </div>
-                      );
-                    })}
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
-        {/* Stats Dashboard */}
-        <section 
-          ref={statsRef}
-          id="about" 
-          className="relative px-6 py-20"
-        >
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-purple-100 to-pink-100">
-                  <Trophy className="w-6 h-6 text-purple-600" />
-                </div>
-                <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">Our Impact</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                Driving Excellence in <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Campus Recruitment</span>
-              </h2>
-              <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                Building a strong network to empower the next generation of talent
-              </p>
-            </div>
-
-            {/* Stats Dashboard */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20">
-              {[
-                { 
-                  number: '50+', 
-                  label: 'Partner Colleges', 
-                  color: '#8B5CF6', // Purple
-                  pastelColor: '#DDD6FE', // Purple pastel
-                  icon: <GraduationCap className="w-8 h-8" />
-                },
-                { 
-                  number: '100+', 
-                  label: 'Companies', 
-                  color: '#EC4899', // Pink
-                  pastelColor: '#FBCFE8', // Pink pastel
-                  icon: <Building2 className="w-8 h-8" />
-                },
-                { 
-                  number: '3K+', 
-                  label: 'Students Placed', 
-                  color: '#3B82F6', // Blue
-                  pastelColor: '#BFDBFE', // Blue pastel
-                  icon: <Users className="w-8 h-8" />
-                },
-                { 
-                  number: '95%', 
-                  label: 'Satisfaction Rate', 
-                  color: '#10B981', // Emerald
-                  pastelColor: '#A7F3D0', // Emerald pastel
-                  icon: <Star className="w-8 h-8" />
-                }
-              ].map((stat, idx) => (
-                <div
-                  key={idx}
-                  className="relative group cursor-pointer"
-                >
-                  {/* Glass Card - White normally, pastel on hover */}
-                  <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl p-8 border border-white/60 shadow-2xl transform group-hover:-translate-y-2 transition-all duration-500 group-hover:shadow-3xl overflow-hidden">
-                    {/* Pastel color overlay on hover */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                      style={{ 
-                        backgroundColor: stat.pastelColor,
-                      }}
-                    />
-                    
-                    {/* Content */}
-                    <div className="relative z-10">
-                      {/* Icon with hover effect */}
-                      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-white to-gray-50 p-3 mb-4 shadow-sm border border-white/60 flex items-center justify-center transition-all duration-300 group-hover:bg-white group-hover:scale-110 group-hover:shadow-lg group-hover:border-white/80">
-                        <div 
-                          className="transition-all duration-300 group-hover:scale-110"
-                          style={{ color: stat.color }}
-                        >
-                          {stat.icon}
-                        </div>
-                      </div>
-                      
-                      {/* Number - changes to darker shade on hover */}
-                      <div className="text-3xl font-bold mb-2 transition-colors duration-300"
-                        style={{ color: stat.color }}
-                      >
-                        <span className="group-hover:text-gray-800 transition-colors duration-300">
-                          {stat.number}
-                        </span>
-                      </div>
-                      
-                      {/* Label - changes to darker on hover */}
-                      <div className="text-lg font-semibold mb-2 transition-colors duration-300 text-gray-700 group-hover:text-gray-900">
-                        {stat.label}
-                      </div>
-                      
-                      {/* Progress Indicator with hover animation */}
-                      <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden group-hover:bg-white/50 transition-colors duration-300">
-                        <div className="h-full rounded-full transition-all duration-700 group-hover:w-full group-hover:bg-gradient-to-r group-hover:from-gray-800 group-hover:to-gray-600"
-                          style={{ 
-                            width: idx === 3 ? '95%' : '85%',
-                            background: `linear-gradient(90deg, ${stat.color}, ${stat.color}80)`,
-                            transition: 'all 0.7s ease'
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Glow Effect - Subtler on hover */}
-                  <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-500"
-                    style={{ 
-                      background: `radial-gradient(circle at center, ${stat.color}20 0%, transparent 70%)`
-                    }}
+                Image Container
+                <div className="relative overflow-hidden" style={{ maxHeight: '520px' }}>
+                  <img 
+                    src={activeTab === "employer" ? getImageForActiveCard() : f1} 
+                    alt="Employer Dashboard" 
+                    className="w-full h-auto object-top object-cover transition-all duration-300"
+                    style={{ animation: 'fade-up 0.3s ease-out' }}
                   />
                 </div>
-              ))}
+              </div>
             </div>
-
-            {/* Partners Dashboard */}
-<div className="relative py-12">
-  <div className="text-center mb-12">
-    <div className="inline-flex items-center gap-3 mb-4">
-      <div className="p-2 rounded-lg bg-gradient-to-br from-blue-100 to-cyan-100">
-        <Users className="w-6 h-6 text-blue-600" />
-      </div>
-      <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">Trusted By</span>
-    </div>
-    <h3 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-      Industry <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">Leaders</span>
-    </h3>
-    <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-      Collaborating with top companies to create opportunities
-    </p>
-  </div>
-
-  {/* Company Logos Marquee - Moving Right to Left (Changed from Left to Right) */}
-  <div className="relative mb-16">
-    <h4 className="text-xl font-bold text-gray-800 mb-8 text-center">Top Companies</h4>
-    <div className="relative overflow-hidden py-4">
-      {/* Gradient overlays for smooth edges */}
-      <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent z-10" />
-      <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent z-10" />
-      
-      <div className="flex space-x-16 animate-marquee-right">
-        {/* First set of company logos */}
-        <div className="flex items-center space-x-16 flex-none">
-          {/* Google */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <svg viewBox="0 0 24 24" className="w-full h-full">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">Google</span>
-          </div>
-          
-          {/* Microsoft */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <svg viewBox="0 0 23 23" className="w-full h-full">
-                <path d="M0 0H11V11H0V0Z" fill="#F25022"/>
-                <path d="M12 0H23V11H12V0Z" fill="#7FBA00"/>
-                <path d="M0 12H11V23H0V12Z" fill="#00A4EF"/>
-                <path d="M12 12H23V23H12V12Z" fill="#FFB900"/>
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">Microsoft</span>
-          </div>
-          
-          {/* Amazon */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <svg viewBox="0 0 24 24" className="w-full h-full">
-                <path d="M10.922 16.226c.094.065.209.1.327.1h.011a.596.596 0 0 0 .333-.112l7.104-4.482c.33-.207.527-.572.527-.964V6.308c0-.392-.197-.757-.527-.964l-7.104-4.482a1.15 1.15 0 0 0-1.215 0L3.724 5.344c-.33.207-.527.572-.527.964v4.482c0 .392.197.757.527.964l7.104 4.482c.158.1.342.151.527.151a1.15 1.15 0 0 0 .667-.2zm-.667-1.108L3.29 10.755V6.308l7.045-4.443 7.045 4.443v4.447l-7.045 4.443z" fill="#FF9900"/>
-                <path d="M17.35 9.948l-3.898 2.459a.592.592 0 0 1-.327.1h-.011a.596.596 0 0 1-.333-.112l-3.898-2.447a.602.602 0 0 1-.21-.819.602.602 0 0 1 .819-.21l3.577 2.246 3.577-2.255a.602.602 0 0 1 .819.21.602.602 0 0 1-.21.819z" fill="#000"/>
-                <path d="M17.35 12.006l-3.898 2.459a.592.592 0 0 1-.327.1h-.011a.596.596 0 0 1-.333-.112l-3.898-2.447a.602.602 0 0 1-.21-.819.602.602 0 0 1 .819-.21l3.577 2.246 3.577-2.255a.602.602 0 0 1 .819.21.602.602 0 0 1-.21.819z" fill="#000"/>
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">Amazon</span>
-          </div>
-          
-          {/* Meta */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <svg viewBox="0 0 24 24" className="w-full h-full">
-                <path d="M24 12c0-6.627-5.373-12-12-12S0 5.373 0 12c0 5.99 4.388 10.954 10.125 11.854V15.47H7.078V12h3.047V9.356c0-3.007 1.792-4.668 4.533-4.668 1.312 0 2.686.234 2.686.234v2.953H15.83c-1.491 0-1.956.925-1.956 1.874V12h3.328l-.532 3.469h-2.796v8.385C19.612 22.954 24 17.99 24 12z" fill="#1877F2"/>
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">Meta</span>
-          </div>
-          
-          {/* Apple */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <svg viewBox="0 0 24 24" className="w-full h-full">
-                <path d="M14.94,5.19A4.38,4.38,0,0,0,16,2,4.44,4.44,0,0,0,13,3.52,4.17,4.17,0,0,0,12,6.61,3.69,3.69,0,0,0,14.94,5.19Zm2.52,7.44a4.51,4.51,0,0,1,2.16-3.81,4.66,4.66,0,0,0-3.66-2c-1.56-.16-3,.91-3.83.91s-2-.89-3.3-.87A4.92,4.92,0,0,0,4.69,9.39C2.93,12.45,4.24,17,6,19.47,6.8,20.68,7.8,22.05,9.12,22s1.75-.76,3.28-.76,2,.76,3.3.73,2.22-1.24,3.06-2.45a11,11,0,0,0,1.38-2.85A4.41,4.41,0,0,1,17.46,12.63Z" fill="#000"/>
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">Apple</span>
-          </div>
-          
-          {/* Adobe */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <svg viewBox="0 0 24 24" className="w-full h-full">
-                <path d="M13.966 22.874l-2.757-6.724H5.092l5.403-13.149 8.488-.001-5.431 13.15 2.758 6.724h-2.335z" fill="#ED2224"/>
-                <path d="M18.984 2.999H5.092l-4.094 9.946 7.921 9.929h13.892l4.094-9.946-7.921-9.929z" fill="#FF7C00"/>
-                <path d="M10.495 16.149l-2.757 6.724h13.892l2.758-6.724H10.495z" fill="#FFD800"/>
-                <path d="M10.495 16.149l2.758-6.724 2.758 6.724H10.495z" fill="#00A8E2"/>
-                <path d="M18.984 2.999l-5.403 13.15h-6.117l5.403-13.15h6.117z" fill="#2EA968"/>
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">Adobe</span>
           </div>
         </div>
+
+        FOR CANDIDATES SECTION - Image Left, Cards Right
+        <div className="mb-20">
+          <h3 className="text-2xl font-bold text-foreground mb-8 text-center">For Candidates</h3>
+          <div className="grid md:grid-cols-12 gap-6 items-start">
+            Left Half - Image Display
+            <div className="md:col-span-8">
+              <div className="relative rounded-2xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-xl)' }}>
+                MacOS-style window bar
+                <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
+                  <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
+                  <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
+                  <span className="w-3 h-3 rounded-full bg-green-500 opacity-80"></span>
+                  <div className="ml-4 flex-1 max-w-xs rounded-md flex items-center px-3" style={{ height: '22px', background: '#061946' }}>
+                    <span className="text-white/40 text-[10px] font-mono truncate">
+                      rawrecruit.in — {activeTab === "candidate" ? getActiveTitle() : "Candidate Dashboard"}
+                    </span>
+                  </div>
+                </div>
+
+                Image Container
+                <div className="relative overflow-hidden" style={{ maxHeight: '520px' }}>
+                  <img 
+                    src={activeTab === "candidate" ? getImageForActiveCard() : f1} 
+                    alt="Candidate Dashboard" 
+                    className="w-full h-auto object-top object-cover transition-all duration-300"
+                    style={{ animation: 'fade-up 0.3s ease-out' }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            Right Half - Step Cards
+            <div className="md:col-span-4">
+              <div className="flex flex-col gap-3">
+                {cardData.candidate?.map((card) => {
+                  const isActive = activeTab === "candidate" && activeCard === card.id;
+                  return renderStepCard(card, isActive, getTabColor("candidate"), "candidate");
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        Animation Styles
+        <style jsx>{`
+          @keyframes fade-up {
+            from {
+              opacity: 0;
+              transform: translateY(10px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}</style>
+      </div>
+    </section> */}
+
+    <section className="section-pad pt-20" style={{ background: 'linear-gradient(180deg, #F6F3FC 0%, #F8FAFC 100%)' }}>
+      <div className="container-xl max-w-7xl mx-auto px-4">
         
-        {/* Duplicate set for seamless looping */}
-        <div className="flex items-center space-x-16 flex-none">
-          {/* Google */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <svg viewBox="0 0 24 24" className="w-full h-full">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-              </svg>
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <p className="text-sm font-semibold tracking-widest uppercase text-purple-600 mb-6">
+            HOW RAWRECRUIT WORKS
+          </p>
+          <h2 className="font-bold text-foreground mb-4 text-[clamp(28px,4vw,40px)] leading-[1.2] tracking-[-0.02em] text-[#0f172a]">
+            Built for Real{" "}
+            <span className="bg-gradient-to-r from-[#7c3aed] to-[#ec4899] bg-clip-text text-transparent">
+              Recruitment Operations
+            </span>
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+            Every interface purpose-built for its user.
+          </p>
+        </div>
+
+        {/* FOR COMPANIES - Step Cards on Left */}
+        <div className="mb-20">
+          <h3 className="text-2xl font-bold text-foreground mb-8 text-center">For Companies</h3>
+          <div className="grid md:grid-cols-12 gap-6 items-start">
+            {/* Left Half - Step Cards */}
+            <div className="md:col-span-4">
+              <div className="flex flex-col gap-2">
+                {cardData.company?.map((card) => {
+                  const isActive = activeTab === "company" && activeCard === card.id;
+                  return renderStepCard(card, isActive, getTabColor("company"));
+                })}
+              </div>
             </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">Google</span>
-          </div>
-          
-          {/* Microsoft */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <svg viewBox="0 0 23 23" className="w-full h-full">
-                <path d="M0 0H11V11H0V0Z" fill="#F25022"/>
-                <path d="M12 0H23V11H12V0Z" fill="#7FBA00"/>
-                <path d="M0 12H11V23H0V12Z" fill="#00A4EF"/>
-                <path d="M12 12H23V23H12V12Z" fill="#FFB900"/>
-              </svg>
+
+            {/* Right Half - Image Display */}
+            <div className="md:col-span-8">
+              <div className="relative rounded-2xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-xl)' }}>
+                <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
+                  <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
+                  <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
+                  <span className="w-3 h-3 rounded-full bg-green-500 opacity-80"></span>
+                  <div className="ml-4 flex-1 max-w-xs rounded-md flex items-center px-3" style={{ height: '22px', background: '#061946' }}>
+                    <span className="text-white/40 text-[10px] font-mono truncate">
+                      rawrecruit.in — {activeTab === "company" ? getActiveTitle() : "Company Dashboard"}
+                    </span>
+                  </div>
+                </div>
+                <div className="relative overflow-hidden" style={{ maxHeight: '520px' }}>
+                  <img 
+                    src={activeTab === "company" ? getImageForActiveCard() : f1} 
+                    alt="Company Dashboard" 
+                    className="w-full h-auto object-top object-cover transition-all duration-300"
+                    style={{ animation: 'fade-up 0.3s ease-out' }}
+                  />
+                </div>
+              </div>
             </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">Microsoft</span>
-          </div>
-          
-          {/* Amazon */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <svg viewBox="0 0 24 24" className="w-full h-full">
-                <path d="M10.922 16.226c.094.065.209.1.327.1h.011a.596.596 0 0 0 .333-.112l7.104-4.482c.33-.207.527-.572.527-.964V6.308c0-.392-.197-.757-.527-.964l-7.104-4.482a1.15 1.15 0 0 0-1.215 0L3.724 5.344c-.33.207-.527.572-.527.964v4.482c0 .392.197.757.527.964l7.104 4.482c.158.1.342.151.527.151a1.15 1.15 0 0 0 .667-.2zm-.667-1.108L3.29 10.755V6.308l7.045-4.443 7.045 4.443v4.447l-7.045 4.443z" fill="#FF9900"/>
-                <path d="M17.35 9.948l-3.898 2.459a.592.592 0 0 1-.327.1h-.011a.596.596 0 0 1-.333-.112l-3.898-2.447a.602.602 0 0 1-.21-.819.602.602 0 0 1 .819-.21l3.577 2.246 3.577-2.255a.602.602 0 0 1 .819.21.602.602 0 0 1-.21.819z" fill="#000"/>
-                <path d="M17.35 12.006l-3.898 2.459a.592.592 0 0 1-.327.1h-.011a.596.596 0 0 1-.333-.112l-3.898-2.447a.602.602 0 0 1-.21-.819.602.602 0 0 1 .819-.21l3.577 2.246 3.577-2.255a.602.602 0 0 1 .819.21.602.602 0 0 1-.21.819z" fill="#000"/>
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">Amazon</span>
-          </div>
-          
-          {/* Meta */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <svg viewBox="0 0 24 24" className="w-full h-full">
-                <path d="M24 12c0-6.627-5.373-12-12-12S0 5.373 0 12c0 5.99 4.388 10.954 10.125 11.854V15.47H7.078V12h3.047V9.356c0-3.007 1.792-4.668 4.533-4.668 1.312 0 2.686.234 2.686.234v2.953H15.83c-1.491 0-1.956.925-1.956 1.874V12h3.328l-.532 3.469h-2.796v8.385C19.612 22.954 24 17.99 24 12z" fill="#1877F2"/>
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">Meta</span>
-          </div>
-          
-          {/* Apple */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <svg viewBox="0 0 24 24" className="w-full h-full">
-                <path d="M14.94,5.19A4.38,4.38,0,0,0,16,2,4.44,4.44,0,0,0,13,3.52,4.17,4.17,0,0,0,12,6.61,3.69,3.69,0,0,0,14.94,5.19Zm2.52,7.44a4.51,4.51,0,0,1,2.16-3.81,4.66,4.66,0,0,0-3.66-2c-1.56-.16-3,.91-3.83.91s-2-.89-3.3-.87A4.92,4.92,0,0,0,4.69,9.39C2.93,12.45,4.24,17,6,19.47,6.8,20.68,7.8,22.05,9.12,22s1.75-.76,3.28-.76,2,.76,3.3.73,2.22-1.24,3.06-2.45a11,11,0,0,0,1.38-2.85A4.41,4.41,0,0,1,17.46,12.63Z" fill="#000"/>
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">Apple</span>
-          </div>
-          
-          {/* Adobe */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <svg viewBox="0 0 24 24" className="w-full h-full">
-                <path d="M13.966 22.874l-2.757-6.724H5.092l5.403-13.149 8.488-.001-5.431 13.15 2.758 6.724h-2.335z" fill="#ED2224"/>
-                <path d="M18.984 2.999H5.092l-4.094 9.946 7.921 9.929h13.892l4.094-9.946-7.921-9.929z" fill="#FF7C00"/>
-                <path d="M10.495 16.149l-2.757 6.724h13.892l2.758-6.724H10.495z" fill="#FFD800"/>
-                <path d="M10.495 16.149l2.758-6.724 2.758 6.724H10.495z" fill="#00A8E2"/>
-                <path d="M18.984 2.999l-5.403 13.15h-6.117l5.403-13.15h6.117z" fill="#2EA968"/>
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">Adobe</span>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  {/* College Logos Marquee - Moving Left to Right (Changed from Right to Left) */}
-  <div className="relative">
-    <h4 className="text-xl font-bold text-gray-800 mb-8 text-center">Top Colleges</h4>
-    <div className="relative overflow-hidden py-4">
-      {/* Gradient overlays for smooth edges */}
-      <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent z-10" />
-      <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent z-10" />
+        {/* FOR COLLEGES - Square Cards on Left */}
+        <div className="mb-20">
+          <h3 className="text-2xl font-bold text-foreground mb-8 text-center">For Colleges</h3>
+          <div className="grid md:grid-cols-12 gap-6 items-start">
+            {/* Left Half - Square Cards */}
+            <div className="md:col-span-4">
+              <div className="grid grid-cols-2 gap-3 h-full max-h-[450px]">
+                {cardData.college?.map((card) => {
+                  const isActive = activeTab === "college" && activeCard === card.id;
+                  return renderSquareCard(card, isActive, getTabColor("college"));
+                })}
+              </div>
+            </div>
+
+            {/* Right Half - Image Display */}
+            <div className="md:col-span-8">
+              <div className="relative rounded-2xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-xl)' }}>
+                <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
+                  <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
+                  <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
+                  <span className="w-3 h-3 rounded-full bg-green-500 opacity-80"></span>
+                  <div className="ml-4 flex-1 max-w-xs rounded-md flex items-center px-3" style={{ height: '22px', background: '#061946' }}>
+                    <span className="text-white/40 text-[10px] font-mono truncate">
+                      rawrecruit.in — {activeTab === "college" ? getActiveTitle() : "College Dashboard"}
+                    </span>
+                  </div>
+                </div>
+                <div className="relative overflow-hidden" style={{ maxHeight: '520px' }}>
+                  <img 
+                    src={activeTab === "college" ? getImageForActiveCard() : f1} 
+                    alt="College Dashboard" 
+                    className="w-full h-auto object-top object-cover transition-all duration-300"
+                    style={{ animation: 'fade-up 0.3s ease-out' }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* FOR EMPLOYERS - Pill Cards Row */}
+        <div className="mb-20">
+          <h3 className="text-2xl font-bold text-foreground mb-8 text-center">For Employers</h3>
+          <div className="flex flex-col items-center">
+            {/* Pill cards row with arrows */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+              {cardData.employer?.map((card, index) => {
+                const isActive = activeTab === "employer" && activeCard === card.id;
+                return (
+                  <div key={card.id} className="flex items-center">
+                    {renderPillCard(card, isActive, getTabColor("employer"), "employer")}
+                    {index < cardData.employer.length - 1 && (
+                      <div className="mx-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 12h14"></path>
+                          <path d="m12 5 7 7-7 7"></path>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Image Display */}
+            <div className="relative rounded-2xl overflow-hidden border border-border w-full max-w-5xl mx-auto" style={{ boxShadow: 'var(--shadow-xl)' }}>
+              <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
+                <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
+                <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
+                <span className="w-3 h-3 rounded-full bg-green-500 opacity-80"></span>
+                <div className="ml-4 flex-1 max-w-xs rounded-md flex items-center px-3" style={{ height: '22px', background: '#061946' }}>
+                  <span className="text-white/40 text-[10px] font-mono truncate">
+                    rawrecruit.in — {activeTab === "employer" ? getActiveTitle() : "Employer Dashboard"}
+                  </span>
+                </div>
+              </div>
+              <div className="relative overflow-hidden" style={{ maxHeight: '480px' }}>
+                <img 
+                  src={activeTab === "employer" ? getImageForActiveCard() : f1} 
+                  alt="Employer Dashboard" 
+                  className="w-full h-auto object-top object-cover transition-all duration-300"
+                  style={{ animation: 'fade-up 0.3s ease-out' }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* FOR CANDIDATES - Pill Cards Row */}
+        <div className="mb-20">
+          <h3 className="text-2xl font-bold text-foreground mb-8 text-center">For Candidates</h3>
+          <div className="flex flex-col items-center">
+            {/* Pill cards row with arrows */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+              {cardData.candidate?.map((card, index) => {
+                const isActive = activeTab === "candidate" && activeCard === card.id;
+                return (
+                  <div key={card.id} className="flex items-center">
+                    {renderPillCard(card, isActive, getTabColor("candidate"), "candidate")}
+                    {index < cardData.candidate.length - 1 && (
+                      <div className="mx-1 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5 12h14"></path>
+                          <path d="m12 5 7 7-7 7"></path>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Image Display */}
+            <div className="relative rounded-2xl overflow-hidden border border-border w-full max-w-5xl mx-auto" style={{ boxShadow: 'var(--shadow-xl)' }}>
+              <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
+                <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
+                <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
+                <span className="w-3 h-3 rounded-full bg-green-500 opacity-80"></span>
+                <div className="ml-4 flex-1 max-w-xs rounded-md flex items-center px-3" style={{ height: '22px', background: '#061946' }}>
+                  <span className="text-white/40 text-[10px] font-mono truncate">
+                    rawrecruit.in — {activeTab === "candidate" ? getActiveTitle() : "Candidate Dashboard"}
+                  </span>
+                </div>
+              </div>
+              <div className="relative overflow-hidden" style={{ maxHeight: '480px' }}>
+                <img 
+                  src={activeTab === "candidate" ? getImageForActiveCard() : f1} 
+                  alt="Candidate Dashboard" 
+                  className="w-full h-auto object-top object-cover transition-all duration-300"
+                  style={{ animation: 'fade-up 0.3s ease-out' }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Animation Styles */}
+        <style jsx>{`
+          @keyframes fade-up {
+            from {
+              opacity: 0;
+              transform: translateY(10px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}</style>
+      </div>
+    </section>
+
+        <section className="section-pad pt-16 pb-24" style={{ background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)' }}>
+  <div className="container-xl max-w-7xl mx-auto px-2">
+    
+    {/* Section Header */}
+    <div className="text-center mb-14">
+      <div 
+        className="inline-block text-[13px] font-semibold uppercase tracking-widest mb-3 px-4 py-1.5 rounded-full border"
+        style={{ 
+          color: '#D3C2F0', 
+          borderColor: 'rgba(125, 58, 233, 0.3)', 
+          background: 'rgba(125, 58, 233, 0.1)' 
+        }}
+      >
+        Platform Impact
+      </div>
+      <h2 
+        className="font-bold text-white mb-3 text-[clamp(28px,4vw,40px)] leading-[1.2] tracking-[-0.02em]"
+      >
+        Numbers That Speak for Themselves
+      </h2>
+      <p style={{ color: '#8596AD', fontSize: '18px' }}>
+        Trusted by institutions and companies across India.
+      </p>
+    </div>
+
+    {/* Stats Grid - with slight side spacing */}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
       
-      <div className="flex space-x-16 animate-marquee-left">
-        {/* First set of college logos */}
-        <div className="flex items-center space-x-16 flex-none">
-          {/* IIT Bombay */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-red-800">IIT</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">IIT Bombay</span>
-          </div>
-          
-          {/* IIT Delhi */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-blue-800">IIT</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">IIT Delhi</span>
-          </div>
-          
-          {/* IIT Madras */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-orange-600">IIT</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">IIT Madras</span>
-          </div>
-          
-          {/* IIT Kharagpur */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-purple-700">IIT</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">IIT Kharagpur</span>
-          </div>
-          
-          {/* BITS Pilani */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-blue-900">BITS</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">BITS Pilani</span>
-          </div>
-          
-          {/* NIT Trichy */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-teal-700">NIT</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">NIT Trichy</span>
-          </div>
-          
-          {/* IIM Ahmedabad */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-red-700">IIM</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">IIM Ahmedabad</span>
-          </div>
-          
-          {/* IIM Bangalore */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-green-800">IIM</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">IIM Bangalore</span>
-          </div>
+      {/* Colleges */}
+      <div 
+        className="rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 group"
+        style={{ 
+          padding: '40px 24px', 
+          border: '1px solid rgba(125, 58, 233, 0.15)', 
+          background: 'rgba(125, 58, 233, 0.06)',
+        }}
+      >
+        <div 
+          className="font-black mb-2 text-[clamp(36px,5vw,52px)] leading-[1.1]"
+          style={{
+            background: 'linear-gradient(135deg, #7D3AE9, #EE4499)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          50+
         </div>
-        
-        {/* Duplicate set for seamless looping */}
-        <div className="flex items-center space-x-16 flex-none">
-          {/* IIT Bombay */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-red-800">IIT</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">IIT Bombay</span>
-          </div>
-          
-          {/* IIT Delhi */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-blue-800">IIT</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">IIT Delhi</span>
-          </div>
-          
-          {/* IIT Madras */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-orange-600">IIT</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">IIT Madras</span>
-          </div>
-          
-          {/* IIT Kharagpur */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-purple-700">IIT</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">IIT Kharagpur</span>
-          </div>
-          
-          {/* BITS Pilani */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-blue-900">BITS</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">BITS Pilani</span>
-          </div>
-          
-          {/* NIT Trichy */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-teal-700">NIT</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">NIT Trichy</span>
-          </div>
-          
-          {/* IIM Ahmedabad */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-red-700">IIM</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">IIM Ahmedabad</span>
-          </div>
-          
-          {/* IIM Bangalore */}
-          <div className="flex flex-col items-center justify-center group cursor-pointer w-32">
-            <div className="w-20 h-20 mb-3 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-              <div className="text-3xl font-bold text-green-800">IIM</div>
-            </div>
-            <span className="text-sm font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 text-center">IIM Bangalore</span>
-          </div>
+        <div style={{ color: '#8596AD', fontSize: '14px', fontWeight: '500' }}>
+          Colleges Onboarded
         </div>
       </div>
+
+      {/* Companies */}
+      <div 
+        className="rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 group"
+        style={{ 
+          padding: '40px 24px', 
+          border: '1px solid rgba(125, 58, 233, 0.15)', 
+          background: 'rgba(125, 58, 233, 0.06)',
+        }}
+      >
+        <div 
+          className="font-black mb-2 text-[clamp(36px,5vw,52px)] leading-[1.1]"
+          style={{
+            background: 'linear-gradient(135deg, #7D3AE9, #EE4499)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          100+
+        </div>
+        <div style={{ color: '#8596AD', fontSize: '14px', fontWeight: '500' }}>
+          Companies Hiring
+        </div>
+      </div>
+
+      {/* Students */}
+      <div 
+        className="rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 group"
+        style={{ 
+          padding: '40px 24px', 
+          border: '1px solid rgba(125, 58, 233, 0.15)', 
+          background: 'rgba(125, 58, 233, 0.06)',
+        }}
+      >
+        <div 
+          className="font-black mb-2 text-[clamp(36px,5vw,52px)] leading-[1.1]"
+          style={{
+            background: 'linear-gradient(135deg, #7D3AE9, #EE4499)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          3,000+
+        </div>
+        <div style={{ color: '#8596AD', fontSize: '14px', fontWeight: '500' }}>
+          Students Placed
+        </div>
+      </div>
+
+      {/* Satisfaction */}
+      <div 
+        className="rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 group"
+        style={{ 
+          padding: '40px 24px', 
+          border: '1px solid rgba(125, 58, 233, 0.15)', 
+          background: 'rgba(125, 58, 233, 0.06)',
+        }}
+      >
+        <div 
+          className="font-black mb-2 text-[clamp(36px,5vw,52px)] leading-[1.1]"
+          style={{
+            background: 'linear-gradient(135deg, #7D3AE9, #EE4499)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          95%
+        </div>
+        <div style={{ color: '#8596AD', fontSize: '14px', fontWeight: '500' }}>
+          Satisfaction Rate
+        </div>
+      </div>
+
     </div>
   </div>
+</section>
 
-  {/* Add CSS animations for marquee */}
-  <style jsx>{`
-    @keyframes marquee-left {
-      0% {
-        transform: translateX(0);
-      }
-      100% {
-        transform: translateX(-50%);
-      }
-    }
-    
-    @keyframes marquee-right {
-      0% {
-        transform: translateX(-50%);
-      }
-      100% {
-        transform: translateX(0);
-      }
-    }
-    
-    .animate-marquee-left {
-      animation: marquee-left 30s linear infinite;
-      display: flex;
-      width: max-content;
-    }
-    
-    .animate-marquee-right {
-      animation: marquee-right 30s linear infinite;
-      display: flex;
-      width: max-content;
-    }
-  `}</style>
-</div>
-          </div>
-        </section>
+        <section 
+  className="section-pad pt-20 pb-28 relative overflow-hidden" 
+  style={{ 
+    background: 'linear-gradient(120deg, #7C3AED 0%, #9333EA 35%, #C026D3 70%, #EC4899 100%)'
+  }}
+>
+  {/* Background decorative elements */}
+  <div 
+    className="absolute top-0 left-0 w-80 h-80 rounded-full pointer-events-none opacity-20 blur-3xl"
+    style={{ 
+      background: 'white', 
+      transform: 'translate(-40%, -40%)'
+    }}
+  />
+  <div 
+    className="absolute bottom-0 right-0 w-80 h-80 rounded-full pointer-events-none opacity-20 blur-3xl"
+    style={{ 
+      background: 'white', 
+      transform: 'translate(40%, 40%)'
+    }}
+  />
+  
+  <div className="container-xl relative z-10">
+    <div className="relative text-center max-w-2xl mx-auto">
+      
+      {/* Eyebrow - Moved down with pt-20 on section */}
+      <div 
+        className="inline-block text-[12px] font-semibold uppercase tracking-widest mb-6 px-4 py-1.5 rounded-full border"
+        style={{ 
+          color: 'rgba(255, 255, 255, 0.9)', 
+          borderColor: 'rgba(255, 255, 255, 0.3)', 
+          background: 'rgba(255, 255, 255, 0.15)'
+        }}
+      >
+        Get Started Today
+      </div>
+      
+      {/* Heading */}
+      <h2 
+        className="font-bold text-white mb-5 text-[clamp(28px,5vw,46px)] leading-[1.15] tracking-[-0.02em]"
+      >
+        Start Hiring or Getting Hired Today
+      </h2>
+      
+      {/* Description */}
+      <p 
+        className="mb-10 leading-relaxed mx-auto"
+        style={{ 
+          color: 'rgba(255, 255, 255, 0.82)', 
+          fontSize: '18px', 
+          maxWidth: '480px'
+        }}
+      >
+        Join RawRecruit and transform campus recruitment. Onboarding support included.
+      </p>
+      
+      {/* Single Button */}
+      <div className="flex items-center justify-center">
+        <button
+          onClick={handleGetStarted}
+          className="inline-flex items-center justify-center gap-2 text-[15px] px-10 py-3 rounded-xl font-medium transition-all duration-300 hover:-translate-y-1"
+          style={{ 
+            background: 'white',
+            color: '#1e293b',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2)',
+            minWidth: '200px',
+            height: '50px'
+          }}
+        >
+          Get Started
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14"></path>
+            <path d="m12 5 7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+      
+      {/* Footer text */}
+      <p 
+        className="mt-6 text-sm"
+        style={{ color: 'rgba(255, 255, 255, 0.55)' }}
+      >
+        No credit card required. Onboarding support included.
+      </p>
+      
+    </div>
+  </div>
+</section>
 
         {/* Footer */}
         <footer 
@@ -2122,7 +2594,7 @@ const App = () => {
                   </span>
                 </button>
                 <p className="text-gray-400 mb-6">
-                  Transforming campus recruitment through innovation and excellence.
+                  Unified platform for campus recruitment connecting colleges, companies, and students.
                 </p>
                 <div className="flex gap-3">
                   <button 
@@ -2413,6 +2885,24 @@ const App = () => {
         ::-webkit-scrollbar-thumb:hover {
           background: linear-gradient(to bottom, #7C3AED, #DB2777);
         }
+
+        @keyframes floatSlow {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
+
+.float-slow {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.float-slower {
+  animation: floatSlow 8s ease-in-out infinite;
+}
+
+.float-slowest {
+  animation: floatSlow 10s ease-in-out infinite;
+}
       `}</style>
     </div>
   );
@@ -2433,4 +2923,3 @@ const TickerItem = ({ text }) => (
     </span>
   </div>
 );
-
