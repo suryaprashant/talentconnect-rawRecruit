@@ -246,3 +246,20 @@ export function getCollegePostingForPoolcampus() {
       throw error;
     });
 }
+
+export const createCollegeMasterData = async (payload) => {
+  return axios.post("/api/colleges/college-master-data", payload, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+};
+
+// GET BY TYPE
+export const getCollegeMasterDataByType = async (type) => {
+  return axios.get(`/api/colleges/college-master-data/${type}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+};

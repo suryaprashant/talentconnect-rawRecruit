@@ -424,6 +424,7 @@ const [dbColleges, setDbColleges] = useState([]);
 const [isLoadingColleges, setIsLoadingColleges] = useState(false);
 const [degreeOptions, setDegreeOptions] = useState([]);
 const [streamOptions, setStreamOptions] = useState([]);
+const [selectedDegreeId, setSelectedDegreeId] = useState(null);
 
 useEffect(() => {
   const fetchColleges = async () => {
@@ -475,8 +476,8 @@ const handleAddCollege = async (name) => {
 
         setDegreeOptions(
           res.data.data.map((item) => ({
-            value: item.value,
-            label: item.value,
+            value: item._id,     // store id here
+            label: item.value,   // show name
           }))
         );
       } catch (err) {
@@ -488,30 +489,30 @@ const handleAddCollege = async (name) => {
   }, []);
 
   useEffect(() => {
-    if (!localFormData.degree) {
+    if (!selectedDegreeId) {
       setStreamOptions([]);
       return;
     }
   
     const fetchStreams = async () => {
       try {
-        const res = await getMasterDataByType("STREAM");
+        const res = await getMasterDataByType("STREAM", selectedDegreeId);
       
-        const filteredStreams = res.data.data
-          .filter((item) => item.parent === localFormData.degree)
-          .map((item) => ({
-            value: item.value,
-            label: item.value,
-          }));
+       
         
-        setStreamOptions(filteredStreams);
+        setStreamOptions(
+        res.data.data.map((item) => ({
+          value: item._id,
+          label: item.value,
+        }))
+      );
       } catch (err) {
         console.error("Error fetching streams", err);
       }
     };
   
     fetchStreams();
-  }, [localFormData.degree]);
+  }, [selectedDegreeId]);
 
   console.log("Degree:", localFormData.degree);
   
@@ -724,13 +725,15 @@ const handleRemoteAdd = async (type, name) => {
                           ? { value: localFormData.degree, label: localFormData.degree }
                           : null
                       }
-                      onChange={(sel) =>
+                      onChange={(sel) => {
                         setLocalFormData((p) => ({
                           ...p,
                           degree: sel?.label || "",
                           specialization: "",
-                        }))
-                      }
+                        }));
+                      
+                        setSelectedDegreeId(sel?.value || null);   // 🔥 ADD THIS
+                      }}
                       onCreateOption={async (val) => {
                         try {
                           const res = await createMasterData({
@@ -800,7 +803,15 @@ const handleRemoteAdd = async (type, name) => {
                   options={degreeOptions}
                   onCreateOption={(val) => handleRemoteAdd('degree', val)}
                   value={localFormData.degree ? { value: localFormData.degree, label: localFormData.degree } : null}
-                  onChange={(sel) => setLocalFormData(p => ({ ...p, degree: sel?.label || "", specialization: "" }))}
+                  onChange={(sel) => {
+                    setLocalFormData((p) => ({
+                      ...p,
+                      degree: sel?.label || "",
+                      specialization: "",
+                    }));
+                  
+                    setSelectedDegreeId(sel?.value || null);
+                  }}
                   placeholder="Search or add degree"
                 />
              
@@ -818,12 +829,9 @@ const handleRemoteAdd = async (type, name) => {
               isDisabled={!localFormData.degree}
               options={streamOptions}
               value={
-                localFormData.specialization
-                  ? {
-                      value: localFormData.specialization,
-                      label: localFormData.specialization,
-                    }
-                  : null
+                streamOptions.find(
+                  (opt) => opt.value === localFormData.specialization
+                ) || null
               }
               onChange={(sel) =>
                 setLocalFormData((p) => ({
@@ -836,17 +844,20 @@ const handleRemoteAdd = async (type, name) => {
                   const res = await createMasterData({
                     type: "STREAM",
                     value: val,
-                    parent: localFormData.degree,
+                    parent: selectedDegreeId,
                   });
                 
                   const newValue = res.data.data.value;
                 
                   setStreamOptions((prev) => [
                     ...prev,
-                    { value: newValue, label: newValue },
+                    { value: res.data.data._id, label: newValue },
                   ]);
                 
-                  setLocalFormData((p) => ({ ...p, specialization: newValue }));
+                  setLocalFormData((p) => ({
+                    ...p,
+                    specialization: res.data.data._id,
+                  }));
                 } catch (err) {
                   console.error("Error adding stream", err);
                 }

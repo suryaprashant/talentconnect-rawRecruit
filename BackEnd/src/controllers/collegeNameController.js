@@ -1,4 +1,5 @@
 import College from '../models/collegeNames.js';
+import { createCollegeMasterData, getCollegeMasterDataByType } from '../services/collegeMasterDataService.js';
 
 // Get all colleges for the dropdown
 export const getAllColleges = async (req, res) => {
@@ -36,5 +37,37 @@ export const registerCollege = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Error saving college", error: error.message });
+  }
+};
+
+export const createCollegeMasterDataController = async (req, res) => {
+  try {
+    const data = await createCollegeMasterData(req.body);
+
+    res.status(201).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getCollegeMasterDataByTypeController = async (req, res) => {
+  try {
+    const data = await getCollegeMasterDataByType(req.params.type);
+
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };

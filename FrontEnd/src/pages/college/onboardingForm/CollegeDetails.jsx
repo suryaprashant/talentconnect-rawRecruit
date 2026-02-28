@@ -106,10 +106,10 @@ const handleCreateCollege = async (inputValue) => {
       return;
     }
 
-    if (!safeFormData.collegeLocation) {
+    {/*if (!safeFormData.collegeLocation) {
       alert("College Location is required.");
       return;
-    }
+    }*/}
 
     nextStep();
   };
@@ -184,26 +184,26 @@ const handleCreateCollege = async (inputValue) => {
                 </label>
                
                  <CreatableSelect
-  isClearable
-  isDisabled={isLoadingColleges}
-  isLoading={isLoadingColleges}
-  options={existingColleges}
-  onCreateOption={handleCreateCollege} // You need to add the handleCreateCollege function I gave earlier
-  onChange={(opt) => updateFormData("collegeName", opt ? opt.label : "")}
-  value={safeFormData.collegeName ? { label: safeFormData.collegeName, value: safeFormData.collegeName } : null}
-  placeholder="Search or type to add new college..."
-  styles={{
-    control: (base) => ({
-      ...base,
-      borderColor: '#e5e7eb',
-      minHeight: '56px',
-      borderRadius: '0.75rem',
-      backgroundColor: 'rgba(255, 255, 255, 0.7)',
-      fontSize: '1.125rem',
-      '&:hover': { borderColor: '#93c5fd' }
-    }),
-  }}
-/>
+                    isClearable
+                    isDisabled={isLoadingColleges}
+                    isLoading={isLoadingColleges}
+                    options={existingColleges}
+                    onCreateOption={handleCreateCollege} // You need to add the handleCreateCollege function I gave earlier
+                    onChange={(opt) => updateFormData("collegeName", opt ? opt.label : "")}
+                    value={safeFormData.collegeName ? { label: safeFormData.collegeName, value: safeFormData.collegeName } : null}
+                    placeholder="Search or type to add new college..."
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        borderColor: '#e5e7eb',
+                        minHeight: '56px',
+                        borderRadius: '0.75rem',
+                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                        fontSize: '1.125rem',
+                        '&:hover': { borderColor: '#93c5fd' }
+                      }),
+                    }}
+                  />
               </div>
 
               <div>
@@ -221,7 +221,7 @@ const handleCreateCollege = async (inputValue) => {
             />
           </div>
 
-              {/* College Location with CreatableSelect */}
+              {/* College Location with CreatableSelect 
               <div>
                 <label className="block font-medium mb-3 text-gray-700 text-lg">
                   College Location *
@@ -282,7 +282,7 @@ const handleCreateCollege = async (inputValue) => {
                     })
                   }}
                 />
-              </div>
+              </div>*/}
 
               {/* Location Grid */}
               <div className="grid grid-cols-2 gap-6">

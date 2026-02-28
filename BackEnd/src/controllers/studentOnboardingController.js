@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import candidateMasterData from "../models/candidateMasterData.js";
 import {
   getAllOnboardingFormsService,
@@ -85,17 +86,27 @@ export const updateOnboardingForm = async (req, res) => {
 };
 
 export const getMasterData = async (req, res) => {
-  const { type } = req.query;
+  
+  const { type, parent } = req.query;
 
   if (!type) {
     return res.status(400).json({ msg: "Type is required" });
   }
 
   try {
-    const data = await candidateMasterData.find({
+    const filter = {
       type,
       isActive: true
-    }).sort({ value: 1 });
+    };
+
+    // If fetching STREAM, filter by parent degree
+    if (type === "STREAM" && parent) {
+      filter.parent = parent;
+    }
+
+    const data = await candidateMasterData
+      .find(filter)
+      .sort({ value: 1 });
 
     res.status(200).json({
       success: true,
