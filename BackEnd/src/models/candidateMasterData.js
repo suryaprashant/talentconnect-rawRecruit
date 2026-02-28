@@ -20,7 +20,8 @@ const CandidatemasterDataSchema = new mongoose.Schema(
       trim: true
     },
     parent: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CandidatemasterData",
       default: null, // DEGREE name for STREAM
     },
     isCustom: {
@@ -42,7 +43,7 @@ const CandidatemasterDataSchema = new mongoose.Schema(
 
 // Prevent duplicates like "SDE" & "sde"
 CandidatemasterDataSchema.index(
-  { type: 1, value: 1 },
+  { type: 1, value: 1, parent: 1 },
   { unique: true }
 );
 

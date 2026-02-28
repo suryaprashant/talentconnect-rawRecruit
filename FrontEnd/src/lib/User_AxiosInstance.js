@@ -309,9 +309,9 @@ export function scheduleInterviewByAdmin(payload) {
   });
 }
 
-export function getMasterDataByType(type) {
+export function getMasterDataByType(type, parent = null) {
   return axiosClient.get("/api/master-data", {
-    params: { type },
+    params: { type, parent },
   });
 }
 
