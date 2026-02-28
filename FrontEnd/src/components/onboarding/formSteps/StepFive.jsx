@@ -84,25 +84,23 @@ export const StepFive = ({ onNext, onBack, formData, onChange }) => {
   const [errors, setErrors] = useState({});
 
   // This useEffect hook auto-populates the form with data from the resume
-  useEffect(() => {
-    const updates = {};
-    if (formData.skills && Array.isArray(formData.skills)) {
-      // Use a Set to automatically remove duplicates, then convert back to an array
-      updates.skills = [...new Set(formData.skills)];
+// Replace your existing fetchMeta useEffect with this:
+useEffect(() => {
+  const fetchSkills = async () => {
+    try {
+      // Calling your new GET endpoint
+      const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta/get-skills`);
+      
+      // Extract the 'skills' string from each object in the array
+      const skillNames = data.map(item => item.skills); 
+      setMetaData(skillNames); // Store them in metaData state
+    } catch (err) {
+      console.error("Error loading skills from database", err);
+      toast.error("Could not load skills list");
     }
-    if (formData.certifications) {
-      updates.certifications = Array.isArray(formData.certifications)
-        ? formData.certifications.join("\n")
-        : formData.certifications;
-    }
-    if (formData.linkedin) updates.linkedin = formData.linkedin;
-    if (formData.github) updates.github = formData.github;
-    if (formData.portfolio) updates.portfolio = formData.portfolio;
-
-    if (Object.keys(updates).length > 0) {
-      setLocalFormData((prev) => ({ ...prev, ...updates }));
-    }
-  }, [formData]);
+  };
+  fetchSkills();
+}, []);
 
 const [customSkillSearch, setCustomSkillSearch] = useState("");
 
@@ -113,81 +111,80 @@ const handleSelectOrAdd = async (skillName) => {
   const trimmedSkill = skillName.trim();
   if (!trimmedSkill) return;
 
-  if (localFormData.skills.includes(trimmedSkill)) {
+  // 1. Check if the user ALREADY selected this skill in the current form
+  const isAlreadySelected = localFormData.skills.some(
+    s => s.toLowerCase() === trimmedSkill.toLowerCase()
+  );
+
+  if (isAlreadySelected) {
     setCustomSkillSearch("");
     setIsDropdownOpen(false);
     return;
   }
 
-  // If it's a new skill, save to DB, else just add to local state
-  if (!filteredSkillOptions.includes(trimmedSkill)) {
+  // 2. Check if the skill exists in the GLOBAL database list
+  // Note: Ensure filteredSkillOptions is actually an array of strings
+  const existsInGlobalList = filteredSkillOptions.some(
+    s => String(s).toLowerCase() === trimmedSkill.toLowerCase()
+  );
+
+  if (!existsInGlobalList) {
+    // ONLY call the API if it's truly a new skill
     await handleAddNewSkill(trimmedSkill);
   } else {
+    // If it exists in global list, just add it to the user's current selection
     setLocalFormData(prev => ({
       ...prev,
       skills: [...prev.skills, trimmedSkill]
     }));
   }
+
   setCustomSkillSearch("");
   setIsDropdownOpen(false);
 };
 
  // 1. Fetch Dynamic Metadata from Backend
-  useEffect(() => {
-    const fetchMeta = async () => {
-      try {
-        const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta`);
-        setMetaData(data);
-      } catch (err) {
-        console.error("Error loading skill metadata", err);
-      }
-    };
-    fetchMeta();
-  }, []);
+
 
   // 2. Filter Skills based on the Degree selected in previous steps
-  const filteredSkillOptions = useMemo(() => {
-    // Check education array from Step 3 or top-level degree field
-    const selectedDegree = formData.education?.[0]?.degree || formData.degree;
-    if (!selectedDegree) return [];
+// Replace your existing filteredSkillOptions with this:
+const filteredSkillOptions = useMemo(() => {
+  // Since metaData is now just an array of skill strings:
+  return Array.isArray(metaData) ? metaData.sort() : [];
+}, [metaData]);
 
-    const match = metaData.find(m => m.degree === selectedDegree);
-    return match ? match.skills.sort() : [];
-  }, [formData.education, formData.degree, metaData]);
+const handleAddNewSkill = async (newSkillName) => {
+  const trimmedSkill = newSkillName.trim();
+  if (!trimmedSkill) return;
 
-  // 3. Global Handler to add new skills to the database
-  const handleAddNewSkill = async (newSkillName) => {
-    if (!newSkillName.trim()) return;
-    const selectedDegree = formData.education?.[0]?.degree || formData.degree;
+  try {
+    // MATCHING YOUR BACKEND: Use 'skills' as the key
+    const payload = { skills: trimmedSkill };
+ console.log("Sending skill:", payload);
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_Backend_URL}/api/meta/add-skill`, 
+      payload
+    );
 
-    try {
-      const payload = {
-        type: 'skills',
-        name: newSkillName.trim(),
-        parentDegree: selectedDegree
-      };
+    // Update dropdown list with the returned string
+    setMetaData(prev => [...new Set([...prev, data.skills])]);
 
-      const { data } = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/meta/add`, payload);
-      
-      setMetaData(prev => {
-        const index = prev.findIndex(m => m.degree === data.degree);
-        const newMeta = [...prev];
-        newMeta[index] = data;
-        return newMeta;
-      });
+    // Update local selection
+    setLocalFormData(prev => ({
+      ...prev,
+      skills: [...new Set([...prev.skills, data.skills])]
+    }));
 
-      if (!localFormData.skills.includes(newSkillName.trim())) {
-        setLocalFormData(prev => ({
-          ...prev,
-          skills: [...prev.skills, newSkillName.trim()]
-        }));
-      }
-      toast.success(`Skill "${newSkillName}" added to database!`);
-    } catch (err) {
-      toast.error("Failed to add new skill to global list");
-    }
-  };
-
+    toast.success(`Skill "${data.skills}" added!`);
+  } catch (err) {
+    // This will catch the 'unique' constraint error if the skill exists
+    const errorMsg = err.response?.data?.error?.includes("duplicate key") 
+      ? "This skill already exists in the database" 
+      : "Error adding skill";
+    
+    toast.error(errorMsg);
+  }
+};
   // ... (Keep handleChange, handleFileChange, removeSkill, handleNextClick)
 
   const handleSkillSelect = (e) => {
@@ -301,95 +298,74 @@ const handleSelectOrAdd = async (skillName) => {
             {/* Skills with Tag system */}
             
     {/* --- REPLACED SKILLS SECTION --- */}
-           <div>
-              <label className="block text-gray-700 font-medium text-sm mb-2">Skills</label>
-              
-              {/* Chips for Selected Skills */}
-              <div className="flex flex-wrap gap-2 mb-3">
-                {localFormData.skills.map((skill) => (
-                  <div key={skill} className="flex items-center bg-[#667eea]/10 border border-[#667eea]/20 text-[#4338ca] rounded-full px-3 py-1.5 text-sm font-medium">
-                    {skill}
-                    <button type="button" onClick={() => removeSkill(skill)} className="ml-2 hover:text-red-500">
-                      <XIcon className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+           {/* Skills with Searchable Dropdown */}
+<div>
+  <label className="block text-gray-700 font-medium text-sm mb-2">
+    Skills
+  </label>
+  <div className="relative">
+    {/* Input Area + Selected Tags */}
+    <div className="flex flex-wrap gap-2 p-3 bg-white border border-gray-300 rounded-xl min-h-[56px] focus-within:border-[#667eea] transition-all">
+      {localFormData.skills.map((skill) => (
+        <span key={skill} className="flex items-center gap-1 px-3 py-1 bg-[#667eea]/10 text-[#667eea] text-sm font-medium rounded-lg border border-[#667eea]/20">
+          {skill}
+          <button type="button" onClick={() => removeSkill(skill)} className="hover:text-red-500">
+            <XIcon className="w-3 h-3" />
+          </button>
+        </span>
+      ))}
+      
+      <input
+        type="text"
+        className="flex-grow min-w-[120px] outline-none bg-transparent text-black text-sm"
+        placeholder="Search skills (e.g. React, Python)..."
+        value={customSkillSearch}
+        onFocus={() => setIsDropdownOpen(true)}
+        onChange={(e) => setCustomSkillSearch(e.target.value)}
+      />
+    </div>
 
-              {/* Search & Select Input */}
-              <div className="relative">
-                <div className="flex gap-2">
-                  <div className="relative flex-grow">
-                    <Code className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Search or type a new skill..."
-                      value={customSkillSearch}
-                      onFocus={() => setIsDropdownOpen(true)}
-                      onChange={(e) => {
-                        setCustomSkillSearch(e.target.value);
-                        setIsDropdownOpen(true);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          handleSelectOrAdd(customSkillSearch);
-                        }
-                      }}
-                      className="w-full pl-12 p-4  bg-white text-black placeholder-gray-400 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] "
-                    />
-                  </div>
-                  {customSkillSearch && (
-                    <button
-                      type="button"
-                      onClick={() => handleSelectOrAdd(customSkillSearch)}
-                      className="px-6 bg-[#667eea] text-white rounded-xl font-medium hover:bg-[#5a6fd6] transition-all"
-                    >
-                      Add
-                    </button>
-                  )}
-                </div>
+    {/* The Dropdown Menu */}
+    {isDropdownOpen && (
+      <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+        {/* 1. Show existing skills from DB that match search */}
+        {filteredSkillOptions
+          .filter(s => 
+            s.toLowerCase().includes(customSkillSearch.toLowerCase()) && 
+            !localFormData.skills.includes(s)
+          )
+          .map(skill => (
+            <button
+              key={skill}
+              type="button"
+              className="w-full text-left px-4 py-3 hover:bg-gray-50 text-sm transition-colors border-b border-gray-50 last:border-none"
+              onClick={() => handleSelectOrAdd(skill)}
+            >
+              {skill}
+            </button>
+          ))}
 
-                {/* Dropdown Menu */}
-                {isDropdownOpen && (
-                  <>
-                    {/* Transparent overlay to close dropdown when clicking outside */}
-                    <div className="fixed inset-0 z-20" onClick={() => setIsDropdownOpen(false)}></div>
-                    
-                    <div className="absolute z-30 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
-                      {filteredSkillOptions
-                        .filter(s => s.toLowerCase().includes(customSkillSearch.toLowerCase()))
-                        .map(skill => (
-                          <div
-                            key={skill}
-                            onClick={() => handleSelectOrAdd(skill)}
-                            className="p-3 hover:bg-[#667eea]/5 cursor-pointer text-gray-700 border-b border-gray-50 last:border-0"
-                          >
-                            {skill}
-                          </div>
-                        ))}
-                      
-                      {/* Show "Add New" option if typing something not in the list */}
-                      {customSkillSearch && !filteredSkillOptions.some(s => s.toLowerCase() === customSkillSearch.toLowerCase()) && (
-                        <div 
-                          onClick={() => handleSelectOrAdd(customSkillSearch)}
-                          className="p-3 text-[#667eea] font-medium hover:bg-[#667eea]/5 cursor-pointer"
-                        >
-                          + Add "{customSkillSearch}" as new skill
-                        </div>
-                      )}
-
-                      {filteredSkillOptions.length === 0 && !customSkillSearch && (
-                        <div className="p-4 text-center text-gray-400 text-sm">
-                          No default skills found. Type to add your own.
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-
+        {/* 2. "Add New" option if search doesn't match any DB skill */}
+        {customSkillSearch && !filteredSkillOptions.some(s => s.toLowerCase() === customSkillSearch.toLowerCase()) && (
+          <button
+            type="button"
+            className="w-full text-left px-4 py-3 bg-[#667eea]/5 text-[#667eea] text-sm font-medium hover:bg-[#667eea]/10"
+            onClick={() => handleSelectOrAdd(customSkillSearch)}
+          >
+            <span className="flex items-center gap-2">
+              <Award className="w-4 h-4" /> Add "{customSkillSearch}" to Database
+            </span>
+          </button>
+        )}
+        
+        {/* 3. Empty State */}
+        {customSkillSearch === "" && filteredSkillOptions.length === 0 && (
+          <div className="px-4 py-3 text-gray-400 text-sm">No suggested skills for your degree yet.</div>
+        )}
+      </div>
+    )}
+  </div>
+</div>
             
 
                
