@@ -248,7 +248,7 @@ export function getCollegePostingForPoolcampus() {
 }
 
 export const createCollegeMasterData = async (payload) => {
-  return axios.post("/api/college-onboarding/college-master-data", payload, {
+  return axiosClient.post("/api/college-onboarding/college-master-data", payload, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
@@ -257,7 +257,7 @@ export const createCollegeMasterData = async (payload) => {
 
 // GET BY TYPE
 export const getCollegeMasterDataByType = async (type) => {
-  return axios.get(`/api/college-onboarding/college-master-data/${type}`, {
+  return axiosClient.get(`/api/college-onboarding/college-master-data/${type}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
