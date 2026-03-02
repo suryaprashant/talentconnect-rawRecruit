@@ -2049,35 +2049,66 @@ export async function submitAlternateDates(req, res) {
 // controllers/applicationController.js
 
 
+// export const updateApplicationStatus = async (req, res) => {
+//     try {
+//         const { applicationId } = req.params;
+//         const { status } = req.body; // "Accepted" or "Rejected"
+
+//         // Basic validation
+//         if (!["Accepted", "Rejected"].includes(status)) {
+//             return res.status(400).json({ 
+//                 success: false, 
+//                 message: "Status must be either 'Accepted' or 'Rejected'" 
+//             });
+//         }
+
+//         const updatedApplication = await Application.findByIdAndUpdate(
+//             applicationId,
+//             { currentStatus: status },
+//             { new: true }
+//         );
+
+//         if (!updatedApplication) {
+//             return res.status(404).json({ success: false, message: "Application not found" });
+//         }
+
+//         res.status(200).json({
+//             success: true,
+//             message: `Status updated to ${status}`,
+//             data: updatedApplication
+//         });
+//     } catch (error) {
+//         res.status(500).json({ success: false, error: error.message });
+//     }
+// };
+
+// controllers/applicationController.js
+
 export const updateApplicationStatus = async (req, res) => {
-    try {
-        const { applicationId } = req.params;
-        const { status } = req.body; // "Accepted" or "Rejected"
+  const { applicationId } = req.params;
+  const { status } = req.body;
 
-        // Basic validation
-        if (!["Accepted", "Rejected"].includes(status)) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Status must be either 'Accepted' or 'Rejected'" 
-            });
-        }
-
-        const updatedApplication = await Application.findByIdAndUpdate(
-            applicationId,
-            { currentStatus: status },
-            { new: true }
-        );
-
-        if (!updatedApplication) {
-            return res.status(404).json({ success: false, message: "Application not found" });
-        }
-
-        res.status(200).json({
-            success: true,
-            message: `Status updated to ${status}`,
-            data: updatedApplication
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+  try {
+    const application = await Application.findById(applicationId);
+    if (!application) {
+      return res.status(404).json({ success: false, message: "Application not found" });
     }
+
+    // Update the status and push to history
+    application.currentStatus = status;
+    application.statusHistory.push({
+      status: status,
+      date: new Date()
+    });
+
+    await application.save();
+
+    res.status(200).json({ 
+      success: true, 
+      message: `Status updated to ${status}`,
+      data: application 
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 };
