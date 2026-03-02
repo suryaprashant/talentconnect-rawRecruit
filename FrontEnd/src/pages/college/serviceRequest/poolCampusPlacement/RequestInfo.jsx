@@ -8,6 +8,10 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { getMasterDataByType, createMasterData } from "../../../../lib/User_AxiosInstance";
 import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
+import {
+  createCollegeMasterData,
+  getCollegeMasterDataByType
+} from "@/lib/College_AxiosIntance";
 
 export default function PoolCampusHiringForm({ onBackClick }) {
     const initialFormState = {
@@ -34,6 +38,8 @@ export default function PoolCampusHiringForm({ onBackClick }) {
         companyType: [],
         proposedSchedule: { startDate: '', endDate: '', preferredMode: '' },
     };
+const [designationOptions, setDesignationOptions] = useState([]);
+const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
 
     const [formData, setFormData] = useState(() => {
         const savedData = localStorage.getItem('pendingPoolCampusRegistration');
@@ -61,7 +67,7 @@ export default function PoolCampusHiringForm({ onBackClick }) {
 
     // ─── Static options ────────────────────────────────────────────────────────
     const collegeTypeOptions  = ['Engineering', 'Medical', 'Management', 'Arts & Science', 'Law', 'Pharmacy', 'Architecture'];
-    const designationOptions  = ['Professor', 'HOD', 'Placement Officer', 'Dean', 'Coordinator'];
+    //const designationOptions  = ['Professor', 'HOD', 'Placement Officer', 'Dean', 'Coordinator'];
     const minStudentsOptions  = ['1-10', '11-25', '26-50', '51-100', '101-200', '200+'];
     const amenitiesOptions    = ['Auditorium', 'Seminar Hall', 'Interview Rooms', 'Computer Labs', 'Wi-Fi Access', 'Projector'];
     const proposedModeOptions = ["Online", "Offline", "Hybrid"];
@@ -109,7 +115,27 @@ export default function PoolCampusHiringForm({ onBackClick }) {
     useEffect(() => {
         localStorage.setItem('pendingPoolCampusRegistration', JSON.stringify(formData));
     }, [formData]);
+useEffect(() => {
+  const fetchDesignations = async () => {
+    setIsLoadingDesignation(true);
+    try {
+      const res = await getCollegeMasterDataByType("COLLEGE_DESIGNATION");
 
+      const formatted = (res?.data?.data || []).map(item => ({
+        value: item.value,
+        label: item.value,
+      }));
+
+      setDesignationOptions(formatted);
+    } catch (err) {
+      console.error("Error fetching designations", err);
+    } finally {
+      setIsLoadingDesignation(false);
+    }
+  };
+
+  fetchDesignations();
+}, []);
     // ─── Click-outside handler for custom dropdowns ────────────────────────────
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -583,7 +609,7 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                 {/* Form */}
                 <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-blue-50/50 p-6">
                     <h2 className="text-2xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-6 text-center">
-                        Register for Pool Campus Hiring
+                        Register for Pool Campus Hiring 
                     </h2>
                     <p className="text-gray-600 mb-8 text-center text-sm">
                         Fill in the details below to register for the hiring drive
@@ -816,14 +842,95 @@ export default function PoolCampusHiringForm({ onBackClick }) {
                                         Designation <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
-                                        <select
-                                            name="designation" value={formData.contactPerson.designation}
-                                            onChange={handleContactChange}
-                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.contactPersonDesignation ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
-                                        >
-                                            <option value="" disabled>Select designation</option>
-                                            {designationOptions.map(d => <option key={d} value={d}>{d}</option>)}
-                                        </select>
+                                       <div>
+ 
+ 
+
+  <CreatableSelect
+    isClearable
+    isSearchable
+    isLoading={isLoadingDesignation}
+    options={designationOptions}
+    styles={errors.contactPersonDesignation ? selectStylesError : selectStyles}
+    placeholder="Select or create designation"
+    value={
+      formData.contactPerson.designation
+        ? {
+            value: formData.contactPerson.designation,
+            label: formData.contactPerson.designation,
+          }
+        : null
+    }
+    onChange={(selected) => {
+      setFormData(prev => ({
+        ...prev,
+        contactPerson: {
+          ...prev.contactPerson,
+          designation: selected?.value || "",
+        },
+      }));
+
+      if (errors.contactPersonDesignation) {
+        setErrors(prev => ({ ...prev, contactPersonDesignation: "" }));
+      }
+    }}
+    onCreateOption={async (inputValue) => {
+      try {
+        const normalized = inputValue.trim();
+        if (!normalized) return;
+
+        // 🔒 prevent duplicate
+        const exists = designationOptions.some(
+          (opt) => opt.value.toLowerCase() === normalized.toLowerCase()
+        );
+
+        if (exists) {
+          setFormData(prev => ({
+            ...prev,
+            contactPerson: {
+              ...prev.contactPerson,
+              designation: normalized,
+            },
+          }));
+          return;
+        }
+
+        // ✅ save to DB
+        await createCollegeMasterData({
+          type: "COLLEGE_DESIGNATION",
+          value: normalized,
+        });
+
+        const newOption = {
+          value: normalized,
+          label: normalized,
+        };
+
+        setDesignationOptions(prev => [...prev, newOption]);
+
+        setFormData(prev => ({
+          ...prev,
+          contactPerson: {
+            ...prev.contactPerson,
+            designation: normalized,
+          },
+        }));
+
+        toast.success("Designation added");
+      } catch (err) {
+        console.error("Error creating designation", err);
+        toast.error("Could not add designation");
+      }
+    }}
+    formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
+  />
+
+  {errors.contactPersonDesignation && (
+    <p className="mt-1 text-xs text-red-600">
+      {errors.contactPersonDesignation}
+    </p>
+  )}
+</div>
                                         {errors.contactPersonDesignation && <p className="mt-1 text-xs text-red-600">{errors.contactPersonDesignation}</p>}
                                     </div>
                                 </div>
