@@ -6,6 +6,7 @@ import secureRoute from '../../middlewares/secureRouteMiddleware.js';
 import {
   updateCollegeProfile
 } from '../../controllers/collegeDashboard/collegeProfileController.js';
+import { createCollegeMasterDataController, getCollegeMasterDataByTypeController } from '../../controllers/collegeNameController.js';
 
 const router = express.Router();
 const storage = multer.memoryStorage();
@@ -35,5 +36,8 @@ router.put(
 
 
 router.get('/profile-data', secureRoute , getCollegeOnboardingByUserId);
+
+router.post("/college-master-data", createCollegeMasterDataController);
+router.get("/college-master-data/:type", getCollegeMasterDataByTypeController);
 
 export default router;
