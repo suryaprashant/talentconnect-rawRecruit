@@ -6,6 +6,8 @@ import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import { getMasterDataByType, createMasterData } from "../../../../lib/User_AxiosInstance";
+import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
 
 export default function PoolCampusHiringForm() {
   // Updated data structure for College Type → Degree → Stream
@@ -102,7 +104,7 @@ export default function PoolCampusHiringForm() {
   const amenitiesOptions = ['Projector & Screen', 'Seminar Hall', 'Interview Rooms', 'Wi-Fi Access', 'Computer Labs', 'Cafeteria', 'Parking Space', 'Technical Support'];
   const numberOfRoundsOptions = ['1 Round', '2 Rounds', '3 Rounds', '4 Rounds', '5 Rounds', '6+ Rounds'];
   const processOptions = ['Online Test', 'Coding Test', 'Aptitude Test', 'Group Discussion', 'Technical Interview', 'HR Interview', 'Case Study', 'Presentation'].sort((a, b) => a.localeCompare(b));
-  const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
+  //const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
   const minimumStudentsOptions = ['1-10 students', '11-25 students', '26-50 students', '51-100 students', '101-200 students', '201-500 students', '500+ students'];
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
@@ -256,6 +258,8 @@ const handleSelectOrAddSkill = async (skillName) => {
   const [customDegree, setCustomDegree] = useState('');
   const [customStream, setCustomStream] = useState('');
   const [customJobRole, setCustomJobRole] = useState('');
+  const [designationOptions,    setDesignationOptions]    = useState([]);
+  const [isLoadingDesignations, setIsLoadingDesignations] = useState(false);
   const [customSkill, setCustomSkill] = useState('');
 
   const [dropdownOpen, setDropdownOpen] = useState({
@@ -283,6 +287,18 @@ const handleSelectOrAddSkill = async (skillName) => {
   useEffect(() => {
     localStorage.setItem('pendingPoolHiringRequest', JSON.stringify(formData));
   }, [formData]);
+
+  useEffect(() => {
+      const fetch = async () => {
+          setIsLoadingDesignations(true);
+          try {
+              const res = await getCompanyMasterDataByType('COMPANY_DESIGNATION');
+              setDesignationOptions((res?.data?.data || []).map(item => ({ value: item.value, label: item.value })));
+          } catch (err) { console.error(err); }
+          finally { setIsLoadingDesignations(false); }
+      };
+      fetch();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -614,6 +630,24 @@ const handleSelectOrAddSkill = async (skillName) => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+   const selectStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: '42px',
+      borderRadius: '8px',
+      fontSize: '14px',
+      borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(102,126,234,0.25)' : 'none',
+      backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
+      '&:hover': { borderColor: '#667eea' },
+    }),
+    menu: (base) => ({ ...base, fontSize: '14px', zIndex: 30, borderRadius: '8px', border: '1px solid #e5e7eb' }),
+    multiValue: (base) => ({ ...base, backgroundColor: '#f3f4f6', borderRadius: '9999px' }),
+    multiValueLabel: (base) => ({ ...base, color: '#4f46e5', fontWeight: 600, fontSize: '12px', paddingLeft: '8px' }),
+    multiValueRemove: (base) => ({ ...base, color: '#667eea', borderRadius: '9999px', ':hover': { backgroundColor: 'rgba(102,126,234,0.15)', color: '#4f46e5' } }),
+    placeholder: (base) => ({ ...base, color: '#9ca3af', fontSize: '14px' }),
   };
 
   return (
@@ -1742,21 +1776,41 @@ const handleSelectOrAddSkill = async (skillName) => {
 
                   {/* Contact person designation */}
                   <div>
-                    <label className="block mb-2 font-medium text-sm text-gray-700">Designation <span className="text-red-500">*</span></label>
-                    <div className="relative">
-                      <select 
-                        name="designation" 
-                        value={formData.contactPerson?.designation || ''} 
-                        onChange={handleContactChange} 
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
-                        required
-                      >
-                        <option value="" disabled>Select designation</option>
-                        {designationOptions.map((designation) => (<option key={designation} value={designation}>{designation}</option>))}
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                    </div>
+                    <label htmlFor="contactDesignation" className="block mb-2 font-medium text-sm text-gray-700">Designation <span className="text-red-500">*</span></label>
+                    <CreatableSelect
+                      isClearable
+                      isLoading={isLoadingDesignations}
+                      options={designationOptions}
+                      value={designationOptions.find(opt => opt.value === formData.contactDesignation) || null}
+                      styles={selectStyles}
+                      placeholder="Select or type designation"
+                      onChange={async (selected) => {
+                        if (!selected) {
+                          setFormData(prev => ({ ...prev, contactDesignation: '' }));
+                          return;
+                        }
+                        if (!selected.__isNew__) {
+                          setFormData(prev => ({ ...prev, contactDesignation: selected.value }));
+                          return;
+                        }
+                        // New designation typed — save to DB
+                        try {
+                          const res = await createCompanyMasterData({
+                            type: "COMPANY_DESIGNATION",
+                            value: selected.value,
+                            isCustom: true,
+                          });
+                          const savedValue = res.data.data.value;
+                          setDesignationOptions(prev => [...prev, { value: savedValue, label: savedValue }]);
+                          setFormData(prev => ({ ...prev, contactDesignation: savedValue }));
+                        } catch (err) {
+                          console.error("Failed to create designation", err);
+                          toast.error("Could not add designation.");
+                        }
+                      }}
+                    />
                   </div>
+                
                 </div>
 
                 {/* Contact Email and Mobile */}
