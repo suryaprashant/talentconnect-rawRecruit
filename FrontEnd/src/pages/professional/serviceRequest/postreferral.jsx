@@ -74,7 +74,7 @@ function PostReferralJobPage() {
     const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
     // --- Filtered Dropdown Lists from CreateJob ---
-    const filteredSkills = allSkills.filter(skill => skill.toLowerCase().includes(skillInput.toLowerCase()));
+   // const filteredSkills = allSkills.filter(skill => skill.toLowerCase().includes(skillInput.toLowerCase()));
     const filteredCertifications = allCertifications.filter(cert => cert.toLowerCase().includes(certificationInput.toLowerCase()));
     const filteredBenefits = allBenefits.filter(benefit => benefit.toLowerCase().includes(benefitInput.toLowerCase()));
     const filteredStudentStreams = fieldOfStudyOptions.filter(stream => stream.toLowerCase().includes(studentStreamInput.toLowerCase()));
@@ -82,6 +82,29 @@ function PostReferralJobPage() {
         city.name.toLowerCase().includes(locationSearch.toLowerCase())
     );
 
+    // Add 'fetchedSkills' to your state declarations
+const [fetchedSkills, setFetchedSkills] = useState([]);
+
+// Fetch skills from your API
+useEffect(() => {
+    const fetchSkills = async () => {
+        try {
+            // Replace with your actual axios call if different
+            // const response = await axios.get('/api/meta/get-skills');
+            const response = await fetch('/api/meta/get-skills'); 
+            const data = await response.json();
+            setFetchedSkills(data.map(s => s.skills)); // Extracting the string from the object
+        } catch (error) {
+            console.error("Error loading skills:", error);
+        }
+    };
+    fetchSkills();
+}, []);
+
+// Update your filteredSkills to use the dynamic state
+const filteredSkills = fetchedSkills.filter(skill => 
+    skill.toLowerCase().includes(skillInput.toLowerCase())
+);
     // --- useEffect Hooks from CreateJob ---
     useEffect(() => {
         // Fetches cities of India and sorts them alphabetically
@@ -155,13 +178,38 @@ function PostReferralJobPage() {
         }));
     };
 
-    const handleItemInputKeyDown = (e, field, input, setInput) => {
-        if (e.key === 'Enter' && input.trim()) {
-            e.preventDefault();
-            addItem(field, input.trim());
-            setInput('');
+  const handleItemInputKeyDown = async (e, field, input, setInput) => {
+    if (e.key === 'Enter' && input.trim()) {
+        e.preventDefault();
+        const newValue = input.trim().toLowerCase();
+
+        // Special logic for the 'skills' field
+        if (field === 'skills') {
+            if (!fetchedSkills.includes(newValue)) {
+                try {
+                    // 1. Save to Backend
+                    const response = await fetch('/api/meta/add-skill', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ skills: newValue })
+                    });
+                    
+                    if (response.ok) {
+                        const savedSkill = await response.json();
+                        // 2. Update local dropdown list so it's available next time
+                        setFetchedSkills(prev => [...prev, savedSkill.skills]);
+                        toast.success("New skill added to database");
+                    }
+                } catch (error) {
+                    console.error("Failed to save new skill", error);
+                }
+            }
         }
-    };
+
+        addItem(field, newValue);
+        setInput('');
+    }
+};
 
     const handleSelectItem = (field, item, setInput, dropdownKey) => {
         addItem(field, item);
@@ -235,7 +283,7 @@ function PostReferralJobPage() {
     return (
         <div className="container mx-auto px-4 py-6">
             <PageHeader title="Post a Referral Job" />
-            <p className="text-gray-600 mb-8">Effortlessly Connect with Qualified Candidates and Build Your Dream Team</p>
+            <p className="text-gray-600 mb-8">Effortlessly Connect with Qualified Candidates and Build Your Dream Teams</p>
 
             {/* Form content from CreateJob */}
             <div className="max-w-3xl mx-auto">
