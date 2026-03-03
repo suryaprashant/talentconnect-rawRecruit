@@ -38,6 +38,7 @@ import f3 from "../../assets/f3.png";
 import f4 from "../../assets/f4.png";
 import f5 from "../../assets/f5.png";
 import f6 from "../../assets/f6.png";
+import { FeatureModal, FEATURE_MODAL_CONFIGS } from "../../components/ui/FeatureModal";
 
 const App = () => {
   const navigate = useNavigate();
@@ -70,6 +71,11 @@ const App = () => {
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [selectedSection, setSelectedSection] = useState(null);
+  const [featureModalConfig, setFeatureModalConfig] = useState(null);
+
+  const openFeatureModal = (title) => {
+    setFeatureModalConfig({ title, ...FEATURE_MODAL_CONFIGS[title] });
+  };
 
   const openModal = (section) => {
     setSelectedSection(section);
@@ -1823,102 +1829,93 @@ const ArrowRightIcon = () => (
   </div>
 </section>
 
-<section id="features" className="section-pad" style={{ background: 'linear-gradient(180deg, #F6F3FC 0%, #F8FAFC 100%)' }}>
-  <div className="container-xl">
-    
-    {/* Section Header */}
-    <div className="text-center mb-14">
-      <p className="text-sm font-semibold tracking-widest uppercase text-purple-600 mb-6">
-        CORE FEATURES
-      </p>
+<section
+        id="features"
+        className="section-pad"
+        style={{ background: "linear-gradient(180deg, #F6F3FC 0%, #F8FAFC 100%)" }}
+      >
+        <div className="container-xl">
+          {/* Section Header */}
+          <div className="text-center mb-14">
+            <p className="text-sm font-semibold tracking-widest uppercase text-purple-600 mb-6">
+              CORE FEATURES
+            </p>
+            <h2 className="font-bold text-foreground mb-4 text-[clamp(28px,4vw,40px)] leading-[1.2] tracking-[-0.02em] text-[#0f172a]">
+              Everything Needed to Run{" "}
+              <span className="bg-gradient-to-r from-[#7c3aed] to-[#ec4899] bg-clip-text text-transparent">
+                Campus Recruitment
+              </span>
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Proven tools for every stakeholder — built for real recruitment operations at scale.
+            </p>
+          </div>
 
-      <h2 className="font-bold text-foreground mb-4 text-[clamp(28px,4vw,40px)] leading-[1.2] tracking-[-0.02em] text-[#0f172a]">
-        Everything Needed to Run{" "}
-        <span className="bg-gradient-to-r from-[#7c3aed] to-[#ec4899] bg-clip-text text-transparent">
-          Campus Recruitment
-        </span>
-      </h2>
-      <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-        Proven tools for every stakeholder — built for real recruitment operations at scale.
-      </p>
-    </div>
+          {/* Features Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
 
-    {/* Features Grid */}
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            <div className="cursor-pointer" onClick={() => openFeatureModal("On-Campus Recruitment")}>
+              <FeatureCard
+                image={f0} imageBg="#F0EBFA" iconColor="#7D3AE9" iconBg="#F0EBFA"
+                iconPath="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+                iconSecondaryPath="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0"
+                title="On-Campus Recruitment"
+                description="Colleges publish on-campus drives; companies discover and apply. Manage the entire drive lifecycle from a single dashboard."
+              />
+            </div>
+
+            <div className="cursor-pointer" onClick={() => openFeatureModal("Pool Campus Recruitment")}>
+              <FeatureCard
+                image={f1} imageBg="#FBEDF5" iconColor="#EE4499" iconBg="#FBEDF5"
+                iconPath="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+                iconSecondaryPath="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
+                title="Pool Campus Recruitment"
+                description="Run multi-college hiring drives. Pool multiple institutions and source from a wider talent pool efficiently."
+              />
+            </div>
+
+            <div className="cursor-pointer" onClick={() => openFeatureModal("Off-Campus Recruitment")}>
+              <FeatureCard
+                image={f2} imageBg="#E9F0FB" iconColor="#327DF5" iconBg="#E9F0FB"
+                iconPath="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20 M2 12h20"
+                iconSecondaryPath="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
+                title="Off-Campus Recruitment"
+                description="Post jobs visible to students across all partner colleges. Off-campus hiring made structured and trackable."
+              />
+            </div>
+
+            <div className="cursor-pointer" onClick={() => openFeatureModal("Internship Management")}>
+              <FeatureCard
+                image={f4} imageBg="#EBFAF0" iconColor="#20C55D" iconBg="#EBFAF0"
+                iconPath="M12 7v14 M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
+                title="Internship Management"
+                description="Post and manage internship opportunities. Students discover, apply, and track status — all in one place."
+              />
+            </div>
+
+            <div className="cursor-pointer" onClick={() => openFeatureModal("Application Tracking System")}>
+              <FeatureCard
+                image={f5} imageBg="#FCF4E8" iconColor="#F49D25" iconBg="#FCF4E8"
+                iconPath="M18 20V10 M12 20V4 M6 20V14"
+                iconType="chart"
+                title="Application Tracking System"
+                description="Complete pipeline visibility — Applied, Shortlisted, Accepted, Rejected. Real-time status for every stakeholder."
+              />
+            </div>
+
+            <div className="cursor-pointer" onClick={() => openFeatureModal("Real-time Messaging System")}>
+              <FeatureCard
+                image={f6} imageBg="#F0EBFA" iconColor="#7D3AE9" iconBg="#F0EBFA"
+                iconPath="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                title="Real-time Messaging System"
+                description="Built-in chat connects HR teams with colleges and students directly. No external tools needed."
+              />
+            </div>
+
+          </div>
+        </div>
+      </section>
       
-      {/* Feature Card 1 - On-Campus Recruitment */}
-      <FeatureCard
-        image={f0}
-        imageBg="#F0EBFA"
-        iconColor="#7D3AE9"
-        iconBg="#F0EBFA"
-        iconPath="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
-        iconSecondaryPath="M12 10m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0"
-        title="On-Campus Recruitment"
-        description="Colleges publish on-campus drives; companies discover and apply. Manage the entire drive lifecycle from a single dashboard."
-      />
-
-      {/* Feature Card 2 - Pool Campus Recruitment */}
-      <FeatureCard
-        image={f1}
-        imageBg="#FBEDF5"
-        iconColor="#EE4499"
-        iconBg="#FBEDF5"
-        iconPath="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
-        iconSecondaryPath="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
-        title="Pool Campus Recruitment"
-        description="Run multi-college hiring drives. Pool multiple institutions and source from a wider talent pool efficiently."
-      />
-
-      {/* Feature Card 3 - Off-Campus Recruitment */}
-      <FeatureCard
-        image={f2}
-        imageBg="#E9F0FB"
-        iconColor="#327DF5"
-        iconBg="#E9F0FB"
-        iconPath="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20 M2 12h20"
-        iconSecondaryPath="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
-        title="Off-Campus Recruitment"
-        description="Post jobs visible to students across all partner colleges. Off-campus hiring made structured and trackable."
-      />
-
-      {/* Feature Card 4 - Internship Management */}
-      <FeatureCard
-        image={f4}
-        imageBg="#EBFAF0"
-        iconColor="#20C55D"
-        iconBg="#EBFAF0"
-        iconPath="M12 7v14 M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
-        title="Internship Management"
-        description="Post and manage internship opportunities. Students discover, apply, and track status — all in one place."
-      />
-
-      {/* Feature Card 5 - Application Tracking System */}
-      <FeatureCard
-        image={f5}
-        imageBg="#FCF4E8"
-        iconColor="#F49D25"
-        iconBg="#FCF4E8"
-        iconPath="M18 20V10 M12 20V4 M6 20V14"
-        iconType="chart"
-        title="Application Tracking System"
-        description="Complete pipeline visibility — Applied, Shortlisted, Accepted, Rejected. Real-time status for every stakeholder."
-      />
-
-      {/* Feature Card 6 - Real-time Messaging */}
-      <FeatureCard
-        image={f6}
-        imageBg="#F0EBFA"
-        iconColor="#7D3AE9"
-        iconBg="#F0EBFA"
-        iconPath="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
-        title="Real-time Messaging System"
-        description="Built-in chat connects HR teams with colleges and students directly. No external tools needed."
-      />
-
-    </div>
-  </div>
-</section>
 
         {/* <section className="section-pad pt-20" style={{ background: 'linear-gradient(180deg, #F6F3FC 0%, #F8FAFC 100%)' }}>
       <div className="container-xl max-w-7xl mx-auto px-4">
@@ -2162,7 +2159,11 @@ const ArrowRightIcon = () => (
 
             {/* Right Half - Image Display */}
             <div className="md:col-span-8">
-              <div className="relative rounded-2xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-xl)' }}>
+              <div
+                className="relative rounded-2xl overflow-hidden border border-border cursor-pointer"
+                style={{ boxShadow: "var(--shadow-xl)" }}
+                onClick={() => openFeatureModal("How It Works - Companies")}
+              >
                 <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
                   <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
                   <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
@@ -2202,7 +2203,11 @@ const ArrowRightIcon = () => (
 
             {/* Right Half - Image Display */}
             <div className="md:col-span-8">
-              <div className="relative rounded-2xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-xl)' }}>
+              <div
+                className="relative rounded-2xl overflow-hidden border border-border cursor-pointer"
+                style={{ boxShadow: "var(--shadow-xl)" }}
+                onClick={() => openFeatureModal("How It Works - Colleges")}
+              >
                 <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
                   <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
                   <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
@@ -2251,7 +2256,11 @@ const ArrowRightIcon = () => (
             </div>
 
             {/* Image Display */}
-            <div className="relative rounded-2xl overflow-hidden border border-border w-full max-w-5xl mx-auto" style={{ boxShadow: 'var(--shadow-xl)' }}>
+            <div
+              className="relative rounded-2xl overflow-hidden border border-border w-full max-w-5xl mx-auto cursor-pointer"
+              style={{ boxShadow: "var(--shadow-xl)" }}
+              onClick={() => openFeatureModal("How It Works - Employers")}
+            >
               <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
                 <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
                 <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
@@ -2299,7 +2308,11 @@ const ArrowRightIcon = () => (
             </div>
 
             {/* Image Display */}
-            <div className="relative rounded-2xl overflow-hidden border border-border w-full max-w-5xl mx-auto" style={{ boxShadow: 'var(--shadow-xl)' }}>
+            <div
+              className="relative rounded-2xl overflow-hidden border border-border w-full max-w-5xl mx-auto cursor-pointer"
+              style={{ boxShadow: "var(--shadow-xl)" }}
+              onClick={() => openFeatureModal("How It Works - Candidates")}
+            >
               <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
                 <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
                 <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
@@ -2558,6 +2571,7 @@ const ArrowRightIcon = () => (
     </div>
   </div>
 </section>
+<FeatureModal config={featureModalConfig} onClose={() => setFeatureModalConfig(null)} />
 
         {/* Footer */}
         <footer 
