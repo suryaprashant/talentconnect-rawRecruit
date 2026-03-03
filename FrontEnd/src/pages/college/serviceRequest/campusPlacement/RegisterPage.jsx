@@ -8,11 +8,17 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { getMasterDataByType, createMasterData } from "../../../../lib/User_AxiosInstance";
 import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
+import {
+  createCollegeMasterData,
+  getCollegeMasterDataByType
+} from "@/lib/College_AxiosIntance";
 
 export default function RegisterPage({ onBackClick }) {
 
     // ─── Static config (unchanged) ────────────────────────────────────────────
-    const designationOptions  = ['Professor', 'HOD', 'Placement Officer', 'Dean', 'Coordinator'];
+   // const designationOptions  = ['Professor', 'HOD', 'Placement Officer', 'Dean', 'Coordinator'];
+   const [designationOptions, setDesignationOptions] = useState([]);
+const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
     const amenitiesOptions    = ['Auditorium', 'Seminar Hall', 'Interview Rooms', 'Computer Labs', 'Wi-Fi Access', 'Projector', 'Parking', 'Refreshments'];
     const minStudentsOptions  = ['1-10', '11-25', '26-50', '51-100', '101-200', '200+'];
     const proposedModeOptions = ["Online", "Offline", "Hybrid"];
@@ -91,6 +97,28 @@ export default function RegisterPage({ onBackClick }) {
     []);
 
     // ─── Persist form + click-outside for custom dropdowns ────────────────────
+    useEffect(() => {
+  const fetchDesignations = async () => {
+    setIsLoadingDesignation(true);
+    try {
+     const res = await getCollegeMasterDataByType("COLLEGE_DESIGNATION");
+
+      const formatted = (res?.data?.data || []).map(item => ({
+        value: item.value,
+        label: item.value,
+      }));
+
+      setDesignationOptions(formatted);
+    } catch (err) {
+      console.error("Error fetching designations", err);
+    } finally {
+      setIsLoadingDesignation(false);
+    }
+  };
+
+  fetchDesignations();
+}, []);
+
     useEffect(() => {
         localStorage.setItem('pendingRegistration', JSON.stringify(formData));
         const handleClickOutside = (event) => {
@@ -454,7 +482,11 @@ export default function RegisterPage({ onBackClick }) {
     const totalStudents = formData.rounds.reduce((sum, round) => {
         return sum + (parseInt(round.students) || 0);
     }, 0);
-
+useEffect(() => {
+  if (formData.degree?.length) {
+    setSelectedDegreeIds(formData.degree.map(d => d.value));
+  }
+}, []);
     // ─── CreatableSelect shared styles (matching existing glassmorphism theme) ──
     const selectStyles = {
         control: (base, state) => ({
@@ -734,28 +766,63 @@ export default function RegisterPage({ onBackClick }) {
                                         onChange={(e) => handleChange('coordinatorName', e.target.value)}
                                     />
                                 </div>
+  
+<CreatableSelect
+  isClearable
+  isSearchable
+  isLoading={isLoadingDesignation}
+  options={designationOptions}
+  styles={errors.coordinatorDesignation ? selectStylesError : selectStyles}
+  placeholder="Select or create designation"
+  value={
+    formData.coordinatorDesignation
+      ? {
+          value: formData.coordinatorDesignation,
+          label: formData.coordinatorDesignation,
+        }
+      : null
+  }
+  onChange={(selected) => {
+    handleChange("coordinatorDesignation", selected?.value || "");
+  }}
+  onCreateOption={async (inputValue) => {
+    try {
+      const normalized = inputValue.trim();
 
-                                <div>
-                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <User className="w-4 h-4 text-[#3b82f6]" />
-                                        Designation <span className="text-red-500">*</span>
-                                    </label>
-                                    <div className="relative">
-                                        <select
-                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.coordinatorDesignation ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
-                                            value={formData.coordinatorDesignation}
-                                            onChange={(e) => handleChange('coordinatorDesignation', e.target.value)}
-                                        >
-                                            <option value="">Select Designation</option>
-                                            {designationOptions.map(option => (
-                                                <option key={option} value={option}>{option}</option>
-                                            ))}
-                                        </select>
-                                        {errors.coordinatorDesignation && (
-                                            <p className="mt-1 text-xs text-red-600">{errors.coordinatorDesignation}</p>
-                                        )}
-                                    </div>
-                                </div>
+      if (!normalized) return;
+
+      // 🔒 prevent duplicate
+      const exists = designationOptions.some(
+        (opt) => opt.value.toLowerCase() === normalized.toLowerCase()
+      );
+
+      if (exists) {
+        handleChange("coordinatorDesignation", normalized);
+        return;
+      }
+
+      // ✅ save to DB
+    await createCollegeMasterData({
+  type: "COLLEGE_DESIGNATION",
+  value: normalized,
+});
+
+      const newOption = {
+        value: normalized,
+        label: normalized,
+      };
+
+      setDesignationOptions((prev) => [...prev, newOption]);
+      handleChange("coordinatorDesignation", normalized);
+
+      toast.success("Designation added");
+    } catch (err) {
+      console.error("Error creating designation", err);
+      toast.error("Could not add designation");
+    }
+  }}
+  formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
+/>
 
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
