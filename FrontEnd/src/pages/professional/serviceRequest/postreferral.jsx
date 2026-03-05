@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from "@/components/dashboard/PageHeader";
-import { postReferralJob } from '@/lib/User_AxiosInstance'; // Using the original API function
+import { postReferralJob ,getSkills, addSkill } from '@/lib/User_AxiosInstance'; // Using the original API function
 import { ChevronDown, X } from 'lucide-react';
+
 import toast from 'react-hot-toast';
 import { City } from 'country-state-city';
 
@@ -87,18 +88,16 @@ const [fetchedSkills, setFetchedSkills] = useState([]);
 
 // Fetch skills from your API
 useEffect(() => {
-    const fetchSkills = async () => {
-        try {
-            // Replace with your actual axios call if different
-            // const response = await axios.get('/api/meta/get-skills');
-            const response = await fetch('/api/meta/get-skills'); 
-            const data = await response.json();
-            setFetchedSkills(data.map(s => s.skills)); // Extracting the string from the object
-        } catch (error) {
-            console.error("Error loading skills:", error);
-        }
-    };
-    fetchSkills();
+  const fetchSkills = async () => {
+    try {
+      const response = await getSkills();
+      setFetchedSkills(response.data.map(s => s.skills));
+    } catch (error) {
+      console.error("Error loading skills:", error);
+    }
+  };
+
+  fetchSkills();
 }, []);
 
 // Update your filteredSkills to use the dynamic state
@@ -178,37 +177,30 @@ const filteredSkills = fetchedSkills.filter(skill =>
         }));
     };
 
-  const handleItemInputKeyDown = async (e, field, input, setInput) => {
-    if (e.key === 'Enter' && input.trim()) {
-        e.preventDefault();
-        const newValue = input.trim().toLowerCase();
+const handleItemInputKeyDown = async (e, field, input, setInput) => {
+  if (e.key === 'Enter' && input.trim()) {
+    e.preventDefault();
+    const newValue = input.trim().toLowerCase();
 
-        // Special logic for the 'skills' field
-        if (field === 'skills') {
-            if (!fetchedSkills.includes(newValue)) {
-                try {
-                    // 1. Save to Backend
-                    const response = await fetch('/api/meta/add-skill', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ skills: newValue })
-                    });
-                    
-                    if (response.ok) {
-                        const savedSkill = await response.json();
-                        // 2. Update local dropdown list so it's available next time
-                        setFetchedSkills(prev => [...prev, savedSkill.skills]);
-                        toast.success("New skill added to database");
-                    }
-                } catch (error) {
-                    console.error("Failed to save new skill", error);
-                }
-            }
+    if (field === 'skills') {
+      if (!fetchedSkills.includes(newValue)) {
+        try {
+          const response = await addSkill(newValue);
+
+          if (response.data) {
+            setFetchedSkills(prev => [...prev, response.data.skills]);
+            toast.success("New skill added to database");
+          }
+
+        } catch (error) {
+          console.error("Failed to save new skill", error);
         }
-
-        addItem(field, newValue);
-        setInput('');
+      }
     }
+
+    addItem(field, newValue);
+    setInput('');
+  }
 };
 
     const handleSelectItem = (field, item, setInput, dropdownKey) => {
