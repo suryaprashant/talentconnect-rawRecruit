@@ -48,7 +48,7 @@ function ProfessionalSidebar({ activePath }) {
         /> */}
         
       </SidebarNavGroup>
-            <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>
+            {/* <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>
         <SidebarNavItem 
           to="/professional-events/casestudy" 
           icon={<FiBookmark />} 
@@ -67,7 +67,7 @@ function ProfessionalSidebar({ activePath }) {
           label="Workshop" 
           active={activePath === '/professional-events/workshop'} 
         />
-      </SidebarNavGroup>
+      </SidebarNavGroup> */}
       <SidebarNavGroup label="Service Request" icon={<FiClipboard />} active={activePath.includes('/service-request')}>
         <SidebarNavItem 
           to="/professional/service-request" 
@@ -113,12 +113,12 @@ function ProfessionalSidebar({ activePath }) {
         />
       </SidebarNavGroup>
 
-      <SidebarNavItem 
+      {/* <SidebarNavItem 
         to="/ai-driven-job-search" 
         icon={<FiSearch />} 
         label="AI-Driven Job Search" 
         active={activePath === '/ai-driven-job-search'} 
-      />
+      /> */}
       <SidebarNavItem 
         to="/chat-application" 
         icon={<FiMessageCircle />} 
