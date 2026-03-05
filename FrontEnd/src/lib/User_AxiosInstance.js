@@ -322,3 +322,25 @@ export function createMasterData(payload) {
     parent: payload.parent || null, // for STREAM → DEGREE mapping
   });
 }
+
+// -------- Skills APIs --------
+
+// Get all skills
+export function getSkills() {
+  return axiosClient.get('/api/meta/get-skills')
+    .then(response => response)
+    .catch(error => {
+      console.error("Error fetching skills:", error);
+      throw error;
+    });
+}
+
+// Add new skill
+export function addSkill(skill) {
+  return axiosClient.post('/api/meta/add-skill', { skills: skill })
+    .then(response => response)
+    .catch(error => {
+      console.error("Error adding skill:", error);
+      throw error;
+    });
+}
