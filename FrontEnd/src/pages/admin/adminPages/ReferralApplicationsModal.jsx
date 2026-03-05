@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Phone, GraduationCap, Briefcase, FileText, Loader2, Award, BookOpen } from 'lucide-react';
 import axios from 'axios';
 import StudentDetailModal from './StudentDetailModal'; // Importing the new component
-
+import { getApplicationForReferral } from '@/lib/Admin_AxiosInstance';
 export default function ReferralApplicationsModal({ isOpen, jobId, onClose, jobTitle }) {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -15,9 +15,7 @@ export default function ReferralApplicationsModal({ isOpen, jobId, onClose, jobT
   const fetchApplications = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/admin/dashboard/referral-applications?jobId=${jobId}`, {
-        withCredentials: true 
-      });
+      const response = await getApplicationForReferral(jobId);
       setApplications(response.data?.data || []);
     } catch (error) {
       console.error("Error fetching applications:", error);
