@@ -249,15 +249,15 @@ import { ChevronDownIcon, XIcon, User, Clock, Globe, Wrench } from "lucide-react
 export const StepSix = ({ onNext, onCancel, onBack = onCancel, formData, onChange }) => {
   // FIXED: Initialize ALL fields from formData for proper sessionStorage restoration
   const [localFormData, setLocalFormData] = useState({
-    about: formData.about || "",
-    gender: formData.gender || "",
+   // about: formData.about || "",
+    //gender: formData.gender || "",
     toolsAndPlatforms: formData.toolsAndPlatforms || [],
-    openToShift: formData.openToShift || [],
+   // openToShift: formData.openToShift || [],
     languagesKnown: formData.languagesKnown || [],
   });
 
   // Options for dropdowns and checkboxes
-  const genderOptions = ["Male", "Female", "Non-binary", "Prefer not to say"];
+  //const genderOptions = ["Male", "Female", "Non-binary", "Prefer not to say"];
   
   const toolsAndPlatforms = [
     "VS Code", "Figma", "JIRA", "Slack", "Trello", "Postman", "AWS Console",
@@ -265,11 +265,11 @@ export const StepSix = ({ onNext, onCancel, onBack = onCancel, formData, onChang
     "GitHub", "GitLab", "Bitbucket", "Notion", "Confluence"
   ];
 
-  const openToShift = [
-    { value: "day", label: "Day Shift" },
-    { value: "night", label: "Night Shift" },
-    { value: "rotational", label: "Rotational Shift" }
-  ];
+  // const openToShift = [
+  //   { value: "day", label: "Day Shift" },
+  //   { value: "night", label: "Night Shift" },
+  //   { value: "rotational", label: "Rotational Shift" }
+  // ];
 
   const languagesKnown = [
     "English", "Hindi", "Spanish", "French", "German", "Chinese", "Japanese",
@@ -298,22 +298,22 @@ export const StepSix = ({ onNext, onCancel, onBack = onCancel, formData, onChang
     }));
   };
 
-  const handleShiftChange = (shiftValue) => {
-    setLocalFormData((prev) => {
-      const currentShifts = [...prev.openToShift];
-      if (currentShifts.includes(shiftValue)) {
-        return {
-          ...prev,
-          openToShift: currentShifts.filter(shift => shift !== shiftValue)
-        };
-      } else {
-        return {
-          ...prev,
-          openToShift: [...currentShifts, shiftValue]
-        };
-      }
-    });
-  };
+  // const handleShiftChange = (shiftValue) => {
+  //   setLocalFormData((prev) => {
+  //     const currentShifts = [...prev.openToShift];
+  //     if (currentShifts.includes(shiftValue)) {
+  //       return {
+  //         ...prev,
+  //         openToShift: currentShifts.filter(shift => shift !== shiftValue)
+  //       };
+  //     } else {
+  //       return {
+  //         ...prev,
+  //         openToShift: [...currentShifts, shiftValue]
+  //       };
+  //     }
+  //   });
+  // };
 
   const handleLanguageSelect = (e) => {
     const language = e.target.value;
@@ -366,7 +366,7 @@ export const StepSix = ({ onNext, onCancel, onBack = onCancel, formData, onChang
           {/* Form Section */}
           <div className="space-y-6">
             {/* About Yourself */}
-            <div>
+            {/* <div>
               <label htmlFor="about" className="block text-gray-700 font-medium text-sm mb-2">
                 About Yourself
               </label>
@@ -379,10 +379,10 @@ export const StepSix = ({ onNext, onCancel, onBack = onCancel, formData, onChang
                 className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
                 placeholder="Tell us about your professional background, interests, and career aspirations..."
               />
-            </div>
+            </div> */}
 
             {/* Gender */}
-            <div>
+            {/* <div>
               <label htmlFor="gender" className="block text-gray-700 font-medium text-sm mb-2">
                 Gender
               </label>
@@ -404,7 +404,7 @@ export const StepSix = ({ onNext, onCancel, onBack = onCancel, formData, onChang
                   <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Tools & Platforms Known */}
             <div>
@@ -453,7 +453,7 @@ export const StepSix = ({ onNext, onCancel, onBack = onCancel, formData, onChang
             </div>
 
             {/* Open to Shift */}
-            <div>
+            {/* <div>
               <label className="block text-gray-700 font-medium text-sm mb-2">
                 Open to Shift
               </label>
@@ -491,7 +491,7 @@ export const StepSix = ({ onNext, onCancel, onBack = onCancel, formData, onChang
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Languages Known */}
             <div>

@@ -25,7 +25,7 @@ export const StepThree = ({
     semester: formData.education?.[0]?.semester || formData.semester || "",
     yearOfGraduation: formData.education?.[0]?.yearOfGraduation || formData.yearOfGraduation || "",
     specialization: formData.education?.[0]?.specialization || formData.specialization || "",
-    cgpa: formData.education?.[0]?.cgpa || formData.cgpa || "",
+  //  cgpa: formData.education?.[0]?.cgpa || formData.cgpa || "",
     degreeCertificate: formData.education?.[0]?.degreeCertificate || formData.degreeCertificate || null,
   });
 
@@ -183,7 +183,7 @@ const handleAddCollege = async (name) => {
       semester: selectedRole === 'student' ? localFormData.semester : undefined,
       yearOfGraduation: localFormData.yearOfGraduation,
       specialization: localFormData.specialization,
-      cgpa: localFormData.cgpa,
+      //cgpa: localFormData.cgpa,
       degreeCertificate: localFormData.degreeCertificate,
     };
 
@@ -197,7 +197,7 @@ const handleAddCollege = async (name) => {
       semester: selectedRole === 'student' ? localFormData.semester : undefined,
       yearOfGraduation: localFormData.yearOfGraduation,
       specialization: localFormData.specialization,
-      cgpa: localFormData.cgpa,
+      //cgpa: localFormData.cgpa,
       degreeCertificate: localFormData.degreeCertificate,
     };
     
@@ -434,7 +434,7 @@ const handleAddCollege = async (name) => {
                       
 
             {/* CGPA/Percentage */}
-            <div>
+            {/* <div>
               <label htmlFor="cgpa" className="block text-gray-700 font-medium text-sm mb-2">
                 Current CGPA/Percentage
               </label>
@@ -447,7 +447,7 @@ const handleAddCollege = async (name) => {
                 className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 placeholder-gray-400"
                 placeholder="Enter your CGPA or percentage"
               />
-            </div>
+            </div> */}
 
             {/* Degree Certificate */}
             <div>
