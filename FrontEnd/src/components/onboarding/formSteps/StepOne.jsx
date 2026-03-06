@@ -66,6 +66,7 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
         college: education.institution ?? "",
         degree: education.degree ?? "",
         specialization: education.field_of_study ?? "",
+        yearOfGraduation: education.year ?? "",
 
         skills: parsedData.skills ?? [],
 
