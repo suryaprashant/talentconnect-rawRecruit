@@ -300,7 +300,7 @@ const App = () => {
 
   return (
     <div
-      className="bg-white rounded-[14px] border border-border overflow-hidden flex flex-col group hover:-translate-y-1 transition-all duration-300 mx-auto w-full max-w-[420px]"
+      className="bg-white rounded-[14px] border border-border overflow-hidden flex flex-col group hover:-translate-y-1 transition-all duration-300 mx-auto w-full max-w-[420px] 2xl:max-w-[480px]"
       style={{ boxShadow: "var(--shadow-md)" }}
     >
       {/* Image */}
@@ -848,15 +848,7 @@ const ArrowRightIcon = () => (
         iconBg: "#FBEDF5",
         iconPath: "M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2zM17 21v-4H7v4M12 7v6M9 10h6"
       },
-      { 
-        id: "students", 
-        title: "Student Management", 
-        description: "Manage student profiles", 
-        image: f4,
-        iconColor: "#EE4499",
-        iconBg: "#FBEDF5",
-        iconPath: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
-      },
+     
       { 
         id: "companies", 
         title: "Company Relations", 
@@ -866,15 +858,7 @@ const ArrowRightIcon = () => (
         iconBg: "#FBEDF5",
         iconPath: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0"
       },
-      { 
-        id: "reports", 
-        title: "Placement Reports", 
-        description: "Track placement stats", 
-        image: f5,
-        iconColor: "#EE4499",
-        iconBg: "#FBEDF5",
-        iconPath: "M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2M3 21h18M12 7v10M8 7v10M16 7v10"
-      },
+      
       { 
         id: "message", 
         title: "Messaging", 
@@ -1317,7 +1301,7 @@ const ArrowRightIcon = () => (
     borderBottom: '1px solid rgba(225, 231, 239, 0.8)'
   }}
 >
-  <div className="container-xl h-full flex items-center justify-between px-16 md:px-18 lg:px-20">
+  <div className="container-xl max-w-[1400px] mx-auto h-full flex items-center justify-between px-16 md:px-18 lg:px-20 2xl:px-24">
     
     {/* Logo - With left spacing */}
     <button 
@@ -1418,7 +1402,7 @@ const ArrowRightIcon = () => (
     <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl"></div>
   </div>
 
-  <div className="max-w-7xl mx-auto px-6 pt-20 pb-24">
+  <div className="max-w-7xl 2xl:max-w-[1400px] mx-auto px-6 2xl:px-12 pt-20 pb-28 2xl:pt-28 2xl:pb-36">
     <div className="grid lg:grid-cols-2 gap-16 items-center">
 
       {/* ================= LEFT SIDE ================= */}
@@ -1430,7 +1414,7 @@ const ArrowRightIcon = () => (
         </p>
 
         {/* Heading */}
-        <h1 className="text-5xl md:text-5xl font-bold leading-tight mb-8">
+        <h1 className="text-5xl md:text-5xl 2xl:text-6xl font-bold leading-tight mb-8">
           <span className="text-[#0f172a]">
             The Operating System
           </span>
@@ -1441,7 +1425,7 @@ const ArrowRightIcon = () => (
         </h1>
 
         {/* Paragraph */}
-<p className="text-gray-600 text-lg leading-relaxed mb-4 max-w-[520px]">
+<p className="text-gray-600 text-lg 2xl:text-xl leading-relaxed mb-4 max-w-[520px] 2xl:max-w-[600px]">
   Connect Colleges, Companies, and Students in One Unified
   Recruitment Platform.
 </p>
@@ -1506,7 +1490,7 @@ const ArrowRightIcon = () => (
 
 
       {/* ================= RIGHT SIDE ================= */}
-      <div className="relative h-[550px] flex items-center justify-center">
+      <div className="relative h-[550px] 2xl:h-[680px] flex items-center justify-center">
 
   {/* H1 – Top Center */}
   <img
@@ -1694,7 +1678,7 @@ const ArrowRightIcon = () => (
 </div>
 
     {/* Dashboard Style Cards */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 2xl:gap-12 max-w-[1400px] mx-auto">
       {[
         {
           type: 'colleges',
@@ -1852,7 +1836,7 @@ const ArrowRightIcon = () => (
           </div>
 
           {/* Features Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 2xl:gap-8 max-w-7xl 2xl:max-w-[1400px] mx-auto">
 
             <div className="cursor-pointer" onClick={() => openFeatureModal("On-Campus Recruitment")}>
               <FeatureCard
@@ -2190,7 +2174,7 @@ const ArrowRightIcon = () => (
         {/* FOR COLLEGES - Square Cards on Left */}
         <div className="mb-20">
           <h3 className="text-2xl font-bold text-foreground mb-8 text-center">For Colleges</h3>
-          <div className="grid md:grid-cols-12 gap-6 items-start">
+          <div className="grid md:grid-cols-12 gap-6 items-center">
             {/* Left Half - Square Cards */}
             <div className="md:col-span-4">
               <div className="grid grid-cols-2 gap-3 h-full max-h-[450px]">
