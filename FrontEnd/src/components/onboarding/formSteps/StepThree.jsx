@@ -20,13 +20,12 @@ export const StepThree = ({
 }) => {
   // Initialize from formData.education[0] OR from top-level fields for backward compatibility
   const [localFormData, setLocalFormData] = useState({
-    college: formData.education?.[0]?.college || formData.college || "",
-    degree: formData.education?.[0]?.degree || formData.degree || "",
-    semester: formData.education?.[0]?.semester || formData.semester || "",
-    yearOfGraduation: formData.education?.[0]?.yearOfGraduation || formData.yearOfGraduation || "",
-    specialization: formData.education?.[0]?.specialization || formData.specialization || "",
-  //  cgpa: formData.education?.[0]?.cgpa || formData.cgpa || "",
-    degreeCertificate: formData.education?.[0]?.degreeCertificate || formData.degreeCertificate || null,
+    college: formData.college || "",
+    degree: formData.degree || "",
+    semester: formData.semester || "",
+    yearOfGraduation: formData.yearOfGraduation || "",
+    specialization: formData.specialization || "",
+    degreeCertificate: formData.degreeCertificate || null,
   });
 
   const [collegeSuggestions, setCollegeSuggestions] = useState([]);
@@ -99,6 +98,24 @@ const handleAddCollege = async (name) => {
   }, []);
 
   useEffect(() => {
+  if (!formData.degree || degreeOptions.length === 0) return;
+
+  const match = degreeOptions.find(
+    (d) => d.label.toLowerCase().replace(/\s|\./g, "") ===
+           formData.degree.toLowerCase().replace(/\s|\./g, "")
+  );
+
+  if (match) {
+    setSelectedDegreeId(match.value);
+
+    setLocalFormData(prev => ({
+      ...prev,
+      degree: match.label
+    }));
+  }
+}, [formData.degree, degreeOptions]);
+
+  useEffect(() => {
     if (!selectedDegreeId) {
       setStreamOptions([]);
       return;
@@ -123,7 +140,21 @@ const handleAddCollege = async (name) => {
   
     fetchStreams();
   }, [selectedDegreeId]);
+  useEffect(() => {
+  if (!formData.specialization || streamOptions.length === 0) return;
 
+  const match = streamOptions.find(
+    (s) =>
+      s.label.toLowerCase() === formData.specialization.toLowerCase()
+  );
+
+  if (match) {
+    setLocalFormData((prev) => ({
+      ...prev,
+      specialization: match.value,
+    }));
+  }
+}, [formData.specialization, streamOptions]);
   console.log("Degree:", localFormData.degree);
   
 
@@ -133,39 +164,52 @@ const handleAddCollege = async (name) => {
   const selectedRole = sessionStorage.getItem('candidateOnboardingSelectedRole');
   
   // Auto-suggest parsed values
+  // useEffect(() => {
+  //   const parsedCollege = formData.education?.[0]?.college || formData.college;
+  //   const parsedDegree = formData.education?.[0]?.degree || formData.degree;
+
+  //   let updates = {};
+
+  //   if (
+  //     parsedCollege &&
+  //     parsedCollege !== "Placeholder" &&
+  //     parsedCollege !== "Multiple-select"
+  //   ) {
+  //     const normalizedParsed = normalizeString(parsedCollege);
+  //     const suggestions = colleges
+  //       .map((c) => (typeof c === "string" ? c : c["College Name"] || ""))
+  //       .filter((name) => normalizeString(name).includes(normalizedParsed))
+  //       .slice(0, 10);
+
+  //     setCollegeSuggestions(suggestions);
+
+  //     if (suggestions.length > 0) {
+  //       updates.college = suggestions[0];
+  //     }
+  //   }
+
+  //   if (parsedDegree && parsedDegree !== "Placeholder") {
+  //     updates.degree = parsedDegree;
+  //   }
+
+  //   if (Object.keys(updates).length > 0) {
+  //     setLocalFormData((prev) => ({ ...prev, ...updates }));
+  //   }
+  // }, [formData.education, formData.college, formData.degree]);
   useEffect(() => {
-    const parsedCollege = formData.education?.[0]?.college || formData.college;
-    const parsedDegree = formData.education?.[0]?.degree || formData.degree;
-
-    let updates = {};
-
-    if (
-      parsedCollege &&
-      parsedCollege !== "Placeholder" &&
-      parsedCollege !== "Multiple-select"
-    ) {
-      const normalizedParsed = normalizeString(parsedCollege);
-      const suggestions = colleges
-        .map((c) => (typeof c === "string" ? c : c["College Name"] || ""))
-        .filter((name) => normalizeString(name).includes(normalizedParsed))
-        .slice(0, 10);
-
-      setCollegeSuggestions(suggestions);
-
-      if (suggestions.length > 0) {
-        updates.college = suggestions[0];
-      }
-    }
-
-    if (parsedDegree && parsedDegree !== "Placeholder") {
-      updates.degree = parsedDegree;
-    }
-
-    if (Object.keys(updates).length > 0) {
-      setLocalFormData((prev) => ({ ...prev, ...updates }));
-    }
-  }, [formData.education, formData.college, formData.degree]);
-
+    setLocalFormData(prev => ({
+      ...prev,
+      college: formData.college || prev.college,
+      degree: formData.degree || prev.degree,
+      specialization: formData.specialization || prev.specialization,
+      yearOfGraduation: formData.yearOfGraduation || prev.yearOfGraduation,
+    }));
+  }, [
+    formData.college,
+    formData.degree,
+    formData.specialization,
+    formData.yearOfGraduation
+  ]);
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setLocalFormData((prev) => ({
@@ -201,7 +245,16 @@ const handleAddCollege = async (name) => {
       degreeCertificate: localFormData.degreeCertificate,
     };
     
-    onChange(updatedFormData);
+    // onChange(updatedFormData);
+    onChange({
+      education: [educationData],
+      college: localFormData.college,
+      degree: localFormData.degree,
+      semester: localFormData.semester,
+      yearOfGraduation: localFormData.yearOfGraduation,
+      specialization: localFormData.specialization,
+      degreeCertificate: localFormData.degreeCertificate,
+    });
     onNext();
   };
 
@@ -291,9 +344,11 @@ const handleAddCollege = async (name) => {
                       isClearable
                       options={degreeOptions}
                       value={
-                        localFormData.degree
-                          ? { value: localFormData.degree, label: localFormData.degree }
-                          : null
+                        degreeOptions.find(
+                          (opt) =>
+                            opt.label.toLowerCase().replace(/\s|\./g, "") ===
+                            localFormData.degree?.toLowerCase().replace(/\s|\./g, "")
+                        ) || null
                       }
                       onChange={(sel) => {
                         setLocalFormData((p) => ({
@@ -373,7 +428,9 @@ const handleAddCollege = async (name) => {
                   options={degreeOptions}
                   menuPlacement="auto"
                   styles={customSelectStyles}
-                  value={localFormData.degree ? { value: localFormData.degree, label: localFormData.degree } : null}
+                  value={
+                    degreeOptions.find(opt => opt.label === localFormData.degree) || null
+                  }
                   onChange={(sel) => {
                     setLocalFormData((p) => ({
                       ...p,
@@ -395,9 +452,16 @@ const handleAddCollege = async (name) => {
               isClearable
               isDisabled={!localFormData.degree}
               options={streamOptions}
+              // value={
+              //   streamOptions.find(
+              //     (opt) => opt.value === localFormData.specialization
+              //   ) || null
+              // }
               value={
                 streamOptions.find(
-                  (opt) => opt.value === localFormData.specialization
+                  (opt) =>
+                    opt.value === localFormData.specialization ||
+                    opt.label === localFormData.specialization
                 ) || null
               }
               onChange={(sel) =>

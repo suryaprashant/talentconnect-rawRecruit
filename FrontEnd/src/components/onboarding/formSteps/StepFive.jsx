@@ -73,16 +73,23 @@ export const StepFive = ({ onNext, onBack, formData, onChange }) => {
   // Local state to manage the form efficiently
   const [metaData, setMetaData] = useState([]);
   const [localFormData, setLocalFormData] = useState({
-    skills: [],
-    certifications: "",
-    linkedin: "",
-    github: "",
-    portfolio: "",
-    project: null,
-    referralSource: "",
+    skills: formData.skills || [],
+    certifications: formData.certifications || "",
+    linkedin: formData.linkedin || "",
+    github: formData.github || "",
+    portfolio: formData.portfolio || "",
+    project: formData.project || null,
+    referralSource: formData.referralSource || "",
   });
   const [errors, setErrors] = useState({});
-
+useEffect(() => {
+  if (formData.skills?.length) {
+    setLocalFormData(prev => ({
+      ...prev,
+      skills: formData.skills
+    }));
+  }
+}, [formData.skills]);
   // This useEffect hook auto-populates the form with data from the resume
 // Replace your existing fetchMeta useEffect with this:
 useEffect(() => {
@@ -264,7 +271,8 @@ const handleAddNewSkill = async (newSkillName) => {
 
   // No errors → proceed
   setErrors({});
-  onChange({ ...formData, ...localFormData });
+  // onChange({ ...formData, ...localFormData });
+  onChange(localFormData);
   onNext();
 };
 

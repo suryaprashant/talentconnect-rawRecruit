@@ -169,11 +169,11 @@ export const uploadResume = async (req, res) => {
 
     console.log("✅ Parsed data stored in ParsedResume collection");
 
-    res.status(200).json({
-      success: true,
-      resumeUrl: cloudinaryResult.secure_url,
+    res.status(200).json(
+      // success: true,
+      // resumeUrl: cloudinaryResult.secure_url,
       parsedData
-    });
+    );
 
   } catch (err) {
 
