@@ -39,3 +39,7 @@ export function updateReferralApplicationStatus(applicationId, action) {
     action: action // Must be "Approved" or "Rejected"
   });
 }
+
+export function getApplicationForReferral(jobId){
+    return axiosClient.get(`/api/admin/dashboard/referral-applications?jobId=${jobId}`)
+}
