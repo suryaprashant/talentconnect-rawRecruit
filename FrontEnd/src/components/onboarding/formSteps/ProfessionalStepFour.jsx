@@ -4,29 +4,12 @@ import { ChevronDownIcon, UploadIcon, X } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { City } from 'country-state-city';
-
-
-const industryOptions = [
-  "Technology",
-  "Finance",
-  "Healthcare",
-  "Education",
-  "Manufacturing",
-  "E-commerce",
-  "Consulting",
-  "Retail",
-];
-
-const jobRoleOptions = [
-  "Software Developer",
-  "UI/UX Designer",
-  "Project Manager",
-  "Data Analyst",
-  "Marketing Specialist",
-  "DevOps Engineer",
-  "Solution Architect",
-  "Executive",
-];
+import CreatableSelect from 'react-select/creatable';
+import {
+  fetchAllCompaniesName,
+  getCompanyMasterDataByType,
+  createCompanyMasterData
+} from "@/lib/Company_AxiosInstance";
 
 const employmentTypeOptions = ["part time", "full time", "contract"];
 
@@ -69,20 +52,20 @@ export const ProfessionalStepFour = ({ onNext, onBack, formData, onChange }) => 
     const [indianCities, setIndianCities] = useState([]);
     const [locationSearch, setLocationSearch] = useState('');
 
+    // ─── Dynamic API state ─────────────────────────────────────────────────────
+    const [industryOptions,   setIndustryOptions]   = useState([]);
+    const [jobRoleOptions,    setJobRoleOptions]    = useState([]);
+    const [companyOptions,    setCompanyOptions]    = useState([]);
+    const [isLoadingMaster,   setIsLoadingMaster]   = useState(false);
+    const [isLoadingCompanies, setIsLoadingCompanies] = useState(false);
+
     const [dropdownOpen, setDropdownOpen] = useState({
-        industry: false,
-        jobRoles: false,
         locations: false,
-        currentCompany: false, 
-        currentRole: false,     
     });
 
-    const industryRef = useRef(null);
-    const jobRolesRef = useRef(null);
     const locationsRef = useRef(null);
-    
 
-    const dropdownRefs = { industry: industryRef, jobRoles: jobRolesRef, locations: locationsRef };
+    const dropdownRefs = { locations: locationsRef };
 
   
     useEffect(() => {
@@ -90,6 +73,49 @@ export const ProfessionalStepFour = ({ onNext, onBack, formData, onChange }) => 
             .map(city => city.name)
             .sort((a, b) => a.localeCompare(b));
         setIndianCities(citiesOfIndia);
+    }, []);
+
+    // ─── Fetch industry + job roles on mount ───────────────────────────────────
+    useEffect(() => {
+        const fetchMasterData = async () => {
+            setIsLoadingMaster(true);
+            try {
+                const [industryRes, jobRoleRes] = await Promise.all([
+                    getCompanyMasterDataByType("INDUSTRY_TYPE"),
+                    getCompanyMasterDataByType("JOB_ROLE"),
+                ]);
+                setIndustryOptions(
+                    industryRes.data.data.map(item => ({ value: item.value, label: item.value }))
+                );
+                setJobRoleOptions(
+                    jobRoleRes.data.data.map(item => ({ value: item.value, label: item.value }))
+                );
+            } catch (err) {
+                console.error("Error fetching master data", err);
+            } finally {
+                setIsLoadingMaster(false);
+            }
+        };
+        fetchMasterData();
+    }, []);
+
+    // ─── Fetch company names on mount ──────────────────────────────────────────
+    useEffect(() => {
+        const loadCompanies = async () => {
+            setIsLoadingCompanies(true);
+            try {
+                const response = await fetchAllCompaniesName();
+                const companyData = Array.isArray(response?.data)
+                    ? response.data
+                    : Array.isArray(response) ? response : [];
+                setCompanyOptions(companyData);
+            } catch (err) {
+                console.error("Failed to fetch company names", err);
+            } finally {
+                setIsLoadingCompanies(false);
+            }
+        };
+        loadCompanies();
     }, []);
 
     
@@ -285,21 +311,57 @@ export const ProfessionalStepFour = ({ onNext, onBack, formData, onChange }) => 
 
                 <form className="w-full text-base font-normal mt-8 max-md:max-w-full">
                     
-                    {/* Interested Industry Type (Multi-Select Dropdown) */}
-                    <MultiSelectDropdown 
-                        field="industry" 
-                        options={industryOptions} 
-                        label="Interested Industry Type" 
-                        ref={industryRef}
-                    />
+                    {/* Interested Industry Type */}
+                    <div className="w-full mt-6 max-md:max-w-full">
+                        <label className="block text-black mb-2">Interested Industry Type</label>
+                        <CreatableSelect
+                            isMulti
+                            isLoading={isLoadingMaster}
+                            options={industryOptions}
+                            value={(formData.industry || []).map(v => ({ value: v, label: v }))}
+                            placeholder="Select or add industry type(s)..."
+                            onChange={(selected) => {
+                                onChange({ ...formData, industry: (selected || []).map(s => s.value) });
+                            }}
+                            onCreateOption={async (inputValue) => {
+                                try {
+                                    const res = await createCompanyMasterData({ type: "INDUSTRY_TYPE", value: inputValue });
+                                    const savedValue = res.data.data.value;
+                                    const newOpt = { value: savedValue, label: savedValue };
+                                    setIndustryOptions(prev => [...prev, newOpt]);
+                                    onChange({ ...formData, industry: [...(formData.industry || []), savedValue] });
+                                } catch (err) {
+                                    console.error("Error creating industry", err);
+                                }
+                            }}
+                        />
+                    </div>
 
-                    {/* Interested Job Roles (Multi-Select Dropdown) */}
-                    <MultiSelectDropdown 
-                        field="jobRoles" 
-                        options={jobRoleOptions} 
-                        label="Interested Job Roles" 
-                        ref={jobRolesRef}
-                    />
+                    {/* Interested Job Roles */}
+                    <div className="w-full mt-6 max-md:max-w-full">
+                        <label className="block text-black mb-2">Interested Job Roles</label>
+                        <CreatableSelect
+                            isMulti
+                            isLoading={isLoadingMaster}
+                            options={jobRoleOptions}
+                            value={(formData.jobRoles || []).map(v => ({ value: v, label: v }))}
+                            placeholder="Select or add job role(s)..."
+                            onChange={(selected) => {
+                                onChange({ ...formData, jobRoles: (selected || []).map(s => s.value) });
+                            }}
+                            onCreateOption={async (inputValue) => {
+                                try {
+                                    const res = await createCompanyMasterData({ type: "JOB_ROLE", value: inputValue });
+                                    const savedValue = res.data.data.value;
+                                    const newOpt = { value: savedValue, label: savedValue };
+                                    setJobRoleOptions(prev => [...prev, newOpt]);
+                                    onChange({ ...formData, jobRoles: [...(formData.jobRoles || []), savedValue] });
+                                } catch (err) {
+                                    console.error("Error creating job role", err);
+                                }
+                            }}
+                        />
+                    </div>
 
                     {/* Preferred Job Locations (Multi-Select Dropdown with Search) */}
                     <MultiSelectDropdown 
@@ -375,21 +437,66 @@ export const ProfessionalStepFour = ({ onNext, onBack, formData, onChange }) => 
                                     
                                     <div className="mb-4">
                                         <label className="block text-black mb-1">Company</label>
-                                        <input 
-                                            value={experience.company || ''} 
-                                            onChange={(e) => handleExperienceChange(index, "company", e.target.value)} 
-                                            className="flex min-h-12 w-full p-3 border border-gray-300 rounded"
-                                            placeholder="e.g., Google"
+                                        <CreatableSelect
+                                            isLoading={isLoadingCompanies}
+                                            isClearable
+                                            options={companyOptions}
+                                            value={experience.company ? { value: experience.company, label: experience.company } : null}
+                                            placeholder="Select or type company name..."
+                                            onChange={(selected) => {
+                                                handleExperienceChange(index, "company", selected ? selected.value : "");
+                                            }}
+                                            onCreateOption={(inputValue) => {
+                                                // No API call needed — just store the typed name directly
+                                                const newOpt = { value: inputValue, label: inputValue };
+                                                setCompanyOptions(prev => [...prev, newOpt]);
+                                                handleExperienceChange(index, "company", inputValue);
+                                            }}
+                                            styles={{
+                                                control: (base, state) => ({
+                                                    ...base,
+                                                    minHeight: '48px',
+                                                    borderRadius: '4px',
+                                                    borderColor: state.isFocused ? '#000' : '#d1d5db',
+                                                    boxShadow: state.isFocused ? '0 0 0 1px #000' : 'none',
+                                                    '&:hover': { borderColor: '#000' },
+                                                }),
+                                                placeholder: (base) => ({ ...base, color: '#9ca3af' }),
+                                            }}
                                         />
                                     </div>
 
                                     <div className="mb-4">
                                         <label className="block text-black mb-1">Job Role</label>
-                                        <input 
-                                            value={experience.role || ''} 
-                                            onChange={(e) => handleExperienceChange(index, "role", e.target.value)} 
-                                            className="flex min-h-12 w-full p-3 border border-gray-300 rounded"
+                                        <CreatableSelect
+                                            options={jobRoleOptions}
+                                            value={experience.role ? { value: experience.role, label: experience.role } : null}
                                             placeholder="e.g., Software Engineer"
+                                            isClearable
+                                            onChange={(selected) => {
+                                                handleExperienceChange(index, "role", selected ? selected.value : "");
+                                            }}
+                                            onCreateOption={async (inputValue) => {
+                                                try {
+                                                    const res = await createCompanyMasterData({ type: "JOB_ROLE", value: inputValue });
+                                                    const savedValue = res.data.data.value;
+                                                    setJobRoleOptions(prev => [...prev, { value: savedValue, label: savedValue }]);
+                                                    handleExperienceChange(index, "role", savedValue);
+                                                } catch (err) {
+                                                    console.error("Error creating job role", err);
+                                                }
+                                            }}
+                                            styles={{
+                                                control: (base, state) => ({
+                                                    ...base,
+                                                    minHeight: '48px',
+                                                    borderRadius: '4px',
+                                                    borderColor: state.isFocused ? '#000' : '#d1d5db',
+                                                    boxShadow: state.isFocused ? '0 0 0 1px #000' : 'none',
+                                                    '&:hover': { borderColor: '#000' },
+                                                }),
+                                                placeholder: (base) => ({ ...base, color: '#9ca3af' }),
+                                            }}
                                         />
                                     </div>
 
