@@ -1,3 +1,4 @@
+import { fetchReferralApplicationsService } from "../services/adminService.js";
 import { countApplicationsService } from "../services/applicationService.js";
 import { getCollegeService } from "../services/collegeService.js";
 import { getCompanyService, getEmployerService } from "../services/companyService.js";
@@ -78,8 +79,8 @@ export const deleteJob = async (req, res) => {
 
         res.status(400).json("Bad request!")
     } catch (error) {
-        console.log("Error: ", error);
-        res.status(500).json({ msg: "Internal server error!" });
+        console.error("Delete Job Controller Error:", error);
+        res.status(500).json({ msg: error.message || "Internal server error" });
     }
 }
 
@@ -121,3 +122,38 @@ export const getEmployerJobs = async (req, res) => {
         res.status(500).json({ msg: "Internal server error!" });
     }
 }
+
+export const getReferralApplicationsForProfessional = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // 1️⃣ Get professional profile
+    const professional = await getStudentService(userId);
+
+    if (!professional || !professional.data?.length) {
+      return res.status(404).json({
+        success: false,
+        message: "Professional profile not found",
+      });
+    }
+
+    const professionalProfileId = professional.data[0]._id;
+
+    // 2️⃣ Fetch ONLY admin-approved applications for this professional’s jobs
+    const response = await fetchReferralApplicationsService({
+      professionalProfileId,
+      adminApprovalStatus: "Approved",
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: response.data,
+    });
+  } catch (error) {
+    console.error("❌ getReferralApplicationsForProfessional:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch applications",
+    });
+  }
+};

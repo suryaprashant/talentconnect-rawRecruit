@@ -1,4 +1,6 @@
 import pdfParse from 'pdf-parse';
+import axios from "axios";
+import FormData from "form-data";
 
 // --- All of your parsing helper functions belong in this file ---
 
@@ -361,7 +363,7 @@ const extractCertifications = (text) => {
 
 
 // --- This is the main service function that brings it all together ---
-export const parseResume = async (resumeBuffer) => {
+{/*export const parseResume = async (resumeBuffer) => {
   try {
     const data = await pdfParse(resumeBuffer);
     const resumeText = data.text;
@@ -382,5 +384,46 @@ export const parseResume = async (resumeBuffer) => {
   } catch (error) {
     console.error("Error in resume parsing service:", error);
     throw new Error("Failed to parse PDF buffer.");
+  }
+};*/}
+
+
+
+export const parseResumeWithPython = async (fileBuffer, fileName) => {
+  const MAX_RETRIES = 2;
+
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+  try {
+
+    const formData = new FormData();
+
+    formData.append("file", fileBuffer, fileName);
+
+    const response = await axios.post(
+      "http://31.97.232.215:10000/api/resume/parse",
+      formData,
+      {
+        headers: {
+          ...formData.getHeaders(),
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        timeout: 120000
+      }
+    );
+
+    return response.data;
+
+  } catch (error) {
+
+    console.error(
+      "❌ Python Parser Error:",
+      error?.response?.data || error.message
+    );
+
+     if (attempt === MAX_RETRIES) {
+        throw new Error("Resume parsing failed");
+      }
+    }
   }
 };

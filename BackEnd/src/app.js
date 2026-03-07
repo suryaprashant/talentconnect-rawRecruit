@@ -117,6 +117,8 @@ import interviewRoutes from "./routes/interviewRoutes.js";
 import metaRoutes from "./routes/metaRoutes.js"
 import { seedDB } from "./scripts/metaScript.js";
 import collegeRoutes from './routes/collegeNameRoute.js';
+import companyRoute from "./routes/companyRoute.js"
+import CustomDropDown from "./routes/CustomDropDown.js"
 app.use("/api/auth", authRoutes);
 
 app.use('/api/colleges', collegeRoutes);
@@ -129,7 +131,7 @@ app.use("/api/admin/job-n-drive", jobDriveManagement);
 app.use("/api/admin/application", applicationManagement);
 app.use("/api/admin/servicerequest", serviceRequestManagement);
 
-app.use('/api/meta', metaRoutes);
+app.use("/api/meta", CustomDropDown);
 // admin relatd auth ends
 
 app.use("/api", student_onboardingroutes);
@@ -177,6 +179,7 @@ app.use('/api/hosting-management', hackathonHostingRoute);
 app.use('/api/hosting-management', casestudyHostingRoute);
 app.use('/api/hosting-management', workshopHostingRoute);
 app.use('/api/servicerequests', serviceRequests);
+app.use("/api/company-master-data", companyRoute);
 
 // RawRecruit API Mounts
 app.use("/api/rawrecruit", [
@@ -214,6 +217,7 @@ app.use("/api/rawrecruit", [
 app.use("/api/rawrecruit/resume", uploadResumeRoute);
 app.use("/rawrecruit/link", basicdetails);
 app.use("/api/resumes", resumeRoutes);
+app.use("api/meta",CustomDropDown)
 
 // app.use("/rawrecruit", jobinterest);
 

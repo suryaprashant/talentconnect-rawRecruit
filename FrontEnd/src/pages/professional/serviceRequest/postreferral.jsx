@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from "@/components/dashboard/PageHeader";
-import { postReferralJob } from '@/lib/User_AxiosInstance'; // Using the original API function
+import { postReferralJob ,getSkills, addSkill ,getMasterDataByType,createMasterData} from '@/lib/User_AxiosInstance'; // Using the original API function
 import { ChevronDown, X } from 'lucide-react';
+
 import toast from 'react-hot-toast';
 import { City } from 'country-state-city';
 
@@ -34,7 +35,7 @@ function PostReferralJobPage() {
         tags: [],
         broadcastType: 'Everyone',
     };
-
+const degreesDropdownRef = useRef(null);
     const [formData, setFormData] = useState(initialState);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -45,6 +46,7 @@ function PostReferralJobPage() {
         benefits: false,
         studentStreams: false,
         tags: false,
+        degree: false,
     });
 
     const [skillInput, setSkillInput] = useState('');
@@ -74,7 +76,7 @@ function PostReferralJobPage() {
     const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
     // --- Filtered Dropdown Lists from CreateJob ---
-    const filteredSkills = allSkills.filter(skill => skill.toLowerCase().includes(skillInput.toLowerCase()));
+   // const filteredSkills = allSkills.filter(skill => skill.toLowerCase().includes(skillInput.toLowerCase()));
     const filteredCertifications = allCertifications.filter(cert => cert.toLowerCase().includes(certificationInput.toLowerCase()));
     const filteredBenefits = allBenefits.filter(benefit => benefit.toLowerCase().includes(benefitInput.toLowerCase()));
     const filteredStudentStreams = fieldOfStudyOptions.filter(stream => stream.toLowerCase().includes(studentStreamInput.toLowerCase()));
@@ -82,6 +84,84 @@ function PostReferralJobPage() {
         city.name.toLowerCase().includes(locationSearch.toLowerCase())
     );
 
+    // Add 'fetchedSkills' to your state declarations
+const [fetchedSkills, setFetchedSkills] = useState([]);
+
+// Fetch skills from your API
+useEffect(() => {
+  const fetchSkills = async () => {
+    try {
+      const response = await getSkills();
+      setFetchedSkills(response.data.map(s => s.skills));
+    } catch (error) {
+      console.error("Error loading skills:", error);
+    }
+  };
+
+  fetchSkills();
+}, []);
+
+// 1. Add new state variables
+const [fetchedDegrees, setFetchedDegrees] = useState([]);
+const [fetchedStreams, setFetchedStreams] = useState([]);
+const [degreeInput, setDegreeInput] = useState('');
+// (studentStreamInput is already in your code)
+
+// 2. Fetch Degrees on Mount
+useEffect(() => {
+  const fetchDegrees = async () => {
+    try {
+      const response = await getMasterDataByType("DEGREE");
+      // Safety: Extract the array regardless of how your backend wraps it
+      const data = response?.data?.data || response?.data || [];
+      setFetchedDegrees(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error loading degrees:", error);
+      setFetchedDegrees([]); 
+    }
+  };
+  fetchDegrees();
+}, []);
+
+// Look for where you call getMasterDataByType
+useEffect(() => {
+    const fetchStreams = async () => {
+        // 1. Find the degree object that matches the selected value
+        const selectedDegreeObj = fetchedDegrees.find(
+            (d) => d.value === formData.minEducation
+        );
+
+        // 2. ONLY call the API if we have a valid _id
+        if (selectedDegreeObj?._id) {
+            try {
+                // PASS THE _id, NOT THE TEXT VALUE
+                const response = await getMasterDataByType("STREAM", selectedDegreeObj._id);
+                const data = response?.data?.data || [];
+                setFetchedStreams(data);
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        } else {
+            // Clear streams if no degree is selected
+            setFetchedStreams([]);
+        }
+    };
+    
+    fetchStreams();
+}, [formData.minEducation, fetchedDegrees]);
+
+// 4. Filtered Lists with Null-Safety (The "|| []" prevents the crash)
+const filteredDegrees = (fetchedDegrees || []).filter(d => 
+  d?.value?.toLowerCase().includes(degreeInput.toLowerCase())
+);
+
+const filteredStreamsFromDB = (fetchedStreams || []).filter(s => 
+  s?.value?.toLowerCase().includes(studentStreamInput.toLowerCase())
+);
+// Update your filteredSkills to use the dynamic state
+const filteredSkills = fetchedSkills.filter(skill => 
+    skill.toLowerCase().includes(skillInput.toLowerCase())
+);
     // --- useEffect Hooks from CreateJob ---
     useEffect(() => {
         // Fetches cities of India and sorts them alphabetically
@@ -89,26 +169,27 @@ function PostReferralJobPage() {
         setIndianCities(cities);
     }, []);
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            const dropdownRefs = {
-                skills: skillsDropdownRef,
-                certifications: certificationsDropdownRef,
-                locations: locationsDropdownRef,
-                benefits: benefitsDropdownRef,
-                studentStreams: studentStreamsDropdownRef,
-                tags: tagsDropdownRef
-            };
-
-            for (const key in dropdownRefs) {
-                if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
-                    setDropdownOpen(prev => ({ ...prev, [key]: false }));
-                }
-            }
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+        const dropdownRefs = {
+            skills: skillsDropdownRef,
+            certifications: certificationsDropdownRef,
+            locations: locationsDropdownRef,
+            benefits: benefitsDropdownRef,
+            studentStreams: studentStreamsDropdownRef,
+            tags: tagsDropdownRef,
+            degree: degreesDropdownRef // <--- Add this mapping
         };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => { document.removeEventListener('mousedown', handleClickOutside); };
-    }, []);
+
+        for (const key in dropdownRefs) {
+            if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
+                setDropdownOpen(prev => ({ ...prev, [key]: false }));
+            }
+        }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => { document.removeEventListener('mousedown', handleClickOutside); };
+}, []);
 
     // --- Generic Handlers from CreateJob ---
     const handleInputChange = (e) => {
@@ -155,14 +236,51 @@ function PostReferralJobPage() {
         }));
     };
 
-    const handleItemInputKeyDown = (e, field, input, setInput) => {
-        if (e.key === 'Enter' && input.trim()) {
-            e.preventDefault();
-            addItem(field, input.trim());
+const handleItemInputKeyDown = async (e, field, input, setInput) => {
+    if (e.key === 'Enter' && input.trim()) {
+        e.preventDefault();
+        const newValue = input.trim();
+
+        // Handle Degree (Single Select)
+        if (field === 'minEducation') {
+            if (!fetchedDegrees.find(d => d.value.toLowerCase() === newValue.toLowerCase())) {
+                try {
+                    const res = await createMasterData({ type: 'DEGREE', value: newValue });
+                    setFetchedDegrees(prev => [...prev, res.data]);
+                } catch (err) { console.error("Failed to save degree", err); }
+            }
+            handleOptionSelect('minEducation', newValue);
+            setInput('');
+            setDropdownOpen(prev => ({ ...prev, degree: false }));
+        }
+
+        // Handle Stream (Multi Select)
+        else if (field === 'studentStreams') {
+            const exists = fetchedStreams.find(s => s.value.toLowerCase() === newValue.toLowerCase());
+            if (!exists) {
+                try {
+                    const selectedDegree = fetchedDegrees.find(d => d.value === formData.minEducation);
+                    const res = await createMasterData({ 
+                        type: 'STREAM', 
+                        value: newValue, 
+                        parent: selectedDegree?.id 
+                    });
+                    // Extract data based on your API response structure
+                    const newStream = res.data?.data || res.data;
+                    setFetchedStreams(prev => [...prev, newStream]);
+                } catch (err) { console.error("Failed to save stream", err); }
+            }
+            addItem('studentStreams', newValue);
             setInput('');
         }
-    };
-
+        
+        // Handle Skills, Certs, Benefits (The missing part)
+        else {
+            addItem(field, newValue);
+            setInput('');
+        }
+    }
+};
     const handleSelectItem = (field, item, setInput, dropdownKey) => {
         addItem(field, item);
         if (setInput) setInput('');
@@ -235,12 +353,12 @@ function PostReferralJobPage() {
     return (
         <div className="container mx-auto px-4 py-6">
             <PageHeader title="Post a Referral Job" />
-            <p className="text-gray-600 mb-8">Effortlessly Connect with Qualified Candidates and Build Your Dream Team</p>
+            <p className="text-gray-600 mb-8">Effortlessly Connect with Qualified Candidates and Build Your Dream Teams</p>
 
             {/* Form content from CreateJob */}
             <div className="max-w-3xl mx-auto">
                 <div className="bg-white border border-gray-200 rounded-md p-6 mb-6">
-                    <h2 className="text-lg font-bold mb-1">Basic Job Details</h2>
+                    <h2 className="text-lg font-bold mb-1">Basic Job Details </h2>
                     <p className="text-sm text-gray-600 mb-4">Provide the core details about this job opportunity.</p>
 
                     <div className="mb-4">
@@ -429,19 +547,89 @@ function PostReferralJobPage() {
                         <textarea id="eligibilityCriteria" name="eligibilityCriteria" placeholder="e.g., Minimum 3.0 GPA, Must be eligible to work in the specified location..." className="w-full p-2 border border-gray-300 rounded-md h-24 focus:ring-2 focus:ring-black" value={formData.eligibilityCriteria} onChange={handleInputChange}></textarea>
                     </div>
 
-                    <div className="mb-4">
-                        <label htmlFor="minEducation" className="block text-sm font-medium mb-2">Minimum Education</label>
-                        <div className="relative">
-                            <select id="minEducation" name="minEducation" className="w-full p-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:ring-2 focus:ring-black" value={formData.minEducation} onChange={handleInputChange}>
-                                <option value="">Select education level</option>
-                                {educationOptions.map((option, index) => (<option key={index} value={option}>{option}</option>))}
-                            </select>
-                            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-                        </div>
-                    </div>
+                    {/* --- Degree (Minimum Education) Searchable Select --- */}
+<div className="mb-4 relative" ref={degreesDropdownRef}>
+    <label className="block text-sm font-medium mb-2">Minimum Education</label>
+    <div 
+        className="flex items-center justify-between p-2 border border-gray-300 rounded-md cursor-pointer"
+        onClick={() => setDropdownOpen(prev => ({ ...prev, degree: !prev.degree }))}
+    >
+        <input 
+            type="text"
+            className="outline-none w-full cursor-pointer"
+            placeholder="Search or type new Degree..."
+            value={dropdownOpen.degree ? degreeInput : (formData.minEducation || "Select Education")}
+            onChange={(e) => setDegreeInput(e.target.value)}
+            onKeyDown={(e) => handleItemInputKeyDown(e, 'minEducation', degreeInput, setDegreeInput)}
+            onClick={(e) => e.stopPropagation()}
+        />
+        <ChevronDown size={16} className="text-gray-400" />
+    </div>
+    {dropdownOpen.degree && (
+        <div className="absolute z-30 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+            {filteredDegrees.map((deg) => (
+                <div 
+                    key={deg.id} 
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                        handleOptionSelect('minEducation', deg.value);
+                        setDegreeInput('');
+                        setDropdownOpen(prev => ({ ...prev, degree: false }));
+                    }}
+                >
+                    {deg.value}
+                </div>
+            ))}
+            {degreeInput && !filteredDegrees.some(d => d.value.toLowerCase() === degreeInput.toLowerCase()) && (
+                <div className="px-4 py-2 text-blue-600 font-medium border-t">Press Enter to add "{degreeInput}"</div>
+            )}
+        </div>
+    )}
+</div>
+
+{/* --- Preferred Field of Study (Streams) Multi-Select --- */}
+<div className="mb-4 relative" ref={studentStreamsDropdownRef}>
+    <label className="block text-sm font-medium mb-2">Preferred Field of Study (Streams)</label>
+    <div className={`relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black ${!formData.minEducation ? 'bg-gray-50 opacity-60 cursor-not-allowed' : ''}`}>
+        <div className="flex flex-wrap gap-2 mb-1">
+            {formData.studentStreams.map((stream, index) => (
+                <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
+                    <span>{stream}</span>
+                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={() => removeItem('studentStreams', stream)}><X size={14} /></button>
+                </div>
+            ))}
+        </div>
+        <input 
+            type="text" 
+            disabled={!formData.minEducation}
+            placeholder={formData.minEducation ? "Type a stream..." : "Select education first"} 
+            className="w-full outline-none bg-transparent" 
+            value={studentStreamInput} 
+            onChange={(e) => setStudentStreamInput(e.target.value)}
+            onFocus={() => setDropdownOpen(prev => ({ ...prev, studentStreams: true }))}
+            onKeyDown={(e) => handleItemInputKeyDown(e, 'studentStreams', studentStreamInput, setStudentStreamInput)} 
+        />
+    </div>
+    {dropdownOpen.studentStreams && formData.minEducation && (
+        <div className="absolute z-20 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+            {filteredStreamsFromDB.map((stream) => (
+                <div 
+                    key={stream.id} 
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer" 
+                    onClick={() => handleSelectItem('studentStreams', stream.value, setStudentStreamInput, 'studentStreams')}
+                >
+                    {stream.value}
+                </div>
+            ))}
+            {studentStreamInput && !filteredStreamsFromDB.some(s => s.value.toLowerCase() === studentStreamInput.toLowerCase()) && (
+                <div className="px-4 py-2 text-blue-600 font-medium border-t">Press Enter to add "{studentStreamInput}"</div>
+            )}
+        </div>
+    )}
+</div>
 
                     {/* Preferred Field of Study Multi-Select */}
-                    <div className="mb-4" ref={studentStreamsDropdownRef}>
+                    {/* <div className="mb-4" ref={studentStreamsDropdownRef}>
                         <label className="block text-sm font-medium mb-2">Preferred Field of Study</label>
                         <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({ ...prev, studentStreams: true }))}>
                             <div className="flex flex-wrap gap-2 mb-2">
@@ -461,7 +649,7 @@ function PostReferralJobPage() {
                                 ))}
                             </div>
                         )}
-                    </div>
+                    </div> */}
 
                     <div className="mb-4">
                         <label htmlFor="yearsOfExperience" className="block text-sm font-medium mb-2">Years of Experience</label>

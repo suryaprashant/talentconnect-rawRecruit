@@ -352,33 +352,45 @@ const resolveJobTypeRoute = (jobType) => {
 };
 
 // Function to get organization name (same logic as UnifiedJobDetail)
+// const getOrganizationName = (job) => {
+//   const jobData = job?.job;
+  
+//   // 1. Company-posted jobs
+//   if (jobData?.companyPosted?.companyDetails?.companyName) {
+//     return jobData.companyPosted.companyDetails.companyName;
+//   }
+  
+//   // 2. College-posted jobs
+//   else if (jobData?.collegePosted?.collegeUniversityDetails?.collegeName) {
+//     return jobData.collegePosted.collegeUniversityDetails.collegeName;
+//   }
+  
+//   // 3. Employer-posted jobs
+//   else if (jobData?.postedBy === 'employer' && jobData?.employerDetails?.companyName) {
+//     return jobData.employerDetails.companyName;
+//   }
+  
+//   // 4. Direct fields
+//   else if (jobData?.companyName) {
+//     return jobData.companyName;
+//   } 
+//   else if (jobData?.collegeName) {
+//     return jobData.collegeName;
+//   }
+  
+//   return "Not Specified";
+// };
 const getOrganizationName = (job) => {
-  const jobData = job?.job;
-  
-  // 1. Company-posted jobs
-  if (jobData?.companyPosted?.companyDetails?.companyName) {
-    return jobData.companyPosted.companyDetails.companyName;
-  }
-  
-  // 2. College-posted jobs
-  else if (jobData?.collegePosted?.collegeUniversityDetails?.collegeName) {
-    return jobData.collegePosted.collegeUniversityDetails.collegeName;
-  }
-  
-  // 3. Employer-posted jobs
-  else if (jobData?.postedBy === 'employer' && jobData?.employerDetails?.companyName) {
-    return jobData.employerDetails.companyName;
-  }
-  
-  // 4. Direct fields
-  else if (jobData?.companyName) {
-    return jobData.companyName;
-  } 
-  else if (jobData?.collegeName) {
-    return jobData.collegeName;
-  }
-  
-  return "Not Specified";
+  const jobData = job?.job || job; // Handle both wrapped and flat objects
+
+  return (
+    jobData?.companyPosted?.companyDetails?.companyName ||
+    jobData?.employerDetails?.companyName || // Check employer specific details
+    jobData?.collegePosted?.collegeUniversityDetails?.collegeName ||
+    jobData?.companyName || // Fallback for direct field
+    jobData?.jobTitle || // Last resort fallback
+    "Company Not Specified"
+  );
 };
 
 // Function to get organization logo (same logic as UnifiedJobDetail)
@@ -676,11 +688,13 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
                             </svg>
                             Start Date
                           </div>
-                          <div className="font-medium">
-                            {job?.job?.startDate
-                              ? new Date(job.job.startDate).toLocaleDateString()
-                              : "N/A"}
-                          </div>
+                        <div className="font-medium">
+    {job?.job?.startDate 
+      ? new Date(job.job.startDate).toLocaleDateString() 
+      : job?.job?.createdAt 
+        ? new Date(job.job.createdAt).toLocaleDateString() // Fallback to posting date
+        : "Immediate"} 
+  </div>
                         </div>
 
                         <div>
@@ -691,10 +705,12 @@ const JobList = ({ jobs: initialJobs, onRefresh }) => {
                             End Date
                           </div>
                           <div className="font-medium">
-                            {job?.job?.endDate
-                              ? new Date(job.job.endDate).toLocaleDateString()
-                              : "N/A"}
-                          </div>
+    {job?.job?.endDate 
+      ? new Date(job.job.endDate).toLocaleDateString() 
+      : job?.job?.applicationDeadline // Check if it's named 'applicationDeadline'
+        ? new Date(job.job.applicationDeadline).toLocaleDateString()
+        : "Not Specified"}
+  </div>
                         </div>
                       </div>
                     </div>

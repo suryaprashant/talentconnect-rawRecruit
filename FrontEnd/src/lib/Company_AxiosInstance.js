@@ -732,3 +732,17 @@ export function getAcceptedCandidates() {
       return { data: { success: false, data: [] } };
     });
 }
+
+export function getCompanyMasterDataByType(type) {
+  return axiosClient.get("/api/company-master-data", {
+    params: { type },
+  });
+}
+
+export function createCompanyMasterData(payload) {
+  return axiosClient.post("/api/company-master-data", {
+    type: payload.type,
+    value: payload.value,
+    parent: payload.parent || null,
+  });
+}

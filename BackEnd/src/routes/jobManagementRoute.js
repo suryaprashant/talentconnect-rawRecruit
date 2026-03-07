@@ -1,5 +1,5 @@
 import express from 'express';
-import { deleteJob, getEmployerJobs, getPostedJobs } from '../controllers/jobManagementController.js';
+import { deleteJob, getEmployerJobs, getPostedJobs, getReferralApplicationsForProfessional } from '../controllers/jobManagementController.js';
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
 // import { getCollegePostedJobs } from '../controllers/collegeJobManagementController.js';
 
@@ -14,6 +14,13 @@ router.get('/', secureRoute, getPostedJobs);
 
 router.get('/employer/:jobType', secureRoute, getEmployerJobs);
 // router.get('/offcampus/applications/:jobId', secureRoute, getOffcampusJobApplicants);
+// routes/professional/referralApplicationsRoute.js
+router.get(
+  "/professional/referral-applications",
+  secureRoute,              // ensures logged-in
+  getReferralApplicationsForProfessional
+);
+
 
 // get applications
 // router.get('offcampus/applications:id')

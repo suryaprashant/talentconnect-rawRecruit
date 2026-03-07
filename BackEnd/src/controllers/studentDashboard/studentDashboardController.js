@@ -1,19 +1,56 @@
 import { getJobPostingsByCollegeService, getJobPostingsByJobTypeService, getJobPostingsByJobTypeWithLocationBasedService, getReferralJobsService } from "../../services/jobPostingService.js";
 import CompanyProfile from "../../models/companyDashboard/companyProfileModel.js";
-import { JobPostingTable } from "../../models/jobPostingsModel.js";
+import { JobPostingTable  } from "../../models/jobPostingsModel.js";
 import OnboardingModel from "../../models/studentonboardingModel.js";
 import { getStudentService } from "../../services/studentService.js";
 import { getCompanyService, getEmployerService } from "../../services/companyService.js";
 import Application from "../../models/applicationModel.js";
 import { getCollegeService } from "../../services/collegeService.js";
 import Auth from "../../models/authModel.js";
-
-
+import {getProfessionalReferralsService} from "../../services/jobPostingService.js"
+import mongoose from "mongoose";
 
 const sendResponse = (res, statusCode, data) => res.status(statusCode).json(data);
 const sendError = (res, statusCode, message) => res.status(statusCode).json({ message });
 
+export const getProfessionalReferrals = async (req, res) => {
+console.log(">>> API Request Received <<<");
+    try {
+        const authUserId = req.user._id;
+        console.log("1. Auth User ID:", authUserId);
 
+        // Step 1: Directly find the student profile in the DB
+        const studentProfile = await OnboardingModel.findOne({ 
+            userId: new mongoose.Types.ObjectId(authUserId) 
+        }).lean();
+
+        if (!studentProfile) {
+            console.log("2. ❌ No student profile found for this Auth ID");
+            return res.status(404).json({ message: "Student profile not found" });
+        }
+
+        const profileId = studentProfile._id;
+        console.log("2. ✅ Found Student Profile ID:", profileId);
+
+        // Step 2: Directly find the jobs matching that profile ID
+        const referrals = await JobPostingTable.find({
+            candidatePosted: profileId,
+            jobType: "Referral"
+        }).sort({ createdAt: -1 }).lean();
+
+        console.log(`3. 📊 Referrals Found: ${referrals.length}`);
+
+        return res.status(200).json({
+            success: true,
+            count: referrals.length,
+            data: referrals
+        });
+
+    } catch (error) {
+        console.error("4. ❌ Error:", error.message);
+        return res.status(500).json({ success: false, error: error.message });
+    }
+};
 
 export const getOffCampusPostings = async (req, res) => {
     const userId = req.user._id;

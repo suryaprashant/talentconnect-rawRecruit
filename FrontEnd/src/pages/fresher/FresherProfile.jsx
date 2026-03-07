@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Button from '@/components/ui/Button';
 import Avatar from '@/components/ui/Avatar';
 import Badge from '@/components/ui/Badge';
-import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown, FiTrash2, FiEdit2, FiSave } from 'react-icons/fi';
+//import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown, FiTrash2, FiEdit2, FiSave } from 'react-icons/fi';
+import { FiLinkedin, FiGithub, FiGlobe, FiPlus, FiUploadCloud, FiChevronDown, FiTrash2, FiEdit2, FiSave, FiCalendar } from 'react-icons/fi';
 import axios from 'axios';
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
@@ -1223,7 +1224,7 @@ function Fresher_Profile() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
                   {isProfileEditing ? (
                     <div className="relative">
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 border-black text-gray-400" />
+                            <FiCalendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <DatePicker
                               selected={profileData.dob ? new Date(profileData.dob) : null}
                               onChange={(date) =>

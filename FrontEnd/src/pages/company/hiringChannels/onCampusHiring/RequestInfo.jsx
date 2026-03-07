@@ -6,9 +6,11 @@ import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import { getMasterDataByType, createMasterData } from "../../../../lib/User_AxiosInstance";
+import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
 
 export default function RequestInfo() {
-  const degreeStreamMapping = {
+  {/*const degreeStreamMapping = {
     'B.E': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'],
     'B.Tech': ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Information Technology', 'Electronics & Communication', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering', 'Data Science'],
     'M.Tech': ['Computer Science', 'Data Science', 'AI & Machine Learning', 'Cyber Security', 'VLSI Design', 'Structural Engineering'],
@@ -22,17 +24,17 @@ export default function RequestInfo() {
     'M.A': ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology'],
     'PhD': ['All Specializations'],
     'Postgraduate Diploma': ['Varies by Specialization'],
-  };
+  };*/}
 
-  const degreeOptions = Object.keys(degreeStreamMapping).sort();
+  //const degreeOptions = Object.keys(degreeStreamMapping).sort();
   
   const collegeCategoryOptions = ['Tier 1', 'Tier 2', 'Tier 3', 'Autonomous', 'All Colleges'];
   const preferredModeOptions = ['Online', 'Offline', 'Hybrid', 'Online Aptitude and Physical Interview'];
-  const jobRoleOptions = ['Software Engineer', 'Data Analyst', 'DevOps Engineer', 'UX/UI Designer', 'Product Manager', 'QA Engineer', 'System Administrator', 'Network Engineer', 'Business Analyst', 'Machine Learning Engineer'];
+  //const jobRoleOptions = ['Software Engineer', 'Data Analyst', 'DevOps Engineer', 'UX/UI Designer', 'Product Manager', 'QA Engineer', 'System Administrator', 'Network Engineer', 'Business Analyst', 'Machine Learning Engineer'];
   const skillsOptions = ['JavaScript', 'Python', 'Java', 'React', 'Node.js', 'HTML/CSS', 'SQL', 'MongoDB', 'AWS', 'Docker', 'Kubernetes', 'Machine Learning', 'Data Structures', 'Algorithms', 'Git', 'REST APIs'];
   const roundsOptions = ['1 Round', '2 Rounds', '3 Rounds', '4 Rounds', '5 Rounds', '6 Rounds', '7+ Rounds'];
   const processOptions = ['Online Test', 'Coding Test', 'Aptitude Test', 'Group Discussion', 'Technical Interview', 'HR Interview', 'Case Study', 'Presentation'].sort((a, b) => a.localeCompare(b));
-  const designationOptions = ['HR Manager', 'Talent Acquisition Specialist', 'Recruitment Lead', 'Campus Relations Manager', 'Technical Recruiter'];
+  //const designationOptions = ['HR Manager', 'Talent Acquisition Specialist', 'Recruitment Lead', 'Campus Relations Manager', 'Technical Recruiter'];
   const minStudentsOptions = ['1-5 students', '6-10 students', '11-20 students', '21-50 students', '51-100 students', '100+ students'];
   const amenitiesOptions = ['Projector', 'Auditorium', 'Interview Rooms', 'Wi-Fi Access', 'Refreshments', 'Parking'];
   const benefitsOptions = ['Health Insurance', 'Provident Fund (PF)', 'Paid Time Off (PTO)', 'Work from Home', 'Performance Bonus', 'Stock Options'];
@@ -99,6 +101,76 @@ export default function RequestInfo() {
       return initialData;
     }
   });
+const [metaData, setMetaData] = useState([]); // Stores global skills from DB
+  const [customSkillSearch, setCustomSkillSearch] = useState(""); 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+ 
+  useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta/get-skills`);
+        // Map the objects [{skills: "React"}] to a simple array of strings ["React"]
+        const skillNames = data.map(item => item.skills);
+        setMetaData(skillNames);
+      } catch (err) {
+        console.error("Error loading skills from database", err);
+      }
+    };
+    fetchSkills();
+  }, []);
+
+  // Filter global skills based on search text
+  const filteredSkillOptions = useMemo(() => {
+    return Array.isArray(metaData) ? metaData.sort() : [];
+  }, [metaData]);
+
+  // --- HANDLERS FOR SKILLS ---
+  const handleAddNewSkill = async (newSkillName) => {
+    const trimmedSkill = newSkillName.trim();
+    if (!trimmedSkill) return;
+
+    try {
+      const payload = { skills: trimmedSkill };
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_Backend_URL}/api/meta/add-skill`, 
+        payload
+      );
+
+      // Update global list and local selection simultaneously
+      setMetaData(prev => [...new Set([...prev, data.skills])]);
+      setFormData(prev => ({
+        ...prev,
+        skills: [...new Set([...prev.skills, data.skills])]
+      }));
+      toast.success(`Skill "${data.skills}" added to global database!`);
+    } catch (err) {
+      if (err.response?.status === 409) {
+        toast.error("Skill already exists in database");
+      } else {
+        toast.error("Failed to add skill to database");
+      }
+    }
+  };
+
+  const handleSelectOrAdd = async (skillName) => {
+    const trimmed = skillName.trim();
+    if (!trimmed) return;
+
+    // 1. Case-insensitive check against global DB list
+    const existingInDb = metaData.find(s => s.toLowerCase() === trimmed.toLowerCase());
+
+    if (existingInDb) {
+      // If it exists in DB, add it to user's selection if not already picked
+      if (!formData.skills.includes(existingInDb)) {
+        setFormData(prev => ({ ...prev, skills: [...prev.skills, existingInDb] }));
+      }
+    } else {
+      // 2. Truly new skill -> Call POST API
+      await handleAddNewSkill(trimmed);
+    }
+    setCustomSkillSearch("");
+    setIsDropdownOpen(false);
+  };
   
   const [descriptionError, setDescriptionError] = useState("");
 
@@ -109,10 +181,22 @@ export default function RequestInfo() {
     })),
   []);
 
-  const [customDegree, setCustomDegree] = useState('');
-  const [customStream, setCustomStream] = useState('');
-  const [customJobRole, setCustomJobRole] = useState('');
-  const [customSkill, setCustomSkill] = useState('');
+  //const [customDegree, setCustomDegree] = useState('');
+  //const [customStream, setCustomStream] = useState('');
+  //const [customJobRole, setCustomJobRole] = useState('');
+  // Degree + Stream (User API — uses _id as value)
+   const [degreeOptions,     setDegreeOptions]     = useState([]);
+  const [streamOptions,     setStreamOptions]     = useState([]);
+  const [selectedDegreeIds, setSelectedDegreeIds] = useState([]);
+  const [isLoadingDegrees,  setIsLoadingDegrees]  = useState(false);
+  const [isLoadingStreams,   setIsLoadingStreams]  = useState(false);
+
+  // Job Roles (Company API — uses string value, no _id)
+  const [jobRoleOptions, setJobRoleOptions] = useState([]);
+  const [isLoadingJobRoles, setIsLoadingJobRoles] = useState(false);
+  const [designationOptions,    setDesignationOptions]    = useState([]);
+  const [isLoadingDesignations, setIsLoadingDesignations] = useState(false);
+    const [customSkill, setCustomSkill] = useState('');
 
   const [dropdownOpen, setDropdownOpen] = useState({
     degree: false,
@@ -128,11 +212,11 @@ export default function RequestInfo() {
     tags: false
   });
 
-  const degreeRef = useRef(null);
-  const streamRef = useRef(null);
+  //const degreeRef = useRef(null);
+  //const streamRef = useRef(null);
   const collegeCategoriesRef = useRef(null); 
   const preferredLocationsRef = useRef(null);
-  const jobRolesRef = useRef(null);
+  //const jobRolesRef = useRef(null);
   const skillsRef = useRef(null);
   const selectionProcessRef = useRef(null);
   const amenitiesRef = useRef(null);
@@ -145,31 +229,98 @@ export default function RequestInfo() {
     localStorage.setItem('pendingOnCampusRequest', JSON.stringify(formData));
   }, [formData]);
 
+   // ─── Fetch degrees on mount ────────────────────────────────────────────────
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      const dropdownRefs = {
-        degree: degreeRef,
-        stream: streamRef,
-        collegeCategories: collegeCategoriesRef, 
-        preferredLocations: preferredLocationsRef,
-        jobRoles: jobRolesRef,
-        skills: skillsRef,
-        selectionProcess: selectionProcessRef,
-        amenities: amenitiesRef,
-        benefits: benefitsRef,
-        tags: tagsRef,
-        workLocation: workLocationRef,
-      };
+    const fetchDegrees = async () => {
+      setIsLoadingDegrees(true);
+      try {
+        const res = await getMasterDataByType("DEGREE");
+        setDegreeOptions(res.data.data.map(item => ({ value: item._id, label: item.value })));
+      } catch (err) {
+        console.error("Error fetching degrees", err);
+      } finally {
+        setIsLoadingDegrees(false);
+      }
+    };
+    fetchDegrees();
+  }, []);
 
-      for (const key in dropdownRefs) {
-        if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
+  // ─── Fetch streams when selected degrees change ────────────────────────────
+  useEffect(() => {
+    if (selectedDegreeIds.length === 0) { setStreamOptions([]); return; }
+    const fetchStreams = async () => {
+      setIsLoadingStreams(true);
+      try {
+        const results = await Promise.all(selectedDegreeIds.map(id => getMasterDataByType("STREAM", id)));
+        const merged = new Map();
+        results.forEach(res => res.data.data.forEach(item => merged.set(item._id, { value: item._id, label: item.value })));
+        setStreamOptions([...merged.values()]);
+      } catch (err) {
+        console.error("Error fetching streams", err);
+      } finally {
+        setIsLoadingStreams(false);
+      }
+    };
+    fetchStreams();
+  }, [selectedDegreeIds]);
+
+  // ─── Fetch job roles on mount ──────────────────────────────────────────────
+  useEffect(() => {
+    const fetchJobRoles = async () => {
+      setIsLoadingJobRoles(true);
+      try {
+        const res = await getCompanyMasterDataByType("JOB_ROLE");
+        setJobRoleOptions(res.data.data.map(item => ({ value: item.value, label: item.value })));
+      } catch (err) {
+        console.error("Error fetching job roles", err);
+      } finally {
+        setIsLoadingJobRoles(false);
+      }
+    };
+    fetchJobRoles();
+  }, []);
+
+  useEffect(() => {
+      const fetch = async () => {
+          setIsLoadingDesignations(true);
+          try {
+              const res = await getCompanyMasterDataByType('COMPANY_DESIGNATION');
+              setDesignationOptions((res?.data?.data || []).map(item => ({ value: item.value, label: item.value })));
+          } catch (err) { console.error(err); }
+          finally { setIsLoadingDesignations(false); }
+      };
+      fetch();
+  }, []);
+
+  useEffect(() => {
+  const handleClickOutside = (event) => {
+    const dropdownRefs = {
+      
+      collegeCategories: collegeCategoriesRef, 
+      preferredLocations: preferredLocationsRef,
+      
+      skills: skillsRef, // <--- Add this line
+      selectionProcess: selectionProcessRef,
+      amenities: amenitiesRef,
+      benefits: benefitsRef,
+      tags: tagsRef,
+      workLocation: workLocationRef,
+    };
+
+    for (const key in dropdownRefs) {
+      if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
+        // Specifically for skills, we handle its own state
+        if (key === 'skills') {
+          setIsDropdownOpen(false); // <--- Close the skills dropdown
+        } else {
           setDropdownOpen(prev => ({ ...prev, [key]: false }));
         }
       }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    }
+  };
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
 
   useEffect(() => {
     setFormData(prev => ({ ...prev, stream: [] }));
@@ -322,8 +473,8 @@ export default function RequestInfo() {
       const token = localStorage.getItem('token') || document.cookie.split('; ').find(row => row.startsWith('jwt='))?.split('=')[1];
 
       const payload = {
-        degree: formData.degree,
-        studentStreams: formData.stream,
+        degree: formData.degree.map(d => d.label),
+        studentStreams: formData.stream.map(s => s.label),
         collegeCategories: formData.collegeCategories, 
         location: formData.preferredLocations,
         lookingFor: formData.lookingFor,
@@ -389,7 +540,7 @@ export default function RequestInfo() {
     }
   };
 
-  const availableStreams = (() => {
+  {/*const availableStreams = (() => {
     if (formData.degree.length === 0) {
       return [];
     }
@@ -400,7 +551,25 @@ export default function RequestInfo() {
       }
     });
     return [...allStreams].sort((a, b) => a.localeCompare(b));
-  })();
+  })();*/}
+
+  const selectStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: '42px',
+      borderRadius: '8px',
+      fontSize: '14px',
+      borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(102,126,234,0.25)' : 'none',
+      backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
+      '&:hover': { borderColor: '#667eea' },
+    }),
+    menu: (base) => ({ ...base, fontSize: '14px', zIndex: 30, borderRadius: '8px', border: '1px solid #e5e7eb' }),
+    multiValue: (base) => ({ ...base, backgroundColor: '#f3f4f6', borderRadius: '9999px' }),
+    multiValueLabel: (base) => ({ ...base, color: '#4f46e5', fontWeight: 600, fontSize: '12px', paddingLeft: '8px' }),
+    multiValueRemove: (base) => ({ ...base, color: '#667eea', borderRadius: '9999px', ':hover': { backgroundColor: 'rgba(102,126,234,0.15)', color: '#4f46e5' } }),
+    placeholder: (base) => ({ ...base, color: '#9ca3af', fontSize: '14px' }),
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 py-4">
@@ -413,8 +582,8 @@ export default function RequestInfo() {
                 <Building2 className="h-5 w-5 text-[#667eea]" />
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                OnCampus Connect: Hire Smarter
-              </h1>
+                OnCampus Connect: Hire Smarter   
+              </h1> 
             </div>
             <p className="text-sm text-gray-600 max-w-2xl mx-auto">
               Our OnCampus service brings career opportunities directly to students, connecting them with top employers through campus recruitment drives.
@@ -441,155 +610,68 @@ export default function RequestInfo() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Degree */}
-                <div ref={degreeRef} className="relative">
+                <div>
                   <label className="block font-medium mb-2 text-sm text-gray-700">Degree</label>
-                  <div className="flex flex-wrap gap-1 mb-2 max-h-20 overflow-y-auto">
-                    {formData.degree.map(degree => (
-                      <div key={degree} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                        <span>{degree}</span>
-                        <button type="button" onClick={() => removeSelectedItem('degree', degree)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
-                      </div>
-                    ))}
-                  </div>
-                  <div
-                    className="flex items-center justify-between p-3 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white"
-                    onClick={() => toggleDropdown('degree')}
-                  >
-                    <span className="text-sm text-gray-500">Select degree(s)</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.degree ? "rotate-180" : ""} text-gray-400`} />
-                  </div>
-                  {dropdownOpen.degree && (
-                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-                      <div className="p-2 border-b border-gray-100 bg-gray-50">
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            placeholder="Add custom degree..."
-                            value={customDegree}
-                            onChange={(e) => setCustomDegree(e.target.value)}
-                            onClick={(e) => e.stopPropagation()}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                handleCustomAdd('degree', customDegree, setCustomDegree);
-                              }
-                            }}
-                            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-                          />
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCustomAdd('degree', customDegree, setCustomDegree);
-                            }}
-                            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-                          >
-                            Add
-                          </button>
-                        </div>
-                      </div>
-                      
-                      <div className="overflow-y-auto max-h-48">
-                        {degreeOptions.map(option => (
-                          <div 
-                            key={option} 
-                            onClick={() => handleMultiSelect('degree', option)} 
-                            className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                              formData.degree.includes(option) ? "bg-blue-50/50" : ""
-                            }`}
-                          >
-                            <span className={`text-sm ${formData.degree.includes(option) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                              {option}
-                            </span>
-                            {formData.degree.includes(option) && <span className="text-[#667eea] font-bold">✓</span>}
-                          </div>
-                        ))}
-                        
-                        {degreeOptions.length === 0 && (
-                          <div className="p-4 text-center text-gray-400 text-xs italic">
-                            No degrees found. Add a degree above.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  <CreatableSelect
+                    isMulti
+                    isClearable
+                    isLoading={isLoadingDegrees}
+                    options={degreeOptions}
+                    value={formData.degree}
+                    styles={selectStyles}
+                    placeholder="Select or add degree(s)"
+                    onChange={(selected) => {
+                      const selections = selected || [];
+                      // Atomic update: set degree + reset stream together
+                      setFormData(prev => ({ ...prev, degree: selections, stream: [] }));
+                      setSelectedDegreeIds(selections.map(s => s.value));
+                    }}
+                    onCreateOption={async (val) => {
+                      try {
+                        const res = await createMasterData({ type: "DEGREE", value: val });
+                        const newOpt = { value: res.data.data._id, label: res.data.data.value };
+                        setDegreeOptions(prev => [...prev, newOpt]);
+                        setFormData(prev => {
+                          const updated = [...prev.degree, newOpt];
+                          setSelectedDegreeIds(updated.map(s => s.value));
+                          return { ...prev, degree: updated, stream: [] };
+                        });
+                      } catch (err) {
+                        console.error("Error adding degree", err);
+                        toast.error("Could not add degree.");
+                      }
+                    }}
+                  />
                 </div>
 
                 {/* Stream */}
-                <div ref={streamRef} className="relative">
+                <div>
                   <label className="block font-medium mb-2 text-sm text-gray-700">Stream</label>
-                  <div className="flex flex-wrap gap-1 mb-2 max-h-20 overflow-y-auto">
-                    {formData.stream.map(stream => (
-                      <div key={stream} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                        <span>{stream}</span>
-                        <button type="button" onClick={() => removeSelectedItem('stream', stream)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
-                      </div>
-                    ))}
-                  </div>
-                  <div
-                    className={`flex items-center justify-between p-3 w-full border rounded-lg ${!formData.degree.length ? 'bg-gray-50 cursor-not-allowed' : 'cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white'} border-gray-200`}
-                    onClick={() => formData.degree.length > 0 && toggleDropdown('stream')}
-                  >
-                    <span className="text-sm text-gray-500">
-                      {formData.degree.length > 0 ? 'Select stream(s)' : 'Select degree first'}
-                    </span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.stream ? "rotate-180" : ""} text-gray-400`} />
-                  </div>
-                  {dropdownOpen.stream && formData.degree.length > 0 && (
-                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-                      <div className="p-2 border-b border-gray-100 bg-gray-50">
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            placeholder="Add custom stream..."
-                            value={customStream}
-                            onChange={(e) => setCustomStream(e.target.value)}
-                            onClick={(e) => e.stopPropagation()}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                handleCustomAdd('stream', customStream, setCustomStream);
-                              }
-                            }}
-                            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-                          />
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCustomAdd('stream', customStream, setCustomStream);
-                            }}
-                            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-                          >
-                            Add
-                          </button>
-                        </div>
-                      </div>
-                      
-                      <div className="overflow-y-auto max-h-48">
-                        {availableStreams.length > 0 ? (
-                          availableStreams.map(stream => (
-                            <div 
-                              key={stream} 
-                              onClick={() => handleMultiSelect('stream', stream)} 
-                              className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                                formData.stream.includes(stream) ? "bg-blue-50/50" : ""
-                              }`}
-                            >
-                              <span className={`text-sm ${formData.stream.includes(stream) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                                {stream}
-                              </span>
-                              {formData.stream.includes(stream) && <span className="text-[#667eea] font-bold">✓</span>}
-                            </div>
-                          ))
-                        ) : (
-                          <div className="p-4 text-center text-gray-400 text-xs italic">
-                            No streams found. Add a stream above.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  <CreatableSelect
+                    isMulti
+                    isClearable
+                    isLoading={isLoadingStreams}
+                    isDisabled={formData.degree.length === 0}
+                    options={streamOptions}
+                    value={formData.stream}
+                    styles={selectStyles}
+                    placeholder={formData.degree.length === 0 ? "Select a degree first" : "Select or add stream(s)"}
+                    onChange={(selected) => {
+                      setFormData(prev => ({ ...prev, stream: selected || [] }));
+                    }}
+                    onCreateOption={async (val) => {
+                      const parentId = selectedDegreeIds[0] || null;
+                      try {
+                        const res = await createMasterData({ type: "STREAM", value: val, parent: parentId });
+                        const newOpt = { value: res.data.data._id, label: res.data.data.value };
+                        setStreamOptions(prev => [...prev, newOpt]);
+                        setFormData(prev => ({ ...prev, stream: [...prev.stream, newOpt] }));
+                      } catch (err) {
+                        console.error("Error adding stream", err);
+                        toast.error("Could not add stream.");
+                      }
+                    }}
+                  />
                 </div>
 
                 {/* College Categories */}
@@ -817,77 +899,32 @@ export default function RequestInfo() {
                   {/* Job Roles */}
                   <div>
                     <label className="block font-medium mb-2 text-sm text-gray-700">Job Roles</label>
-                    <div ref={jobRolesRef} className="relative">
-                      <div className={`flex flex-wrap gap-1 mb-2 max-h-20 overflow-y-auto ${formData.jobRoles.length > 0 ? 'min-h-[28px]' : ''}`}>
-                        {formData.jobRoles.map(role => (
-                          <div key={role} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                            <span>{role}</span>
-                            <button type="button" onClick={() => removeSelectedItem('jobRoles', role)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex items-center justify-between p-3 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('jobRoles')}>
-                        <span className="text-sm text-gray-500">Select job roles</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.jobRoles ? "rotate-180" : ""} text-gray-400`} />
-                      </div>
-                      {dropdownOpen.jobRoles && (
-                        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-                          <div className="p-2 border-b border-gray-100 bg-gray-50">
-                            <div className="flex gap-2">
-                              <input
-                                type="text"
-                                placeholder="Add custom role..."
-                                value={customJobRole}
-                                onChange={(e) => setCustomJobRole(e.target.value)}
-                                onClick={(e) => e.stopPropagation()}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    handleCustomAdd('jobRoles', customJobRole, setCustomJobRole);
-                                  }
-                                }}
-                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-                              />
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleCustomAdd('jobRoles', customJobRole, setCustomJobRole);
-                                }}
-                                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-                              >
-                                Add
-                              </button>
-                            </div>
-                          </div>
-                          
-                          <div className="overflow-y-auto max-h-48">
-                            {jobRoleOptions.map(role => (
-                              <div 
-                                key={role} 
-                                onClick={() => handleMultiSelect('jobRoles', role)} 
-                                className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                                  formData.jobRoles.includes(role) ? "bg-blue-50/50" : ""
-                                }`}
-                              >
-                                <span className={`text-sm ${formData.jobRoles.includes(role) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                                  {role}
-                                </span>
-                                {formData.jobRoles.includes(role) && <span className="text-[#667eea] font-bold">✓</span>}
-                              </div>
-                            ))}
-                            
-                            {jobRoleOptions.length === 0 && (
-                              <div className="p-4 text-center text-gray-400 text-xs italic">
-                                No job roles found. Add a role above.
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <CreatableSelect
+                      isMulti
+                      isClearable
+                      isLoading={isLoadingJobRoles}
+                      options={jobRoleOptions}
+                      value={formData.jobRoles.map(role => ({ value: role, label: role }))}
+                      styles={selectStyles}
+                      placeholder="Select or add job roles"
+                      onChange={(selected) => {
+                        setFormData(prev => ({ ...prev, jobRoles: (selected || []).map(s => s.value) }));
+                      }}
+                      onCreateOption={async (val) => {
+                        try {
+                          const res = await createCompanyMasterData({ type: "JOB_ROLE", value: val });
+                          const savedValue = res.data.data.value;
+                          const newOpt = { value: savedValue, label: savedValue };
+                          setJobRoleOptions(prev => [...prev, newOpt]);
+                          setFormData(prev => ({ ...prev, jobRoles: [...prev.jobRoles, savedValue] }));
+                        } catch (err) {
+                          console.error("Error creating job role", err);
+                          toast.error("Could not add job role.");
+                        }
+                      }}
+                    />
                   </div>
-
+                  
                   {/* Work Location */}
                   <div className='mt-2'>
                     <label className="block font-medium mb-2 text-sm text-gray-700">Work Location <span className="text-red-500">*</span></label>
@@ -946,79 +983,105 @@ export default function RequestInfo() {
                 </div>
 
                 {/* Skills */}
-                <div ref={skillsRef} className="relative">
-                  <label className="block font-medium mb-2 text-sm text-gray-700">Skills</label>
+               
+               {/* --- IMPROVED SKILLS SECTION --- */}
+
+{/* --- INTEGRATED SKILLS SECTION --- */}
+<div ref={skillsRef} className="relative pt-2">
+  <label className="block font-semibold mb-2 text-sm text-gray-700 flex items-center gap-2">
+    <Target className="w-4 h-4 text-[#667eea]" />
+    Required Skills <span className="text-red-500">*</span>
+  </label>
+
+  {/* Search & Tag Container */}
+  <div className={`
+    group flex flex-wrap gap-2 p-2.5 min-h-[48px] 
+    bg-gradient-to-r from-gray-50 to-white 
+    border rounded-xl transition-all duration-300
+    ${isDropdownOpen ? 'border-[#667eea] ring-2 ring-[#667eea]/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'}
+  `}>
+    {/* Selected Skill Tags */}
+    {formData.skills.map((skill) => (
+      <div 
+        key={skill} 
+        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#667eea]/20 text-[#667eea] text-xs font-bold rounded-full shadow-sm animate-in fade-in zoom-in duration-200"
+      >
+        {skill}
+        <button 
+          type="button" 
+          onClick={() => removeSelectedItem('skills', skill)} 
+          className="hover:bg-red-50 p-0.5 rounded-full transition-colors"
+        >
+          <X size={12} className="text-gray-400 hover:text-red-500" />
+        </button>
+      </div>
+    ))}
+
+    {/* Search Input */}
+    <input
+      type="text"
+      className="flex-grow min-w-[140px] outline-none bg-transparent text-sm text-gray-800 placeholder:text-gray-400"
+      placeholder={formData.skills.length === 0 ? "Search or add skills (e.g. React, Java)..." : "Add more..."}
+      value={customSkillSearch}
+      onFocus={() => setIsDropdownOpen(true)}
+      onChange={(e) => setCustomSkillSearch(e.target.value)}
+    />
+  </div>
+
+  {/* Unified Dropdown Menu */}
+  {isDropdownOpen && (
+    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-top-2 duration-200">
+      <div className="max-h-64 overflow-y-auto">
+        
+        {/* 1. Filtered results from DB */}
+        {filteredSkillOptions
+          .filter(s => 
+            s.toLowerCase().includes(customSkillSearch.toLowerCase()) && 
+            !formData.skills.includes(s)
+          )
+          .map((skill, index) => (
+            <button
+              key={index}
+              type="button"
+              className="w-full text-left px-5 py-3 hover:bg-[#667eea]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
+              onClick={() => handleSelectOrAdd(skill)}
+            >
+              <span>{skill}</span>
+              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#667eea] -rotate-90" />
+            </button>
+          ))}
+
+        {/* 2. "Add New" Logic - Only shows if search doesn't match a DB skill */}
+        {customSkillSearch && !filteredSkillOptions.some(s => s.toLowerCase() === customSkillSearch.toLowerCase()) && (
+          <button
+            type="button"
+            className="w-full text-left px-5 py-4 bg-[#667eea]/5 text-[#667eea] text-sm font-bold hover:bg-[#667eea]/10 transition-all border-t border-[#667eea]/10"
+            onClick={() => handleSelectOrAdd(customSkillSearch)}
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-1.5 bg-white rounded-lg shadow-sm">
+                <Award size={16} className="text-[#764ba2]" />
+              </div>
+              <span>Add "<span className="underline italic">{customSkillSearch}</span>" as a new skill</span>
+            </div>
+          </button>
+        )}
+
+        {/* 3. Empty/Syncing State */}
+        {customSkillSearch === "" && filteredSkillOptions.length === 0 && (
+          <div className="px-5 py-8 text-center text-gray-400 text-xs italic">
+            Start typing to search or add skills...
+          </div>
+        )}
+      </div>
+    </div>
+  )}
+</div>
                   
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {formData.skills.map(skill => (
-                      <div key={skill} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                        <span>{skill}</span>
-                        <button type="button" onClick={() => removeSelectedItem('skills', skill)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
-                      </div>
-                    ))}
-                  </div>
                   
-                  <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('skills')}>
-                    <span className="text-sm text-gray-500">Select skills</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.skills ? "rotate-180" : ""} text-gray-400`} />
-                  </div>
-                  
-                  {dropdownOpen.skills && (
-                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-                      <div className="p-2 border-b border-gray-100 bg-gray-50">
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            placeholder="Add custom skill..."
-                            value={customSkill}
-                            onChange={(e) => setCustomSkill(e.target.value)}
-                            onClick={(e) => e.stopPropagation()}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                handleCustomAdd('skills', customSkill, setCustomSkill);
-                              }
-                            }}
-                            className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-                          />
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCustomAdd('skills', customSkill, setCustomSkill);
-                            }}
-                            className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-                          >
-                            Add
-                          </button>
-                        </div>
-                      </div>
-                      
-                      <div className="overflow-y-auto max-h-48">
-                        {skillsOptions.map(skill => (
-                          <div 
-                            key={skill} 
-                            onClick={() => handleMultiSelect('skills', skill)} 
-                            className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                              formData.skills.includes(skill) ? "bg-blue-50/50" : ""
-                            }`}
-                          >
-                            <span className={`text-sm ${formData.skills.includes(skill) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                              {skill}
-                            </span>
-                            {formData.skills.includes(skill) && <span className="text-[#667eea] font-bold">✓</span>}
-                          </div>
-                        ))}
-                        
-                        {skillsOptions.length === 0 && (
-                          <div className="p-4 text-center text-gray-400 text-xs italic">
-                            No skills found. Add a skill above.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                 
+              
+            
               </div>
             </div>
 
@@ -1412,21 +1475,40 @@ export default function RequestInfo() {
                   </div>
 
                   {/* Contact person designation */}
-                  <div>
+                   <div>
                     <label htmlFor="contactDesignation" className="block mb-2 font-medium text-sm text-gray-700">Designation <span className="text-red-500">*</span></label>
-                    <div className="relative">
-                      <select 
-                        id="contactDesignation" 
-                        name="contactDesignation" 
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
-                        value={formData.contactDesignation} 
-                        onChange={handleInputChange}
-                      >
-                        <option value="" disabled>Select designation</option>
-                        {designationOptions.map(option => (<option key={option} value={option}>{option}</option>))}
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                    </div>
+                    <CreatableSelect
+                      isClearable
+                      isLoading={isLoadingDesignations}
+                      options={designationOptions}
+                      value={designationOptions.find(opt => opt.value === formData.contactDesignation) || null}
+                      styles={selectStyles}
+                      placeholder="Select or type designation"
+                      onChange={async (selected) => {
+                        if (!selected) {
+                          setFormData(prev => ({ ...prev, contactDesignation: '' }));
+                          return;
+                        }
+                        if (!selected.__isNew__) {
+                          setFormData(prev => ({ ...prev, contactDesignation: selected.value }));
+                          return;
+                        }
+                        // New designation typed — save to DB
+                        try {
+                          const res = await createCompanyMasterData({
+                            type: "COMPANY_DESIGNATION",
+                            value: selected.value,
+                            isCustom: true,
+                          });
+                          const savedValue = res.data.data.value;
+                          setDesignationOptions(prev => [...prev, { value: savedValue, label: savedValue }]);
+                          setFormData(prev => ({ ...prev, contactDesignation: savedValue }));
+                        } catch (err) {
+                          console.error("Failed to create designation", err);
+                          toast.error("Could not add designation.");
+                        }
+                      }}
+                    />
                   </div>
                 </div>
 

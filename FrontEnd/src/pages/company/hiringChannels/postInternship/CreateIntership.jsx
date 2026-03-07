@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
 import DatePicker from 'react-datepicker';
+import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
 
 export default function PostIntership() {
   const initialState = {
@@ -36,7 +37,7 @@ export default function PostIntership() {
   const [descriptionError, setDescriptionError] = useState("");
 
   // Add job title options array
-  const jobTitleOptions = [
+  {/*const jobTitleOptions = [
     "Software Engineer",
     "Data Analyst", 
     "DevOps Engineer",
@@ -85,7 +86,7 @@ export default function PostIntership() {
     "Engineering Manager",
     "CTO",
     "CIO"
-  ];
+  ];*/}
 
   const educationOptions = ["High School", "Bachelor's Degree", "Master's Degree", "PhD", "Diploma", "Other"];
   const fieldOfStudyOptions = ["Computer Science", "Engineering", "Business", "Arts", "Sciences", "Mathematics", "Medicine", "Law", "Other"];
@@ -113,7 +114,9 @@ export default function PostIntership() {
   const [customSkill, setCustomSkill] = useState('');
   const [customBenefit, setCustomBenefit] = useState('');
   const [customStream, setCustomStream] = useState('');
-  const [customJobTitle, setCustomJobTitle] = useState('');
+  // Job Roles (Company API — uses string value, no _id)
+  const [jobRoleOptions, setJobRoleOptions] = useState([]);
+  const [isLoadingJobRoles, setIsLoadingJobRoles] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState({
     jobRoles: false,
     skills: false,
@@ -122,16 +125,31 @@ export default function PostIntership() {
     tags: false
   });
 
-  const jobTitlesRef = useRef(null);
+  //const jobTitlesRef = useRef(null);
   const skillsRef = useRef(null);
   const benefitsRef = useRef(null);
   const studentStreamsRef = useRef(null);
   const tagsRef = useRef(null);
 
+  // ─── Fetch job roles on mount ──────────────────────────────────────────────
+  useEffect(() => {
+    const fetchJobRoles = async () => {
+      setIsLoadingJobRoles(true);
+      try {
+        const res = await getCompanyMasterDataByType("JOB_ROLE");
+        setJobRoleOptions(res.data.data.map(item => ({ value: item.value, label: item.value })));
+      } catch (err) {
+        console.error("Error fetching job roles", err);
+      } finally {
+        setIsLoadingJobRoles(false);
+      }
+    };
+    fetchJobRoles();
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       const dropdownRefs = {
-        jobRoles: jobTitlesRef,
         skills: skillsRef,
         benefits: benefitsRef,
         studentStreams: studentStreamsRef,
@@ -223,6 +241,67 @@ export default function PostIntership() {
     }));
   };
 
+  // --- DYNAMIC SKILLS STATE ---
+const [metaData, setMetaData] = useState([]); // All skills from DB
+const [customSkillSearch, setCustomSkillSearch] = useState(""); 
+const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+// --- FETCH FROM DATABASE ---
+useEffect(() => {
+  const fetchSkills = async () => {
+    try {
+      const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta/get-skills`);
+      const skillNames = data.map(item => item.skills);
+      setMetaData(skillNames);
+    } catch (err) {
+      console.error("Error loading skills", err);
+    }
+  };
+  fetchSkills();
+}, []);
+
+const filteredSkillOptions = useMemo(() => {
+  return Array.isArray(metaData) ? metaData.sort() : [];
+}, [metaData]);
+
+// --- SKILL HANDLERS ---
+const handleAddNewSkill = async (newSkillName) => {
+  const trimmedSkill = newSkillName.trim();
+  if (!trimmedSkill) return;
+
+  try {
+    const payload = { skills: trimmedSkill };
+    const { data } = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/meta/add-skill`, payload);
+
+    setMetaData(prev => [...new Set([...prev, data.skills])]);
+    setFormData(prev => ({
+      ...prev,
+      skills: [...new Set([...prev.skills, data.skills])]
+    }));
+    toast.success(`Skill "${data.skills}" added to global database!`);
+  } catch (err) {
+    if (err.response?.status === 409) toast.error("Skill already exists");
+    else toast.error("Failed to add skill");
+  }
+};
+
+const handleSelectOrAdd = async (skillName) => {
+  const trimmed = skillName.trim();
+  if (!trimmed) return;
+
+  const existingInDb = metaData.find(s => s.toLowerCase() === trimmed.toLowerCase());
+
+  if (existingInDb) {
+    if (!formData.skills.includes(existingInDb)) {
+      setFormData(prev => ({ ...prev, skills: [...prev.skills, existingInDb] }));
+    }
+  } else {
+    await handleAddNewSkill(trimmed);
+  }
+  setCustomSkillSearch("");
+  setIsDropdownOpen(false);
+};
+
   const handlePostJob = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -297,6 +376,24 @@ export default function PostIntership() {
     setFormData(initialState);
   };
 
+  const selectStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: '42px',
+      borderRadius: '8px',
+      fontSize: '14px',
+      borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(102,126,234,0.25)' : 'none',
+      backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
+      '&:hover': { borderColor: '#667eea' },
+    }),
+    menu: (base) => ({ ...base, fontSize: '14px', zIndex: 30, borderRadius: '8px', border: '1px solid #e5e7eb' }),
+    multiValue: (base) => ({ ...base, backgroundColor: '#f3f4f6', borderRadius: '9999px' }),
+    multiValueLabel: (base) => ({ ...base, color: '#4f46e5', fontWeight: 600, fontSize: '12px', paddingLeft: '8px' }),
+    multiValueRemove: (base) => ({ ...base, color: '#667eea', borderRadius: '9999px', ':hover': { backgroundColor: 'rgba(102,126,234,0.15)', color: '#4f46e5' } }),
+    placeholder: (base) => ({ ...base, color: '#9ca3af', fontSize: '14px' }),
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/5 via-[#f093fb]/5 to-[#764ba2]/5 py-4">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -320,7 +417,7 @@ export default function PostIntership() {
         <div className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-xl shadow p-6">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">Internship Details</h2>
-            <p className="text-gray-500 text-sm mt-1">Fill in the details to create your internship posting</p>
+            <p className="text-gray-500 text-sm mt-1">Fill in the details to create your internship postings</p>
           </div>
 
           <form onSubmit={handlePostJob}>
@@ -337,84 +434,32 @@ export default function PostIntership() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Job Titles */}
-                  <div ref={jobTitlesRef} className="relative">
-                    <label className="block font-medium mb-2 text-sm text-gray-700">
-                      Job Titles <span className="text-red-500">*</span>
-                    </label>
-                    
-                    <div className="flex flex-wrap gap-1 mb-2">
-                      {formData.jobRoles.map(title => (
-                        <div key={title} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                          <span>{title}</span>
-                          <button
-                            type="button"
-                            onClick={() => removeSelectedItem('jobRoles', title)}
-                            className="ml-1 text-gray-500 hover:text-gray-700"
-                          >
-                            <X size={12} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white min-h-[38px]" onClick={() => toggleDropdown('jobRoles')}>
-                      <span className="text-sm text-gray-500">
-                        {formData.jobRoles.length > 0 ? `${formData.jobRoles.length} title(s) selected` : "Select job titles"}
-                      </span>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.jobRoles ? "rotate-180" : ""} text-gray-400`} />
-                    </div>
-                    
-                    {dropdownOpen.jobRoles && (
-                      <div className="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-                        <div className="p-2 border-b border-gray-100 bg-gray-50">
-                          <div className="flex gap-2">
-                            <input
-                              type="text"
-                              placeholder="Add custom job title..."
-                              value={customJobTitle}
-                              onChange={(e) => setCustomJobTitle(e.target.value)}
-                              onClick={(e) => e.stopPropagation()}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  handleCustomAdd('jobRoles', customJobTitle, setCustomJobTitle);
-                                }
-                              }}
-                              className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-                            />
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleCustomAdd('jobRoles', customJobTitle, setCustomJobTitle);
-                              }}
-                              className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-                            >
-                              Add
-                            </button>
-                          </div>
-                        </div>
-                        
-                        <div className="overflow-y-auto max-h-48">
-                          {jobTitleOptions.map((title, index) => (
-                            <div
-                              key={index}
-                              onClick={() => handleMultiSelect('jobRoles', title)}
-                              className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                                formData.jobRoles.includes(title) ? "bg-blue-50/50" : ""
-                              }`}
-                            >
-                              <span className={`text-sm ${formData.jobRoles.includes(title) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                                {title}
-                              </span>
-                              {formData.jobRoles.includes(title) && <span className="text-[#667eea] font-bold">✓</span>}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* <p className="text-xs text-gray-500 mt-1">Select one or more job titles that apply to this internship</p> */}
+                  <div>
+                    <label className="block font-medium mb-2 text-sm text-gray-700">Job Roles</label>
+                    <CreatableSelect
+                      isMulti
+                      isClearable
+                      isLoading={isLoadingJobRoles}
+                      options={jobRoleOptions}
+                      value={formData.jobRoles.map(role => ({ value: role, label: role }))}
+                      styles={selectStyles}
+                      placeholder="Select or add job roles"
+                      onChange={(selected) => {
+                        setFormData(prev => ({ ...prev, jobRoles: (selected || []).map(s => s.value) }));
+                      }}
+                      onCreateOption={async (val) => {
+                        try {
+                          const res = await createCompanyMasterData({ type: "JOB_ROLE", value: val });
+                          const savedValue = res.data.data.value;
+                          const newOpt = { value: savedValue, label: savedValue };
+                          setJobRoleOptions(prev => [...prev, newOpt]);
+                          setFormData(prev => ({ ...prev, jobRoles: [...prev.jobRoles, savedValue] }));
+                        } catch (err) {
+                          console.error("Error creating job role", err);
+                          toast.error("Could not add job role.");
+                        }
+                      }}
+                    />
                   </div>
 
                   {/* Work Mode */}
@@ -837,79 +882,94 @@ export default function PostIntership() {
                   {/* Skills and Benefits */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Skills */}
-                    <div ref={skillsRef} className="relative">
-                      <label className="block font-medium mb-2 text-sm text-gray-700">Skills</label>
-                      
-                      <div className="flex flex-wrap gap-1 mb-1">
-                        {formData.skills.map((skill, index) => (
-                          <div key={index} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                            <span>{skill}</span>
-                            <button
-                              type="button"
-                              className="ml-1 text-gray-500 hover:text-gray-700"
-                              onClick={() => removeSelectedItem('skills', skill)}
-                            >
-                              <X size={12} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                      
-                      <div className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors min-h-[38px] bg-gradient-to-r from-gray-50 to-white" onClick={() => toggleDropdown('skills')}>
-                        <span className="text-sm text-gray-500">Select skills</span>
-                        <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.skills ? "rotate-180" : ""} text-gray-400`} />
-                      </div>
-                      
-                      {dropdownOpen.skills && (
-                        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-hidden">
-                          <div className="p-2 border-b border-gray-100 bg-gray-50">
-                            <div className="flex gap-2">
-                              <input
-                                type="text"
-                                placeholder="Add custom skill..."
-                                value={customSkill}
-                                onChange={(e) => setCustomSkill(e.target.value)}
-                                onClick={(e) => e.stopPropagation()}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    handleCustomAdd('skills', customSkill, setCustomSkill);
-                                  }
-                                }}
-                                className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
-                              />
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleCustomAdd('skills', customSkill, setCustomSkill);
-                                }}
-                                className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
-                              >
-                                Add
-                              </button>
-                            </div>
-                          </div>
-                          
-                          <div className="overflow-y-auto max-h-48">
-                            {allSkills.map((skill, index) => (
-                              <div
-                                key={index}
-                                onClick={() => handleMultiSelect('skills', skill)}
-                                className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                                  formData.skills.includes(skill) ? "bg-blue-50/50" : ""
-                                }`}
-                              >
-                                <span className={`text-sm ${formData.skills.includes(skill) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                                  {skill}
-                                </span>
-                                {formData.skills.includes(skill) && <span className="text-[#667eea] font-bold">✓</span>}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                   {/* --- INTEGRATED SKILLS SECTION --- */}
+<div ref={skillsRef} className="relative pt-2">
+  <label className="block font-semibold mb-2 text-sm text-gray-700 flex items-center gap-2">
+    <Award className="w-4 h-4 text-[#667eea]" />
+    Required Skills <span className="text-red-500">*</span>
+  </label>
+
+  <div className={`
+    group flex flex-wrap gap-2 p-2.5 min-h-[48px] 
+    bg-gradient-to-r from-gray-50 to-white 
+    border rounded-xl transition-all duration-300
+    ${isDropdownOpen ? 'border-[#667eea] ring-2 ring-[#667eea]/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'}
+  `}>
+    {/* Selected Tags */}
+    {formData.skills.map((skill) => (
+      <div 
+        key={skill} 
+        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#667eea]/20 text-[#667eea] text-xs font-bold rounded-full shadow-sm animate-in fade-in zoom-in duration-200"
+      >
+        {skill}
+        <button 
+          type="button" 
+          onClick={() => removeSelectedItem('skills', skill)} 
+          className="hover:bg-red-50 p-0.5 rounded-full transition-colors"
+        >
+          <X size={12} className="text-gray-400 hover:text-red-500" />
+        </button>
+      </div>
+    ))}
+
+    <input
+      type="text"
+      className="flex-grow min-w-[140px] outline-none bg-transparent text-sm text-gray-800 placeholder:text-gray-400"
+      placeholder={formData.skills.length === 0 ? "Search or add skills (e.g. React, Python)..." : "Add more..."}
+      value={customSkillSearch}
+      onFocus={() => setIsDropdownOpen(true)}
+      onChange={(e) => setCustomSkillSearch(e.target.value)}
+    />
+  </div>
+
+  {/* Unified Dropdown Menu */}
+  {isDropdownOpen && (
+    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-top-2 duration-200">
+      <div className="max-h-64 overflow-y-auto">
+        
+        {/* 1. Results from Database */}
+        {filteredSkillOptions
+          .filter(s => 
+            s.toLowerCase().includes(customSkillSearch.toLowerCase()) && 
+            !formData.skills.includes(s)
+          )
+          .map((skill, index) => (
+            <button
+              key={index}
+              type="button"
+              className="w-full text-left px-5 py-3 hover:bg-[#667eea]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
+              onClick={() => handleSelectOrAdd(skill)}
+            >
+              <span>{skill}</span>
+              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#667eea] -rotate-90" />
+            </button>
+          ))}
+
+        {/* 2. "Add New" button - Shows if search string is new */}
+        {customSkillSearch && !filteredSkillOptions.some(s => s.toLowerCase() === customSkillSearch.toLowerCase()) && (
+          <button
+            type="button"
+            className="w-full text-left px-5 py-4 bg-[#667eea]/5 text-[#667eea] text-sm font-bold hover:bg-[#667eea]/10 transition-all border-t border-[#667eea]/10"
+            onClick={() => handleSelectOrAdd(customSkillSearch)}
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-1.5 bg-white rounded-lg shadow-sm">
+                <Target size={16} className="text-[#764ba2]" />
+              </div>
+              <span>Add "<span className="underline italic">{customSkillSearch}</span>" as a new skill</span>
+            </div>
+          </button>
+        )}
+
+        {customSkillSearch === "" && filteredSkillOptions.length === 0 && (
+          <div className="px-5 py-8 text-center text-gray-400 text-xs italic">
+            Start typing to search or add skills...
+          </div>
+        )}
+      </div>
+    </div>
+  )}
+</div>
 
                     {/* Benefits */}
                     <div ref={benefitsRef} className="relative">

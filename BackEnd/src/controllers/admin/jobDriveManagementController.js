@@ -3,6 +3,8 @@ import HackathonHostingService from "../../services/hackathonHostingService.js";
 import WorkShopHostingService from "../../services/workshopService.js";
 import CaseStudyHostingService from "../../services/casestudyService.js";
 import { JobPostingTable } from "../../models/jobPostingsModel.js";
+import { getPendingReferralJobsService, updateReferralApprovalStatusService,getAcceptedReferralJobsService } from "../../services/adminService.js";
+import { ok } from "assert";
 
 export const getJobDriveOverView = async (req, res) => {
   try {
@@ -229,6 +231,98 @@ export const getAllPositions = async (req, res) => {
       success: false,
       message: "Error while fetching job postings",
       error: error.message,
+    });
+  }
+};
+
+export const getPendingReferralJobsForAdmin = async (req, res) => {
+  try {
+    // 1. Authorization
+    if (req.user.userType !== "admin") {
+      return res.status(403).json({ error: "Access denied" });
+    }
+
+    // 2. Call service
+    const jobs = await getPendingReferralJobsService();
+
+    // 3. Response
+    return res.status(200).json({
+      count: jobs.length,
+      data: jobs
+    });
+
+  } catch (error) {
+    console.error(
+      "Error in getPendingReferralJobsForAdmin:",
+      error.message
+    );
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getAcceptedReferralJobsForAdmin= async (req, res) => {
+  try {
+    // 1. Authorization
+    if (req.user.userType !== "admin") {
+      return res.status(403).json({ error: "Access denied" });
+    }
+
+    // 2. Call service
+    const jobs = await getAcceptedReferralJobsService();
+
+    // 3. Response
+    return res.status(200).json({
+      count: jobs.length,
+      data: jobs
+    });
+
+  } catch (error) {
+    console.error(
+      "Error in getPendingReferralJobsForAdmin:",
+      error.message
+    );
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+export const updateReferralJobApprovalStatus = async (req, res) => {
+  try {
+    console.log('ok')
+    const { jobId } = req.params;
+    const { approvalStatus } = req.body;
+    console.log(approvalStatus)
+
+    // Basic validation
+    if (!["Approved", "Rejected", "Pending"].includes(approvalStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid approval status",
+      });
+    }
+
+    const updatedJob = await updateReferralApprovalStatusService(
+      jobId,
+      approvalStatus
+    );
+
+    if (!updatedJob) {
+      return res.status(404).json({
+        success: false,
+        message: "Referral job not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Referral job ${approvalStatus.toLowerCase()} successfully`,
+      data: updatedJob,
+    });
+  } catch (error) {
+    console.error("Error updating referral approval:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
     });
   }
 };

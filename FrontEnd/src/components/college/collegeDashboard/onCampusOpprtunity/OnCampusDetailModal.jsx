@@ -758,6 +758,7 @@ useEffect(() => {
               <div className="flex items-center text-sm text-gray-600 mt-1">
                 <MapPin className="h-4 w-4 mr-2 text-[#667eea] flex-shrink-0" />
                 <span className="truncate">{companyLocation}</span>
+                {console.log('here',companyLocation)}
               </div>
             </div>
           </button>

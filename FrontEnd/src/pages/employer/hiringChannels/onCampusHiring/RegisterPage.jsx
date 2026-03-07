@@ -12,7 +12,7 @@ export default function RegisterPage({ onBackClick, formData={}, handleInputChan
                 <Building2 className="h-5 w-5 text-[#667eea]" />
               </div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent">
-                OnCampus Connect: Hire Smarter
+                OnCampus Connect: Hire Smarter 
               </h1>
             </div>
             <p className="text-sm text-gray-600 mt-3 max-w-xl mx-auto">

@@ -2558,8 +2558,13 @@ function ProfProfile() {
                 if (!keysToSkip.includes(key)) {
                     const value = profileData[key];
 
-                    if ((key === 'employmentType' || key === 'lookingFor') && value === '') {
-                        continue; 
+                    if (key === 'employmentType' && value === '') {
+                      continue;
+                    }
+                    
+                    if (key === 'lookingFor' && value === '') {
+                      formData.append('lookingFor', 'Job');
+                      continue;
                     }
 
                     if (Array.isArray(value)) {
@@ -4164,7 +4169,7 @@ function ProfProfile() {
                                             <p className="text-sm text-gray-600">{resumeFile.name}</p>
                                         ) : (
                                             <a 
-                                                href={profileData.resumeUrl} 
+                                                href={`/fresher-resume-preview?url=${encodeURIComponent(profileData.resumeUrl)}`}
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
                                                 className="text-sm text-blue-600 hover:underline"

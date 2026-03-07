@@ -6,6 +6,8 @@ import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import { getMasterDataByType, createMasterData } from "../../../../lib/User_AxiosInstance";
+import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
 
 export default function PoolCampusHiringForm() {
   // Updated data structure for College Type → Degree → Stream
@@ -102,7 +104,7 @@ export default function PoolCampusHiringForm() {
   const amenitiesOptions = ['Projector & Screen', 'Seminar Hall', 'Interview Rooms', 'Wi-Fi Access', 'Computer Labs', 'Cafeteria', 'Parking Space', 'Technical Support'];
   const numberOfRoundsOptions = ['1 Round', '2 Rounds', '3 Rounds', '4 Rounds', '5 Rounds', '6+ Rounds'];
   const processOptions = ['Online Test', 'Coding Test', 'Aptitude Test', 'Group Discussion', 'Technical Interview', 'HR Interview', 'Case Study', 'Presentation'].sort((a, b) => a.localeCompare(b));
-  const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
+  //const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
   const minimumStudentsOptions = ['1-10 students', '11-25 students', '26-50 students', '51-100 students', '101-200 students', '201-500 students', '500+ students'];
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
@@ -116,6 +118,66 @@ export default function PoolCampusHiringForm() {
     })),
   []);
 
+  // --- DYNAMIC SKILLS STATE ---
+const [metaData, setMetaData] = useState([]); // Skills from DB
+const [customSkillSearch, setCustomSkillSearch] = useState(""); 
+const [isSkillDropdownOpen, setIsSkillDropdownOpen] = useState(false);
+
+// --- FETCH FROM DATABASE ---
+useEffect(() => {
+  const fetchSkills = async () => {
+    try {
+      const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta/get-skills`);
+      const skillNames = data.map(item => item.skills);
+      setMetaData(skillNames);
+    } catch (err) {
+      console.error("Error loading skills", err);
+    }
+  };
+  fetchSkills();
+}, []);
+
+const filteredSkillOptions = useMemo(() => {
+  return Array.isArray(metaData) ? metaData.sort() : [];
+}, [metaData]);
+
+// --- SKILL HANDLERS ---
+const handleAddNewSkill = async (newSkillName) => {
+  const trimmedSkill = newSkillName.trim();
+  if (!trimmedSkill) return;
+
+  try {
+    const payload = { skills: trimmedSkill };
+    const { data } = await axios.post(`${import.meta.env.VITE_Backend_URL}/api/meta/add-skill`, payload);
+
+    setMetaData(prev => [...new Set([...prev, data.skills])]);
+    setFormData(prev => ({
+      ...prev,
+      skills: [...new Set([...(prev.skills || []), data.skills])]
+    }));
+    toast.success(`Skill "${data.skills}" added globally!`);
+  } catch (err) {
+    if (err.response?.status === 409) toast.error("Skill already exists");
+    else toast.error("Failed to add skill");
+  }
+};
+
+const handleSelectOrAddSkill = async (skillName) => {
+  const trimmed = skillName.trim();
+  if (!trimmed) return;
+
+  const existingInDb = metaData.find(s => s.toLowerCase() === trimmed.toLowerCase());
+
+  if (existingInDb) {
+    if (!formData.skills.includes(existingInDb)) {
+      setFormData(prev => ({ ...prev, skills: [...(prev.skills || []), existingInDb] }));
+    }
+  } else {
+    await handleAddNewSkill(trimmed);
+  }
+  setCustomSkillSearch("");
+  setIsSkillDropdownOpen(false);
+};
   // Updated initialState with new fields
   const initialState = {
     venue: null,
@@ -196,6 +258,8 @@ export default function PoolCampusHiringForm() {
   const [customDegree, setCustomDegree] = useState('');
   const [customStream, setCustomStream] = useState('');
   const [customJobRole, setCustomJobRole] = useState('');
+  const [designationOptions,    setDesignationOptions]    = useState([]);
+  const [isLoadingDesignations, setIsLoadingDesignations] = useState(false);
   const [customSkill, setCustomSkill] = useState('');
 
   const [dropdownOpen, setDropdownOpen] = useState({
@@ -223,6 +287,18 @@ export default function PoolCampusHiringForm() {
   useEffect(() => {
     localStorage.setItem('pendingPoolHiringRequest', JSON.stringify(formData));
   }, [formData]);
+
+  useEffect(() => {
+      const fetch = async () => {
+          setIsLoadingDesignations(true);
+          try {
+              const res = await getCompanyMasterDataByType('COMPANY_DESIGNATION');
+              setDesignationOptions((res?.data?.data || []).map(item => ({ value: item.value, label: item.value })));
+          } catch (err) { console.error(err); }
+          finally { setIsLoadingDesignations(false); }
+      };
+      fetch();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -554,6 +630,24 @@ export default function PoolCampusHiringForm() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+   const selectStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: '42px',
+      borderRadius: '8px',
+      fontSize: '14px',
+      borderColor: state.isFocused ? '#667eea' : '#e5e7eb',
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(102,126,234,0.25)' : 'none',
+      backgroundImage: 'linear-gradient(to right, rgb(249 250 251), rgb(255 255 255))',
+      '&:hover': { borderColor: '#667eea' },
+    }),
+    menu: (base) => ({ ...base, fontSize: '14px', zIndex: 30, borderRadius: '8px', border: '1px solid #e5e7eb' }),
+    multiValue: (base) => ({ ...base, backgroundColor: '#f3f4f6', borderRadius: '9999px' }),
+    multiValueLabel: (base) => ({ ...base, color: '#4f46e5', fontWeight: 600, fontSize: '12px', paddingLeft: '8px' }),
+    multiValueRemove: (base) => ({ ...base, color: '#667eea', borderRadius: '9999px', ':hover': { backgroundColor: 'rgba(102,126,234,0.15)', color: '#4f46e5' } }),
+    placeholder: (base) => ({ ...base, color: '#9ca3af', fontSize: '14px' }),
   };
 
   return (
@@ -1243,61 +1337,100 @@ export default function PoolCampusHiringForm() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Skills */}
-                <div ref={skillsRef} className="relative">
-                  <label className="block font-medium mb-2 text-sm text-gray-700">Skills <span className="text-red-500">*</span></label>
-                  <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
-                    {(formData.skills || []).map(skill => (
-                      <div key={skill} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                        <span>{skill}</span>
-                        <button type="button" onClick={() => removeSelectedItem('skills', skill)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
-                      </div>
-                    ))}
-                  </div>
-                  <div onClick={() => toggleDropdown('skills')} className="flex items-center justify-between p-2 w-full border border-gray-200 rounded-lg cursor-pointer hover:border-gray-300 transition-colors bg-gradient-to-r from-gray-50 to-white">
-                    <span className="text-sm text-gray-500">Select skills</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen.skills ? "rotate-180" : ""} text-gray-400`} />
-                  </div>
-                  {dropdownOpen.skills && (
-                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                      <div className="p-2 border-b border-gray-100 flex">
-                        <input
-                          type="text"
-                          placeholder="Add custom skill..."
-                          value={customSkill}
-                          onChange={(e) => setCustomSkill(e.target.value)}
-                          onClick={(e) => e.stopPropagation()}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
-                            }
-                          }}
-                          className="w-full p-2 text-sm border border-gray-200 rounded-lg"
-                        />
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCustomAdd('skills', customSkill, setCustomSkill, skillsOptions);
-                          }}
-                          className="ml-2 px-3 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-medium"
-                        >
-                          Add
-                        </button>
-                      </div>
-                      <div >
-                        {skillsOptions.map(skill => (
-                          <div key={skill} onClick={() => handleMultiSelect('skills', skill)} className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 ${(formData.skills || []).includes(skill) ? "bg-blue-50" : ""}`}>
-                            <div className="flex items-center justify-between">
-                              <span className={`text-sm ${(formData.skills || []).includes(skill) ? "text-[#667eea] font-medium" : "text-gray-700"}`}>{skill}</span>
-                              {(formData.skills || []).includes(skill) && <span className="text-[#667eea]">✓</span>}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+               {/* Skills & Competencies Section */}
+<div ref={skillsRef} className="relative pt-2 col-span-1 md:col-span-2">
+  <label className="block font-semibold mb-2 text-sm text-gray-700 flex items-center gap-2">
+    <Award className="w-4 h-4 text-[#667eea]" />
+    Required Skills <span className="text-red-500">*</span>
+  </label>
+
+  <div className={`
+    group flex flex-wrap gap-2 p-2.5 min-h-[48px] 
+    bg-gradient-to-r from-gray-50 to-white 
+    border rounded-xl transition-all duration-300
+    ${isSkillDropdownOpen ? 'border-[#667eea] ring-2 ring-[#667eea]/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'}
+  `}>
+    {/* Selected Tags */}
+    {formData.skills.map((skill) => (
+      <div 
+        key={skill} 
+        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-[#667eea]/20 text-[#667eea] text-xs font-bold rounded-full shadow-sm animate-in fade-in zoom-in duration-200"
+      >
+        {skill}
+        <button 
+          type="button" 
+          onClick={() => removeSelectedItem('skills', skill)} 
+          className="hover:bg-red-50 p-0.5 rounded-full transition-colors"
+        >
+          <X size={12} className="text-gray-400 hover:text-red-500" />
+        </button>
+      </div>
+    ))}
+
+    <input
+      type="text"
+      className="flex-grow min-w-[140px] outline-none bg-transparent text-sm text-gray-800 placeholder:text-gray-400"
+      placeholder={formData.skills.length === 0 ? "Search or add skills (e.g. React, Java)..." : "Add more..."}
+      value={customSkillSearch}
+      onFocus={() => setIsSkillDropdownOpen(true)}
+      onChange={(e) => setCustomSkillSearch(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' && customSkillSearch) {
+          e.preventDefault();
+          handleSelectOrAddSkill(customSkillSearch);
+        }
+      }}
+    />
+  </div>
+
+  {/* Unified Dropdown Menu */}
+  {isSkillDropdownOpen && (
+    <div className="absolute z-50 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-2xl overflow-hidden animate-in slide-in-from-top-2 duration-200">
+      <div className="max-h-64 overflow-y-auto">
+        
+        {/* Results from Database */}
+        {filteredSkillOptions
+          .filter(s => 
+            s.toLowerCase().includes(customSkillSearch.toLowerCase()) && 
+            !formData.skills.includes(s)
+          )
+          .map((skill, index) => (
+            <button
+              key={index}
+              type="button"
+              className="w-full text-left px-5 py-3 hover:bg-[#667eea]/5 text-sm text-gray-700 transition-colors flex items-center justify-between group/item"
+              onClick={() => handleSelectOrAddSkill(skill)}
+            >
+              <span>{skill}</span>
+              <ChevronDown className="w-3 h-3 text-gray-300 group-hover/item:text-[#667eea] -rotate-90" />
+            </button>
+          ))}
+
+        {/* "Add New" button if skill doesn't exist */}
+        {customSkillSearch && !filteredSkillOptions.some(s => s.toLowerCase() === customSkillSearch.toLowerCase()) && (
+          <button
+            type="button"
+            className="w-full text-left px-5 py-4 bg-[#667eea]/5 text-[#667eea] text-sm font-bold hover:bg-[#667eea]/10 transition-all border-t border-[#667eea]/10"
+            onClick={() => handleSelectOrAddSkill(customSkillSearch)}
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-1.5 bg-white rounded-lg shadow-sm">
+                <Target size={16} className="text-[#764ba2]" />
+              </div>
+              <span>Add "<span className="underline italic">{customSkillSearch}</span>" as a new skill</span>
+            </div>
+          </button>
+        )}
+
+        {customSkillSearch === "" && filteredSkillOptions.length === 0 && (
+          <div className="px-5 py-8 text-center text-gray-400 text-xs italic">
+            Start typing to search or add skills...
+          </div>
+        )}
+      </div>
+    </div>
+  )}
+</div>
 
                 {/* Tags */}
                 <div ref={tagsRef} className="relative">
@@ -1643,21 +1776,41 @@ export default function PoolCampusHiringForm() {
 
                   {/* Contact person designation */}
                   <div>
-                    <label className="block mb-2 font-medium text-sm text-gray-700">Designation <span className="text-red-500">*</span></label>
-                    <div className="relative">
-                      <select 
-                        name="designation" 
-                        value={formData.contactPerson?.designation || ''} 
-                        onChange={handleContactChange} 
-                        className="w-full p-2 text-sm border border-gray-200 rounded-lg appearance-none bg-gradient-to-r from-gray-50 to-white pr-10 focus:ring-2 focus:ring-[#667eea]/50 focus:border-transparent focus:outline-none transition-all duration-200" 
-                        required
-                      >
-                        <option value="" disabled>Select designation</option>
-                        {designationOptions.map((designation) => (<option key={designation} value={designation}>{designation}</option>))}
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-                    </div>
+                    <label htmlFor="contactDesignation" className="block mb-2 font-medium text-sm text-gray-700">Designation <span className="text-red-500">*</span></label>
+                    <CreatableSelect
+                      isClearable
+                      isLoading={isLoadingDesignations}
+                      options={designationOptions}
+                      value={designationOptions.find(opt => opt.value === formData.contactDesignation) || null}
+                      styles={selectStyles}
+                      placeholder="Select or type designation"
+                      onChange={async (selected) => {
+                        if (!selected) {
+                          setFormData(prev => ({ ...prev, contactDesignation: '' }));
+                          return;
+                        }
+                        if (!selected.__isNew__) {
+                          setFormData(prev => ({ ...prev, contactDesignation: selected.value }));
+                          return;
+                        }
+                        // New designation typed — save to DB
+                        try {
+                          const res = await createCompanyMasterData({
+                            type: "COMPANY_DESIGNATION",
+                            value: selected.value,
+                            isCustom: true,
+                          });
+                          const savedValue = res.data.data.value;
+                          setDesignationOptions(prev => [...prev, { value: savedValue, label: savedValue }]);
+                          setFormData(prev => ({ ...prev, contactDesignation: savedValue }));
+                        } catch (err) {
+                          console.error("Failed to create designation", err);
+                          toast.error("Could not add designation.");
+                        }
+                      }}
+                    />
                   </div>
+                
                 </div>
 
                 {/* Contact Email and Mobile */}
