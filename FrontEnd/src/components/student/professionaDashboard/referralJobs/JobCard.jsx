@@ -458,12 +458,12 @@ const navigate = useNavigate();
             </div>
           </div>
 
-          <Link
-          to={`/${role}-dashboard/job-listing/${job._id}`}
+          <div
+         
           className="px-4 py-2 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition"
         >
           Details
-        </Link>
+        </div>
         </div>
       </div>
     </div>
