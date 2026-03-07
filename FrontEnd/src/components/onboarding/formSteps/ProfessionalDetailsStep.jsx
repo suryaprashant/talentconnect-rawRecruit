@@ -18,10 +18,11 @@ const domainKnowledgeOptions = [
   "EdTech", "Logistics & Supply Chain", "Gaming", "Telecommunications",
 ];
 
-const companyOptions = [
-  "Tech Mahindra", "Infosys", "Tata Consultancy Services (TCS)", "Wipro",
-  "HCL Technologies", "Cognizant", "Accenture", "Capgemini", "Other"
-];
+// const companyOptions = [
+//   ...(formData.currentCompany ? [formData.currentCompany] : []),
+//   "Tech Mahindra", "Infosys", "Tata Consultancy Services (TCS)", "Wipro",
+//   "HCL Technologies", "Cognizant", "Accenture", "Capgemini", "Other"
+// ];
 
 // --- Helper Components for Multi-Select UI (Copied from previous file for style) ---
 const SelectedTag = ({ item, onRemove }) => (
@@ -40,6 +41,20 @@ const SelectedTag = ({ item, onRemove }) => (
 
 
 export const ProfessionalDetailsStep = ({ onNext, onBack, formData, onChange }) => {
+  const companyOptions = [
+    ...new Set([
+      formData.currentCompany,
+      "Tech Mahindra",
+      "Infosys",
+      "Tata Consultancy Services (TCS)",
+      "Wipro",
+      "HCL Technologies",
+      "Cognizant",
+      "Accenture",
+      "Capgemini",
+      "Other"
+    ].filter(Boolean))
+  ];
   const [localFormData, setLocalFormData] = useState({
     totalExperience: "",
     domainKnowledge: [],

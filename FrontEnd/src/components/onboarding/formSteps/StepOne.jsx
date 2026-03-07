@@ -58,6 +58,33 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
       const parsedData = await response.json();
       // Pass the parsed data up to the parent state
       const education = parsedData.education?.[0] || {};
+      const experiences = (parsedData.work_experience || []).map(exp => ({
+        company: exp.organization ?? "",
+        role: exp.title ?? "",
+        startDate: exp.start_date ? new Date(Date.parse(exp.start_date)) : null,
+        endDate:
+          !exp.end_date || exp.end_date.toLowerCase() === "present"
+            ? null
+            : new Date(Date.parse(exp.end_date)),
+        description: Array.isArray(exp.description)
+          ? exp.description.join("\n")
+          : exp.description ?? "",
+        experienceCertificate: null,
+        isCurrent: !exp.end_date || exp.end_date?.toLowerCase() === "present"
+      }));
+      const convertExperienceToRange = (years) => {
+        if (years < 1) return "Less than 1 year";
+        if (years < 3) return "1-3 years";
+        if (years < 5) return "3-5 years";
+        if (years < 8) return "5-8 years";
+        if (years < 12) return "8-12 years";
+        if (years < 15) return "12-15 years";
+        return "15+ years";
+      };
+      const totalExperience = convertExperienceToRange(
+        parsedData.total_experience_years || 0
+      );
+      const currentCompany = experiences.find(exp => exp.isCurrent)?.company || "";
       onChange({
         name: parsedData.name ?? "",
         email: parsedData.email ?? "",
@@ -69,6 +96,10 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
         yearOfGraduation: education.year ?? "",
 
         skills: parsedData.skills ?? [],
+        experiences :  experiences,
+
+        totalExperience: totalExperience,
+        currentCompany: currentCompany,
 
         linkedin: parsedData.linkedin_url ?? "",
         github: parsedData.github_url ?? "",
