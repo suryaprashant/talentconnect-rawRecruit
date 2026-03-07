@@ -95,23 +95,43 @@ const handleAddCollege = async (name) => {
     fetchDegrees();
   }, []);
 
+  const normalizeDegree = (deg) => {
+    if (!deg) return "";
+
+    const map = {
+      "btech": "bacheloroftechnology",
+      "b.tech": "bacheloroftechnology",
+      "bacheloroftechnology": "bacheloroftechnology",
+
+      "be": "bachelorofengineering",
+      "b.e": "bachelorofengineering",
+      "bachelorofengineering": "bachelorofengineering",
+
+      "mtech": "masteroftechnology",
+      "m.tech": "masteroftechnology",
+      "masteroftechnology": "masteroftechnology",
+    };
+
+    const cleaned = deg.toLowerCase().replace(/\s|\./g, "");
+
+    return map[cleaned] || cleaned;
+  };
   useEffect(() => {
-  if (!formData.degree || degreeOptions.length === 0) return;
+    if (!formData.degree || degreeOptions.length === 0) return;
 
-  const match = degreeOptions.find(
-    (d) => d.label.toLowerCase().replace(/\s|\./g, "") ===
-           formData.degree.toLowerCase().replace(/\s|\./g, "")
-  );
+    const match = degreeOptions.find(
+      (d) => normalizeDegree(d.label) === normalizeDegree(formData.degree)
+    );
 
-  if (match) {
-    setSelectedDegreeId(match.value);
+    if (match) {
+      setSelectedDegreeId(match.value);
 
-    setLocalFormData(prev => ({
-      ...prev,
-      degree: match.label
-    }));
-  }
-}, [formData.degree, degreeOptions]);
+      setLocalFormData(prev => ({
+        ...prev,
+        degree: match.label
+      }));
+    }
+  }, [formData.degree, degreeOptions]);
 
   useEffect(() => {
     if (!selectedDegreeId) {
