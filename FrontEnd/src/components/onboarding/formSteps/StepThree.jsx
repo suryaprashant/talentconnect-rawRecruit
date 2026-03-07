@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect ,useMemo } from "react";
 import CreatableSelect from "react-select/creatable";
 import { UploadIcon, GraduationCap } from "lucide-react";
@@ -396,14 +394,15 @@ const handleAddCollege = async (name) => {
               isDisabled={!localFormData.degree}
               options={streamOptions}
               value={
-                streamOptions.find(
-                  (opt) => opt.value === localFormData.specialization
-                ) || null
+                localFormData.specialization
+                  ? streamOptions.find(opt => opt.label === localFormData.specialization)
+                    || { value: localFormData.specialization, label: localFormData.specialization }
+                  : null
               }
               onChange={(sel) =>
                 setLocalFormData((p) => ({
                   ...p,
-                  specialization: sel?.value || "",
+                  specialization: sel?.label || "",
                 }))
               }
               onCreateOption={async (val) => {
@@ -414,16 +413,18 @@ const handleAddCollege = async (name) => {
                     parent: selectedDegreeId,
                   });
                 
-                  const newValue = res.data.data.value;
+                  const newLabel = res.data.data.value;
+                  const newId = res.data.data._id;
                 
                   setStreamOptions((prev) => [
                     ...prev,
-                    { value: res.data.data._id, label: newValue },
+                    { value: newId, label: newLabel },
                   ]);
                 
+                  // Store the name (label), not the _id
                   setLocalFormData((p) => ({
                     ...p,
-                    specialization: res.data.data._id,
+                    specialization: newLabel,
                   }));
                 } catch (err) {
                   console.error("Error adding stream", err);
