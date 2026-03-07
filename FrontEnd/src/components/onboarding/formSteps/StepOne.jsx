@@ -19,6 +19,31 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
     const data = new FormData();
     data.append('resume', selectedFile);
 
+    // try {
+    //   const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/upload/resume`, {
+    //     method: 'POST',
+    //     body: data,
+    //     credentials: "include",
+    //   });
+
+    //   if (!response.ok) {
+    //     throw new Error('Failed to parse resume. You can still continue and fill details manually.');
+    //   }
+
+    //   const parsedData = await response.json();
+    //   // Pass the parsed data up to the parent state
+    //   onChange(parsedData);
+      
+    //   setIsSuccess(true);
+    //   setMessage("Success! Resume parsed successfully. Redirecting...");
+    //   setIsLoading(false);
+      
+    //   // Auto-advance after success
+    //   setTimeout(() => {
+    //     onNext();
+    //   }, 1500);
+
+    // }
     try {
       const response = await fetch(`${import.meta.env.VITE_Backend_URL}/api/upload/resume`, {
         method: 'POST',
@@ -32,12 +57,28 @@ export const StepOne = ({ onNext, onCancel, onChange }) => {
 
       const parsedData = await response.json();
       // Pass the parsed data up to the parent state
-      onChange(parsedData);
+      const education = parsedData.education?.[0] || {};
+      onChange({
+        name: parsedData.name ?? "",
+        email: parsedData.email ?? "",
+        phone: parsedData.phone ?? "",
+
+        college: education.institution ?? "",
+        degree: education.degree ?? "",
+        specialization: education.field_of_study ?? "",
+        yearOfGraduation: education.year ?? "",
+
+        skills: parsedData.skills ?? [],
+
+        linkedin: parsedData.linkedin_url ?? "",
+        github: parsedData.github_url ?? "",
+        portfolio: parsedData.portfolio_url ?? "",
+      });
       
       setIsSuccess(true);
       setMessage("Success! Resume parsed successfully. Redirecting...");
       setIsLoading(false);
-      
+      // console.log(formData);
       // Auto-advance after success
       setTimeout(() => {
         onNext();
