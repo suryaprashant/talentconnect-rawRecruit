@@ -230,6 +230,7 @@ import RefferalJobPosting from './pages/fresher/fresherDashboard/refferalJobs/Re
 import RefferalJobDetail from './pages/fresher/fresherDashboard/refferalJobs/RefferalJobDetails'
 import RefferalPosting from './pages/professional/dashboard/refferalJobs/RefferalJobListing'
 import RefferalDetail from './pages/professional/dashboard/refferalJobs/RefferalJobDetails'
+import ReferralManagement from './pages/professional/ReferralManagement/ReferralManagement'
 import StudentReferralJobs from './pages/students/studentDashboard/refferalJobs/RefferalJobListing'
 import StudentRefferalJobDetails from './pages/students/studentDashboard/refferalJobs/RefferalJobDetails'
 import OncampusApplicationStatus from "./pages/company/applicationStatus/OncampusApplicationStatus";
@@ -267,9 +268,11 @@ import CollegeDetailPage from "./pages/company/employerDashboard/CollegeDetailPa
 import CompanyPoolCampusLayout from "./components/company/CompanyPoolCampusLayout";
 import OffCampusJobs from "./pages/students/studentDashboard/offCampusListing/offCampusJobListing";
 import OffCampusLayout from "./components/student/studentDashboard/offCampusListing/OffCampusLayout";
+import ReferralLayout from "./components/student/professionaDashboard/referralJobs/ReferralJobLayout";
 import InternshipLayout from "./components/student/studentDashboard/intershipOpportunity/InternshipLayout";
 import InternshipListingEmployer from "./pages/employer/jobManagement/internship/internahipListing";
 import SaveJob from "./components/common/savedJob/JobDetail"
+
 // Create query client
 const queryClient = new QueryClient();
 function AppRoutes() {
@@ -278,6 +281,7 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Auth Routes */}
+      
       <Route path="/mock" element={<PostIntership />} />
       <Route path="/userselection" element={<RoleSelection />} />
       <Route path="/" element={<HomapPage />} />
@@ -385,7 +389,7 @@ function AppRoutes() {
               <Route path="/student-dashboard/hackathon" element={<Hackathon />} />
               <Route path="/student-dashboard/hackathon/:id" element={<Detail />} />
               <Route path="/student-dashboard/hackathon/register/:event_ID" element={<HackathonRegistration />} />
-              <Route path="/student-dashboard/Referral" element={<StudentReferralJobs />} />
+              <Route path="/student-dashboard/Referral" element={<ReferralLayout />} />
               <Route path="/student-dashboard/Referral/:jobId" element={<StudentRefferalJobDetails />} />
               {/* Student Events Routes */}
               <Route path="/student-events/hackathon" element={<EventList event_name="hackathon" />} />
@@ -433,7 +437,7 @@ function AppRoutes() {
               <Route path="/fresher-dashboard/Off-campus" element={<OffCampusLayout />} />
               <Route path="/fresher-dashboard/Off-campus/:jobId" element={<FOffCampusJobDetail />} />
 
-              <Route path="/fresher-dashboard/Referral" element={<RefferalJobPosting />} />
+              <Route path="/fresher-dashboard/Referral" element={<ReferralLayout />} />
               <Route path="/fresher-dashboard/Referral/:jobId" element={<RefferalJobDetail />} />
 
               <Route path="/fresher-dashboard/hackathon" element={<FresherHackathon />} />
@@ -461,11 +465,13 @@ function AppRoutes() {
               <Route path="/professional-dashboard/Job-listing/:jobId" element={<ProfessionalJobDetails />} />
               <Route path="/professional-dashboard/hackathon" element={<ProfessionalHackathon />} />
               <Route path="/professional-dashboard/hackathon/:id" element={<ProfessionalDetail />} />
-              <Route path="/professional-dashboard/Referral" element={<RefferalPosting />} />
+              <Route path="/professional-dashboard/Referral" element={<ReferralLayout />} />
               <Route path="/professional-dashboard/Referral/:jobId" element={<RefferalDetail />} />
+              <Route path="/professional-dashboard/Referral-management" element={<ReferralManagement />} />
 
               <Route path='professional/service-request' element={<RefPostingPage />} />
               <Route path='professional/service-request/post' element={<PostReferralJobPage />} />
+          
               <Route path='professional/service-request/referral' element={<ManageReferralJobs />} />
               <Route path='professional/service-request/totalapplicants' element={<TotalApplicantsPage />} />
               <Route path='professional/service-request/applicant' element={<OffCampusApplicant />} />

@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import Auth from "../models/authModel.js";
 
 const optionalAuth = async (req, res, next) => {
-    console.log("Optional Auth middleware called, ladkat");
+    
   try {
     let token;
 

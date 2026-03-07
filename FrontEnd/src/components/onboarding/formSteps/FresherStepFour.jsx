@@ -5,6 +5,10 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { City } from 'country-state-city';
 import CreatableSelect from 'react-select/creatable';
+import {
+  getCompanyMasterDataByType,
+  createCompanyMasterData
+} from "@/lib/Company_AxiosInstance";
 
 // --- STATIC OPTIONS ---
 const industryOptions = [
@@ -62,6 +66,8 @@ const SelectedTag = ({ item, onRemove }) => (
 
 export const FresherStepFour = ({ onNext, onBack }) => {
     const { formData, updateFormData } = useRole();
+    const [industryOptions, setIndustryOptions] = useState([]);
+    const [jobRoleOptions, setJobRoleOptions] = useState([]);
 
     // --- Location Options (React-Select) ---
     const locationOptions = useMemo(() => {
@@ -73,6 +79,17 @@ export const FresherStepFour = ({ onNext, onBack }) => {
             ?.sort((a, b) => a.label.localeCompare(b.label));
     }, []);
 
+    const [localFormData, setLocalFormData] = useState({
+        industry: Array.isArray(formData.industry)
+          ? formData.industry
+          : formData.industry ? [formData.industry] : [],
+        jobRoles: Array.isArray(formData.jobRoles)
+          ? formData.jobRoles
+          : formData.jobRoles
+            ? [formData.jobRoles]
+            : [],
+      });
+
     const [dropdownOpen, setDropdownOpen] = useState({
         industry: false,
         jobRoles: false,
@@ -80,6 +97,35 @@ export const FresherStepFour = ({ onNext, onBack }) => {
 
     const industryRef = useRef(null);
     const jobRolesRef = useRef(null);
+
+    useEffect(() => {
+        const fetchMasterData = async () => {
+          try {
+            const [industryRes, jobRoleRes] = await Promise.all([
+              getCompanyMasterDataByType("INDUSTRY_TYPE"),
+              getCompanyMasterDataByType("JOB_ROLE")
+            ]);
+
+            setIndustryOptions(
+              industryRes.data.data.map(item => ({
+                label: item.value,
+                value: item.value
+              }))
+            );
+
+            setJobRoleOptions(
+              jobRoleRes.data.data.map(item => ({
+                label: item.value,
+                value: item.value
+              }))
+            );
+          } catch (err) {
+            console.error("Error fetching company master data", err);
+          }
+        };
+
+        fetchMasterData();
+      }, []);
 
     // Close dropdowns when clicking outside
     useEffect(() => {
@@ -187,6 +233,10 @@ export const FresherStepFour = ({ onNext, onBack }) => {
     };
 
     const handleClick = () => {
+        updateFormData({
+            industry: localFormData.industry,
+            jobRoles: localFormData.jobRoles,
+        });
         onNext();
     }
 
@@ -293,20 +343,99 @@ export const FresherStepFour = ({ onNext, onBack }) => {
                     {/* Wider Form Section */}
                     <div className="space-y-6">
                         {/* Interested Industry Type (Multi-Select Dropdown) */}
-                        <MultiSelectDropdown
-                            field="industry"
-                            options={industryOptions}
-                            label="Interested Industry Type"
-                            ref={industryRef}
-                        />
-
-                        {/* Interested Job Roles (Multi-Select Dropdown) */}
-                        <MultiSelectDropdown
-                            field="jobRoles"
+                        <div>
+                          <label htmlFor="industry" className="block text-gray-700 font-medium text-sm mb-2">
+                            Interested Industry Type
+                          </label>
+                          <div className="relative">
+                            <CreatableSelect
+                              isClearable
+                              placeholder="Select or add industry..."
+                              options={industryOptions}
+                              value={
+                                localFormData.industry.length > 0
+                                  ? { label: localFormData.industry[0], value: localFormData.industry[0] }
+                                  : null
+                              }
+                              onChange={(selected) => {
+                                const arr = selected ? [selected.value] : [];
+                                setLocalFormData(prev => ({ ...prev, industry: arr }));
+                                updateFormData({ industry: arr });
+                              }}
+                              onCreateOption={async (inputValue) => {
+                                try {
+                                  const res = await createCompanyMasterData({
+                                    type: "INDUSTRY_TYPE",
+                                    value: inputValue
+                                  });
+                              
+                                  const newOption = {
+                                    label: res.data.data.value,
+                                    value: res.data.data.value
+                                  };
+                              
+                                  const arr = [newOption.value];
+                                  setIndustryOptions(prev => [...prev, newOption]);
+                                  setLocalFormData(prev => ({ ...prev, industry: arr }));
+                                  updateFormData({ industry: arr });
+                                } catch (err) {
+                                  console.error("Error creating industry", err);
+                                }
+                              }}
+                            />
+                            <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </div>
+                        </div>
+                          
+                        {/* Job Roles */}
+                        <div
+                          ref={jobRolesRef}
+                          className="relative"
+                        >
+                          <label className="block text-gray-700 font-medium text-sm mb-2">
+                            Interested Job Roles
+                          </label>
+                          
+                          <CreatableSelect
+                            isMulti
+                            placeholder="Select or add job roles..."
                             options={jobRoleOptions}
-                            label="Interested Job Roles"
-                            ref={jobRolesRef}
-                        />
+                            value={localFormData.jobRoles.map(role => ({
+                              label: role,
+                              value: role
+                            }))}
+                            onChange={(selectedOptions) => {
+                              const values = selectedOptions ? selectedOptions.map(opt => opt.value) : [];
+                              setLocalFormData(prev => ({ ...prev, jobRoles: values }));
+                              updateFormData({ jobRoles: values });  // ← ADD THIS
+                            }}
+                            onCreateOption={async (inputValue) => {
+                              try {
+                                const res = await createCompanyMasterData({
+                                  type: "JOB_ROLE",
+                                  value: inputValue
+                                });
+                            
+                                const newOption = {
+                                  label: res.data.data.value,
+                                  value: res.data.data.value
+                                };
+                            
+                                setJobRoleOptions(prev => [...prev, newOption]);
+                                // Use functional updater to avoid stale closure
+                                setLocalFormData(prev => {
+                                  const updated = [...prev.jobRoles, newOption.value];
+                                  updateFormData({ jobRoles: updated });
+                                  return { ...prev, jobRoles: updated };
+                                });
+                              } catch (err) {
+                                console.error("Error creating job role", err);
+                              }
+                            }}
+                          />
+                        </div>
 
                         {/* Preferred Job Locations */}
                         <div>
@@ -513,24 +642,118 @@ export const FresherStepFour = ({ onNext, onBack }) => {
 
                                     {/* Role Dropdown */}
                                     <div className="relative mt-4">
-                                        <label className="block text-gray-700 font-medium text-sm mb-2">Role</label>
-                                        <div className="flex items-center">
-                                            <Briefcase className="w-5 h-5 text-gray-400 mr-3" />
-                                            <div className="relative flex-grow">
-                                                <select
-                                                    name="role"
-                                                    value={exp.role}
-                                                    onChange={(e) => handleExperienceChange(index, e)}
-                                                    className="appearance-none w-full p-4 bg-transparent border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
-                                                >
-                                                    <option value="" disabled>Select Role</option>
-                                                    {roleOptions.map(role => (
-                                                        <option key={role} value={role}>{role}</option>
-                                                    ))}
-                                                </select>
-                                                <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                                            </div>
+                                      <label className="block text-gray-700 font-medium text-sm mb-2">Role</label>
+                                      <div className="flex items-center">
+                                        <Briefcase className="w-5 h-5 text-gray-400 mr-3" />
+                                        <div className="flex-grow">
+                                          <CreatableSelect
+                                            placeholder="Select or add role..."
+                                            options={jobRoleOptions}
+                                            value={
+                                              exp.role
+                                                ? { label: exp.role, value: exp.role }
+                                                : null
+                                            }
+                                            onChange={(selected) => {
+                                              const newExperiences = [...(formData.experiences || [])];
+                                              newExperiences[index] = {
+                                                ...newExperiences[index],
+                                                role: selected ? selected.value : ""
+                                              };
+                                              updateFormData({ experiences: newExperiences });
+                                            }}
+                                            onCreateOption={async (inputValue) => {
+                                              try {
+                                                const res = await createCompanyMasterData({
+                                                  type: "JOB_ROLE",
+                                                  value: inputValue
+                                                });
+                                            
+                                                const newOption = {
+                                                  label: res.data.data.value,
+                                                  value: res.data.data.value
+                                                };
+                                            
+                                                // Update dropdown options
+                                                setJobRoleOptions(prev => [...prev, newOption]);
+                                            
+                                                // Update experience role
+                                                const newExperiences = [...(formData.experiences || [])];
+                                                newExperiences[index] = {
+                                                  ...newExperiences[index],
+                                                  role: newOption.value
+                                                };
+                                            
+                                                updateFormData({ experiences: newExperiences });
+                                              } catch (err) {
+                                                console.error("Error creating job role", err);
+                                              }
+                                            }}
+                                            styles={{
+                                              control: (base, state) => ({
+                                                ...base,
+                                                borderRadius: "0.75rem",
+                                                border: "1px solid #d1d5db",
+                                                padding: "8px 16px",
+                                                minHeight: "56px",
+                                                boxShadow: state.isFocused
+                                                  ? "0 0 0 3px rgba(102,126,234,0.1)"
+                                                  : "none",
+                                                borderColor: state.isFocused ? "#667eea" : "#d1d5db",
+                                                "&:hover": {
+                                                  borderColor: "#667eea"
+                                                }
+                                              }),
+                                              valueContainer: (base) => ({
+                                                ...base,
+                                                padding: 0
+                                              }),
+                                              input: (base) => ({
+                                                ...base,
+                                                margin: 0,
+                                                padding: 0,
+                                                color: "#374151"
+                                              }),
+                                              placeholder: (base) => ({
+                                                ...base,
+                                                color: "#9ca3af"
+                                              }),
+                                              singleValue: (base) => ({
+                                                ...base,
+                                                color: "#374151"
+                                              }),
+                                              indicatorSeparator: () => ({
+                                                display: "none"
+                                              }),
+                                              dropdownIndicator: (base) => ({
+                                                ...base,
+                                                color: "#9ca3af",
+                                                "&:hover": {
+                                                  color: "#667eea"
+                                                }
+                                              }),
+                                              menu: (base) => ({
+                                                ...base,
+                                                borderRadius: "0.75rem",
+                                                border: "1px solid #e5e7eb",
+                                                marginTop: "8px",
+                                                zIndex: 50
+                                              }),
+                                              option: (base, state) => ({
+                                                ...base,
+                                                backgroundColor: state.isSelected
+                                                  ? "rgba(102,126,234,0.1)"
+                                                  : state.isFocused
+                                                  ? "rgba(102,126,234,0.05)"
+                                                  : "white",
+                                                color: state.isSelected ? "#5b21b6" : "#374151",
+                                                padding: "12px 16px",
+                                                cursor: "pointer"
+                                              })
+                                            }}
+                                          />
                                         </div>
+                                      </div>
                                     </div>
 
                                     {/* Date Range */}

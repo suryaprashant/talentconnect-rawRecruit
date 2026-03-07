@@ -50,12 +50,12 @@ function StudentSidebar({ activePath }) {
           label="Internship Opportunities" 
           active={activePath === '/student-dashboard/Internship'} 
         /> 
-        {/* <SidebarNavItem 
+         <SidebarNavItem 
           to="/student-dashboard/Referral" 
           icon={<FiUsers />} 
           label="Referral Jobs" 
           active={activePath === '/student-dashboard/Referral'} 
-        /> */}
+        /> 
       </SidebarNavGroup>
 
       {/* <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>
@@ -119,13 +119,13 @@ function StudentSidebar({ activePath }) {
           label="Internship Opportunities" 
           active={activePath === '/application-status/Internship'} 
         /> 
-        {/* <SidebarNavItem 
+        <SidebarNavItem 
           to="/application-status/Referral" 
           icon={<FiUsers />} 
           label="Referral Jobs" 
           active={activePath === '/application-status/Referral'} 
         />
-        <SidebarNavItem 
+        {/*<SidebarNavItem 
           to="/application-status/event-status" 
           icon={<FiAward />} 
           label="Event Management" 

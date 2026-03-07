@@ -187,7 +187,12 @@
 // }
 
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  createCollegeMasterData,
+  getCollegeMasterDataByType
+} from "@/lib/College_AxiosIntance";
+import CreatableSelect from "react-select/creatable";
 
 // Validation functions
 const validateLinkedInURL = (url) => {
@@ -240,6 +245,8 @@ export default function CoordinatorDetails({
   totalSteps,
 }) {
   const [errors, setErrors] = useState({});
+  const [designationOptions, setDesignationOptions] = useState([]);
+  const [loadingDesignation, setLoadingDesignation] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -275,6 +282,47 @@ export default function CoordinatorDetails({
   // LinkedIn validation helper function
   const isValidLinkedIn = (url) => {
     return validateLinkedInURL(url) === "";
+  };
+
+  useEffect(() => {
+    fetchDesignations();
+  }, []);
+
+  const fetchDesignations = async () => {
+    try {
+      const res = await getCollegeMasterDataByType("COLLEGE_DESIGNATION");
+
+      const formatted = res.data.data.map((item) => ({
+        value: item.value,
+        label: item.value,
+      }));
+
+      setDesignationOptions(formatted);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleCreate = async (inputValue) => {
+    try {
+      setLoadingDesignation(true);
+
+      await createCollegeMasterData({
+        type: "COLLEGE_DESIGNATION",
+        value: inputValue,
+      });
+
+      const newOption = { value: inputValue, label: inputValue };
+
+      setDesignationOptions((prev) => [...prev, newOption]);
+
+      updateFormData("designation", inputValue);
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingDesignation(false);
+    }
   };
 
   const handleNext = () => {
@@ -373,24 +421,39 @@ export default function CoordinatorDetails({
                 <label className="block font-medium mb-3 text-gray-700 text-lg">
                   Designation *
                 </label>
-                <select
-                  name="designation"
-                  value={formData.designation || ""}
-                  onChange={handleChange}
-                  className={`w-full p-4 bg-white/70 backdrop-blur-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent transition-all duration-200 text-lg ${
-                    errors.designation 
-                      ? 'border-red-300 focus:ring-red-300' 
-                      : 'border-gray-200/80'
-                  }`}
-                  required
-                >
-                  <option value="" className="text-gray-400 text-lg">Select Designation</option>
-                  {designations.map((designation, index) => (
-                    <option key={index} value={designation} className="text-lg">
-                      {designation}
-                    </option>
-                  ))}
-                </select>
+
+                <CreatableSelect
+                  options={designationOptions}
+                  isLoading={loadingDesignation}
+                  value={
+                    formData.designation
+                      ? { value: formData.designation, label: formData.designation }
+                      : null
+                  }
+                  onChange={(selectedOption) =>
+                    updateFormData("designation", selectedOption?.value || "")
+                  }
+                  onCreateOption={handleCreate}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const inputValue = e.target.value?.trim();
+                    
+                      if (!inputValue) return;
+                    
+                      const exists = designationOptions.some(
+                        (option) =>
+                          option.value.toLowerCase() === inputValue.toLowerCase()
+                      );
+                    
+                      if (!exists) {
+                        e.preventDefault(); // prevent default select behavior
+                        handleCreate(inputValue);
+                      }
+                    }
+                  }}
+                  placeholder="Select or create designation"
+                />
+
                 {errors.designation && (
                   <p className="text-red-500 text-sm mt-2">
                     {errors.designation}

@@ -2,6 +2,35 @@ import mongoose from 'mongoose';
 import { JobPostingTable } from '../models/jobPostingsModel.js';
 import Application from "../models/applicationModel.js";
 import OnboardingModel from '../models/studentonboardingModel.js';
+import { getStudentService } from './studentService.js';
+export const getProfessionalReferralsService = async (userId) => {
+  try {
+        // Step 1: 
+        // Get the student/onboarding profile first
+        const authUserId=userId
+        const userProfile = await getStudentService(authUserId);
+        const onboardingId = userProfile?.data?._id;
+
+        if (!onboardingId) {
+            console.log("No onboarding profile found for this user.");
+            return [];
+        }
+
+        console.log("Searching for jobs with candidatePosted ID:", onboardingId);
+
+        // Step 2: Query using the onboardingId found in your Compass screenshot
+        return await JobPostingTable.find({
+            candidatePosted: onboardingId,
+            jobType: "Referral"
+        })
+        .sort({ createdAt: -1 })
+        .lean();
+
+    } catch (error) {
+        console.error("Service Error:", error.message);
+        throw error;
+    }
+};
 
 // get totel job posted and it is in active state 
 export const getTotalJobPostedCount = async (filters = {}) => {
@@ -167,8 +196,10 @@ export const getReferralJobsService = async (jobType, candidatePostedId) => {
     try {
         const response = await JobPostingTable.find({
             jobType: jobType,
+            approvalStatus: "Approved", 
             candidatePosted: { $ne: candidatePostedId }
         })
+            .populate('candidatePosted')
             .lean()
             .sort({ createdAt: -1 });
 
@@ -404,12 +435,43 @@ export const getJobPostedByCompanyService = async (Id, jobType, userType , authU
 
 
 export const deleteJobByIdService = async (jobId, companyId) => {
+    const session = await mongoose.startSession();
+
     try {
-        const response = await JobPostingTable.findOneAndDelete({ _id: jobId, companyPosted: companyId });
-        // console.log(response);
-        return { success: true, msg: "Job Deleted" };
+        session.startTransaction();
+
+        // 1️⃣ Verify job belongs to company
+        const job = await JobPostingTable.findOne(
+            { _id: jobId, companyPosted: companyId },
+            null,
+            { session }
+        );
+
+        if (!job) {
+            throw new Error("Job not found or unauthorized");
+        }
+
+        // 2️⃣ Delete all applications for this job
+        await Application.deleteMany(
+            { job: jobId },
+            { session }
+        );
+
+        // 3️⃣ Delete the job itself
+        await JobPostingTable.deleteOne(
+            { _id: jobId },
+            { session }
+        );
+
+        await session.commitTransaction();
+        session.endSession();
+
+        return { success: true, msg: "Job and related applications deleted successfully" };
+
     } catch (error) {
-        console.log("Error: ", error.message);
-        throw new Error("Failed to fetch");
+        await session.abortTransaction();
+        session.endSession();
+        console.error("Delete Job Error:", error.message);
+        throw error;
     }
-}
+};

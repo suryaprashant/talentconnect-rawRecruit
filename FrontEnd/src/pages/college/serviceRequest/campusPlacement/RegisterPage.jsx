@@ -6,51 +6,25 @@ import CreatableSelect from 'react-select/creatable';
 import { City } from 'country-state-city';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import { getMasterDataByType, createMasterData } from "../../../../lib/User_AxiosInstance";
+import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
+import {
+  createCollegeMasterData,
+  getCollegeMasterDataByType
+} from "@/lib/College_AxiosIntance";
 
 export default function RegisterPage({ onBackClick }) {
-    const degreeStreamMapping = {
-        'B.Tech': ['Computer Science', 'Mechanical', 'Civil', 'Electrical', 'Electronics', 'Bio-medical', 'Information Technology', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'],
-        'B.E': ['Computer Science', 'Mechanical Engineering', 'Civil Engineering', 'Electrical Engineering', 'Electronics & Communication', 'Information Technology', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'],
-        'M.Tech': ['Computer Science', 'Data Science', 'AI & Machine Learning', 'Cyber Security', 'VLSI Design', 'Structural Engineering'],
-        'B.Sc': ['Computer Science', 'Mathematics', 'Physics', 'Chemistry', 'Statistics', 'Biology'],
-        'M.Sc': ['Computer Science', 'Data Science', 'Mathematics', 'Physics', 'Chemistry', 'Statistics', 'Biology'],
-        'MBA': ['Marketing', 'Finance', 'Human Resources', 'Operations Management', 'IT & Systems', 'International Business'],
-        'BBA': ['Marketing', 'Finance', 'Human Resources', 'Operations Management'],
-        'B.Com': ['Accounting', 'Finance', 'Taxation', 'Economics', 'Marketing'],
-        'M.Com': ['Accounting', 'Finance', 'Taxation', 'International Business'],
-        'B.A': ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology'],
-        'M.A': ['History', 'Political Science', 'Sociology', 'English Literature', 'Economics', 'Psychology'],
-        'PhD': ['All Specializations'],
-        'Postgraduate Diploma': ['Varies by Specialization'],
-    };
 
-    const degreeOptions = Object.keys(degreeStreamMapping).sort();
-    
-    const designationOptions = ['Professor', 'HOD', 'Placement Officer', 'Dean', 'Coordinator'];
-    const amenitiesOptions = ['Auditorium', 'Seminar Hall', 'Interview Rooms', 'Computer Labs', 'Wi-Fi Access', 'Projector', 'Parking', 'Refreshments'];
-    const minStudentsOptions = ['1-10', '11-25', '26-50', '51-100', '101-200', '200+'];
-    const companyTypeOptions = ["MNC", "Startup", "SME", "Public Sector"];
+    // ─── Static config (unchanged) ────────────────────────────────────────────
+   // const designationOptions  = ['Professor', 'HOD', 'Placement Officer', 'Dean', 'Coordinator'];
+   const [designationOptions, setDesignationOptions] = useState([]);
+const [isLoadingDesignation, setIsLoadingDesignation] = useState(false);
+    const amenitiesOptions    = ['Auditorium', 'Seminar Hall', 'Interview Rooms', 'Computer Labs', 'Wi-Fi Access', 'Projector', 'Parking', 'Refreshments'];
+    const minStudentsOptions  = ['1-10', '11-25', '26-50', '51-100', '101-200', '200+'];
     const proposedModeOptions = ["Online", "Offline", "Hybrid"];
-    
-    const branchOptions = [
-        'Computer Science',
-        'Information Technology',
-        'Electronics & Communication',
-        'Electrical Engineering',
-        'Mechanical Engineering',
-        'Civil Engineering',
-        'Chemical Engineering',
-        'Biotechnology',
-        'Aerospace Engineering',
-        'Bio-medical',
-        'Mathematics',
-        'Physics',
-        'Chemistry',
-        'Statistics',
-        'Biology',
-        'All Branches'
-    ];
 
+    // ─── Initial form state ────────────────────────────────────────────────────
+    // degree / stream now store { value: _id, label: name } objects
     const initialFormState = {
         degree: [],
         stream: [],
@@ -60,11 +34,12 @@ export default function RegisterPage({ onBackClick }) {
         salaryValue: '',
         tentativeStartDate: '',
         tentativeEndDate: '',
-        rounds: Array.from({ length: 3 }, (_, i) => ({ 
-            id: i + 1, 
-            branch: '', 
-            students: '', 
-            skills: '' 
+        rounds: Array.from({ length: 3 }, (_, i) => ({
+            id: i + 1,
+            degree: '',   // plain string label for the table rows (keep simple select)
+            stream: '',
+            students: '',
+            skills: ''
         })),
         collegeLocation: null,
         coordinatorName: '',
@@ -82,42 +57,67 @@ export default function RegisterPage({ onBackClick }) {
     const [formData, setFormData] = useState(() => {
         const savedData = localStorage.getItem('pendingRegistration');
         if (savedData) {
-            try {
-                return JSON.parse(savedData);
-            } catch (e) {
-                return initialFormState;
-            }
+            try { return JSON.parse(savedData); }
+            catch (e) { return initialFormState; }
         }
         return initialFormState;
     });
 
-    const [errors, setErrors] = useState({});
-    const [alert, setAlert] = useState({ show: false, message: '', type: '' });
+    // ─── UI State ──────────────────────────────────────────────────────────────
+    const [errors, setErrors]               = useState({});
+    const [alert, setAlert]                 = useState({ show: false, message: '', type: '' });
     const [descriptionError, setDescriptionError] = useState("");
 
-    const [dropdownOpen, setDropdownOpen] = useState({ 
-        amenities: false, 
-        companyType: false,
-        degree: false,
-        stream: false
+    const [dropdownOpen, setDropdownOpen] = useState({
+        amenities: false,
     });
-    
+
     const [customAmenity, setCustomAmenity] = useState('');
-    const [customDegree, setCustomDegree] = useState('');
-    const [customCompanyType, setCustomCompanyType] = useState('');
-    const [customStream, setCustomStream] = useState('');
 
+    // ─── Dynamic degree / stream API state ────────────────────────────────────
+    const [degreeOptions,      setDegreeOptions]      = useState([]);
+    const [streamOptions,      setStreamOptions]      = useState([]);
+    const [selectedDegreeIds,  setSelectedDegreeIds]  = useState([]);
+    const [isLoadingDegrees,   setIsLoadingDegrees]   = useState(false);
+    const [isLoadingStreams,    setIsLoadingStreams]    = useState(false);
+
+    // ─── Dynamic company type API state ───────────────────────────────────────
+    const [companyTypeOptions,    setCompanyTypeOptions]    = useState([]);
+    const [isLoadingCompanyTypes, setIsLoadingCompanyTypes] = useState(false);
+
+    // ─── Refs ──────────────────────────────────────────────────────────────────
     const amenitiesRef = useRef(null);
-    const companyTypeRef = useRef(null);
-    const degreeRef = useRef(null);
-    const streamRef = useRef(null);
 
+    // ─── City options ──────────────────────────────────────────────────────────
     const cityOptions = useMemo(() =>
         City.getCitiesOfCountry('IN').map(city => ({
             value: city.name,
             label: city.name,
         })),
     []);
+
+    // ─── Persist form + click-outside for custom dropdowns ────────────────────
+    useEffect(() => {
+  const fetchDesignations = async () => {
+    setIsLoadingDesignation(true);
+    try {
+     const res = await getCollegeMasterDataByType("COLLEGE_DESIGNATION");
+
+      const formatted = (res?.data?.data || []).map(item => ({
+        value: item.value,
+        label: item.value,
+      }));
+
+      setDesignationOptions(formatted);
+    } catch (err) {
+      console.error("Error fetching designations", err);
+    } finally {
+      setIsLoadingDesignation(false);
+    }
+  };
+
+  fetchDesignations();
+}, []);
 
     useEffect(() => {
         localStorage.setItem('pendingRegistration', JSON.stringify(formData));
@@ -128,97 +128,133 @@ export default function RegisterPage({ onBackClick }) {
             if (companyTypeRef.current && !companyTypeRef.current.contains(event.target)) {
                 setDropdownOpen(prev => ({ ...prev, companyType: false }));
             }
-            if (degreeRef.current && !degreeRef.current.contains(event.target)) {
-                setDropdownOpen(prev => ({ ...prev, degree: false }));
-            }
-            if (streamRef.current && !streamRef.current.contains(event.target)) {
-                setDropdownOpen(prev => ({ ...prev, stream: false }));
-            }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => { document.removeEventListener('mousedown', handleClickOutside); };
     }, [formData]);
 
+    // ─── Fetch company types on mount ─────────────────────────────────────────
     useEffect(() => {
-        setFormData(prev => ({ ...prev, stream: [] }));
-    }, [formData.degree]);
+        const fetchCompanyTypes = async () => {
+            setIsLoadingCompanyTypes(true);
+            try {
+                const res = await getCompanyMasterDataByType('COMPANY_TYPE');
+                setCompanyTypeOptions(
+                    (res?.data?.data || []).map(item => ({ value: item.value, label: item.value }))
+                );
+            } catch (err) {
+                console.error("Error fetching company types", err);
+            } finally {
+                setIsLoadingCompanyTypes(false);
+            }
+        };
+        fetchCompanyTypes();
+    }, []);
 
+    // ─── Fetch degrees on mount ────────────────────────────────────────────────
+    useEffect(() => {
+        const fetchDegrees = async () => {
+            setIsLoadingDegrees(true);
+            try {
+                const res = await getMasterDataByType("DEGREE");
+                setDegreeOptions(
+                    res.data.data.map((item) => ({
+                        value: item._id,
+                        label: item.value,
+                    }))
+                );
+            } catch (err) {
+                console.error("Error fetching degrees", err);
+            } finally {
+                setIsLoadingDegrees(false);
+            }
+        };
+        fetchDegrees();
+    }, []);
+
+    // ─── Fetch streams whenever selected degrees change ────────────────────────
+    useEffect(() => {
+        if (selectedDegreeIds.length === 0) {
+            setStreamOptions([]);
+            return;
+        }
+        const fetchStreams = async () => {
+            setIsLoadingStreams(true);
+            try {
+                // Fetch streams for all selected degrees and merge (no duplicates)
+                const results = await Promise.all(
+                    selectedDegreeIds.map((id) => getMasterDataByType("STREAM", id))
+                );
+                const merged = new Map();
+                results.forEach((res) => {
+                    res.data.data.forEach((item) => {
+                        merged.set(item._id, { value: item._id, label: item.value });
+                    });
+                });
+                setStreamOptions([...merged.values()]);
+            } catch (err) {
+                console.error("Error fetching streams", err);
+            } finally {
+                setIsLoadingStreams(false);
+            }
+        };
+        fetchStreams();
+    }, [selectedDegreeIds]);
+
+    // ─── Reset stream when degree changes ─────────────────────────────────────
+    // (handled inline in onChange — no separate useEffect needed)
+
+    // ─── Helpers ───────────────────────────────────────────────────────────────
     const validateProposedSchedule = () => {
         const newErrors = {};
         const { startDate, endDate, preferredMode } = formData.proposedSchedule;
-
-        if (!startDate.trim()) {
-            newErrors.proposedStartDate = 'Please select proposed start date';
-        }
-
-        if (!endDate.trim()) {
-            newErrors.proposedEndDate = 'Please select proposed end date';
-        }
-
-        if (!preferredMode.trim()) {
-            newErrors.proposedMode = 'Please select preferred mode';
-        }
-
+        if (!startDate.trim()) newErrors.proposedStartDate = 'Please select proposed start date';
+        if (!endDate.trim())   newErrors.proposedEndDate   = 'Please select proposed end date';
+        if (!preferredMode.trim()) newErrors.proposedMode  = 'Please select preferred mode';
         if (startDate && endDate) {
             const start = new Date(startDate);
-            const end = new Date(endDate);
-            if (end <= start) {
-                newErrors.proposedEndDate = 'End date must be after start date';
-            }
+            const end   = new Date(endDate);
+            if (end <= start) newErrors.proposedEndDate = 'End date must be after start date';
         }
-
         return newErrors;
     };
 
     const handleChange = (field, value) => {
-        setFormData({ ...formData, [field]: value });
-        if (errors[field]) {
-            setErrors(prev => ({ ...prev, [field]: '' }));
-        }
+        setFormData(prev => ({ ...prev, [field]: value }));
+        if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
     };
 
     const formatDateLocal = (date) => {
         if (!date) return '';
-        const year = date.getFullYear();
+        const year  = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
+        const day   = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
 
     const handleDateChange = (date, field) => {
-        const formattedDate = formatDateLocal(date);
-        setFormData(prev => ({ ...prev, [field]: formattedDate }));
+        setFormData(prev => ({ ...prev, [field]: formatDateLocal(date) }));
     };
 
     const handleProposedDateChange = (date, field) => {
-        const formattedDate = formatDateLocal(date);
         setFormData(prev => ({
             ...prev,
-            proposedSchedule: {
-                ...prev.proposedSchedule,
-                [field]: formattedDate
-            }
+            proposedSchedule: { ...prev.proposedSchedule, [field]: formatDateLocal(date) }
         }));
-        if (field === 'startDate' && errors.proposedStartDate) {
+        if (field === 'startDate' && errors.proposedStartDate)
             setErrors(prev => ({ ...prev, proposedStartDate: '' }));
-        }
-        if (field === 'endDate' && errors.proposedEndDate) {
+        if (field === 'endDate' && errors.proposedEndDate)
             setErrors(prev => ({ ...prev, proposedEndDate: '' }));
-        }
     };
 
     const handleProposedScheduleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            proposedSchedule: {
-                ...prev.proposedSchedule,
-                [name]: value
-            }
+            proposedSchedule: { ...prev.proposedSchedule, [name]: value }
         }));
-        if (name === 'preferredMode' && errors.proposedMode) {
+        if (name === 'preferredMode' && errors.proposedMode)
             setErrors(prev => ({ ...prev, proposedMode: '' }));
-        }
     };
 
     const handleMultiToggle = (field, value) => {
@@ -237,10 +273,12 @@ export default function RegisterPage({ onBackClick }) {
     };
 
     const addRound = () => {
-        const newId = formData.rounds.length > 0 ? Math.max(...formData.rounds.map(r => r.id)) + 1 : 1;
+        const newId = formData.rounds.length > 0
+            ? Math.max(...formData.rounds.map(r => r.id)) + 1
+            : 1;
         setFormData(prev => ({
             ...prev,
-            rounds: [...prev.rounds, { id: newId, branch: '', students: '', skills: '' }]
+            rounds: [...prev.rounds, { id: newId, degree: '', stream: '', students: '', skills: '' }]
         }));
     };
 
@@ -254,8 +292,11 @@ export default function RegisterPage({ onBackClick }) {
     };
 
     const handleCustomAdd = (field, value, setValue, predefinedOptions = []) => {
-        if (value.trim() && !formData[field].includes(value.trim()) && 
-            !predefinedOptions.map(opt => opt.toLowerCase()).includes(value.trim().toLowerCase())) {
+        if (
+            value.trim() &&
+            !formData[field].includes(value.trim()) &&
+            !predefinedOptions.map(opt => opt.toLowerCase()).includes(value.trim().toLowerCase())
+        ) {
             setFormData(prev => ({ ...prev, [field]: [...prev[field], value.trim()] }));
         }
         setValue('');
@@ -277,9 +318,11 @@ export default function RegisterPage({ onBackClick }) {
         setFormData(initialFormState);
         setErrors({});
         setDescriptionError("");
+        setSelectedDegreeIds([]);
         localStorage.removeItem('pendingRegistration');
     };
 
+    // ─── Validation ────────────────────────────────────────────────────────────
     const validateForm = () => {
         let formValid = true;
         const newErrors = {};
@@ -288,12 +331,6 @@ export default function RegisterPage({ onBackClick }) {
             newErrors.degree = 'Please select at least one degree';
             formValid = false;
         }
-
-        if (!formData.collegeLocation) {
-            newErrors.collegeLocation = 'Please select college location';
-            formValid = false;
-        }
-
         if (!formData.email.trim()) {
             newErrors.email = 'Please enter official email';
             formValid = false;
@@ -301,7 +338,6 @@ export default function RegisterPage({ onBackClick }) {
             newErrors.email = 'Please enter a valid email address';
             formValid = false;
         }
-
         if (!formData.mobile.trim()) {
             newErrors.mobile = 'Please enter official mobile number';
             formValid = false;
@@ -309,49 +345,47 @@ export default function RegisterPage({ onBackClick }) {
             newErrors.mobile = 'Please enter a valid 10-digit mobile number';
             formValid = false;
         }
-
         if (!formData.coordinatorDesignation.trim()) {
             newErrors.coordinatorDesignation = 'Please select coordinator designation';
             formValid = false;
         }
-
         if (!formData.minStudentsToBePlaced.trim()) {
             newErrors.minStudentsToBePlaced = 'Please select minimum students to be placed';
             formValid = false;
         }
-
         if (formData.description.length > 500) {
             setDescriptionError("Description cannot exceed 500 characters.");
             formValid = false;
         }
-
         const proposedScheduleErrors = validateProposedSchedule();
         if (Object.keys(proposedScheduleErrors).length > 0) {
             Object.assign(newErrors, proposedScheduleErrors);
             formValid = false;
         }
-
         setErrors(newErrors);
         return formValid;
     };
 
+    // ─── Submit ────────────────────────────────────────────────────────────────
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         if (!validateForm()) {
             showAlert('Please fill all required fields correctly', 'error');
             return;
         }
 
         let aggregatedSkills = [];
-        let studentStreams = formData.stream;
-        let roundNames = [];
+        // degree / stream are now objects — extract labels for the payload
+        let studentStreams = formData.stream.map(s => s.label);
+        let roundNames    = [];
         let studentCounts = [];
 
-        const nonEmptyRounds = formData.rounds.filter(round => round.students || round.skills || round.branch);
+        const nonEmptyRounds = formData.rounds.filter(round => round.students || round.skills || round.degree);
         nonEmptyRounds.forEach(round => {
-            if (round.skills) aggregatedSkills = [...new Set([...aggregatedSkills, ...round.skills.split(',').map(s => s.trim()).filter(Boolean)])];
+            if (round.skills)
+                aggregatedSkills = [...new Set([...aggregatedSkills, ...round.skills.split(',').map(s => s.trim()).filter(Boolean)])];
             if (round.students) studentCounts.push(round.students);
+            if (round.stream)   studentStreams = [...new Set([...studentStreams, round.stream])];
             roundNames.push(`Round ${round.id}`);
         });
 
@@ -365,42 +399,42 @@ export default function RegisterPage({ onBackClick }) {
         }
 
         const payload = {
-            jobType: 'On-campus',
-            degree: formData.degree,
-            studentStreams: studentStreams,
+            jobType:        'On-campus',
+            degree:         formData.degree.map(d => d.label),   // send labels to backend
+            studentStreams,
             numberOfStudent: studentCounts,
-            lookingFor: backendLookingFor,
-            employmentType: formData.employmentType,
+            lookingFor:      backendLookingFor,
+            employmentType:  formData.employmentType,
             packageDetails: {
                 currency: formData.salaryRange,
                 totalCTC: parseFloat(formData.salaryValue) || 0,
             },
             startDate: formData.tentativeStartDate,
-            endDate: formData.tentativeEndDate,
-            location: formData.collegeLocation ? [formData.collegeLocation.value] : [],
+            endDate:   formData.tentativeEndDate,
+            location:  formData.collegeLocation ? [formData.collegeLocation.value] : [],
             contactPerson: {
-                name: formData.coordinatorName,
+                name:        formData.coordinatorName,
                 designation: formData.coordinatorDesignation,
-                email: formData.email,
-                mobile: formData.mobile,
-                linkedin: formData.linkedinProfile,
+                email:       formData.email,
+                mobile:      formData.mobile,
+                linkedin:    formData.linkedinProfile,
             },
             noOfplacedStudents: formData.minStudentsToBePlaced,
-            skills: aggregatedSkills,
-            rounds: roundNames,
-            amenitiesRequired: formData.amenities,
-            description: formData.description,
-            companyType: formData.companyType,
-            proposedSchedule: formData.proposedSchedule,
+            skills:             aggregatedSkills,
+            rounds:             roundNames,
+            amenitiesRequired:  formData.amenities,
+            description:        formData.description,
+            companyType:        formData.companyType,
+            proposedSchedule:   formData.proposedSchedule,
         };
 
         try {
             const backendUrl = import.meta.env.VITE_Backend_URL || 'http://localhost:5000';
-            const response = await axios.post(`${backendUrl}/api/hiring-channels/on-campus/college-request`, payload, {
-                withCredentials: true,
-                headers: { 'Content-Type': 'application/json' }
-            });
-
+            const response = await axios.post(
+                `${backendUrl}/api/hiring-channels/on-campus/college-request`,
+                payload,
+                { withCredentials: true, headers: { 'Content-Type': 'application/json' } }
+            );
             toast.success(response?.data?.message);
             resetForm();
         } catch (error) {
@@ -409,6 +443,7 @@ export default function RegisterPage({ onBackClick }) {
         }
     };
 
+    // ─── Dropdown toggle ───────────────────────────────────────────────────────
     const toggleDropdown = (dropdown) => {
         setDropdownOpen(prev => ({
             ...Object.keys(prev).reduce((acc, key) => ({ ...acc, [key]: false }), {}),
@@ -416,23 +451,90 @@ export default function RegisterPage({ onBackClick }) {
         }));
     };
 
-    const availableStreams = (() => {
-        if (formData.degree.length === 0) {
-            return [];
+    // ─── Per-row stream cache for Section 6 table (independent of Section 2) ──
+    // Maps degreeId -> array of { value: _id, label: name }
+    const [rowStreamCache, setRowStreamCache] = useState({});
+
+    const fetchStreamsForRow = async (degreeLabel) => {
+        if (!degreeLabel) return;
+        // Find the _id for this label from degreeOptions
+        const matched = degreeOptions.find(d => d.label === degreeLabel);
+        if (!matched) return;
+        const degreeId = matched.value;
+        // Already cached
+        if (rowStreamCache[degreeId]) return;
+        try {
+            const res = await getMasterDataByType("STREAM", degreeId);
+            const streams = res.data.data.map(item => item.value);
+            setRowStreamCache(prev => ({ ...prev, [degreeId]: streams }));
+        } catch (err) {
+            console.error("Error fetching row streams", err);
         }
-        const allStreams = new Set();
-        formData.degree.forEach(degree => {
-            if (degreeStreamMapping[degree]) {
-                degreeStreamMapping[degree].forEach(stream => allStreams.add(stream));
-            }
-        });
-        return [...allStreams].sort((a, b) => a.localeCompare(b));
-    })();
+    };
+
+    const getRowStreams = (degreeLabel) => {
+        if (!degreeLabel) return [];
+        const matched = degreeOptions.find(d => d.label === degreeLabel);
+        if (!matched) return [];
+        return rowStreamCache[matched.value] || [];
+    };
 
     const totalStudents = formData.rounds.reduce((sum, round) => {
         return sum + (parseInt(round.students) || 0);
     }, 0);
+useEffect(() => {
+  if (formData.degree?.length) {
+    setSelectedDegreeIds(formData.degree.map(d => d.value));
+  }
+}, []);
+    // ─── CreatableSelect shared styles (matching existing glassmorphism theme) ──
+    const selectStyles = {
+        control: (base, state) => ({
+            ...base,
+            minHeight: '42px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+            backdropFilter: 'blur(8px)',
+            borderColor: state.isFocused ? '#93c5fd' : 'rgba(255, 255, 255, 0.5)',
+            boxShadow: state.isFocused ? '0 0 0 1px #93c5fd' : 'none',
+            '&:hover': { borderColor: '#93c5fd' },
+        }),
+        menu: (base) => ({
+            ...base,
+            fontSize: '14px',
+            zIndex: 30,
+        }),
+        multiValue: (base) => ({
+            ...base,
+            background: 'linear-gradient(to right, rgba(147,197,253,0.2), rgba(59,130,246,0.2))',
+            borderRadius: '9999px',
+        }),
+        multiValueLabel: (base) => ({
+            ...base,
+            color: '#3b82f6',
+            fontWeight: 600,
+            fontSize: '12px',
+            paddingLeft: '8px',
+        }),
+        multiValueRemove: (base) => ({
+            ...base,
+            color: '#3b82f6',
+            borderRadius: '9999px',
+            ':hover': { backgroundColor: 'rgba(59,130,246,0.2)', color: '#3b82f6' },
+        }),
+        placeholder: (base) => ({ ...base, color: '#6b7280', fontSize: '14px' }),
+    };
 
+    const selectStylesError = {
+        ...selectStyles,
+        control: (base, state) => ({
+            ...selectStyles.control(base, state),
+            borderColor: '#fca5a5',
+        }),
+    };
+
+    // ─── JSX ───────────────────────────────────────────────────────────────────
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#f0e6f7]/60 via-[#d4e8f9]/55 to-[#cff7ea]/60">
             {/* Pastel blur background elements */}
@@ -447,7 +549,7 @@ export default function RegisterPage({ onBackClick }) {
                 <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl shadow-lg shadow-blue-50/50 p-4 mb-6">
                     <div className="text-center">
                         <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-1">
-                            Revolutionizing Campus Recruitment 
+                            Revolutionizing Campus Recruitment
                         </h1>
                         <p className="text-gray-600 text-sm max-w-2xl mx-auto">
                             Our platform connects colleges with skilled employers, offering tools for targeted training and data-driven insights to refine recruitment strategies.
@@ -472,60 +574,24 @@ export default function RegisterPage({ onBackClick }) {
                     </p>
 
                     <form onSubmit={handleSubmit} className="space-y-8">
+
                         {/* ============ SECTION 1: COLLEGE DETAILS ============ */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 pb-2">
                                 <Home className="w-5 h-5 text-[#3b82f6]" />
                                 <h3 className="text-lg font-semibold text-gray-800">College Details</h3>
                             </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* College Location */}
-                                <div>
-                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <MapPin className="w-4 h-4 text-[#3b82f6]" />
-                                        College Location <span className="text-red-500">*</span>
-                                    </label>
-                                    <CreatableSelect
-                                        isClearable
-                                        options={cityOptions}
-                                        value={formData.collegeLocation}
-                                        onChange={(selectedOption) => handleChange('collegeLocation', selectedOption)}
-                                        placeholder="Select or type city..."
-                                        className="text-sm"
-                                        styles={{
-                                            control: (base, state) => ({
-                                                ...base,
-                                                backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                                                backdropFilter: 'blur(8px)',
-                                                borderColor: errors.collegeLocation ? '#fca5a5' : state.isFocused ? '#93c5fd' : 'rgba(255, 255, 255, 0.5)',
-                                                minHeight: '42px',
-                                                borderRadius: '8px',
-                                                fontSize: '14px',
-                                                '&:hover': {
-                                                    borderColor: errors.collegeLocation ? '#fca5a5' : '#93c5fd',
-                                                },
-                                            }),
-                                            menu: (base) => ({
-                                                ...base,
-                                                fontSize: '14px',
-                                            }),
-                                        }}
-                                    />
-                                    {errors.collegeLocation && (
-                                        <p className="mt-1 text-xs text-red-600">{errors.collegeLocation}</p>
-                                    )}
-                                </div>
 
-                                {/* Amenities/Facilities */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Amenities / Facilities */}
                                 <div ref={amenitiesRef} className="relative">
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                         <Building className="w-4 h-4 text-[#3b82f6]" />
                                         Campus Facilities
                                     </label>
                                     <div className="relative">
-                                        <div 
-                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 text-sm" 
+                                        <div
+                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 text-sm"
                                             onClick={() => toggleDropdown('amenities')}
                                         >
                                             {formData.amenities.length > 0 ? (
@@ -545,9 +611,9 @@ export default function RegisterPage({ onBackClick }) {
                                             <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
                                                 <div className="max-h-40 overflow-auto">
                                                     {amenitiesOptions.map(opt => (
-                                                        <div 
-                                                            key={opt} 
-                                                            className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.amenities.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} 
+                                                        <div
+                                                            key={opt}
+                                                            className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.amenities.includes(opt) ? "bg-[#93c5fd]/10" : ""}`}
                                                             onClick={() => handleMultiToggle('amenities', opt)}
                                                         >
                                                             <div className="flex items-center">
@@ -563,18 +629,18 @@ export default function RegisterPage({ onBackClick }) {
                                                     ))}
                                                 </div>
                                                 <div className="p-2 border-t border-white/50">
-                                                    <input 
-                                                        type="text" 
-                                                        placeholder="Add custom facility..." 
-                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm" 
-                                                        value={customAmenity} 
-                                                        onChange={(e) => setCustomAmenity(e.target.value)} 
-                                                        onKeyDown={(e) => { 
-                                                            if (e.key === 'Enter') { 
-                                                                e.preventDefault(); 
-                                                                handleCustomAdd('amenities', customAmenity, setCustomAmenity); 
-                                                            } 
-                                                        }} 
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Add custom facility..."
+                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
+                                                        value={customAmenity}
+                                                        onChange={(e) => setCustomAmenity(e.target.value)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') {
+                                                                e.preventDefault();
+                                                                handleCustomAdd('amenities', customAmenity, setCustomAmenity);
+                                                            }
+                                                        }}
                                                     />
                                                 </div>
                                             </div>
@@ -590,164 +656,92 @@ export default function RegisterPage({ onBackClick }) {
                                 <BookOpen className="w-5 h-5 text-[#3b82f6]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Academic Details</h3>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* Degree */}
-                                <div ref={degreeRef} className="relative">
+
+                                {/* ── Degree (dynamic, multi, creatable) ── */}
+                                <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                         <GraduationCap className="w-4 h-4 text-[#3b82f6]" />
                                         Degree <span className="text-red-500">*</span>
                                     </label>
-                                    <div className="flex flex-wrap gap-1 mb-1 max-h-16 overflow-y-auto">
-                                        {formData.degree.map(degree => (
-                                            <div key={degree} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
-                                                <span>{degree}</span>
-                                                <button type="button" onClick={() => removeItem('degree', degree)} className="ml-1 hover:bg-[#3b82f6]/20 rounded-full p-0.5">
-                                                    <X size={10} />
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div
-                                        className="flex items-center justify-between p-2.5 w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg cursor-pointer hover:border-[#93c5fd] transition-all duration-200 min-h-[42px]"
-                                        onClick={() => toggleDropdown('degree')}
-                                    >
-                                        <span className="text-sm text-gray-500">Select degree(s)</span>
-                                        <ChevronDown className={`w-4 h-4 text-[#3b82f6] transition-transform ${dropdownOpen.degree ? "rotate-180" : ""}`} />
-                                    </div>
+                                    <CreatableSelect
+                                        isMulti
+                                        isClearable
+                                        isLoading={isLoadingDegrees}
+                                        options={degreeOptions}
+                                        value={formData.degree}
+                                        styles={errors.degree ? selectStylesError : selectStyles}
+                                        placeholder="Select or add degree(s)"
+                                        onChange={(selected) => {
+                                            const selections = selected || [];
+                                            setFormData(prev => ({ ...prev, degree: selections, stream: [] }));
+                                            if (errors.degree) setErrors(prev => ({ ...prev, degree: '' }));
+                                            setSelectedDegreeIds(selections.map(s => s.value));
+                                        }}
+                                        onCreateOption={async (val) => {
+                                            try {
+                                                const res = await createMasterData({ type: "DEGREE", value: val });
+                                                const newOpt = { value: res.data.data._id, label: res.data.data.value };
+                                                setDegreeOptions(prev => [...prev, newOpt]);
+                                                setFormData(prev => {
+                                                    const updated = [...prev.degree, newOpt];
+                                                    setSelectedDegreeIds(updated.map(s => s.value));
+                                                    return { ...prev, degree: updated, stream: [] };
+                                                });
+                                            } catch (err) {
+                                                console.error("Error adding degree", err);
+                                                toast.error("Could not add degree.");
+                                            }
+                                        }}
+                                    />
                                     {errors.degree && (
                                         <p className="mt-1 text-xs text-red-600">{errors.degree}</p>
                                     )}
-                                    {dropdownOpen.degree && (
-                                        <div className="absolute z-20 mt-1 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg shadow-lg shadow-blue-50/50 overflow-hidden">
-                                            <div className="p-2 border-b border-white/50 flex">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Add custom degree..."
-                                                    value={customDegree}
-                                                    onChange={(e) => setCustomDegree(e.target.value)}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter') {
-                                                            e.preventDefault();
-                                                            handleCustomAdd('degree', customDegree, setCustomDegree, degreeOptions);
-                                                        }
-                                                    }}
-                                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleCustomAdd('degree', customDegree, setCustomDegree, degreeOptions);
-                                                    }}
-                                                    className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
-                                                >
-                                                    Add
-                                                </button>
-                                            </div>
-                                            <div className="max-h-40 overflow-auto">
-                                                {degreeOptions.map(option => (
-                                                    <div 
-                                                        key={option} 
-                                                        onClick={() => handleMultiToggle('degree', option)} 
-                                                        className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.degree.includes(option) ? "bg-[#93c5fd]/10" : ""}`}
-                                                    >
-                                                        <div className="flex items-center">
-                                                            <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.degree.includes(option) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                                {formData.degree.includes(option) && (
-                                                                    <CheckSquare size={10} className="text-white" />
-                                                                )}
-                                                            </div>
-                                                            <span className="text-sm">{option}</span>
-                                                        </div>
-                                                        {formData.degree.includes(option) && <span className="text-[#3b82f6] text-xs">✓</span>}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
 
-                                {/* Stream */}
-                                <div ref={streamRef} className="relative">
+                                {/* ── Stream (dynamic, multi, creatable, disabled until degree picked) ── */}
+                                <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                         <GraduationCap className="w-4 h-4 text-[#3b82f6]" />
                                         Stream
                                     </label>
-                                    <div className="flex flex-wrap gap-1 mb-1 max-h-16 overflow-y-auto">
-                                        {formData.stream.map(stream => (
-                                            <div key={stream} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
-                                                <span>{stream}</span>
-                                                <button type="button" onClick={() => removeItem('stream', stream)} className="ml-1 hover:bg-[#3b82f6]/20 rounded-full p-0.5">
-                                                    <X size={10} />
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div
-                                        className={`flex items-center justify-between p-2.5 w-full bg-white/50 backdrop-blur-sm border rounded-lg cursor-pointer hover:border-[#93c5fd] transition-all duration-200 min-h-[42px] ${!formData.degree.length ? 'border-gray-200 cursor-not-allowed' : 'border-white/50'}`}
-                                        onClick={() => formData.degree.length > 0 && toggleDropdown('stream')}
-                                    >
-                                        <span className="text-sm text-gray-500">
-                                            {formData.degree.length > 0 ? 'Select stream(s)' : 'Select degree first'}
-                                        </span>
-                                        <ChevronDown className={`w-4 h-4 text-[#3b82f6] transition-transform ${dropdownOpen.stream ? "rotate-180" : ""}`} />
-                                    </div>
-                                    {dropdownOpen.stream && formData.degree.length > 0 && (
-                                        <div className="absolute z-20 mt-1 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg shadow-lg shadow-blue-50/50 overflow-hidden">
-                                            <div className="p-2 border-b border-white/50 flex">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Add custom stream..."
-                                                    value={customStream}
-                                                    onChange={(e) => setCustomStream(e.target.value)}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter') {
-                                                            e.preventDefault();
-                                                            handleCustomAdd('stream', customStream, setCustomStream);
-                                                        }
-                                                    }}
-                                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleCustomAdd('stream', customStream, setCustomStream);
-                                                    }}
-                                                    className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
-                                                >
-                                                    Add
-                                                </button>
-                                            </div>
-                                            <div className="max-h-40 overflow-auto">
-                                                {availableStreams.length > 0 ? (
-                                                    availableStreams.map(stream => (
-                                                        <div 
-                                                            key={stream} 
-                                                            onClick={() => handleMultiToggle('stream', stream)} 
-                                                            className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.stream.includes(stream) ? "bg-[#93c5fd]/10" : ""}`}
-                                                        >
-                                                            <div className="flex items-center">
-                                                                <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.stream.includes(stream) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                                    {formData.stream.includes(stream) && (
-                                                                        <CheckSquare size={10} className="text-white" />
-                                                                    )}
-                                                                </div>
-                                                                <span className="text-sm">{stream}</span>
-                                                            </div>
-                                                            {formData.stream.includes(stream) && <span className="text-[#3b82f6] text-xs">✓</span>}
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <div className="px-3 py-2 text-sm text-gray-500 border-b border-white/50">Add streams manually</div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
+                                    <CreatableSelect
+                                        isMulti
+                                        isClearable
+                                        isLoading={isLoadingStreams}
+                                        isDisabled={formData.degree.length === 0}
+                                        options={streamOptions}
+                                        value={formData.stream}
+                                        styles={selectStyles}
+                                        placeholder={
+                                            formData.degree.length === 0
+                                                ? "Select a degree first"
+                                                : "Select or add stream(s)"
+                                        }
+                                        onChange={(selected) => {
+                                            handleChange('stream', selected || []);
+                                        }}
+                                        onCreateOption={async (val) => {
+                                            // Use first selected degree as parent
+                                            const parentId = selectedDegreeIds[0] || null;
+                                            try {
+                                                const res = await createMasterData({
+                                                    type: "STREAM",
+                                                    value: val,
+                                                    parent: parentId,
+                                                });
+                                                const newOpt = { value: res.data.data._id, label: res.data.data.value };
+                                                setStreamOptions(prev => [...prev, newOpt]);
+                                                handleChange('stream', [...formData.stream, newOpt]);
+                                            } catch (err) {
+                                                console.error("Error adding stream", err);
+                                                toast.error("Could not add stream.");
+                                            }
+                                        }}
+                                    />
                                 </div>
+
                             </div>
                         </div>
 
@@ -757,59 +751,92 @@ export default function RegisterPage({ onBackClick }) {
                                 <UsersIcon className="w-5 h-5 text-[#3b82f6]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Coordinator Details</h3>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                         <User className="w-4 h-4 text-[#3b82f6]" />
                                         Coordinator Name
                                     </label>
-                                    <input 
-                                        type="text" 
-                                        placeholder="Enter name" 
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
-                                        value={formData.coordinatorName} 
-                                        onChange={(e) => handleChange('coordinatorName', e.target.value)} 
+                                    <input
+                                        type="text"
+                                        placeholder="Enter name"
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent"
+                                        value={formData.coordinatorName}
+                                        onChange={(e) => handleChange('coordinatorName', e.target.value)}
                                     />
                                 </div>
+  
+<CreatableSelect
+  isClearable
+  isSearchable
+  isLoading={isLoadingDesignation}
+  options={designationOptions}
+  styles={errors.coordinatorDesignation ? selectStylesError : selectStyles}
+  placeholder="Select or create designation"
+  value={
+    formData.coordinatorDesignation
+      ? {
+          value: formData.coordinatorDesignation,
+          label: formData.coordinatorDesignation,
+        }
+      : null
+  }
+  onChange={(selected) => {
+    handleChange("coordinatorDesignation", selected?.value || "");
+  }}
+  onCreateOption={async (inputValue) => {
+    try {
+      const normalized = inputValue.trim();
 
-                                <div>
-                                    <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
-                                        <User className="w-4 h-4 text-[#3b82f6]" />
-                                        Designation <span className="text-red-500">*</span>
-                                    </label>
-                                    <div className="relative">
-                                        <select 
-                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.coordinatorDesignation ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
-                                            value={formData.coordinatorDesignation} 
-                                            onChange={(e) => handleChange('coordinatorDesignation', e.target.value)} 
-                                        >
-                                            <option value="">Select Designation</option>
-                                            {designationOptions.map(option => (
-                                                <option key={option} value={option}>{option}</option>
-                                            ))}
-                                        </select>
-                                        {errors.coordinatorDesignation && (
-                                            <p className="mt-1 text-xs text-red-600">{errors.coordinatorDesignation}</p>
-                                        )}
-                                    </div>
-                                </div>
+      if (!normalized) return;
+
+      // 🔒 prevent duplicate
+      const exists = designationOptions.some(
+        (opt) => opt.value.toLowerCase() === normalized.toLowerCase()
+      );
+
+      if (exists) {
+        handleChange("coordinatorDesignation", normalized);
+        return;
+      }
+
+      // ✅ save to DB
+    await createCollegeMasterData({
+  type: "COLLEGE_DESIGNATION",
+  value: normalized,
+});
+
+      const newOption = {
+        value: normalized,
+        label: normalized,
+      };
+
+      setDesignationOptions((prev) => [...prev, newOption]);
+      handleChange("coordinatorDesignation", normalized);
+
+      toast.success("Designation added");
+    } catch (err) {
+      console.error("Error creating designation", err);
+      toast.error("Could not add designation");
+    }
+  }}
+  formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
+/>
 
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                         <Mail className="w-4 h-4 text-[#3b82f6]" />
                                         Email <span className="text-red-500">*</span>
                                     </label>
-                                    <input 
-                                        type="email" 
-                                        placeholder="official@college.edu" 
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.email ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
-                                        value={formData.email} 
-                                        onChange={(e) => handleChange('email', e.target.value)} 
+                                    <input
+                                        type="email"
+                                        placeholder="official@college.edu"
+                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.email ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                        value={formData.email}
+                                        onChange={(e) => handleChange('email', e.target.value)}
                                     />
-                                    {errors.email && (
-                                        <p className="mt-1 text-xs text-red-600">{errors.email}</p>
-                                    )}
+                                    {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
                                 </div>
 
                                 <div>
@@ -817,16 +844,14 @@ export default function RegisterPage({ onBackClick }) {
                                         <Phone className="w-4 h-4 text-[#3b82f6]" />
                                         Mobile <span className="text-red-500">*</span>
                                     </label>
-                                    <input 
-                                        type="tel" 
-                                        placeholder="10-digit number" 
-                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.mobile ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
-                                        value={formData.mobile} 
-                                        onChange={(e) => handleChange('mobile', e.target.value)} 
+                                    <input
+                                        type="tel"
+                                        placeholder="10-digit number"
+                                        className={`w-full bg-white/50 backdrop-blur-sm border ${errors.mobile ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                        value={formData.mobile}
+                                        onChange={(e) => handleChange('mobile', e.target.value)}
                                     />
-                                    {errors.mobile && (
-                                        <p className="mt-1 text-xs text-red-600">{errors.mobile}</p>
-                                    )}
+                                    {errors.mobile && <p className="mt-1 text-xs text-red-600">{errors.mobile}</p>}
                                 </div>
 
                                 <div className="md:col-span-2">
@@ -834,12 +859,12 @@ export default function RegisterPage({ onBackClick }) {
                                         <Linkedin className="w-4 h-4 text-[#3b82f6]" />
                                         LinkedIn Profile
                                     </label>
-                                    <input 
-                                        type="url" 
-                                        placeholder="linkedin.com/in/username" 
-                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent" 
-                                        value={formData.linkedinProfile} 
-                                        onChange={(e) => handleChange('linkedinProfile', e.target.value)} 
+                                    <input
+                                        type="url"
+                                        placeholder="linkedin.com/in/username"
+                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent"
+                                        value={formData.linkedinProfile}
+                                        onChange={(e) => handleChange('linkedinProfile', e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -851,7 +876,7 @@ export default function RegisterPage({ onBackClick }) {
                                 <Briefcase className="w-5 h-5 text-[#3b82f6]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Placement Details</h3>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
@@ -860,14 +885,14 @@ export default function RegisterPage({ onBackClick }) {
                                     </label>
                                     <div className="flex gap-2">
                                         {['job', 'internship'].map((type) => (
-                                            <button 
-                                                key={type} 
-                                                type="button" 
+                                            <button
+                                                key={type}
+                                                type="button"
                                                 className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 capitalize ${
-                                                    formData.lookingFor.includes(type) 
-                                                        ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent' 
+                                                    formData.lookingFor.includes(type)
+                                                        ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent'
                                                         : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
-                                                }`} 
+                                                }`}
                                                 onClick={() => handleMultiToggle('lookingFor', type)}
                                             >
                                                 {type}
@@ -883,14 +908,14 @@ export default function RegisterPage({ onBackClick }) {
                                     </label>
                                     <div className="flex gap-2">
                                         {['Full-time', 'Part-time', 'Contract'].map((type) => (
-                                            <button 
-                                                key={type} 
-                                                type="button" 
+                                            <button
+                                                key={type}
+                                                type="button"
                                                 className={`px-3 py-2 rounded-lg border text-sm transition-all duration-200 font-medium flex-1 ${
-                                                    formData.employmentType.includes(type) 
-                                                        ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent' 
+                                                    formData.employmentType.includes(type)
+                                                        ? 'bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white border-transparent'
                                                         : 'bg-white/50 backdrop-blur-sm border-white/50 text-gray-700 hover:bg-white/70'
-                                                }`} 
+                                                }`}
                                                 onClick={() => handleMultiToggle('employmentType', type)}
                                             >
                                                 {type}
@@ -905,10 +930,10 @@ export default function RegisterPage({ onBackClick }) {
                                         Min Students to Place <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
-                                        <select 
-                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.minStudentsToBePlaced ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
-                                            value={formData.minStudentsToBePlaced} 
-                                            onChange={(e) => handleChange('minStudentsToBePlaced', e.target.value)} 
+                                        <select
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.minStudentsToBePlaced ? 'border-red-300' : 'border-white/50'} rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                            value={formData.minStudentsToBePlaced}
+                                            onChange={(e) => handleChange('minStudentsToBePlaced', e.target.value)}
                                         >
                                             <option value="">Select Range</option>
                                             {minStudentsOptions.map(option => (
@@ -921,76 +946,40 @@ export default function RegisterPage({ onBackClick }) {
                                     </div>
                                 </div>
 
-                                <div ref={companyTypeRef} className="relative">
+                                {/* Company Type */}
+                                <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                         <Building className="w-4 h-4 text-[#3b82f6]" />
                                         Company Type
                                     </label>
-                                    <div className="relative">
-                                        <div 
-                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg p-2.5 min-h-[42px] cursor-pointer hover:border-[#93c5fd] transition-all duration-200 text-sm" 
-                                            onClick={() => toggleDropdown('companyType')}
-                                        >
-                                            {formData.companyType.length > 0 ? (
-                                                <div className="flex flex-wrap gap-1">
-                                                    {formData.companyType.map(item => (
-                                                        <span key={item} className="flex items-center bg-gradient-to-r from-[#93c5fd]/20 to-[#3b82f6]/20 text-[#3b82f6] text-xs font-semibold px-2 py-0.5 rounded-full">
-                                                            {item}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            ) : <span className="text-gray-500">Select company types</span>}
-                                        </div>
-                                        {dropdownOpen.companyType && (
-                                            <div className="absolute z-20 w-full bg-white/90 backdrop-blur-sm border border-white/50 rounded-lg mt-1 shadow-lg shadow-blue-50/50 overflow-hidden">
-                                                <div className="p-2 border-b border-white/50 flex">
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Add custom company type..."
-                                                        value={customCompanyType}
-                                                        onChange={(e) => setCustomCompanyType(e.target.value)}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter') {
-                                                                e.preventDefault();
-                                                                handleCustomAdd('companyType', customCompanyType, setCustomCompanyType, companyTypeOptions);
-                                                            }
-                                                        }}
-                                                        className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-2 py-1.5 text-sm"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleCustomAdd('companyType', customCompanyType, setCustomCompanyType, companyTypeOptions);
-                                                        }}
-                                                        className="ml-2 px-3 py-1.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded text-xs font-medium"
-                                                    >
-                                                        Add
-                                                    </button>
-                                                </div>
-                                                <div className="max-h-40 overflow-auto">
-                                                    {companyTypeOptions.map(opt => (
-                                                        <div 
-                                                            key={opt} 
-                                                            onClick={() => handleMultiToggle('companyType', opt)} 
-                                                            className={`px-3 py-2 hover:bg-[#93c5fd]/10 cursor-pointer border-b border-white/50 last:border-b-0 transition-colors duration-200 flex justify-between items-center ${formData.companyType.includes(opt) ? "bg-[#93c5fd]/10" : ""}`} 
-                                                        >
-                                                            <div className="flex items-center">
-                                                                <div className={`w-4 h-4 border-2 rounded mr-2 flex items-center justify-center ${formData.companyType.includes(opt) ? 'bg-[#3b82f6] border-[#3b82f6]' : 'border-gray-300'}`}>
-                                                                    {formData.companyType.includes(opt) && (
-                                                                        <CheckSquare size={10} className="text-white" />
-                                                                    )}
-                                                                </div>
-                                                                <span className="text-sm">{opt}</span>
-                                                            </div>
-                                                            {formData.companyType.includes(opt) && <span className="text-[#3b82f6] text-xs">✓</span>}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
+                                    <CreatableSelect
+                                        isMulti
+                                        isClearable
+                                        isLoading={isLoadingCompanyTypes}
+                                        options={companyTypeOptions}
+                                        value={companyTypeOptions.filter(opt => formData.companyType.includes(opt.value))}
+                                        styles={selectStyles}
+                                        placeholder="Select or add company type(s)"
+                                        onChange={(selected) => {
+                                            handleChange('companyType', (selected || []).map(s => s.value));
+                                        }}
+                                        onCreateOption={async (val) => {
+                                            try {
+                                                const res = await createCompanyMasterData({
+                                                    type: 'COMPANY_TYPE',
+                                                    value: val,
+                                                    isCustom: true,
+                                                });
+                                                const savedValue = res.data.data.value;
+                                                const newOpt = { value: savedValue, label: savedValue };
+                                                setCompanyTypeOptions(prev => [...prev, newOpt]);
+                                                handleChange('companyType', [...formData.companyType, savedValue]);
+                                            } catch (err) {
+                                                console.error('Failed to create company type', err);
+                                                toast.error('Could not add company type.');
+                                            }
+                                        }}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -1001,7 +990,7 @@ export default function RegisterPage({ onBackClick }) {
                                 <IndianRupee className="w-5 h-5 text-[#3b82f6]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Compensation Details</h3>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
@@ -1012,30 +1001,18 @@ export default function RegisterPage({ onBackClick }) {
                                         <div className="relative bg-white/50 backdrop-blur-sm flex items-center">
                                             <div className="px-3 py-2 w-24 text-sm flex items-center gap-2">
                                                 {formData.salaryRange === 'INR' || !formData.salaryRange ? (
-                                                    <>
-                                                        <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
-                                                        <span>INR</span>
-                                                    </>
+                                                    <><IndianRupee className="w-3.5 h-3.5 text-gray-600" /><span>INR</span></>
                                                 ) : formData.salaryRange === 'USD' ? (
-                                                    <>
-                                                        <DollarSign className="w-3.5 h-3.5 text-gray-600" />
-                                                        <span>USD</span>
-                                                    </>
+                                                    <><DollarSign className="w-3.5 h-3.5 text-gray-600" /><span>USD</span></>
                                                 ) : formData.salaryRange === 'EUR' ? (
-                                                    <>
-                                                        <Euro className="w-3.5 h-3.5 text-gray-600" />
-                                                        <span>EUR</span>
-                                                    </>
+                                                    <><Euro className="w-3.5 h-3.5 text-gray-600" /><span>EUR</span></>
                                                 ) : (
-                                                    <>
-                                                        <IndianRupee className="w-3.5 h-3.5 text-gray-600" />
-                                                        <span>INR</span>
-                                                    </>
+                                                    <><IndianRupee className="w-3.5 h-3.5 text-gray-600" /><span>INR</span></>
                                                 )}
                                             </div>
-                                            <select 
+                                            <select
                                                 className="absolute inset-0 opacity-0 cursor-pointer"
-                                                value={formData.salaryRange || 'INR'} 
+                                                value={formData.salaryRange || 'INR'}
                                                 onChange={(e) => handleChange('salaryRange', e.target.value)}
                                             >
                                                 <option value="INR">INR</option>
@@ -1045,11 +1022,11 @@ export default function RegisterPage({ onBackClick }) {
                                             <ChevronDown className="absolute right-2 w-3 h-3 text-gray-400 pointer-events-none" />
                                         </div>
                                         <div className="relative flex-1">
-                                            <input 
-                                                type="number" 
-                                                className="bg-white/50 backdrop-blur-sm w-full px-3 py-2 text-sm focus:outline-none" 
-                                                placeholder="Amount" 
-                                                value={formData.salaryValue || ''} 
+                                            <input
+                                                type="number"
+                                                className="bg-white/50 backdrop-blur-sm w-full px-3 py-2 text-sm focus:outline-none"
+                                                placeholder="Amount"
+                                                value={formData.salaryValue || ''}
                                                 onChange={(e) => handleChange('salaryValue', e.target.value)}
                                                 min="0"
                                                 step="1000"
@@ -1106,7 +1083,7 @@ export default function RegisterPage({ onBackClick }) {
                                 <Users className="w-5 h-5 text-[#3b82f6]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Student Details</h3>
                             </div>
-                            
+
                             <div>
                                 <div className="flex items-center justify-between mb-2">
                                     <label className="block text-gray-700 font-medium text-sm flex items-center gap-1.5">
@@ -1122,57 +1099,94 @@ export default function RegisterPage({ onBackClick }) {
                                         Add Student
                                     </button>
                                 </div>
-                                
+
                                 <div className="overflow-x-auto mb-3">
                                     <table className="min-w-full divide-y divide-white/50 text-xs">
                                         <thead className="bg-white/50">
                                             <tr>
-                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Student</th>
-                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Branch</th>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500 w-8">#</th>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Degree</th>
+                                                <th className="px-2 py-1.5 text-left font-medium text-gray-500">Stream</th>
                                                 <th className="px-2 py-1.5 text-left font-medium text-gray-500">Count</th>
                                                 <th className="px-2 py-1.5 text-left font-medium text-gray-500">Skills (comma separated)</th>
+                                                <th className="px-2 py-1.5 w-6"></th>
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white/30 divide-y divide-white/50">
-                                            {formData.rounds.map((round) => (
-                                                <tr key={round.id}>
-                                                    <td className="px-2 py-1.5">#{round.id}</td>
-                                                    <td className="px-2 py-1.5">
-                                                        <select 
-                                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs" 
-                                                            value={round.branch} 
-                                                            onChange={(e) => handleRoundChange(round.id, 'branch', e.target.value)}
-                                                        >
-                                                            <option value="">Select</option>
-                                                            {branchOptions.map(option => (
-                                                                <option key={option} value={option}>{option}</option>
-                                                            ))}
-                                                        </select>
-                                                    </td>
-                                                    <td className="px-2 py-1.5">
-                                                        <input 
-                                                            type="number" 
-                                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs" 
-                                                            value={round.students} 
-                                                            onChange={(e) => handleRoundChange(round.id, 'students', e.target.value)} 
-                                                            min="0" 
-                                                        />
-                                                    </td>
-                                                    <td className="px-2 py-1.5">
-                                                        <input 
-                                                            type="text" 
-                                                            className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs" 
-                                                            value={round.skills} 
-                                                            onChange={(e) => handleRoundChange(round.id, 'skills', e.target.value)} 
-                                                            placeholder="e.g., Java, Python, React" 
-                                                        />
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                            {formData.rounds.map((round) => {
+                                                // For the table rows: use degreeOptions labels for the select
+                                                const rowStreamLabels = getRowStreams(round.degree);
+                                                return (
+                                                    <tr key={round.id}>
+                                                        <td className="px-2 py-1.5 text-gray-500">#{round.id}</td>
+                                                        <td className="px-2 py-1.5">
+                                                            <select
+                                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd]"
+                                                                value={round.degree}
+                                                                onChange={(e) => {
+                                                                    const newDegree = e.target.value;
+                                                                    const updatedRounds = formData.rounds.map(r =>
+                                                                        r.id === round.id ? { ...r, degree: newDegree, stream: '' } : r
+                                                                    );
+                                                                    setFormData(prev => ({ ...prev, rounds: updatedRounds }));
+                                                                    fetchStreamsForRow(newDegree);
+                                                                }}
+                                                            >
+                                                                <option value="">Select</option>
+                                                                {degreeOptions.map(opt => (
+                                                                    <option key={opt.value} value={opt.label}>{opt.label}</option>
+                                                                ))}
+                                                            </select>
+                                                        </td>
+                                                        <td className="px-2 py-1.5">
+                                                            <select
+                                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd] disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                value={round.stream}
+                                                                disabled={!round.degree}
+                                                                onChange={(e) => handleRoundChange(round.id, 'stream', e.target.value)}
+                                                            >
+                                                                <option value="">{round.degree ? 'Select' : 'Degree first'}</option>
+                                                                {rowStreamLabels.map(label => (
+                                                                    <option key={label} value={label}>{label}</option>
+                                                                ))}
+                                                            </select>
+                                                        </td>
+                                                        <td className="px-2 py-1.5">
+                                                            <input
+                                                                type="number"
+                                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd]"
+                                                                value={round.students}
+                                                                onChange={(e) => handleRoundChange(round.id, 'students', e.target.value)}
+                                                                min="0"
+                                                            />
+                                                        </td>
+                                                        <td className="px-2 py-1.5">
+                                                            <input
+                                                                type="text"
+                                                                className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded px-1.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#93c5fd]"
+                                                                value={round.skills}
+                                                                onChange={(e) => handleRoundChange(round.id, 'skills', e.target.value)}
+                                                                placeholder="e.g., Java, Python, React"
+                                                            />
+                                                        </td>
+                                                        <td className="px-2 py-1.5">
+                                                            {formData.rounds.length > 1 && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => removeRound(round.id)}
+                                                                    className="text-red-400 hover:text-red-600 transition-colors"
+                                                                >
+                                                                    <Trash2 size={12} />
+                                                                </button>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
                                         </tbody>
                                     </table>
                                 </div>
-                                
+
                                 <div className="mt-2 p-2 bg-gradient-to-r from-[#93c5fd]/10 to-[#3b82f6]/10 border border-[#93c5fd]/20 rounded text-xs">
                                     <div className="flex items-center justify-between">
                                         <span className="font-medium text-[#3b82f6]">Total Students:</span>
@@ -1188,7 +1202,7 @@ export default function RegisterPage({ onBackClick }) {
                                 <Clock className="w-5 h-5 text-[#3b82f6]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Schedule Details</h3>
                             </div>
-                            
+
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                     <Clock className="w-4 h-4 text-[#3b82f6]" />
@@ -1222,10 +1236,10 @@ export default function RegisterPage({ onBackClick }) {
                                         )}
                                     </div>
                                     <div className="relative">
-                                        <select 
-                                            name="preferredMode" 
-                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedMode ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`} 
-                                            value={formData.proposedSchedule.preferredMode} 
+                                        <select
+                                            name="preferredMode"
+                                            className={`w-full bg-white/50 backdrop-blur-sm border ${errors.proposedMode ? 'border-red-300' : 'border-white/50'} rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent`}
+                                            value={formData.proposedSchedule.preferredMode}
                                             onChange={handleProposedScheduleChange}
                                         >
                                             <option value="">Preferred Mode</option>
@@ -1247,16 +1261,16 @@ export default function RegisterPage({ onBackClick }) {
                                 <FileText className="w-5 h-5 text-[#3b82f6]" />
                                 <h3 className="text-lg font-semibold text-gray-800">Additional Information</h3>
                             </div>
-                            
+
                             <div>
                                 <label className="block text-gray-700 font-medium mb-2 text-sm flex items-center gap-1.5">
                                     <MessageSquare className="w-4 h-4 text-[#3b82f6]" />
                                     Description
                                 </label>
-                                <textarea 
-                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent resize-none" 
-                                    placeholder="Additional information about the placement drive, specific requirements, or any other details..." 
-                                    value={formData.description} 
+                                <textarea
+                                    className="w-full bg-white/50 backdrop-blur-sm border border-white/50 rounded-lg px-2.5 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#93c5fd] focus:border-transparent resize-none"
+                                    placeholder="Additional information about the placement drive, specific requirements, or any other details..."
+                                    value={formData.description}
                                     onChange={(e) => {
                                         handleChange('description', e.target.value);
                                         if (e.target.value.length > 500) {
@@ -1264,10 +1278,10 @@ export default function RegisterPage({ onBackClick }) {
                                         } else {
                                             setDescriptionError("");
                                         }
-                                    }} 
+                                    }}
                                     rows="4"
                                     maxLength={500}
-                                ></textarea>
+                                />
                                 <div className="flex justify-between text-xs mt-1">
                                     <span className={descriptionError ? 'text-red-500' : 'text-gray-500'}>
                                         {descriptionError ? descriptionError : `${formData.description.length}/500 characters`}
@@ -1278,7 +1292,7 @@ export default function RegisterPage({ onBackClick }) {
 
                         {/* Form Actions */}
                         <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-6 border-t border-gray-200/50">
-                            <button 
+                            <button
                                 type="button"
                                 onClick={onBackClick}
                                 className="flex items-center gap-1.5 text-gray-600 hover:text-gray-800 font-medium transition-colors duration-200 text-sm"
@@ -1286,7 +1300,7 @@ export default function RegisterPage({ onBackClick }) {
                                 <ArrowLeft className="w-3.5 h-3.5" />
                                 Back
                             </button>
-                            <button 
+                            <button
                                 type="submit"
                                 className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#93c5fd] to-[#3b82f6] text-white rounded-lg hover:shadow-lg hover:shadow-[#93c5fd]/40 transition-all duration-200 text-sm font-medium"
                             >
@@ -1294,6 +1308,7 @@ export default function RegisterPage({ onBackClick }) {
                                 Register OnCampus
                             </button>
                         </div>
+
                     </form>
                 </div>
             </div>

@@ -124,7 +124,7 @@ export const Confirmation = ({ onSubmit, onCancel }) => {
         const lowerCaseUserType = userTypeFromDb.toLowerCase();
         switch (lowerCaseUserType) {
           case "professional":
-            navigate("/profhome", { replace: true });
+            navigate("/home", { replace: true });
             break;
           case "fresher":
           case "student":

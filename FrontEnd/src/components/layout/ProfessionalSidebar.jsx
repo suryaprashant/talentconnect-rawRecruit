@@ -28,12 +28,12 @@ function ProfessionalSidebar({ activePath }) {
       <SidebarNavItem to="/saved-jobs" icon={<FiBookmark />} label="Saved Jobs/Internships" active={activePath === '/saved-jobs'} />
 
       <SidebarNavGroup label="Professional Dashboard" icon={<FiPieChart />} active={activePath.includes('/professional-dashboard')}>
-        <SidebarNavItem 
+        {/*<SidebarNavItem 
           to="/professional-dashboard/job-listing" 
           icon={<FiBriefcase />} 
           label="Job Listings" 
           active={activePath === '/professional-dashboard/job-listing'} 
-        />
+        />*/}
         <SidebarNavItem 
           to="/professional-dashboard/Referral" 
           icon={<FiUsers />} 
@@ -46,8 +46,9 @@ function ProfessionalSidebar({ activePath }) {
           label="Hackathon" 
           active={activePath === '/professional-dashboard/hackathon'} 
         /> */}
+        
       </SidebarNavGroup>
-            <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>
+            {/* <SidebarNavGroup label="Events" icon={<FiCalendar/>} active={activePath.includes('/events')}>
         <SidebarNavItem 
           to="/professional-events/casestudy" 
           icon={<FiBookmark />} 
@@ -66,7 +67,7 @@ function ProfessionalSidebar({ activePath }) {
           label="Workshop" 
           active={activePath === '/professional-events/workshop'} 
         />
-      </SidebarNavGroup>
+      </SidebarNavGroup> */}
       <SidebarNavGroup label="Service Request" icon={<FiClipboard />} active={activePath.includes('/service-request')}>
         <SidebarNavItem 
           to="/professional/service-request" 
@@ -74,21 +75,24 @@ function ProfessionalSidebar({ activePath }) {
           label="Post Referral Job" 
           active={activePath === '/professional/service-request'} 
         />
-        <SidebarNavItem 
+        {/* <SidebarNavItem 
           to="/professional/service-request/referral" 
           icon={<FiEdit />} 
           label="Manage Referral Jobs" 
           active={activePath === '/service-request/manage-Referral'} 
-        />
+        /> */}
       </SidebarNavGroup>
 
+        <SidebarNavItem to="/professional-dashboard/Referral-management" icon={<FiHome />} label="Referral Management" active={activePath === '/professional-dashboard/Referral-management'} />
+
+
       <SidebarNavGroup label="Application Status" icon={<FiCheckCircle />} active={activePath.includes('/application-status')}>
-        <SidebarNavItem 
+        {/* <SidebarNavItem 
           to="/application-status/Job-listing" 
           icon={<FiBriefcase />} 
           label="Job Listing" 
           active={activePath === '/application-status/Job-listing'} 
-        />
+        /> */}
         <SidebarNavItem 
           to="/application-status/Referral" 
           icon={<FiUsers />} 
@@ -101,20 +105,20 @@ function ProfessionalSidebar({ activePath }) {
           label="Off-Campus Jobs" 
           active={activePath === '/application-status/off-campus-jobs'} 
         /> */}
-        <SidebarNavItem 
+        {/* <SidebarNavItem 
           to="/application-status/event-status" 
           icon={<FiAward />} 
           label="Event Management" 
           active={activePath === '/application-status/event-status'} 
-        />
+        /> */}
       </SidebarNavGroup>
 
-      <SidebarNavItem 
+      {/* <SidebarNavItem 
         to="/ai-driven-job-search" 
         icon={<FiSearch />} 
         label="AI-Driven Job Search" 
         active={activePath === '/ai-driven-job-search'} 
-      />
+      /> */}
       <SidebarNavItem 
         to="/chat-application" 
         icon={<FiMessageCircle />} 

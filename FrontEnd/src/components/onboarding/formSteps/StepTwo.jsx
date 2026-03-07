@@ -4,13 +4,12 @@ import { extractValidEmail } from "@/lib/utils";
 import { getProfileTypeFromJWT } from "../../../context/RoleContext/jwt";
 
 export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChange }) => {
-  const parsedData = formData?.parsedData || {};
   const [hasAutoSeparated, setHasAutoSeparated] = React.useState(false);
   const [validationErrors, setValidationErrors] = React.useState({
     name: '',
     email: '',
     phone: '',
-    profileType: ''
+    
   });
 
   React.useEffect(() => {
@@ -23,189 +22,189 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
   }, []);
 
 
-  React.useEffect(() => {
-    if (!formData?.parsedData) return;
+  // React.useEffect(() => {
+  //   if (!formData?.parsedData) return;
 
-    const { name, phone, email } = formData.parsedData;
-    const updates = {};
+  //   const { name, phone, email } = formData.parsedData;
+  //   const updates = {};
 
-    if (name && !formData.name) {
-      updates.name = name;
-    }
-    if (phone && !formData.phone) {
-      updates.phone = phone;
-    }
-    if (email && !formData.email) {
-      updates.email = email;
-    }
+  //   if (name && !formData.name) {
+  //     updates.name = name;
+  //   }
+  //   if (phone && !formData.phone) {
+  //     updates.phone = phone;
+  //   }
+  //   if (email && !formData.email) {
+  //     updates.email = email;
+  //   }
 
-    if (Object.keys(updates).length > 0) {
-      onChange(updates);
-    }
-  }, [formData?.parsedData?.name]);
+  //   if (Object.keys(updates).length > 0) {
+  //     onChange(updates);
+  //   }
+  // }, [formData?.parsedData?.name]);
 
 
-  const separateContactInfo = (text) => {
-    if (!text) return { name: '', phone: '', email: '' };
+  // const separateContactInfo = (text) => {
+  //   if (!text) return { name: '', phone: '', email: '' };
 
-    let name = '';
-    let phone = '';
-    let email = '';
-    let remainingText = text;
+  //   let name = '';
+  //   let phone = '';
+  //   let email = '';
+  //   let remainingText = text;
 
-    const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
+  //   const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
 
-    const phonePatterns = [
-      /(\+91[\s-]?[6-9]\d{9})/g,
-      /(\+91[\s-]?\d{10})/g,
-      /([6-9]\d{9})/g,
-      /(\d{10})/g,
-      /(\+\d{1,3}[\s-]?\d{6,14})/g,
-    ];
+  //   const phonePatterns = [
+  //     /(\+91[\s-]?[6-9]\d{9})/g,
+  //     /(\+91[\s-]?\d{10})/g,
+  //     /([6-9]\d{9})/g,
+  //     /(\d{10})/g,
+  //     /(\+\d{1,3}[\s-]?\d{6,14})/g,
+  //   ];
 
-    const contactKeywords = [
-      'email:', 'e-mail:', 'mail:', 'contact:', 'phone:', 'mobile:', 'mob:',
-      'cell:', 'tel:', 'telephone:', 'call:', 'number:', 'ph:', 'contact no:',
-      'mobile no:', 'phone no:', 'contact number:', 'mobile number:', 'phone number:'
-    ];
+  //   const contactKeywords = [
+  //     'email:', 'e-mail:', 'mail:', 'contact:', 'phone:', 'mobile:', 'mob:',
+  //     'cell:', 'tel:', 'telephone:', 'call:', 'number:', 'ph:', 'contact no:',
+  //     'mobile no:', 'phone no:', 'contact number:', 'mobile number:', 'phone number:'
+  //   ];
 
-    let cleanText = remainingText
-      .replace(/\s+/g, ' ')
-      .trim();
+  //   let cleanText = remainingText
+  //     .replace(/\s+/g, ' ')
+  //     .trim();
 
-    const emailMatch = cleanText.match(emailRegex);
-    if (emailMatch) {
-      email = emailMatch[0];
-      cleanText = cleanText
-        .replace(emailRegex, '')
-        .replace(/email\s*:\s*/gi, '')
-        .replace(/e-?mail\s*:\s*/gi, '')
-        .replace(/mail\s*:\s*/gi, '')
-        .trim();
-    }
+  //   const emailMatch = cleanText.match(emailRegex);
+  //   if (emailMatch) {
+  //     email = emailMatch[0];
+  //     cleanText = cleanText
+  //       .replace(emailRegex, '')
+  //       .replace(/email\s*:\s*/gi, '')
+  //       .replace(/e-?mail\s*:\s*/gi, '')
+  //       .replace(/mail\s*:\s*/gi, '')
+  //       .trim();
+  //   }
 
-    let phoneMatch = null;
-    for (const pattern of phonePatterns) {
-      phoneMatch = cleanText.match(pattern);
-      if (phoneMatch) {
-        phone = phoneMatch[0];
-        if (!phone.startsWith('+91') && phone.length === 10 && /^[6-9]/.test(phone)) {
-          phone = '+91' + phone;
-        }
-        cleanText = cleanText
-          .replace(pattern, '')
-          .replace(/mobile\s*:\s*/gi, '')
-          .replace(/phone\s*:\s*/gi, '')
-          .replace(/contact\s*:\s*/gi, '')
-          .replace(/mob\s*:\s*/gi, '')
-          .replace(/cell\s*:\s*/gi, '')
-          .replace(/tel\s*:\s*/gi, '')
-          .replace(/telephone\s*:\s*/gi, '')
-          .replace(/number\s*:\s*/gi, '')
-          .replace(/ph\s*:\s*/gi, '')
-          .replace(/contact\s+no\s*:\s*/gi, '')
-          .replace(/mobile\s+no\s*:\s*/gi, '')
-          .replace(/phone\s+no\s*:\s*/gi, '')
-          .replace(/contact\s+number\s*:\s*/gi, '')
-          .replace(/mobile\s+number\s*:\s*/gi, '')
-          .replace(/phone\s+number\s*:\s*/gi, '')
-          .trim();
-        break;
-      }
-    }
+  //   let phoneMatch = null;
+  //   for (const pattern of phonePatterns) {
+  //     phoneMatch = cleanText.match(pattern);
+  //     if (phoneMatch) {
+  //       phone = phoneMatch[0];
+  //       if (!phone.startsWith('+91') && phone.length === 10 && /^[6-9]/.test(phone)) {
+  //         phone = '+91' + phone;
+  //       }
+  //       cleanText = cleanText
+  //         .replace(pattern, '')
+  //         .replace(/mobile\s*:\s*/gi, '')
+  //         .replace(/phone\s*:\s*/gi, '')
+  //         .replace(/contact\s*:\s*/gi, '')
+  //         .replace(/mob\s*:\s*/gi, '')
+  //         .replace(/cell\s*:\s*/gi, '')
+  //         .replace(/tel\s*:\s*/gi, '')
+  //         .replace(/telephone\s*:\s*/gi, '')
+  //         .replace(/number\s*:\s*/gi, '')
+  //         .replace(/ph\s*:\s*/gi, '')
+  //         .replace(/contact\s+no\s*:\s*/gi, '')
+  //         .replace(/mobile\s+no\s*:\s*/gi, '')
+  //         .replace(/phone\s+no\s*:\s*/gi, '')
+  //         .replace(/contact\s+number\s*:\s*/gi, '')
+  //         .replace(/mobile\s+number\s*:\s*/gi, '')
+  //         .replace(/phone\s+number\s*:\s*/gi, '')
+  //         .trim();
+  //       break;
+  //     }
+  //   }
 
-    contactKeywords.forEach(keyword => {
-      const keywordRegex = new RegExp(keyword.replace(':', '\\s*:\\s*'), 'gi');
-      cleanText = cleanText.replace(keywordRegex, '').trim();
-    });
+  //   contactKeywords.forEach(keyword => {
+  //     const keywordRegex = new RegExp(keyword.replace(':', '\\s*:\\s*'), 'gi');
+  //     cleanText = cleanText.replace(keywordRegex, '').trim();
+  //   });
 
-    name = cleanText
-      .replace(/^\s*-+\s*|\s*-+\s*$/g, '')
-      .replace(/^\s*\|\s*|\s*\|\s*$/g, '')
-      .replace(/^\s*,\s*|\s*,\s*$/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
+  //   name = cleanText
+  //     .replace(/^\s*-+\s*|\s*-+\s*$/g, '')
+  //     .replace(/^\s*\|\s*|\s*\|\s*$/g, '')
+  //     .replace(/^\s*,\s*|\s*,\s*$/g, '')
+  //     .replace(/\s+/g, ' ')
+  //     .trim();
 
-    if (name) {
-      const prefixesToRemove = [
-        'name:', 'full name:', 'candidate:', 'applicant:', 'resume of:', 'cv of:'
-      ];
+  //   if (name) {
+  //     const prefixesToRemove = [
+  //       'name:', 'full name:', 'candidate:', 'applicant:', 'resume of:', 'cv of:'
+  //     ];
 
-      prefixesToRemove.forEach(prefix => {
-        const prefixRegex = new RegExp(`^${prefix}\\s*`, 'gi');
-        name = name.replace(prefixRegex, '').trim();
-      });
+  //     prefixesToRemove.forEach(prefix => {
+  //       const prefixRegex = new RegExp(`^${prefix}\\s*`, 'gi');
+  //       name = name.replace(prefixRegex, '').trim();
+  //     });
 
-      name = name.replace(/\b\w/g, l => l.toUpperCase());
-    }
+  //     name = name.replace(/\b\w/g, l => l.toUpperCase());
+  //   }
 
-    return { name, phone, email };
-  };
+  //   return { name, phone, email };
+  // };
 
-  const separateContactInfoAdvanced = (text) => {
-    if (!text) return { name: '', phone: '', email: '' };
+  // const separateContactInfoAdvanced = (text) => {
+  //   if (!text) return { name: '', phone: '', email: '' };
 
-    const nameEmailPattern = /^([A-Za-z\s]+?)(?:Email\s*:|E-?mail\s*:)/i;
-    const nameEmailMatch = text.match(nameEmailPattern);
+  //   const nameEmailPattern = /^([A-Za-z\s]+?)(?:Email\s*:|E-?mail\s*:)/i;
+  //   const nameEmailMatch = text.match(nameEmailPattern);
 
-    if (nameEmailMatch) {
-      const extractedName = nameEmailMatch[1].trim();
-      const result = separateContactInfo(text);
+  //   if (nameEmailMatch) {
+  //     const extractedName = nameEmailMatch[1].trim();
+  //     const result = separateContactInfo(text);
 
-      if (extractedName && extractedName.length > result.name.length) {
-        result.name = extractedName.replace(/\b\w/g, l => l.toUpperCase());
-      }
+  //     if (extractedName && extractedName.length > result.name.length) {
+  //       result.name = extractedName.replace(/\b\w/g, l => l.toUpperCase());
+  //     }
 
-      return result;
-    }
+  //     return result;
+  //   }
 
-    const complexPattern = /^([A-Za-z\s]+?)(?:\s*[-|,]\s*)?(?:Email|E-?mail|Phone|Mobile|Contact)/i;
-    const complexMatch = text.match(complexPattern);
+  //   const complexPattern = /^([A-Za-z\s]+?)(?:\s*[-|,]\s*)?(?:Email|E-?mail|Phone|Mobile|Contact)/i;
+  //   const complexMatch = text.match(complexPattern);
 
-    if (complexMatch) {
-      const extractedName = complexMatch[1].trim();
-      const result = separateContactInfo(text);
+  //   if (complexMatch) {
+  //     const extractedName = complexMatch[1].trim();
+  //     const result = separateContactInfo(text);
 
-      if (extractedName && extractedName.length > result.name.length) {
-        result.name = extractedName.replace(/\b\w/g, l => l.toUpperCase());
-      }
+  //     if (extractedName && extractedName.length > result.name.length) {
+  //       result.name = extractedName.replace(/\b\w/g, l => l.toUpperCase());
+  //     }
 
-      return result;
-    }
+  //     return result;
+  //   }
 
-    return separateContactInfo(text);
-  };
+  //   return separateContactInfo(text);
+  // };
 
-  React.useEffect(() => {
-    if (parsedData?.name && !hasAutoSeparated &&
-      (formData.parsedData.name.includes('+91') ||
-        /\d{10}/.test(formData.parsedData.name) ||
-        /@/.test(formData.parsedData.name) ||
-        /email:/i.test(formData.parsedData.name) ||
-        /mobile:/i.test(formData.parsedData.name) ||
-        /phone:/i.test(formData.parsedData.name))) {
+  // React.useEffect(() => {
+  //   if (parsedData?.name && !hasAutoSeparated &&
+  //     (formData.parsedData.name.includes('+91') ||
+  //       /\d{10}/.test(formData.parsedData.name) ||
+  //       /@/.test(formData.parsedData.name) ||
+  //       /email:/i.test(formData.parsedData.name) ||
+  //       /mobile:/i.test(formData.parsedData.name) ||
+  //       /phone:/i.test(formData.parsedData.name))) {
 
-      const { name, phone, email } = separateContactInfoAdvanced(formData.parsedData.name);
+  //     const { name, phone, email } = separateContactInfoAdvanced(formData.parsedData.name);
 
-      if (name !== formData.parsedData.name || phone || email) {
-        const updates = {
-          ...formData,
-          name: name || formData.parsedData.name
-        };
+  //     if (name !== formData.parsedData.name || phone || email) {
+  //       const updates = {
+  //         ...formData,
+  //         name: name || formData.parsedData.name
+  //       };
 
-        if (phone && !formData.parsedData.phone) {
-          updates.phone = phone;
-        }
+  //       if (phone && !formData.parsedData.phone) {
+  //         updates.phone = phone;
+  //       }
 
-        if (email && !formData.parsedData.email) {
-          updates.email = email;
-        }
+  //       if (email && !formData.parsedData.email) {
+  //         updates.email = email;
+  //       }
 
-        onChange(updates);
-        setHasAutoSeparated(true);
-      }
-    }
-  }, [parsedData?.name]);
+  //       onChange(updates);
+  //       setHasAutoSeparated(true);
+  //     }
+  //   }
+  // }, [parsedData?.name]);
 
   const validateField = (name, value) => {
     let error = '';
@@ -328,10 +327,10 @@ export const StepTwo = ({ onNext, onBack, onProfileTypeSelect, formData, onChang
 const validateAllFields = () => {
   const errors = {
     // Check manual input (formData.name) first, then fallback to parsedData
-    name: validateField('name', formData.name || parsedData.name || ''),
-    email: validateField('email', formData.email || parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser") || "{}")?.user?.email || ''),
-    phone: validateField('phone', formData.phone || parsedData.phone || ''),
-    profileType: validateField('profileType', formData.profileType || '')
+    name: validateField('name', formData.name || ''),
+    email: validateField('email', formData.email || ''),
+    phone: validateField('phone', formData.phone || ''),
+    
   };
 
   setValidationErrors(errors);
@@ -407,7 +406,7 @@ const validateAllFields = () => {
                     placeholder="Enter your full name"
                     className="w-full bg-transparent border-none focus:outline-none text-gray-700 placeholder-gray-400 text-base"
                    // value={formData.parsedData.name || ""}
-                   value={formData.name || parsedData.name || ""}
+                   value={formData.name || ""}
                     onChange={handleNameChange}
                     onBlur={handleFieldBlur}
                   />
@@ -439,8 +438,9 @@ const validateAllFields = () => {
                     //value={formData.parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser")).user.email || ""}
                     // Inside the email <input />
                   // value={parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser"))?.user?.email || ""}
-                   value={formData.email || parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser") || "{}")?.user?.email || ""}
-                  onChange={handleEmailChange}
+                  //  value={formData.email || parsedData.email || JSON.parse(localStorage.getItem("ChatAppUser") || "{}")?.user?.email || ""}
+                    value={formData.email || ""}
+                    onChange={handleEmailChange}
                     onBlur={handleFieldBlur}
                     required
                   />
@@ -470,7 +470,8 @@ const validateAllFields = () => {
                     placeholder="+91 9876543210"
                     className="w-full bg-transparent border-none focus:outline-none text-gray-700 placeholder-gray-400 text-base"
                    // value={parsedData.phone || ""}
-                   value={formData.phone || parsedData.phone || ""}
+                  //  value={formData.phone || parsedData.phone || ""}
+                    value={formData.phone || ""}
                     onChange={handlePhoneChange}
                     onBlur={handleFieldBlur}
                     required
@@ -487,7 +488,7 @@ const validateAllFields = () => {
             </div>
 
             {/* Profile Type Field - Full width below */}
-            {!formData.profileType && (
+            {/*{!formData.profileType && (
             <div>
               <label htmlFor="profileType" className="block text-gray-700 font-medium text-sm mb-2">
                 Profile Type <span className="text-red-500">*</span>
@@ -503,7 +504,7 @@ const validateAllFields = () => {
                   onChange={handleProfileTypeChange}
                   onBlur={handleFieldBlur}
                   
-                  className="appearance-none w-full p-4 bg-transparent border-none focus:outline-none text-gray-700 pr-12 text-base" /* Increased padding and text size */
+                  className="appearance-none w-full p-4 bg-transparent border-none focus:outline-none text-gray-700 pr-12 text-base" 
                 >
                   <option value="" disabled className="text-gray-400">Select a profile type</option>
                   <option value="student" className="text-gray-700">Student</option>
@@ -517,7 +518,7 @@ const validateAllFields = () => {
                   {validationErrors.profileType}
                 </div>
               )}
-            </div>)}
+            </div>)}*/}
 
           </div>
 
@@ -533,7 +534,8 @@ const validateAllFields = () => {
               onClick={handleNextClick}
               //disabled={!formData.parsedData.phone || !formData.profileType || !formData.parsedData.name}
            //   disabled={!parsedData.phone || !formData.profileType || !parsedData.name}
-           disabled={!formData.phone && !parsedData.phone}
+              // disabled={!formData.phone && !parsedData.phone}
+              disabled={!formData.phone || !formData.name}
               className="flex items-center justify-center px-8 py-4 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-200 font-medium text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none" /* Increased padding and text */
             >
               Next

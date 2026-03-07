@@ -4,7 +4,8 @@ import {
   uploadResume, 
   resumeSearch,
   viewResumeAsPdf,
-  serveResume  
+  serveResume,  
+  getParsedResume
 } from '../controllers/resumeController.js';
 import secureRoute from '../middlewares/secureRouteMiddleware.js';
 
@@ -16,6 +17,7 @@ const upload = multer({
 
 // Existing routes
 router.post('/resume', secureRoute, upload.single('resume'), uploadResume);
+router.get('/resume/parsed', secureRoute, getParsedResume);
 router.get('/search', resumeSearch);
 
 router.get('/serve/:userId', serveResume);
