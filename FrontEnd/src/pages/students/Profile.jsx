@@ -301,7 +301,7 @@ function Profile() {
       if (response.data && response.data.data.profileType === 'professional') {
         alert("Success! You have been switched to a professional profile.");
         localStorage.setItem('selectedRole', 'professional');
-        navigate('/Profhome');
+        navigate('/home');
       } else {
         throw new Error("API did not confirm the profile type update.");
       }

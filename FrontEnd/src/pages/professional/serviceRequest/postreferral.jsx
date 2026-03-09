@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from "@/components/dashboard/PageHeader";
-import { postReferralJob ,getSkills, addSkill ,getMasterDataByType,createMasterData} from '@/lib/User_AxiosInstance'; // Using the original API function
+import { postReferralJob, getSkills, addSkill, getMasterDataByType, createMasterData } from '@/lib/User_AxiosInstance';
+import CreatableSelect from 'react-select/creatable';
 import { ChevronDown, X } from 'lucide-react';
-
 import toast from 'react-hot-toast';
 import { City } from 'country-state-city';
 
@@ -44,124 +44,93 @@ const degreesDropdownRef = useRef(null);
         certifications: false,
         locations: false,
         benefits: false,
-        studentStreams: false,
         tags: false,
-        degree: false,
     });
 
     const [skillInput, setSkillInput] = useState('');
     const [certificationInput, setCertificationInput] = useState('');
     const [benefitInput, setBenefitInput] = useState('');
-    const [studentStreamInput, setStudentStreamInput] = useState('');
     const [locationSearch, setLocationSearch] = useState('');
     const [indianCities, setIndianCities] = useState([]);
     const [descriptionError, setDescriptionError] = useState("");
 
-    // --- Refs from CreateJob ---
+    // --- Refs ---
     const skillsDropdownRef = useRef(null);
     const certificationsDropdownRef = useRef(null);
     const locationsDropdownRef = useRef(null);
     const benefitsDropdownRef = useRef(null);
-    const studentStreamsDropdownRef = useRef(null);
     const tagsDropdownRef = useRef(null);
 
-    // --- Dropdown Options from CreateJob ---
+    // --- Dropdown Options ---
     const educationOptions = ["High School", "Bachelor's Degree", "Master's Degree", "PhD", "Diploma", "Other"];
-    const fieldOfStudyOptions = ["Computer Science", "Engineering", "Business", "Arts", "Sciences", "Mathematics", "Medicine", "Law", "Other"];
     const experienceOptions = ["0-1 years", "1-3 years", "3-5 years", "5-10 years", "10+ years"];
     const allCertifications = ["AWS Certified", "Microsoft Certified", "Google Cloud Certified", "Cisco Certified", "PMP"];
     const allBenefits = ["Health Insurance", "401(k)", "Paid Time Off", "Flexible Schedule", "Dental Insurance"];
     const workAuthOptions = ["Citizens Only", "Permanent Residents", "Work Visa Holders", "Any"];
-    const allSkills = ["JavaScript", "React", "Vue", "Angular", "Node.js", "Python", "Java", "C++", "SQL", "MongoDB"];
     const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
-    // --- Filtered Dropdown Lists from CreateJob ---
-   // const filteredSkills = allSkills.filter(skill => skill.toLowerCase().includes(skillInput.toLowerCase()));
     const filteredCertifications = allCertifications.filter(cert => cert.toLowerCase().includes(certificationInput.toLowerCase()));
     const filteredBenefits = allBenefits.filter(benefit => benefit.toLowerCase().includes(benefitInput.toLowerCase()));
-    const filteredStudentStreams = fieldOfStudyOptions.filter(stream => stream.toLowerCase().includes(studentStreamInput.toLowerCase()));
-    const filteredCities = indianCities.filter(city =>
-        city.name.toLowerCase().includes(locationSearch.toLowerCase())
-    );
+    const filteredCities = indianCities.filter(city => city.name.toLowerCase().includes(locationSearch.toLowerCase()));
 
-    // Add 'fetchedSkills' to your state declarations
-const [fetchedSkills, setFetchedSkills] = useState([]);
+    // --- Dynamic degree/stream state ---
+    const [degreeOptions, setDegreeOptions]   = useState([]);
+    const [streamOptions, setStreamOptions]   = useState([]);
+    const [selectedDegreeId, setSelectedDegreeId] = useState(null);
+    const [isLoadingDegrees, setIsLoadingDegrees] = useState(false);
+    const [isLoadingStreams, setIsLoadingStreams] = useState(false);
 
-// Fetch skills from your API
-useEffect(() => {
-  const fetchSkills = async () => {
-    try {
-      const response = await getSkills();
-      setFetchedSkills(response.data.map(s => s.skills));
-    } catch (error) {
-      console.error("Error loading skills:", error);
-    }
-  };
-
-  fetchSkills();
-}, []);
-
-// 1. Add new state variables
-const [fetchedDegrees, setFetchedDegrees] = useState([]);
-const [fetchedStreams, setFetchedStreams] = useState([]);
-const [degreeInput, setDegreeInput] = useState('');
-// (studentStreamInput is already in your code)
-
-// 2. Fetch Degrees on Mount
-useEffect(() => {
-  const fetchDegrees = async () => {
-    try {
-      const response = await getMasterDataByType("DEGREE");
-      // Safety: Extract the array regardless of how your backend wraps it
-      const data = response?.data?.data || response?.data || [];
-      setFetchedDegrees(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error("Error loading degrees:", error);
-      setFetchedDegrees([]); 
-    }
-  };
-  fetchDegrees();
-}, []);
-
-// Look for where you call getMasterDataByType
-useEffect(() => {
-    const fetchStreams = async () => {
-        // 1. Find the degree object that matches the selected value
-        const selectedDegreeObj = fetchedDegrees.find(
-            (d) => d.value === formData.minEducation
-        );
-
-        // 2. ONLY call the API if we have a valid _id
-        if (selectedDegreeObj?._id) {
+        // --- Fetch skills ---
+    const [fetchedSkills, setFetchedSkills] = useState([]);
+    useEffect(() => {
+        const fetchSkills = async () => {
             try {
-                // PASS THE _id, NOT THE TEXT VALUE
-                const response = await getMasterDataByType("STREAM", selectedDegreeObj._id);
-                const data = response?.data?.data || [];
-                setFetchedStreams(data);
+                const response = await getSkills();
+                setFetchedSkills(response.data.map(s => s.skills));
             } catch (error) {
-                console.error("Error:", error);
+                console.error("Error loading skills:", error);
             }
-        } else {
-            // Clear streams if no degree is selected
-            setFetchedStreams([]);
-        }
-    };
-    
-    fetchStreams();
-}, [formData.minEducation, fetchedDegrees]);
+        };
+        fetchSkills();
+    }, []);
+    const filteredSkills = fetchedSkills.filter(skill => skill.toLowerCase().includes(skillInput.toLowerCase()));
 
-// 4. Filtered Lists with Null-Safety (The "|| []" prevents the crash)
-const filteredDegrees = (fetchedDegrees || []).filter(d => 
-  d?.value?.toLowerCase().includes(degreeInput.toLowerCase())
-);
+    // --- Fetch degrees on mount ---
+    useEffect(() => {
+        const fetchDegrees = async () => {
+            setIsLoadingDegrees(true);
+            try {
+                const res = await getMasterDataByType("DEGREE");
+                setDegreeOptions(
+                    (res?.data?.data || []).map(item => ({ value: item._id, label: item.value }))
+                );
+            } catch (err) {
+                console.error("Error loading degrees:", err);
+            } finally {
+                setIsLoadingDegrees(false);
+            }
+        };
+        fetchDegrees();
+    }, []);
 
-const filteredStreamsFromDB = (fetchedStreams || []).filter(s => 
-  s?.value?.toLowerCase().includes(studentStreamInput.toLowerCase())
-);
-// Update your filteredSkills to use the dynamic state
-const filteredSkills = fetchedSkills.filter(skill => 
-    skill.toLowerCase().includes(skillInput.toLowerCase())
-);
+    // --- Fetch streams when degree changes ---
+    useEffect(() => {
+        if (!selectedDegreeId) { setStreamOptions([]); return; }
+        const fetchStreams = async () => {
+            setIsLoadingStreams(true);
+            try {
+                const res = await getMasterDataByType("STREAM", selectedDegreeId);
+                setStreamOptions(
+                    (res?.data?.data || []).map(item => ({ value: item._id, label: item.value }))
+                );
+            } catch (err) {
+                console.error("Error loading streams:", err);
+            } finally {
+                setIsLoadingStreams(false);
+            }
+        };
+        fetchStreams();
+    }, [selectedDegreeId]);
     // --- useEffect Hooks from CreateJob ---
     useEffect(() => {
         // Fetches cities of India and sorts them alphabetically
@@ -176,11 +145,8 @@ const filteredSkills = fetchedSkills.filter(skill =>
             certifications: certificationsDropdownRef,
             locations: locationsDropdownRef,
             benefits: benefitsDropdownRef,
-            studentStreams: studentStreamsDropdownRef,
             tags: tagsDropdownRef,
-            degree: degreesDropdownRef // <--- Add this mapping
         };
-
         for (const key in dropdownRefs) {
             if (dropdownRefs[key].current && !dropdownRefs[key].current.contains(event.target)) {
                 setDropdownOpen(prev => ({ ...prev, [key]: false }));
@@ -236,51 +202,13 @@ const filteredSkills = fetchedSkills.filter(skill =>
         }));
     };
 
-const handleItemInputKeyDown = async (e, field, input, setInput) => {
-    if (e.key === 'Enter' && input.trim()) {
-        e.preventDefault();
-        const newValue = input.trim();
-
-        // Handle Degree (Single Select)
-        if (field === 'minEducation') {
-            if (!fetchedDegrees.find(d => d.value.toLowerCase() === newValue.toLowerCase())) {
-                try {
-                    const res = await createMasterData({ type: 'DEGREE', value: newValue });
-                    setFetchedDegrees(prev => [...prev, res.data]);
-                } catch (err) { console.error("Failed to save degree", err); }
-            }
-            handleOptionSelect('minEducation', newValue);
-            setInput('');
-            setDropdownOpen(prev => ({ ...prev, degree: false }));
-        }
-
-        // Handle Stream (Multi Select)
-        else if (field === 'studentStreams') {
-            const exists = fetchedStreams.find(s => s.value.toLowerCase() === newValue.toLowerCase());
-            if (!exists) {
-                try {
-                    const selectedDegree = fetchedDegrees.find(d => d.value === formData.minEducation);
-                    const res = await createMasterData({ 
-                        type: 'STREAM', 
-                        value: newValue, 
-                        parent: selectedDegree?.id 
-                    });
-                    // Extract data based on your API response structure
-                    const newStream = res.data?.data || res.data;
-                    setFetchedStreams(prev => [...prev, newStream]);
-                } catch (err) { console.error("Failed to save stream", err); }
-            }
-            addItem('studentStreams', newValue);
+    const handleItemInputKeyDown = (e, field, input, setInput) => {
+        if (e.key === 'Enter' && input.trim()) {
+            e.preventDefault();
+            addItem(field, input.trim());
             setInput('');
         }
-        
-        // Handle Skills, Certs, Benefits (The missing part)
-        else {
-            addItem(field, newValue);
-            setInput('');
-        }
-    }
-};
+    };
     const handleSelectItem = (field, item, setInput, dropdownKey) => {
         addItem(field, item);
         if (setInput) setInput('');
@@ -351,15 +279,15 @@ const handleItemInputKeyDown = async (e, field, input, setInput) => {
 
     // --- Merged JSX ---
     return (
-        <div className="container mx-auto px-4 py-6">
-            <PageHeader title="Post a Referral Job" />
-            <p className="text-gray-600 mb-8">Effortlessly Connect with Qualified Candidates and Build Your Dream Teams</p>
-
-            {/* Form content from CreateJob */}
+        <div className="min-h-screen bg-gray-50 px-4 py-8">
             <div className="max-w-3xl mx-auto">
-                <div className="bg-white border border-gray-200 rounded-md p-6 mb-6">
-                    <h2 className="text-lg font-bold mb-1">Basic Job Details </h2>
-                    <p className="text-sm text-gray-600 mb-4">Provide the core details about this job opportunity.</p>
+                <div className="mb-6">
+                    <PageHeader title="Post a Referral Job" />
+                    <p className="text-gray-500 text-sm mt-1">Effortlessly connect with qualified candidates and build your dream team.</p>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-5 shadow-sm">
+                    <h2 className="text-base font-semibold text-gray-900 mb-1">Basic Job Details</h2>
+                    <p className="text-sm text-gray-400 mb-5">Provide the core details about this job opportunity.</p>
 
                     <div className="mb-4">
                         <label className="block text-sm font-medium mb-2">Employment type <span className="text-red-500">*</span></label>
@@ -537,119 +465,73 @@ const handleItemInputKeyDown = async (e, field, input, setInput) => {
                     </div>
                 </div>
 
-                {/* Selection Criteria Section */}
-                <div className="bg-white border border-gray-200 rounded-md p-6 mb-6">
-                    <h2 className="text-lg font-bold mb-1">Selection Criteria</h2>
-                    <p className="text-sm text-gray-600 mb-4">Outline the qualifications for the ideal candidate.</p>
+                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-5 shadow-sm">
+                    <h2 className="text-base font-semibold text-gray-900 mb-1">Selection Criteria</h2>
+                    <p className="text-sm text-gray-400 mb-5">Outline the qualifications for the ideal candidate.</p>
 
                     <div className="mb-4">
                         <label htmlFor="eligibilityCriteria" className="block text-sm font-medium mb-2">Eligibility Criteria</label>
                         <textarea id="eligibilityCriteria" name="eligibilityCriteria" placeholder="e.g., Minimum 3.0 GPA, Must be eligible to work in the specified location..." className="w-full p-2 border border-gray-300 rounded-md h-24 focus:ring-2 focus:ring-black" value={formData.eligibilityCriteria} onChange={handleInputChange}></textarea>
                     </div>
 
-                    {/* --- Degree (Minimum Education) Searchable Select --- */}
-<div className="mb-4 relative" ref={degreesDropdownRef}>
-    <label className="block text-sm font-medium mb-2">Minimum Education</label>
-    <div 
-        className="flex items-center justify-between p-2 border border-gray-300 rounded-md cursor-pointer"
-        onClick={() => setDropdownOpen(prev => ({ ...prev, degree: !prev.degree }))}
-    >
-        <input 
-            type="text"
-            className="outline-none w-full cursor-pointer"
-            placeholder="Search or type new Degree..."
-            value={dropdownOpen.degree ? degreeInput : (formData.minEducation || "Select Education")}
-            onChange={(e) => setDegreeInput(e.target.value)}
-            onKeyDown={(e) => handleItemInputKeyDown(e, 'minEducation', degreeInput, setDegreeInput)}
-            onClick={(e) => e.stopPropagation()}
-        />
-        <ChevronDown size={16} className="text-gray-400" />
-    </div>
-    {dropdownOpen.degree && (
-        <div className="absolute z-30 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
-            {filteredDegrees.map((deg) => (
-                <div 
-                    key={deg.id} 
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => {
-                        handleOptionSelect('minEducation', deg.value);
-                        setDegreeInput('');
-                        setDropdownOpen(prev => ({ ...prev, degree: false }));
-                    }}
-                >
-                    {deg.value}
-                </div>
-            ))}
-            {degreeInput && !filteredDegrees.some(d => d.value.toLowerCase() === degreeInput.toLowerCase()) && (
-                <div className="px-4 py-2 text-blue-600 font-medium border-t">Press Enter to add "{degreeInput}"</div>
-            )}
-        </div>
-    )}
-</div>
+                    {/* Minimum Education — Degree */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Minimum Education</label>
+                        <CreatableSelect
+                            isClearable
+                            isLoading={isLoadingDegrees}
+                            options={degreeOptions}
+                            value={
+                                formData.minEducation
+                                    ? degreeOptions.find(o => o.label === formData.minEducation)
+                                        || { value: formData.minEducation, label: formData.minEducation }
+                                    : null
+                            }
+                            placeholder="Search or add degree..."
+                            onChange={(sel) => {
+                                setFormData(prev => ({ ...prev, minEducation: sel?.label || '', studentStreams: [] }));
+                                setSelectedDegreeId(sel?.value || null);
+                                setStreamOptions([]);
+                            }}
+                            onCreateOption={async (val) => {
+                                try {
+                                    const res = await createMasterData({ type: 'DEGREE', value: val });
+                                    const saved = res.data?.data || res.data;
+                                    const newOpt = { value: saved._id, label: saved.value };
+                                    setDegreeOptions(prev => [...prev, newOpt]);
+                                    setFormData(prev => ({ ...prev, minEducation: saved.value, studentStreams: [] }));
+                                    setSelectedDegreeId(saved._id);
+                                    setStreamOptions([]);
+                                } catch (err) { console.error("Failed to save degree", err); }
+                            }}
+                        />
+                    </div>
 
-{/* --- Preferred Field of Study (Streams) Multi-Select --- */}
-<div className="mb-4 relative" ref={studentStreamsDropdownRef}>
-    <label className="block text-sm font-medium mb-2">Preferred Field of Study (Streams)</label>
-    <div className={`relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black ${!formData.minEducation ? 'bg-gray-50 opacity-60 cursor-not-allowed' : ''}`}>
-        <div className="flex flex-wrap gap-2 mb-1">
-            {formData.studentStreams.map((stream, index) => (
-                <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
-                    <span>{stream}</span>
-                    <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={() => removeItem('studentStreams', stream)}><X size={14} /></button>
-                </div>
-            ))}
-        </div>
-        <input 
-            type="text" 
-            disabled={!formData.minEducation}
-            placeholder={formData.minEducation ? "Type a stream..." : "Select education first"} 
-            className="w-full outline-none bg-transparent" 
-            value={studentStreamInput} 
-            onChange={(e) => setStudentStreamInput(e.target.value)}
-            onFocus={() => setDropdownOpen(prev => ({ ...prev, studentStreams: true }))}
-            onKeyDown={(e) => handleItemInputKeyDown(e, 'studentStreams', studentStreamInput, setStudentStreamInput)} 
-        />
-    </div>
-    {dropdownOpen.studentStreams && formData.minEducation && (
-        <div className="absolute z-20 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
-            {filteredStreamsFromDB.map((stream) => (
-                <div 
-                    key={stream.id} 
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer" 
-                    onClick={() => handleSelectItem('studentStreams', stream.value, setStudentStreamInput, 'studentStreams')}
-                >
-                    {stream.value}
-                </div>
-            ))}
-            {studentStreamInput && !filteredStreamsFromDB.some(s => s.value.toLowerCase() === studentStreamInput.toLowerCase()) && (
-                <div className="px-4 py-2 text-blue-600 font-medium border-t">Press Enter to add "{studentStreamInput}"</div>
-            )}
-        </div>
-    )}
-</div>
-
-                    {/* Preferred Field of Study Multi-Select */}
-                    {/* <div className="mb-4" ref={studentStreamsDropdownRef}>
-                        <label className="block text-sm font-medium mb-2">Preferred Field of Study</label>
-                        <div className="relative p-2 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-black" onClick={() => setDropdownOpen(prev => ({ ...prev, studentStreams: true }))}>
-                            <div className="flex flex-wrap gap-2 mb-2">
-                                {formData.studentStreams.map((stream, index) => (
-                                    <div key={index} className="bg-gray-100 px-2 py-1 rounded-full flex items-center text-sm">
-                                        <span>{stream}</span>
-                                        <button type="button" className="ml-2 text-gray-500 hover:text-gray-800" onClick={(e) => { e.stopPropagation(); removeItem('studentStreams', stream); }}><X size={14} /></button>
-                                    </div>
-                                ))}
-                            </div>
-                            <input type="text" placeholder="Type a field of study..." className="w-full outline-none" value={studentStreamInput} onChange={(e) => setStudentStreamInput(e.target.value)} onKeyDown={(e) => handleItemInputKeyDown(e, 'studentStreams', studentStreamInput, setStudentStreamInput)} />
-                        </div>
-                        {dropdownOpen.studentStreams && (
-                            <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
-                                {filteredStudentStreams.map((stream, index) => (
-                                    <div key={index} className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => handleSelectItem('studentStreams', stream, setStudentStreamInput, 'studentStreams')}>{stream}</div>
-                                ))}
-                            </div>
-                        )}
-                    </div> */}
+                    {/* Preferred Field of Study — Streams */}
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Preferred Field of Study (Streams)</label>
+                        <CreatableSelect
+                            isMulti
+                            isClearable
+                            isLoading={isLoadingStreams}
+                            isDisabled={!formData.minEducation}
+                            options={streamOptions}
+                            value={formData.studentStreams.map(s => ({ value: s, label: s }))}
+                            placeholder={formData.minEducation ? "Search or add streams..." : "Select a degree first"}
+                            onChange={(sel) => {
+                                setFormData(prev => ({ ...prev, studentStreams: (sel || []).map(s => s.label) }));
+                            }}
+                            onCreateOption={async (val) => {
+                                try {
+                                    const res = await createMasterData({ type: 'STREAM', value: val, parent: selectedDegreeId });
+                                    const saved = res.data?.data || res.data;
+                                    const newOpt = { value: saved._id, label: saved.value };
+                                    setStreamOptions(prev => [...prev, newOpt]);
+                                    setFormData(prev => ({ ...prev, studentStreams: [...prev.studentStreams, saved.value] }));
+                                } catch (err) { console.error("Failed to save stream", err); }
+                            }}
+                        />
+                    </div>
 
                     <div className="mb-4">
                         <label htmlFor="yearsOfExperience" className="block text-sm font-medium mb-2">Years of Experience</label>
@@ -771,12 +653,11 @@ const handleItemInputKeyDown = async (e, field, input, setInput) => {
                     </div>
                 </div>
 
-                {/* Original Action Buttons */}
-                <div className="flex justify-end space-x-4">
-                    <button type="button" className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50 font-medium" onClick={handleCancel} disabled={isSubmitting}>
+                <div className="flex justify-end gap-3 pb-8">
+                    <button type="button" className="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors" onClick={handleCancel} disabled={isSubmitting}>
                         Cancel
                     </button>
-                    <button type="button" className="px-6 py-2 bg-black text-white rounded-md hover:bg-gray-800 font-medium" onClick={handleSubmit} disabled={isSubmitting}>
+                    <button type="button" className="px-6 py-2.5 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50" onClick={handleSubmit} disabled={isSubmitting}>
                         {isSubmitting ? 'Posting...' : 'Post Your Job'}
                     </button>
                 </div>

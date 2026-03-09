@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import candidatemasterData from "./models/candidateMasterData.js"; // adjust path
 
-const MONGO_URI = "mongodb+srv://Admin:VneGXxUJDOwHV260@cluster1.guimnhi.mongodb.net/?retryWrites=true&w=majority";
+
 
 const degreeStreamMapping = {
   'B.Tech': ['Computer Science', 'Mechanical', 'Civil', 'Electrical', 'Electronics', 'Bio-medical', 'Information Technology', 'Chemical Engineering', 'Biotechnology', 'Aerospace Engineering'],
