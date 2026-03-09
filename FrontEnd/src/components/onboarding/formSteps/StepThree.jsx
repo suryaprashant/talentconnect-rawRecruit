@@ -384,14 +384,18 @@ const handleAddCollege = async (name) => {
                             value: val,
                           });
                         
-                          const newValue = res.data.data.value;
+                          const newId    = res.data.data._id;
+                          const newLabel = res.data.data.value;
                         
+                          // value must be _id (not name) so stream fetch gets a valid ObjectId
                           setDegreeOptions((prev) => [
                             ...prev,
-                            { value: newValue, label: newValue },
+                            { value: newId, label: newLabel },
                           ]);
                         
-                          setLocalFormData((p) => ({ ...p, degree: newValue }));
+                          setLocalFormData((p) => ({ ...p, degree: newLabel, specialization: "" }));
+                          // ✅ set the real _id so stream fetch fires immediately
+                          setSelectedDegreeId(newId);
                         } catch (err) {
                           console.error("Error adding degree", err);
                         }
