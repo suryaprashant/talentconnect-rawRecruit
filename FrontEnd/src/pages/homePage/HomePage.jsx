@@ -1396,249 +1396,205 @@ const ArrowRightIcon = () => (
           <section ref={heroRef} id="hero" className="relative px-6">
             {/* Wrapper for hero + stats only */}
             <div className="relative">
-  {/* Hero Background Elements - keep these for visual interest */}
-  <div className="absolute inset-0 overflow-hidden pointer-events-none">
-    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
-    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl"></div>
-  </div>
+              {/* Hero Background Elements */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/20 to-cyan-200/20 rounded-full blur-3xl"></div>
+              </div>
 
-  <div className="max-w-7xl 2xl:max-w-[1400px] mx-auto px-6 2xl:px-12 pt-20 pb-28 2xl:pt-28 2xl:pb-36">
-    <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <div className="max-w-7xl 2xl:max-w-[1400px] mx-auto px-4 sm:px-6 2xl:px-12 pt-12 sm:pt-16 pb-16 sm:pb-28 2xl:pt-28 2xl:pb-36">
+                <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
-      {/* ================= LEFT SIDE ================= */}
-      <div>
+                  {/* ================= LEFT SIDE ================= */}
+                  <div>
 
-        {/* Top Label */}
-        <p className="text-sm tracking-widest text-purple-600 font-semibold mb-6">
-          TRUSTED CAMPUS RECRUITMENT PLATFORM
-        </p>
+                    {/* Top Label */}
+                    <p className="text-xs sm:text-sm tracking-widest text-purple-600 font-semibold mb-4 sm:mb-6">
+                      TRUSTED CAMPUS RECRUITMENT PLATFORM
+                    </p>
 
-        {/* Heading */}
-        <h1 className="text-5xl md:text-5xl 2xl:text-6xl font-bold leading-tight mb-8">
-          <span className="text-[#0f172a]">
-            The Operating System
-          </span>
-          <br />
-          <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            for Campus Recruitment
-          </span>
-        </h1>
+                    {/* Heading */}
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl 2xl:text-6xl font-bold leading-tight mb-6 sm:mb-8">
+                      <span className="text-[#0f172a]">
+                        The Operating System
+                      </span>
+                      <br />
+                      <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                        for Campus Recruitment
+                      </span>
+                    </h1>
 
-        {/* Paragraph */}
-<p className="text-gray-600 text-lg 2xl:text-xl leading-relaxed mb-4 max-w-[520px] 2xl:max-w-[600px]">
-  Connect Colleges, Companies, and Students in One Unified
-  Recruitment Platform.
-</p>
+                    {/* Paragraphs */}
+                    <p className="text-gray-600 text-base sm:text-lg 2xl:text-xl leading-relaxed mb-3 sm:mb-4 max-w-full sm:max-w-[520px] 2xl:max-w-[600px]">
+                      Connect Colleges, Companies, and Students in One Unified
+                      Recruitment Platform.
+                    </p>
 
-<p className="text-gray-600 text-lg leading-relaxed mb-10 max-w-[520px]">
-  Run On-Campus Drives, Pool Hiring, Off-Campus Hiring, and
-  Internships — all from a single system.
-</p>
+                    <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-8 sm:mb-10 max-w-full sm:max-w-[520px]">
+                      Run On-Campus Drives, Pool Hiring, Off-Campus Hiring, and
+                      Internships — all from a single system.
+                    </p>
 
-        {/* Single CTA */}
-        <button
-          onClick={handleGetStarted}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-10 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-        >
-          <span className="flex items-center gap-3">
-            Start Your Journey
-            <ArrowRight className="w-5 h-5" />
-          </span>
-        </button>
+                    {/* CTA */}
+                    <button
+                      onClick={handleGetStarted}
+                      className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 sm:px-10 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+                    >
+                      <span className="flex items-center justify-center gap-3">
+                        Start Your Journey
+                        <ArrowRight className="w-5 h-5" />
+                      </span>
+                    </button>
 
-        <div className="mt-14 flex items-center gap-4 max-w-5xl">
+                    {/* Stats row — wraps on mobile */}
+                    <div className="mt-10 sm:mt-14 flex flex-wrap items-center gap-x-4 gap-y-3 max-w-full">
 
-  <div className="flex items-center gap-3">
-    <div className="w-4 h-4 flex items-center justify-center rounded-full border-2 border-purple-500 text-purple-600 text-xs font-bold">
-      ✓
-    </div>
-    <p className="text-gray-700 text-sm whitespace-nowrap">
-      <span className="font-semibold text-gray-900">50+</span> Partner Colleges
-    </p>
-  </div>
+                      {[
+                        { value: "50+",    label: "Partner Colleges" },
+                        { value: "100+",   label: "Companies" },
+                        { value: "3,000+", label: "Students Placed" },
+                        { value: "95%",    label: "Satisfaction Rate" },
+                      ].map(({ value, label }) => (
+                        <div key={label} className="flex items-center gap-2">
+                          <div className="w-4 h-4 flex items-center justify-center rounded-full border-2 border-purple-500 text-purple-600 text-xs font-bold flex-shrink-0">
+                            ✓
+                          </div>
+                          <p className="text-gray-700 text-sm whitespace-nowrap">
+                            <span className="font-semibold text-gray-900">{value}</span> {label}
+                          </p>
+                        </div>
+                      ))}
 
-  <div className="flex items-center gap-3">
-    <div className="w-4 h-4 flex items-center justify-center rounded-full border-2 border-purple-500 text-purple-600 text-xs font-bold">
-      ✓
-    </div>
-    <p className="text-gray-700 text-sm whitespace-nowrap">
-      <span className="font-semibold text-gray-900">100+</span> Companies
-    </p>
-  </div>
-
-  <div className="flex items-center gap-3">
-    <div className="w-4 h-4 flex items-center justify-center rounded-full border-2 border-purple-500 text-purple-600 text-xs font-bold">
-      ✓
-    </div>
-    <p className="text-gray-700 text-sm whitespace-nowrap">
-      <span className="font-semibold text-gray-900">3,000+</span> Students Placed
-    </p>
-  </div>
-
-  <div className="flex items-center gap-3">
-    <div className="w-4 h-4 flex items-center justify-center rounded-full border-2 border-purple-500 text-purple-600 text-xs font-bold">
-      ✓
-    </div>
-    <p className="text-gray-700 text-sm whitespace-nowrap">
-      <span className="font-semibold text-gray-900">95%</span> Satisfaction Rate
-    </p>
-  </div>
-
-</div>
-
-      </div>
-
-
-      {/* ================= RIGHT SIDE ================= */}
-      <div className="relative h-[550px] 2xl:h-[680px] flex items-center justify-center">
-
-  {/* H1 – Top Center */}
-  <img
-    src={h1}
-    alt="Company Dashboard"
-    className="absolute top-0 z-30 w-[90%] rounded-2xl shadow-2xl border border-gray-200 float-slow"
-  />
-
-  {/* H2 – Left Middle */}
-  <img
-    src={h2}
-    alt="Student Dashboard"
-    className="absolute top-48 left-0 z-20 w-[92%] rounded-2xl shadow-2xl border border-gray-200 float-slower"
-  />
-
-  {/* H3 – Bottom Right */}
-  <img
-    src={h3}
-    alt="College Dashboard"
-    className="absolute bottom-8 right-0 z-10 w-[92%] rounded-2xl shadow-2xl border border-gray-200 float-slowest"
-  />
-
-</div>
-
-    </div>
-  </div>
-</div>
-
-            {/* Partners Section */}
-<div className="w-full overflow-hidden py-0">
-
-  {/* Heading */}
-  <div className="text-center mb-8">
-    <span className="text-sm font-medium text-gray-600 uppercase tracking-wider">
-      Trusted by Leading Institutions and Companies
-    </span>
-  </div>
-
-  {/* ===== COMPANY MARQUEE ===== */}
-  <div className="relative w-full overflow-hidden">
-    <div className="marquee-container">
-      {/* Removed white gradient overlays */}
-      
-      <div className="marquee">
-        <div className="marquee-track">
-          {[...Array(3)].map((_, loopIndex) => (
-            <div key={loopIndex} className="marquee-content">
-              {["Google", "Microsoft", "Amazon", "Meta", "Apple", "Adobe", "Netflix", "Salesforce"].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 whitespace-nowrap mx-4">
-                  <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 text-sm font-semibold">
-                    {item.charAt(0)}
+                    </div>
                   </div>
-                  <span className="text-sm font-medium text-gray-700">
-                    {item}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {/* ===== COLLEGE MARQUEE ===== */}
-  <div className="relative w-full overflow-hidden mt-8">
-    <div className="marquee-container">
-      {/* Removed white gradient overlays */}
-      
-      <div className="marquee reverse">
-        <div className="marquee-track">
-          {[...Array(3)].map((_, loopIndex) => (
-            <div key={loopIndex} className="marquee-content">
-              {[
-                "IIT Bombay", "IIT Delhi", "IIT Madras", "IIT Kharagpur",
-                "BITS Pilani", "NIT Trichy", "IIM Ahmedabad", "IIM Bangalore",
-                "IIT Kanpur", "NIT Surathkal"
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 whitespace-nowrap mx-4">
-                  <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 text-sm font-semibold">
-                    {item.split(' ').map(word => word.charAt(0)).join('')}
+                    
+                  {/* ================= RIGHT SIDE ================= */}
+                  {/* Overlapping layout on ALL screen sizes */}
+                  <div className="relative h-[220px] sm:h-[340px] md:h-[420px] lg:h-[480px] xl:h-[550px] 2xl:h-[680px] flex items-center justify-center mt-6 lg:mt-0">
+                    <img
+                      src={h1}
+                      alt="Company Dashboard"
+                      className="absolute top-0 z-30 w-[90%] rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl border border-gray-200 float-slow"
+                    />
+                    <img
+                      src={h2}
+                      alt="Student Dashboard"
+                      className="absolute top-[38%] left-0 z-20 w-[92%] rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl border border-gray-200 float-slower"
+                    />
+                    <img
+                      src={h3}
+                      alt="College Dashboard"
+                      className="absolute bottom-0 right-0 z-10 w-[92%] rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl border border-gray-200 float-slowest"
+                    />
                   </div>
-                  <span className="text-sm font-medium text-gray-700">
-                    {item}
-                  </span>
+                    
                 </div>
-              ))}
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {/* Animation Styles */}
-  <style jsx>{`
-    .marquee-container {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .marquee {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .marquee-track {
-      display: flex;
-      width: max-content;
-      animation: scroll 35s linear infinite;
-    }
-
-    .marquee.reverse .marquee-track {
-      animation: scroll-reverse 35s linear infinite;
-    }
-
-    .marquee-content {
-      display: flex;
-      gap: 0rem;
-      padding-right: 0rem;
-    }
-
-    @keyframes scroll {
-      from { transform: translateX(0); }
-      to { transform: translateX(-33.33%); }
-    }
-
-    @keyframes scroll-reverse {
-      from { transform: translateX(-33.33%); }
-      to { transform: translateX(0); }
-    }
-  `}</style>
-
-</div> 
+                    
+            {/* ================= MARQUEE SECTION ================= */}
+            <div className="w-full overflow-hidden py-0">
+                    
+              <div className="text-center mb-8 px-4">
+                <span className="text-xs sm:text-sm font-medium text-gray-600 uppercase tracking-wider">
+                  Trusted by Leading Institutions and Companies
+                </span>
+              </div>
+                    
+              {/* Company Marquee */}
+              <div className="relative w-full overflow-hidden">
+                <div className="marquee-container">
+                  <div className="marquee">
+                    <div className="marquee-track">
+                      {[...Array(3)].map((_, loopIndex) => (
+                        <div key={loopIndex} className="marquee-content">
+                          {["Google", "Microsoft", "Amazon", "Meta", "Apple", "Adobe", "Netflix", "Salesforce"].map((item, i) => (
+                            <div key={i} className="flex items-center gap-3 whitespace-nowrap mx-3 sm:mx-4">
+                              <div className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 text-xs sm:text-sm font-semibold flex-shrink-0">
+                                {item.charAt(0)}
+                              </div>
+                              <span className="text-xs sm:text-sm font-medium text-gray-700">
+                                {item}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+                    
+              {/* College Marquee */}
+              <div className="relative w-full overflow-hidden mt-6 sm:mt-8">
+                <div className="marquee-container">
+                  <div className="marquee reverse">
+                    <div className="marquee-track">
+                      {[...Array(3)].map((_, loopIndex) => (
+                        <div key={loopIndex} className="marquee-content">
+                          {[
+                            "IIT Bombay", "IIT Delhi", "IIT Madras", "IIT Kharagpur",
+                            "BITS Pilani", "NIT Trichy", "IIM Ahmedabad", "IIM Bangalore",
+                            "IIT Kanpur", "NIT Surathkal"
+                          ].map((item, i) => (
+                            <div key={i} className="flex items-center gap-3 whitespace-nowrap mx-3 sm:mx-4">
+                              <div className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 text-xs font-semibold flex-shrink-0">
+                                {item.split(' ').map(word => word.charAt(0)).join('')}
+                              </div>
+                              <span className="text-xs sm:text-sm font-medium text-gray-700">
+                                {item}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+                    
+              <style jsx>{`
+                .marquee-container {
+                  position: relative;
+                  width: 100%;
+                  overflow: hidden;
+                }
+                .marquee {
+                  position: relative;
+                  width: 100%;
+                  overflow: hidden;
+                }
+                .marquee-track {
+                  display: flex;
+                  width: max-content;
+                  animation: scroll 35s linear infinite;
+                }
+                .marquee.reverse .marquee-track {
+                  animation: scroll-reverse 35s linear infinite;
+                }
+                .marquee-content {
+                  display: flex;
+                  gap: 0rem;
+                  padding-right: 0rem;
+                }
+                @keyframes scroll {
+                  from { transform: translateX(0); }
+                  to { transform: translateX(-33.33%); }
+                }
+                @keyframes scroll-reverse {
+                  from { transform: translateX(-33.33%); }
+                  to { transform: translateX(0); }
+                }
+              `}</style>
+            </div>
+              
           </section>
-
+              
           <style jsx>{`
             @keyframes compact-scroll {
-              0% {
-                transform: translateX(0);
-              }
-              100% {
-                transform: translateX(-33.333%);
-              }
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-33.333%); }
             }
-            
             .animate-compact-scroll {
               animation: compact-scroll 15s linear infinite;
               display: flex;
@@ -1647,171 +1603,171 @@ const ArrowRightIcon = () => (
         </div>
 
         {/* Platform Overview */}
-<section 
-  ref={howItWorksRef}
-  id="how-it-works" 
-  className="relative px-6 py-20"
->
-  <div className="max-w-7xl mx-auto">
-    <div className="text-center mb-20">
-
-  {/* Small Top Label */}
-  <p className="text-sm font-semibold tracking-widest uppercase text-purple-600 mb-6">
-    PLATFORM OVERVIEW
-  </p>
-
-  {/* Main Heading */}
-  <h2 className="text-4xl md:text-4xl font-bold mb-6 leading-tight">
-    <span className="text-[#0f172a]">
-      One Platform.
-    </span>{" "}
-    <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-      Three Powerful Interfaces.
-    </span>
-  </h2>
-
-  {/* Sub Text */}
-  <p className="text-gray-500 text-lg md:text-xl max-w-3xl mx-auto">
-    Designed for Colleges, Companies, and Students
-  </p>
-
-</div>
-
-    {/* Dashboard Style Cards */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 2xl:gap-12 max-w-[1400px] mx-auto">
-      {[
-        {
-          type: 'colleges',
-          icon: <GraduationCap className="w-8 h-8" />,
-          title: 'For Colleges (TPOs)',
-          steps: [
-            'Register your college on a centralized campus recruitment platform',
-            'Discover on-campus and pool-campus hiring requests from companies',
-            'Publish on-campus and pool-campus recruitment opportunities',
-            'Access student training, seminars, and institutional branding services'
-          ],
-          color: '#8B5CF6',
-          seoValue: 'Targets campus recruitment for colleges, TPO placement platform, on-campus recruitment',
-          description: 'Colleges can connect directly with companies, post hiring requests, and access training services.'
-        },
-        {
-          type: 'companies',
-          icon: <Building2 className="w-8 h-8" />,
-          title: 'For Companies (HR & Hiring Managers)',
-          steps: [
-            'Create a company profile to manage fresher hiring at scale',
-            'Explore college-led on-campus and pool-campus recruitment opportunities',
-            'Post on-campus, pool-campus, and off-campus hiring requirements',
-            'Access workforce solutions and employee training programs'
-          ],
-          color: '#EC4899',
-          seoValue: 'Targets fresher recruitment platform, campus hiring solutions, entry-level hiring',
-          description: 'Companies can find qualified candidates from colleges and post various campus recruitment opportunities.'
-        },
-        {
-          type: 'employers',
-          icon: <Briefcase className="w-8 h-8" />,
-          title: 'For Employers (Staffing & Hiring Partners)',
-          steps: [
-            'Set up an independent employer profile',
-            'Manage end-to-end campus and off-campus recruitment activities',
-            'Coordinate hiring on behalf of multiple companies',
-            'Handle company approvals, scheduling, and recruitment operations'
-          ],
-          color: '#3B82F6',
-          seoValue: 'Targets recruitment management, employer hiring solutions, campus hiring coordination',
-          description: 'Employers can work independently or on behalf of companies to manage recruitment processes.'
-        }
-      ].map((section, idx) => (
-        <div
-          key={idx}
-          onClick={() => handleRoleSelect(section.type)}
-          className="relative group cursor-pointer perspective-1000"
+        <section 
+          ref={howItWorksRef}
+          id="how-it-works" 
+          className="relative px-6 py-20"
         >
-          {/* Card with Glass Morphism - More expressive gradient on hover */}
-          <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl p-7 h-full transform transition-all duration-500 group-hover:-translate-y-3 group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:border-white/60 group-hover:bg-gradient-to-br group-hover:from-purple-500/10 group-hover:via-pink-500/10 group-hover:to-blue-500/10">
-            {/* Animated Top Accent - More expressive */}
-            <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-500 group-hover:h-2 group-hover:shadow-[0_0_15px_rgba(139,92,246,0.3)]"></div>
-            
-            {/* Icon with enhanced hover effect - Further reduced margin */}
-            <div className="relative mb-3"> {/* Changed from mb-4 to mb-3 */}
-              {/* Glow effect on hover */}
-              <div className="absolute -inset-3 rounded-xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
-                style={{
-                  background: `radial-gradient(circle at center, ${section.color}30 0%, transparent 70%)`,
-                  filter: 'blur(10px)',
-                }}
-              />
-              <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-white to-gray-50 p-2.5 shadow-lg border border-white/60 transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
-                <div 
-                  className="transition-transform duration-300 group-hover:scale-110"
-                  style={{ color: section.color }}
-                >
-                  {section.icon}
-                </div>
-              </div>
-            </div>
-            
-            {/* Enhanced title hover effect - Further reduced margin */}
-            <h3 className="text-xl font-bold text-gray-800 mb-3 transform transition-all duration-300 group-hover:translate-x-2 group-hover:text-gray-900">
-              {section.title}
-            </h3>
-            
-            <ul className="space-y-2.5 mb-4"> {/* Reduced space-y-3 to space-y-2.5 and mb-6 to mb-4 */}
-              {section.steps.map((step, stepIdx) => (
-                <li 
-                  key={stepIdx} 
-                  className="flex items-start gap-2.5 group/item transform transition-all duration-300 hover:translate-x-1"
-                >
-                  {/* Enhanced number badge - Smaller */}
-                  <div 
-                    className="flex-shrink-0 w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center text-xs font-semibold shadow-sm border border-white/40 transform transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-0.5 group-hover/item:shadow-md"
-                    style={{ color: section.color }}
-                  >
-                    {stepIdx + 1}
-                  </div>
-                  <span className="text-gray-600 text-sm leading-relaxed pt-0.5 group-hover:text-gray-800 transition-colors duration-300">
-                    {step}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            
-            {/* Reduced spacing further - Minimal padding */}
-            <div className="pt-2 border-t border-gray-100/30 group-hover:border-gray-200/70 transition-colors duration-300 flex items-center justify-end">
-              {/* Enhanced arrow container - Smaller */}
-              <div className="relative overflow-hidden">
-                {/* Animated slide trail */}
-                <div 
-                  className="absolute -left-4 w-0 h-0.5 rounded-full group-hover:w-6 transition-all duration-500"
-                  style={{
-                    background: `linear-gradient(90deg, transparent, ${section.color})`,
-                  }}
-                />
-                {/* Arrow button - Smaller */}
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-sm border border-gray-100/60 transform transition-all duration-300 group-hover:scale-110 group-hover:translate-x-2 group-hover:shadow-md">
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-600 group-hover:text-gray-800 transition-colors duration-300" />
-                </div>
-              </div>
-            </div>
-            
-            {/* Edge highlights for 3D effect */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-          </div>
-          
-          {/* Enhanced floating shadow */}
-          <div className="absolute -bottom-3 left-3 right-3 h-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
-            style={{
-              background: `linear-gradient(90deg, ${section.color}40, ${section.type === 'colleges' ? '#C084FC' : section.type === 'companies' ? '#F472B6' : '#60A5FA'}40)`,
-              filter: 'blur(15px)',
-            }}
-          ></div>
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-20">
+                  
+          {/* Small Top Label */}
+          <p className="text-sm font-semibold tracking-widest uppercase text-purple-600 mb-6">
+            PLATFORM OVERVIEW
+          </p>
+                  
+          {/* Main Heading */}
+          <h2 className="text-4xl md:text-4xl font-bold mb-6 leading-tight">
+            <span className="text-[#0f172a]">
+              One Platform.
+            </span>{" "}
+            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Three Powerful Interfaces.
+            </span>
+          </h2>
+                  
+          {/* Sub Text */}
+          <p className="text-gray-500 text-lg md:text-xl max-w-3xl mx-auto">
+            Designed for Colleges, Companies, and Students
+          </p>
+                  
         </div>
-      ))}
-    </div>
-  </div>
-</section>
+                  
+            {/* Dashboard Style Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 2xl:gap-12 max-w-[1400px] mx-auto">
+              {[
+                {
+                  type: 'colleges',
+                  icon: <GraduationCap className="w-8 h-8" />,
+                  title: 'For Colleges (TPOs)',
+                  steps: [
+                    'Register your college on a centralized campus recruitment platform',
+                    'Discover on-campus and pool-campus hiring requests from companies',
+                    'Publish on-campus and pool-campus recruitment opportunities',
+                    'Access student training, seminars, and institutional branding services'
+                  ],
+                  color: '#8B5CF6',
+                  seoValue: 'Targets campus recruitment for colleges, TPO placement platform, on-campus recruitment',
+                  description: 'Colleges can connect directly with companies, post hiring requests, and access training services.'
+                },
+                {
+                  type: 'companies',
+                  icon: <Building2 className="w-8 h-8" />,
+                  title: 'For Companies (HR & Hiring Managers)',
+                  steps: [
+                    'Create a company profile to manage fresher hiring at scale',
+                    'Explore college-led on-campus and pool-campus recruitment opportunities',
+                    'Post on-campus, pool-campus, and off-campus hiring requirements',
+                    'Access workforce solutions and employee training programs'
+                  ],
+                  color: '#EC4899',
+                  seoValue: 'Targets fresher recruitment platform, campus hiring solutions, entry-level hiring',
+                  description: 'Companies can find qualified candidates from colleges and post various campus recruitment opportunities.'
+                },
+                {
+                  type: 'employers',
+                  icon: <Briefcase className="w-8 h-8" />,
+                  title: 'For Employers (Staffing & Hiring Partners)',
+                  steps: [
+                    'Set up an independent employer profile',
+                    'Manage end-to-end campus and off-campus recruitment activities',
+                    'Coordinate hiring on behalf of multiple companies',
+                    'Handle company approvals, scheduling, and recruitment operations'
+                  ],
+                  color: '#3B82F6',
+                  seoValue: 'Targets recruitment management, employer hiring solutions, campus hiring coordination',
+                  description: 'Employers can work independently or on behalf of companies to manage recruitment processes.'
+                }
+              ].map((section, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => handleRoleSelect(section.type)}
+                  className="relative group cursor-pointer perspective-1000"
+                >
+                  {/* Card with Glass Morphism - More expressive gradient on hover */}
+                  <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl border border-white/40 shadow-xl p-7 h-full transform transition-all duration-500 group-hover:-translate-y-3 group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:border-white/60 group-hover:bg-gradient-to-br group-hover:from-purple-500/10 group-hover:via-pink-500/10 group-hover:to-blue-500/10">
+                    {/* Animated Top Accent - More expressive */}
+                    <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 transition-all duration-500 group-hover:h-2 group-hover:shadow-[0_0_15px_rgba(139,92,246,0.3)]"></div>
+                    
+                    {/* Icon with enhanced hover effect - Further reduced margin */}
+                    <div className="relative mb-3"> {/* Changed from mb-4 to mb-3 */}
+                      {/* Glow effect on hover */}
+                      <div className="absolute -inset-3 rounded-xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                        style={{
+                          background: `radial-gradient(circle at center, ${section.color}30 0%, transparent 70%)`,
+                          filter: 'blur(10px)',
+                        }}
+                      />
+                      <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-white to-gray-50 p-2.5 shadow-lg border border-white/60 transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                        <div 
+                          className="transition-transform duration-300 group-hover:scale-110"
+                          style={{ color: section.color }}
+                        >
+                          {section.icon}
+                        </div>
+                      </div>
+                    </div>
+                      
+                    {/* Enhanced title hover effect - Further reduced margin */}
+                    <h3 className="text-xl font-bold text-gray-800 mb-3 transform transition-all duration-300 group-hover:translate-x-2 group-hover:text-gray-900">
+                      {section.title}
+                    </h3>
+                      
+                    <ul className="space-y-2.5 mb-4"> {/* Reduced space-y-3 to space-y-2.5 and mb-6 to mb-4 */}
+                      {section.steps.map((step, stepIdx) => (
+                        <li 
+                          key={stepIdx} 
+                          className="flex items-start gap-2.5 group/item transform transition-all duration-300 hover:translate-x-1"
+                        >
+                          {/* Enhanced number badge - Smaller */}
+                          <div 
+                            className="flex-shrink-0 w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center text-xs font-semibold shadow-sm border border-white/40 transform transition-all duration-300 group-hover/item:scale-110 group-hover/item:-translate-y-0.5 group-hover/item:shadow-md"
+                            style={{ color: section.color }}
+                          >
+                            {stepIdx + 1}
+                          </div>
+                          <span className="text-gray-600 text-sm leading-relaxed pt-0.5 group-hover:text-gray-800 transition-colors duration-300">
+                            {step}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    {/* Reduced spacing further - Minimal padding */}
+                    <div className="pt-2 border-t border-gray-100/30 group-hover:border-gray-200/70 transition-colors duration-300 flex items-center justify-end">
+                      {/* Enhanced arrow container - Smaller */}
+                      <div className="relative overflow-hidden">
+                        {/* Animated slide trail */}
+                        <div 
+                          className="absolute -left-4 w-0 h-0.5 rounded-full group-hover:w-6 transition-all duration-500"
+                          style={{
+                            background: `linear-gradient(90deg, transparent, ${section.color})`,
+                          }}
+                        />
+                        {/* Arrow button - Smaller */}
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-sm border border-gray-100/60 transform transition-all duration-300 group-hover:scale-110 group-hover:translate-x-2 group-hover:shadow-md">
+                          <ChevronRight className="w-3.5 h-3.5 text-gray-600 group-hover:text-gray-800 transition-colors duration-300" />
+                        </div>
+                      </div>
+                    </div>
+                        
+                    {/* Edge highlights for 3D effect */}
+                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                  </div>
+                        
+                  {/* Enhanced floating shadow */}
+                  <div className="absolute -bottom-3 left-3 right-3 h-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                    style={{
+                      background: `linear-gradient(90deg, ${section.color}40, ${section.type === 'colleges' ? '#C084FC' : section.type === 'companies' ? '#F472B6' : '#60A5FA'}40)`,
+                      filter: 'blur(15px)',
+                    }}
+                  ></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
 <section
         id="features"
