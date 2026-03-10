@@ -25,7 +25,7 @@ function Fresher_Profile() {
     fullName: '',
     email: '',
     phone: '',
-    about: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique...',
+    about: '',
     college: '',
     degree: '',
     yearOfGraduation: '',
