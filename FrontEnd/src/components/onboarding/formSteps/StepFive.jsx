@@ -1,5 +1,5 @@
 import React, { useState, useEffect ,useMemo } from "react";
-import { ChevronDownIcon, UploadIcon, XIcon, Award, Link, FileCode, Code } from "lucide-react";
+import { ChevronDownIcon, UploadIcon, XIcon, Award, Link, FileCode, Code, Wrench } from "lucide-react";
 import axios from 'axios';
 //import { ChevronDownIcon, UploadIcon, XIcon, Award, Link, FileCode, Code } from "lucide-react";
 import toast from 'react-hot-toast';
@@ -79,6 +79,7 @@ export const StepFive = ({ onNext, onBack, formData, onChange }) => {
     github: formData.github || "",
     portfolio: formData.portfolio || "",
     project: formData.project || null,
+    toolsAndPlatforms: formData.toolsAndPlatforms || [],
     referralSource: formData.referralSource || "",
   });
   const [errors, setErrors] = useState({});
@@ -113,6 +114,12 @@ const [customSkillSearch, setCustomSkillSearch] = useState("");
 
  // Inside StepFive component, add this state:
 const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+const toolsAndPlatforms = [
+  "VS Code", "Figma", "JIRA", "Slack", "Trello", "Postman", "AWS Console",
+  "Google Cloud Platform", "Azure Portal", "Docker", "Kubernetes", "Jenkins",
+  "GitHub", "GitLab", "Bitbucket", "Notion", "Confluence"
+];
 
 const handleSelectOrAdd = async (skillName) => {
   const trimmedSkill = skillName.trim();
@@ -216,6 +223,23 @@ const handleAddNewSkill = async (newSkillName) => {
 
   const handleFileChange = (e) => {
     setLocalFormData((prev) => ({ ...prev, project: e.target.files[0] }));
+  };
+
+  const handleToolsSelect = (e) => {
+    const tool = e.target.value;
+    if (tool && !localFormData.toolsAndPlatforms.includes(tool)) {
+      setLocalFormData((prev) => ({
+        ...prev,
+        toolsAndPlatforms: [...prev.toolsAndPlatforms, tool],
+      }));
+    }
+  };
+
+  const removeTool = (toolToRemove) => {
+    setLocalFormData((prev) => ({
+      ...prev,
+      toolsAndPlatforms: prev.toolsAndPlatforms.filter((tool) => tool !== toolToRemove),
+    }));
   };
 
   // const handleSkillSelect = (e) => {
@@ -393,6 +417,50 @@ const handleAddNewSkill = async (newSkillName) => {
                   className="flex-grow p-4  bg-white text-black placeholder-gray-400 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)]"
                   placeholder="e.g., Google Cloud Certified, AWS Certified Developer (One per line)"
                 />
+              </div>
+            </div>
+
+            {/* Tools & Platforms Known (moved from old Step 6) */}
+            <div>
+              <label className="block text-gray-700 font-medium text-sm mb-2">
+                Tools & Platforms Known
+              </label>
+
+              {localFormData.toolsAndPlatforms.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {localFormData.toolsAndPlatforms.map((tool) => (
+                    <div
+                      key={tool}
+                      className="flex items-center bg-gradient-to-r from-[#e0e7ff]/20 to-[#c7d2fe]/20 border border-[#e0e7ff]/30 text-gray-700 rounded-full px-3 py-1.5 text-sm"
+                    >
+                      {tool}
+                      <button
+                        type="button"
+                        onClick={() => removeTool(tool)}
+                        className="ml-2 text-gray-500 hover:text-red-500 transition-colors"
+                      >
+                        <XIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center">
+                <Wrench className="w-5 h-5 text-gray-400 mr-3" />
+                <div className="relative flex-grow">
+                  <select
+                    onChange={handleToolsSelect}
+                    value=""
+                    className="appearance-none w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#667eea] focus:shadow-[0_0_0_3px_rgba(102,126,234,0.1)] text-gray-700 pr-10"
+                  >
+                    <option value="" disabled>Select a tool or platform</option>
+                    {toolsAndPlatforms.map(tool => (
+                      <option key={tool} value={tool}>{tool}</option>
+                    ))}
+                  </select>
+                  <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                </div>
               </div>
             </div>
 
