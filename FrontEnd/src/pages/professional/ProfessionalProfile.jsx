@@ -2950,7 +2950,11 @@ function ProfProfile() {
                                                         </div>
                                                         <div>
                                                             <p className="text-sm text-gray-500">Looking For</p>
+                                                            {
+                                                            profileData.lookingFor=='Both' ?  (<Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">Jobs and Internships</Badge>)
+                                                             :
                                                             <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.lookingFor || 'N/A'}</Badge>
+                                                            }
                                                         </div>
                                                         <div>
                                                             <p className="text-sm text-gray-500">Employment Type</p>
@@ -3702,7 +3706,11 @@ function ProfProfile() {
                                         </div>
                                     ) : (
                                         <div className={displayFieldStyle}>
-                                            {profileData.lookingFor || "N/A"}
+                                             {
+                                                            profileData.lookingFor=='Both' ?  (<Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">Jobs and Internships</Badge>)
+                                                             :
+                                                            <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.lookingFor || 'N/A'}</Badge>
+                                                            }
                                         </div>
                                     )}
                                 </div>
