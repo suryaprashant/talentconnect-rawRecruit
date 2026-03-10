@@ -68,9 +68,9 @@ function ProfessionalSidebar({ activePath }) {
           active={activePath === '/professional-events/workshop'} 
         />
       </SidebarNavGroup> */}
-      <SidebarNavGroup label="Service Request" icon={<FiClipboard />} active={activePath.includes('/service-request')}>
+      <SidebarNavGroup label="Service Request" icon={<FiClipboard />} active={activePath.includes('/service-request/post')}>
         <SidebarNavItem 
-          to="/professional/service-request" 
+          to="/professional/service-request/post" 
           icon={<FiPlusSquare />} 
           label="Post Referral Job" 
           active={activePath === '/professional/service-request'} 
