@@ -11,6 +11,81 @@ import InterviewSchedulerPopupAdmin from './ScheduleInterviewAdmin';
 export default function StudentDetailModal({ application, onClose, onStatusUpdate }) {
   const [updating, setUpdating] = useState(null); // stores 'Approved' or 'Rejected' to show specific loader
   const [toggleScheduleInterviewPopup, setToggleScheduleInterviewPopup] = useState(false);
+  const [loadingResume, setLoadingResume] = useState(false);
+
+  const handleViewResume = async (resumeUrl, applicantName) => {
+    if (!resumeUrl) return alert("No resume found");
+
+    setLoadingResume(true);
+    try {
+      const response = await fetch(resumeUrl);
+      const blob = await response.blob();
+      const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      const newTab = window.open('', '_blank');
+      newTab.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>${applicantName || 'Applicant'} - Resume</title>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body, html { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+            .header h1 { font-size: 18px; font-weight: 600; margin: 0; }
+            .controls { display: flex; gap: 10px; }
+            .controls button { background: white; color: #667eea; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px; transition: all 0.2s; display: flex; align-items: center; gap: 5px; }
+            .controls button:hover { background: #f8fafc; transform: translateY(-1px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+            .pdf-container { width: 100%; height: calc(100vh - 60px); }
+            iframe { width: 100%; height: 100%; border: none; }
+            .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>📄 ${applicantName || 'Applicant'} - Resume</h1>
+            <div class="controls">
+              <button onclick="downloadPDF()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Download
+              </button>
+              <button onclick="window.close()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Close
+              </button>
+            </div>
+          </div>
+          <div class="pdf-container">
+            <iframe src="${pdfUrl}" title="Resume PDF Viewer"></iframe>
+          </div>
+          <script>
+            const pdfBlobUrl = "${pdfUrl}";
+            function downloadPDF() {
+              const link = document.createElement('a');
+              link.href = pdfBlobUrl;
+              link.download = '${applicantName || 'resume'}.pdf';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }
+          </script>
+        </body>
+        </html>
+      `);
+      newTab.document.close();
+    } catch (error) {
+      console.error("Resume load error:", error);
+      alert("Failed to load resume. Please try again.");
+    } finally {
+      setLoadingResume(false);
+    }
+  };
 
   if (!application) return null;
 
@@ -148,15 +223,14 @@ const handleStatusUpdate = async (statusAction) => {
         <div className="px-8 py-6 border-t bg-white flex flex-wrap items-center justify-between gap-4">
           <div className="flex gap-3 items-center">
             {applicant?.resume ? (
-              <a
-                href={applicant.resume}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all shadow-lg"
+              <button
+                onClick={() => handleViewResume(applicant.resume, applicant.name)}
+                disabled={loadingResume}
+                className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-all shadow-lg disabled:opacity-50"
               >
-                <FileText size={18} />
-                View Resume
-              </a>
+                {loadingResume ? <Loader2 size={18} className="animate-spin" /> : <FileText size={18} />}
+                {loadingResume ? 'Loading...' : 'View Resume'}
+              </button>
             ) : (
               <span className="text-gray-400 italic">No resume uploaded</span>
             )}
