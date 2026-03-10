@@ -307,11 +307,9 @@
 //   );
 // }
 
-
-
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, X } from 'lucide-react';
+import { getMasterDataByType, createMasterData } from '@/lib/User_AxiosInstance';
 
 export default function RecruitmentDetails({ 
   formData, 
@@ -331,22 +329,104 @@ export default function RecruitmentDetails({
   const [dropdownOpen, setDropdownOpen] = useState({
     programs: false,
     courses: false,
-    companies: false
+    companies: false,
+    degree: false,
+    stream: false,
   });
 
   const [customInput, setCustomInput] = useState({
     programs: '',
     courses: '',
-    companies: ''
+    companies: '',
+    degree: '',
+    stream: '',
   });
 
   const programsRef = useRef(null);
   const coursesRef = useRef(null);
   const companiesRef = useRef(null);
+  const degreeRef = useRef(null);
+  const streamRef = useRef(null);
 
-  const programOptions = ["Engineering", "Business", "Arts", "Science"];
-  const courseOptions = ["Computer Science", "Mechanical Engineering", "MBA", "Electrical Engineering"];
   const companyOptions = ["Google", "Microsoft", "Amazon", "TCS"];
+
+  // ─── Dynamic degree/stream state ──────────────────────────────────────────
+  const [degreeOptions, setDegreeOptions] = useState([]);
+  const [streamOptions, setStreamOptions] = useState([]);
+  const [allStreamsOptions, setAllStreamsOptions] = useState([]); // for Popular Courses field
+  const [degreeIdMap, setDegreeIdMap] = useState({});
+  const [isLoadingDegrees, setIsLoadingDegrees] = useState(false);
+  const [isLoadingStreams, setIsLoadingStreams] = useState(false);
+  const [isLoadingAllStreams, setIsLoadingAllStreams] = useState(false);
+
+  // Fetch degrees on mount
+  useEffect(() => {
+    const fetchDegrees = async () => {
+      setIsLoadingDegrees(true);
+      try {
+        const res = await getMasterDataByType("DEGREE");
+        // Handle both { data: { data: [] } } and { data: [] } response shapes
+        const data = res?.data?.data || res?.data || [];
+        const arr = Array.isArray(data) ? data : [];
+        const opts = arr.map(item => item.value);
+        const idMap = {};
+        arr.forEach(item => { idMap[item.value] = item._id; });
+        setDegreeOptions(opts);
+        setDegreeIdMap(idMap);
+      } catch (err) {
+        console.error("Error fetching degrees", err);
+      } finally {
+        setIsLoadingDegrees(false);
+      }
+    };
+    fetchDegrees();
+  }, []);
+
+  // Fetch ALL streams across all degrees — for Popular Courses field
+  useEffect(() => {
+    const allIds = Object.values(degreeIdMap);
+    if (allIds.length === 0) return;
+    const fetchAllStreams = async () => {
+      setIsLoadingAllStreams(true);
+      try {
+        const results = await Promise.all(allIds.map(id => getMasterDataByType("STREAM", id)));
+        const all = results.flatMap(r => (r?.data?.data || r?.data || []).map(item => item.value));
+        setAllStreamsOptions([...new Set(all)]);
+      } catch (err) {
+        console.error("Error fetching all streams", err);
+      } finally {
+        setIsLoadingAllStreams(false);
+      }
+    };
+    fetchAllStreams();
+  }, [JSON.stringify(degreeIdMap)]);
+  const selectedDegrees = initializeArrayField('degrees');
+  const selectedDegreesKey = selectedDegrees.join(',');
+
+  useEffect(() => {
+    if (selectedDegrees.length === 0) {
+      setStreamOptions([]);
+      return;
+    }
+    // Guard: degreeIdMap not yet populated (degrees fetch still in flight)
+    const ids = selectedDegrees.map(d => degreeIdMap[d]).filter(Boolean);
+    if (ids.length === 0) return;
+
+    const fetchStreams = async () => {
+      setIsLoadingStreams(true);
+      try {
+        const results = await Promise.all(ids.map(id => getMasterDataByType("STREAM", id)));
+        const allStreams = results.flatMap(r => (r?.data?.data || []).map(item => item.value));
+        setStreamOptions([...new Set(allStreams)]);
+      } catch (err) {
+        console.error("Error fetching streams", err);
+      } finally {
+        setIsLoadingStreams(false);
+      }
+    };
+    fetchStreams();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDegreesKey, isLoadingDegrees]);
 
   // Calculate progress percentage
   const progressPercentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
@@ -354,15 +434,18 @@ export default function RecruitmentDetails({
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (programsRef.current && !programsRef.current.contains(event.target)) {
-        setDropdownOpen(prev => ({ ...prev, programs: false }));
-      }
-      if (coursesRef.current && !coursesRef.current.contains(event.target)) {
-        setDropdownOpen(prev => ({ ...prev, courses: false }));
-      }
-      if (companiesRef.current && !companiesRef.current.contains(event.target)) {
-        setDropdownOpen(prev => ({ ...prev, companies: false }));
-      }
+      const refs = {
+        programs: programsRef,
+        courses: coursesRef,
+        companies: companiesRef,
+        degree: degreeRef,
+        stream: streamRef,
+      };
+      Object.entries(refs).forEach(([key, ref]) => {
+        if (ref.current && !ref.current.contains(event.target)) {
+          setDropdownOpen(prev => ({ ...prev, [key]: false }));
+        }
+      });
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -378,25 +461,23 @@ export default function RecruitmentDetails({
         programs: false,
         courses: false,
         companies: false,
+        degree: false,
+        stream: false,
         [dropdown]: isOpening
       };
     });
-    // Clear custom input when closing dropdown
     if (dropdownOpen[dropdown]) {
       setCustomInput(prev => ({ ...prev, [dropdown]: '' }));
     }
   };
 
   const handleMultiSelect = (field, value) => {
-    // Ensure we're working with an array
     const currentValues = initializeArrayField(field);
     let newValues;
     
     if (currentValues.includes(value)) {
-      // Remove if already selected
       newValues = currentValues.filter(item => item !== value);
     } else {
-      // Add if not selected
       newValues = [...currentValues, value];
     }
     
@@ -409,21 +490,71 @@ export default function RecruitmentDetails({
     updateFormData(field, newValues);
   };
 
+  // Generic add custom item (for static fields)
   const handleAddCustomItem = (field, dropdownType) => {
     const customValue = customInput[dropdownType].trim();
     if (!customValue) return;
 
     const currentValues = initializeArrayField(field);
     
-    // Check if already exists
     if (!currentValues.includes(customValue)) {
-      const newValues = [...currentValues, customValue];
-      updateFormData(field, newValues);
+      updateFormData(field, [...currentValues, customValue]);
     }
     
-    // Clear input and close dropdown
     setCustomInput(prev => ({ ...prev, [dropdownType]: '' }));
     setDropdownOpen(prev => ({ ...prev, [dropdownType]: false }));
+  };
+
+  // Add custom degree — saves to DB, then stores _id in map
+  const handleAddCustomDegree = async () => {
+    const val = customInput.degree.trim();
+    if (!val) return;
+
+    try {
+      const res = await createMasterData({ type: "DEGREE", value: val });
+      const saved = res.data?.data || res.data;
+      const newLabel = saved.value;
+      const newId = saved._id;
+
+      setDegreeOptions(prev => prev.includes(newLabel) ? prev : [...prev, newLabel]);
+      setDegreeIdMap(prev => ({ ...prev, [newLabel]: newId }));
+
+      const currentValues = initializeArrayField('degrees');
+      if (!currentValues.includes(newLabel)) {
+        updateFormData('degrees', [...currentValues, newLabel]);
+      }
+    } catch (err) {
+      console.error("Error saving degree", err);
+    }
+
+    setCustomInput(prev => ({ ...prev, degree: '' }));
+    setDropdownOpen(prev => ({ ...prev, degree: false }));
+  };
+
+  // Add custom stream — saves to DB under all currently selected degree parents
+  const handleAddCustomStream = async () => {
+    const val = customInput.stream.trim();
+    if (!val) return;
+
+    try {
+      // Save under the first selected degree that has a known _id
+      const parentId = selectedDegrees.map(d => degreeIdMap[d]).find(Boolean);
+      const res = await createMasterData({ type: "STREAM", value: val, parent: parentId });
+      const saved = res.data?.data || res.data;
+      const newLabel = saved.value;
+
+      setStreamOptions(prev => prev.includes(newLabel) ? prev : [...prev, newLabel]);
+
+      const currentValues = initializeArrayField('studentStreams');
+      if (!currentValues.includes(newLabel)) {
+        updateFormData('studentStreams', [...currentValues, newLabel]);
+      }
+    } catch (err) {
+      console.error("Error saving stream", err);
+    }
+
+    setCustomInput(prev => ({ ...prev, stream: '' }));
+    setDropdownOpen(prev => ({ ...prev, stream: false }));
   };
 
   const handleCustomInputChange = (dropdownType, value) => {
@@ -433,7 +564,9 @@ export default function RecruitmentDetails({
   const handleKeyPress = (e, field, dropdownType) => {
     if (e.key === 'Enter' && customInput[dropdownType].trim()) {
       e.preventDefault();
-      handleAddCustomItem(field, dropdownType);
+      if (dropdownType === 'degree') handleAddCustomDegree();
+      else if (dropdownType === 'stream') handleAddCustomStream();
+      else handleAddCustomItem(field, dropdownType);
     }
   };
 
@@ -442,10 +575,8 @@ export default function RecruitmentDetails({
     let newServices;
     
     if (currentServices.includes(service)) {
-      // Remove if already selected
       newServices = currentServices.filter(s => s !== service);
     } else {
-      // Add if not selected
       newServices = [...currentServices, service];
     }
     
@@ -457,13 +588,29 @@ export default function RecruitmentDetails({
     updateFormData('collegeBrochure', e.target.files[0]);
   };
 
-  const isAnyDropdownOpen = Object.values(dropdownOpen).some(Boolean);
+  const refMap = {
+    programs: programsRef,
+    courses: coursesRef,
+    companies: companiesRef,
+    degree: degreeRef,
+    stream: streamRef,
+  };
 
-  const renderDropdown = (dropdownType, field, label, options, placeholder) => {
+  const renderDropdown = (dropdownType, field, label, options, placeholder, {
+    isLoading = false,
+    isDisabled = false,
+    onAddCustom = null, // if null, uses handleAddCustomItem
+  } = {}) => {
     const currentValues = initializeArrayField(field);
+    const addCustom = onAddCustom || (() => handleAddCustomItem(field, dropdownType));
+    const customLabel = dropdownType === 'programs' ? 'program'
+      : dropdownType === 'courses' ? 'course'
+      : dropdownType === 'companies' ? 'company'
+      : dropdownType === 'degree' ? 'degree'
+      : 'stream';
     
     return (
-      <div ref={dropdownType === 'programs' ? programsRef : dropdownType === 'courses' ? coursesRef : companiesRef} className="relative">
+      <div ref={refMap[dropdownType]} className="relative">
         <label className="block font-medium mb-3 text-gray-700 text-lg">{label}</label>
         
         {/* Selected items chips */}
@@ -483,16 +630,20 @@ export default function RecruitmentDetails({
         </div>
         
         <div
-          className="flex items-center justify-between p-4 w-full bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl cursor-pointer hover:border-[#93c5fd] transition-all duration-200"
-          onClick={() => toggleDropdown(dropdownType)}
+          className={`flex items-center justify-between p-4 w-full bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl transition-all duration-200 ${
+            isDisabled
+              ? 'opacity-50 cursor-not-allowed'
+              : 'cursor-pointer hover:border-[#93c5fd]'
+          }`}
+          onClick={() => !isDisabled && toggleDropdown(dropdownType)}
         >
           <span className="text-gray-500 text-lg">
-            {placeholder}
+            {isLoading ? 'Loading...' : isDisabled ? 'Select a degree first' : placeholder}
           </span>
           <ChevronDownIcon className={`w-6 h-6 transition-transform duration-300 ${dropdownOpen[dropdownType] ? "rotate-180" : ""}`} />
         </div>
         
-        {dropdownOpen[dropdownType] && (
+        {dropdownOpen[dropdownType] && !isDisabled && (
           <div className="absolute z-20 mt-2 w-full bg-white/95 backdrop-blur-xl border border-gray-200/80 rounded-xl shadow-xl shadow-blue-50/30 max-h-80 overflow-auto">
             {/* Custom input section */}
             <div className="sticky top-0 bg-white/95 backdrop-blur-xl border-b border-gray-200/80 p-4">
@@ -502,17 +653,14 @@ export default function RecruitmentDetails({
                   value={customInput[dropdownType]}
                   onChange={(e) => handleCustomInputChange(dropdownType, e.target.value)}
                   onKeyPress={(e) => handleKeyPress(e, field, dropdownType)}
-                  placeholder={`Add custom ${dropdownType === 'programs' ? 'program' : dropdownType === 'courses' ? 'course' : 'company'}`}
+                  placeholder={`Add custom ${customLabel}`}
                   className="flex-1 px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200/80 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#93c5fd] focus:border-transparent text-lg transition-all duration-200"
                   onClick={(e) => e.stopPropagation()}
                   autoFocus
                 />
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleAddCustomItem(field, dropdownType);
-                  }}
+                  onClick={(e) => { e.stopPropagation(); addCustom(); }}
                   disabled={!customInput[dropdownType].trim()}
                   className={`px-6 py-3 rounded-xl font-medium text-lg transition-all duration-300 ${
                     customInput[dropdownType].trim() 
@@ -527,6 +675,11 @@ export default function RecruitmentDetails({
 
             {/* Predefined options */}
             <div className="p-2">
+              {options.length === 0 && (
+                <div className="px-4 py-3 text-gray-400 text-lg text-center">
+                  {isLoading ? 'Loading options...' : 'No options found. Add one above.'}
+                </div>
+              )}
               {options.map(option => (
                 <div
                   key={option}
@@ -545,12 +698,10 @@ export default function RecruitmentDetails({
               ))}
             </div>
 
-            {/* Divider if there are both custom items and predefined options */}
+            {/* Custom items added in this session */}
             {currentValues.filter(item => !options.includes(item)).length > 0 && options.length > 0 && (
               <div className="border-t border-gray-200/50 mx-4 my-2"></div>
             )}
-
-            {/* Custom items */}
             {currentValues
               .filter(item => !options.includes(item))
               .map(customItem => (
@@ -609,8 +760,12 @@ export default function RecruitmentDetails({
                 'programs',
                 'programsOffered',
                 'Programs Offered',
-                programOptions,
-                'Select or add programs'
+                degreeOptions,
+                'Select or add programs',
+                {
+                  isLoading: isLoadingDegrees,
+                  onAddCustom: handleAddCustomDegree,
+                }
               )}
 
               {/* Popular Courses for Recruitment */}
@@ -618,8 +773,26 @@ export default function RecruitmentDetails({
                 'courses',
                 'popularCoursesForRecruitment',
                 'Popular Courses for Recruitment',
-                courseOptions,
-                'Select or add courses'
+                allStreamsOptions,
+                'Select or add courses',
+                {
+                  isLoading: isLoadingAllStreams,
+                  onAddCustom: async () => {
+                    const val = customInput.courses.trim();
+                    if (!val) return;
+                    try {
+                      // Save as a STREAM without a parent (top-level stream)
+                      const res = await createMasterData({ type: "STREAM", value: val });
+                      const saved = res.data?.data || res.data;
+                      const newLabel = saved.value;
+                      setAllStreamsOptions(prev => prev.includes(newLabel) ? prev : [...prev, newLabel]);
+                      const current = initializeArrayField('popularCoursesForRecruitment');
+                      if (!current.includes(newLabel)) updateFormData('popularCoursesForRecruitment', [...current, newLabel]);
+                    } catch (err) { console.error("Error saving course", err); }
+                    setCustomInput(prev => ({ ...prev, courses: '' }));
+                    setDropdownOpen(prev => ({ ...prev, courses: false }));
+                  },
+                }
               )}
 
               {/* Preferred Hiring Companies */}
@@ -629,6 +802,33 @@ export default function RecruitmentDetails({
                 'Preferred Hiring Companies',
                 companyOptions,
                 'Select or add companies'
+              )}
+
+              {/* Degree — dynamic from DB, multi-select */}
+              {renderDropdown(
+                'degree',
+                'degrees',
+                'Eligible Degrees',
+                degreeOptions,
+                'Select or add degrees',
+                {
+                  isLoading: isLoadingDegrees,
+                  onAddCustom: handleAddCustomDegree,
+                }
+              )}
+
+              {/* Stream — dynamic from DB, depends on selected degrees */}
+              {renderDropdown(
+                'stream',
+                'studentStreams',
+                'Eligible Streams / Specializations',
+                streamOptions,
+                'Select or add streams',
+                {
+                  isLoading: isLoadingStreams,
+                  isDisabled: selectedDegrees.length === 0,
+                  onAddCustom: handleAddCustomStream,
+                }
               )}
 
               {/* Recruitment Services */}
@@ -654,23 +854,23 @@ export default function RecruitmentDetails({
 
               {/* Upload Section */}
               <div className="border-t border-gray-200/50 pt-8">
-  <h3 className="font-medium text-lg mb-6 text-gray-700">Upload College Brochure</h3>
-  <div className="relative">
-    <input
-      type="file"
-      accept=".pdf"
-      onChange={handleFileUpload}
-      className="block rounded-xl border border-gray-200/80 w-full text-lg text-gray-500 bg-white/70 backdrop-blur-sm 
-               py-3 px-4 pr-32 cursor-pointer
-               file:absolute file:right-1 file:top-1 file:bottom-1
-               file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-lg file:font-medium 
-               file:bg-gradient-to-r file:from-[#e0f2fe] file:to-[#dbeafe] file:text-[#1d4ed8] 
-               hover:file:bg-gradient-to-r hover:file:from-[#dbeafe] hover:file:to-[#c7d2fe] 
-               transition-all duration-300"
-    />
-    <p className="text-sm text-gray-500 mt-3 ml-2">Upload PDF format only</p>
-  </div>
-</div>
+                <h3 className="font-medium text-lg mb-6 text-gray-700">Upload College Brochure</h3>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleFileUpload}
+                    className="block rounded-xl border border-gray-200/80 w-full text-lg text-gray-500 bg-white/70 backdrop-blur-sm 
+                             py-3 px-4 pr-32 cursor-pointer
+                             file:absolute file:right-1 file:top-1 file:bottom-1
+                             file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-lg file:font-medium 
+                             file:bg-gradient-to-r file:from-[#e0f2fe] file:to-[#dbeafe] file:text-[#1d4ed8] 
+                             hover:file:bg-gradient-to-r hover:file:from-[#dbeafe] hover:file:to-[#c7d2fe] 
+                             transition-all duration-300"
+                  />
+                  <p className="text-sm text-gray-500 mt-3 ml-2">Upload PDF format only</p>
+                </div>
+              </div>
             </div>
 
             {/* Navigation Buttons */}
