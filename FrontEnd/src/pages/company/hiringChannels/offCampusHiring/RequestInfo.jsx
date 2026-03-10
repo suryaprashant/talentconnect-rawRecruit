@@ -80,7 +80,7 @@ export default function OffCampusHiringForm({ onBackClick }) {
   const initialState = {
     venue: '',
     degree: [], // Multi-select for degrees
-    studentStreams: [], // Streams based on selected degrees
+    stream: [], // Streams based on selected degrees
     eligibilityCriteria: '',
     description: '',
     packageDetails: { currency: 'INR', totalCTC: '', fixedPay: '', joiningBonus: '' },
@@ -528,7 +528,7 @@ const handleSelectOrAdd = async (skillName) => {
 
     const fieldsToValidate = [
       { key: 'degree', name: 'Degree' },
-      { key: 'studentStreams', name: 'Student Stream' },
+      { key: 'stream', name: 'Student Stream' },
       { key: 'skills', name: 'Skills' },
       { key: 'benefits', name: 'Benefits Offered' },
       { key: 'workMode', name: 'Work Mode' },

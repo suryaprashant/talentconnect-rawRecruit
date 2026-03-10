@@ -97,53 +97,129 @@ export function FeatureModal({ config, onClose }) {
   );
 }
 
+
 export const FEATURE_MODAL_CONFIGS = {
 
-  // ── Features Section ────────────────────────────────────────────────────────
-  "On-Campus Recruitment": {
-    buttons: [
-      { label: "For Companies", variant: "outline", value: "company" },
-      { label: "For Colleges",  variant: "fill",    value: "college" },
-    ],
-  },
-  "Pool Campus Recruitment": {
-    buttons: [
-      { label: "For Companies", variant: "outline", value: "company" },
-      { label: "For Colleges",  variant: "fill",    value: "college" },
-    ],
-  },
-  "Off-Campus Recruitment": {
-    buttons: [
-      { label: "For Companies", variant: "outline", value: "company" },
-      { label: "For Colleges",  variant: "fill",    value: "college" },
-    ],
-  },
-  "Internship Management": {
-    buttons: [
-      { label: "For Companies", variant: "outline", value: "company" },
-      { label: "For Colleges",  variant: "fill",    value: "college" },
-    ],
-  },
-  "Application Tracking System": { buttons: undefined },
-  "Real-time Messaging System":  { buttons: undefined },
+  // ── Features Section ──────────────────────────────────────────────────────
 
-  // ── How It Works Section ────────────────────────────────────────────────────
+  "On-Campus Recruitment": {
+    content: (
+      <>
+        <p className="font-medium text-slate-700">Structured campus hiring through direct college–company collaboration.</p>
+        <p>On-Campus Recruitment enables colleges and companies to coordinate placement drives on a centralized platform. Both institutions and employers can post recruitment requests, schedule drives, and manage hiring activities while students participate through their college placement process.</p>
+      </>
+    ),
+    buttons: [
+      { label: "For Companies", variant: "outline", value: "company" },
+      { label: "For Colleges",  variant: "fill",    value: "college" },
+    ],
+  },
+
+  "Pool Campus Recruitment": {
+    content: (
+      <>
+        <p className="font-medium text-slate-700">Organize multi-college hiring drives with a wider talent pool.</p>
+        <p>Pool Campus Recruitment allows colleges and companies to collaborate across multiple institutions for shared hiring drives. Recruitment requests can be initiated by either party, enabling companies to reach talent from several colleges through a single coordinated drive.</p>
+      </>
+    ),
+    buttons: [
+      { label: "For Companies", variant: "outline", value: "company" },
+      { label: "For Colleges",  variant: "fill",    value: "college" },
+    ],
+  },
+
+  "Off-Campus Recruitment": {
+    content: (
+      <>
+        <p className="font-medium text-slate-700">Reach students directly with open job opportunities.</p>
+        <p>Off-Campus Recruitment allows companies to publish job openings directly on the platform, enabling students from different colleges to discover opportunities and apply independently.</p>
+      </>
+    ),
+    buttons: [
+      { label: "For Companies", variant: "outline", value: "company" },
+      { label: "For Colleges",  variant: "fill",    value: "college" },
+    ],
+  },
+
+  "Internship Management": {
+    content: (
+      <>
+        <p className="font-medium text-slate-700">Connect students with real-world internship opportunities.</p>
+        <p>Companies can post internship opportunities on the platform, allowing students to explore and apply directly while colleges can monitor and support student participation.</p>
+      </>
+    ),
+    buttons: [
+      { label: "For Companies", variant: "outline", value: "company" },
+      { label: "For Colleges",  variant: "fill",    value: "college" },
+    ],
+  },
+
+  "Application Tracking System": {
+    content: (
+      <>
+        <p className="font-medium text-slate-700">Track and manage the entire recruitment pipeline.</p>
+        <p>The Application Tracking System provides a centralized dashboard to monitor candidate progress, manage recruitment stages, and maintain visibility across the hiring process.</p>
+      </>
+    ),
+    buttons: undefined,
+  },
+
+  "Real-time Messaging System": {
+    content: (
+      <>
+        <p className="font-medium text-slate-700">Enable seamless communication across the recruitment ecosystem.</p>
+        <p>The Direct Messaging System allows companies, colleges, and students to communicate in real time, ensuring faster coordination, updates, and collaboration throughout the recruitment process.</p>
+      </>
+    ),
+    buttons: undefined,
+  },
+
+
+  // ── How It Works Section ──────────────────────────────────────────────────
+
   "How It Works - Companies": {
+    content: (
+      <>
+        <p className="font-medium text-slate-700">Structured campus hiring through direct college–company collaboration.</p>
+        <p>On-Campus Recruitment enables colleges and companies to coordinate placement drives on a centralized platform. Both institutions and employers can post recruitment requests, schedule drives, and manage hiring activities while students participate through their college placement process.</p>
+      </>
+    ),
     buttons: [
       { label: "For Companies", variant: "fill", value: "company" },
     ],
   },
+
   "How It Works - Colleges": {
+    content: (
+      <>
+        <p className="font-medium text-slate-700">Organize multi-college hiring drives with a wider talent pool.</p>
+        <p>Pool Campus Recruitment allows colleges and companies to collaborate across multiple institutions for shared hiring drives. Recruitment requests can be initiated by either party, enabling companies to reach talent from several colleges through a single coordinated drive.</p>
+      </>
+    ),
     buttons: [
       { label: "For Colleges", variant: "fill", value: "college" },
     ],
   },
+
   "How It Works - Employers": {
+    content: (
+      <>
+        <p className="font-medium text-slate-700">Reach students directly with open job opportunities.</p>
+        <p>Off-Campus Recruitment allows companies to publish job openings directly on the platform, enabling students from different colleges to discover opportunities and apply independently.</p>
+      </>
+    ),
     buttons: [
       { label: "For Employers", variant: "fill", value: "employer" },
     ],
   },
+
   "How It Works - Candidates": {
+    content: (
+      <>
+        <p className="font-medium text-slate-700">Connect students with real-world internship opportunities.</p>
+        <p>Companies can post internship opportunities on the platform, allowing students to explore and apply directly while colleges can monitor and support student participation.</p>
+      </>
+    ),
     buttons: [
       { label: "Student",      variant: "outline", value: "student"      },
       { label: "Fresher",      variant: "outline", value: "fresher"      },
