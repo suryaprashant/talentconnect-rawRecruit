@@ -156,6 +156,7 @@ const App = () => {
   const handleRoleSelect = (role) => {
     console.log('here')
     if (role) {
+      sessionStorage.setItem("tempSelectedRole", role);
       localStorage.setItem('selectedRole', role);
       navigate('/signup');
     }
@@ -1492,7 +1493,7 @@ const ArrowRightIcon = () => (
               </div>
             </div>
                     
-            {/* ================= MARQUEE SECTION ================= */}
+            {/* ================= MARQUEE SECTION ================= 
             <div className="w-full overflow-hidden py-0">
                     
               <div className="text-center mb-8 px-4">
@@ -1501,7 +1502,7 @@ const ArrowRightIcon = () => (
                 </span>
               </div>
                     
-              {/* Company Marquee */}
+              {/* Company Marquee
               <div className="relative w-full overflow-hidden">
                 <div className="marquee-container">
                   <div className="marquee">
@@ -1525,7 +1526,7 @@ const ArrowRightIcon = () => (
                 </div>
               </div>
                     
-              {/* College Marquee */}
+               
               <div className="relative w-full overflow-hidden mt-6 sm:mt-8">
                 <div className="marquee-container">
                   <div className="marquee reverse">
@@ -1586,7 +1587,7 @@ const ArrowRightIcon = () => (
                   to { transform: translateX(0); }
                 }
               `}</style>
-            </div>
+            </div>*/}
               
           </section>
               
@@ -1637,7 +1638,7 @@ const ArrowRightIcon = () => (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 2xl:gap-12 max-w-[1400px] mx-auto">
               {[
                 {
-                  type: 'colleges',
+                  type: 'college',
                   icon: <GraduationCap className="w-8 h-8" />,
                   title: 'For Colleges (TPOs)',
                   steps: [
@@ -1651,7 +1652,7 @@ const ArrowRightIcon = () => (
                   description: 'Colleges can connect directly with companies, post hiring requests, and access training services.'
                 },
                 {
-                  type: 'companies',
+                  type: 'company',
                   icon: <Building2 className="w-8 h-8" />,
                   title: 'For Companies (HR & Hiring Managers)',
                   steps: [
@@ -1665,7 +1666,7 @@ const ArrowRightIcon = () => (
                   description: 'Companies can find qualified candidates from colleges and post various campus recruitment opportunities.'
                 },
                 {
-                  type: 'employers',
+                  type: 'employer',
                   icon: <Briefcase className="w-8 h-8" />,
                   title: 'For Employers (Staffing & Hiring Partners)',
                   steps: [
@@ -2291,10 +2292,10 @@ const ArrowRightIcon = () => (
       </div>
     </section>
 
-        <section className="section-pad pt-16 pb-24" style={{ background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)' }}>
-  <div className="container-xl max-w-7xl mx-auto px-2">
+        {/*<section className="section-pad pt-16 pb-24" style={{ background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)' }}>
+  <div className="container-xl max-w-7xl mx-auto px-2">*/}
     
-    {/* Section Header */}
+    {/* Section Header 
     <div className="text-center mb-14">
       <div 
         className="inline-block text-[13px] font-semibold uppercase tracking-widest mb-3 px-4 py-1.5 rounded-full border"
@@ -2314,12 +2315,12 @@ const ArrowRightIcon = () => (
       <p style={{ color: '#8596AD', fontSize: '18px' }}>
         Trusted by institutions and companies across India.
       </p>
-    </div>
+    </div>*/}
 
-    {/* Stats Grid - with slight side spacing */}
+    {/* Stats Grid - with slight side spacing 
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
       
-      {/* Colleges */}
+      {/* Colleges 
       <div 
         className="rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 group"
         style={{ 
@@ -2344,7 +2345,7 @@ const ArrowRightIcon = () => (
         </div>
       </div>
 
-      {/* Companies */}
+      {/* Companies 
       <div 
         className="rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 group"
         style={{ 
@@ -2369,7 +2370,7 @@ const ArrowRightIcon = () => (
         </div>
       </div>
 
-      {/* Students */}
+      {/* Students 
       <div 
         className="rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 group"
         style={{ 
@@ -2394,7 +2395,7 @@ const ArrowRightIcon = () => (
         </div>
       </div>
 
-      {/* Satisfaction */}
+      {/* Satisfaction 
       <div 
         className="rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 group"
         style={{ 
@@ -2421,7 +2422,7 @@ const ArrowRightIcon = () => (
 
     </div>
   </div>
-</section>
+</section>*/}
 
         <section 
   className="section-pad pt-20 pb-28 relative overflow-hidden" 
