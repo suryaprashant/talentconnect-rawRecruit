@@ -84,6 +84,7 @@ const studentOnboardingSchema = new mongoose.Schema(
       enum: ["Job", "Internship", "Job,Internship" , "Both"] ,
       default:"Job,Internship"
     },
+    
     employmentType: {
       type: [String],
       enum: ["part time", "full time", "contract"],

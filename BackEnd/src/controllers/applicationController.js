@@ -249,6 +249,7 @@ export async function fetchSavedJobs(req, res) {
 }*/}
 
 export async function createOffcampusApplication(req, res) {
+  console.log('applied offcampus')
   const { jobId } = req.body;
   const userId = req.user._id;
   const userType = req.user.userType; // student | fresher

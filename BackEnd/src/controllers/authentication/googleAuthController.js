@@ -1,5 +1,6 @@
 import { authenticateWithGoogle } from "../../services/googleAuthService.js";
 import { generateToken } from "../..//services/authService.js";
+import Auth from "../../models/authModel.js";
 
 const ALLOWED_USER_TYPES = [
   "student",
