@@ -3,6 +3,7 @@ import Otp from "../../models/otpModel.js";
 import StudentProfile from '../../models/studentProfileModel.js';
 import FresherProfile from '../../models/fresherProfileModel.js';
 import CollegeProfile from '../../models/collegeDashboard/collegeProfileModel.js';
+import Auth from "../../models/authModel.js";
 
 const setJwtCookie = (res, token) => {
     res.cookie('jwt', token, {
