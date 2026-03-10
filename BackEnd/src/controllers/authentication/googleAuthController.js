@@ -23,6 +23,10 @@ export const googleAuth = async (req, res) => {
 
         const { user, isNewUser } = await authenticateWithGoogle({ code, userType });
 
+        if (req.body.deviceToken) {
+          await Auth.findByIdAndUpdate(user._id, { deviceToken: req.body.deviceToken });
+        }
+
         if (isNewUser && !ALLOWED_USER_TYPES.includes(userType)) {
           return res.status(400).json({
             message: "Invalid user type selected"

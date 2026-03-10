@@ -2807,9 +2807,9 @@ function ProfProfile() {
                     <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
                       {/* Degree & Specialization */}
                       <div className="col-span-2 sm:col-span-1">
-                        <p className="text-gray-500">Degree & Specialization</p>
+                        <p className="text-gray-500">Degree </p>
                         <p className="font-semibold text-gray-900">
-                          {profileData.degree || 'N/A'} / {profileData.specialization || 'N/A'}
+                          {profileData.degree || 'N/A'} 
                         </p>
                       </div>
 
@@ -2950,7 +2950,11 @@ function ProfProfile() {
                                                         </div>
                                                         <div>
                                                             <p className="text-sm text-gray-500">Looking For</p>
+                                                            {
+                                                            profileData.lookingFor=='Both' ?  (<Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">Jobs and Internships</Badge>)
+                                                             :
                                                             <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.lookingFor || 'N/A'}</Badge>
+                                                            }
                                                         </div>
                                                         <div>
                                                             <p className="text-sm text-gray-500">Employment Type</p>
@@ -3393,12 +3397,12 @@ function ProfProfile() {
                                         </div>
                                     )}
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Specialization</label>
+                                {/* <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Specializations</label>
                                     {isProfileEditing ? (
                                         <input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="e.g., Computer Science" value={profileData.specialization} onChange={(e) => handleProfileDataChange('specialization', e.target.value)} />
                                     ) : (<div className={displayFieldStyle}>{profileData.specialization || "N/A"}</div>)}
-                                </div>
+                                </div> */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Current Semester</label>
                                     {isProfileEditing ? (
@@ -3702,7 +3706,11 @@ function ProfProfile() {
                                         </div>
                                     ) : (
                                         <div className={displayFieldStyle}>
-                                            {profileData.lookingFor || "N/A"}
+                                             {
+                                                            profileData.lookingFor=='Both' ?  (<Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">Jobs and Internships</Badge>)
+                                                             :
+                                                            <Badge variant="primary" size="md" className="bg-gray-100 text-gray-800">{profileData.lookingFor || 'N/A'}</Badge>
+                                                            }
                                         </div>
                                     )}
                                 </div>

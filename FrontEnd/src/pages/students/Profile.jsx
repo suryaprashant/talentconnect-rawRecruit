@@ -142,7 +142,7 @@ function Profile() {
     fullName: '',
     email: '',
     phone: '',
-    about: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique...',
+    about: '',
     college: '',
     degree: '',
     yearOfGraduation: '',
@@ -229,7 +229,7 @@ function Profile() {
             ...restOfData,
             fullName: name || '',
             profileImageUrl: fetchedData.profileImage || '',
-            about: fetchedData.about || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique...',
+            about: fetchedData.about || '',
             backgroundImageUrl: fetchedData.backgroundImage || '',
             resumeUrl: fetchedData.resume || '',
             degreeCertificateUrl: fetchedData.degreeCertificate || '',
@@ -1345,7 +1345,6 @@ const isLookingForActive = (option) => {
                     </div>
                 </div>
             </div>
-
             {/* Educational Background Section */}
             <div className="bg-white/90 backdrop-blur-sm border border-white/50 rounded-2xl shadow-lg shadow-purple-50/50 p-6">
               <div className="flex justify-between items-center mb-4">

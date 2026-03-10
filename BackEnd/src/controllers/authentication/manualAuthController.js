@@ -32,6 +32,9 @@ export const signup = async (req, res) => {
         }
 
         const newUser = await registerUser({ email, password, userType });
+        if (req.body.deviceToken) {
+          await Auth.findByIdAndUpdate(newUser._id, { deviceToken: req.body.deviceToken });
+        }
 
         await Otp.deleteOne({ _id: validOtp._id });
         
@@ -78,6 +81,10 @@ export const login = async (req, res) => {
         const { email, password } = req.body;
         
         const user = await loginUser({ email, password });
+
+        if (req.body.deviceToken) {
+          await Auth.findByIdAndUpdate(user._id, { deviceToken: req.body.deviceToken });
+        }
 
         const token = generateToken({
             userId: user._id,
@@ -286,3 +293,4 @@ export const getUserById = async (req, res) => {
     });
   }
 };
+
