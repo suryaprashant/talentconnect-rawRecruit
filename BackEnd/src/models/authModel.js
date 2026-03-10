@@ -54,6 +54,10 @@ const AuthSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  deviceToken: {
+    type: String,
+    default: null,
+  },
 
   //  Added for password reset
   resetToken: String,

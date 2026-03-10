@@ -6,6 +6,8 @@ import {  handleLinkedInCallback, redirectToLinkedIn } from '../controllers/auth
 import { requestPasswordReset, resetPassword, validateResetToken } from '../controllers/authentication/forgotPasswordController.js';
 import authMiddleware from '../middlewares/auth.middleware.js';
 import optionalAuth from '../middlewares/optionalAuth.middleware.js';
+import  Auth  from '../models/authModel.js';
+import secureRoute from '../middlewares/secureRouteMiddleware.js';
 
 
 const router = express.Router();
@@ -33,6 +35,19 @@ router.post('/reset-password' , resetPassword);
 
 // In your auth routes
 router.get('/user/:id', getUserById);
+
+router.patch("/device-token", secureRoute, async (req, res) => {
+  try {
+    const { deviceToken } = req.body;
+    if (!deviceToken) {
+      return res.status(400).json({ message: "deviceToken is required" });
+    }
+    await Auth.findByIdAndUpdate(req.user._id, { deviceToken });
+    res.status(200).json({ success: true, message: "Device token updated" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 export default router;
 
