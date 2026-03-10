@@ -9,43 +9,36 @@ import { pushNotification } from "./firebaseAdmin.js";
 // ─── CORE HELPER ────────────────────────────────────────────────────────────
 
 const sendNotification = async ({
-  recipientId,
-  senderId,
-  type,
-  message,
-  referenceId,
-  jobType,
-  meta,
-  jobId,
+  recipientId, senderId, type, message, referenceId, jobType, meta, jobId,
 }) => {
   // 1. Save to DB
   const notification = await Notification.create({
-    recipientId,
-    senderId,
-    type,
-    message,
-    referenceId,
-    jobType,
-    meta,
-    jobId,
-    read: false,
+    recipientId, senderId, type, message, referenceId, jobType, meta, jobId, read: false,
   });
 
-  // 2. Real-time socket (web)
+  // 2. Socket emit — sync, no await
   const socketId = getReceiverSocketId(recipientId.toString());
+  console.log("socketId found:", socketId);
   if (socketId) {
     io.to(socketId).emit("newNotification", notification);
+    console.log("🚀 emitted to socket");
   }
 
-  // 3. FCM push (mobile)
-  const user = await Auth.findById(recipientId).select("deviceToken");
-  if (user?.deviceToken) {
-    await pushNotification({
-      deviceToken: user.deviceToken,
-      title: type,
-      body: message,
-    });
-  }
+  // 3. FCM — completely non-blocking, runs after socket
+  setImmediate(async () => {
+    try {
+      const user = await Auth.findById(recipientId).select("deviceToken");
+      if (user?.deviceToken) {
+        await pushNotification({
+          deviceToken: user.deviceToken,
+          title: type,
+          body: message,
+        });
+      }
+    } catch (fcmErr) {
+      console.error("FCM error (non-critical):", fcmErr.message);
+    }
+  });
 
   return notification;
 };
