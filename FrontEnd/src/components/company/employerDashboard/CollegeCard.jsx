@@ -184,7 +184,7 @@ const CollegeCard = ({ college, onClick }) => {
     if (college.location && college.location.length > 0) {
       return college.location.slice(0, 2).join(', ');
     }
-    return 'Location not specified';
+    return 'no';
   };
 
   const getInitials = (name) => {
@@ -489,12 +489,16 @@ const CollegeCard = ({ college, onClick }) => {
             </p>
 
             {/* Location */}
-            <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
-              <MapPin className="h-4 w-4 text-gray-500" />
-              <span className="line-clamp-1 max-w-[120px]">
-                {formatLocation()}
-              </span>
-            </div>
+              <div className="flex items-center gap-1 text-gray-700 text-xs mt-1">
+    {formatLocation() !== "no" && (
+      <>
+        <MapPin className="h-4 w-4 text-gray-500" />
+        <span className="line-clamp-1 max-w-[120px]">
+          {formatLocation()}
+        </span>
+      </>
+    )}
+  </div>
           </div>
 
           <button
