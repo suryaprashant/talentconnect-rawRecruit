@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import "../homePage/../../pages/../../src/App.css"
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext'; 
 import {
   Users, Building2, Briefcase, GraduationCap, Target,
   TrendingUp, Award, Calendar, Lightbulb, UserCheck,
@@ -140,11 +141,7 @@ const App = () => {
   }, []);
 
   const handleCardClick = (cardType) => {
-    // const hiringRoutes = {
-    //   'On-Campus Recruitment': '/hiring-channels/on-campus-hiring',
-    //   'Pool-Campus Recruitment': '/hiring-channels/pool-campus-hiring',
-    //   'Off-Campus Recruitment': '/hiring-channels/off-campus-hiring'
-    // };
+ 
 
     const targetRoute = hiringRoutes[cardType];
     if (targetRoute) {
@@ -153,14 +150,52 @@ const App = () => {
     }
   };
 
-  const handleRoleSelect = (role) => {
-    console.log('here')
-    if (role) {
-      sessionStorage.setItem("tempSelectedRole", role);
-      localStorage.setItem('selectedRole', role);
-      navigate('/signup');
+  const { isAuthenticated, role } = useAuth();
+
+  // const handleRoleSelect = (role) => {
+  //   console.log('here')
+  //   if (role) {
+  //     sessionStorage.setItem("tempSelectedRole", role);
+  //     localStorage.setItem('selectedRole', role);
+  //     navigate('/signup');
+  //   }
+  // };
+
+  const handleRoleSelect = (selectedRole) => {
+  if (!isAuthenticated) {
+    // Not logged in → send to signup as that role
+    sessionStorage.setItem("tempSelectedRole", selectedRole);
+    localStorage.setItem('selectedRole', selectedRole);
+    navigate('/signup');
+    return;
+  }
+
+  if (role === selectedRole) {
+    // Already logged in as this role → go to their dashboard
+    const dashboardRoutes = {
+      college:   '/home',
+      company:   '/home',
+      employer:  '/home',
+      candidate: '/home',
+    };
+    navigate(dashboardRoutes[role] || '/dashboard');
+  } else {
+    // Logged in as a different role → show a prompt
+    const roleLabels = {
+      college:   'College',
+      company:   'Company',
+      employer:  'Employer',
+      candidate: 'Candidate',
+    };
+    const confirmSwitch = window.confirm(
+      `You're currently logged in as a ${roleLabels[role]}.\n\nTo access the ${roleLabels[selectedRole]} portal, please log in with a ${roleLabels[selectedRole]} account.`
+    );
+    if (confirmSwitch) {
+      sessionStorage.setItem("tempSelectedRole", selectedRole);
+      navigate('/login');
     }
-  };
+  }
+};
 
   const handleServiceCardClick = (serviceType, serviceTitle) => {
     localStorage.setItem('selectedServiceType', serviceType);
@@ -411,345 +446,7 @@ const ArrowRightIcon = () => (
   </svg>
 );
 
-  // const getTabColor = (tabId) => {
-  //   switch(tabId) {
-  //     case "company": return "#7D3AE9";
-  //     case "college": return "#EE4499";
-  //     case "employer": return "#327DF5";
-  //     case "candidate": return "#20C55D";
-  //     default: return "#7D3AE9";
-  //   }
-  // };
 
-  // const cardData = {
-  //   company: [
-  //     { 
-  //       id: "dashboard", 
-  //       title: "Dashboard Overview", 
-  //       description: "View all recruitment activities", 
-  //       step: "01",
-  //       fullDescription: "Complete overview of all recruitment activities, metrics, and upcoming drives in one place.",
-  //       image: f1,
-  //       iconColor: "#7D3AE9",
-  //       iconBg: "#F0EBFA",
-  //       iconPath: "M3 12l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v10H3V12z",
-  //     },
-  //     { 
-  //       id: "jobs", 
-  //       title: "Job Postings", 
-  //       description: "Manage job listings", 
-  //       step: "02",
-  //       fullDescription: "Create, edit, and manage job postings with detailed requirements and eligibility criteria.",
-  //       image: f2,
-  //       iconColor: "#7D3AE9",
-  //       iconBg: "#F0EBFA",
-  //       iconPath: "M20 7h-4.5A2.5 2.5 0 0 1 13 4.5V3M4 21h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8L9 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"
-  //     },
-  //     { 
-  //       id: "requests", 
-  //       title: "Campus Requests", 
-  //       description: "Postings by college", 
-  //       step: "03",
-  //       fullDescription: "Review and manage campus requests from colleges, schedule drives, and coordinate with placement cells.",
-  //       image: f5,
-  //       iconColor: "#7D3AE9",
-  //       iconBg: "#F0EBFA",
-  //       iconPath: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 9l5 5 5-5M12 4v10"
-  //     },
-  //     { 
-  //       id: "applications", 
-  //       title: "Applications", 
-  //       description: "Track candidate applications", 
-  //       step: "04",
-  //       fullDescription: "Track and manage all incoming applications, filter by criteria, and shortlist candidates.",
-  //       image: f3,
-  //       iconColor: "#7D3AE9",
-  //       iconBg: "#F0EBFA",
-  //       iconPath: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"
-  //     },
-  //     { 
-  //       id: "interviews", 
-  //       title: "Interviews", 
-  //       description: "Schedule and manage interviews", 
-  //       step: "05",
-  //       fullDescription: "Schedule interviews, send invites, and track interview feedback and outcomes.",
-  //       image: f4,
-  //       iconColor: "#7D3AE9",
-  //       iconBg: "#F0EBFA",
-  //       iconPath: "M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5M16 2v4M3 10h18M8 2v4"
-  //     },
-  //     { 
-  //       id: "messages", 
-  //       title: "Messaging", 
-  //       description: "Real time chats", 
-  //       step: "06",
-  //       fullDescription: "Real-time communication with colleges and candidates, with message history and notifications.",
-  //       image: f6,
-  //       iconColor: "#7D3AE9",
-  //       iconBg: "#F0EBFA",
-  //       iconPath: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
-  //     },
-  //   ],
-  //   college: [
-  //     { 
-  //       id: "dashboard", 
-  //       title: "College Dashboard", 
-  //       description: "Placement cell overview", 
-  //       step: "01",
-  //       fullDescription: "Complete placement cell overview with drive schedules, student stats, and company partnerships.",
-  //       image: f1,
-  //       iconColor: "#EE4499",
-  //       iconBg: "#FBEDF5",
-  //       iconPath: "M3 12l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v10H3V12z",
-  //     },
-  //     { 
-  //       id: "drives", 
-  //       title: "Placement Drives", 
-  //       description: "Manage campus drives", 
-  //       step: "02",
-  //       fullDescription: "Create and manage campus placement drives, invite companies, and track drive progress.",
-  //       image: f2,
-  //       iconColor: "#EE4499",
-  //       iconBg: "#FBEDF5",
-  //       iconPath: "M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2zM17 21v-4H7v4M12 7v6M9 10h6"
-  //     },
-  //     { 
-  //       id: "students", 
-  //       title: "Student Management", 
-  //       description: "Manage student profiles", 
-  //       step: "03",
-  //       fullDescription: "Manage student profiles, track eligibility, and maintain placement-ready candidate pools.",
-  //       image: f3,
-  //       iconColor: "#EE4499",
-  //       iconBg: "#FBEDF5",
-  //       iconPath: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
-  //     },
-  //     { 
-  //       id: "companies", 
-  //       title: "Company Relations", 
-  //       description: "Partner companies", 
-  //       step: "04",
-  //       fullDescription: "Manage company partnerships, track engagement, and maintain relationships with recruiters.",
-  //       image: f4,
-  //       iconColor: "#EE4499",
-  //       iconBg: "#FBEDF5",
-  //       iconPath: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0"
-  //     },
-  //     { 
-  //       id: "reports", 
-  //       title: "Placement Reports", 
-  //       description: "Track placement stats", 
-  //       step: "05",
-  //       fullDescription: "Generate placement reports, track metrics, and analyze placement performance over time.",
-  //       image: f5,
-  //       iconColor: "#EE4499",
-  //       iconBg: "#FBEDF5",
-  //       iconPath: "M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2M3 21h18M12 7v10M8 7v10M16 7v10"
-  //     },
-  //     { 
-  //       id: "calendar", 
-  //       title: "Event Calendar", 
-  //       description: "Schedule placements", 
-  //       step: "06",
-  //       fullDescription: "Schedule placement events, interviews, and drive activities with calendar integration.",
-  //       image: f6,
-  //       iconColor: "#EE4499",
-  //       iconBg: "#FBEDF5",
-  //       iconPath: "M8 2v4M16 2v4M3 10h18M21 14v-4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"
-  //     },
-  //   ],
-  //   employer: [
-  //     { 
-  //       id: "dashboard", 
-  //       title: "Employer Dashboard", 
-  //       description: "Complete hiring overview", 
-  //       step: "01",
-  //       fullDescription: "Complete hiring dashboard with job postings, candidate pipelines, and hiring metrics.",
-  //       image: f1,
-  //       iconColor: "#327DF5",
-  //       iconBg: "#E9F0FB",
-  //       iconPath: "M3 12l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v10H3V12z",
-  //     },
-  //     { 
-  //       id: "postings", 
-  //       title: "Job Postings", 
-  //       description: "Create & manage jobs", 
-  //       step: "02",
-  //       fullDescription: "Create and manage job postings, set requirements, and track application volumes.",
-  //       image: f2,
-  //       iconColor: "#327DF5",
-  //       iconBg: "#E9F0FB",
-  //       iconPath: "M20 7h-4.5A2.5 2.5 0 0 1 13 4.5V3M4 21h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8L9 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"
-  //     },
-  //     { 
-  //       id: "candidates", 
-  //       title: "Candidate Search", 
-  //       description: "Find matching profiles", 
-  //       step: "03",
-  //       fullDescription: "Search and filter candidate profiles, save searches, and shortlist potential hires.",
-  //       image: f3,
-  //       iconColor: "#327DF5",
-  //       iconBg: "#E9F0FB",
-  //       iconPath: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0"
-  //     },
-  //     { 
-  //       id: "applications", 
-  //       title: "Applications", 
-  //       description: "Review applicants", 
-  //       step: "04",
-  //       fullDescription: "Review incoming applications, filter by criteria, and move candidates through pipeline.",
-  //       image: f4,
-  //       iconColor: "#327DF5",
-  //       iconBg: "#E9F0FB",
-  //       iconPath: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"
-  //     },
-  //     { 
-  //       id: "interviews", 
-  //       title: "Interviews", 
-  //       description: "Schedule & track", 
-  //       step: "05",
-  //       fullDescription: "Schedule interviews, send calendar invites, and track interview feedback.",
-  //       image: f5,
-  //       iconColor: "#327DF5",
-  //       iconBg: "#E9F0FB",
-  //       iconPath: "M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5M16 2v4M3 10h18M8 2v4"
-  //     },
-  //     { 
-  //       id: "offers", 
-  //       title: "Offer Management", 
-  //       description: "Send & track offers", 
-  //       step: "06",
-  //       fullDescription: "Create and send offer letters, track acceptance rates, and manage offer negotiations.",
-  //       image: f6,
-  //       iconColor: "#327DF5",
-  //       iconBg: "#E9F0FB",
-  //       iconPath: "M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5M9 12h6M12 9v6"
-  //     },
-  //   ],
-  //   candidate: [
-  //     { 
-  //       id: "dashboard", 
-  //       title: "Candidate Dashboard", 
-  //       description: "Personalized overview", 
-  //       step: "01",
-  //       fullDescription: "Personalized dashboard with job recommendations, application status, and upcoming interviews.",
-  //       image: f1,
-  //       iconColor: "#20C55D",
-  //       iconBg: "#EBFAF0",
-  //       iconPath: "M3 12l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v10H3V12z",
-  //     },
-  //     { 
-  //       id: "offcampus", 
-  //       title: "Off-Campus Jobs", 
-  //       description: "Browse off-campus openings", 
-  //       step: "02",
-  //       fullDescription: "Browse and apply to off-campus job openings from partner companies.",
-  //       image: f2,
-  //       iconColor: "#20C55D",
-  //       iconBg: "#EBFAF0",
-  //       iconPath: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20M12 2v20"
-  //     },
-  //     { 
-  //       id: "internships", 
-  //       title: "Internships", 
-  //       description: "Find internship opportunities", 
-  //       step: "03",
-  //       fullDescription: "Discover and apply to internship opportunities matching your profile and interests.",
-  //       image: f3,
-  //       iconColor: "#20C55D",
-  //       iconBg: "#EBFAF0",
-  //       iconPath: "M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
-  //     },
-  //     { 
-  //       id: "applications", 
-  //       title: "My Applications", 
-  //       description: "Track application status", 
-  //       step: "04",
-  //       fullDescription: "Track all your job applications, view status updates, and manage responses.",
-  //       image: f4,
-  //       iconColor: "#20C55D",
-  //       iconBg: "#EBFAF0",
-  //       iconPath: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"
-  //     },
-  //     { 
-  //       id: "interviews", 
-  //       title: "My Interviews", 
-  //       description: "Upcoming interviews", 
-  //       step: "05",
-  //       fullDescription: "View and manage upcoming interviews, get reminders, and access interview details.",
-  //       image: f5,
-  //       iconColor: "#20C55D",
-  //       iconBg: "#EBFAF0",
-  //       iconPath: "M8 7h.01M12 7h.01M16 7h.01M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9.5M3 10h18"
-  //     },
-  //     { 
-  //       id: "chats", 
-  //       title: "Messages", 
-  //       description: "Chat with recruiters", 
-  //       step: "06",
-  //       fullDescription: "Real-time chat with recruiters and placement coordinators, get updates and ask questions.",
-  //       image: f6,
-  //       iconColor: "#20C55D",
-  //       iconBg: "#EBFAF0",
-  //       iconPath: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
-  //     },
-  //   ],
-  // };
-
-  // const getImageForActiveCard = () => {
-  //   const card = cardData[activeTab]?.find(c => c.id === activeCard);
-  //   return card?.image || f1;
-  // };
-
-  // const getActiveTitle = () => {
-  //   const card = cardData[activeTab]?.find(c => c.id === activeCard);
-  //   return card?.title || "Dashboard";
-  // };
-
-  // const getActiveDescription = () => {
-  //   const card = cardData[activeTab]?.find(c => c.id === activeCard);
-  //   return card?.fullDescription || card?.description || "";
-  // };
-
-  // const renderStepCard = (card, isActive, tabColor, sectionTab) => {
-  //   return (
-  //     <button
-  //       key={card.id}
-  //       onClick={() => {
-  //         setActiveTab(sectionTab);
-  //         setActiveCard(card.id);
-  //       }}
-  //       className="text-left rounded-xl p-4 transition-all duration-300 border w-full hover:translate-x-1"
-  //       style={{
-  //         borderColor: isActive ? tabColor : 'transparent',
-  //         backgroundColor: isActive ? `${tabColor}08` : 'transparent',
-  //         boxShadow: isActive ? `0 4px 12px ${tabColor}20` : 'none',
-  //       }}
-  //     >
-  //       <div className="flex items-start gap-3">
-  //         <span 
-  //           className="text-sm font-bold whitespace-nowrap mt-0.5"
-  //           style={{ color: tabColor }}
-  //         >
-  //           {card.step}
-  //         </span>
-  //         <div className="flex-1">
-  //           <h3 
-  //             className="text-base font-semibold leading-tight"
-  //             style={{ color: '#0f172a' }}
-  //           >
-  //             {card.title}
-  //           </h3>
-  //           {isActive && (
-  //             <p className="text-sm leading-relaxed mt-2 text-muted-foreground">
-  //               {card.fullDescription}
-  //             </p>
-  //           )}
-  //         </div>
-  //       </div>
-  //     </button>
-  //   );
-  // };
 
   const getTabColor = (tabId) => {
     switch(tabId) {
@@ -1432,12 +1129,7 @@ const ArrowRightIcon = () => (
                 <div className="flex flex-col md:flex-row gap-3 w-full">
   
   <button
-     onClick={()=>{
-       sessionStorage.setItem('tempSelectedRole', 'college');
-      sessionStorage.setItem('candidateOnboardingSelectedRole', 'college');
-      localStorage.setItem('selectedRole', 'college');
-      navigate('/signup');
-    }}
+   onClick={() => handleRoleSelect('college')}
     className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 sm:px-10 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
   >
     <span className="flex items-center justify-center gap-3">
@@ -1447,12 +1139,7 @@ const ArrowRightIcon = () => (
   </button>
 
   <button
-   onClick={()=>{
-       sessionStorage.setItem('tempSelectedRole', 'company');
-      sessionStorage.setItem('candidateOnboardingSelectedRole', 'company');
-      localStorage.setItem('selectedRole', 'company');
-      navigate('/signup');
-    }}
+  onClick={() => handleRoleSelect('company')}
     className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 sm:px-10 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
   >
     <span className="flex items-center justify-center gap-3">
@@ -1510,101 +1197,7 @@ const ArrowRightIcon = () => (
               </div>
             </div>
                     
-            {/* ================= MARQUEE SECTION ================= 
-            <div className="w-full overflow-hidden py-0">
-                    
-              <div className="text-center mb-8 px-4">
-                <span className="text-xs sm:text-sm font-medium text-gray-600 uppercase tracking-wider">
-                  Trusted by Leading Institutions and Companies
-                </span>
-              </div>
-                    
-              {/* Company Marquee
-              <div className="relative w-full overflow-hidden">
-                <div className="marquee-container">
-                  <div className="marquee">
-                    <div className="marquee-track">
-                      {[...Array(3)].map((_, loopIndex) => (
-                        <div key={loopIndex} className="marquee-content">
-                          {["Google", "Microsoft", "Amazon", "Meta", "Apple", "Adobe", "Netflix", "Salesforce"].map((item, i) => (
-                            <div key={i} className="flex items-center gap-3 whitespace-nowrap mx-3 sm:mx-4">
-                              <div className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 text-xs sm:text-sm font-semibold flex-shrink-0">
-                                {item.charAt(0)}
-                              </div>
-                              <span className="text-xs sm:text-sm font-medium text-gray-700">
-                                {item}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-                    
-               
-              <div className="relative w-full overflow-hidden mt-6 sm:mt-8">
-                <div className="marquee-container">
-                  <div className="marquee reverse">
-                    <div className="marquee-track">
-                      {[...Array(3)].map((_, loopIndex) => (
-                        <div key={loopIndex} className="marquee-content">
-                          {[
-                            "IIT Bombay", "IIT Delhi", "IIT Madras", "IIT Kharagpur",
-                            "BITS Pilani", "NIT Trichy", "IIM Ahmedabad", "IIM Bangalore",
-                            "IIT Kanpur", "NIT Surathkal"
-                          ].map((item, i) => (
-                            <div key={i} className="flex items-center gap-3 whitespace-nowrap mx-3 sm:mx-4">
-                              <div className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 text-xs font-semibold flex-shrink-0">
-                                {item.split(' ').map(word => word.charAt(0)).join('')}
-                              </div>
-                              <span className="text-xs sm:text-sm font-medium text-gray-700">
-                                {item}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-                    
-              <style jsx>{`
-                .marquee-container {
-                  position: relative;
-                  width: 100%;
-                  overflow: hidden;
-                }
-                .marquee {
-                  position: relative;
-                  width: 100%;
-                  overflow: hidden;
-                }
-                .marquee-track {
-                  display: flex;
-                  width: max-content;
-                  animation: scroll 35s linear infinite;
-                }
-                .marquee.reverse .marquee-track {
-                  animation: scroll-reverse 35s linear infinite;
-                }
-                .marquee-content {
-                  display: flex;
-                  gap: 0rem;
-                  padding-right: 0rem;
-                }
-                @keyframes scroll {
-                  from { transform: translateX(0); }
-                  to { transform: translateX(-33.33%); }
-                }
-                @keyframes scroll-reverse {
-                  from { transform: translateX(-33.33%); }
-                  to { transform: translateX(0); }
-                }
-              `}</style>
-            </div>*/}
+         
               
           </section>
               
@@ -1875,212 +1468,7 @@ const ArrowRightIcon = () => (
       </section>
       
 
-        {/* <section className="section-pad pt-20" style={{ background: 'linear-gradient(180deg, #F6F3FC 0%, #F8FAFC 100%)' }}>
-      <div className="container-xl max-w-7xl mx-auto px-4">
-        
-        Section Header
-        <div className="text-center mb-16">
-          <p className="text-sm font-semibold tracking-widest uppercase text-purple-600 mb-6">
-            HOW RAWRECRUIT WORKS
-          </p>
-          <h2 className="font-bold text-foreground mb-4 text-[clamp(28px,4vw,40px)] leading-[1.2] tracking-[-0.02em] text-[#0f172a]">
-            Built for Real{" "}
-            <span className="bg-gradient-to-r from-[#7c3aed] to-[#ec4899] bg-clip-text text-transparent">
-              Recruitment Operations
-            </span>
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-            Every interface purpose-built for its user.
-          </p>
-        </div>
-
-        FOR COMPANIES SECTION
-        <div className="mb-20">
-          <h3 className="text-2xl font-bold text-foreground mb-8 text-center">For Companies</h3>
-          <div className="grid md:grid-cols-12 gap-6 items-start">
-            Left Half - Step Cards
-            <div className="md:col-span-4">
-              <div className="flex flex-col gap-3">
-                {cardData.company?.map((card) => {
-                  const isActive = activeTab === "company" && activeCard === card.id;
-                  return renderStepCard(card, isActive, getTabColor("company"), "company");
-                })}
-              </div>
-            </div>
-
-            Right Half - Image Display
-            <div className="md:col-span-8">
-              <div className="relative rounded-2xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-xl)' }}>
-                MacOS-style window bar
-                <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
-                  <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
-                  <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
-                  <span className="w-3 h-3 rounded-full bg-green-500 opacity-80"></span>
-                  <div className="ml-4 flex-1 max-w-xs rounded-md flex items-center px-3" style={{ height: '22px', background: '#061946' }}>
-                    <span className="text-white/40 text-[10px] font-mono truncate">
-                      rawrecruit.in — {activeTab === "company" ? getActiveTitle() : "Company Dashboard"}
-                    </span>
-                  </div>
-                </div>
-
-                Image Container
-                <div className="relative overflow-hidden" style={{ maxHeight: '520px' }}>
-                  <img 
-                    src={activeTab === "company" ? getImageForActiveCard() : f1} 
-                    alt="Company Dashboard" 
-                    className="w-full h-auto object-top object-cover transition-all duration-300"
-                    style={{ animation: 'fade-up 0.3s ease-out' }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        FOR COLLEGES SECTION - Image Left, Cards Right
-        <div className="mb-20">
-          <h3 className="text-2xl font-bold text-foreground mb-8 text-center">For Colleges</h3>
-          <div className="grid md:grid-cols-12 gap-6 items-start">
-            Left Half - Image Display
-            <div className="md:col-span-8">
-              <div className="relative rounded-2xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-xl)' }}>
-                MacOS-style window bar
-                <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
-                  <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
-                  <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
-                  <span className="w-3 h-3 rounded-full bg-green-500 opacity-80"></span>
-                  <div className="ml-4 flex-1 max-w-xs rounded-md flex items-center px-3" style={{ height: '22px', background: '#061946' }}>
-                    <span className="text-white/40 text-[10px] font-mono truncate">
-                      rawrecruit.in — {activeTab === "college" ? getActiveTitle() : "College Dashboard"}
-                    </span>
-                  </div>
-                </div>
-
-                Image Container
-                <div className="relative overflow-hidden" style={{ maxHeight: '520px' }}>
-                  <img 
-                    src={activeTab === "college" ? getImageForActiveCard() : f1} 
-                    alt="College Dashboard" 
-                    className="w-full h-auto object-top object-cover transition-all duration-300"
-                    style={{ animation: 'fade-up 0.3s ease-out' }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            Right Half - Step Cards
-            <div className="md:col-span-4">
-              <div className="flex flex-col gap-3">
-                {cardData.college?.map((card) => {
-                  const isActive = activeTab === "college" && activeCard === card.id;
-                  return renderStepCard(card, isActive, getTabColor("college"), "college");
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        FOR EMPLOYERS SECTION - Cards Left, Image Right
-        <div className="mb-20">
-          <h3 className="text-2xl font-bold text-foreground mb-8 text-center">For Employers</h3>
-          <div className="grid md:grid-cols-12 gap-6 items-start">
-            Left Half - Step Cards
-            <div className="md:col-span-4">
-              <div className="flex flex-col gap-3">
-                {cardData.employer?.map((card) => {
-                  const isActive = activeTab === "employer" && activeCard === card.id;
-                  return renderStepCard(card, isActive, getTabColor("employer"), "employer");
-                })}
-              </div>
-            </div>
-
-            Right Half - Image Display
-            <div className="md:col-span-8">
-              <div className="relative rounded-2xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-xl)' }}>
-                MacOS-style window bar
-                <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
-                  <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
-                  <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
-                  <span className="w-3 h-3 rounded-full bg-green-500 opacity-80"></span>
-                  <div className="ml-4 flex-1 max-w-xs rounded-md flex items-center px-3" style={{ height: '22px', background: '#061946' }}>
-                    <span className="text-white/40 text-[10px] font-mono truncate">
-                      rawrecruit.in — {activeTab === "employer" ? getActiveTitle() : "Employer Dashboard"}
-                    </span>
-                  </div>
-                </div>
-
-                Image Container
-                <div className="relative overflow-hidden" style={{ maxHeight: '520px' }}>
-                  <img 
-                    src={activeTab === "employer" ? getImageForActiveCard() : f1} 
-                    alt="Employer Dashboard" 
-                    className="w-full h-auto object-top object-cover transition-all duration-300"
-                    style={{ animation: 'fade-up 0.3s ease-out' }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        FOR CANDIDATES SECTION - Image Left, Cards Right
-        <div className="mb-20">
-          <h3 className="text-2xl font-bold text-foreground mb-8 text-center">For Candidates</h3>
-          <div className="grid md:grid-cols-12 gap-6 items-start">
-            Left Half - Image Display
-            <div className="md:col-span-8">
-              <div className="relative rounded-2xl overflow-hidden border border-border" style={{ boxShadow: 'var(--shadow-xl)' }}>
-                MacOS-style window bar
-                <div className="flex items-center gap-1.5 px-4" style={{ height: '36px', background: '#040f2a' }}>
-                  <span className="w-3 h-3 rounded-full bg-red-500 opacity-80"></span>
-                  <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80"></span>
-                  <span className="w-3 h-3 rounded-full bg-green-500 opacity-80"></span>
-                  <div className="ml-4 flex-1 max-w-xs rounded-md flex items-center px-3" style={{ height: '22px', background: '#061946' }}>
-                    <span className="text-white/40 text-[10px] font-mono truncate">
-                      rawrecruit.in — {activeTab === "candidate" ? getActiveTitle() : "Candidate Dashboard"}
-                    </span>
-                  </div>
-                </div>
-
-                Image Container
-                <div className="relative overflow-hidden" style={{ maxHeight: '520px' }}>
-                  <img 
-                    src={activeTab === "candidate" ? getImageForActiveCard() : f1} 
-                    alt="Candidate Dashboard" 
-                    className="w-full h-auto object-top object-cover transition-all duration-300"
-                    style={{ animation: 'fade-up 0.3s ease-out' }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            Right Half - Step Cards
-            <div className="md:col-span-4">
-              <div className="flex flex-col gap-3">
-                {cardData.candidate?.map((card) => {
-                  const isActive = activeTab === "candidate" && activeCard === card.id;
-                  return renderStepCard(card, isActive, getTabColor("candidate"), "candidate");
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        Animation Styles
-        <style jsx>{`
-          @keyframes fade-up {
-            from {
-              opacity: 0;
-              transform: translateY(10px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-        `}</style>
-      </div>
-    </section> */}
+       
 
     <section className="section-pad pt-20" style={{ background: 'linear-gradient(180deg, #F6F3FC 0%, #F8FAFC 100%)' }}>
       <div className="container-xl max-w-7xl mx-auto px-4">
@@ -2309,138 +1697,7 @@ const ArrowRightIcon = () => (
       </div>
     </section>
 
-        {/*<section className="section-pad pt-16 pb-24" style={{ background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)' }}>
-  <div className="container-xl max-w-7xl mx-auto px-2">*/}
-    
-    {/* Section Header 
-    <div className="text-center mb-14">
-      <div 
-        className="inline-block text-[13px] font-semibold uppercase tracking-widest mb-3 px-4 py-1.5 rounded-full border"
-        style={{ 
-          color: '#D3C2F0', 
-          borderColor: 'rgba(125, 58, 233, 0.3)', 
-          background: 'rgba(125, 58, 233, 0.1)' 
-        }}
-      >
-        Platform Impact
-      </div>
-      <h2 
-        className="font-bold text-white mb-3 text-[clamp(28px,4vw,40px)] leading-[1.2] tracking-[-0.02em]"
-      >
-        Numbers That Speak for Themselves
-      </h2>
-      <p style={{ color: '#8596AD', fontSize: '18px' }}>
-        Trusted by institutions and companies across India.
-      </p>
-    </div>*/}
-
-    {/* Stats Grid - with slight side spacing 
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
       
-      {/* Colleges 
-      <div 
-        className="rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 group"
-        style={{ 
-          padding: '40px 24px', 
-          border: '1px solid rgba(125, 58, 233, 0.15)', 
-          background: 'rgba(125, 58, 233, 0.06)',
-        }}
-      >
-        <div 
-          className="font-black mb-2 text-[clamp(36px,5vw,52px)] leading-[1.1]"
-          style={{
-            background: 'linear-gradient(135deg, #7D3AE9, #EE4499)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
-        >
-          50+
-        </div>
-        <div style={{ color: '#8596AD', fontSize: '14px', fontWeight: '500' }}>
-          Colleges Onboarded
-        </div>
-      </div>
-
-      {/* Companies 
-      <div 
-        className="rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 group"
-        style={{ 
-          padding: '40px 24px', 
-          border: '1px solid rgba(125, 58, 233, 0.15)', 
-          background: 'rgba(125, 58, 233, 0.06)',
-        }}
-      >
-        <div 
-          className="font-black mb-2 text-[clamp(36px,5vw,52px)] leading-[1.1]"
-          style={{
-            background: 'linear-gradient(135deg, #7D3AE9, #EE4499)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
-        >
-          100+
-        </div>
-        <div style={{ color: '#8596AD', fontSize: '14px', fontWeight: '500' }}>
-          Companies Hiring
-        </div>
-      </div>
-
-      {/* Students 
-      <div 
-        className="rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 group"
-        style={{ 
-          padding: '40px 24px', 
-          border: '1px solid rgba(125, 58, 233, 0.15)', 
-          background: 'rgba(125, 58, 233, 0.06)',
-        }}
-      >
-        <div 
-          className="font-black mb-2 text-[clamp(36px,5vw,52px)] leading-[1.1]"
-          style={{
-            background: 'linear-gradient(135deg, #7D3AE9, #EE4499)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
-        >
-          3,000+
-        </div>
-        <div style={{ color: '#8596AD', fontSize: '14px', fontWeight: '500' }}>
-          Students Placed
-        </div>
-      </div>
-
-      {/* Satisfaction 
-      <div 
-        className="rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 group"
-        style={{ 
-          padding: '40px 24px', 
-          border: '1px solid rgba(125, 58, 233, 0.15)', 
-          background: 'rgba(125, 58, 233, 0.06)',
-        }}
-      >
-        <div 
-          className="font-black mb-2 text-[clamp(36px,5vw,52px)] leading-[1.1]"
-          style={{
-            background: 'linear-gradient(135deg, #7D3AE9, #EE4499)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
-        >
-          95%
-        </div>
-        <div style={{ color: '#8596AD', fontSize: '14px', fontWeight: '500' }}>
-          Satisfaction Rate
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>*/}
-
         <section 
   className="section-pad pt-20 pb-28 relative overflow-hidden" 
   style={{ 
