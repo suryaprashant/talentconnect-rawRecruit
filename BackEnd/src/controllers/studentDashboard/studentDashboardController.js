@@ -254,10 +254,6 @@ export const getOnCampusPostingsForCompany = async (req, res) => {
         }
 
 
-        console.log("🔍 Dashboard Context Debug");
-
-        console.log("applicationQuery:", JSON.stringify(applicationQuery, null, 2));
-
 
         const applications = await Application.find(applicationQuery)
           .select("job")

@@ -9,6 +9,7 @@ import {getTotalJobPostedCount} from "../../services/jobPostingService.js";
 import {getTotalJobApplicationSubmited} from "../../services/applicationService.js";
 import InterviewSchedule from "../../models/InterviewSchedule.Model.js";
 import { JobPostingTable } from "../../models/jobPostingsModel.js";
+import { notifyCandidateOnAdminInterviewScheduled } from "../../services/notificationService.js";
 
 /**
  * @desc    Get Admin Dashboard Overview
@@ -133,6 +134,18 @@ export async function scheduleInterviewByAdmin(req, res) {
       message,
       status: "Scheduled",
       emailStatus: "PENDING",
+    });
+
+    // 🔔 Send realtime notification to candidate
+    await notifyCandidateOnAdminInterviewScheduled({
+      recipientId: applicantAuthId,
+      senderId: adminAuthId,
+      companyName,
+      applicationId,
+      jobId,
+      jobType: job.jobType,
+      date,
+      time,
     });
 
     return res.status(200).json({

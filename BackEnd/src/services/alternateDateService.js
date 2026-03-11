@@ -4,6 +4,7 @@ import Auth from "../models/authModel.js";
 import CompanyProfile from "../models/companyDashboard/companyProfileModel.js";
 import { JobPostingTable } from "../models/jobPostingsModel.js";
 import { sendAlternateDateEmailToCollege } from "../utils/alternateDateEmail.js";
+import { createNotification } from "./notificationService.js";
 
 
 export const submitAlternateDatesService = async (jobId, companyId, alternateDates) => {
@@ -73,6 +74,16 @@ export const submitAlternateDatesService = async (jobId, companyId, alternateDat
       formattedAlternateDates,
       jobPosting.jobTitle || "On-Campus Drive"
     );
+
+    // Send realtime notification to college
+    await createNotification({
+      recipientId: college.userId,   // college auth userId
+      senderId: company.userId,      // company auth userId
+      type: "ALTERNATE_DATE_REQUEST",
+      message: `${company.companyDetails?.companyName || "A company"} requested alternate dates: ${formattedAlternateDates.startDate} to ${formattedAlternateDates.endDate}`,
+      referenceId: jobId,
+      jobType: jobPosting.jobType,
+    });
 
     return { 
       success: true, 
