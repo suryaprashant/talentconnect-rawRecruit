@@ -889,15 +889,7 @@ const ArrowRightIcon = () => (
         iconBg: "#E9F0FB",
         iconPath: "M20 7h-4.5A2.5 2.5 0 0 1 13 4.5V3M4 21h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8L9 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"
       },
-      { 
-        id: "candidates", 
-        title: "Candidate Search", 
-        description: "Find matching profiles", 
-        image: f3,
-        iconColor: "#327DF5",
-        iconBg: "#E9F0FB",
-        iconPath: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0-8 0"
-      },
+    
       { 
         id: "applications", 
         title: "Applications", 
@@ -1437,15 +1429,40 @@ const ArrowRightIcon = () => (
                     </p>
 
                     {/* CTA */}
-                    <button
-                      onClick={handleGetStarted}
-                      className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 sm:px-10 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-                    >
-                      <span className="flex items-center justify-center gap-3">
-                        Start Your Journey
-                        <ArrowRight className="w-5 h-5" />
-                      </span>
-                    </button>
+                <div className="flex flex-col md:flex-row gap-3 w-full">
+  
+  <button
+     onClick={()=>{
+       sessionStorage.setItem('tempSelectedRole', 'college');
+      sessionStorage.setItem('candidateOnboardingSelectedRole', 'college');
+      localStorage.setItem('selectedRole', 'college');
+      navigate('/signup');
+    }}
+    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 sm:px-10 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+  >
+    <span className="flex items-center justify-center gap-3">
+      For Colleges
+      <ArrowRight className="w-4 h-4" />
+    </span>
+  </button>
+
+  <button
+   onClick={()=>{
+       sessionStorage.setItem('tempSelectedRole', 'company');
+      sessionStorage.setItem('candidateOnboardingSelectedRole', 'company');
+      localStorage.setItem('selectedRole', 'company');
+      navigate('/signup');
+    }}
+    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 sm:px-10 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+  >
+    <span className="flex items-center justify-center gap-3">
+      For Companies
+      <ArrowRight className="w-4 h-4" />
+    </span>
+  </button>
+
+</div>
+                   
 
                     {/* Stats row — wraps on mobile */}
                     <div className="mt-10 sm:mt-14 flex flex-wrap items-center gap-x-4 gap-y-3 max-w-full">

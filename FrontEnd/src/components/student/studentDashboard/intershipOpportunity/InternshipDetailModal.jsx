@@ -949,7 +949,7 @@ const InternshipDetailModal = ({ jobId, isOpen, onClose, isApplied: propIsApplie
                   </div>
                 </div>
               )}
-
+{console.log(jobDetail)}
               {/* Process Tab - NEW SECTION */}
               {activeTab === 'process' && (
                 <div className="space-y-4">
