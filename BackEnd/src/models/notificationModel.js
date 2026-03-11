@@ -30,7 +30,8 @@ const notificationSchema = new mongoose.Schema({
     'COLLEGE_APPLICATION_ACCEPTED',
     'COLLEGE_APPLICATION_REJECTED',
     "JOB_REGISTRATION",
-    "INTERVIEW_SCHEDULED"
+    "INTERVIEW_SCHEDULED",
+    "ALTERNATE_DATE_REQUEST"
   ],
         required: true,
     },
@@ -50,7 +51,7 @@ const notificationSchema = new mongoose.Schema({
     },
     jobType: {
         type: String,
-        enum: ["On-campus", "Off-campus", "Pool-campus", "Internship"],
+        enum: ["On-campus", "Off-campus", "Pool-campus", "Internship", "Referral"],
         required: false,
     },
 

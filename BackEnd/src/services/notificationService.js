@@ -16,6 +16,10 @@ const sendNotification = async ({
     recipientId, senderId, type, message, referenceId, jobType, meta, jobId, read: false,
   });
 
+  console.log("===== DEBUG SOCKET =====");
+  console.log("recipientId passed:", recipientId);
+  console.log("recipientId string:", recipientId?.toString());
+
   // 2. Socket emit — sync, no await
   const socketId = getReceiverSocketId(recipientId.toString());
   console.log("socketId found:", socketId);
@@ -339,6 +343,28 @@ export const notifyCollegeOnInterviewScheduled = async ({
     senderId: companyAuthId,
     type: "INTERVIEW_SCHEDULED",
     message: `${companyName} scheduled an interview with you`,
+    referenceId: applicationId,
+    jobId,
+    jobType,
+    meta: { date, time },
+  });
+};
+
+export const notifyCandidateOnAdminInterviewScheduled = async ({
+  recipientId,
+  senderId,
+  companyName,
+  applicationId,
+  jobId,
+  jobType,
+  date,
+  time,
+}) => {
+  await sendNotification({
+    recipientId,          // candidate authId
+    senderId,             // admin authId
+    type: "INTERVIEW_SCHEDULED",
+    message: `Admin scheduled interview for ${companyName} application`,
     referenceId: applicationId,
     jobId,
     jobType,
