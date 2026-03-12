@@ -414,14 +414,28 @@ export const getJobPostedByCompanyService = async (Id, jobType, userType , authU
           
         }
          else if (userType === 'employer') {
-            const query = { 
-                companyPosted: Id,      
-                jobType: jobType,
-                postedByUser: authUserId 
-            };
+
+            // Working on behalf of company
+            if (authUserId && authUserId.activeCompanyId) {
             
-            response = await JobPostingTable.find(query).lean();
-          
+                response = await JobPostingTable.find({
+                    companyPosted: authUserId.activeCompanyId,
+                    postedByUser: authUserId._id,
+                    jobType: jobType
+                }).lean();
+            
+            } else {
+            
+                // Working independently
+                response = await JobPostingTable.find({
+                    postedByUser: authUserId._id,
+                    jobType: jobType,
+                    $or: [
+                        { companyPosted: null },
+                        { companyPosted: { $exists: false } }
+                    ]
+                }).lean();
+            }
         }
         else if (userType === 'college') response = await JobPostingTable.find({ collegePosted: Id, jobType: jobType }).lean();
         //  console.log(response);

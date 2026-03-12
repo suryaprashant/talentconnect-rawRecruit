@@ -3,6 +3,7 @@ import Conversation from "../models/conversationModel.js";
 import Message from "../models/message.model.js";
 import Auth from "../models/authModel.js";
 import mongoose from "mongoose";
+import { notifyOnNewChatMessage } from "./notificationService.js";
 
 
 export const createMessage = async ({ senderId, receiverId, message }) => {
@@ -40,13 +41,21 @@ export const createMessage = async ({ senderId, receiverId, message }) => {
     // }
 
      try {
-      const receiverSocketId = getReceiverSocketId(receiverId);
+      const receiverSocketId = getReceiverSocketId(receiverId.toString());
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("newMessage", newMessage);
       }
+
+      // 🔥 Send push + optional extra socket notification
+      await notifyOnNewChatMessage({
+          senderId,
+          receiverId,
+          message,
+          conversationId: conversation._id,
+     });
+
     } catch (socketError) {
       console.error("Socket emission error:", socketError);
-      // Don't throw here, message is already saved
     }
 
     return newMessage;

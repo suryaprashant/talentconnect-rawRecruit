@@ -24,10 +24,17 @@ const sendNotification = async ({
 
   // 2. Socket emit — sync, no await
   const socketId = getReceiverSocketId(recipientId.toString());
-  console.log("socketId found:", socketId);
+
   if (socketId) {
-    io.to(socketId).emit("newNotification", notification);
-    console.log("🚀 emitted to socket");
+    const populatedNotification = await Notification.findById(notification._id)
+      .populate("senderId", "name userType profileImage");
+  
+    console.log(
+      "📤 Emitting populated notification:",
+      JSON.stringify(populatedNotification, null, 2)
+    );
+  
+    io.to(socketId).emit("newNotification", populatedNotification);
   }
 
   // 3. FCM — completely non-blocking, runs after socket
@@ -418,4 +425,23 @@ export const notifyCandidateOnAdminInterviewScheduled = async ({
     jobType,
     meta: { date, time },
   });
+};
+
+export const notifyOnNewChatMessage = async ({
+  senderId,
+  receiverId,
+  message,
+  conversationId,
+}) => {
+  try {
+    await sendNotification({
+      recipientId: receiverId,     // MUST be Auth._id
+      senderId,
+      type: "NEW_CHAT_MESSAGE",
+      message,
+      referenceId: conversationId, // optional
+    });
+  } catch (err) {
+    console.error("Chat notification error:", err.message);
+  }
 };
