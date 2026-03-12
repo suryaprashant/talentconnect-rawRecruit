@@ -275,10 +275,11 @@ export function ApplyForOffCampusJob(jobId) {
 }
 
 
-export const getReferralApplications = (jobId) => {
+export const getReferralApplications = (jobId,isVisited) => {
   return axiosClient.get(`/application/my-referral-applications`, {
     params: {
       jobId: jobId,
+      isVisited:isVisited,
       adminApprovalStatus: 'Approved'
     }
   });
