@@ -974,8 +974,7 @@ export async function getUserApplicationStatus(req, res) {
 
 // action by company
 // offcampus and joblisting
-export async function getApplicationsByJob(req, res) {
-  console.log("🔥 getApplicationsByJob HIT") 
+export async function getApplicationsByJob(req, res) { 
   const { jobId, jobType, targetStatus, isVisited } = req.query;
   const userType = req.user.userType;
   if (!jobId || !jobType)
