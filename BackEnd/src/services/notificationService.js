@@ -29,26 +29,24 @@ const sendNotification = async ({
   }
 
   // 3. FCM — completely non-blocking, runs after socket
-  setImmediate(async () => {
-    try {
-      console.log("🔔 Preparing FCM for recipient:", recipientId);
+  try {
+    console.log("🔔 Preparing FCM for recipient:", recipientId);
     
-      const user = await Auth.findById(recipientId).select("deviceToken");
-      console.log("📱 Device token in DB:", user?.deviceToken);
+    const user = await Auth.findById(recipientId).select("deviceToken");
+    console.log("📱 Device token in DB:", user?.deviceToken);
     
-      if (user?.deviceToken) {
-        await pushNotification({
-          deviceToken: user.deviceToken,
-          title: type,
-          body: message,
-        });
-      } else {
-        console.log("⚠️ No device token found in DB");
-      }
-    } catch (fcmErr) {
-      console.error("FCM error (non-critical):", fcmErr);
+    if (user?.deviceToken) {
+      await pushNotification({
+        deviceToken: user.deviceToken,
+        title: type,
+        body: message,
+      });
+    } else {
+      console.log("⚠️ No device token found in DB");
     }
-  });
+  } catch (fcmErr) {
+    console.error("FCM error (non-critical):", fcmErr);
+  }
 
   return notification;
 };
