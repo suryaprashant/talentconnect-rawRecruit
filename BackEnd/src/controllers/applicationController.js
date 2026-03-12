@@ -1344,11 +1344,17 @@ export async function rejectApplicant(req, res) {
           const companyName =
             companyProfile?.companyDetails?.companyName || "Company";
         
-          const studentAuthId = await resolveStudentAuthId(
-            response.data.applicant
-          );
-        
-          if (!studentAuthId) return;
+            const resolveStudentAuthId = async (onboardingId) => {
+              const onboarding = await Onboarding.findById(onboardingId).select("userId");
+              return onboarding?.userId || null;
+            };
+          
+            const studentAuthId = await resolveStudentAuthId(response.data.applicant);
+          
+            if (!studentAuthId) {
+              console.error("❌ Student authId not found:", response.data.applicant);
+              return;
+            }
         
           notifyOnApplicationStatusChange({
             recipientId: studentAuthId,
@@ -1576,9 +1582,14 @@ export async function acceptApplicant(req, res) {
     // 👉 CASE 3: Student / Fresher is applicant → Company accepted them
     if (
       application.applicantType === "student" ||
-      application.applicantType === "fresher"
+      application.applicantType === "fresher" ||
+      application.applicantType === "professional"
     ) {
       try {
+        const resolveStudentAuthId = async (onboardingId) => {
+          const onboarding = await Onboarding.findById(onboardingId).select("userId");
+          return onboarding?.userId || null;
+        };
         const studentAuthId = await resolveStudentAuthId(application.applicant);
         if (!studentAuthId) return;
       
@@ -1760,7 +1771,7 @@ export async function getAcceptedCandidatesByCompany(req, res) {
   }
 }*/}
 
-//prathmesh interview schedule fix
+//Prathmesh interview schedule fix
 export async function scheduleInterview(req, res) {
   try {
     console.log("📩 Schedule Interview Payload:", req.body);
