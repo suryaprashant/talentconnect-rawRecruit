@@ -3,7 +3,7 @@ import { useState } from 'react';
 import ReactGA from "react-ga4";
 import { TermsModal } from '@/components/onboarding/Terms&conditionModal'; 
 import heroImage from "../../assets/RR-Tagline.png";
-
+import { useAuth } from '@/context/AuthContext'; // adjust path if needed
 // Helper function for GA events
 const trackGAEvent = (category, action, label) => {
   if (import.meta.env.VITE_GA_MEASUREMENT_ID && window.ReactGA) {
@@ -16,6 +16,8 @@ const trackGAEvent = (category, action, label) => {
 };
 
 const RoleSelection = () => {
+  
+const { isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState('');
   const [hoveredRole, setHoveredRole] = useState('');
@@ -124,18 +126,64 @@ const RoleSelection = () => {
     },
   ];
 
+  // const handleContinue = () => {
+  //   if (selectedRole) {
+  //     sessionStorage.setItem('tempSelectedRole', selectedRole);
+  //     sessionStorage.setItem('candidateOnboardingSelectedRole', selectedRole);
+  //     localStorage.setItem('selectedRole', selectedRole);
+      
+  //     // Track final selection confirmation
+  //     trackGAEvent("Role Selection", "Continue Clicked", selectedRole);
+      
+  //     navigate('/signup');
+  //   }
+  // };
+
   const handleContinue = () => {
-    if (selectedRole) {
+  if (!selectedRole) return;
+
+  trackGAEvent("Role Selection", "Continue Clicked", selectedRole);
+
+  if (!isAuthenticated) {
+    sessionStorage.setItem('tempSelectedRole', selectedRole);
+    sessionStorage.setItem('candidateOnboardingSelectedRole', selectedRole);
+    localStorage.setItem('selectedRole', selectedRole);
+    navigate('/signup');
+    return;
+  }
+
+  if (role === selectedRole) {
+    // Already logged in as this role → go to their dashboard
+    const dashboardRoutes = {
+      college:      '/home',
+      company:      '/home',
+      employer:     '/home',
+      student:      '/home',
+      fresher:      '/home',
+      professional: '/home',
+      candidate:    '/home',
+    };
+    navigate(dashboardRoutes[role] || '/dashboard');
+  } else {
+    // Logged in as a different role → prompt
+    const roleLabels = {
+      college:      'College',
+      company:      'Company',
+      employer:     'Employer',
+      student:      'Student',
+      fresher:      'Fresher',
+      professional: 'Professional',
+      candidate:    'Candidate',
+    };
+    const confirmSwitch = window.confirm(
+      `You're currently logged in as a ${roleLabels[role] ?? role}.\n\nTo access the ${roleLabels[selectedRole]} portal, please log in with a ${roleLabels[selectedRole]} account.`
+    );
+    if (confirmSwitch) {
       sessionStorage.setItem('tempSelectedRole', selectedRole);
-      sessionStorage.setItem('candidateOnboardingSelectedRole', selectedRole);
-      localStorage.setItem('selectedRole', selectedRole);
-      
-      // Track final selection confirmation
-      trackGAEvent("Role Selection", "Continue Clicked", selectedRole);
-      
-      navigate('/signup');
+      navigate('/login');
     }
-  };
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#667eea]/10 via-[#f093fb]/5 to-[#764ba2]/10">
