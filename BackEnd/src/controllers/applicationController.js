@@ -1186,6 +1186,7 @@ export async function shortlistApplicant(req, res) {
             applicationId: response.data._id,
             jobType: response.data.jobType
           });
+          console.log("done55555")
         } catch (err) {
           console.error("Student shortlist notification failed:", err);
         }
