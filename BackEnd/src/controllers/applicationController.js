@@ -43,6 +43,7 @@ import  InterviewSchedule  from "../models/InterviewSchedule.Model.js";
 import { resolveStudentAuthId } from "../utils/resolveStudentAuthId.js";
 import { fetchReferralApplicationsService } from "../controllers/../services/adminService.js";
 import Application from "../models/applicationModel.js";
+import Onboarding from "../models/studentonboardingModel.js"
 // controllers/professionalController.js
 export const getReferralApplicationsForProfessional = async (req, res, next) => {
   try {
@@ -1169,10 +1170,12 @@ export async function shortlistApplicant(req, res) {
           const companyName =
             companyProfile?.companyDetails?.companyName || "Company";
         
-          const studentAuthId = await resolveStudentAuthId(
-            response.data.applicant
-          );
-        
+          const resolveStudentAuthId = async (onboardingId) => {
+            const onboarding = await Onboarding.findById(onboardingId).select("userId");
+            return onboarding?.userId || null;
+          };
+
+         const studentAuthId = await resolveStudentAuthId(response.data.applicant);
           if (!studentAuthId) {
             console.error("❌ Student authId not found:", response.data.applicant);
             return;
@@ -1186,7 +1189,7 @@ export async function shortlistApplicant(req, res) {
             applicationId: response.data._id,
             jobType: response.data.jobType
           });
-          console.log("done55555")
+          
         } catch (err) {
           console.error("Student shortlist notification failed:", err);
         }
