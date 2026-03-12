@@ -5,6 +5,8 @@ import EmployerProfile from "../models/employerDashboard/employerProfileModel.js
 import CollegeOnboarding from "../models/collegeDashboard/collegeOnboardingModel.js";
 import { getReceiverSocketId, io } from "../socketIO/server.js";
 import { pushNotification } from "./firebaseAdmin.js";
+import Application from "../models/applicationModel.js";
+import Onboarding from "../models/studentonboardingModel.js";
 
 // ─── CORE HELPER ────────────────────────────────────────────────────────────
 
@@ -201,8 +203,50 @@ export const notifyOnApplicationStatusChange = async ({
   const message = statusMessageMap[status];
   if (!message) return;
 
+  let finalRecipientAuthId = recipientId;
+
+  // 🔍 Check if recipientId is actually Auth ID
+  const authExists = await Auth.findById(recipientId).select("_id");
+
+  if (!authExists && applicationId) {
+    console.log("⚠️ recipientId is not Auth. Resolving via application...");
+
+    const application = await Application.findById(applicationId).lean();
+    if (!application) return;
+
+    switch (application.applicantType) {
+      case "student":
+      case "fresher":
+      case "professional": {
+        const onboarding = await Onboarding.findById(application.applicant).select("userId");
+        finalRecipientAuthId = onboarding?.userId;
+        break;
+      }
+
+      case "college": {
+        const college = await CollegeOnboarding.findById(application.applicant).select("userId");
+        finalRecipientAuthId = college?.userId;
+        break;
+      }
+
+      case "company": {
+        const company = await CompanyProfile.findById(application.applicant).select("userId");
+        finalRecipientAuthId = company?.userId;
+        break;
+      }
+
+      default:
+        break;
+    }
+  }
+
+  if (!finalRecipientAuthId) {
+    console.error("❌ Could not resolve Auth ID for notification");
+    return;
+  }
+
   await sendNotification({
-    recipientId,
+    recipientId: finalRecipientAuthId,
     senderId,
     type: `APPLICATION_${status.toUpperCase()}`,
     message,
