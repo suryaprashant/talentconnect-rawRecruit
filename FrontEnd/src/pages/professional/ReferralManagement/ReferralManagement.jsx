@@ -14,7 +14,7 @@ export default function ReferralManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState(null);
-
+const [viewType, setViewType] = useState('new'); // 'new' | 'reviewed'
   const [isAppModalOpen, setIsAppModalOpen] = useState(false);
   const [targetJob, setTargetJob] = useState(null);
 
@@ -44,10 +44,11 @@ export default function ReferralManagement() {
     fetchMyJobs();
   }, []);
 
-  const handleViewApplicants = (job) => {
-    setTargetJob(job);
-    setIsAppModalOpen(true);
-  };
+const handleViewApplicants = (job, viewType) => {
+  setTargetJob(job);
+  setViewType(viewType); // 👈 new state
+  setIsAppModalOpen(true);
+};
 
   // Filtering logic
   const filteredJobs = jobs.filter(job => {
@@ -171,10 +172,17 @@ export default function ReferralManagement() {
 
                     {/* Actions */}
                     <div className="col-span-3">
-                      <div className="flex items-center justify-center">
+                      <div className="flex items-center justify-end">
                         <button
-                          onClick={() => handleViewApplicants(job)}
-                          className="flex items-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all text-xs font-bold"
+                            onClick={() => handleViewApplicants(job, 'new')}
+                          className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all text-xs font-bold"
+                        >
+                          <Eye size={14} />
+                          View New Applicants 
+                        </button>
+                          <button
+                           onClick={() => handleViewApplicants(job, 'reviewed')}
+                          className="flex items-center gap-1.5 px-2 py-1 mx-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all text-xs font-bold"
                         >
                           <Eye size={14} />
                           View Applicants 
@@ -216,6 +224,7 @@ export default function ReferralManagement() {
         isOpen={isAppModalOpen}
         jobId={targetJob?._id}
         jobTitle={targetJob?.jobTitle}
+         viewType={viewType}
         onClose={() => {
           setIsAppModalOpen(false);
           setTargetJob(null);
