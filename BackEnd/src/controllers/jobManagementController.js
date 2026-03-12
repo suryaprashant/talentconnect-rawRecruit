@@ -8,7 +8,6 @@ import { getStudentService } from "../services/studentService.js";
 
 export const getPostedJobs = async (req, res) => {
     const Id = req.user._id;
-    // console.log("User ID: ", Id);
     const userType = req.user.userType;
     const { jobType, status } = req.query;
     if (!jobType || !status) return res.status(404).json({ msg: "parameters missing!" });
@@ -37,7 +36,7 @@ export const getPostedJobs = async (req, res) => {
             return res.status(404).json({ error: "Company profile not found" });
         }
 
-        const jobs = await getJobPostedByCompanyService(companyProfile.data[0]._id, jobType, userType, Id);
+        const jobs = await getJobPostedByCompanyService(companyProfile.data[0]._id, jobType, userType, req.user);
 
       
 
