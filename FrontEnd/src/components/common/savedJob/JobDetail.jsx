@@ -555,6 +555,7 @@ const UnifiedJobDetail = () => {
   };
 
   const handleApply = async () => {
+    console.log('clicked for collge')
     try {
       if (!userType) {
         toast.error("Please login to apply");
