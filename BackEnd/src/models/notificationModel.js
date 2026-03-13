@@ -31,7 +31,8 @@ const notificationSchema = new mongoose.Schema({
     'COLLEGE_APPLICATION_REJECTED',
     "JOB_REGISTRATION",
     "INTERVIEW_SCHEDULED",
-    "ALTERNATE_DATE_REQUEST"
+    "ALTERNATE_DATE_REQUEST",
+    "NEW_CHAT_MESSAGE"
   ],
         required: true,
     },

@@ -47,23 +47,34 @@ import Onboarding from "../models/studentonboardingModel.js"
 // controllers/professionalController.js
 export const getReferralApplicationsForProfessional = async (req, res, next) => {
   try {
-    const professionalProfileId = req.user.profileId; 
+    const professionalProfileId = req.user.profileId;
+    const { jobId, adminApprovalStatus, isVisited } = req.query;
 
-    // 1. Get the specific jobId from the URL query (?jobId=...)
-    const { jobId, adminApprovalStatus } = req.query;
+    // ✅ FIX: declare isVisitedBool properly
+    const isVisitedBool = isVisited === "true" ? true : isVisited === "false" ? false : undefined;
 
-    // 2. Pass jobId into the service
     const response = await fetchReferralApplicationsService({
       professionalProfileId,
-      jobId, // <--- THIS IS THE KEY CHANGE
+      jobId,
       adminApprovalStatus: adminApprovalStatus || "Approved",
+      isVisited: isVisitedBool,
     });
+
+    // ✅ Mark as visited AFTER fetching new ones
+    if (isVisitedBool === false && jobId) {
+      await Application.updateMany(
+        { job: jobId, isVisited: false, jobType: "Referral" },
+        { $set: { isVisited: true } }
+      );
+    }
 
     return res.status(200).json(response);
   } catch (error) {
     next(error);
   }
 };
+
+
 export async function unsaveJobByUser(req, res) {
     const { jobId } = req.params; // jobId passed in the URL
     const userId = req.user._id;
@@ -1333,11 +1344,17 @@ export async function rejectApplicant(req, res) {
           const companyName =
             companyProfile?.companyDetails?.companyName || "Company";
         
-          const studentAuthId = await resolveStudentAuthId(
-            response.data.applicant
-          );
-        
-          if (!studentAuthId) return;
+            const resolveStudentAuthId = async (onboardingId) => {
+              const onboarding = await Onboarding.findById(onboardingId).select("userId");
+              return onboarding?.userId || null;
+            };
+          
+            const studentAuthId = await resolveStudentAuthId(response.data.applicant);
+          
+            if (!studentAuthId) {
+              console.error("❌ Student authId not found:", response.data.applicant);
+              return;
+            }
         
           notifyOnApplicationStatusChange({
             recipientId: studentAuthId,
@@ -1565,9 +1582,14 @@ export async function acceptApplicant(req, res) {
     // 👉 CASE 3: Student / Fresher is applicant → Company accepted them
     if (
       application.applicantType === "student" ||
-      application.applicantType === "fresher"
+      application.applicantType === "fresher" ||
+      application.applicantType === "professional"
     ) {
       try {
+        const resolveStudentAuthId = async (onboardingId) => {
+          const onboarding = await Onboarding.findById(onboardingId).select("userId");
+          return onboarding?.userId || null;
+        };
         const studentAuthId = await resolveStudentAuthId(application.applicant);
         if (!studentAuthId) return;
       
@@ -1749,7 +1771,7 @@ export async function getAcceptedCandidatesByCompany(req, res) {
   }
 }*/}
 
-//prathmesh interview schedule fix
+//Prathmesh interview schedule fix
 export async function scheduleInterview(req, res) {
   try {
     console.log("📩 Schedule Interview Payload:", req.body);

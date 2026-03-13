@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Phone, Download, ExternalLink, GraduationCap, Briefcase } from 'lucide-react';
 import { getReferralApplications ,updateApplicationStatusApi } from '@/lib/User_AxiosInstance';
 import { ApplicationDetailModal } from './ApplicationDetailModal';
-export default function ReferralApplicationsModal({ isOpen, jobId, jobTitle, onClose }) {
+export default function ReferralApplicationsModal({ isOpen, jobId, jobTitle, viewType, onClose }) {
   const [applications, setApplications] = useState([]);
   const [selectedApp, setSelectedApp] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -11,12 +11,14 @@ export default function ReferralApplicationsModal({ isOpen, jobId, jobTitle, onC
     if (isOpen && jobId) {
       fetchApplications();
     }
-  }, [isOpen, jobId]);
+  }, [isOpen, jobId ,viewType]);
 
  const fetchApplications = async () => {
   setLoading(true);
   try {
-    const response = await getReferralApplications(jobId);
+     const isVisited = viewType === 'new' ? false : true;
+
+    const response = await getReferralApplications(jobId,isVisited);
     
     // Check if response.data.data exists (based on your JSON)
     const incomingData = response.data?.data || [];

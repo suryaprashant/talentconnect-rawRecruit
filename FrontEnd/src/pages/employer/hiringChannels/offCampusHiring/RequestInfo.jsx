@@ -1542,7 +1542,7 @@ const handleSelectOrAddSkill = async (skillName) => {
       const submissionData = {
         venue: formData.venue,
         degree: formData.degree.map(d => d.label),
-        studentStreams: formData.stream.map(s => s.label),
+        studentStreams: formData.studentStreams.map(s => s.label),
         eligibilityCriteria: formData.eligibilityCriteria,
         description: formData.description,
         packageDetails: {
@@ -1712,7 +1712,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                     onChange={(selected) => {
                       const selections = selected || [];
                       // Atomic update: set degree + reset stream together
-                      setFormData(prev => ({ ...prev, degree: selections, stream: [] }));
+                      setFormData(prev => ({ ...prev, degree: selections, studentStreams: [] }));
                       setSelectedDegreeIds(selections.map(s => s.value));
                     }}
                     onCreateOption={async (val) => {
@@ -1723,7 +1723,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         setFormData(prev => {
                           const updated = [...prev.degree, newOpt];
                           setSelectedDegreeIds(updated.map(s => s.value));
-                          return { ...prev, degree: updated, stream: [] };
+                          return { ...prev, degree: updated, studentStreams: [] };
                         });
                       } catch (err) {
                         console.error("Error adding degree", err);
@@ -1742,11 +1742,11 @@ const handleSelectOrAddSkill = async (skillName) => {
                     isLoading={isLoadingStreams}
                     isDisabled={formData.degree.length === 0}
                     options={streamOptions}
-                    value={formData.stream}
+                    value={formData.studentStreams}
                     styles={selectStyles}
                     placeholder={formData.degree.length === 0 ? "Select a degree first" : "Select or add stream(s)"}
                     onChange={(selected) => {
-                      setFormData(prev => ({ ...prev, stream: selected || [] }));
+                      setFormData(prev => ({ ...prev, studentStreams: selected || [] }));
                     }}
                     onCreateOption={async (val) => {
                       const parentId = selectedDegreeIds[0] || null;
@@ -1754,7 +1754,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                         const res = await createMasterData({ type: "STREAM", value: val, parent: parentId });
                         const newOpt = { value: res.data.data._id, label: res.data.data.value };
                         setStreamOptions(prev => [...prev, newOpt]);
-                        setFormData(prev => ({ ...prev, stream: [...prev.stream, newOpt] }));
+                        setFormData(prev => ({ ...prev, studentStreams: [...prev.studentStreams, newOpt] }));
                       } catch (err) {
                         console.error("Error adding stream", err);
                         toast.error("Could not add stream.");
