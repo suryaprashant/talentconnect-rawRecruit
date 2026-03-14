@@ -735,10 +735,10 @@ export default function ProfileAchievements({
           {/* Main Card */}
           <div className="relative bg-white/95 backdrop-blur-xl border border-white/70 rounded-3xl shadow-xl shadow-blue-50/50 p-10">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] bg-clip-text text-transparent mb-6">
-              College Profile & Achievements
+              College Profile
             </h1>
             <p className="text-gray-600 text-lg mb-8">
-              Showcase your institution's key highlights, achievements, and online presence!
+              Showcase your institution's online presence!
             </p>
 
             <div className="space-y-8">
@@ -774,13 +774,13 @@ export default function ProfileAchievements({
                 />
               </div>
 
-              {/* --- Workshops Section --- */}
+              {/* --- Workshops Section ---
               <div className="border-t border-gray-200/50 pt-8">
                 <h3 className="font-bold text-xl mb-6 text-gray-800">
                   Workshops & Training Programs
                 </h3>
 
-                {/* Display added workshops */}
+                {/* Display added workshops 
                 {formData.workshops && formData.workshops.length > 0 && (
                   <div className="mb-6 p-5 bg-gradient-to-r from-gray-50/50 to-blue-50/30 backdrop-blur-sm border border-gray-200/50 rounded-xl">
                     <h4 className="text-lg font-semibold mb-3 text-gray-700">
@@ -884,15 +884,15 @@ export default function ProfileAchievements({
                     Add Workshop
                   </button>
                 </div>
-              </div>
+              </div> */}
 
-              {/* --- Volunteering Section --- */}
+              {/* --- Volunteering Section --- 
               <div className="border-t border-gray-200/50 pt-8">
                 <h3 className="font-bold text-xl mb-6 text-gray-800">
                   Volunteering & Community Engagement
                 </h3>
 
-                {/* Display added volunteering */}
+                {/* Display added volunteering 
                 {formData.volunteering && formData.volunteering.length > 0 && (
                   <div className="mb-6 p-5 bg-gradient-to-r from-gray-50/50 to-green-50/30 backdrop-blur-sm border border-gray-200/50 rounded-xl">
                     <h4 className="text-lg font-semibold mb-3 text-gray-700">
@@ -1005,13 +1005,13 @@ export default function ProfileAchievements({
                 </div>
               </div>
 
-              {/* --- Awards Section --- */}
+              {/* --- Awards Section --- 
               <div className="border-t border-gray-200/50 pt-8">
                 <h3 className="font-bold text-xl mb-6 text-gray-800">
                   Awards & Recognitions
                 </h3>
 
-                {/* Display added awards */}
+                {/* Display added awards 
                 {formData.awards && formData.awards.length > 0 && (
                   <div className="mb-6 p-5 bg-gradient-to-r from-gray-50/50 to-purple-50/30 backdrop-blur-sm border border-gray-200/50 rounded-xl">
                     <h4 className="text-lg font-semibold mb-3 text-gray-700">
@@ -1112,7 +1112,7 @@ export default function ProfileAchievements({
                   </button>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Navigation Buttons */}
             <div className="flex flex-col sm:flex-row justify-between gap-6 mt-12 pt-8 border-t border-white/50">
@@ -1132,6 +1132,7 @@ export default function ProfileAchievements({
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
