@@ -39,6 +39,8 @@ import f3 from "../../assets/f3.png";
 import f4 from "../../assets/f4.png";
 import f5 from "../../assets/f5.png";
 import f6 from "../../assets/f6.png";
+import AS from "../../assets/AS.png";
+import CAS from "../../assets/CAS.png";
 import { FeatureModal, FEATURE_MODAL_CONFIGS } from "../../components/ui/FeatureModal";
 
 const App = () => {
@@ -495,11 +497,11 @@ const ArrowRightIcon = () => (
       },
       { 
         id: "applications", 
-        title: "Applications", 
+        title: "Applications Status", 
         description: "Track candidate applications", 
         fullDescription: "Track and manage all incoming applications, filter by criteria, and shortlist candidates.",
         step: "04",
-        image: f5,
+        image: AS,
         iconColor: "#7D3AE9",
         iconBg: "#F0EBFA",
         iconPath: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"
@@ -549,7 +551,7 @@ const ArrowRightIcon = () => (
      
       { 
         id: "companies", 
-        title: "Company Relations", 
+        title: "Company Request", 
         description: "Partner companies", 
         image: h6,
         iconColor: "#EE4499",
@@ -589,9 +591,9 @@ const ArrowRightIcon = () => (
     
       { 
         id: "applications", 
-        title: "Applications", 
+        title: "Applications Status", 
         description: "Review applicants", 
-        image: f5,
+        image: AS,
         iconColor: "#327DF5",
         iconBg: "#E9F0FB",
         iconPath: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"
@@ -647,7 +649,7 @@ const ArrowRightIcon = () => (
         id: "applications", 
         title: "My Applications", 
         description: "Track application status", 
-        image: f4,
+        image: CAS,
         iconColor: "#20C55D",
         iconBg: "#EBFAF0",
         iconPath: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"
