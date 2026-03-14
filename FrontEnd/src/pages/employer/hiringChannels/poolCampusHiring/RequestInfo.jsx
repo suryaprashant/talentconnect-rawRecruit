@@ -1164,7 +1164,6 @@
 // }
 
 
-
 import { useState, useRef, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { ChevronDown, X, Building2, Mail, Phone, Link, Calendar, Users, Briefcase, Target, DollarSign, Clock, MessageSquare, MapPin, Layers, IndianRupee } from 'lucide-react';
@@ -1174,6 +1173,8 @@ import { City } from 'country-state-city';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import BackButton from '@/components/layout/BackButton';
+import { getMasterDataByType, createMasterData } from "../../../../lib/User_AxiosInstance";
+import { getCompanyMasterDataByType, createCompanyMasterData } from "../../../../lib/Company_AxiosInstance";
 
 export default function PoolCampusHiringForm() {
   // Updated data structure for College Type → Degree → Stream
@@ -1270,20 +1271,143 @@ export default function PoolCampusHiringForm() {
   const amenitiesOptions = ['Projector & Screen', 'Seminar Hall', 'Interview Rooms', 'Wi-Fi Access', 'Computer Labs', 'Cafeteria', 'Parking Space', 'Technical Support'];
   const numberOfRoundsOptions = ['1 Round', '2 Rounds', '3 Rounds', '4 Rounds', '5 Rounds', '6+ Rounds'];
   const processOptions = ['Online Test', 'Coding Test', 'Aptitude Test', 'Group Discussion', 'Technical Interview', 'HR Interview', 'Case Study', 'Presentation'].sort((a, b) => a.localeCompare(b));
-  const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
+  //const designationOptions = ['HR Manager', 'Technical Recruiter', 'Talent Acquisition', 'Hiring Manager', 'Team Lead', 'Department Head', 'CEO', 'CTO', 'Founder', 'Other'];
   const minimumStudentsOptions = ['1-10 students', '11-25 students', '26-50 students', '51-100 students', '101-200 students', '201-500 students', '500+ students'];
   const tagsOptions = ['Urgent hiring', 'Fresher preferred', 'Remote-friendly', 'Work from Home', 'Internship-eligible', 'Hybrid', 'High Priority', 'Contract', 'Part-time', 'Full-time'];
 
   const collegeCategoryOptions = ['Tier 1', 'Tier 2', 'Tier 3', 'Autonomous', 'Other'];
   const preferredHiringModeOptions = ["Online", "Offline", "Hybrid", "Online Aptitude and Physical Interview"];
-
+  const [degreeOptions, setDegreeOptions] = useState([]);
+  const [streamOptions, setStreamOptions] = useState([]);
+  const [jobRoleOptions, setJobRoleOptions] = useState([]);
+  const [designationOptions, setDesignationOptions] = useState([]);
   const cityOptions = useMemo(() =>
     City.getCitiesOfCountry('IN').map(city => ({
       value: city.name,
       label: city.name,
     })),
   []);
+  useEffect(() => {
+    const fetchDegrees = async () => {
+      try {
+        const res = await getMasterDataByType("DEGREE");
+        const options = res.data.data.map(item => ({
+          value: item._id,
+          label: item.value
+        }));
+        setDegreeOptions(options);
+      } catch (err) {
+        console.error("Error fetching degrees", err);
+      }
+    };
 
+    fetchDegrees();
+  }, []);
+
+  const handleAddDegree = async (val) => {
+    try {
+      const res = await createMasterData({
+        type: "DEGREE",
+        value: val
+      });
+
+      const newDegree = res.data.data.value;
+
+      setDegreeOptions(prev => [...prev, newDegree]);
+      setFormData(prev => ({
+        ...prev,
+        collegeDegrees: [...prev.collegeDegrees, newDegree]
+      }));
+
+    } catch (err) {
+      console.error("Error creating degree", err);
+    }
+  };
+  
+  
+
+  const handleAddStream = async (val, parentDegree) => {
+    try {
+      const res = await createMasterData({
+        type: "STREAM",
+        value: val,
+        parent: parentDegree
+      });
+
+      const newStream = res.data.data.value;
+
+      setStreamOptions(prev => [...prev, newStream]);
+      setFormData(prev => ({
+        ...prev,
+        collegeStreams: [...prev.collegeStreams, newStream]
+      }));
+
+    } catch (err) {
+      console.error("Error creating stream", err);
+    }
+  };
+
+  useEffect(() => {
+    const fetchJobRoles = async () => {
+      try {
+        const res = await getCompanyMasterDataByType("JOB_ROLE");
+        const roles = res.data.data.map(item => item.value);
+        setJobRoleOptions(roles);
+      } catch (err) {
+        console.error("Error fetching job roles", err);
+      }
+    };
+
+    fetchJobRoles();
+  }, []);
+  const handleAddJobRole = async (val) => {
+    try {
+      const res = await createCompanyMasterData({
+        type: "JOB_ROLE",
+        value: val
+      });
+
+      const newRole = res.data.data.value;
+
+      setJobRoleOptions(prev => [...prev, newRole]);
+      setFormData(prev => ({
+        ...prev,
+        jobRoles: [...prev.jobRoles, newRole]
+      }));
+
+    } catch (err) {
+      console.error("Error creating job role", err);
+    }
+  };
+  useEffect(() => {
+    const fetchDesignations = async () => {
+      try {
+        const res = await getCompanyMasterDataByType("COMPANY_DESIGNATION");
+        const designations = res.data.data.map(item => item.value);
+        setDesignationOptions(designations);
+      } catch (err) {
+        console.error("Error fetching designations", err);
+      }
+    };
+
+    fetchDesignations();
+  }, []);
+
+  const handleAddDesignation = async (val) => {
+    try {
+      const res = await createCompanyMasterData({
+        type: "COMPANY_DESIGNATION",
+        value: val
+      });
+
+      const newDesignation = res.data.data.value;
+
+      setDesignationOptions(prev => [...prev, newDesignation]);
+
+    } catch (err) {
+      console.error("Error creating designation", err);
+    }
+  };
   // --- DYNAMIC SKILLS STATE ---
 const [metaData, setMetaData] = useState([]); // Skills from global DB
 const [customSkillSearch, setCustomSkillSearch] = useState(""); 
@@ -1294,7 +1418,8 @@ useEffect(() => {
   const fetchSkills = async () => {
     try {
       const { data } = await axios.get(`${import.meta.env.VITE_Backend_URL}/api/meta/get-skills`);
-      const skillNames = data.map(item => item.skills);
+      // const skillNames = data.map(item => item.skills);
+      const skillNames = (data.data || data).map(item => item.skills);
       setMetaData(skillNames);
     } catch (err) {
       console.error("Error loading skills from database", err);
@@ -1303,8 +1428,11 @@ useEffect(() => {
   fetchSkills();
 }, []);
 
+// const filteredSkillOptions = useMemo(() => {
+//   return Array.isArray(metaData) ? metaData.sort() : [];
+// }, [metaData]);
 const filteredSkillOptions = useMemo(() => {
-  return Array.isArray(metaData) ? metaData.sort() : [];
+  return Array.isArray(metaData) ? [...metaData].sort() : [];
 }, [metaData]);
 
 // --- SKILL HANDLERS ---
@@ -1336,7 +1464,7 @@ const handleSelectOrAddSkill = async (skillName) => {
   const existingInDb = metaData.find(s => s.toLowerCase() === trimmed.toLowerCase());
 
   if (existingInDb) {
-    if (!formData.skills.includes(existingInDb)) {
+    if (!(formData.skills || []).includes(existingInDb)) {
       setFormData(prev => ({ ...prev, skills: [...(prev.skills || []), existingInDb] }));
     }
   } else {
@@ -1415,7 +1543,31 @@ const handleSelectOrAddSkill = async (skillName) => {
       return initialState;
     }
   });
-  
+  useEffect(() => {
+    const fetchStreams = async () => {
+      if (!formData.collegeDegrees?.length) return;
+
+      try {
+        const degreeIds = formData.collegeDegrees
+          .map(d => (typeof d === "object" ? d.value : null))
+          .filter(Boolean);
+
+        const results = await Promise.all(
+          degreeIds.map(id => getMasterDataByType("STREAM", id))
+        );
+
+        const streams = results.flatMap(res =>
+          res.data.data.map(s => s.value)
+        );
+
+        setStreamOptions([...new Set(streams)]);
+      } catch (err) {
+        console.error("Error fetching streams", err);
+      }
+    };
+
+    fetchStreams();
+  }, [formData.collegeDegrees]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [descriptionError, setDescriptionError] = useState("");
@@ -1500,19 +1652,14 @@ const handleSelectOrAddSkill = async (skillName) => {
   // Helper functions for available options
   const getAvailableDegrees = () => {
     if (!formData.collegeTypes) return [];
-    return collegeTypeDegreeMapping[formData.collegeTypes]?.degrees || [];
+    // return collegeTypeDegreeMapping[formData.collegeTypes]?.degrees || [];
+    return degreeOptions;
   };
 
+  // 
   const getAvailableStreams = () => {
-    if (!formData.collegeTypes || formData.collegeDegrees.length === 0) return [];
-    
-    const streams = new Set();
-    formData.collegeDegrees.forEach(degree => {
-      const degreeStreams = collegeTypeDegreeMapping[formData.collegeTypes]?.streams?.[degree] || [];
-      degreeStreams.forEach(stream => streams.add(stream));
-    });
-    
-    return Array.from(streams);
+    if (!formData.collegeDegrees.length) return [];
+    return streamOptions;
   };
 
   const handleChange = (e) => {
@@ -1967,8 +2114,8 @@ const handleSelectOrAddSkill = async (skillName) => {
                     <label className="block font-medium mb-2 text-sm text-gray-700">Degree <span className="text-red-500">*</span></label>
                     <div className="flex flex-wrap gap-1 mb-1 max-h-20 overflow-y-auto">
                       {formData.collegeDegrees.map(degree => (
-                        <div key={degree} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                          <span>{degree}</span>
+                        <div key={degree.value} className="flex items-center bg-gradient-to-r from-gray-100 to-white border border-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                          <span>{degree.label}</span>
                           <button type="button" onClick={() => removeSelectedItem('collegeDegrees', degree)} className="ml-1 text-gray-500 hover:text-gray-700"><X size={12} /></button>
                         </div>
                       ))}
@@ -1999,7 +2146,9 @@ const handleSelectOrAddSkill = async (skillName) => {
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                   e.preventDefault();
-                                  handleCustomAdd('collegeDegrees', customDegree, setCustomDegree, getAvailableDegrees());
+                                  // handleCustomAdd('collegeDegrees', customDegree, setCustomDegree, getAvailableDegrees());
+                                  handleAddDegree(customDegree);
+                                  setCustomDegree('');
                                 }
                               }}
                               className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
@@ -2008,7 +2157,9 @@ const handleSelectOrAddSkill = async (skillName) => {
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleCustomAdd('collegeDegrees', customDegree, setCustomDegree, getAvailableDegrees());
+                                // handleCustomAdd('collegeDegrees', customDegree, setCustomDegree, getAvailableDegrees());
+                                handleAddDegree(customDegree);
+                                setCustomDegree('');
                               }}
                               className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                             >
@@ -2019,17 +2170,18 @@ const handleSelectOrAddSkill = async (skillName) => {
                         
                         <div className="overflow-y-auto max-h-48">
                           {getAvailableDegrees().map(degree => (
-                            <div 
-                              key={degree} 
-                              onClick={() => handleMultiSelect('collegeDegrees', degree)} 
+                            <div
+                              key={degree.value}
+                              onClick={() => handleMultiSelect('collegeDegrees', degree)}
                               className={`px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center justify-between ${
-                                formData.collegeDegrees.includes(degree) ? "bg-blue-50/50" : ""
+                                formData.collegeDegrees.some(d => d.value === degree.value)
+                                  ? "bg-blue-50/50"
+                                  : ""
                               }`}
                             >
-                              <span className={`text-sm ${formData.collegeDegrees.includes(degree) ? "text-[#667eea] font-semibold" : "text-gray-700"}`}>
-                                {degree}
+                              <span className="text-sm text-gray-700">
+                                {degree.label}
                               </span>
-                              {formData.collegeDegrees.includes(degree) && <span className="text-[#667eea] font-bold">✓</span>}
                             </div>
                           ))}
                           
@@ -2080,7 +2232,9 @@ const handleSelectOrAddSkill = async (skillName) => {
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                   e.preventDefault();
-                                  handleCustomAdd('collegeStreams', customStream, setCustomStream, getAvailableStreams());
+                                  // handleCustomAdd('collegeStreams', customStream, setCustomStream, getAvailableStreams());
+                                  handleAddStream(customStream, formData.collegeDegrees[0].value);
+                                  setCustomStream('');
                                 }
                               }}
                               className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
@@ -2089,7 +2243,9 @@ const handleSelectOrAddSkill = async (skillName) => {
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleCustomAdd('collegeStreams', customStream, setCustomStream, getAvailableStreams());
+                                // handleCustomAdd('collegeStreams', customStream, setCustomStream, getAvailableStreams());
+                                handleAddStream(customStream, formData.collegeDegrees[0].value);
+                                setCustomStream('');
                               }}
                               className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                             >
@@ -2465,7 +2621,9 @@ const handleSelectOrAddSkill = async (skillName) => {
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') {
                                     e.preventDefault();
-                                    handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
+                                    // handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
+                                    handleAddJobRole(customJobRole);
+                                    setCustomJobRole('');
                                   }
                                 }}
                                 className="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#667eea]/50 focus:outline-none"
@@ -2474,7 +2632,9 @@ const handleSelectOrAddSkill = async (skillName) => {
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
+                                  // handleCustomAdd('jobRoles', customJobRole, setCustomJobRole, jobRoles);
+                                  handleAddJobRole(customJobRole);
+                                  setCustomJobRole('');
                                 }}
                                 className="px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white rounded-lg text-xs font-bold whitespace-nowrap"
                               >
@@ -2484,7 +2644,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                           </div>
                           
                           <div className="overflow-y-auto max-h-48">
-                            {jobRoles.map(role => (
+                            {jobRoleOptions.map(role => (
                               <div 
                                 key={role} 
                                 onClick={() => handleMultiSelect('jobRoles', role)} 
@@ -2499,7 +2659,7 @@ const handleSelectOrAddSkill = async (skillName) => {
                               </div>
                             ))}
                             
-                            {jobRoles.length === 0 && (
+                            {jobRoleOptions.length === 0 && (
                               <div className="p-4 text-center text-gray-400 text-xs italic">
                                 No job roles found. Add a role above.
                               </div>

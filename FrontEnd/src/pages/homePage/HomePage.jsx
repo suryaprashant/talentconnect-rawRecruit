@@ -1699,7 +1699,7 @@ const ArrowRightIcon = () => (
 
       
         <section 
-  className="section-pad pt-20 pb-28 relative overflow-hidden" 
+  className="section-pad pt-20 pb-20 relative overflow-hidden" 
   style={{ 
     background: 'linear-gradient(120deg, #7C3AED 0%, #9333EA 35%, #C026D3 70%, #EC4899 100%)'
   }}
